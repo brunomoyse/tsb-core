@@ -1,10 +1,11 @@
 import './globals.css'
 import React from "react";
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Noto_Sans } from 'next/font/google'
 import ReduxProvider from "@/components/ReduxProvider";
-const inter = Inter({ subsets: ['latin'] })
+const notoFont = Noto_Sans({ weight: '400', subsets: ['latin'] })
 import { ApolloWrapper } from "@/lib/apollo-wrapper";
+import Navbar from "@/components/navbar/Navbar";
 
 export const metadata: Metadata = {
   title: 'Tokyo Sushi Bar',
@@ -18,9 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`bg-hero-pattern ${inter.className}`}>
+      <body className={`bg-hero-pattern ${notoFont.className}`}>
         <ReduxProvider>
             <ApolloWrapper>
+                <header>
+                    <Navbar />
+                </header>
                 {children}
             </ApolloWrapper>
         </ReduxProvider>
