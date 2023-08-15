@@ -1,6 +1,10 @@
+import dynamic from "next/dynamic";
+const CartButton = dynamic(() => import('@/components/navbar/CartButton'), { ssr: false });
+
 import ConnectButton from "./ConnectButton";
-import CartButton from "./CartButton";
 import MobileMenu from "./MobileMenu";
+
+
 
 const Navbar: React.FC = () => {
     return (
