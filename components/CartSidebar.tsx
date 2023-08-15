@@ -1,6 +1,6 @@
-'use client';
+// components/CartSidebar.tsx
 
-export const dynamic = "force-dynamic";
+'use client';
 
 import React from 'react';
 
@@ -96,10 +96,11 @@ const CartSidebar: React.FC = () => {
             </div>
             <button
                 onClick={handlePayment}
-                className="p-4 w-full text-white bg-pink-400 rounded-xl transition ease-in-out duration-150 hover:bg-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+                className="flex items-center justify-center p-4 w-full text-offWhite bg-coralPink rounded-full transition ease-in-out duration-150 hover:bg-coralPink-darker focus:outline-none focus:ring-2 focus:ring-coralPink focus:ring-offset-2"
             >
                 PAYER
             </button>
+
         </div>
     );
 }
