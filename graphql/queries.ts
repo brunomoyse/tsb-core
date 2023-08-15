@@ -3,13 +3,24 @@
 import { gql } from "@apollo/client";
 
 export const PRODUCTS_QUERY = gql`
-    query ($first: Int!, $lang: Language!, $tags: [ID!], $search: String) {
+    query ($first: Int!, $page: Int!, $lang: Language!, $tags: [ID!], $search: String) {
         products(
             first: $first
+            page: $page
             lang: $lang
             tags: $tags
             search: $search
         ) {
+            paginatorInfo {
+                count
+                currentPage
+                firstItem
+                hasMorePages
+                lastItem
+                lastPage
+                perPage
+                total
+            }
             data {
                 id
                 price
