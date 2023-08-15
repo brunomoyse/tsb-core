@@ -16,15 +16,29 @@ const cartSlice = createSlice({
             const existingCartItemIndex = state.products.findIndex(item => item.product.id === productToAdd.id);
 
             if (existingCartItemIndex !== -1) {
-                // Increment the quantity if the product already exists in the cart
-                state.products[existingCartItemIndex].quantity += 1;
+                // Using the spread operator to return a new array instance
+                return {
+                    ...state,
+                    products: state.products.map((item, index) => {
+                        if (index === existingCartItemIndex) {
+                            return {
+                                ...item,
+                                quantity: item.quantity + 1
+                            };
+                        }
+                        return item;
+                    })
+                };
             } else {
-                // Add a new product entry if it doesn't exist
-                state.products.push({
-                    id: productToAdd.id,
-                    product: productToAdd,
-                    quantity: 1
-                });
+                // Using the spread operator to return a new array instance
+                return {
+                    ...state,
+                    products: [...state.products, {
+                        id: productToAdd.id,
+                        product: productToAdd,
+                        quantity: 1
+                    }]
+                };
             }
         },
         incrementQuantity: (state, action: PayloadAction<{ id: string }>) => {

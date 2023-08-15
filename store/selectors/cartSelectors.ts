@@ -1,5 +1,4 @@
 // store/selectors/cartSelectors.ts
-
 import { createSelector } from 'reselect';
 import { RootState } from "@/store";
 
@@ -20,4 +19,10 @@ export const getTotalPrice = createSelector(
 export const selectCartItems = createSelector(
     [getCartProducts],
     (products: CartItem[]) => products
+);
+
+// A memoized selector to return the total quantity of products
+export const selectTotalProductQuantity = createSelector(
+    [getCartProducts],
+    (products: CartItem[]) => products.reduce((acc, product) => acc + product.quantity, 0)
 );
