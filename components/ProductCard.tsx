@@ -1,10 +1,12 @@
 // ProductCard.tsx
 
 import React from 'react';
-
-import ClientSideButton from './ClientSideButton';  // Import the client-side component
-import { formatPrice } from '@/utils/utils';
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+import { formatPrice } from '@/utils/utils';
+
+const ClientSideButton = dynamic(() => import('@/components/ClientSideButton'), { ssr: false }); // Import the client-side component
 
 interface ProductCardProps {
     product: Product;
