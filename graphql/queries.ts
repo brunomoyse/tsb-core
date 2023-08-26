@@ -63,3 +63,25 @@ export const ORDER_QUERY = gql`
         }
     }
 `;
+
+export const TAGS_WITH_PRODUCTS_QUERY = gql`
+    query ($lang: Language!) {
+        tags {
+            id
+            productTagTranslations(language: $lang) {
+                name
+            }
+            products {
+                id
+                price
+                code
+                slug
+                productTranslations(language: $lang) {
+                    name
+                    language
+                }
+            }
+        }
+    }
+`;
+

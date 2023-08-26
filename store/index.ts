@@ -2,6 +2,7 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './slices/cartSlice';
+import productsReducer from './slices/productsSlice';
 import { saveToLocalStorageWithExpiry } from '@/utils/localStorage';
 
 /* @ts-ignore */
@@ -19,7 +20,8 @@ const cartLocalStorageMiddleware = store => next => action => {
 
 const store = configureStore({
     reducer: {
-        cart: cartReducer
+        cart: cartReducer,
+        products: productsReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(cartLocalStorageMiddleware)
 });

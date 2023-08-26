@@ -5,6 +5,13 @@ interface Product {
     price: number;
     code: string;
     slug: string;
+    isActive: boolean;
+}
+
+interface ProductTag {
+    id: string;
+    productTagTranslations: { name: string }[];
+    products: Product[];
 }
 
 interface CartItem {

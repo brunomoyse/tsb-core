@@ -1,40 +1,42 @@
-// ProductCard.tsx
-
-import React from 'react';
+import * as React from 'react';
 import Image from "next/image";
+import { formatPrice } from "@/utils/utils";
 import dynamic from "next/dynamic";
+const ClientSideButton = dynamic(() =>
+    import('@/components/ClientSideButton'), {
+        ssr: false,
+        loading: () => <div>ajouter</div>
+    }
+);
 
-import { formatPrice } from '@/utils/utils';
-
-const ClientSideButton = dynamic(() => import('@/components/ClientSideButton'), { ssr: false }); // Import the client-side component
+import {addToCart} from "@/store/slices/cartSlice";
 
 interface ProductCardProps {
     product: Product;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return (
-        <div className="relative group rounded p-2 z-10">
-            <div className="block border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition ease-in-out duration-200 cursor-pointer bg-gray-50">
-                <div className="relative w-48 h-48 overflow-hidden mx-auto">
-                    <Image
-                        src={`/images/menu/${product.slug}.png`}
-                        alt={product.productTranslations[0].name}
-                        className="w-full h-full object-cover"
-                        width={192}
-                        height={192}
-                    />
-                </div>
-
-                <div className="p-4">
-                    <h2 className="text-lg font-bold mb-2">{product.productTranslations[0].name}</h2>
-                    <p className="text-pink-600 font-semibold">{formatPrice(product.price)}</p>
-                </div>
+        <div className="bg-white rounded-3xl pb-4">
+            <div className="flex justify-center relative h-40">
+                <Image
+                    alt={product.productTranslations[0].name}
+                    src={`/images/menu/${product.slug}.png`}
+                    fill={true}
+                    className="rounded-t-3xl hover:scale-125 duration-300 cursor-pointer"
+                    style={{objectFit: "contain"}}
+                    draggable={false}
+                />
             </div>
-
-            <div className="absolute inset-0 bg-pink-100 opacity-0 group-hover:opacity-50 transition-opacity z-5 pointer-events-none"></div>
-
-            <ClientSideButton product={product} />
+            <div className="mt-2">
+                <span className="flex justify-center mb-2 tracking-wide">{ product.productTranslations[0].name.toUpperCase() }</span>
+                <span className="flex justify-center text-coralPink mb-1">{formatPrice(product.price)}</span>
+                <span
+                    className="cursor-pointer flex justify-center text-gray-400 mb-2 underline underline-offset-8 decoration-coralPink"
+                >
+                    <ClientSideButton product={product} />
+                </span>
+            </div>
         </div>
     );
 }
