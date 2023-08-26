@@ -8,8 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'hero-pattern': "url('/main-bg.jpg')",
+      //backgroundImage: {
+      //  'hero-pattern': "url('/main-bg.jpg')",
+      //},
+      backgroundColor: {
+        'charcoal': '#302b2c',
+        'coralPink': {
+          DEFAULT: '#e96c74',
+          darker: '#d25660' // Darkened version of coralPink.
+        },
+        'offWhite': '#f5f0f0',
+        'softPink': '#e9b3bc'
       },
       colors: {
         'charcoal': '#302b2c',
@@ -20,6 +29,10 @@ const config: Config = {
         'offWhite': '#f5f0f0',
         'softPink': '#e9b3bc'
       },
+      fontFamily: {
+        'sans': ['"Josefin Sans"', 'sans-serif'],
+        'slab': ['"Josefin Slab"', 'serif'],
+      }
     },
   },
   plugins: [],
