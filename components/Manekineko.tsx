@@ -1,51 +1,66 @@
 "use client";
 
-import React, { useRef, Suspense } from 'react';
+// Manekineko.tsx
+import React, { Suspense } from 'react';
 import { Canvas, useLoader, useFrame } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
+import { TextureLoader } from 'three';
+import { useGLTF, useAnimations, OrbitControls } from '@react-three/drei';
+import { Mesh } from 'three';
 
 const Model = () => {
-    const gltf = useLoader(GLTFLoader, '/models/manekineko/scene.gltf');
+    const gltf = useGLTF("/models/manekineko/scene.gltf", true);
+    const { animations } = gltf;
+    const { actions, mixer } = useAnimations(animations, gltf.scene);
 
-    // Load textures
-    const blackBaseColor = useLoader(THREE.TextureLoader, '/models/manekineko/maneki_black_baseColor.jpeg');
-    const blackMetallicRoughness = useLoader(THREE.TextureLoader, '/models/manekineko/maneki_black_metallicRoughness.png');
+    // Load the textures
+    const baseColorTexture = useLoader(TextureLoader, "/models/manekineko/maneki_white_baseColor.jpeg");
+    const metallicRoughnessTexture = useLoader(TextureLoader, "/models/manekineko/maneki_white_metallicRoughness.png");
 
-    // Assuming the model's mesh material is named 'manekiMaterial', you can adjust this
-    const mesh = gltf.scene.children.find(child => child.isMesh && child.material.name === 'manekiMaterial');
-    if (mesh) {
-        mesh.material.map = blackBaseColor;
-        mesh.material.metalnessMap = blackMetallicRoughness;
-        mesh.material.needsUpdate = true;
+    // Flip the texture vertically
+    baseColorTexture.flipY = false;
+    metallicRoughnessTexture.flipY = false;
+
+    // Apply the textures to the model's material (assuming a single material for simplicity)
+    if (gltf && gltf.scene) {
+        gltf.scene.traverse((child) => {
+            if (child instanceof Mesh) {
+                child.material.map = baseColorTexture;
+                child.material.roughnessMap = metallicRoughnessTexture;
+                child.material.metalnessMap = metallicRoughnessTexture;
+                child.material.needsUpdate = true;
+            }
+        });
     }
 
-    const ref = useRef<THREE.Mesh>();
+    // This will run on every frame and update the animation mixer
+    useFrame((state, delta) => mixer.update(delta));
 
-    // This will run on every frame, useful if your model has animations
-    useFrame((state, delta) => {
-        if (ref.current) {
-            // If the model has animations, uncomment the next line
-            // state.clock.getElapsedTime() is the time in seconds since the clock started, it can be used to control the animation mixer
-            // gltf.animations.forEach(clip => state.mixers[clip.name].update(delta));
-        }
-    });
+    // Start the animation (assuming only one animation clip is present)
+    if (actions && Object.keys(actions).length) {
+        const firstActionKey = Object.keys(actions)[0];
+        // @ts-ignore
+        actions[firstActionKey].play();
+    }
 
-    return <primitive ref={ref} object={gltf.scene} />;
-};
+    return (
+        <primitive object={gltf.scene} dispose={null} />
+    );
+}
 
 const Manekineko: React.FC = () => {
     return (
-        <Canvas style={{ width: '500px', height: '500px' }}>
+        <Canvas camera={{ position: [0, 2, 5], fov: 40 }}>
             <Suspense fallback={null}>
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} />
+                <ambientLight />
+                <directionalLight position={[2.5, 8, 5]} intensity={1.5} />
                 <Model />
             </Suspense>
             <OrbitControls enablePan={false} />
         </Canvas>
     );
-};
+}
 
 export default Manekineko;
+
+
+
