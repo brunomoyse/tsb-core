@@ -26,9 +26,12 @@ const CameraLogger: React.FC = () => {
         const handleScroll = () => {
             const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = window.scrollY / scrollMax;
+            const maxAngle = 2; // pi = 90 degrees
+            let angle = initialAngle + scrollPercent * Math.PI; // Calculate desired angle
 
-            // Adjust the multiplier to change the scroll speed (2 * Math.PI = 360deg)
-            const angle = initialAngle + scrollPercent * 2.7;
+            // Clamp the angle
+            angle = Math.max(-maxAngle, Math.min(maxAngle, angle));
+
             const radius = Math.sqrt(
                 (initialPosition.current.x - 5.35)**2 +
                 (initialPosition.current.z + 8)**2
@@ -57,25 +60,10 @@ const CameraLogger: React.FC = () => {
         };
     }, [camera]);
 
-    useEffect(() => {
-        const handleSaveCameraState = (e: KeyboardEvent) => {
-            if (e.key === "s" || e.key === "S") {
-                console.log("Camera Position:", camera.position);
-                console.log("Camera Rotation:", camera.rotation);
-            }
-        };
-
-        window.addEventListener('keydown', handleSaveCameraState);
-
-        return () => {
-            window.removeEventListener('keydown', handleSaveCameraState);
-        }
-    }, [camera]);
-
-
+    // initial camera position movement
     useEffect(() => {
         gsap.to(camera.position, {
-            duration: 4,
+            duration: 1.3,
             x: initialPosition.current.x,
             y: initialPosition.current.y,
             z: initialPosition.current.z,
@@ -205,7 +193,7 @@ const Manekineko: React.FC = () => {
                     //    11.009304534482585
                     //],
                     position: [34.362144994873887, 20.309751143909795, 21.009304534482585],
-                    fov: 30
+                    fov: 28
                 }}
                 shadows
             >

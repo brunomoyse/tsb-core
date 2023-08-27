@@ -7,7 +7,7 @@ export default function Home() {
       <main>
           <section className="min-h-screen bg-white">
               <div className="min-h-screen flex justify-center items-center">
-                  <div className="w-full grid md:grid-cols-2 2xl:gap-x-36 xl:gap-x-20 lg:gap-x-12">
+                  <div className="w-full grid md:grid-cols-2 2xl:gap-x-36 xl:gap-x-20 lg:gap-x-12 h-96">
 
                       <div className="w-full flex flex-col items-center md:items-end justify-center mb-8">
                           <Manekineko />
