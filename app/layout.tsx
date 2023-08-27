@@ -26,9 +26,6 @@ export default function RootLayout({
       <body className={`bg-offWhite ${josefinSans.className}`}>
         <ReduxProvider>
             <ApolloWrapper>
-                <header>
-                    <Navbar />
-                </header>
                 {children}
             </ApolloWrapper>
         </ReduxProvider>

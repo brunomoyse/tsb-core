@@ -8,6 +8,7 @@ import {TAGS_WITH_PRODUCTS_QUERY} from "@/graphql/queries";
 import ProductCard from "@/components/ProductCard";
 import TagItem from "@/components/TagItem";
 import * as React from "react";
+import Navbar from "@/components/navbar/Navbar";
 
 
 export default async function Page() {
@@ -40,21 +41,25 @@ export default async function Page() {
     });
 
     return (
-        <main className="flex mx-auto container">
+        <div>
+            <header>
+                <Navbar />
+            </header>
+            <main className="flex mx-auto container">
 
-            {/* Shortcut Sidebar */}
-            <aside className="w-1/5 overflow-y-auto">
-                <ul className="my-8 fixed">
-                    {tags.map((tag: any) => (
-                        <div key={tag.id}>
-                            <TagItem tag={tag} />
-                        </div>
-                    ))}
-                </ul>
-            </aside>
+                {/* Shortcut Sidebar */}
+                <aside className="w-1/5 overflow-y-auto">
+                    <ul className="my-8 fixed">
+                        {tags.map((tag: any) => (
+                            <div key={tag.id}>
+                                <TagItem tag={tag} />
+                            </div>
+                        ))}
+                    </ul>
+                </aside>
 
-            {/* Products */}
-            <div className="flex-1 my-8">
+                {/* Products */}
+                <div className="flex-1 my-8">
                     {tags.map((tag: any) => (
                         tag.products && tag.products.length > 0 ? (
                             <section key={tag.id} id={tag.id} className="mb-6">
@@ -69,12 +74,13 @@ export default async function Page() {
                             </section>
                         ) : null
                     ))}
-            </div>
+                </div>
 
-            {/* Cart Sidebar
+                {/* Cart Sidebar
             <aside className="w-1/5 p-4">
                 <CartSidebar />
             </aside>*/}
-        </main>
+            </main>
+        </div>
     );
 }

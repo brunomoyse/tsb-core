@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .min-h-calc {
+        min-height: calc(100vh - 60px);
+    }
+}
