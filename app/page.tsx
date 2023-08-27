@@ -13,7 +13,6 @@ export default function Home() {
                           <Manekineko />
                       </div>
 
-
                       <div className="flex flex-col items-center md:items-start justify-center mb-8">
                           <div className="flex flex-col items-center justify-center">
                               <h1 className="lg:text-9xl text-7xl w-full text-center tracking-tight">TOKYO</h1>
@@ -24,6 +23,7 @@ export default function Home() {
                   </div>
               </div>
           </section>
+          <section className="min-h-screen bg-white"></section>
       </main>
   )
 }
