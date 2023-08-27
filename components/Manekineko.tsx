@@ -83,8 +83,11 @@ const Model = () => {
     // Start the animation (assuming only one animation clip is present)
     if (actions && Object.keys(actions).length) {
         const firstActionKey = Object.keys(actions)[0];
-        // @ts-ignore
-        actions[firstActionKey].play();
+        setTimeout(() => {
+            // @ts-ignore
+            actions[firstActionKey].play();
+        }, 2850)
+
     }
 
     return (
@@ -96,10 +99,10 @@ const Manekineko: React.FC = () => {
 
     return (
         <motion.div
-            className="w-full flex flex-col items-center md:items-end justify-center mb-8"
-            initial={({ y: 30, opacity: 0 })}
-            animate={{ y: 0, opacity: 1}}
-            transition={{ ease: "easeOut", duration: 2, delay: 2 }}
+            className="w-full flex flex-col items-center md:items-end justify-center"
+            initial={({ x: -450 })}
+            animate={{ x: 0 }}
+            transition={{ ease: "easeOut", duration: 1, delay : 1.4 }}
         >
             <Canvas
                 camera={{

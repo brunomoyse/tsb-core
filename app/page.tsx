@@ -16,8 +16,8 @@ export default function Home() {
 
                       <div className="flex flex-col items-center md:items-start justify-center mb-8">
                           <div className="flex flex-col items-center justify-center">
-                              <h1 className="lg:text-9xl text-8xl w-full text-center tracking-tight">TOKYO</h1>
-                              <h2 className="lg:text-5xl text-4xl flex-1 w-full -mt-2 mb-8 text-center tracking-widest">SUSHI & BAR</h2>
+                              <h1 className="lg:text-9xl text-7xl w-full text-center tracking-tight">TOKYO</h1>
+                              <h2 className="lg:text-5xl text-3xl flex-1 w-full -mt-2 mb-8 text-center tracking-widest">SUSHI & BAR</h2>
                               <DeliveryButton />
                           </div>
                       </div>
