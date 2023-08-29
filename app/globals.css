@@ -7,3 +7,28 @@
         min-height: calc(100vh - 60px);
     }
 }
+
+.parallax {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.parallax-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+    z-index: -1;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    padding: 50px;
+}
