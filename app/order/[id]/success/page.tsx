@@ -1,4 +1,4 @@
-import {getClient} from "@/lib/client";
+import { getClient } from "@/lib/server/client";
 import {ORDER_QUERY} from "@/graphql/queries";
 import ClearCart from "@/components/ClearCart";
 

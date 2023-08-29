@@ -105,6 +105,7 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 state.loading = false;
+                /* @ts-ignore */
                 state.error = action.error.message;
             })
             .addCase(editProduct.fulfilled, (state, action: PayloadAction<Product>) => {
