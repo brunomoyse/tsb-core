@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className="flex justify-center relative h-40">
                 <Image
                     alt={product.productTranslations[0].name}
-                    src={`/images/menu/${product.slug}.png`}
+                    src={`/images/compressed/${product.slug}-360.png`}
                     fill={true}
                     className="rounded-t-3xl hover:scale-125 duration-300 cursor-pointer"
                     style={{objectFit: "contain"}}
