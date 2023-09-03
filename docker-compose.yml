@@ -1,0 +1,14 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  tsb-core:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - tsb-network
+
+networks:
+  tsb-network:
+    external: true
