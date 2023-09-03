@@ -96,7 +96,7 @@ const CartSidebar: React.FC = () => {
             </div>
             <button
                 onClick={handlePayment}
-                className="flex items-center justify-center p-4 w-full text-offWhite bg-coralPink rounded-full transition ease-in-out duration-150 hover:bg-coralPink-darker focus:outline-none focus:ring-2 focus:ring-coralPink focus:ring-offset-2"
+                className="flex items-center justify-center p-4 w-full text-off-white bg-tsb-red rounded-full transition ease-in-out duration-150 hover:bg-coralPink-darker focus:outline-none focus:ring-2 focus:ring-coralPink focus:ring-offset-2"
             >
                 PAYER
             </button>

@@ -8,30 +8,47 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      //backgroundImage: {
-      //  'hero-pattern': "url('/main-bg.jpg')",
-      //},
       backgroundColor: {
-        'charcoal': '#302b2c',
-        'coralPink': {
-          DEFAULT: '#e96c74',
-          darker: '#d25660' // Darkened version of coralPink.
+        'tsb': {
+          'red': {
+            lightest: '#FFc7CA',
+            lighter: '#FF8F95',
+            DEFAULT: '#ED1C24',
+            darker: '#a6141c'
+          },
+          'gray': {
+            lightest: '#EDEDED',
+            lighter: '#808D88',
+            DEFAULT: '#132D24'
+          },
         },
-        'offWhite': '#f5f0f0',
-        'softPink': '#e9b3bc'
+        'off-white': '#f5f0f0',
       },
       colors: {
-        'charcoal': '#302b2c',
-        'coralPink': {
-          DEFAULT: '#e96c74',
-          darker: '#d25660' // Darkened version of coralPink.
+        'tsb': {
+          'red': {
+            lightest: '#FFc7CA',
+            lighter: '#FF8F95',
+            DEFAULT: '#ED1C24',
+            darker: '#B30F14'
+          },
+          'gray': {
+            lightest: '#EDEDED',
+            lighter: '#808D88',
+            DEFAULT: '#132D24'
+          },
         },
-        'offWhite': '#f5f0f0',
-        'softPink': '#e9b3bc'
+        'off-white': '#f5f0f0',
+        //'charcoal': '#302b2c',
+        //'coralPink': {
+        //  DEFAULT: '#e96c74',
+        //  darker: '#d25660' // Darkened version of coralPink.
+        //},
+        //'offWhite': '#f5f0f0',
+        //'softPink': '#e9b3bc'
       },
       fontFamily: {
-        'sans': ['"Josefin Sans"', 'sans-serif'],
-        'slab': ['"Josefin Slab"', 'serif'],
+        'logo': 'Channel',
       }
     },
   },

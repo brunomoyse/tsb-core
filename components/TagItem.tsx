@@ -13,14 +13,14 @@ const scrollToSection = (id: string) => {
     /* @ts-ignore */
     const y = el?.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
-    window.scrollTo({top: y + 75, behavior: 'smooth'});
+    window.scrollTo({top: y + 5, behavior: 'smooth'});
 }
 
 const TagItem: React.FC<ProductTagProps> = ({ tag }) => {
 
     return (
         <li
-            className="cursor-pointer hover:text-coralPink my-1"
+            className="cursor-pointer hover:text-tsb-red my-1 "
             key={tag.id}
             onClick={() => scrollToSection(tag.id)}
         >

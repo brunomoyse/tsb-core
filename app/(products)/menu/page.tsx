@@ -44,11 +44,12 @@ export default async function Page() {
         <div>
             <header>
                 <Navbar />
+                <div className="h-20"></div>
             </header>
-            <main className="flex mx-auto container">
+            <main className="mx-auto container flex sm:grid sm:grid-cols-12">
 
                 {/* Shortcut Sidebar */}
-                <aside className="w-1/5 overflow-y-auto">
+                <aside className="overflow-y-auto hidden sm:flex justify-center sm:col-span-4 md:col-span-2">
                     <ul className="my-8 fixed">
                         {tags.map((tag: any) => (
                             <div key={tag.id}>
@@ -59,12 +60,12 @@ export default async function Page() {
                 </aside>
 
                 {/* Products */}
-                <div className="flex-1 my-8">
+                <div className="flex-1 my-8 sm:col-span-8 md:col-span-10">
                     {tags.map((tag: any) => (
                         tag.products && tag.products.length > 0 ? (
-                            <section key={tag.id} id={tag.id} className="mb-6">
-                                <h2 className="min-w-fit text-2xl flex justify-center mb-6">{tag.productTagTranslations[0].name}</h2>
-                                <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                            <section key={tag.id} id={tag.id} className="mb-20 px-8">
+                                <h2 className="font-['Channel'] min-w-fit text-2xl flex justify-center mb-4 py-8">{tag.productTagTranslations[0].name}</h2>
+                                <div className="grid xs: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                     {tag.products.map((item: any) => (
                                         <div key={item.id}>
                                             <ProductCard product={item} />

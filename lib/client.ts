@@ -2,7 +2,7 @@
 
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_SERVER_ENDPOINT;
 
 const httpLink = new HttpLink({
     uri: GRAPHQL_URL,
