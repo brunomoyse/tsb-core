@@ -1,8 +1,8 @@
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-const output = "/Users/brunomoyse/Development/applications/PERSO/tsb-next/public/images/compressed/";
-const input = "/Users/brunomoyse/Development/applications/PERSO/tsb-next/public/images/menu/menu/";
+const output = "/Users/brunomoyse/Development/applications/PERSO/tsb/tsb-core/public/images/compressed/";
+const input = "/Users/brunomoyse/Development/applications/PERSO/tsb/tsb-core/public/images/menu/sushi/";
 const pngQuality = { quality: 80 };
 const webpQuality = { quality: 80, reductionEffort: 6 };
 const avifQuality = { quality: 80, speed: 1 };
