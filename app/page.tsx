@@ -10,33 +10,24 @@ import DeliveryButton from "@/components/DeliveryButton";
 
 export default function Home() {
   return (
-      <main>
-          <section className="min-h-screen bg-white">
+      <main className="bg-tsb-gray">
+          <section className="min-h-screen bg-tsb-gray">
               <div className="min-h-screen flex justify-center items-center">
-                  <div className="w-full grid md:grid-cols-2 2xl:gap-x-36 xl:gap-x-20 lg:gap-x-12">
-
-                      <div className="w-full flex flex-col items-center md:items-end justify-center mb-8">
-                          <Manekineko />
-                      </div>
-
-
-                      <div className="flex flex-col items-center md:items-start justify-center mb-8">
-                          <div className="flex flex-col items-center justify-center">
-                              {/*
-                              <h1 className={`${kaushanScript.className} text-9xl w-full mb-4 text-center`}>Tokyo</h1>
-                              <h2 className="text-6xl flex-1 w-full mb-4 text-center">SUSHI & BAR</h2>
-                              <Image
-                                  src="/images/tsb_logo.jpg"
-                                  alt="Tokyo Sushi Bar logo"
-                                  width={250}
-                                  height={250}
-                                  draggable={false}
-                              />
-                              */}
+                  <div className="flex flex-col items-center md:items-start justify-center mb-8">
+                      <div className="flex flex-col items-center justify-center">
+                          <Image
+                              src={"/images/tsb-logo.svg"}
+                              alt="Tokyo Sushi Bar logo"
+                              width="380"
+                              height="380"
+                              draggable={false}
+                              className="relative -left-8 mb-10"
+                          />
+                          {/*
                               <h1 className="lg:text-9xl text-8xl w-full text-center tracking-tight">TOKYO</h1>
                               <h2 className="lg:text-5xl text-4xl flex-1 w-full -mt-2 mb-8 text-center tracking-widest">SUSHI & BAR</h2>
-                              <DeliveryButton />
-                          </div>
+                              */}
+                          <DeliveryButton />
                       </div>
                   </div>
               </div>

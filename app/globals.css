@@ -7,3 +7,8 @@
         min-height: calc(100vh - 60px);
     }
 }
+
+@font-face {
+    font-family: Channel;
+    src: url("../public/fonts/channel.ttf") format("opentype");
+}

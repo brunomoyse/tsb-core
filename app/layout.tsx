@@ -1,15 +1,12 @@
 import './globals.css'
 import React from "react";
 import type { Metadata } from 'next'
-import { Noto_Sans } from 'next/font/google'
 import { Josefin_Sans } from "next/font/google";
-import { Josefin_Slab } from "next/font/google";
 import ReduxProvider from "@/components/ReduxProvider";
-//const notoFont = Noto_Sans({ weight: '400', subsets: ['latin'] })
 
 const josefinSans = Josefin_Sans({ weight: '400', subsets: ['latin'] })
 import { ApolloWrapper } from "@/lib/apollo-wrapper";
-import Navbar from "@/components/navbar/Navbar";
+// import Navbar from "@/components/navbar/Navbar";
 
 export const metadata: Metadata = {
   title: 'Tokyo Sushi Bar',
@@ -23,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`bg-offWhite ${josefinSans.className}`}>
+      <body className={`bg-tsb-gray text-off-white ${josefinSans.className}`}>
         <ReduxProvider>
             <ApolloWrapper>
                 {children}
