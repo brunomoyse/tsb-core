@@ -1,7 +1,10 @@
 interface Product {
     id: string;
     attachments: { path_url: string }[];
-    productTranslations: { name: string }[];
+    productTranslations: {
+        name: string
+        description: string
+    }[];
     price: number;
     code: string;
     slug: string;

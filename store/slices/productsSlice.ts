@@ -6,12 +6,16 @@ interface ProductsState {
     products: Product[];
     loading: boolean;
     error: null | string;
+    currentProduct: null | Product;
+    isProductDialogOpen: boolean;
 }
 
 const initialState: ProductsState = {
     products: [],
     loading: false,
     error: null,
+    currentProduct: null,
+    isProductDialogOpen: false,
 };
 
 // Async thunks
@@ -92,7 +96,14 @@ export const editProduct = createAsyncThunk(
 const productsSlice = createSlice({
     name: 'products',
     initialState,
-    reducers: {},
+    reducers: {
+        setCurrentProduct: (state, action: PayloadAction<Product | null>) => {
+            state.currentProduct = action.payload;
+        },
+        toggleProductDialog: (state) => {
+            state.isProductDialogOpen = !state.isProductDialogOpen;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchProducts.pending, (state) => {
@@ -116,5 +127,6 @@ const productsSlice = createSlice({
             });
     },
 });
+export const { setCurrentProduct, toggleProductDialog } = productsSlice.actions;
 
 export default productsSlice.reducer;

@@ -62,11 +62,11 @@ const CartSidebar: React.FC = () => {
     }
 
     return (
-        <div className="relative h-full">
+        <div className="fixed top-20 right-0 w-[300px] bg-tsb-gray shadow-2xl text-off-white p-8 z-50 rounded-3xl">
             <h2 className="text-lg font-bold mb-4">Panier</h2>
             <div className="overflow-y-auto pb-16">
                 {cartItems.map(({ product, quantity }) => (
-                    <div key={product.id} className="mb-4 bg-white shadow-sm rounded-lg p-4 border border-gray-200">
+                    <div key={product.id} className="mb-4 bg-tsb-gray shadow-sm rounded-lg p-4 border border-gray-200">
                         <p className="text-lg font-medium mb-2">{product.productTranslations[0].name}</p>
 
                         <div className="flex items-center justify-between">

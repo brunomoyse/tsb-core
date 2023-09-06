@@ -9,7 +9,7 @@ import ProductCard from "@/components/menu/ProductCard";
 import TagItem from "@/components/menu/TagItem";
 import * as React from "react";
 import Navbar from "@/components/navbar/Navbar";
-
+import ProductDetailDialog from "@/components/menu/ProductDetailDialog";
 
 export default async function Page() {
     const { data: res } = await getClient().query({
@@ -39,6 +39,7 @@ export default async function Page() {
             });
         }
     });
+
 
     return (
         <div>
@@ -72,6 +73,7 @@ export default async function Page() {
                                         </div>
                                     ))}
                                 </div>
+                                <ProductDetailDialog />
                             </section>
                         ) : null
                     ))}

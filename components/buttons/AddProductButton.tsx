@@ -6,11 +6,11 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/slices/cartSlice';
 
-interface ClientSideButtonProps {
+interface AddProductButtonProps {
     product: Product;
 }
 
-const AddProductButton: React.FC<ClientSideButtonProps> = ({ product }) => {
+const AddProductButton: React.FC<AddProductButtonProps> = ({ product }) => {
     const dispatch = useDispatch();
 
     return (

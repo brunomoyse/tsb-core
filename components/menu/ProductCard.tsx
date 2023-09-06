@@ -1,7 +1,10 @@
+/* ProductCard.tsx */
 import * as React from 'react';
 import Image from "next/image";
 import { formatPrice } from "@/utils/utils";
 import dynamic from "next/dynamic";
+import {addToCart} from "@/store/slices/cartSlice";
+
 const ClientSideButton = dynamic(() =>
     import('@/components/buttons/AddProductButton'), {
         ssr: false,
@@ -10,24 +13,32 @@ const ClientSideButton = dynamic(() =>
         </div>
     }
 );
-
-import {addToCart} from "@/store/slices/cartSlice";
+const ProductImageWrapper = dynamic(() =>
+        import('@/components/menu/ProductImageWrapper'), {
+        ssr: false
+    }
+);
 
 interface ProductCardProps {
     product: Product;
     priority?: boolean
 }
 
+
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, priority=false }) => {
+
+
     return (
         <div className="rounded-3xl bg-white pb-4">
-            <div className="flex justify-center relative h-40 rounded-t-2xl ">
+            <div className="flex justify-center relative h-40 rounded-t-2xl">
+                <ProductImageWrapper product={product} />
                 <Image
                     alt={product.productTranslations[0].name}
                     src={`/images/compressed/${product.slug}-200.png`}
                     width={190}
                     height={160}
-                    className="hover:scale-105 duration-700 cursor-pointer"
+                    className="hover:scale-105 duration-700"
                     style={{objectFit: "contain"}}
                     draggable={false}
                     priority={priority}
