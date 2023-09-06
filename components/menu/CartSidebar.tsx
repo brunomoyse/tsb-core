@@ -72,31 +72,31 @@ const CartSidebar: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <button
-                                    className="px-3 py-1 text-lg bg-gray-200 rounded-lg mr-2 hover:bg-gray-300 focus:outline-none"
+                                    className="px-3 py-1 text-lg rounded-lg mr-2 bg-tsb-gray text-off-white border-2 border-tsb-red hover:bg-tsb-red hover:text-white focus:outline-none"
                                     onClick={() => handleDecrementQuantity(product)}
                                 >
                                     -
                                 </button>
                                 <span className="text-md font-semibold mx-2">{quantity}</span>
                                 <button
-                                    className="px-3 py-1 text-lg bg-gray-200 rounded-lg ml-2 hover:bg-gray-300 focus:outline-none"
+                                    className="px-3 py-1 ml-2 rounded-lg text-lg bg-tsb-gray text-off-white border-2 border-tsb-red hover:bg-tsb-red hover:text-white focus:outline-none"
                                     onClick={() => handleIncrementQuantity(product)}
                                 >
                                     +
                                 </button>
                             </div>
 
-                            <p className="text-sm text-gray-500">Prix: {formatPrice(product.price * quantity)}</p>
+                            <p className="text-sm text-tsb-gray-lighter">Prix: {formatPrice(product.price * quantity)}</p>
                         </div>
                     </div>
                 ))}
             </div>
-            <div className="mt-6 text-xl font-bold">
+            <div className="my-6 text-xl font-bold">
                 Total: {formatPrice(totalPrice)}
             </div>
             <button
                 onClick={handlePayment}
-                className="flex items-center justify-center p-4 w-full text-off-white bg-tsb-red rounded-full transition ease-in-out duration-150 hover:bg-coralPink-darker focus:outline-none focus:ring-2 focus:ring-coralPink focus:ring-offset-2"
+                className="flex items-center justify-center p-4 w-full text-off-white bg-tsb-red-darker hover:bg-tsb-red rounded-full transition ease-in-out duration-150 hover:bg-coralPink-darker focus:outline-none focus:ring-2 focus:ring-coralPink focus:ring-offset-2"
             >
                 PAYER
             </button>
