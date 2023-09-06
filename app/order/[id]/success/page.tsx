@@ -1,6 +1,6 @@
 import { getClient } from "@/lib/server/client";
 import {ORDER_QUERY} from "@/graphql/queries";
-import ClearCart from "@/components/ClearCart";
+import ClearCart from "@/components/menu/ClearCart";
 
 export default async function Page({
      params

@@ -1,7 +1,7 @@
 // components/SchemaMarkup.tsx
 
 // @ts-ignore
-import { RestaurantSchema } from '../types/SchemaTypes';
+import { RestaurantSchema } from '../../types/SchemaTypes';
 
 const SchemaMarkup: React.FC = () => {
     const schema: RestaurantSchema = {

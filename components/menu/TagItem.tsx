@@ -19,13 +19,13 @@ const scrollToSection = (id: string) => {
 const TagItem: React.FC<ProductTagProps> = ({ tag }) => {
 
     return (
-        <li
+        <span
             className="cursor-pointer hover:text-tsb-red my-1 "
             key={tag.id}
             onClick={() => scrollToSection(tag.id)}
         >
             {tag.productTagTranslations[0].name}
-        </li>
+        </span>
     );
 }
 

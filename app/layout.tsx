@@ -2,7 +2,7 @@ import './globals.css'
 import React from "react";
 import type { Metadata } from 'next'
 import { Josefin_Sans } from "next/font/google";
-import ReduxProvider from "@/components/ReduxProvider";
+import ReduxProvider from "@/components/others/ReduxProvider";
 
 const josefinSans = Josefin_Sans({ weight: '400', subsets: ['latin'] })
 import { ApolloWrapper } from "@/lib/apollo-wrapper";

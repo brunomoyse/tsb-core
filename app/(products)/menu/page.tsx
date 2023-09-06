@@ -3,10 +3,10 @@
 import dynamic from "next/dynamic";
 import { getClient } from "@/lib/server/client";
 
-const CartSidebar = dynamic(() => import('@/components/CartSidebar'), { ssr: false });
+const CartSidebar = dynamic(() => import('@/components/menu/CartSidebar'), { ssr: false });
 import {TAGS_WITH_PRODUCTS_QUERY} from "@/graphql/queries";
-import ProductCard from "@/components/ProductCard";
-import TagItem from "@/components/TagItem";
+import ProductCard from "@/components/menu/ProductCard";
+import TagItem from "@/components/menu/TagItem";
 import * as React from "react";
 import Navbar from "@/components/navbar/Navbar";
 
@@ -52,9 +52,9 @@ export default async function Page() {
                 <aside className="overflow-y-auto hidden sm:flex justify-center sm:col-span-4 md:col-span-2">
                     <ul className="my-8 fixed">
                         {tags.map((tag: any) => (
-                            <div key={tag.id}>
+                            <li key={tag.id}>
                                 <TagItem tag={tag} />
-                            </div>
+                            </li>
                         ))}
                     </ul>
                 </aside>
@@ -64,11 +64,11 @@ export default async function Page() {
                     {tags.map((tag: any) => (
                         tag.products && tag.products.length > 0 ? (
                             <section key={tag.id} id={tag.id} className="mb-20 px-8">
-                                <h2 className="font-['Channel'] min-w-fit text-2xl flex justify-center mb-4 py-8">{tag.productTagTranslations[0].name}</h2>
+                                <h2 className="font-['Channel'] min-w-fit select-none text-2xl flex justify-center mb-4 py-8">{tag.productTagTranslations[0].name}</h2>
                                 <div className="grid xs: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                                    {tag.products.map((item: any) => (
+                                    {tag.products.map((item: any, index: number) => (
                                         <div key={item.id}>
-                                            <ProductCard product={item} />
+                                            <ProductCard product={item} priority={index < 17} />
                                         </div>
                                     ))}
                                 </div>
@@ -77,10 +77,9 @@ export default async function Page() {
                     ))}
                 </div>
 
-                {/* Cart Sidebar
-            <aside className="w-1/5 p-4">
-                <CartSidebar />
-            </aside>*/}
+                <aside>
+                    <CartSidebar />
+                </aside>
             </main>
         </div>
     );

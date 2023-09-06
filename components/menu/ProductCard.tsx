@@ -3,9 +3,11 @@ import Image from "next/image";
 import { formatPrice } from "@/utils/utils";
 import dynamic from "next/dynamic";
 const ClientSideButton = dynamic(() =>
-    import('@/components/ClientSideButton'), {
+    import('@/components/buttons/AddProductButton'), {
         ssr: false,
-        loading: () => <div>ajouter</div>
+        loading: () => <div className="text-tsb-gray hover:text-tsb-red-lighter cursor-pointer flex justify-center mb-2 underline underline-offset-8 decoration-tsb-red">
+            <span>ajouter</span>
+        </div>
     }
 );
 
@@ -13,20 +15,22 @@ import {addToCart} from "@/store/slices/cartSlice";
 
 interface ProductCardProps {
     product: Product;
+    priority?: boolean
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-    console.log(product)
+const ProductCard: React.FC<ProductCardProps> = ({ product, priority=false }) => {
     return (
-        <div className="rounded-3xl border-tsb-gray-lighter border-2 bg-white p-4 pb-6">
+        <div className="rounded-3xl bg-white pb-4">
             <div className="flex justify-center relative h-40 rounded-t-2xl ">
                 <Image
                     alt={product.productTranslations[0].name}
-                    src={`/images/compressed/${product.slug}-360.png`}
-                    fill={true}
+                    src={`/images/compressed/${product.slug}-200.png`}
+                    width={190}
+                    height={160}
                     className="hover:scale-105 duration-700 cursor-pointer"
                     style={{objectFit: "contain"}}
                     draggable={false}
+                    priority={priority}
                 />
             </div>
             <div className="mt-2">

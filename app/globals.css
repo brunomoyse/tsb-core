@@ -11,4 +11,114 @@
 @font-face {
     font-family: Channel;
     src: url("../public/fonts/channel.ttf") format("opentype");
+    font-display: swap;
+}
+
+.add-btn {
+    width: 150px;
+    height: 50px;
+    border: 1px solid #333;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 0;
+    transition: 1s;
+}
+
+.add-btn::before, .add-btn::after {
+    position: absolute;
+    background: #eee;
+    z-index: -1;
+    transition: 1s;
+    content: '';
+}
+
+.add-btn::before {
+    height: 50px;
+    width: 130px;
+}
+
+.add-btn::after {
+    width: 150px;
+    height: 30px;
+}
+
+.add-btn:hover::before {
+    width: 0px;
+    background: #fff;
+}
+
+.add-btn:hover::after {
+    height: 0px;
+    background: #fff;
+}
+
+.add-btn:hover {
+    background: #fff;
+}
+
+#f-1, #f-2, #f-3, #f-4, #f-5, #f-6, #f-7 {
+    opacity: 0;
+    transform: scale(.8);
+}
+
+#logo-text, #logo-subtext {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+#circle-mask {
+    stroke-dasharray: 383;
+    stroke-dashoffset: 383;
+    animation: tsb-draw-in 1.3s cubic-bezier(.46,.05,.66,.9) both;
+}
+
+#f-1 {
+    animation: tsb-fade-in .5s .9s ease-in-out both;
+}
+#f-2 {
+    animation: tsb-fade-in .5s .95s ease-in-out both;
+}
+#f-3 {
+    animation: tsb-fade-in .5s 1s ease-in-out both;
+}
+#f-4 {
+    animation: tsb-fade-in .5s 1.05s ease-in-out both;
+}
+#f-5 {
+    animation: tsb-fade-in .5s 1.1s ease-in-out both;
+}
+#f-6 {
+    animation: tsb-fade-in .5s 1.15s ease-in-out both;
+}
+#f-7 {
+    animation: tsb-fade-in .5s 1.2s ease-in-out both;
+}
+
+#logo-text, #logo-subtext {
+    animation: tsb-fade-in .9s 1s cubic-bezier(.46,.05,.66,.9) both;
+}
+
+@keyframes tsb-fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes tsb-draw-in {
+    0% {
+        stroke-dashoffset: -383;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
 }

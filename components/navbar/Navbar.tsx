@@ -3,7 +3,7 @@ import Link from 'next/link';
 import dynamic from "next/dynamic";
 
 const CartButton = dynamic(() =>
-    import('@/components/navbar/CartButton'), {
+    import('@/components/buttons/CartButton'), {
         ssr: false,
     loading: () => <div className="h-9 w-36"></div>
     /*
@@ -22,7 +22,6 @@ const CartButton = dynamic(() =>
 });
 
 import ConnectButton from "./ConnectButton";
-import MobileMenu from "./MobileMenu";
 
 const Navbar: React.FC = () => {
     return (
@@ -32,14 +31,12 @@ const Navbar: React.FC = () => {
                     <Link href="/" className="text-charcoal hover:text-tsb-red">
                         <h1 className="font-['Channel']">
                             <span>Tokyo</span>
-                            <span className="text-sm">Sushi Bar</span>
                         </h1>
                     </Link>
                 </div>
                 <div className="flex items-center space-x-2">  {/* Added items-center here */}
                     <CartButton />
                     {/*<ConnectButton />*/}
-                    <MobileMenu />
                 </div>
             </div>
         </nav>
