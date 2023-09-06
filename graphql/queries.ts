@@ -36,9 +36,9 @@ export const PRODUCTS_QUERY = gql`
 `;
 
 export const ORDER_QUERY = gql`
-    query ($lang: Language) {
+    query ($lang: Language, $id: ID!) {
         order (
-            id: "99e3b686-6cb6-4281-b3cb-83479eb5b440"
+            id: $id
         ) {
             id
             createdAt

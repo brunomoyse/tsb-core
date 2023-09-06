@@ -14,8 +14,11 @@ export default async function Page({
             lang: 'FR',
             id: params.id
         },
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache'
     });
+
+    // query to update order status to success
+    // ...
 
     return (
         <main className="flex flex-col items-center justify-between p-24">
@@ -24,7 +27,7 @@ export default async function Page({
             La commande est composée de:
             <ul>
                 {data.order.products.map((item:any) => (
-                    <li key={item.id}>{item.productTranslations[0].name} ({item.pivot.quantity} x)</li>
+                    <li key={item.id}>{item.productTranslations[0].name} (x {item.pivot.quantity})</li>
                 ))}
             </ul>
         </main>
