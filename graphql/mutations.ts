@@ -15,3 +15,12 @@ export const CREATE_ORDER_MUTATION = gql`
         }
     }
 `;
+
+export const UPDATE_ORDER_MUTATION = gql`
+    mutation ($status: OrderStatus!, $id: ID!) {
+        updateOrderStatus(id: $id, status: $status) {
+            id
+            status
+        }
+    }
+`;

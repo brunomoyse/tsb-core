@@ -1,6 +1,8 @@
 import { getClient } from "@/lib/server/client";
 import {ORDER_QUERY} from "@/graphql/queries";
+import {UPDATE_ORDER_MUTATION} from "@/graphql/mutations";
 import ClearCart from "@/components/menu/ClearCart";
+import {useMutation} from "@apollo/client";
 
 export default async function Page({
      params
@@ -18,7 +20,13 @@ export default async function Page({
     });
 
     // query to update order status to success
-    // ...
+    await getClient().mutate({
+        mutation: UPDATE_ORDER_MUTATION,
+        variables: {
+            id: params.id,
+            status: 'PAID'
+        }
+    })
 
     return (
         <main className="flex flex-col items-center justify-between p-24">
