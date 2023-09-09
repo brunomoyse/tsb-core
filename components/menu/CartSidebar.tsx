@@ -8,16 +8,16 @@ import { formatPrice } from '@/utils/utils';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCartItems, getTotalPrice } from '@/store/selectors/cartSelectors';
-import { incrementQuantity, decrementQuantity } from '@/store/slices/cartSlice';
+import {incrementQuantity, decrementQuantity, toggleCartVisibility} from '@/store/slices/cartSlice';
 
 import { useMutation } from "@apollo/client";
 import { CREATE_ORDER_MUTATION } from "@/graphql/mutations";
 
 const CartSidebar: React.FC = () => {
+    const dispatch = useDispatch();
+    const isCartVisible = useSelector(state => state.cart.isCartVisible);
     const cartItems: CartItem[] = useSelector(selectCartItems);
     const totalPrice: number = useSelector(getTotalPrice);
-
-    const dispatch = useDispatch();
 
     const handleIncrementQuantity = (product: Product) => {
         dispatch(incrementQuantity({ id: product.id }));
@@ -53,10 +53,15 @@ const CartSidebar: React.FC = () => {
         }
     };
 
-    if (cartItems.length === 0) {
-        // If you want to return null and not render anything:
-        return null;
+    const handleToggle = () => {
+        dispatch(toggleCartVisibility());
+    };
 
+    if (!isCartVisible) {
+        return null;
+    }
+
+    if (cartItems.length === 0) {
         // If you want to return a placeholder message:
         // return <div>Your cart is empty.</div>;
     }

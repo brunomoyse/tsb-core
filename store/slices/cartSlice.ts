@@ -5,12 +5,16 @@ import { getFromLocalStorageWithExpiry } from '@/utils/localStorage';
 
 const initialState: CartState = {
     products: getFromLocalStorageWithExpiry('cart')?.products || [],
+    isCartVisible: false,
 };
 
 const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
+        toggleCartVisibility: state => {
+            state.isCartVisible = !state.isCartVisible;
+        },
         addToCart: (state, action: PayloadAction<Product>) => {
             const productToAdd = action.payload;
             const existingCartItemIndex = state.products.findIndex(item => item.product.id === productToAdd.id);
@@ -66,6 +70,7 @@ const cartSlice = createSlice({
 });
 
 export const {
+    toggleCartVisibility,
     addToCart,
     incrementQuantity,
     decrementQuantity,

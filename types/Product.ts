@@ -25,5 +25,6 @@ interface CartItem {
 
 interface CartState {
     products: CartItem[];
+    isCartVisible: boolean;
     //totalPrice: number;
 }
