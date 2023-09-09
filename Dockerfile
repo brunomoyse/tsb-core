@@ -13,10 +13,6 @@ RUN npm install
 # Copy the application code
 COPY . .
 
-# Build the Next.js app
-#RUN npm run build
+#  Build the Next.js app & start the app
+CMD sh -c "npm run build && npm start"
 
-# Start the app
-#CMD ["npm", "start"]
-
-CMD ["npm", "run", "dev"]
