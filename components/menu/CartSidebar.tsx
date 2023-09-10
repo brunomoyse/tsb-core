@@ -15,6 +15,7 @@ import { CREATE_ORDER_MUTATION } from "@/graphql/mutations";
 
 const CartSidebar: React.FC = () => {
     const dispatch = useDispatch();
+    /* @ts-ignore */
     const isCartVisible = useSelector(state => state.cart.isCartVisible);
     const cartItems: CartItem[] = useSelector(selectCartItems);
     const totalPrice: number = useSelector(getTotalPrice);
