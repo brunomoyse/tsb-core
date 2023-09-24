@@ -26,7 +26,7 @@ import ConnectButton from "./ConnectButton";
 const Navbar: React.FC = () => {
     return (
         <nav className="bg-tsb-gray shadow-xl text-off-white fixed z-50 h-20 w-full">
-            <div className="container px-8 flex justify-between items-center h-full mx-auto">
+            <div className="px-16 flex justify-between items-center h-full mx-auto">
                 <div className="text-xl font-bold flex items-center">
                     <Link href="/" className="text-charcoal hover:text-tsb-red">
                         <h1 className="font-['Channel']">

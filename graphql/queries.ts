@@ -45,8 +45,10 @@ export const ORDER_QUERY = gql`
             updatedAt
             paymentMode
             status
-            stripeSessionId
-            stripeCheckoutUrl
+            # stripeSessionId
+            # stripeCheckoutUrl
+            molliePaymentId
+            molliePaymentUrl
             user {
                 id
             }

@@ -38,6 +38,10 @@ export default async function Page({
                     <li key={item.id}>{item.productTranslations[0].name} (x {item.pivot.quantity})</li>
                 ))}
             </ul>
+
+            <button className="py-6 bg-tsb-red-darker" >
+                <a href="/">Go Home</a>
+            </button>
         </main>
     );
 }

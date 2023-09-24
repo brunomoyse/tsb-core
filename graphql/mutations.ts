@@ -5,7 +5,8 @@ import { gql } from "@apollo/client";
 export const CREATE_ORDER_MUTATION = gql`
     mutation ($orderProductInput: [OrderProductInput!]!) {
         createOrder(products: $orderProductInput) {
-            stripeCheckoutUrl
+            molliePaymentId
+            molliePaymentUrl
             products {
                 id
                 pivot {
