@@ -3,11 +3,11 @@
 import { gql } from "@apollo/client";
 
 export const PRODUCTS_QUERY = gql`
-    query ($first: Int!, $page: Int!, $lang: Language!, $tags: [ID!], $search: String) {
+    query ($first: Int!, $page: Int!, $locale: Locale!, $tags: [ID!], $search: String) {
         products(
             first: $first
             page: $page
-            lang: $lang
+            locale: $locale
             tags: $tags
             search: $search
         ) {
@@ -26,9 +26,9 @@ export const PRODUCTS_QUERY = gql`
                 price
                 code
                 slug
-                productTranslations(language: $lang) {
+                productTranslations(locale: $locale) {
                     name
-                    language
+                    locale
                 }
             }
         }
@@ -36,7 +36,7 @@ export const PRODUCTS_QUERY = gql`
 `;
 
 export const ORDER_QUERY = gql`
-    query ($lang: Language, $id: ID!) {
+    query ($locale: Locale, $id: ID!) {
         order (
             id: $id
         ) {
@@ -54,7 +54,7 @@ export const ORDER_QUERY = gql`
             }
             products {
                 id
-                productTranslations (language: $lang) {
+                productTranslations (locale: $locale) {
                     name
                 }
                 pivot {
@@ -67,10 +67,10 @@ export const ORDER_QUERY = gql`
 `;
 
 export const TAGS_WITH_PRODUCTS_QUERY = gql`
-    query ($lang: Language!) {
+    query ($locale: Locale!) {
         tags {
             id
-            productTagTranslations(language: $lang) {
+            productTagTranslations(locale: $locale) {
                 name
             }
             products {
@@ -78,9 +78,9 @@ export const TAGS_WITH_PRODUCTS_QUERY = gql`
                 price
                 code
                 slug
-                productTranslations(language: $lang) {
+                productTranslations(locale: $locale) {
                     name
-                    language
+                    locale
                 }
             }
         }

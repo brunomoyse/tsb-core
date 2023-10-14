@@ -15,7 +15,7 @@ export default async function Page() {
     const { data: res } = await getClient().query({
         query: TAGS_WITH_PRODUCTS_QUERY,
         variables: {
-            lang: 'FR'
+            locale: 'FR'
         },
     });
 

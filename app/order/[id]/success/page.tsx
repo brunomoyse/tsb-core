@@ -13,7 +13,7 @@ export default async function Page({
     const { data } = await getClient().query({
         query: ORDER_QUERY,
         variables: {
-            lang: 'FR',
+            locale: 'FR',
             id: params.id
         },
         fetchPolicy: 'no-cache'
