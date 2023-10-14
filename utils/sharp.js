@@ -11,6 +11,8 @@ const sizes = [200];
 const productCategories = [
     'menu',
     'sushi',
+    'bento',
+    'maki',
 ];
 
 productCategories.forEach((category) => {
