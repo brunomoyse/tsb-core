@@ -19,7 +19,6 @@ export default async function Page() {
         },
     });
 
-
     let tags = structuredClone(res?.tags);
 
     tags.forEach((tag: ProductTag) => {
