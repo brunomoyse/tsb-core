@@ -9,10 +9,15 @@ const avifQuality = { quality: 80, speed: 1 };
 const sizes = [200];
 
 const productCategories = [
-    'menu',
-    'sushi',
     'bento',
+    'california-roll',
+    'gunkan',
     'maki',
+    'masago-roll',
+    'menu',
+    'spring-roll',
+    'sushi',
+    'temaki',
 ];
 
 productCategories.forEach((category) => {
