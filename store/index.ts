@@ -3,7 +3,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './slices/cartSlice';
 import productsReducer from './slices/productsSlice';
-import { saveToLocalStorageWithExpiry } from '@/utils/localStorage';
+import { saveToLocalStorageWithExpiry } from '@/lib/utils/localStorage';
 
 /* @ts-ignore */
 const cartLocalStorageMiddleware = store => next => action => {

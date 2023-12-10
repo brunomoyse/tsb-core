@@ -4,7 +4,9 @@ interface Product {
     productTranslations: {
         name: string
         description: string
+        locale: string
     }[];
+    productTags: ProductTag[];
     price: number;
     code: string;
     slug: string;

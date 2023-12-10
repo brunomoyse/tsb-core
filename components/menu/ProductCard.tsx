@@ -1,7 +1,7 @@
 /* ProductCard.tsx */
 import * as React from 'react';
 import Image from "next/image";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/lib/utils/utils";
 import dynamic from "next/dynamic";
 import {addToCart} from "@/store/slices/cartSlice";
 

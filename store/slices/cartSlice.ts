@@ -1,7 +1,7 @@
 // store/slices/cartSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getFromLocalStorageWithExpiry } from '@/utils/localStorage';
+import { getFromLocalStorageWithExpiry } from '@/lib/utils/localStorage';
 
 const initialState: CartState = {
     products: getFromLocalStorageWithExpiry('cart')?.products || [],

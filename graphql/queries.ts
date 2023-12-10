@@ -3,7 +3,7 @@
 import { gql } from "@apollo/client";
 
 export const PRODUCTS_QUERY = gql`
-    query ($first: Int!, $page: Int!, $locale: Locale!, $tags: [ID!], $search: String) {
+    query ($first: Int, $page: Int, $locale: Locale!, $tags: [ID!], $search: String) {
         products(
             first: $first
             page: $page
@@ -26,9 +26,18 @@ export const PRODUCTS_QUERY = gql`
                 price
                 code
                 slug
-                productTranslations(locale: $locale) {
+                isActive
+                #productTranslations(locale: $locale) {
+                productTranslations {
                     name
+                    description
                     locale
+                }
+                productTags {
+                    id
+                    productTagTranslations(locale: $locale) {
+                        name
+                    }
                 }
             }
         }
@@ -61,6 +70,17 @@ export const ORDER_QUERY = gql`
                     quantity
                 }
 
+            }
+        }
+    }
+`;
+
+export const TAGS_QUERY = gql`
+    query ($locale: Locale!) {
+        tags {
+            id
+            productTagTranslations(locale: $locale) {
+                name
             }
         }
     }

@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { formatPrice } from '@/utils/utils';
+import { formatPrice } from '@/lib/utils/utils';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCartItems, getTotalPrice } from '@/store/selectors/cartSelectors';
