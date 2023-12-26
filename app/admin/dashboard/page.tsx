@@ -132,7 +132,7 @@ export default function Page() {
     if (error) return <p>Error occurred: {error.message}</p>;
 
     return (
-        <main className="flex flex-col justify-between p-24 bg-white text-black">
+        <main className="flex flex-col justify-between p-24 bg-white text-black h-screen">
             <div className="flex justify-between mb-4">
                 <Input
                     type="text"
@@ -151,7 +151,8 @@ export default function Page() {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[100px]">Code</TableHead>
-                        <TableHead>Nom (français)</TableHead>
+                        <TableHead>Catégorie (FR)</TableHead>
+                        <TableHead>Nom (FR)</TableHead>
                         <TableHead>Prix</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -169,6 +170,7 @@ export default function Page() {
                         : products.map((product: Product) => (
                             <TableRow key={product.id} className={!product.isActive ? 'hover:bg-gray-200 bg-gray-200 italic text-gray-500' : ''}>
                                 <TableCell className="font-medium">{product.code}</TableCell>
+                                <TableCell>{product.productTags[0].productTagTranslations.find(p => p.locale === 'FR')?.name}</TableCell>
                                 <TableCell>{product.productTranslations?.find(p => p.locale === 'FR')?.name}</TableCell>
                                 <TableCell>{formatPrice(product.price)}</TableCell>
                                 <TableCell className="text-right">

@@ -33,16 +33,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, priority=false }) =>
         <div className="rounded-3xl bg-white pb-4">
             <div className="flex justify-center relative h-40 rounded-t-2xl">
                 <ProductImageWrapper product={product} />
-                <Image
-                    alt={product.productTranslations[0].name}
-                    src={`/images/compressed/${product.slug}-200.png`}
-                    width={190}
-                    height={160}
-                    className="hover:scale-105 duration-700"
-                    style={{objectFit: "contain"}}
-                    draggable={false}
-                    priority={priority}
-                />
+                <picture className="hover:scale-105 duration-700 p-6 pb-8">
+                    <source srcSet={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${product?.preview?.path}.avif`} type="image/avif" />
+                    <source srcSet={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${product?.preview?.path}.webp`} type="image/webp" />
+                    <img
+                        src={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${product?.preview?.path}.png`}
+                        alt={product.productTranslations[0].name}
+                        draggable={false}
+                        style={{ height: '100%', objectFit: 'contain' }}
+                        fetchPriority={priority ? 'high' : 'low'}
+                    />
+                </picture>
             </div>
             <div className="mt-2">
                 <span className={`${product.productTranslations[0].name.length > 10 ? 'tracking-tight' : 'tracking-wider'} flex justify-center mb-2 text-black`}>{

@@ -11,11 +11,21 @@ interface Product {
     code: string;
     slug: string;
     isActive: boolean;
+    preview: Attachment
+}
+
+interface Attachment {
+    id: string;
+    path: string;
 }
 
 interface ProductTag {
     id: string;
-    productTagTranslations: { name: string }[];
+    productTagTranslations: {
+        name: string
+        description: string
+        locale: string
+    }[];
     products: Product[];
 }
 

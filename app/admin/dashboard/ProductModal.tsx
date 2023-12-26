@@ -29,6 +29,8 @@ import {TAGS_QUERY} from "@/graphql/queries";
 import {Textarea} from "@/components/ui/textarea";
 import {useEffect, useState, CSSProperties} from "react";
 import {SelectViewport} from "@radix-ui/react-select";
+import * as React from "react";
+import {width} from "@mui/system";
 
 interface ProductModalComponentProps {
     isEditing: boolean;
@@ -41,20 +43,24 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
     // Set up the mutation functions
     const [updateProduct, { loading: updateLoading}] = useMutation(UPDATE_PRODUCT_MUTATION);
     const [createProduct, { loading: createLoading}] = useMutation(CREATE_PRODUCT_MUTATION);
-
-    const [productTags, setProductTags] = useState([]);
+    // State to control image display
+    const [showImageInput, setShowImageInput] = useState(false);
+    const [productTags, setProductTags] = useState<ProductTag[]>([]);
 
     useQuery(TAGS_QUERY, {
         variables: { locale: 'FR' },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
         onCompleted: (data) => {
-            setProductTags(data.tags.sort((a: ProductTag, b: ProductTag) => a.productTagTranslations[0].name.localeCompare(b.productTagTranslations[0].name)));
+            const sortedTags: ProductTag[] = [...data.tags].sort((a: ProductTag, b: ProductTag) =>
+                a.productTagTranslations[0].name.localeCompare(b.productTagTranslations[0].name)
+            );
+            setProductTags(sortedTags);
         },
+
         onError: (error) => {
             console.error('Error fetching tags:', error);
         }
     });
-
 
     // Submit handler
     const onSubmit = async (data: any) => {
@@ -122,35 +128,15 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
                     }
                 };
 
-// If there is a file, add it to the variables and prepare the map
-                if (data.image && data.image.length > 0) {
-                    // Add the image under a unique path like 'variables.input.image'
-                    variables.input.image = null; // This will be replaced with the actual file in the FormData
-
-                    // Construct the map for multipart form data
-                    const map = {
-                        '0': ['variables.input.image']
-                    };
-
-                    // Append the map and operations as JSON
-                    formData.append('operations', JSON.stringify({ query: CREATE_PRODUCT_MUTATION, variables }));
-                    formData.append('map', JSON.stringify(map));
-
-                    // Append the file as '0', which corresponds to the path in the map
-                    formData.append('0', data.image[0]);
-                } else {
-                    // If there is no file, just append the operations
-                    formData.append('operations', JSON.stringify({ query: CREATE_PRODUCT_MUTATION, variables }));
-                }
-
-// Send the formData as the variables for the mutation
-                await createProduct({
-                    variables: formData,
-                    context: {
-                        hasUpload: true
-                    },
+                // Send the formData as the variables for the mutation
+                const res = await createProduct({
+                    variables: variables
                 });
 
+                if (data.image && data.image.length > 0) {
+                    const productId = res.data.createProduct.id;
+                    await uploadImage(productId, data.image[0]);
+                }
 
                 // Add the product
                 /*
@@ -193,6 +179,27 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
         }
     };
 
+    async function uploadImage(productId: string, file: string | Blob) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('product_id', productId);
+
+        try {
+            const fileEndpoint = process.env.API_FILE_ENDPOINT || '';
+
+            const response = await fetch(fileEndpoint, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Image upload failed: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
+    }
+
     const formSchema = z.object({
         code: z.string(),
         name_french: z.string().min(2).max(50),
@@ -213,6 +220,8 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
     // Effect to reset the form whenever the selectedProduct changes
     useEffect(() => {
         if (selectedProduct) {
+
+            console.log(selectedProduct);
             const category = selectedProduct.productTags[0]?.id || '';
             reset({
                 code: selectedProduct.code || '',
@@ -242,6 +251,11 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
         maxHeight: '200px',
         overflowY: 'auto',
     }
+
+    // Clear image handler
+    const handleClearImage = () => {
+        setShowImageInput(true);
+    };
 
     return (
         <Dialog open={isEditing} onOpenChange={onOpenChange}>
@@ -386,11 +400,33 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
                                 <FormItem>
                                     <FormLabel>Image</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="file"
-                                            {...register('image', { required: false })}
-                                            accept=".png"
-                                        />
+                                        {selectedProduct && selectedProduct.preview && selectedProduct.preview.path && !showImageInput ? (
+                                            <div>
+                                                {/* eslint-disable-next-line react/no-unescaped-entities */}
+                                                <Button onClick={handleClearImage} className="my-4">Changer l'image</Button>
+
+                                                <picture className="hover:scale-105 duration-700 p-6 pb-8">
+                                                    <source
+                                                        srcSet={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${selectedProduct?.preview?.path}.avif`}
+                                                        type="image/avif"/>
+                                                    <source
+                                                        srcSet={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${selectedProduct?.preview?.path}.webp`}
+                                                        type="image/webp"/>
+                                                    <img
+                                                        src={`${process.env.AWS_S3_BUCKET_ENDPOINT!}/images/thumbnails/${selectedProduct?.preview?.path}.png`}
+                                                        alt={selectedProduct.productTranslations[0].name}
+                                                        draggable={false}
+                                                        className="w-28 mt-4"
+                                                    />
+                                                </picture>
+                                            </div>
+                                        ) : (
+                                            <Input
+                                                type="file"
+                                                {...register('image', {required: !selectedProduct})}
+                                                accept=".png, .jpg, .jpeg"
+                                            />
+                                        )}
                                     </FormControl>
                                     <FormMessage>
                                         {fieldState?.error ? fieldState.error.message : null}

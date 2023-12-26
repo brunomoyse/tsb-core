@@ -37,7 +37,12 @@ export const PRODUCTS_QUERY = gql`
                     id
                     productTagTranslations(locale: $locale) {
                         name
+                        locale
                     }
+                }
+                preview {
+                    id
+                    path
                 }
             }
         }
@@ -86,7 +91,7 @@ export const TAGS_QUERY = gql`
     }
 `;
 
-export const TAGS_WITH_PRODUCTS_QUERY = gql`
+export const TAGS_WITH_PRODUCTS_QUERY = gql `
     query ($locale: Locale!) {
         tags {
             id
@@ -101,6 +106,10 @@ export const TAGS_WITH_PRODUCTS_QUERY = gql`
                 productTranslations(locale: $locale) {
                     name
                     locale
+                }
+                preview {
+                    id
+                    path
                 }
             }
         }

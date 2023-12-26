@@ -18,11 +18,10 @@ export const PriceInput = ({ field, fieldState }) => {
             field.onChange(formattedValue);
             initialFormattingDone.current = true;
         }
-    }, [field.value]);
+    }, [field.value]) // eslint-disable-line
 
     // Format the value when the input loses focus
     const handleBlur = () => {
-        console.log('blur');
         const formattedValue = formatValue(field.value);
         field.onChange(formattedValue);
     };
