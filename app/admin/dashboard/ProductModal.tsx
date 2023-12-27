@@ -73,7 +73,7 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
             // Call the mutation function
             // if product exists and id is not null
             if (selectedProduct && selectedProduct.id) {
-                await updateProduct({
+                const res = await updateProduct({
                     variables: {
                         id: selectedProduct.id,
                         input: {
@@ -100,6 +100,11 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
                         },
                     },
                 });
+
+                if (data.image && data.image.length > 0) {
+                    const productId = res.data.updateProduct.id;
+                    await uploadImage(productId, data.image[0]);
+                }
             } else {
 
                 // First, construct your variables as a normal JSON
@@ -137,37 +142,8 @@ export const ProductModal = ({ isEditing, onOpenChange, onProductUpdate,  select
                     const productId = res.data.createProduct.id;
                     await uploadImage(productId, data.image[0]);
                 }
-
-                // Add the product
-                /*
-                await createProduct({
-                    variables: {
-                        input: {
-                            productTranslations: {
-                                create: [
-                                    {
-                                        locale: 'FR',
-                                        name: data.name_french,
-                                        description: data.description_french
-                                    },
-                                    {
-                                        locale: 'EN',
-                                        name: data.name_english,
-                                        description: data.description_english
-                                    }
-                                ]
-                            },
-                            productTags: {
-                                connect: [data.category]
-                            },
-                            price: price,
-                            code: data.code,
-                            image: data.image,
-                        }
-                    },
-                });
-                */
             }
+
             // Call the callback function with the updated product to update in the main list
             onProductUpdate();
 
