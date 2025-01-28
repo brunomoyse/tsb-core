@@ -1,12 +1,14 @@
 export default defineNuxtConfig({
   //ssr: true,
   ssr: false,
+
   css: ["~/assets/css/main.css"],
 
   $meta: {
     title: "Tokyo Sushi Bar",
     description: "Tokyo Sushi Bar",
   },
+
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     head: {
@@ -19,12 +21,14 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },
   },
+
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
     "@pinia/nuxt",
     "@nuxtjs/google-fonts",
   ],
+
   // @ts-ignore-next-line
   shadcn: {
     /**
@@ -55,4 +59,6 @@ export default defineNuxtConfig({
       Montserrat: [400, 500, 600, 700],
     },
   },
+
+  compatibilityDate: "2025-01-27",
 });
