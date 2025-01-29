@@ -1,8 +1,5 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue';
-  import { useMediaQuery } from '@vueuse/core';
-
-  const isMobile = useMediaQuery('(max-width: 640px)');
 
   // Reference to the menu toggle checkbox
   const menuToggle = ref<HTMLInputElement | null>(null);
@@ -54,7 +51,7 @@
 
             <div class="flex items-center space-x-2">
                 <CartButton />
-                <ConnectButton v-if="!isMobile" />
+                <ConnectButton class="desktop-only" />
             </div>
         </div>
     </nav>

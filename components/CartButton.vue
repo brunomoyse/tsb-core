@@ -19,16 +19,13 @@
         </svg>
 
         <!-- Button Text -->
-        <span v-if="!isMobile">Panier</span>
+        <span class="desktop-only">Panier</span>
     </button>
 </template>
 
 <script setup lang="ts">
-import { useMediaQuery } from '@vueuse/core';
 import { computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
-
-const isMobile = useMediaQuery('(max-width: 640px)');
 
 // Initialize the cart store
 const cartStore = useCartStore();
