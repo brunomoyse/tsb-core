@@ -8,7 +8,7 @@
     <main class="w-screen">
       <!-- Search Section -->
       <section class="mt-2 mb-6 px-4">
-        <div v-if="isMobile" class="relative w-full max-w-md mx-auto">
+        <div class="mobile-only relative w-full max-w-md mx-auto">
           <!-- Visually Hidden Label for Accessibility -->
           <label for="search" class="sr-only">Search</label>
 
@@ -75,126 +75,134 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import { Input } from "@/components/ui/input";
-import { Search, X as XIcon } from 'lucide-vue-next'; // Import XIcon
+import { Search, X as XIcon } from 'lucide-vue-next';
 import { useDebounce, useMediaQuery } from '@vueuse/core';
-import { useFetch, useRequestHeaders } from '#imports'; // Adjust based on your setup
-
+import { useRequestHeaders, useAsyncData, useNuxtApp } from '#imports';
+import type { Ref } from 'vue';
 import type { ProductCategory, ProductInfo } from '@/types';
 
-// Access the Nuxt app instance
-const { $apiBaseUrl } = useNuxtApp();
-
-// Initialize the cart store
+// 1) CART STORE
 const cartStore = useCartStore();
 
+// 2) REFS / REACTIVE STATE
 const searchValue = ref('');
 const selectedCategory: Ref<ProductCategory | null> = ref(null);
-const selectedProducts: Ref<ProductInfo[]> = ref([]);
 
-const isMobile = useMediaQuery('(max-width: 640px)');
-
-// Create a debounced version of searchValue with a 300ms delay
+// Debounced search for performance
 const debouncedSearchValue = useDebounce(searchValue, 300);
 
-// Define categories ref
+// Initialize placeholders for category/product data
 const categories = ref<ProductCategory[]>([]);
+const selectedProducts = ref<ProductInfo[]>([]);
 
-// Function to fetch products by category
-const fetchProductsByCategory = async (categoryUuid: string) => {
-  const { data: products, error: fetchError, pending: fetchPending } = await useFetch<ProductInfo[]>(
-    `${$apiBaseUrl()}/products-by-category/${categoryUuid}`,
-    {
-      headers: {
-        'Accept-Language': process.server
-          ? useRequestHeaders()['accept-language']
-          : navigator.language,
-      },
+// 3) NUXT APP HELPERS
+const { $apiBaseUrl } = useNuxtApp();
+
+// 4) HEADERS: Called in setup to ensure correct Nuxt context
+const acceptLanguage = process.server
+  ? useRequestHeaders(['accept-language'])['accept-language'] || 'en'
+  : navigator.language || 'en';
+
+// 5) FETCH CATEGORIES WITH useAsyncData
+const {
+  data: categoryData,
+  error: categoryError,
+} = await useAsyncData<ProductCategory[]>('categories', () =>
+  $fetch(`${$apiBaseUrl()}/categories`, {
+    headers: {
+      'Accept-Language': acceptLanguage,
+    },
+  })
+);
+
+// 6) SET CATEGORIES & INITIAL CATEGORY (IF ANY)
+if (categoryError.value) {
+  console.error('Error fetching categories:', categoryError.value);
+  // You could handle an error state here if needed
+} else if (categoryData.value && categoryData.value.length > 0) {
+  categories.value = categoryData.value;
+  selectedCategory.value = categoryData.value[0];
+}
+
+// 7) CREATE A PARAM FOR THE CURRENT CATEGORY ID
+const selectedCategoryId = computed(() => selectedCategory.value?.id);
+
+// 8) FETCH PRODUCTS BASED ON SELECTED CATEGORY
+//    useAsyncData with a function that depends on `selectedCategoryId`
+const {
+  data: productData,
+  error: productError,
+  refresh: refreshProducts,
+} = await useAsyncData<ProductInfo[]>(
+  'products-' + (selectedCategoryId.value || 'none'),
+  () => {
+    if (!selectedCategoryId.value) {
+      // Return an empty array but wrapped in a Promise
+      return Promise.resolve([] as ProductInfo[]);
     }
-  );
-
-  // Handle the fetched data
-  if (fetchError.value) {
-    console.error('Error fetching products:', fetchError.value);
-    // You can set an error state here if needed
-    return;
+    return $fetch<ProductInfo[]>(`${$apiBaseUrl()}/products-by-category/${selectedCategoryId.value}`, {
+      headers: {
+        'Accept-Language': acceptLanguage,
+      },
+    });
   }
-  // Reset selected products
-  selectedProducts.value = [];
-  if (products.value) {
-    selectedProducts.value = products.value;
-  }
+);
 
-  // @TODO: handle the pending state
-  // e.g., show a loading spinner
-};
+// 9) WATCH FOR CHANGES IN SELECTED CATEGORY
+watch(
+  selectedCategoryId,
+  async (newValue, oldValue) => {
+    // 1. If there's no new category selected, reset products
+    if (!newValue) {
+      selectedProducts.value = [];
+      return;
+    }
 
+    // 2. If the new category ID differs from the old one, refresh data
+    if (newValue !== oldValue) {
+      // Re-fetch products for the new category ID
+      await refreshProducts();
+
+      // Assign the newly fetched products (if any) to `selectedProducts`
+      if (productData.value) {
+        selectedProducts.value = productData.value;
+      }
+    }
+  },
+  { immediate: true }
+);
+
+// 10) INITIALIZE `selectedProducts` ON MOUNT
+//     If we already have productData from the default category, assign it
+if (productData.value) {
+  selectedProducts.value = productData.value;
+}
+
+// 11) SELECT CATEGORY FUNCTION
 const selectCategory = (categoryId: string): void => {
   if (!categoryId) {
     console.error('Invalid category UUID provided.');
     return;
   }
-
-  const category = categories.value.find((category: ProductCategory) => category.id === categoryId);
-
+  const category = categories.value.find((cat) => cat.id === categoryId);
   if (category) {
     selectedCategory.value = category;
   }
 };
 
-// Function to fetch categories and then fetch products based on the first category
-const fetchCategoriesAndProducts = async () => {
-  // Fetch categories
-  const { data: fetchedCategories, error: categoryError, pending: categoryPending } = await useFetch<ProductCategory[]>(
-    `${$apiBaseUrl()}/categories`,
-    {
-      headers: {
-        'Accept-Language': process.server
-          ? useRequestHeaders()['accept-language']
-          : navigator.language,
-      },
-    }
-  );
-
-  if (categoryError.value) {
-    console.error('Error fetching categories:', categoryError.value);
-    // Handle error state as needed
-    return;
-  }
-
-  if (fetchedCategories.value && fetchedCategories.value.length > 0) {
-    categories.value = fetchedCategories.value;
-    selectedCategory.value = fetchedCategories.value[0];
-    await fetchProductsByCategory(fetchedCategories.value[0].id);
-  }
-};
-
-// Initial fetch of categories and products
-await fetchCategoriesAndProducts();
-
-// Watch for changes in selectedCategoryUuid to fetch products
-watch(
-  selectedCategory,
-  (newCategory, oldCategory) => {
-    if (newCategory && newCategory !== oldCategory) {
-      fetchProductsByCategory(newCategory.id);
-    }
-  }
-);
-
-// Compute filtered products based on debounced search value
+// 12) FILTERED PRODUCTS BASED ON SEARCH
 const filteredProducts = computed(() => {
   if (!debouncedSearchValue.value.trim()) return selectedProducts.value || [];
   if (!selectedProducts.value) return [];
 
   const searchTerms = debouncedSearchValue.value.trim().toLowerCase().split(/\s+/);
-
   return selectedProducts.value.filter((product: ProductInfo) => {
     const combinedName = (selectedCategory.value?.name + " " + product.name).toLowerCase();
-    return searchTerms.every((term: string) => combinedName.includes(term));
+    return searchTerms.every((term) => combinedName.includes(term));
   });
 });
 
-// Function to clear the search input
+// 13) CLEAR SEARCH
 const clearSearch = () => {
   searchValue.value = '';
 };
