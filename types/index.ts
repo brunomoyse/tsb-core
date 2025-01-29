@@ -1,52 +1,49 @@
-interface Product {
+// types/index.ts
+
+export interface Product {
     id: string;
     price: number;
     code: string;
     slug: string;
     isActive: boolean;
-}
-
-interface ProductTranslation {
+  }
+  
+  export interface ProductTranslation {
     id: string;
     name: string;
     description: string;
     locale: string;
-}
-
-interface ProductInfo {
+  }
+  
+  export interface ProductInfo {
     id: string;
     name: string;
     description: string;
     price: number;
     code: string;
     slug: string;
-}
-
-interface ProductCategory {
+  }
+  
+  export interface ProductCategory {
     id: string;
     name: string;
     order: number;
-}
-
-interface CategoryWithProducts {
+  }
+  
+  export interface CategoryWithProducts {
     id: string;
     name: string;
     order: number;
     products: ProductInfo[];
-}
-
-interface CartItem {
+  }
+  
+  export interface CartItem {
     id: string;
     product: ProductInfo;
     quantity: number;
-}
-
-interface CartState {
+  }
+  
+  export interface CartState {
     products: CartItem[];
     isCartVisible: boolean;
-    //totalPrice: number;
-}
-
-
-
-
+  }

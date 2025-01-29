@@ -1,17 +1,19 @@
 <template>
-  <div class="w-full max-w-full min-h-screen bg-gray-50">
+  <div class="w-full max-w-full min-h-screen bg-gray-50 relative">
     <header>
       <Navbar />
+      <!-- Spacer to prevent content from being hidden behind the fixed Navbar -->
       <div class="h-20"></div>
     </header>
     <main class="w-screen">
+      <!-- Search Section -->
       <section class="mt-2 mb-6 px-4">
         <div v-if="isMobile" class="relative w-full max-w-md mx-auto">
           <!-- Visually Hidden Label for Accessibility -->
           <label for="search" class="sr-only">Search</label>
 
           <!-- Search Input -->
-          <Input id="search" type="text" placeholder="Search a sushi, maki,..."
+          <Input id="search" type="text" placeholder="What do you want to eat?"
             class="w-full py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tsb-red transition duration-200 ease-in-out sm:py-3 sm:pl-5 sm:pr-12"
             v-model="searchValue" aria-label="Search" />
 
@@ -31,11 +33,12 @@
 
       <!-- Categories -->
       <section>
-        <div class="mx-4 mb-3">Choose a category</div>
+        <div class="mx-4 mb-3 text-lg font-medium">Choose a category</div>
         <div
-          class="flex overflow-x-auto space-x-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:gap-8 no-scrollbar ml-4">
+          class="flex overflow-x-auto space-x-4 ml-4 no-scrollbar">
           <template v-for="category in categories" :key="category.id">
-            <CategoryCard :category="category" @click="selectCategory(category.id)" />
+            <CategoryCard :category="category" :active="selectedCategory === category" @select="selectCategory"
+              :show-icon="false" />
           </template>
         </div>
       </section>
@@ -50,17 +53,21 @@
 
         <section class="mx-4 mb-8">
           <div class="grid grid-cols-2 gap-3">
-            <template v-for="product in filteredProducts" :key="product.id">
-              <ProductCard :product="product" />
+            <template v-for="product in filteredProducts" :key="product.id" v-if="selectedCategory">
+              <ProductCard :product="product" :category="selectedCategory" />
             </template>
           </div>
         </section>
       </section>
 
-      <!-- Cart Sidebar -->
-      <aside v-if="!isCartEmpty">
-        <CartSidebar />
-      </aside>
+      <!-- Cart Sidebar with Transition -->
+      <Transition name="slide-down">
+        <aside v-if="cartStore.isCartVisible"
+          class="fixed top-20 right-0 w-full h-full bg-white shadow-lg p-8 overflow-y-auto z-40" role="dialog"
+          aria-modal="true" aria-labelledby="cart-heading">
+          <CartSidebar />
+        </aside>
+      </Transition>
     </main>
   </div>
 </template>
@@ -72,11 +79,14 @@ import { Search, X as XIcon } from 'lucide-vue-next'; // Import XIcon
 import { useDebounce, useMediaQuery } from '@vueuse/core';
 import { useFetch, useRequestHeaders } from '#imports'; // Adjust based on your setup
 
+import type { ProductCategory, ProductInfo } from '@/types';
+
 // Access the Nuxt app instance
 const { $apiBaseUrl } = useNuxtApp();
 
-// Reactive references
-const isCartEmpty = ref(true);
+// Initialize the cart store
+const cartStore = useCartStore();
+
 const searchValue = ref('');
 const selectedCategory: Ref<ProductCategory | null> = ref(null);
 const selectedProducts: Ref<ProductInfo[]> = ref([]);
@@ -108,12 +118,13 @@ const fetchProductsByCategory = async (categoryUuid: string) => {
     // You can set an error state here if needed
     return;
   }
-
+  // Reset selected products
+  selectedProducts.value = [];
   if (products.value) {
     selectedProducts.value = products.value;
   }
 
-  // Optionally handle the pending state
+  // @TODO: handle the pending state
   // e.g., show a loading spinner
 };
 
@@ -279,5 +290,36 @@ const clearSearch = () => {
 
 #menu-toggle:not(:checked)~#mobile-menu {
   animation: fadeOut 0.4s forwards;
+}
+
+/* Transition Styles for Slide-Down Animation */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-down-enter-from {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.slide-down-enter-to {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-down-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-down-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* Optional: Prevent body scrolling when cart is open */
+body.cart-open {
+  overflow: hidden;
 }
 </style>
