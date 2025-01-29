@@ -22,7 +22,7 @@
         <div class="px-4 flex justify-between items-center h-full mx-auto">
 
             <!-- Hamburger Menu and Mobile Menu (visible on mobile) -->
-            <div class="flex flex-col items-center md:hidden">
+            <div class="mobile-only flex flex-col items-center">
                 <!-- Hidden checkbox -->
                 <input type="checkbox" id="menu-toggle" class="hidden" ref="menuToggle" />
 
@@ -36,10 +36,9 @@
 
                 <!-- Mobile Menu -->
                 <div id="mobile-menu" class="fixed top-20 left-0 right-0 bottom-0 bg-white shadow-lg flex flex-col items-center justify-center opacity-0 transform translate-y-[-20px] transition-opacity transition-transform duration-400 ease-out pointer-events-none">
-                    <a href="#home" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Home</a>
-                    <a href="#about" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">About</a>
-                    <a href="#services" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Services</a>
-                    <a href="#contact" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Contact</a>
+                    <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Home</a>
+                    <a href="menu" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Menu</a>
+                    <a href="contact" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Contact</a>
                 </div>
             </div>
 

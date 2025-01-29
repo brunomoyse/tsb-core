@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   ssr: true,
 
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css", "~/assets/css/sakura.css"],
 
   $meta: {
     title: "Tokyo Sushi Bar",
