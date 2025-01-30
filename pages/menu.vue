@@ -1,10 +1,5 @@
 <template>
   <div class="w-full max-w-full min-h-screen bg-gray-50 relative">
-    <header>
-      <Navbar />
-      <!-- Spacer to prevent content from being hidden behind the fixed Navbar -->
-      <div class="h-20"></div>
-    </header>
     <main class="w-screen">
       <!-- Search Section -->
       <section class="mt-2 mb-6 px-4">
