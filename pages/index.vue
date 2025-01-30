@@ -1,26 +1,5 @@
-<script setup lang="ts">
-import Sakura from '@/lib/sakura';
-
-// Sakura references
-let sakura: Sakura | null = null;
-
-// Mount logic for Sakura animation
-onMounted(() => {
-  setTimeout(() => {
-    sakura = new Sakura('.homescreen');
-  }, 1000);
-});
-
-// Cleanup logic
-onBeforeUnmount(() => {
-  if (sakura) {
-    sakura.stop(true);
-  }
-});
-</script>
-
 <template>
-  <main class="bg-tsb-gray min-h-screen flex flex-col">
+  <div class="bg-tsb-gray min-h-screen flex flex-col">
     <!-- Petal animation container -->
     <section class="homescreen flex-1 bg-white relative">
       <!-- Centered content -->
@@ -55,8 +34,32 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </section>
-  </main>
+  </div>
 </template>
+
+<script setup lang="ts">
+import Sakura from '@/lib/sakura';
+
+// Sakura references
+let sakura: Sakura | null = null;
+
+definePageMeta({
+  layout: false
+})
+
+// Mount logic for Sakura animation
+onMounted(() => {
+  setTimeout(() => {
+    sakura = new Sakura('.homescreen');
+  }, 1000);
+});
+
+onBeforeUnmount(() => {
+  if (sakura) {
+    sakura.stop(true);
+  }
+});
+</script>
 
 <style scoped>
 .page-enter-active,
