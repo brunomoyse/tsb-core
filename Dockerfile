@@ -1,11 +1,15 @@
-FROM node:20-alpine AS builder
+FROM node:22 AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
 
 # Set environment variables
-ENV API_BASE_URL_CLIENT=http://localhost:8080
-ENV API_BASE_URL_SERVER=http://host.docker.internal:8080
+#ENV API_BASE_URL_CLIENT="http://35.181.95.58/api"
+#ENV API_BASE_URL_SERVER="http://35.181.95.58/api"
+ENV API_BASE_URL_CLIENT="https://brunomoyse.be/api"
+ENV API_BASE_URL_SERVER="https://brunomoyse.be/api"
+ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
+ENV BASE_URL="/"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -20,7 +24,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20-alpine
+FROM node:22
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -28,8 +32,6 @@ WORKDIR /usr/src/app
 # Set environment variables
 ENV NODE_ENV=production
 ENV NITRO_PRESET=node-server
-ENV API_BASE_URL_CLIENT=http://localhost:8080
-ENV API_BASE_URL_SERVER=http://host.docker.internal:8080
 
 # Copy only the built output and necessary files
 COPY --from=builder /usr/src/app/.output ./.output

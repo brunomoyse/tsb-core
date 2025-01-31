@@ -1,9 +1,9 @@
 <template>
-    <button @click="cartStore.toggleCartVisibility" :class="`relative flex items-center justify-center rounded-full h-9 p-4
+    <button @click="cartStore.toggleCartVisibility" :class="`relative flex items-center justify-center rounded-full h-9 p-4 border-2 
             font-semibold text-sm ${isCartVisible
-            ? 'bg-red-200'
+            ? 'bg-red-400 text-white'
             : 'bg-off-white text-tsb-gray'
-        } ${!isCartEmpty ? 'border-2 border-tsb-red' : ''
+        } ${!isCartEmpty ? 'border-tsb-red' : 'border-transparent'
         }`" aria-label="Toggle Cart">
         <!-- Badge for total product quantity -->
         <span v-if="!isCartEmpty"
