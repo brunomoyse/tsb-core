@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useMediaQuery } from '@vueuse/core';
-
 const isUserConnected = false;
-const isMobile = useMediaQuery('(max-width: 640px)');
 </script>
 
 <template>
@@ -18,6 +15,6 @@ const isMobile = useMediaQuery('(max-width: 640px)');
             </path>
         </svg>
 
-        <span v-if="!isMobile">{{ isUserConnected ? 'Mon compte' : 'Se connecter' }}</span>
+        <span class="desktop-only">{{ isUserConnected ? 'Mon compte' : 'Se connecter' }}</span>
     </button>
 </template>

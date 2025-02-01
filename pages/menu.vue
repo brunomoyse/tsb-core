@@ -41,11 +41,13 @@
         </div>
 
         <section v-if="selectedCategory" class="mx-4 mb-8">
-          <div class="grid grid-cols-2 gap-3">
+          <div v-if="productsPending" class="text-center">Loading products...</div>
+          <div v-else-if="productData" class="grid grid-cols-2 gap-3">
             <template v-for="product in filteredProducts" :key="product.id">
-              <ProductCard  :product="product" :category="selectedCategory" />
+              <ProductCard :product="product" :category="selectedCategory" />
             </template>
           </div>
+          <div v-else class="text-center">No products found</div>
         </section>
       </section>
 
@@ -69,57 +71,49 @@ import { useDebounce } from '@vueuse/core';
 import { useAsyncData, useNuxtApp } from '#imports';
 import type { ProductCategory, ProductInfo } from '@/types';
 
-// 1️⃣ CART STORE
+const { $apiBaseUrl } = useNuxtApp();
+
+// Cart store
 const cartStore = useCartStore();
 
-// 2️⃣ SEARCH & CATEGORY STATE
+// Search
 const searchValue = ref('');
 const debouncedSearchValue = useDebounce(searchValue, 300);
 
-// 3️⃣ USE `useState()` TO MAKE VALUES SSR-SAFE
+// States
 const categories = useState<ProductCategory[]>('categories', () => []);
 const selectedCategory = useState<ProductCategory | null>('selectedCategory', () => null);
-const selectedProducts = useState<ProductInfo[]>('selectedProducts', () => []);
+const productsPending = ref(false);
 
-// 4️⃣ FETCH CATEGORIES (SSR-SAFE)
-const { $apiBaseUrl } = useNuxtApp();
-const { data: categoryData, error: categoryError } = await useAsyncData<ProductCategory[]>('categories', () =>
+// Fetch categories
+const { data: categoryData } = await useAsyncData<ProductCategory[]>('categories', () =>
   $fetch(`${$apiBaseUrl()}/categories`)
 );
 
-// Set categories once fetched
+// Set categories and selected category
 if (categoryData.value) {
   categories.value = categoryData.value;
   selectedCategory.value = categoryData.value[0] || null;
 }
 
-// 5️⃣ COMPUTED: GET `selectedCategoryId`
+// Compute selected category ID
 const selectedCategoryId = computed(() => selectedCategory.value?.id || null);
 
-// 6️⃣ FETCH PRODUCTS BASED ON SELECTED CATEGORY
-const {
-  data: productData,
-  error: productError,
-  refresh: refreshProducts,
-} = await useAsyncData<ProductInfo[]>(
-  `products-${selectedCategoryId.value || 'none'}`,
-  async () => {
-    if (!selectedCategoryId.value) return [];
-    return await $fetch(`${$apiBaseUrl()}/products-by-category/${selectedCategoryId.value}`);
-  },
-  { watch: [selectedCategoryId] }
+const { data: productData, refresh: refreshProducts, error: productsError } = await useFetch<ProductInfo[]>(
+  () => `${$apiBaseUrl()}/products-by-category/${selectedCategoryId.value}`,
+  {
+    immediate: false, // Don't fetch immediately (trigger manually with refresh method)
+    watch: false
+  }
 );
 
-// 7️⃣ WATCH CATEGORY CHANGES & REFRESH PRODUCTS
-watch(selectedCategoryId, async (newValue, oldValue) => {
-  if (!newValue) return (selectedProducts.value = []);
-  if (newValue !== oldValue) {
-    await refreshProducts();
-    selectedProducts.value = productData.value || [];
-  }
-}, { immediate: true });
+// Initial fetch for SSR
+await refreshProducts();
 
-// 8️⃣ FILTER PRODUCTS BASED ON SEARCH INPUT
+// Computed products list
+const selectedProducts = computed(() => productData.value || []);
+
+// Filtered products based on search
 const filteredProducts = computed(() => {
   if (!debouncedSearchValue.value.trim()) return selectedProducts.value;
   return selectedProducts.value.filter(product =>
@@ -129,12 +123,14 @@ const filteredProducts = computed(() => {
   );
 });
 
-// 9️⃣ SELECT CATEGORY
-const selectCategory = (categoryId: string): void => {
+// Methods
+const selectCategory = async (categoryId: string): Promise<void> => {
   selectedCategory.value = categories.value.find(cat => cat.id === categoryId) || null;
+  productsPending.value = true;
+  await refreshProducts();
+  productsPending.value = false;
 };
 
-// 🔟 CLEAR SEARCH
 const clearSearch = () => {
   searchValue.value = '';
 };
