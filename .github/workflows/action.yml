@@ -71,6 +71,9 @@ jobs:
           echo "*** Running Docker Compose ***"
           docker compose pull && docker compose up -d
 
+          echo "*** Removing unused Docker images ***"
+          docker image prune -af
+
           echo "*** Deployment complete ***"
         EOF
 

@@ -1,4 +1,4 @@
-FROM node:22 AS builder
+FROM node:22-alpine3.21 AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -24,7 +24,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:22
+FROM node:22-alpine3.21
 
 # Set working directory
 WORKDIR /usr/src/app
