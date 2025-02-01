@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import { useCartStore } from "@/stores/cart";
-import { formatPrice } from "~/lib/utils";
+import { formatPrice } from "~/lib/price";
 import type { ProductInfo } from "@/types";
 
 const config = useRuntimeConfig();
