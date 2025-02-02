@@ -9,10 +9,11 @@
           <Input id="search" type="text" placeholder="What do you want to eat?"
             class="w-full py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:ring-tsb-red sm:py-3 sm:pl-5 sm:pr-12"
             v-model="searchValue" />
-          -->
+
           <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none sm:right-4">
             <Search class="h-5 w-5 text-gray-400 sm:h-6 sm:w-6" />
           </span>
+          -->
           <button v-if="debouncedSearchValue" @click="clearSearch"
             class="absolute inset-y-0 right-10 flex items-center text-gray-500 hover:text-gray-700 sm:right-12">
             <XIcon class="h-5 w-5 sm:h-6 sm:w-6" />
@@ -22,7 +23,7 @@
 
       <!-- Categories -->
       <section>
-        <div class="mx-4 mb-3 text-lg font-medium">Choose a category</div>
+        <div class="mx-4 mb-3 text-lg font-medium">{{ $t('menu.pickCategory') }}</div>
         <div class="flex overflow-x-auto space-x-4 ml-4 no-scrollbar">
           <CategoryCard v-for="category in categories" :key="category.id" :category="category"
             :active="selectedCategory?.id === category.id" @select="selectCategory" :show-icon="false" />
@@ -32,15 +33,15 @@
       <!-- Products -->
       <section class="flex-1 my-8">
         <div class="flex justify-between items-center mx-4 mb-3">
-          {{ filteredProducts.length }} choices
+          {{ filteredProducts.length }} {{ $t('menu.choices') }}
         </div>
         <section v-if="selectedCategory" class="mx-4 mb-8">
-          <div v-if="productsPending" class="text-center">Loading products...</div>
+          <div v-if="productsStatus === 'pending'" class="text-center">Loading products...</div>
           <div v-else-if="filteredProducts.length" class="grid grid-cols-2 gap-3">
             <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product"
               :category="selectedCategory" />
           </div>
-          <div v-else class="text-center">No products found</div>
+          <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
         </section>
       </section>
 
@@ -57,7 +58,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Input } from "@/components/ui/input";
 import { Search, X as XIcon } from 'lucide-vue-next';
 import { useDebounce } from '@vueuse/core';
 import { useFetch, useNuxtApp } from '#imports';
@@ -65,19 +65,29 @@ import type { ProductCategory, ProductInfo } from '@/types';
 
 const { $apiBaseUrl } = useNuxtApp();
 const cartStore = useCartStore();
+const { locale: userLocale } = useI18n();
 
 const searchValue = ref('');
 const debouncedSearchValue = useDebounce(searchValue, 300);
 
 // Fetch categories
-const { data: categories } = await useFetch<ProductCategory[]>(`${$apiBaseUrl()}/categories`);
+const { data: categories } = await useFetch<ProductCategory[]>(`${$apiBaseUrl()}/categories`, {
+  headers: {
+    "accept-language": userLocale
+  }
+});
 const selectedCategory = ref(categories.value?.[0] || null);
 
 // Fetch products based on selected category
 const selectedCategoryId = computed(() => selectedCategory.value?.id || null);
-const { data: productData, pending: productsPending, refresh: refreshProducts } = useFetch<ProductInfo[]>(
+const { data: productData, status: productsStatus, refresh: refreshProducts } = useFetch<ProductInfo[]>(
   () => `${$apiBaseUrl()}/products-by-category/${selectedCategoryId.value}`,
-  { watch: [selectedCategoryId] }
+  {
+    headers: {
+      "accept-language": userLocale
+    },
+    watch: [selectedCategoryId]
+  }
 );
 
 const filteredProducts = computed(() => {

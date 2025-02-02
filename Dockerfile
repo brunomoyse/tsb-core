@@ -4,10 +4,9 @@ FROM node:22-alpine3.21 AS builder
 WORKDIR /usr/src/app
 
 # Set environment variables
-#ENV API_BASE_URL_CLIENT="http://35.181.95.58/api"
-#ENV API_BASE_URL_SERVER="http://35.181.95.58/api"
-ENV API_BASE_URL_CLIENT="https://brunomoyse.be/api"
-ENV API_BASE_URL_SERVER="https://brunomoyse.be/api"
+# @TODO: Use .env file
+ENV API_BASE_URL_CLIENT="https://nuagemagique.dev/api"
+ENV API_BASE_URL_SERVER="https://nuagemagique.dev/api"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
 ENV BASE_URL="/"
 
