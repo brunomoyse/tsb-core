@@ -1,0 +1,19 @@
+{
+    "nav": {
+        "home": "Accueil",
+        "about": "Le restaurant",
+        "menu": "Menu",
+        "book": "Réserver",
+        "contact": "Contact"
+    },
+    "home": {
+        "about": "Le restaurant",
+        "menu": "Menu",
+        "book": "Réserver",
+        "contact": "Contact"
+    },
+    "menu": {
+        "pickCategory": "Choisis une catégorie",
+        "choices": "choix"
+    }
+}

@@ -18,23 +18,29 @@
                 <!-- Mobile Menu -->
                 <div id="mobile-menu"
                     class="fixed top-20 left-0 right-0 bottom-0 bg-white shadow-lg flex flex-col items-center justify-center opacity-0 transform translate-y-[-20px] transition-opacity transition-transform duration-400 ease-out pointer-events-none">
-                    <a href="/"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Home</a>
-                    <a href="menu"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Menu</a>
-                    <a href="contact"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">Contact</a>
+                    <NuxtLink :to="$localePath('index')"
+                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
+                        Home
+                    </NuxtLink>
+                    <NuxtLinkLocale to="menu"
+                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
+                        Menu
+                    </NuxtLinkLocale>
+                    <NuxtLinkLocale to="contact"
+                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
+                        Contact
+                    </NuxtLinkLocale>
                 </div>
             </div>
 
-            <NuxtLink to="/">
+            <NuxtLink :to="$localePath('index')" class="flex items-center space-x-2">
                 <h1 class="flex text-lg items-center font-['Channel'] text-charcoal">
                     Tokyo
                 </h1>
             </NuxtLink>
 
             <div class="flex items-center space-x-2">
-                <CartButton v-if="currentRoute.name === 'menu'" />
+                <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />
                 <ConnectButton class="desktop-only" />
             </div>
         </div>

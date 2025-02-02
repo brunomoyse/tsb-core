@@ -1,0 +1,19 @@
+{
+    "nav": {
+        "home": "主页",
+        "about": "关于",
+        "menu": "菜单",
+        "book": "Booking",
+        "contact": "联系"
+    },
+    "home": {
+        "about": "关于",
+        "menu": "菜单",
+        "book": "Booking",
+        "contact": "联系"
+    },
+    "menu": {
+        "pickCategory": "",
+        "choices": ""
+    }
+}

@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   },
 
   app: {
-    baseURL: process.env.BASE_URL ?? '/',
+    baseURL: process.env.BASE_URL ?? "/",
     pageTransition: { name: "page", mode: "out-in" },
     head: {
       title: "Tokyo Sushi Bar",
@@ -24,22 +24,19 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxtjs/tailwindcss",
-    "shadcn-nuxt",
-    "@pinia/nuxt",
     "@nuxtjs/google-fonts",
+    "@nuxtjs/i18n",
+    "@pinia/nuxt",
   ],
 
-  // @ts-ignore-next-line
-  shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
-    prefix: "",
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
-    componentDir: "./components/ui",
+  i18n: {
+    locales: ["en", "fr", "zh"],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root' // recommended for SEO
+    },
+    vueI18n: "./i18n.config.ts",
   },
 
   runtimeConfig: {

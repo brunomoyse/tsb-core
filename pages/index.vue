@@ -13,24 +13,24 @@
         <div class="flex flex-col md:flex-row md:space-x-12 space-y-8 md:space-y-0 items-center">
           
           <!-- Commander -->
-          <NuxtLink to="/menu">
-            Menu
-          </NuxtLink>
+          <NuxtLinkLocale to="menu">
+            {{ $t('home.menu') }}
+          </NuxtLinkLocale>
           
           <!-- Réserver -->
-          <NuxtLink to="/booking">
-            Réserver
-          </NuxtLink>
+          <NuxtLinkLocale to="booking">
+            {{ $t('home.book') }}
+          </NuxtLinkLocale>
 
           <!-- Le restaurant -->
-          <NuxtLink to="/about">
-            Le restaurant
-          </NuxtLink>
+          <NuxtLinkLocale to="about">
+            {{ $t('home.about') }}
+          </NuxtLinkLocale>
 
           <!-- Contact -->
-          <NuxtLink to="/contact">
-            Contact
-          </NuxtLink>
+          <NuxtLinkLocale to="contact">
+            {{ $t('home.contact') }}
+          </NuxtLinkLocale>
         </div>
       </div>
     </section>
