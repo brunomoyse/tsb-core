@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <NuxtLink name="index">
+            <NuxtLink to="/">
                 <h1 class="flex text-lg items-center font-['Channel'] text-charcoal">
                     Tokyo
                 </h1>
