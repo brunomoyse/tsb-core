@@ -9,7 +9,7 @@
 
                 <!-- Hamburger icon -->
                 <label for="menu-toggle" class="hamburger cursor-pointer focus:outline-none"
-                    aria-label="Toggle navigation menu" role="button" tabindex="0">
+                    aria-label="Toggle navigation menu" tabindex="0">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -18,18 +18,29 @@
                 <!-- Mobile Menu -->
                 <div id="mobile-menu"
                     class="fixed top-20 left-0 right-0 bottom-0 bg-white shadow-lg flex flex-col items-center justify-center opacity-0 transform translate-y-[-20px] transition-opacity transition-transform duration-400 ease-out pointer-events-none">
-                    <NuxtLink :to="$localePath('index')"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
-                        Home
-                    </NuxtLink>
-                    <NuxtLinkLocale to="menu"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
-                        Menu
-                    </NuxtLinkLocale>
-                    <NuxtLinkLocale to="contact"
-                        class="block px-4 py-2 text-gray-700 hover:bg-gray-200 w-full text-center transition-colors duration-200">
-                        Contact
-                    </NuxtLinkLocale>
+                    <ul role="menu" class="w-full text-center">
+                        <li role="none">
+                            <NuxtLink :to="$localePath('index')"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                                role="menuitem">
+                                Home
+                            </NuxtLink>
+                        </li>
+                        <li role="none">
+                            <NuxtLinkLocale to="menu"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                                role="menuitem">
+                                Menu
+                            </NuxtLinkLocale>
+                        </li>
+                        <li role="none">
+                            <NuxtLinkLocale to="contact"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                                role="menuitem">
+                                Contact
+                            </NuxtLinkLocale>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
