@@ -5,9 +5,11 @@
       <section class="mt-2 mb-6 px-4">
         <div class="mobile-only relative w-full max-w-md mx-auto">
           <label for="search" class="sr-only">Search</label>
+          <!--
           <Input id="search" type="text" placeholder="What do you want to eat?"
             class="w-full py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:ring-tsb-red sm:py-3 sm:pl-5 sm:pr-12"
             v-model="searchValue" />
+          -->
           <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none sm:right-4">
             <Search class="h-5 w-5 text-gray-400 sm:h-6 sm:w-6" />
           </span>
