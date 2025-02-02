@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 ENV API_BASE_URL_CLIENT="https://nuagemagique.dev/api"
 ENV API_BASE_URL_SERVER="https://nuagemagique.dev/api"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
-ENV BASE_URL="/"
+ENV BASE_URL="https://nuagemagique.dev"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
