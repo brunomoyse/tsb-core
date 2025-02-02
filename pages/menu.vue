@@ -38,7 +38,7 @@
         <section v-if="selectedCategory" class="mx-4 mb-8">
           <div v-if="productsStatus === 'pending'" class="text-center">Loading products...</div>
           <div v-else-if="filteredProducts.length" class="grid grid-cols-2 gap-3">
-            <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product"
+            <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index" :product="product"
               :category="selectedCategory" />
           </div>
           <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
