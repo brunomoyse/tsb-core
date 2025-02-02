@@ -9,7 +9,8 @@
                 <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.webp`"
                     type="image/webp" />
                 <img :src="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.png`" :alt="product.name"
-                    class="object-contain max-h-full" :draggable="false" loading="lazy" />
+                    class="object-contain max-h-full" :draggable="false" :loading="index > 5 ? 'lazy' : 'eager'"
+                    :fetchpriority="index < 6 ? 'high' : 'low'" />
             </picture>
         </div>
 
@@ -26,7 +27,7 @@
                     {{ product.name }}
                 </span>
 
-            <!-- Category Name -->
+                <!-- Category Name -->
                 <span class="text-gray-500 text-xs mb-1">
                     1 pc
                 </span>
@@ -70,6 +71,7 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 
 const props = defineProps<{
+    index: number;
     product: ProductInfo;
     category: ProductCategory;
 }>();
