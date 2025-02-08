@@ -1,4 +1,7 @@
 {
+    "head": {
+        "title": "Tokyo Sushi Bar"
+    },
     "nav": {
         "home": "Accueil",
         "about": "Le restaurant",

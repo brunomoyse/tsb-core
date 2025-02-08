@@ -51,9 +51,13 @@
             </NuxtLink>
 
             <div class="flex items-center space-x-2">
+                <ConnectButton @click="openLoginModal" />
+
                 <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />
-                <ConnectButton class="desktop-only" />
             </div>
+
+            <!-- Login Modal -->
+            <Login v-if="isLoginOpen" @close="isLoginOpen = false" />
         </div>
     </nav>
 </template>
@@ -77,8 +81,13 @@ watch(
         }
     }
 );
-</script>
 
+
+const isLoginOpen = ref(false)
+
+const openLoginModal = () => isLoginOpen.value = true
+
+</script>
 
 <style>
 :root {

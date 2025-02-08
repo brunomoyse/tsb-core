@@ -1,4 +1,7 @@
 {
+    "head": {
+        "title": "Tokyo Sushi Bar"
+    },
     "nav": {
         "home": "Home",
         "about": "About",
@@ -15,5 +18,16 @@
     "menu": {
         "pickCategory": "Pick a category",
         "choices": "choices"
+    },
+    "login": {
+        "title": "Login",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "forgot": "Forgot password?",
+        "noAccount": "Don't have an account?",
+        "register": "Create an account",
+        "submit": "Login"
     }
 }

@@ -19,7 +19,7 @@
             <div class="flex flex-col items-center mb-2">
                 <!-- Category Name -->
                 <span class="text-gray-500 font-medium text-xs mb-1 truncate">
-                    {{ category.name }}
+                    {{ product.category.name }}
                 </span>
 
                 <!-- Product Name -->
@@ -29,7 +29,7 @@
 
                 <!-- Category Name -->
                 <span class="text-gray-500 text-xs mb-1">
-                    1 pc
+                    {{ product?.pieces}} {{  product?.pieces > 1 ? 'pcs' : 'pc' }}
                 </span>
             </div>
 
@@ -65,7 +65,7 @@
 import { useCartStore } from "@/stores/cart";
 import { formatPrice } from "~/lib/price";
 import { computed } from "vue";
-import type { ProductInfo, ProductCategory } from "@/types";
+import type { ProductInfo } from "@/types";
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
@@ -73,7 +73,6 @@ const cartStore = useCartStore();
 const props = defineProps<{
     index: number;
     product: ProductInfo;
-    category: ProductCategory;
 }>();
 
 // Computed property to check if the product is in the cart
@@ -82,7 +81,7 @@ const isInCart = computed(() => {
 });
 
 // Computed property to get the quantity of the product in the cart
-const quantity = computed(() => {
+const cardQuantity = computed(() => {
     const cartItem = cartStore.products.find(item => item.product.id === props.product.id);
     return cartItem ? cartItem.quantity : 0;
 });
@@ -93,7 +92,3 @@ const addToCart = () => {
 };
 
 </script>
-
-<style scoped>
-/* Optional: Add any additional component-specific styles here */
-</style>

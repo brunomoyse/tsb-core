@@ -1,4 +1,7 @@
 {
+    "head": {
+        "title": "Tokyo Sushi Bar"
+    },
     "nav": {
         "home": "主页",
         "about": "关于",
