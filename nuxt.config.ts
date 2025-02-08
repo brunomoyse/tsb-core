@@ -26,6 +26,11 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "@nuxtjs/i18n",
     "@pinia/nuxt",
+    'pinia-plugin-persistedstate/nuxt'
+  ],
+  
+  plugins: [
+    '~/plugins/fetchAuth',
   ],
 
   i18n: {

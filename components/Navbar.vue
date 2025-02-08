@@ -51,7 +51,7 @@
             </NuxtLink>
 
             <div class="flex items-center space-x-2">
-                <ConnectButton @click="openLoginModal" />
+                <ConnectButton v-if="!authStore.user" @click="openLoginModal" />
 
                 <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />
             </div>
@@ -63,8 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth'
 
+const authStore = useAuthStore()
 const currentRoute = useRoute();
 
 // Reference to the menu toggle checkbox
