@@ -22,6 +22,9 @@ export interface Product {
     price: number;
     code: string;
     slug: string;
+    pieces: number;
+    // Pluged from parent
+    category: ProductCategory;
   }
   
   export interface ProductCategory {

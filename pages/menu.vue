@@ -3,30 +3,27 @@
     <main class="w-screen">
       <!-- Search Section -->
       <section class="mt-2 mb-6 px-4">
-        <div class="mobile-only relative w-full max-w-md mx-auto">
-          <label for="search" class="sr-only">Search</label>
-          <!--
-          <Input id="search" type="text" placeholder="What do you want to eat?"
-            class="w-full py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:ring-tsb-red sm:py-3 sm:pl-5 sm:pr-12"
-            v-model="searchValue" />
+        <SearchBar v-model="searchValue" />
+      </section>
 
-          <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none sm:right-4">
-            <Search class="h-5 w-5 text-gray-400 sm:h-6 sm:w-6" />
-          </span>
-          -->
-          <button v-if="debouncedSearchValue" @click="clearSearch"
-            class="absolute inset-y-0 right-10 flex items-center text-gray-500 hover:text-gray-700 sm:right-12">
-            <XIcon class="h-5 w-5 sm:h-6 sm:w-6" />
-          </button>
+      <section v-if="searchValue.trim().length < 1" class="m-4">
+        <!-- Categories -->
+        <h2 class="text-lg font-medium mb-1">
+          {{ $t('menu.pickCategory') }}
+        </h2>
+        <div class="flex overflow-x-auto space-x-4 no-scrollbar">
+          <CategoryCard v-for="category in categories" :key="category.id" :category="category"
+            :active="selectedCategory?.id === category.id" @select="selectCategory" :show-icon="false" />
         </div>
       </section>
 
-      <!-- Categories -->
-      <section>
-        <div class="mx-4 mb-3 text-lg font-medium">{{ $t('menu.pickCategory') }}</div>
-        <div class="flex overflow-x-auto space-x-4 ml-4 no-scrollbar">
-          <CategoryCard v-for="category in categories" :key="category.id" :category="category"
-            :active="selectedCategory?.id === category.id" @select="selectCategory" :show-icon="false" />
+      <section v-if="searchValue.trim().length < 1" class="m-4">
+        <!-- Filtres (Préférences) -->
+        <h2 class="text-lg font-medium mb-1">Filtres</h2>
+        <div class="flex space-x-4">
+          <template v-for="tag in [{ slug: 'halal', name: 'Halal' }, { slug: 'vegan', name: 'Vegan' }]">
+            <Checkbox>{{ tag.name }}</Checkbox>
+          </template>
         </div>
       </section>
 
@@ -35,11 +32,10 @@
         <div class="flex justify-between items-center mx-4 mb-3">
           {{ filteredProducts.length }} {{ $t('menu.choices') }}
         </div>
-        <section v-if="selectedCategory" class="mx-4 mb-8">
-          <div v-if="productsStatus === 'pending'" class="text-center">Loading products...</div>
-          <div v-else-if="filteredProducts.length" class="grid grid-cols-2 gap-3">
-            <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index" :product="product"
-              :category="selectedCategory" />
+        <section class="mx-4 mb-8">
+          <div v-if="filteredProducts.length" class="grid grid-cols-2 gap-3">
+            <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index"
+              :product="product" />
           </div>
           <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
         </section>
@@ -57,49 +53,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Search, X as XIcon } from 'lucide-vue-next';
-import { useDebounce } from '@vueuse/core';
-import { useFetch, useNuxtApp } from '#imports';
-import type { ProductCategory, ProductInfo } from '@/types';
+import { ref, computed } from 'vue'
+import { useDebounce } from '@vueuse/core'
+import { useFetch, useNuxtApp } from '#imports'
 
-const { $apiBaseUrl } = useNuxtApp();
-const cartStore = useCartStore();
-const { locale: userLocale } = useI18n();
+import type { CategoryWithProducts, ProductCategory } from '@/types'
+const { $apiBaseUrl } = useNuxtApp()
+const cartStore = useCartStore()
+const { locale: userLocale } = useI18n()
 
-const searchValue = ref('');
-const debouncedSearchValue = useDebounce(searchValue, 300);
+const searchValue = ref('')
+// Debounce the user input to reduce frequent filtering
+const debouncedSearchValue = useDebounce(searchValue, 300)
+
+// Watch search input: If search is typed, unselect category
+watch(debouncedSearchValue, (newValue) => {
+  if (newValue.trim() !== '') {
+    selectedCategory.value = null
+  } else {
+    selectedCategory.value = categories.value?.[0] || null
+  }
+})
 
 // Fetch categories
 const { data: categories } = await useFetch<ProductCategory[]>(`${$apiBaseUrl()}/categories`, {
-  headers: {
-    "accept-language": userLocale
-  }
-});
-const selectedCategory = ref(categories.value?.[0] || null);
-
-// Fetch products based on selected category
-const selectedCategoryId = computed(() => selectedCategory.value?.id || null);
-const { data: productData, status: productsStatus, refresh: refreshProducts } = useFetch<ProductInfo[]>(
-  () => `${$apiBaseUrl()}/products-by-category/${selectedCategoryId.value}`,
-  {
-    headers: {
-      "accept-language": userLocale
-    },
-    watch: [selectedCategoryId]
-  }
-);
-
-const filteredProducts = computed(() => {
-  const query = debouncedSearchValue.value.trim().toLowerCase();
-  return productData.value?.filter(p => (`${selectedCategory.value?.name} ${p.name}`).toLowerCase().includes(query)) || [];
-});
+  headers: { 'accept-language': userLocale }
+})
+const selectedCategory = ref(categories.value?.[0] || null)
 
 const selectCategory = async (categoryId: string) => {
-  selectedCategory.value = categories.value?.find(cat => cat.id === categoryId) || null;
-};
+  selectedCategory.value = categories.value?.find((cat) => cat.id === categoryId) || null
+}
 
-const clearSearch = () => searchValue.value = '';
+// Fetch products by category
+const { data: categoriesWithProductsData } = await useAsyncData(
+  'categoriesWithProducts',
+  () => $fetch<CategoryWithProducts[]>(`${$apiBaseUrl()}/categories-with-products`, {
+    headers: { 'accept-language': userLocale.value }
+  })
+)
+
+// Flatten product list for filtering
+const productData = computed(() =>
+  categoriesWithProductsData.value?.flatMap((cat) =>
+    cat.products.map((product) => ({
+      ...product,
+      category: cat
+    }))
+  ) || []
+)
+
+// Filtered products computed
+const filteredProducts = computed(() => {
+  const query = debouncedSearchValue.value.trim().toLowerCase()
+
+  return productData.value?.filter((p) => {
+    // Match the selected category (if one is selected)
+    const matchesCategory = !selectedCategory.value || p.category.id === selectedCategory.value.id
+
+    // If there's no query, return all products in the selected category
+    if (!query) return matchesCategory
+
+    // Combine category + product name for searching
+    const nameToSearch = `${p.category.name} ${p.name}`.toLowerCase()
+
+    return nameToSearch.includes(query)
+  }) || []
+})
+
+
+
 </script>
 
 <style>
