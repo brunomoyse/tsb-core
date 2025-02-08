@@ -18,5 +18,18 @@
     "menu": {
         "pickCategory": "Choisis une catégorie",
         "choices": "choix"
+    },
+    "login": {
+        "title": "Se connecter",
+        "email": "E-mail",
+        "emailPlaceholder": "Entrez votre e-mail",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "Entrez votre mot de passe",
+        "dividerOr": "ou",
+        "forgot": "Mot de passe oublié?",
+        "noAccount": "Pas de compte?",
+        "register": "Créer un compte",
+        "submit": "Se connecter",
+        "ssoGoogle": "Se connecter avec Google"
     }
 }

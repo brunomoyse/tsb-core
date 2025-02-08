@@ -1,5 +1,5 @@
 <template>
-    <div
+    <div v-if="product" :key="product.id"
         class="relative max-w-[200px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
         <!-- Product Image -->
         <div class="flex justify-center items-center h-1/2 p-4">
@@ -29,7 +29,7 @@
 
                 <!-- Category Name -->
                 <span class="text-gray-500 text-xs mb-1">
-                    {{ product?.pieces}} {{  product?.pieces > 1 ? 'pcs' : 'pc' }}
+                    {{ product?.pieces }} {{ product?.pieces > 1 ? 'pcs' : 'pc' }}
                 </span>
             </div>
 
