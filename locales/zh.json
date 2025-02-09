@@ -3,20 +3,40 @@
         "title": "Tokyo Sushi Bar"
     },
     "nav": {
-        "home": "主页",
-        "about": "关于",
+        "home": "首页",
+        "about": "关于我们",
         "menu": "菜单",
-        "book": "Booking",
-        "contact": "联系"
+        "book": "预订",
+        "contact": "联系我们"
     },
     "home": {
-        "about": "关于",
+        "about": "关于我们",
         "menu": "菜单",
-        "book": "Booking",
-        "contact": "联系"
+        "book": "预订",
+        "contact": "联系我们"
     },
     "menu": {
-        "pickCategory": "",
-        "choices": ""
+        "pickCategory": "选择类别",
+        "choices": "选择"
+    },
+    "login": {
+        "title": "登录",
+        "email": "邮箱",
+        "emailPlaceholder": "输入邮箱",
+        "password": "密码",
+        "passwordPlaceholder": "输入密码",
+        "dividerOr": "或",
+        "forgot": "忘记密码？",
+        "noAccount": "没有账号？",
+        "register": "注册账号",
+        "submit": "登录",
+        "ssoGoogle": "使用谷歌账号登录"
+    },
+    "cart": {
+        "title": "购物车",
+        "empty": "您的购物车是空的",
+        "total": "总计",
+        "checkout": "结账",
+        "removeItem": "移除商品"
     }
 }

@@ -53,7 +53,6 @@ export const useCartStore = defineStore("cart", {
      * @param product - The product to add to the cart.
      */
     addToCart(product: ProductInfo): void {
-      console.log("Adding to cart", product.id);
       const existingCartItem = this.products.find(
         (item) => item.product.id === product.id
       );
@@ -61,8 +60,7 @@ export const useCartStore = defineStore("cart", {
         existingCartItem.quantity += 1;
       } else {
         this.products.push({
-          id: product.id,
-          product: { ...product },
+          product,
           quantity: 1,
         });
       }
@@ -82,16 +80,10 @@ export const useCartStore = defineStore("cart", {
         if (cartItem.quantity > 1 && quantity > 0) {
           // Decrement the quantity by one
           cartItem.quantity -= quantity;
-          console.log(
-            `Decremented quantity of ${cartItem.product.name} to ${cartItem.quantity}.`
-          );
         } else {
           // Quantity is 1, remove the product from the cart
           this.products = this.products.filter(
             (item) => item.product.id !== productId
-          );
-          console.log(
-            `Removed ${cartItem.product.name} from the cart. Quantity was ${cartItem.quantity}.`
           );
         }
       } else {

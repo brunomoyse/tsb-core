@@ -2,7 +2,9 @@
     <div class="flex flex-col h-[calc(100%-5rem)]">
         <!-- Header with Title and Close Button -->
         <div class="flex justify-between items-center mb-4">
-            <h2 id="cart-heading" class="text-2xl font-semibold text-gray-800">Cart</h2>
+            <h2 id="cart-heading" class="text-2xl font-semibold text-gray-800">
+                {{ $t('cart.title') }}
+            </h2>
             <button @click="cartStore.toggleCartVisibility" aria-label="Close Cart"
                 class="text-gray-500 hover:text-gray-700 focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -22,11 +24,11 @@
                         d="M3.666 11.333h10.333l1.334-8h-11l-.267-2h-3.4v2h1.667l1.333 8zm1.333 3.334A1.333 1.333 0 105 12a1.333 1.333 0 000 2.667zm9.334-1.334a1.333 1.333 0 11-2.667 0 1.333 1.333 0 012.667 0z">
                     </path>
                 </svg>
-                <p>Cart is empty</p>
+                <p>{{ $t('cart.empty') }}</p>
             </div>
 
             <div v-else>
-                <div v-for="item in cartStore.products" :key="item.id" class="mb-4">
+                <div v-for="item in cartStore.products" :key="item.product.id" class="mb-4">
                     <!-- Cart Item -->
                     <div class="flex items-center p-4 bg-white shadow rounded-lg border border-gray-200">
                         <!-- Product Image -->
@@ -81,21 +83,22 @@
                     <!-- Remove Item Button -->
                     <button @click="cartStore.removeFromCart(item.product.id)" aria-label="Remove Item"
                         class="mt-2 text-sm text-red-500 hover:underline focus:outline-none">
-                        Remove
+                        {{ $t('cart.removeItem') }}
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Total and Payment Button -->
-        <div class="mt-auto">
+        <div v-if="cartStore.products.length > 0" class="mt-auto">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-lg font-medium text-gray-700">Total:</span>
+                <span class="text-lg font-medium text-gray-700">
+                    {{ $t('cart.total') }}:</span>
                 <span class="text-xl font-semibold text-gray-900">{{ formatPrice(cartStore.totalPrice) }}</span>
             </div>
             <button @click="handlePayment"
-                class="w-full bg-tsb-red text-white py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2">
-                PAY
+                class="w-full bg-tsb-red text-white uppercase py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2">
+                {{ $t('cart.checkout') }}
             </button>
         </div>
     </div>
@@ -105,8 +108,10 @@
 <script setup lang="ts">
 import { useCartStore } from "@/stores/cart";
 import { formatPrice } from "~/lib/price";
-import type { ProductInfo } from "@/types";
+import type { ProductInfo, Order } from "@/types";
 
+const authStore = useAuthStore();
+const { $apiBaseUrl } = useNuxtApp()
 const config = useRuntimeConfig();
 // Initialize the cart store
 const cartStore = useCartStore();
@@ -134,14 +139,34 @@ const handleDecrementQuantity = (productId: string, quantity: number): void => {
  * Handles the payment process.
  * This is a placeholder and should be replaced with actual payment logic.
  */
-const handlePayment = (): void => {
+const handlePayment = async () => {
     if (cartStore.products.length === 0) {
-        alert("Votre panier est vide.");
+        console.error("Cart is empty.");
+        return;
+    }
+
+    if (authStore.accessToken === null) {
+        console.error("User is not authenticated.");
         return;
     }
 
     // Implement your payment logic here
-    alert("Procédure de paiement en cours...");
+    const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/user/orders`, {
+        method: "POST",
+        body: JSON.stringify({
+            // @TODO: add shipping address
+            // shippingAddress: ''
+            products: cartStore.products
+        }),
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authStore.accessToken}`,
+        },
+        credentials: "include",
+    });
+
+    // Redirect to payment
+    navigateTo(order.value?.molliePaymentUrl, { external: true });
 
     // After successful payment, clear the cart and hide the sidebar
     cartStore.clearCart();

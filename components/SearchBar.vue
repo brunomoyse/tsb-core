@@ -10,7 +10,7 @@
       :value="modelValue"
       @input="onInput"
       type="text"
-      class="w-full border rounded-md px-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full border rounded-md px-10 py-2 focus:outline-none focus:ring-2 focus:ring-tsb-pink"
       placeholder="Search..."
     />
     

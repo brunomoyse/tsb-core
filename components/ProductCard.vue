@@ -77,12 +77,12 @@ const props = defineProps<{
 
 // Computed property to check if the product is in the cart
 const isInCart = computed(() => {
-    return cartStore.products.some(item => item.product.id === props.product.id);
+    return cartStore.products.some(cartItem => cartItem.product.id === props.product.id);
 });
 
 // Computed property to get the quantity of the product in the cart
 const cardQuantity = computed(() => {
-    const cartItem = cartStore.products.find(item => item.product.id === props.product.id);
+    const cartItem = cartStore.products.find(cartItem => cartItem.product.id === props.product.id);
     return cartItem ? cartItem.quantity : 0;
 });
 
