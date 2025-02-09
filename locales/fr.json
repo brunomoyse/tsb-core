@@ -31,5 +31,12 @@
         "register": "Créer un compte",
         "submit": "Se connecter",
         "ssoGoogle": "Se connecter avec Google"
+    },
+    "cart": {
+        "title": "Panier",
+        "empty": "Le panier est vide.",
+        "total": "Total",
+        "checkout": "Payer",
+        "removeItem": "Supprimer l'article"
     }
 }

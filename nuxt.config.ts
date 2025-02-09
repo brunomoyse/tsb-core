@@ -34,7 +34,20 @@ export default defineNuxtConfig({
   ],
 
   i18n: {
-    locales: ["en", "fr", "zh"],
+    locales: [
+      {
+        code: 'fr',
+        language: 'fr-BE'
+      },
+      {
+        code: 'en',
+        language: 'en'
+      },
+      {
+        code: 'zh',
+        language: 'zh-CN'
+      }
+    ],
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_redirected',

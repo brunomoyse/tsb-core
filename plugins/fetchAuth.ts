@@ -8,31 +8,43 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Define the new fetch function
   const newFetch = async (
-    url: string | URL,
-    options: RequestInit = {}
+    input: string | URL,
+    init: RequestInit = {}
   ): Promise<any> => {
-    options.headers = options.headers || {};
+    // Convert the input to a string (in case it's a URL object)
+    const url = typeof input === "string" ? input : input.toString();
 
-    console.log("Auth Plugin Intercepting Request:", url.toString()); // Debugging
+    // 1. Only intercept if the URL starts with http://localhost:8080/user/
+    const interceptPattern = "http://localhost:8080/user/";
+    if (!url.startsWith(interceptPattern)) {
+      // 2. For everything else, just use the original fetch unchanged
+      return originalFetch(url, init);
+    }
 
+    // If we get here, it's an API call we want to intercept
+
+    // Ensure headers is defined
+    init.headers = init.headers || {};
+
+    console.log("Auth Plugin Intercepting Request:", url); // Debugging
+
+    // If we have an accessToken, attach it
     if (authStore.accessToken) {
-      (options.headers as HeadersInit)[
-        "Authorization"
-      ] = `Bearer ${authStore.accessToken}`;
+      (init.headers as HeadersInit)["Authorization"] = `Bearer ${authStore.accessToken}`;
     }
 
     try {
-      return await originalFetch(url.toString(), options);
+      return await originalFetch(url, init);
     } catch (error: any) {
+      // If we got a 401, attempt token refresh
       if (error.status === 401) {
         console.warn("Access token expired, attempting to refresh...");
         try {
           const newAccessToken = await refreshAccessToken(authStore);
           if (newAccessToken) {
-            (options.headers as HeadersInit)[
-              "Authorization"
-            ] = `Bearer ${newAccessToken}`;
-            return await originalFetch(url.toString(), options); // Retry with refreshed token
+            // Update headers with the new access token and retry
+            (init.headers as HeadersInit)["Authorization"] = `Bearer ${newAccessToken}`;
+            return await originalFetch(url, init);
           }
         } catch (refreshError) {
           console.error("Session expired, logging out...");
@@ -44,7 +56,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   };
 
-  // ✅ Correctly override `$fetch` globally
+  // Override $fetch globally
   globalThis.$fetch = newFetch;
 });
 

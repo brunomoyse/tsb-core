@@ -98,7 +98,11 @@ const productData = computed(() =>
   categoriesWithProductsData.value?.flatMap((cat) =>
     cat.products.map((product) => ({
       ...product,
-      category: cat
+      category: {
+        id: cat.id,
+        name: cat.name,
+        order:  cat.order
+      } as ProductCategory
     }))
   ) || []
 )

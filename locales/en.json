@@ -31,5 +31,12 @@
         "register": "Create an account",
         "submit": "Login",
         "ssoGoogle": "Login with Google"
+    },
+    "cart": {
+        "title": "Cart",
+        "empty": "Your cart is empty",
+        "total": "Total",
+        "checkout": "Checkout",
+        "removeItem": "Remove item"
     }
 }
