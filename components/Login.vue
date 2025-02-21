@@ -13,13 +13,14 @@
       <form @submit.prevent="login" class="space-y-4">
         <div>
           <label class="block text-sm text-gray-700 mb-1">{{ $t('login.email') }}</label>
-          <input v-model="email" type="email" :placeholder="$t('login.emailPlaceholder')" required
+          <input v-model="email" type="email" :placeholder="$t('login.emailPlaceholder')" autocomplete="email"
             class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
         </div>
 
         <div>
           <label class="block text-sm text-gray-700 mb-1">{{ $t('login.password') }}</label>
-          <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')" required
+          <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')"
+            autocomplete="current-password" required
             class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
         </div>
 
@@ -103,10 +104,9 @@ const login = async () => {
   }
 }
 
-// Google SSO login
 const loginWithGoogle = () => {
-  console.log('Redirecting to Google authentication...')
-}
+  window.location.href = `${$apiBaseUrl()}/auth/google/sign-in`;
+};
 </script>
 
 <style>

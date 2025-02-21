@@ -67,6 +67,44 @@ export const useCartStore = defineStore("cart", {
     },
 
     /**
+     * Increments the quantity of a product in the cart.
+     * @param productId - The ID of the product to increment.
+     */
+    incrementQuantity(productId: string): void {
+      const cartItem = this.products.find(
+        (item) => item.product.id === productId
+      );
+      if (cartItem) {
+        cartItem.quantity += 1;
+      } else {
+        console.warn(`Product with ID ${productId} not found in the cart.`);
+      }
+    },
+
+    /**
+     * Decrements the quantity of a product in the cart.
+     * If the quantity reaches 0, the product is removed from the cart.
+     * @param productId - The ID of the product to decrement.
+     */
+    decrementQuantity(productId: string): void {
+      const cartItem = this.products.find(
+        (item) => item.product.id === productId
+      );
+      if (cartItem) {
+        if (cartItem.quantity > 1) {
+          cartItem.quantity -= 1;
+        } else {
+          // Remove the product if quantity is 1
+          this.products = this.products.filter(
+            (item) => item.product.id !== productId
+          );
+        }
+      } else {
+        console.warn(`Product with ID ${productId} not found in the cart.`);
+      }
+    },
+
+    /**
      * Removes a product from the cart based on its ID.
      * @param productId - The ID of the product to remove.
      */
