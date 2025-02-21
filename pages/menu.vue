@@ -125,7 +125,9 @@ const filteredProducts = computed(() => {
   }) || []
 })
 
-
+onMounted(async () => {
+  await useAuthStore().refreshAccessToken();
+})
 
 </script>
 
