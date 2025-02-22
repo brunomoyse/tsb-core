@@ -56,7 +56,7 @@
                         <!-- Quantity Controls and Price -->
                         <div class="flex items-center">
                             <!-- Decrement Button -->
-                            <button @click="handleDecrementQuantity(item.product.id, 1)" aria-label="Decrement Quantity"
+                            <button @click="handleDecrementQuantity(item.product)" aria-label="Decrement Quantity"
                                 class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-700" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -81,7 +81,7 @@
                     </div>
 
                     <!-- Remove Item Button -->
-                    <button @click="cartStore.removeFromCart(item.product.id)" aria-label="Remove Item"
+                    <button @click="handleRemoveFromCart(item.product)" aria-label="Remove Item"
                         class="mt-2 text-sm text-red-500 hover:underline focus:outline-none">
                         {{ $t('cart.removeItem') }}
                     </button>
@@ -122,17 +122,23 @@ const cartStore = useCartStore();
  */
 const handleIncrementQuantity = (productId: string): void => {
     const product = getProductById(productId);
-    cartStore.addToCart(product);
-    console.log(`Incremented quantity for product ${productId}`);
+    cartStore.incrementQuantity(product);
 };
 
 /**
  * Handles decrementing the quantity of a product in the cart.
- * @param productId - The ID of the product to decrement.
+ * @param product - The product to decrement.
  */
-const handleDecrementQuantity = (productId: string, quantity: number): void => {
-    cartStore.removeFromCart(productId, quantity);
-    console.log(`Decremented quantity for product ${productId}`);
+const handleDecrementQuantity = (product: ProductInfo): void => {
+    cartStore.decrementQuantity(product);
+};
+
+/**
+ * Handles removing a product from the cart.
+ * @param product - The product to remove from the cart.
+ */
+const handleRemoveFromCart = (product: ProductInfo): void => {
+    cartStore.removeFromCart(product);
 };
 
 /**

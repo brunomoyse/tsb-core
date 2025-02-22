@@ -47,17 +47,15 @@ export const useCartStore = defineStore("cart", {
    */
   actions: {
     /**
-     * Adds a product to the cart.
-     * If the product already exists, increments its quantity.
-     * Otherwise, adds the product with a quantity of 1.
-     * @param product - The product to add to the cart.
+     * Increments the quantity of a product in the cart.
+     * @param productId - The ID of the product to increment.
      */
-    addToCart(product: ProductInfo): void {
-      const existingCartItem = this.products.find(
+    incrementQuantity(product: ProductInfo): void {
+      const cartItem = this.products.find(
         (item) => item.product.id === product.id
       );
-      if (existingCartItem) {
-        existingCartItem.quantity += 1;
+      if (cartItem) {
+        cartItem.quantity += 1;
       } else {
         this.products.push({
           product,
@@ -67,28 +65,13 @@ export const useCartStore = defineStore("cart", {
     },
 
     /**
-     * Increments the quantity of a product in the cart.
-     * @param productId - The ID of the product to increment.
-     */
-    incrementQuantity(productId: string): void {
-      const cartItem = this.products.find(
-        (item) => item.product.id === productId
-      );
-      if (cartItem) {
-        cartItem.quantity += 1;
-      } else {
-        console.warn(`Product with ID ${productId} not found in the cart.`);
-      }
-    },
-
-    /**
      * Decrements the quantity of a product in the cart.
      * If the quantity reaches 0, the product is removed from the cart.
      * @param productId - The ID of the product to decrement.
      */
-    decrementQuantity(productId: string): void {
+    decrementQuantity(product: ProductInfo): void {
       const cartItem = this.products.find(
-        (item) => item.product.id === productId
+        (item) => item.product.id === product.id
       );
       if (cartItem) {
         if (cartItem.quantity > 1) {
@@ -96,36 +79,30 @@ export const useCartStore = defineStore("cart", {
         } else {
           // Remove the product if quantity is 1
           this.products = this.products.filter(
-            (item) => item.product.id !== productId
+            (item) => item.product.id !== product.id
           );
         }
       } else {
-        console.warn(`Product with ID ${productId} not found in the cart.`);
+        console.warn(`Product with ID ${product.id} not found in the cart.`);
       }
     },
 
     /**
      * Removes a product from the cart based on its ID.
-     * @param productId - The ID of the product to remove.
+     * @param product - The product to remove.
      */
-    removeFromCart(productId: string, quantity: number = 0): void {
+    removeFromCart(product: ProductInfo): void {
       // Find the cart item based on the product ID
       const cartItem = this.products.find(
-        (item) => item.product.id === productId
+        (item) => item.product.id === product.id
       );
 
       if (cartItem) {
-        if (cartItem.quantity > 1 && quantity > 0) {
-          // Decrement the quantity by one
-          cartItem.quantity -= quantity;
-        } else {
-          // Quantity is 1, remove the product from the cart
-          this.products = this.products.filter(
-            (item) => item.product.id !== productId
-          );
-        }
+        this.products = this.products.filter(
+          (item) => item.product.id !== product.id
+        );
       } else {
-        console.warn(`Product with ID ${productId} not found in the cart.`);
+        console.warn(`Product with ID ${product.id} not found in the cart.`);
       }
     },
 
