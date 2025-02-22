@@ -14,18 +14,10 @@
       placeholder="Search..."
     />
     
-    <!-- Magnifying glass icon (inline SVG) -->
-    <svg
-      class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-      fill="none"
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <path d="M21 21l-4.35-4.35m0 0A9 9 0 104.35 4.35a9 9 0 0012.7 12.7z" />
-    </svg>
+
+        <!-- Magnifying glass icon (inline SVG) -->
+        <img src="/icons/search-icon.svg" alt="Search" class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2" />
+
     
     <!-- Clear button (only shown if there's text) -->
     <button
