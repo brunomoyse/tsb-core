@@ -51,7 +51,8 @@
             </NuxtLink>
 
             <div class="flex items-center space-x-2">
-                <ConnectButton v-if="!authStore.user" @click="openLoginModal" />
+                <SignInButton v-if="!isUserConnected" @click="openLoginModal" />
+                <SignOutButton v-if="isUserConnected" @click="handleLogOut"/>
 
                 <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />
             </div>
@@ -64,6 +65,8 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
+import SignInButton from './LoginButton.vue';
+import SignOutButton from './LogoutButton.vue';
 
 const authStore = useAuthStore()
 const currentRoute = useRoute();
@@ -87,6 +90,12 @@ watch(
 const isLoginOpen = ref(false)
 
 const openLoginModal = () => isLoginOpen.value = true
+
+const isUserConnected = authStore.user !== null
+
+const handleLogOut = () => {
+    authStore.logout()
+}
 
 </script>
 

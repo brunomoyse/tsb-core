@@ -76,8 +76,6 @@ const register = () => {
 
 // Regular email/password login
 const login = async () => {
-  console.log('Logging in...')
-
   try {
     const response = await $fetch<LoginResponse>(`${$apiBaseUrl()}/auth/sign-in`, {
       method: 'POST',

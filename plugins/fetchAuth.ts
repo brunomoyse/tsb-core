@@ -26,8 +26,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Ensure headers is defined
     init.headers = init.headers || {};
 
-    console.log("Auth Plugin Intercepting Request:", url); // Debugging
-
     // If we have an accessToken, attach it
     if (authStore.accessToken) {
       (init.headers as HeadersInit)["Authorization"] = `Bearer ${authStore.accessToken}`;
