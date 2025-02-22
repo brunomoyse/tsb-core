@@ -28,17 +28,12 @@
       </section>
 
       <!-- Products -->
-      <section class="flex-1 my-8">
-        <div class="flex justify-between items-center mx-4 mb-3">
-          {{ filteredProducts.length }} {{ $t('menu.choices') }}
+      <section class="mx-auto px-4 mb-8">
+        <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-6">
+          <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index" :product="product"
+            class="flex-[0_1_48%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]" />
         </div>
-        <section class="mx-4 mb-8">
-          <div v-if="filteredProducts.length" class="grid grid-cols-2 gap-3">
-            <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index"
-              :product="product" />
-          </div>
-          <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
-        </section>
+        <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
       </section>
 
       <!-- Cart Sidebar -->
@@ -101,7 +96,7 @@ const productData = computed(() =>
       category: {
         id: cat.id,
         name: cat.name,
-        order:  cat.order
+        order: cat.order
       } as ProductCategory
     }))
   ) || []

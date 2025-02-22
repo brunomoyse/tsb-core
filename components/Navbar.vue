@@ -52,6 +52,7 @@
 
             <div class="flex items-center space-x-2">
                 <SignInButton v-if="!isUserConnected" @click="openLoginModal" />
+                <AccountButton v-if="isUserConnected" />
                 <SignOutButton v-if="isUserConnected" @click="handleLogOut"/>
 
                 <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />

@@ -44,7 +44,7 @@
       <!-- Google SSO Button -->
       <button @click="loginWithGoogle"
         class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition">
-        <img src="/images/google-icon.svg" alt="Google" class="w-5 h-5 mr-2" />
+        <img src="/icons/google-icon.svg" alt="Google" class="w-5 h-5 mr-2" />
         <span class="text-gray-700">{{ $t('login.ssoGoogle') }}</span>
       </button>
 
