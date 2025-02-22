@@ -11,10 +11,14 @@
             </path>
         </svg>
 
-        <span class="desktop-only">{{ isUserConnected ? 'Mon compte' : 'Se connecter' }}</span>
+        <span class="desktop-only">{{ isUserConnected ? $t('nav.myAccount') : $t('nav.login') }}</span>
     </button>
 </template>
 
 <script setup lang="ts">
-const isUserConnected = false;
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+
+const isUserConnected = authStore.user !== null
 </script>

@@ -17,8 +17,7 @@ export const useAuthStore = defineStore('auth', {
     async refreshAccessToken() {
       try {
         const config = useRuntimeConfig(); // Get API base URL safely
-        console.log(config.public)
-        const response = await $fetch(`${config.public.server.apiBaseUrl}/auth/refresh`, {
+        const response: { accessToken?: string, user?: User } = await $fetch(`${config.public.server.apiBaseUrl}/auth/refresh`, {
           method: 'POST',
           credentials: 'include', // Sends HTTP-only refresh token cookie
         });
@@ -36,8 +35,12 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     logout() {
+      // @TODO: Call API to invalidate refresh token
       this.accessToken = null;
       this.user = null;
+
+      // Refresh the page to clear all state
+      window.location.reload();
     }
   },
   persist: true

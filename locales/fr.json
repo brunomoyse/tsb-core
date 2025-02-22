@@ -4,37 +4,40 @@
     },
     "nav": {
         "home": "Accueil",
-        "about": "Le restaurant",
+        "about": "À propos",
         "menu": "Menu",
-        "book": "Réserver",
-        "contact": "Contact"
+        "book": "Réservation",
+        "contact": "Contact",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "myAccount": "Mon compte"
     },
     "home": {
-        "about": "Le restaurant",
+        "about": "À propos",
         "menu": "Menu",
-        "book": "Réserver",
+        "book": "Réservation",
         "contact": "Contact"
     },
     "menu": {
-        "pickCategory": "Choisis une catégorie",
+        "pickCategory": "Choisissez une catégorie",
         "choices": "choix"
     },
     "login": {
-        "title": "Se connecter",
+        "title": "Connexion",
         "email": "E-mail",
         "emailPlaceholder": "Entrez votre e-mail",
         "password": "Mot de passe",
         "passwordPlaceholder": "Entrez votre mot de passe",
         "dividerOr": "ou",
         "forgot": "Mot de passe oublié?",
-        "noAccount": "Pas de compte?",
+        "noAccount": "Vous n'avez pas de compte?",
         "register": "Créer un compte",
-        "submit": "Se connecter",
-        "ssoGoogle": "Se connecter avec Google"
+        "submit": "Connexion",
+        "ssoGoogle": "Connexion avec Google"
     },
     "cart": {
         "title": "Panier",
-        "empty": "Le panier est vide.",
+        "empty": "Votre panier est vide",
         "total": "Total",
         "checkout": "Payer",
         "removeItem": "Supprimer l'article"
