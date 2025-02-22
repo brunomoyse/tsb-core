@@ -21,7 +21,7 @@
         <!-- Filtres (Préférences) -->
         <h2 class="text-lg font-medium mb-1">Filtres</h2>
         <div class="flex space-x-4">
-          <template v-for="tag in [{ slug: 'halal', name: 'Halal' }, { slug: 'vegan', name: 'Vegan' }]">
+          <template v-for="tag in [{ slug: 'halal', name: $t('menu.halal') }, { slug: 'vegan', name: $t('menu.vegan') }]">
             <Checkbox>{{ tag.name }}</Checkbox>
           </template>
         </div>

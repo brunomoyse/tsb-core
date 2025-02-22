@@ -18,7 +18,7 @@
           </NuxtLinkLocale>
           
           <!-- Réserver -->
-          <NuxtLinkLocale to="booking">
+          <NuxtLinkLocale to="reservations">
             {{ $t('home.book') }}
           </NuxtLinkLocale>
 

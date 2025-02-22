@@ -11,7 +11,7 @@
       @input="onInput"
       type="text"
       class="w-full border rounded-md px-10 py-2 focus:outline-none focus:ring-2 focus:ring-tsb-pink"
-      placeholder="Search..."
+      :placeholder="$t('nav.search')"
     />
     
 
