@@ -52,7 +52,7 @@
         "chefName": "Zhu Mengmeng",
         "chefRole": "Executive Chef",
         "waitressName": "Xu Sa",
-        "waitressRole": "Co-Founder & Restaurant Manager",
+        "waitressRole": "Restaurant Manager",
         "ctaTitle": "Join Us for an Unforgettable Experience",
         "ctaText": "Book a table now or order your favorite sushi for takeaway!",
         "ctaButtonReserve": "Reserve a Table",
@@ -86,5 +86,10 @@
         "total": "Total",
         "checkout": "Checkout",
         "removeItem": "Remove item"
+    },
+    "404": {
+        "message": "Sorry, we couldn't find the page you are looking for.",
+        "homeButton": "Home",
+        "menuButton": "View Menu"
     }
 }
