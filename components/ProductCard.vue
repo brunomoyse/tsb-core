@@ -157,7 +157,7 @@
   });
   
   const addToCart = () => {
-    cartStore.addToCart(props.product);
+    cartStore.incrementQuantity(props.product);
     showControls.value = true;
     resetTimeout();
   };
@@ -169,12 +169,12 @@
   };
   
   const decrement = () => {
-    cartStore.decrementQuantity(props.product.id);
+    cartStore.decrementQuantity(props.product);
     resetTimeout();
   };
   
   const increment = () => {
-    cartStore.incrementQuantity(props.product.id);
+    cartStore.incrementQuantity(props.product);
     resetTimeout();
   };
   
