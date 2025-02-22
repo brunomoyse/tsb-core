@@ -86,5 +86,10 @@
         "total": "Total",
         "checkout": "Payer",
         "removeItem": "Supprimer l'article"
+    },
+    "404": {
+        "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
+        "homeButton": "Accueil",
+        "menuButton": "Voir le Menu"
     }
 }

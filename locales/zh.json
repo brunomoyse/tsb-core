@@ -86,5 +86,10 @@
         "total": "总计",
         "checkout": "结账",
         "removeItem": "删除商品"
+    },
+    "404": {
+        "message": "抱歉，我们找不到您正在寻找的页面。",
+        "homeButton": "首页",
+        "menuButton": "查看菜单"
     }
 }
