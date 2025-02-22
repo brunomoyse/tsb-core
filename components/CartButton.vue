@@ -16,7 +16,7 @@
 
 
         <!-- Button Text -->
-        <span class="pl-1 desktop-only">Panier</span>
+        <span class="pl-1 desktop-only">{{ $t('nav.cart') }}</span>
     </button>
 </template>
 
