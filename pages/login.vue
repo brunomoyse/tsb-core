@@ -1,11 +1,6 @@
 <template>
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center px-4" @click.self="$emit('close')">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-fadeIn">
-      <!-- Close Button -->
-      <button class="absolute top-4 right-4 text-gray-400 hover:text-black" @click="$emit('close')">
-        ✕
-      </button>
-
+  <div class="flex justify-center">
+    <div class="w-[500px]">
       <!-- Title -->
       <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('login.title') }}</h2>
 
@@ -35,7 +30,7 @@
           <div class="w-full border-t border-gray-300"></div>
         </div>
         <div class="relative text-center">
-          <span class="bg-white px-3 text-sm text-gray-500 uppercase">
+          <span class="bg-tsb-one px-3 text-sm text-gray-500 uppercase">
             {{ $t('login.dividerOr') }}
           </span>
         </div>
@@ -57,9 +52,11 @@
       </p>
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, useNuxtApp } from '#imports';
 import type { LoginResponse } from '@/types';
 import { useAuthStore } from '@/stores/auth'
 
@@ -105,6 +102,16 @@ const login = async () => {
 const loginWithGoogle = () => {
   window.location.href = `${$apiBaseUrl()}/auth/google/sign-in`;
 };
+
+onMounted(async () => {
+  const params = new URLSearchParams(window.location.search)
+  const success = params.get('success')
+  if (success === 'true') {
+    await useAuthStore().refreshAccessToken();
+    // Redirect to home page after successful login
+    window.location.href = '/';
+  }
+})
 </script>
 
 <style>

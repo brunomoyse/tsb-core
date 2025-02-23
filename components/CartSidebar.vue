@@ -97,7 +97,7 @@
                 <span class="text-xl font-semibold text-gray-900">{{ formatPrice(cartStore.totalPrice) }}</span>
             </div>
             <button @click="handlePayment"
-                class="w-full bg-tsb-red text-white uppercase py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2">
+                class="w-full bg-red-500 text-white uppercase py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2">
                 {{ $t('cart.checkout') }}
             </button>
         </div>
@@ -106,7 +106,9 @@
 
 
 <script setup lang="ts">
+import { useNuxtApp, useRuntimeConfig, useFetch, navigateTo } from "#app";
 import { useCartStore } from "@/stores/cart";
+import { useAuthStore } from "@/stores/auth";
 import { formatPrice } from "~/lib/price";
 import type { ProductInfo, Order } from "@/types";
 

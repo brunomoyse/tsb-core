@@ -17,45 +17,35 @@ module.exports = {
     extend: {
       backgroundColor: {
         'tsb': {
-          'red': {
-            lightest: '#FFc7CA',
-            lighter: '#FF8F95',
-            DEFAULT: '#ED1C24',
-            darker: '#a6141c'
+          'one': {
+            DEFAULT: '#F6F5F2',
           },
-          'gray': {
-            lightest: '#EDEDED',
-            lighter: '#808D88',
-            DEFAULT: '#132D24'
+          'two': {
+            DEFAULT: '#F0EBE3'
           },
-          'pink': {
-            lightest: '#FFF0F4',
-            lighter: '#FFE5EC',
-            DEFAULT: '#FFD1DA'
-          }
+          'three': {
+            DEFAULT: '#F3D0D7'
+          },
+          'four': {
+            DEFAULT: '#FFEFEF'
+          },
         },
-        'off-white': '#f5f0f0',
       },
       colors: {
         'tsb': {
-          'red': {
-            lightest: '#FFc7CA',
-            lighter: '#FF8F95',
-            DEFAULT: '#ED1C24',
-            darker: '#B30F14'
+          'one': {
+            DEFAULT: '#F6F5F2',
           },
-          'gray': {
-            lightest: '#EDEDED',
-            lighter: '#808D88',
-            DEFAULT: '#132D24'
+          'two': {
+            DEFAULT: '#F0EBE3'
           },
-          'pink': {
-            lightest: '#FFF0F4',
-            lighter: '#FFE5EC',
-            DEFAULT: '#FFD1DA'
-          }
+          'three': {
+            DEFAULT: '#F3D0D7'
+          },
+          'four': {
+            DEFAULT: '#FFEFEF'
+          },
         },
-        'off-white': '#f5f0f0',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

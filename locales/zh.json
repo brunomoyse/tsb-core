@@ -12,7 +12,8 @@
         "logout": "登出",
         "myAccount": "我的账户",
         "search": "搜索",
-        "cart": "购物车"
+        "cart": "购物车",
+        "language": "选择语言"
     },
     "home": {
         "about": "关于我们",

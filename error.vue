@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen flex flex-col items-center justify-center bg-pink-50 px-4 text-center">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-tsb-one px-4 text-center">
       <!-- Round Maneki Neko Avatar -->
       <img 
         src="/images/404-maneki-neko.png" 

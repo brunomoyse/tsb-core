@@ -12,7 +12,8 @@
         "logout": "Logout",
         "myAccount": "My account",
         "search": "Search...",
-        "cart": "Cart"
+        "cart": "Cart",
+        "language": "Select Language"
     },
     "home": {
         "about": "About",

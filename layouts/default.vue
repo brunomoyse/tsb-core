@@ -2,34 +2,45 @@
   <div>
     <Html :lang="head.htmlAttrs?.lang ?? 'en'" :dir="head.htmlAttrs?.dir ?? 'ltr'">
 
-      <Head>
-        <Title>{{ title }}</Title>
-        <template v-for="link in head.link" :key="link.hid">
-          <Link :id="link.hid" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
-        </template>
-        <template v-for="meta in head.meta" :key="meta.hid">
-          <Meta :id="meta.hid" :property="meta.property" :content="meta.content" />
-        </template>
-      </Head>
+    <Head>
+      <Title>{{ title }}</Title>
+      <template v-for="link in head.link" :key="link.hid">
+        <Link :id="link.hid" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
+      </template>
+      <template v-for="meta in head.meta" :key="meta.hid">
+        <Meta :id="meta.hid" :property="meta.property" :content="meta.content" />
+      </template>
+    </Head>
 
-      <Body>
-        <header>
-          <Navbar />
-          <!-- Spacer to prevent content from being hidden behind the fixed Navbar -->
-          <div class="h-20"></div>
-        </header>
+    <Body class="bg-tsb-one">
+      <header>
+        <MobileNavbar />
+        <SideNavbar />
+      </header>
 
-        <main>
-          <slot />
-        </main>
+      <main class="flex-1 bg-tsb-one p-4 sm:ml-[142px] pt-8">
+        <slot />
+      </main>
 
-        <footer></footer>
+      <footer class="p-4 text-xs text-gray-500">
+        <div class="flex flex-wrap items-center justify-end space-x-2">
+          <NuxtLinkLocale to="/terms" class="hover:underline">
+            CGV
+          </NuxtLinkLocale>
+          <span>|</span>
+          <span>by</span>
+          <a href="https://brunomoyse.be" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center hover:underline">
+            brunomoyse
+          </a>
+        </div>
+      </footer>
+      <!-- Cookie consent tooltip always visible across pages -->
+      <CookieConsent />
+      <!-- Global Cart Button -->
+      <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')" />
 
-        <!-- Login Modal: Shows only when route is "/login" -->
-        <Teleport to="body">
-          <Login v-if="route.name === 'login'" />
-        </Teleport>
-      </Body>
+    </Body>
 
     </Html>
   </div>
@@ -40,9 +51,12 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
+import MobileNavbar from '~/components/MobileNavbar.vue'
 
 const route = useRoute()
 const { t } = useI18n()
 const head = useLocaleHead()
+const currentRoute = useRoute();
+
 const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
 </script>

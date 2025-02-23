@@ -12,7 +12,8 @@
         "logout": "Déconnexion",
         "myAccount": "Mon compte",
         "search": "Rechercher...",
-        "cart": "Panier"
+        "cart": "Panier",
+        "language": "Sélectionner la langue"
     },
     "home": {
         "about": "À propos",

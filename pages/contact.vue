@@ -69,9 +69,9 @@
           <div>
             <h2 class="font-semibold">{{ $t('contact.reservationsTitle') }}</h2>
             <p>
-              <a href="/reservations" class="text-blue-500 hover:underline">
+              <NuxtLinkLocale to="reservation" class="text-blue-500 hover:underline">
                 {{ $t('contact.reservationsLink') }}
-              </a>
+                </NuxtLinkLocale>
             </p>
           </div>
         </div>

@@ -7,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ProductCategory } from "@/types";
 
 // Define props
@@ -29,10 +30,10 @@ const handleClick = () => {
 // Compute dynamic classes based on active state
 const chipClasses = computed(() => {
     return `
-      inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm
+      inline-flex items-center px-4 py-1.5 rounded-2xl text-sm font-medium transition-all duration-200 shadow-sm
       ${props.active
-            ? 'bg-slate-800 text-white border border-slate-800'
-            : 'bg-off-white text-slate-600 border border-slate-300 hover:bg-slate-200'
+            ? 'bg-black text-white border border-slate-800'
+            : 'bg-tsb-two text-black border border-slate-300 hover:bg-slate-200'
         }
     `;
 });
