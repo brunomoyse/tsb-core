@@ -1,9 +1,8 @@
 <template>
-    <nav class="bg-white text-tsb-gray fixed z-50 h-20 w-full">
+    <nav class="mobile-only bg-white text-tsb-gray fixed z-50 h-20 w-full">
         <div class="px-4 flex justify-between items-center h-full mx-auto">
-
             <!-- Hamburger Menu and Mobile Menu (visible on mobile) -->
-            <div class="mobile-only flex flex-col items-center">
+            <div class="flex flex-col items-center">
                 <!-- Hidden checkbox -->
                 <input type="checkbox" id="menu-toggle" class="hidden" ref="menuToggle" />
 
@@ -20,7 +19,7 @@
                     class="fixed top-20 left-0 right-0 bottom-0 bg-white shadow-lg flex flex-col items-center justify-center opacity-0 transform translate-y-[-20px] transition-transform duration-400 ease-out pointer-events-none">
                     <ul role="menu" class="w-full text-center">
                         <li role="none">
-                            <NuxtLink :to="$localePath('index')"
+                            <NuxtLink :to="localePath('index')"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
                                 role="menuitem">
                                 Home
@@ -43,32 +42,18 @@
                     </ul>
                 </div>
             </div>
-
-            <NuxtLink :to="$localePath('index')" class="flex items-center space-x-2">
-                <h1 class="flex text-lg items-center font-['Channel'] text-charcoal">
-                    Tokyo
-                </h1>
-            </NuxtLink>
-
-            <div class="flex items-center space-x-2">
-                <SignInButton v-if="!isUserConnected" @click="openLoginModal" />
-                <AccountButton v-if="isUserConnected" />
-                <SignOutButton v-if="isUserConnected" @click="handleLogOut"/>
-
-                <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name.startsWith('menu')" />
-            </div>
-
-            <!-- Login Modal -->
-            <Login v-if="isLoginOpen" @close="isLoginOpen = false" />
+            
         </div>
     </nav>
 </template>
 
 <script setup lang="ts">
+import { ref, useRoute, watch, useLocalePath } from '#imports';
 import { useAuthStore } from '@/stores/auth'
 import SignInButton from './LoginButton.vue';
 import SignOutButton from './LogoutButton.vue';
 
+const localePath = useLocalePath();
 const authStore = useAuthStore()
 const currentRoute = useRoute();
 

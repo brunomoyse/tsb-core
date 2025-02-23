@@ -1,3 +1,5 @@
+import { defineNuxtConfig } from "nuxt/config";
+
 export default defineNuxtConfig({
   ssr: true,
 
@@ -34,6 +36,7 @@ export default defineNuxtConfig({
   ],
 
   i18n: {
+    defaultLocale: 'fr',
     locales: [
       {
         code: 'fr',
@@ -54,6 +57,7 @@ export default defineNuxtConfig({
       redirectOn: 'root' // recommended for SEO
     },
     baseUrl: process.env.BASE_URL,
+    strategy: 'prefix',
     vueI18n: "./i18n.config.ts",
   },
 
@@ -68,7 +72,7 @@ export default defineNuxtConfig({
       },
     },
   },
-
+  // @ts-ignore-next-line
   googleFonts: {
     families: {
       Montserrat: [400, 500, 600, 700],

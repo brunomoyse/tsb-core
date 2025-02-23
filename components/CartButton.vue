@@ -1,28 +1,37 @@
 <template>
-    <button @click="cartStore.toggleCartVisibility" :class="`relative flex items-center justify-center rounded-full h-9 p-4 border-2 
-            font-semibold text-sm ${isCartVisible
-            ? 'bg-red-400 text-white'
-            : 'bg-off-white text-tsb-gray'
-        } ${!isCartEmpty ? 'border-tsb-red' : 'border-transparent'
-        }`" aria-label="Toggle Cart">
-        <!-- Badge for total product quantity -->
-        <span v-if="!isCartEmpty"
-            class="absolute bottom-0 right-0 transform translate-x-[50%] translate-y-[50%] bg-tsb-red text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
-            {{ totalProductQuantity }}
-        </span>
+    <div class="fixed bottom-8 right-8 z-50" v-if="!isCartEmpty && !isCartVisible">
+        <button type="button" @click="handleToggleCart"
+            class="relative w-14 h-14 bg-white border border-red-500 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition">
+            <!-- Cart Icon -->
+            <div
+                class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible">
+                <img src="/icons/shopping-bag-icon.svg" alt="Cart Icon" class="w-6 h-6" />
 
-        <!-- Cart SVG Icon -->
-        <img src="/icons/shopping-bag-icon.svg" alt="Logout" class="h-6 w-6" />
+                <!-- Tooltip positioned below -->
+                <span
+                    class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+                    Panier
+                </span>
+            </div>
+            <img />
 
-
-        <!-- Button Text -->
-        <span class="pl-1 desktop-only">{{ $t('nav.cart') }}</span>
-    </button>
+            <!-- Badge for cart count -->
+            <div v-if="cartCount > 0"
+                class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
+                {{ cartCount }}
+            </div>
+            <span class="sr-only">Cart Notifications</span>
+        </button>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
+
+const handleToggleCart = () => {
+    cartStore.toggleCartVisibility();
+}
 
 // Initialize the cart store
 const cartStore = useCartStore();
@@ -31,6 +40,5 @@ const isCartEmpty = computed(() => cartStore.products.length === 0);
 const isCartVisible = computed(() => cartStore.isCartVisible);
 
 // Computed property for the total quantity of products
-const totalProductQuantity = computed(() => cartStore.totalItems);
-
+const cartCount = computed(() => cartStore.totalItems);
 </script>

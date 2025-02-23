@@ -1,6 +1,6 @@
 <template>
     <button class="relative flex items-center justify-center rounded-full h-9 p-4
-        font-semibold text-sm bg-off-white text-tsb-gray hover:bg-tsb-pink hover:text-black">
+        font-semibold text-sm bg-off-white text-tsb-gray hover:bg-tsb-three hover:text-black">
 
         <img src="/icons/login-icon.svg" alt="Login" class="h-6 w-6" />
 
