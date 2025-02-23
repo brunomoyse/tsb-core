@@ -6,6 +6,8 @@ export interface Product {
   code: string;
   slug: string;
   isActive: boolean;
+  isHalal: boolean;
+  isVegan: boolean;
 }
 
 export interface ProductTranslation {
@@ -23,6 +25,8 @@ export interface ProductInfo {
   code: string;
   slug: string;
   pieces: number;
+  isHalal: boolean;
+  isVegan: boolean;
   // Pluged from parent
   category: ProductCategory;
 }

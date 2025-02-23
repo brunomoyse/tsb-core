@@ -21,8 +21,10 @@
         <!-- Filtres (Préférences) -->
         <h2 class="text-lg font-medium mb-1">Filtres</h2>
         <div class="flex space-x-4">
-          <template v-for="tag in [{ slug: 'halal', name: $t('menu.halal') }, { slug: 'vegan', name: $t('menu.vegan') }]">
-            <Checkbox>{{ tag.name }}</Checkbox>
+          <template v-for="tag in filters" :key="tag.slug">
+            <Checkbox v-model="filterOptions[tag.slug]">
+              {{ tag.name }}
+            </Checkbox>
           </template>
         </div>
       </section>
@@ -55,7 +57,17 @@ import { useFetch, useNuxtApp } from '#imports'
 import type { CategoryWithProducts, ProductCategory } from '@/types'
 const { $apiBaseUrl } = useNuxtApp()
 const cartStore = useCartStore()
-const { locale: userLocale } = useI18n()
+const { locale: userLocale, t } = useI18n()
+
+const filterOptions = reactive<Record<string, boolean>>({
+  isHalal: false,
+  isVegan: false
+})
+
+const filters = [
+  { slug: 'isHalal', name: t('menu.halal') },
+  { slug: 'isVegan', name: t('menu.vegan') }
+]
 
 const searchValue = ref('')
 // Debounce the user input to reduce frequent filtering
@@ -102,20 +114,27 @@ const productData = computed(() =>
   ) || []
 )
 
-// Filtered products computed
 const filteredProducts = computed(() => {
   const query = debouncedSearchValue.value.trim().toLowerCase()
 
   return productData.value?.filter((p) => {
     // Match the selected category (if one is selected)
-    const matchesCategory = !selectedCategory.value || p.category.id === selectedCategory.value.id
+    const matchesCategory =
+      !selectedCategory.value ||
+      p.category.id === selectedCategory.value.id
 
-    // If there's no query, return all products in the selected category
-    if (!query) return matchesCategory
+    // Check if the product meets all active filter criteria
+    const passesFilters = Object.entries(filterOptions).every(
+      ([key, isActive]) => !isActive || (p as any)[key]
+    )
 
-    // Combine category + product name for searching
+    if (!matchesCategory || !passesFilters) return false
+
+    // If there's no query, include the product.
+    if (!query) return true
+
+    // Search within category name and product name.
     const nameToSearch = `${p.category.name} ${p.name}`.toLowerCase()
-
     return nameToSearch.includes(query)
   }) || []
 })
