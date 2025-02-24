@@ -2,9 +2,8 @@
     <li>
         <NuxtLinkLocale :to="to">
             <!-- Container with overflow-visible -->
-            <div
-                class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible">
-                <img :src="icon" :alt="alt" class="h-6 w-6" />
+            <div class="relative group w-[50px] h-[50px] flex items-center justify-center overflow-visible">
+                <img :src="icon" :alt="alt" class="fit" />
 
                 <!-- Tooltip positioned below -->
                 <span v-if="tooltipText"

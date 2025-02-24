@@ -5,7 +5,7 @@
   >
     <!-- Top Navigation Items -->
     <ul class="flex flex-col items-center space-y-6 mt-6">
-      <NavItem to="/" icon="/icons/tsb-logo.png" alt="Tokyo Sushi Bar logo" :tooltipText="$t('nav.home')" />
+      <Logo to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" :tooltipText="$t('nav.home')" />
       <NavItem to="/menu" icon="/icons/menu-icon.svg" alt="Menu Icon" :tooltipText="$t('nav.menu')" />
       <NavItem to="/reservation" icon="/icons/reservation-icon.svg" alt="Reservation Icon" :tooltipText="$t('nav.book')" />
       <NavItem to="/contact" icon="/icons/contact-icon.svg" alt="Contact Icon" :tooltipText="$t('nav.contact')" />
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import NavItem from '~/components/NavItem.vue'
+import Logo from '~/components/Logo.vue'
 import LanguagePicker from '~/components/LanguagePicker.vue'
 import { useAuthStore } from '@/stores/auth'
 
