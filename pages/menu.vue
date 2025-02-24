@@ -38,17 +38,21 @@
       <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
     </section>
 
+    <SideCart />
+
     <!-- Cart Sidebar -->
-    <Transition name="slide-down">
+    <Transition name="slide-down" class="md:hidden">
       <aside v-if="cartStore.isCartVisible"
         class="fixed top-20 right-0 w-full h-full bg-white shadow-lg p-8 overflow-y-auto z-40">
-        <CartSidebar />
+        <CartMobile />
       </aside>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
+import CartMobile from '~/components/CartMobile.vue'
+import SideCart from '~/components/SideCart.vue'
 import { ref, computed, reactive, watch } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useFetch, useNuxtApp, useCartStore, useI18n, useAsyncData } from '#imports'
