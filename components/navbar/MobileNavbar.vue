@@ -50,8 +50,6 @@
 <script setup lang="ts">
 import { ref, useRoute, watch, useLocalePath } from '#imports';
 import { useAuthStore } from '@/stores/auth'
-import SignInButton from './LoginButton.vue';
-import SignOutButton from './LogoutButton.vue';
 
 const localePath = useLocalePath();
 const authStore = useAuthStore()

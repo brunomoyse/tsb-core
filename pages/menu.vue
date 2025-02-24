@@ -45,8 +45,11 @@
 </template>
 
 <script setup lang="ts">
-import CartMobile from '~/components/CartMobile.vue'
-import SideCart from '~/components/SideCart.vue'
+import CartMobile from '~/components/cart/CartMobile.vue'
+import SideCart from '~/components/cart/SideCart.vue'
+import ProductCard from '~/components/menu/ProductCard.vue'
+import SearchBar from '~/components/menu/SearchBar.vue'
+import CategoryCard from '~/components/menu/CategoryCard.vue'
 import { ref, computed, reactive, watch } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useFetch, useNuxtApp, useCartStore, useI18n, useAsyncData } from '#imports'
