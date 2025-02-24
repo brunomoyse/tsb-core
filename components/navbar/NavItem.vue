@@ -11,10 +11,7 @@
                     draggable="false" />
 
                 <!-- Tooltip positioned below -->
-                <span v-if="tooltipText" :class="[
-                    'absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max',
-                    isActive ? 'bg-white text-black' : 'bg-black text-white',
-                ]">
+                <span v-if="tooltipText" class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max bg-black text-white">
                     {{ tooltipText }}
                 </span>
             </div>
