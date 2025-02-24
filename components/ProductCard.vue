@@ -2,16 +2,16 @@
   <div v-if="product" :key="product.id"
     class="relative max-w-[200px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
     <!-- Product Image -->
-    <div class="flex justify-center items-center h-1/2 p-4">
+    <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent>
       <picture class="w-full h-full flex justify-center items-center">
         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.avif`" type="image/avif" />
         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.webp`" type="image/webp" />
         <img :src="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.png`" :alt="product.name"
-          class="object-contain max-h-full" :draggable="false" :loading="index > 5 ? 'lazy' : 'eager'"
-          :fetchpriority="index < 6 ? 'high' : 'low'" />
+          class="object-contain max-h-full transition-opacity duration-500"
+          :class="loaded ? 'opacity-100' : 'opacity-0'" :draggable="false" :loading="index > 5 ? 'lazy' : 'eager'"
+          :fetchpriority="index < 6 ? 'high' : 'low'" ref="imageElement" />
       </picture>
     </div>
-
     <!-- Product Details -->
     <div class="flex-1 flex flex-col justify-between p-2">
       <div class="flex flex-col items-center mb-2">
@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import { useCartStore } from "@/stores/cart";
 import { formatPrice } from "~/lib/price";
-import { computed, ref, onUnmounted } from "vue";
+import { computed, ref, onUnmounted, onMounted } from "vue";
 import type { ProductInfo } from "@/types";
 import { useRuntimeConfig } from "#imports";
 
@@ -153,4 +153,37 @@ const resetTimeout = () => {
     showControls.value = false;
   }, 2000);
 };
+
+// Define the ref with the correct type (HTMLImageElement)
+const imageElement = ref<HTMLImageElement | null>(null);
+
+// Track whether the image has loaded
+const loaded = ref(false);
+
+onMounted(() => {
+  if (imageElement.value) {
+    // Check if the image is already loaded (e.g., cached)
+    if (imageElement.value.complete) {
+      loaded.value = true;
+    } else {
+      // Wait for the image to load
+      imageElement.value.addEventListener('load', () => {
+        loaded.value = true;
+      });
+    }
+  }
+});
 </script>
+<style>
+.transition-opacity {
+  transition: opacity 0.8s ease;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+</style>

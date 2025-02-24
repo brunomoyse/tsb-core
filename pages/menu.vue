@@ -6,8 +6,8 @@
       <SearchBar v-model="searchValue" />
     </section>
 
+    <!-- Categories -->
     <section v-if="searchValue.trim().length < 1" class="m-4">
-      <!-- Categories -->
       <h2 class="text-lg font-medium mb-1">
         {{ $t('menu.pickCategory') }}
       </h2>
@@ -17,8 +17,8 @@
       </div>
     </section>
 
+    <!-- Filtres (Préférences) -->
     <section v-if="searchValue.trim().length < 1" class="m-4">
-      <!-- Filtres (Préférences) -->
       <h2 class="text-lg font-medium mb-1">Filtres</h2>
       <div class="flex space-x-4">
         <template v-for="tag in filters" :key="tag.slug">
@@ -38,15 +38,9 @@
       <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
     </section>
 
-    <SideCart />
-
     <!-- Cart Sidebar -->
-    <Transition name="slide-down" class="md:hidden">
-      <aside v-if="cartStore.isCartVisible"
-        class="fixed top-20 right-0 w-full h-full bg-white shadow-lg p-8 overflow-y-auto z-40">
-        <CartMobile />
-      </aside>
-    </Transition>
+    <SideCart />
+    <CartMobile />
   </div>
 </template>
 
@@ -58,6 +52,7 @@ import { useDebounce } from '@vueuse/core'
 import { useFetch, useNuxtApp, useCartStore, useI18n, useAsyncData } from '#imports'
 
 import type { CategoryWithProducts, ProductCategory } from '@/types'
+
 const { $apiBaseUrl } = useNuxtApp()
 const cartStore = useCartStore()
 const { locale: userLocale, t } = useI18n()
