@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import NavItem from './NavItem.vue';
 import Logo from './Logo.vue'
-import LanguagePicker from '~/components/Navbar/LanguagePicker.vue'
+import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore();

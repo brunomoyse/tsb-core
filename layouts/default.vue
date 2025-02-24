@@ -51,8 +51,8 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
-import MobileNavbar from '~/components/Navbar/MobileNavbar.vue'
-import SideNavbar from '~/components/Navbar/SideNavbar.vue'
+import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
+import SideNavbar from '~/components/navbar/SideNavbar.vue'
 
 
 const route = useRoute()
