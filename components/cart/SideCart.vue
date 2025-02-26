@@ -160,7 +160,7 @@
     }
   
     // Create an order on your backend
-    const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/user/orders`, {
+    const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/orders`, {
       method: "POST",
       body: JSON.stringify({
         // @TODO: add shippingAddress if needed

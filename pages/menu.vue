@@ -96,7 +96,7 @@ const selectCategory = async (categoryId: string) => {
 // Fetch products by category
 const { data: categoriesWithProductsData } = await useAsyncData(
   'categoriesWithProducts',
-  () => $fetch<CategoryWithProducts[]>(`${$apiBaseUrl()}/categories-with-products`, {
+  () => $fetch<CategoryWithProducts[]>(`${$apiBaseUrl()}/categories:withProducts`, {
     headers: { 'accept-language': userLocale.value }
   })
 )
