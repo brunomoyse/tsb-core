@@ -1,12 +1,9 @@
 <template>
     <nav class="mobile-only bg-white text-tsb-gray fixed z-50 h-20 w-full">
         <div class="px-4 flex justify-between items-center h-full mx-auto">
-            <!-- Hamburger Menu and Mobile Menu (visible on mobile) -->
+            <!-- Hamburger Menu -->
             <div class="flex flex-col items-center">
-                <!-- Hidden checkbox -->
                 <input type="checkbox" id="menu-toggle" class="hidden" ref="menuToggle" />
-
-                <!-- Hamburger icon -->
                 <label for="menu-toggle" class="hamburger cursor-pointer focus:outline-none"
                     aria-label="Toggle navigation menu" tabindex="0">
                     <span></span>
@@ -14,35 +11,38 @@
                     <span></span>
                 </label>
 
-                <!-- Mobile Menu -->
+                <!-- Mobile Sidebar Menu -->
                 <div id="mobile-menu"
-                    class="fixed top-20 left-0 right-0 bottom-0 bg-white shadow-lg flex flex-col items-center justify-center opacity-0 transform translate-y-[-20px] transition-transform duration-400 ease-out pointer-events-none">
-                    <ul role="menu" class="w-full text-center">
-                        <li role="none">
-                            <NuxtLink :to="localePath('index')"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
-                                role="menuitem">
-                                Home
-                            </NuxtLink>
-                        </li>
-                        <li role="none">
-                            <NuxtLinkLocale to="menu"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
-                                role="menuitem">
-                                Menu
-                            </NuxtLinkLocale>
-                        </li>
-                        <li role="none">
-                            <NuxtLinkLocale to="contact"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
-                                role="menuitem">
-                                Contact
-                            </NuxtLinkLocale>
-                        </li>
+                    class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
+
+                    <!-- Top Section -->
+                    <div class="flex flex-col items-center space-y-6 mt-4">
+
+
+                        <ul class="flex flex-col items-center space-y-6 w-full">
+                            <Logo @click="closeMenu" to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" class="mb-6" />
+                            <MobileNavItem @click="closeMenu" to="menu" icon="/icons/menu-icon.svg" :label="$t('nav.menu')" />
+                            <MobileNavItem @click="closeMenu" to="reservation" icon="/icons/reservation-icon.svg"
+                                :label="$t('nav.book')" />
+                            <MobileNavItem @click="closeMenu" to="contact" icon="/icons/contact-icon.svg" :label="$t('nav.contact')" />
+                        </ul>
+                    </div>
+
+                    <!-- Bottom Section -->
+                    <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full">
+                        <MobileNavItem @click="closeMenu" v-if="!isUserConnected" to="login" icon="/icons/login-icon.svg"
+                            :label="$t('nav.login')" />
+                        <MobileNavItem @click="closeMenu" v-if="isUserConnected" to="logout" icon="/icons/logout-icon.svg"
+                            :label="$t('nav.logout')" @click.prevent="handleLogOut" />
+
+                        <LanguagePicker icon="/icons/translate-icon.svg" alt="Translate Icon"
+                            tooltipText="Change Language" :label="$t('nav.language')" class="justify-center" />
                     </ul>
                 </div>
             </div>
-            
+
+            <!-- Mobile Logo -->
+            <Logo to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" />
         </div>
     </nav>
 </template>
@@ -50,10 +50,11 @@
 <script setup lang="ts">
 import { ref, useRoute, watch, useLocalePath } from '#imports';
 import { useAuthStore } from '@/stores/auth'
+import MobileNavItem from './MobileNavItem.vue';
+import Logo from './Logo.vue';
+import LanguagePicker from './LanguagePicker.vue';
 
-const localePath = useLocalePath();
 const authStore = useAuthStore()
-const currentRoute = useRoute();
 
 // Reference to the menu toggle checkbox
 const menuToggle = ref<HTMLInputElement | null>(null);
@@ -70,15 +71,16 @@ watch(
     }
 );
 
-
-const isLoginOpen = ref(false)
-
-const openLoginModal = () => isLoginOpen.value = true
-
 const isUserConnected = authStore.user !== null
 
 const handleLogOut = () => {
     authStore.logout()
+}
+
+const closeMenu = () => {
+  if (menuToggle.value) {
+    menuToggle.value.checked = false
+  }
 }
 
 </script>

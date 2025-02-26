@@ -31,12 +31,18 @@
 
     <!-- Products -->
     <section class="mx-auto px-4 mb-8">
-      <div v-if="filteredProducts.length" class="flex flex-wrap justify-left gap-6">
-        <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index" :product="product"
-          class="flex-[0_1_48%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]" />
-      </div>
-      <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
-    </section>
+  <div v-if="filteredProducts.length" 
+       class="flex flex-wrap justify-center gap-6 sm:justify-start">
+    <ProductCard 
+      v-for="(product, index) in filteredProducts" 
+      :key="product.id" 
+      :index="index" 
+      :product="product"
+      class="flex-[1_0_100%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]"
+    />
+  </div>
+  <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
+</section>
 
     <!-- Cart Sidebar -->
     <SideCart />
