@@ -155,7 +155,7 @@ const handlePayment = async () => {
     }
 
     // Implement your payment logic here
-    const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/user/orders`, {
+    const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/orders`, {
         method: "POST",
         body: JSON.stringify({
             // @TODO: add shipping address
