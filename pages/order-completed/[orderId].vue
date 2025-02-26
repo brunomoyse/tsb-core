@@ -1,5 +1,4 @@
 <template>
-    <!-- Full-height container for a centered card -->
     <div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
         <!-- Card -->
         <div class="max-w-2xl w-full bg-white rounded-lg shadow-md p-6">
@@ -57,7 +56,7 @@ const orderId = route.params.orderId as string
 
 const baseUrl = $apiBaseUrl()
 
-const { data: order, error } = await useFetch<Order>(`${baseUrl}/user/order/${orderId}`, {
+const { data: order, error } = await useFetch<Order>(`${baseUrl}/orders/${orderId}`, {
     headers: {
         Authorization: `Bearer ${authStore.accessToken}`
     },
