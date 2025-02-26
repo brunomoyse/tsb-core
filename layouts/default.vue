@@ -13,30 +13,33 @@
     </Head>
 
     <Body class="bg-tsb-one">
-      <header>
-        <MobileNavbar />
-        <SideNavbar />
-      </header>
+      <!-- Wrapper div for sticky footer -->
+      <div class="min-h-screen flex flex-col">
+        <header>
+          <MobileNavbar />
+          <SideNavbar />
+        </header>
 
-      <main class="flex-1 bg-tsb-one p-4 sm:ml-[142px] pt-8">
-        <!-- Spacer for mobile navbar -->
-        <div class="mobile-only h-20" />
-        <slot />
-      </main>
+        <main class="flex-1 bg-tsb-one p-4 sm:ml-[142px] pt-8">
+          <!-- Spacer for mobile navbar -->
+          <div class="mobile-only h-20" />
+          <slot />
+        </main>
 
-      <footer class="p-4 text-xs text-gray-500">
-        <div class="flex flex-wrap items-center justify-end space-x-2">
-          <NuxtLinkLocale to="/terms" class="hover:underline">
-            CGV
-          </NuxtLinkLocale>
-          <span>|</span>
-          <span>by</span>
-          <a href="https://brunomoyse.be" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center hover:underline">
-            brunomoyse
-          </a>
-        </div>
-      </footer>
+        <footer class="p-4 text-xs text-gray-500">
+          <div class="flex flex-wrap items-center justify-end space-x-2">
+            <NuxtLinkLocale to="/terms" class="hover:underline">
+              CGV
+            </NuxtLinkLocale>
+            <span>|</span>
+            <span>by</span>
+            <a href="https://brunomoyse.be" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center hover:underline">
+              brunomoyse
+            </a>
+          </div>
+        </footer>
+      </div>
       <!-- Cookie consent tooltip always visible across pages -->
       <CookieConsent />
       <!-- Global Cart Button -->
