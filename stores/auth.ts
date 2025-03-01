@@ -34,8 +34,11 @@ export const useAuthStore = defineStore('auth', {
         this.logout();
       }
     },
-    logout() {
-      // @TODO: Call API to invalidate refresh token
+    async logout() {
+      const res = await $fetch(`${config.public.server.apiBaseUrl}/tokens:revoke`, {
+        method: 'POST',
+        credentials: 'include',
+      });
       this.accessToken = null;
       this.user = null;
 
