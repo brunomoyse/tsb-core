@@ -115,8 +115,6 @@ const productData = computed(() =>
   }))
 )
 
-console.log(productData.value);
-
 const filteredProducts = computed(() => {
   const query = debouncedSearchValue.value.trim().toLowerCase()
 
