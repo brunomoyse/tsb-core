@@ -122,7 +122,7 @@ import { useNuxtApp, useRuntimeConfig, useFetch, navigateTo } from "#app";
 import { useCartStore } from "@/stores/cart";
 import { useAuthStore } from "@/stores/auth";
 import { formatPrice } from "~/lib/price";
-import type { ProductInfo, Order } from "@/types";
+import type { Product, Order } from "@/types";
 
 const authStore = useAuthStore();
 const { $apiBaseUrl } = useNuxtApp()
@@ -135,11 +135,11 @@ const handleIncrementQuantity = (productId: string): void => {
     cartStore.incrementQuantity(product);
 };
 
-const handleDecrementQuantity = (product: ProductInfo): void => {
+const handleDecrementQuantity = (product: Product): void => {
     cartStore.decrementQuantity(product);
 };
 
-const handleRemoveFromCart = (product: ProductInfo): void => {
+const handleRemoveFromCart = (product: Product): void => {
     cartStore.removeFromCart(product);
 };
 
@@ -177,7 +177,7 @@ const handlePayment = async () => {
     cartStore.toggleCartVisibility();
 };
 
-const getProductById = (productId: string): ProductInfo => {
+const getProductById = (productId: string): Product => {
     const cartItem = cartStore.products.find(item => item.product.id === productId);
     if (cartItem) {
         return cartItem.product;

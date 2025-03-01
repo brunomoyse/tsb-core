@@ -107,7 +107,7 @@
   import { useCartStore } from "@/stores/cart";
   import { useAuthStore } from "@/stores/auth";
   import { formatPrice } from "~/lib/price";
-  import type { ProductInfo, Order } from "@/types";
+  import type { Product, Order } from "@/types";
   
   /**
    * -------------------------------------
@@ -140,11 +140,11 @@
     cartStore.incrementQuantity(product);
   };
   
-  const handleDecrementQuantity = (product: ProductInfo): void => {
+  const handleDecrementQuantity = (product: Product): void => {
     cartStore.decrementQuantity(product);
   };
   
-  const handleRemoveFromCart = (product: ProductInfo): void => {
+  const handleRemoveFromCart = (product: Product): void => {
     cartStore.removeFromCart(product);
   };
   
@@ -188,7 +188,7 @@
    *  UTILS
    * -------------------------------------
    */
-  const getProductById = (productId: string): ProductInfo => {
+  const getProductById = (productId: string): Product => {
     const cartItem = cartStore.products.find(item => item.product.id === productId);
     if (cartItem) {
       return cartItem.product;

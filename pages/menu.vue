@@ -60,7 +60,7 @@ import { ref, computed, reactive, watch } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useFetch, useNuxtApp, useCartStore, useI18n, useAsyncData } from '#imports'
 
-import type { CategoryWithProducts, ProductCategory } from '@/types'
+import type { Product, ProductCategory } from '@/types'
 
 const { $apiBaseUrl } = useNuxtApp()
 const cartStore = useCartStore()
@@ -100,26 +100,22 @@ const selectCategory = async (categoryId: string) => {
 }
 
 // Fetch products by category
-const { data: categoriesWithProductsData } = await useAsyncData(
-  'categoriesWithProducts',
-  () => $fetch<CategoryWithProducts[]>(`${$apiBaseUrl()}/categories:withProducts`, {
+const { data: products } = await useAsyncData(
+  'products',
+  () => $fetch<Product[]>(`${$apiBaseUrl()}/products`, {
     headers: { 'accept-language': userLocale.value }
   })
 )
 
-// Flatten product list for filtering
 const productData = computed(() =>
-  categoriesWithProductsData.value?.flatMap((cat) =>
-    cat.products.map((product) => ({
-      ...product,
-      category: {
-        id: cat.id,
-        name: cat.name,
-        order: cat.order
-      } as ProductCategory
-    }))
-  ) || []
+  // Add property "category" to each product based on the category ID
+  products.value?.flatMap((p) => ({
+    ...p,
+    category: categories.value?.find((c) => c.id === p.categoryId) || null
+  }))
 )
+
+console.log(productData.value);
 
 const filteredProducts = computed(() => {
   const query = debouncedSearchValue.value.trim().toLowerCase()
@@ -128,7 +124,7 @@ const filteredProducts = computed(() => {
     // Match the selected category (if one is selected)
     const matchesCategory =
       !selectedCategory.value ||
-      p.category.id === selectedCategory.value.id
+      p.category?.id === selectedCategory.value.id
 
     // Check if the product meets all active filter criteria
     const passesFilters = Object.entries(filterOptions).every(
@@ -141,7 +137,7 @@ const filteredProducts = computed(() => {
     if (!query) return true
 
     // Search within category name and product name.
-    const nameToSearch = `${p.category.name} ${p.name}`.toLowerCase()
+    const nameToSearch = `${p.category?.name} ${p.name}`.toLowerCase()
     return nameToSearch.includes(query)
   }) || []
 })
