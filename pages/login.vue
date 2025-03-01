@@ -68,7 +68,7 @@ const password = ref('')
 const emit = defineEmits(['close'])
 
 const register = () => {
-  console.log('Redirecting to registration...')
+  ('Redirecting to registration...')
 }
 
 // Regular email/password login

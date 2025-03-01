@@ -1,81 +1,81 @@
-import { useAuthStore } from "@/stores/auth";
+// plugins/fetchAuth.ts
+import { defineNuxtPlugin, useNuxtApp } from '#app'
+import { useAuthStore } from '@/stores/auth'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const authStore = useAuthStore();
+  const authStore = useAuthStore()
+  const { $apiBaseUrl } = useNuxtApp()
 
-  // Save the original fetch function
-  const originalFetch = globalThis.$fetch;
+  const originalFetch = globalThis.$fetch
+  let refreshPromise: Promise<string | null> | null = null
 
-  // Define the new fetch function
-  const newFetch = async (
-    input: string | URL,
-    init: RequestInit = {}
-  ): Promise<any> => {
-    // Convert the input to a string (in case it's a URL object)
-    const url = typeof input === "string" ? input : input.toString();
-
-    // 1. Only intercept if the URL starts with http://localhost:8080/user/
-    const interceptPattern = "http://localhost:8080/user/";
-    if (!url.startsWith(interceptPattern)) {
-      // 2. For everything else, just use the original fetch unchanged
-      return originalFetch(url, init);
+  async function refreshAccessToken(): Promise<string | null> {
+    try {
+      // Use originalFetch to avoid interceptor loop
+      const response: any = await originalFetch(`${$apiBaseUrl()}/tokens:refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.json()
+      return data.accessToken
+    } catch (error) {
+      console.error('Failed to refresh access token:', error)
+      return null
     }
+  }
 
-    // If we get here, it's an API call we want to intercept
+  async function attemptRefresh(): Promise<string | null> {
+    // Prevent concurrent refresh attempts
+    if (refreshPromise) return refreshPromise
 
-    // Ensure headers is defined
-    init.headers = init.headers || {};
+    refreshPromise = (async () => {
+      try {
+        const newToken = await refreshAccessToken()
+        if (newToken) authStore.setAccessToken(newToken)
+        return newToken
+      } finally {
+        refreshPromise = null
+      }
+    })()
 
-    // If we have an accessToken, attach it
+    return refreshPromise
+  }
+
+  const newFetch = async (input: string | URL, init: RequestInit = {}): Promise<any> => {
+    const url = typeof input === 'string' ? input : input.toString()
+    const headers = { ...init.headers }
+
+    // Initial token attachment
     if (authStore.accessToken) {
-      (init.headers as HeadersInit)["Authorization"] = `Bearer ${authStore.accessToken}`;
+      headers['Authorization'] = `Bearer ${authStore.accessToken}`
+    } else {
+      const newToken = await attemptRefresh()
+      if (newToken) headers['Authorization'] = `Bearer ${newToken}`
     }
 
     try {
-      return await originalFetch(url, init);
+      return await originalFetch(url, { ...init, headers })
     } catch (error: any) {
-      // If we got a 401, attempt token refresh
       if (error.status === 401) {
-        console.warn("Access token expired, attempting to refresh...");
-        try {
-          const newAccessToken = await refreshAccessToken(authStore);
-          if (newAccessToken) {
-            // Update headers with the new access token and retry
-            (init.headers as HeadersInit)["Authorization"] = `Bearer ${newAccessToken}`;
-            return await originalFetch(url, init);
-          }
-        } catch (refreshError) {
-          console.error("Session expired, logging out...");
-          authStore.logout();
-          return navigateTo("/login");
+        console.warn('Access token expired; attempting to refresh...')
+        const newToken = await attemptRefresh()
+
+        if (newToken) {
+          // Retry with new token using original fetch
+          return originalFetch(url, {
+            ...init,
+            headers: { ...headers, Authorization: `Bearer ${newToken}` }
+          })
+        } else {
+          // Remove invalid token and retry
+          const { Authorization, ...cleanHeaders } = headers
+          return originalFetch(url, { ...init, headers: cleanHeaders })
         }
       }
-      throw error;
+      throw error
     }
-  };
-
-  // Override $fetch globally
-  globalThis.$fetch = newFetch;
-});
-
-// Helper function to refresh the access token
-async function refreshAccessToken(
-  authStore: ReturnType<typeof useAuthStore>
-): Promise<string | null> {
-  try {
-    const { $apiBaseUrl } = useNuxtApp();
-
-    const response = await $fetch<{ accessToken: string }>(
-      `${$apiBaseUrl()}/auth/refresh`,
-      {
-        method: "POST",
-        credentials: "include", // Sends refresh token from HTTP-only cookie
-      }
-    );
-    authStore.setAccessToken(response.accessToken);
-    return response.accessToken;
-  } catch (error) {
-    console.error("Failed to refresh access token:", error);
-    return null;
   }
-}
+
+  globalThis.$fetch = newFetch
+})
