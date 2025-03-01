@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
     async refreshAccessToken() {
       try {
         const config = useRuntimeConfig(); // Get API base URL safely
-        const response: { accessToken?: string, user?: User } = await $fetch(`${config.public.server.apiBaseUrl}/auth/refresh`, {
+        const response: { accessToken?: string, user?: User } = await $fetch(`${config.public.server.apiBaseUrl}/tokens:refresh`, {
           method: 'POST',
           credentials: 'include', // Sends HTTP-only refresh token cookie
         });
