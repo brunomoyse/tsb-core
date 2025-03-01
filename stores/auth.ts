@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia'
-import { useRuntimeConfig } from '#imports' // Import Nuxt runtime config
+import { defineStore } from "pinia";
+import { useRuntimeConfig } from "#imports"; // Import Nuxt runtime config
 import type { User } from "@/types";
 
-export const useAuthStore = defineStore('auth', {
+export const useAuthStore = defineStore("auth", {
   state: () => ({
     accessToken: null as string | null,
-    user: null as User | null
+    user: null as User | null,
   }),
   actions: {
     setAccessToken(token: string) {
@@ -16,11 +16,16 @@ export const useAuthStore = defineStore('auth', {
     },
     async refreshAccessToken() {
       try {
-        const config = useRuntimeConfig(); // Get API base URL safely
-        const response: { accessToken?: string, user?: User } = await $fetch(`${config.public.server.apiBaseUrl}/tokens:refresh`, {
-          method: 'POST',
-          credentials: 'include', // Sends HTTP-only refresh token cookie
-        });
+        const config = useRuntimeConfig();
+
+        const response: { accessToken?: string; user?: User } = await $fetch(
+          /* @ts-ignore */
+          `${config.public.server.apiBaseUrl}/tokens/refresh`,
+          {
+            method: "POST",
+            credentials: "include", // Sends HTTP-only refresh token cookie
+          }
+        );
 
         if (response.accessToken) {
           this.setAccessToken(response.accessToken);
@@ -30,21 +35,33 @@ export const useAuthStore = defineStore('auth', {
           this.setUser(response.user);
         }
       } catch (error) {
-        console.error('Token refresh failed:', error);
+        console.error("Token refresh failed:", error);
         this.logout();
       }
     },
     async logout() {
-      const res = await $fetch(`${config.public.server.apiBaseUrl}/tokens:revoke`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      try {
+        const config = useRuntimeConfig();
+
+        // Call the backend endpoint to revoke tokens.
+        /* @ts-ignore */
+        await $fetch(`${config.public.server.apiBaseUrl}/tokens/revoke`, {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (error) {
+        console.error("Failed to revoke tokens:", error);
+        // Depending on your needs, you might want to handle this error
+        // or continue to clear the client-side session anyway.
+      }
+
+      // Clear authentication state.
       this.accessToken = null;
       this.user = null;
 
-      // Refresh the page to clear all state
-      window.location.reload();
-    }
+      // Optionally, reload the page or redirect to a public route.
+      // window.location.reload();
+    },
   },
-  persist: true
+  persist: true,
 });
