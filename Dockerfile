@@ -1,12 +1,12 @@
-FROM node:22-alpine3.21 AS builder
+FROM node:22.14-alpine3.21 AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
 
 # Set environment variables
 # @TODO: Use .env file
-ENV API_BASE_URL_CLIENT="https://nuagemagique.dev/api"
-ENV API_BASE_URL_SERVER="https://nuagemagique.dev/api"
+ENV API_BASE_URL_CLIENT="https://nuagemagique.dev/api/v1"
+ENV API_BASE_URL_SERVER="https://nuagemagique.dev/api/v1"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
 ENV BASE_URL="https://nuagemagique.dev"
 
