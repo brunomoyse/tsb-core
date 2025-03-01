@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { defineNuxtPlugin, useNuxtApp } from "#app";
+// plugins/fetchAuth.ts
+import { defineNuxtPlugin, useNuxtApp, useRequestEvent } from "#app";
 import { useAuthStore } from "@/stores/auth";
 import { useRuntimeConfig } from "#imports";
 
@@ -10,10 +11,26 @@ export default defineNuxtPlugin(() => {
   let refreshPromise: Promise<string | null> | null = null;
 
   function hasRefreshTokenCookie(): boolean {
-    // Check if refresh_token cookie exists
-    return document.cookie.split(';').some((cookie) => {
-      return cookie.trim().startsWith('refresh_token=');
-    });
+    // Client-side check
+    if (process.client) {
+      return document.cookie.split(';').some((cookie) => {
+        return cookie.trim().startsWith('refresh_token=');
+      });
+    }
+
+    // Server-side check
+    if (process.server) {
+      const { req } = useRequestEvent();
+      if (!req?.headers.cookie) {
+        return false;
+      }
+      return req.headers.cookie.split(';').some((cookie) => {
+        return cookie.trim().startsWith('refresh_token=');
+      });
+    }
+
+    // Fallback
+    return false;
   }
 
   async function refreshAccessToken(): Promise<string | null> {

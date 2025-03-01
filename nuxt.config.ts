@@ -57,7 +57,7 @@ export default defineNuxtConfig({
       redirectOn: 'root' // recommended for SEO
     },
     baseUrl: process.env.BASE_URL,
-    strategy: 'prefix',
+    strategy: 'prefix_and_default',
     vueI18n: "./i18n.config.ts",
   },
 
@@ -79,5 +79,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: "2025-01-27",
+  compatibilityDate: "2025-03-01",
 });

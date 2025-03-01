@@ -100,7 +100,7 @@ const selectCategory = async (categoryId: string) => {
 }
 
 // Fetch products by category
-const { data: products } = await useAsyncData(
+const { data: products, error } = await useAsyncData(
   'products',
   () => $fetch<Product[]>(`${$apiBaseUrl()}/products`, {
     headers: { 'accept-language': userLocale.value }
@@ -139,10 +139,6 @@ const filteredProducts = computed(() => {
     return nameToSearch.includes(query)
   }) || []
 })
-
-//onMounted(async () => {
-//  await useAuthStore().refreshAccessToken();
-//})
 
 </script>
 
