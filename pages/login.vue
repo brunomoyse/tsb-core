@@ -74,7 +74,7 @@ const register = () => {
 // Regular email/password login
 const login = async () => {
   try {
-    const response = await $fetch<LoginResponse>(`${$apiBaseUrl()}/auth/sign-in`, {
+    const response = await $fetch<LoginResponse>(`${$apiBaseUrl()}/login`, {
       method: 'POST',
       body: {
         email: email.value,
@@ -100,7 +100,7 @@ const login = async () => {
 }
 
 const loginWithGoogle = () => {
-  window.location.href = `${$apiBaseUrl()}/auth/google/sign-in`;
+  window.location.href = `${$apiBaseUrl()}/oauth/google`;
 };
 
 onMounted(async () => {

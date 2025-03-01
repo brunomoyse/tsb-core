@@ -2,23 +2,6 @@
 
 export interface Product {
   id: string;
-  price: number;
-  code: string;
-  slug: string;
-  isActive: boolean;
-  isHalal: boolean;
-  isVegan: boolean;
-}
-
-export interface ProductTranslation {
-  id: string;
-  name: string;
-  description: string;
-  locale: string;
-}
-
-export interface ProductInfo {
-  id: string;
   name: string;
   description: string;
   price: number;
@@ -27,8 +10,9 @@ export interface ProductInfo {
   pieces: number;
   isHalal: boolean;
   isVegan: boolean;
-  // Pluged from parent
-  category: ProductCategory;
+  isAvailable: boolean;
+  categoryId: string;
+  category?: ProductCategory | null;
 }
 
 export interface ProductCategory {
@@ -37,15 +21,8 @@ export interface ProductCategory {
   order: number;
 }
 
-export interface CategoryWithProducts {
-  id: string;
-  name: string;
-  order: number;
-  products: ProductInfo[];
-}
-
 export interface CartItem {
-  product: ProductInfo;
+  product: Product;
   quantity: number;
 }
 
@@ -74,5 +51,5 @@ export interface Order {
   molliePaymentId: string;
   molliePaymentUrl: string;
   status: string;
-  items: CartItem[];
+  products: CartItem[];
 }

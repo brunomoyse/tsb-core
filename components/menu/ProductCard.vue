@@ -17,7 +17,7 @@
       <div class="flex flex-col items-center mb-2">
         <!-- Category Name -->
         <span class="text-gray-500 font-medium text-xs mb-1 truncate">
-          {{ product.category.name }}
+          {{ product.category?.name }}
         </span>
 
         <!-- Product Name -->
@@ -89,7 +89,7 @@
 import { useCartStore } from "@/stores/cart";
 import { formatPrice } from "~/lib/price";
 import { computed, ref, onUnmounted, onMounted } from "vue";
-import type { ProductInfo } from "@/types";
+import type { Product } from "@/types";
 import { useRuntimeConfig } from "#imports";
 
 const cartStore = useCartStore();
@@ -97,7 +97,7 @@ const config = useRuntimeConfig();
 
 const props = defineProps<{
   index: number;
-  product: ProductInfo;
+  product: Product;
 }>();
 
 const showControls = ref(false);
