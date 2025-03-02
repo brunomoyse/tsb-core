@@ -22,7 +22,7 @@
                     <div>
                         <h3 class="font-medium text-gray-800 mb-1">Items:</h3>
                         <ul class="list-disc list-inside text-gray-600">
-                            <li v-for="item in order.items" :key="item.product.id">
+                            <li v-for="item in order.products" :key="item.product.id">
                                 {{ item.quantity }} x {{ item.product.name }} ({{ item.product.price }} EUR each)
                             </li>
                         </ul>

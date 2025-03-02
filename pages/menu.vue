@@ -45,8 +45,8 @@
 </section>
 
     <!-- Cart Sidebar -->
-    <SideCart />
-    <CartMobile />
+    <SideCart class="desktop-only" />
+    <CartMobile  />
   </div>
 </template>
 
