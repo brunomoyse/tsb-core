@@ -22,11 +22,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports'
 import NavItem from './NavItem.vue';
 import Logo from './Logo.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore();
-const isUserConnected = authStore.user !== null;
+const isUserConnected = computed(() => authStore.user !== null)
 </script>
