@@ -46,7 +46,7 @@
       <!-- Signup Link -->
       <p class="text-sm text-gray-500 text-center mt-4">
         {{ $t('login.noAccount') }}
-        <span @click="register" class="text-black font-medium hover:underline">
+        <span @click="register" class="text-black font-medium hover:underline cursor-pointer">
           {{ $t('login.register') }}
         </span>
       </p>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useNuxtApp } from '#imports';
+import { onMounted, ref, useNuxtApp, navigateTo } from '#imports';
 import type { LoginResponse } from '@/types';
 import { useAuthStore } from '@/stores/auth'
 
@@ -68,7 +68,7 @@ const password = ref('')
 const emit = defineEmits(['close'])
 
 const register = () => {
-  ('Redirecting to registration...')
+  navigateTo('/register')
 }
 
 // Regular email/password login
