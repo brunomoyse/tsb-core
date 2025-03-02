@@ -1,46 +1,63 @@
 <template>
-  <div>
+  <div class="flex">
+    <!-- Main Central Content -->
+    <div class="sm:w-[calc(100vw-142px)] lg:w-[calc(67vw-71px)]">
+      <!-- Search Section -->
+      <section class="mb-4 px-4">
+        <SearchBar v-model="searchValue" />
+      </section>
 
-    <!-- Search Section -->
-    <section class="mb-4 px-4 w-screen">
-      <SearchBar v-model="searchValue" />
-    </section>
+      <!-- Categories -->
+      <section v-if="searchValue.trim().length < 1" class="m-4">
+        <h2 class="text-lg font-medium mb-1">{{ $t('menu.pickCategory') }}</h2>
+        <div class="flex overflow-x-auto space-x-4 no-scrollbar">
+          <CategoryCard
+            v-for="category in categories"
+            :key="category.id"
+            :category="category"
+            :active="selectedCategory?.id === category.id"
+            @select="selectCategory"
+            :show-icon="false"
+          />
+        </div>
+      </section>
 
-    <!-- Categories -->
-    <section v-if="searchValue.trim().length < 1" class="m-4">
-      <h2 class="text-lg font-medium mb-1">
-        {{ $t('menu.pickCategory') }}
-      </h2>
-      <div class="flex overflow-x-auto space-x-4 no-scrollbar">
-        <CategoryCard v-for="category in categories" :key="category.id" :category="category"
-          :active="selectedCategory?.id === category.id" @select="selectCategory" :show-icon="false" />
-      </div>
-    </section>
+      <!-- Filters -->
+      <section v-if="searchValue.trim().length < 1" class="m-4">
+        <h2 class="text-lg font-medium mb-1">Filtres</h2>
+        <div class="flex space-x-4">
+          <template v-for="tag in filters" :key="tag.slug">
+            <Checkbox v-model="filterOptions[tag.slug]">
+              {{ tag.name }}
+            </Checkbox>
+          </template>
+        </div>
+      </section>
 
-    <!-- Filtres (Préférences) -->
-    <section v-if="searchValue.trim().length < 1" class="m-4">
-      <h2 class="text-lg font-medium mb-1">Filtres</h2>
-      <div class="flex space-x-4">
-        <template v-for="tag in filters" :key="tag.slug">
-          <Checkbox v-model="filterOptions[tag.slug]">
-            {{ tag.name }}
-          </Checkbox>
-        </template>
-      </div>
-    </section>
-
-    <!-- Products -->
-    <section class="mx-auto px-4 mb-8">
-      <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-6 sm:justify-start">
-        <ProductCard v-for="(product, index) in filteredProducts" :key="product.id" :index="index" :product="product"
-          class="flex-[1_0_100%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]" />
-      </div>
-      <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
-    </section>
+      <!-- Products -->
+      <section class="mx-auto px-4 mb-8">
+        <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-6">
+          <ProductCard
+            v-for="(product, index) in filteredProducts"
+            :key="product.id"
+            :index="index"
+            :product="product"
+            class="flex-[1_0_100%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]"
+          />
+        </div>
+        <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
+      </section>
+    </div>
 
     <!-- Cart Sidebar -->
-    <SideCart class="desktop-only" />
-    <CartMobile />
+    <aside class="hidden lg:block lg:w-[calc(30vw-71px)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
+      <SideCart />
+    </aside>
+
+    <!-- Mobile Cart -->
+    <div class="lg:hidden">
+      <CartMobile />
+    </div>
   </div>
 </template>
 

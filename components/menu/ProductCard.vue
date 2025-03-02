@@ -1,6 +1,6 @@
 <template>
   <div v-if="product" :key="product.id"
-    class="max-w-[200px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
+    class="min-w-[175px] max-w-[200px] w-full h-[260px]  bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
     <!-- Product Image -->
     <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent>
       <picture class="w-full h-full flex justify-center items-center">
