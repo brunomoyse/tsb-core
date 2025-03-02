@@ -81,6 +81,22 @@
         "submit": "Connexion",
         "ssoGoogle": "Connexion avec Google"
     },
+    "register": {
+        "title": "Inscription",
+        "fullName": "Nom",
+        "fullNamePlaceholder": "Entrez votre nom",
+        "email": "E-mail",
+        "emailPlaceholder": "Entrez votre adresse e-mail",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "Entrez votre mot de passe",
+        "confirmPassword": "Confirmez le mot de passe",
+        "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+        "phone": "Téléphone",
+        "phonePlaceholder": "Entrez votre numéro de téléphone",
+        "address": "Adresse",
+        "addressPlaceholder": "Entrez votre adresse",
+        "submit": "S'inscrire"
+    },
     "cart": {
         "title": "Panier",
         "empty": "Votre panier est vide",

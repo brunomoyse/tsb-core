@@ -81,6 +81,22 @@
         "submit": "Login",
         "ssoGoogle": "Login with Google"
     },
+    "register": {
+        "title": "Register",
+        "fullName": "Name",
+        "fullNamePlaceholder": "Enter your name",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "phone": "Phone",
+        "phonePlaceholder": "Enter your phone number",
+        "address": "Address",
+        "addressPlaceholder": "Enter your address",
+        "submit": "Register"
+    },
     "cart": {
         "title": "Cart",
         "empty": "Your cart is empty",

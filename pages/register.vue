@@ -10,93 +10,78 @@
       <form @submit.prevent="registerUser" class="space-y-4">
         <!-- Full Name -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">
+          <label for="fullName" class="block text-sm text-gray-700 mb-1">
             {{ $t('register.fullName') }}
           </label>
-          <input
-            v-model="fullName"
-            type="text"
-            :placeholder="$t('register.fullNamePlaceholder')"
-            autocomplete="name"
-            required
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-          />
+          <input id="fullName" v-model="fullName" type="text" name="fullName"
+            :placeholder="$t('register.fullNamePlaceholder')" autocomplete="name" required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">
+          <label for="email" class="block text-sm text-gray-700 mb-1">
             {{ $t('register.email') }}
           </label>
-          <input
-            v-model="email"
-            type="email"
-            :placeholder="$t('register.emailPlaceholder')"
-            autocomplete="email"
-            required
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-          />
+          <input id="email" v-model="email" type="email" name="email" :placeholder="$t('register.emailPlaceholder')"
+            autocomplete="email" required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
         </div>
 
         <!-- Password -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">
+          <label for="password" class="block text-sm text-gray-700 mb-1">
             {{ $t('register.password') }}
           </label>
-          <input
-            v-model="password"
-            type="password"
-            :placeholder="$t('register.passwordPlaceholder')"
-            autocomplete="new-password"
-            required
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-          />
+          <input id="password" v-model="password" type="password" name="password"
+            :placeholder="$t('register.passwordPlaceholder')" autocomplete="new-password" required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label for="confirmPassword" class="block text-sm text-gray-700 mb-1">
+            {{ $t('register.confirmPassword') }}
+          </label>
+          <input id="confirmPassword" v-model="confirmPassword" type="password" name="confirmPassword"
+            :placeholder="$t('register.confirmPasswordPlaceholder')" autocomplete="new-password" required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
         </div>
 
         <!-- Phone Number with Country Selector -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">
+          <label for="phone" class="block text-sm text-gray-700 mb-1">
             {{ $t('register.phone') }}
           </label>
           <div class="flex space-x-2">
             <!-- Country selector with flags -->
-            <select v-model="selectedCountry" class="p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200">
+            <select id="country" v-model="selectedCountry" name="country" autocomplete="off"
+              class="p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200">
               <option v-for="country in countries" :key="country.code" :value="country.code">
                 {{ country.flag }} {{ country.prefix }}
               </option>
             </select>
             <!-- Phone number input -->
-            <input
-              v-model="phoneLocal"
-              type="text"
-              :placeholder="$t('register.phonePlaceholder')"
-              required
-              class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-            />
+            <input id="phone" v-model="phoneLocal" type="tel" name="phone" autocomplete="tel"
+              :placeholder="$t('register.phonePlaceholder')" required
+              class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
           </div>
           <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
         </div>
 
         <!-- Address with Autocompletion -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">
+          <label for="address" class="block text-sm text-gray-700 mb-1">
             {{ $t('register.address') }}
           </label>
-          <input
-            v-model="address"
-            type="text"
-            :placeholder="$t('register.addressPlaceholder')"
-            autocomplete="street-address"
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-          />
+          <input id="address" v-model="address" type="text" name="address"
+            :placeholder="$t('register.addressPlaceholder')" autocomplete="street-address"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
           <!-- TODO: integrate geocoder API for address autocompletion -->
         </div>
 
         <!-- Submit Button -->
-        <button
-          type="submit"
-          class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
-        >
+        <button type="submit" class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
           {{ $t('register.submit') }}
         </button>
       </form>
@@ -105,9 +90,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useNuxtApp, navigateTo, computed } from '#imports'
+import { ref, useNuxtApp, navigateTo, computed, useLocalePath } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
+
+const localePath = useLocalePath()
 
 const t = useI18n().t
 
@@ -116,6 +103,7 @@ const phoneUtil = PhoneNumberUtil.getInstance()
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const phoneLocal = ref('')
 const address = ref('')
 const selectedCountry = ref('BE') // Default country code.
@@ -123,11 +111,11 @@ const selectedCountry = ref('BE') // Default country code.
 const phoneError = ref('')
 
 const countries = [
+  { prefix: '+31', code: 'NL', flag: '🇳🇱' },
   { prefix: '+32', code: 'BE', flag: '🇧🇪' },
   { prefix: '+33', code: 'FR', flag: '🇫🇷' },
-  { prefix: '+44', code: 'DE', flag: '🇩🇪' },
   { prefix: '+352', code: 'LU', flag: '🇱🇺' },
-  { prefix: '+31', code: 'NL', flag: '🇳🇱' },
+  { prefix: '+44', code: 'DE', flag: '🇩🇪' },
 ]
 
 const { $apiBaseUrl } = useNuxtApp()
@@ -136,10 +124,8 @@ const { $apiBaseUrl } = useNuxtApp()
 const validatePhone = (): boolean => {
   console.log('Parsed number...')
   try {
-    console.log('Phone local:', phoneLocal.value)
-    console.log('Selected country:', selectedCountry.value)
     const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
-    console.log('Parsed number:', number)
+
     if (!phoneUtil.isValidNumber(number)) {
       phoneError.value = t('register.invalidPhone')
       return false
@@ -170,6 +156,13 @@ const registerUser = async () => {
     console.error('Missing required fields')
     return
   }
+
+  // Check if both passwords match.
+  if (password.value !== confirmPassword.value) {
+    console.error('Passwords do not match')
+    return
+  }
+
   if (!validatePhone()) {
     console.error('Invalid phone number')
     return
@@ -186,14 +179,11 @@ const registerUser = async () => {
       },
       credentials: 'include'
     })
-    navigateTo('/login')
-
+    navigateTo(localePath('/login'))
   } catch (error) {
     console.error('Registration error:', error)
   }
 }
-
-
 </script>
 
 <style scoped>
@@ -202,6 +192,7 @@ const registerUser = async () => {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

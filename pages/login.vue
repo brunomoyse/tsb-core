@@ -6,19 +6,37 @@
 
       <!-- Login Form -->
       <form @submit.prevent="login" class="space-y-4">
+        <!-- Email -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">{{ $t('login.email') }}</label>
-          <input v-model="email" type="email" :placeholder="$t('login.emailPlaceholder')" autocomplete="email"
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
+          <label for="email" class="block text-sm text-gray-700 mb-1">{{ $t('login.email') }}</label>
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            name="email"
+            :placeholder="$t('login.emailPlaceholder')"
+            autocomplete="email"
+            required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+          />
         </div>
 
+        <!-- Password -->
         <div>
-          <label class="block text-sm text-gray-700 mb-1">{{ $t('login.password') }}</label>
-          <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')"
-            autocomplete="current-password" required
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200" />
+          <label for="password" class="block text-sm text-gray-700 mb-1">{{ $t('login.password') }}</label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            name="password"
+            :placeholder="$t('login.passwordPlaceholder')"
+            autocomplete="current-password"
+            required
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+          />
         </div>
 
+        <!-- Submit Button -->
         <button type="submit" class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
           {{ $t('login.submit') }}
         </button>
@@ -37,8 +55,10 @@
       </div>
 
       <!-- Google SSO Button -->
-      <button @click="loginWithGoogle"
-        class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition">
+      <button
+        @click="loginWithGoogle"
+        class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition"
+      >
         <img src="/icons/google-icon.svg" alt="Google" class="w-5 h-5 mr-2" />
         <span class="text-gray-700">{{ $t('login.ssoGoogle') }}</span>
       </button>
@@ -46,30 +66,27 @@
       <!-- Signup Link -->
       <p class="text-sm text-gray-500 text-center mt-4">
         {{ $t('login.noAccount') }}
-        <span @click="register" class="text-black font-medium hover:underline cursor-pointer">
-          {{ $t('login.register') }}
-        </span>
+        <NuxtLinkLocale to="/register">
+          <span class="text-black font-medium hover:underline cursor-pointer">
+            {{ $t('login.register') }}
+          </span>
+        </NuxtLinkLocale>
       </p>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useNuxtApp, navigateTo } from '#imports';
+import { onMounted, ref, useNuxtApp, navigateTo, useLocalePath } from '#imports';
 import type { LoginResponse } from '@/types';
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 const { $apiBaseUrl } = useNuxtApp()
+const localePath = useLocalePath()
 
 const email = ref('')
 const password = ref('')
-const emit = defineEmits(['close'])
-
-const register = () => {
-  navigateTo('/register')
-}
 
 // Regular email/password login
 const login = async () => {
@@ -92,8 +109,6 @@ const login = async () => {
     authStore.setAccessToken(response.accessToken)
     authStore.setUser(response.user)
 
-    emit('close')
-
   } catch (error) {
     console.error('Login error:', error)
   }
@@ -109,7 +124,7 @@ onMounted(async () => {
   if (success === 'true') {
     await useAuthStore().refreshAccessToken();
     // Redirect to home page after successful login
-    window.location.href = '/';
+    navigateTo(localePath('/'))
   }
 })
 </script>
