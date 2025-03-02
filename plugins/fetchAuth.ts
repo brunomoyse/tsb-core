@@ -1,6 +1,6 @@
 // @ts-nocheck
 // plugins/fetchAuth.ts
-import { defineNuxtPlugin, useNuxtApp, useRequestEvent } from "#app";
+import { defineNuxtPlugin } from "#app";
 import { useAuthStore } from "@/stores/auth";
 import { useRuntimeConfig } from "#imports";
 
@@ -10,111 +10,90 @@ export default defineNuxtPlugin(() => {
   const originalFetch = globalThis.$fetch;
   let refreshPromise: Promise<string | null> | null = null;
 
-  function hasRefreshTokenCookie(): boolean {
-    // Client-side check
-    if (process.client) {
-      return document.cookie.split(';').some((cookie) => {
-        return cookie.trim().startsWith('refresh_token=');
-      });
-    }
-
-    // Server-side check
-    if (process.server) {
-      const { req } = useRequestEvent();
-      if (!req?.headers?.cookie) {
-        return false;
-      }
-      return req.headers.cookie.split(';').some((cookie) => {
-        return cookie.trim().startsWith('refresh_token=');
-      });
-    }
-
-    // Fallback
-    return false;
-  }
-
   async function refreshAccessToken(): Promise<string | null> {
-    // Only attempt refresh if cookie exists
-    if (!hasRefreshTokenCookie()) {
-      console.log('No refresh token cookie found, skipping refresh');
-      return null;
-    }
-
     try {
-      const response = await window.fetch(
-        `${config.public.server.apiBaseUrl}/tokens/refresh`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { 
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      console.log('Attempting token refresh...');
+      const data = await originalFetch(`${config.public.server.apiBaseUrl}/tokens/refresh`, {
+        method: "POST",
+        credentials: "include",
+        headers: { 
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!data?.accessToken) {
+        console.error('No access token in response');
+        return null;
       }
 
-      const data = await response.json();
+      console.log('New access token received');
+      authStore.setAccessToken(data.accessToken);
+      authStore.setUser(data.user);
       return data.accessToken;
+
     } catch (error) {
-      console.error("Failed to refresh access token:", error);
+      console.error("Refresh failed completely:", error);
+      authStore.setAccessToken(null);
+      authStore.setUser(null);
       return null;
     }
   }
 
   async function attemptRefresh(): Promise<string | null> {
     if (refreshPromise) return refreshPromise;
-
-    refreshPromise = (async () => {
-      try {
-        const newToken = await refreshAccessToken();
-        if (newToken) authStore.setAccessToken(newToken);
-        return newToken;
-      } finally {
+    
+    refreshPromise = refreshAccessToken()
+      .finally(() => {
         refreshPromise = null;
-      }
-    })();
+      });
 
     return refreshPromise;
   }
 
-  const newFetch = async (
-    input: string | URL,
-    init: RequestInit = {}
-  ): Promise<any> => {
-    const url = typeof input === "string" ? input : input.toString();
-    const headers = { ...init.headers };
+  const newFetch = async (input: string, init: RequestInit = {}) => {
+    const url = input.toString();
+    const headers = new Headers(init.headers);
+    let retryCount = 0;
 
-    // Initial token attachment
-    if (authStore.accessToken) {
-      headers["Authorization"] = `Bearer ${authStore.accessToken}`;
-    } else if (hasRefreshTokenCookie()) {
-      // Only attempt refresh if refresh token cookie exists
-      const newToken = await attemptRefresh();
-      if (newToken) headers["Authorization"] = `Bearer ${newToken}`;
-    }
-
-    try {
-      return await originalFetch(url, { ...init, headers });
-    } catch (error: any) {
-      if (error.status === 401 && hasRefreshTokenCookie()) {
-        console.warn("Access token expired; attempting to refresh...");
-        const newToken = await attemptRefresh();
-
-        if (newToken) {
-          return originalFetch(url, {
-            ...init,
-            headers: { ...headers, Authorization: `Bearer ${newToken}` },
-          });
-        } else {
-          const { Authorization, ...cleanHeaders } = headers;
-          return originalFetch(url, { ...init, headers: cleanHeaders });
-        }
+    const executeRequest = async (): Promise<Response> => {
+      if (authStore.accessToken) {
+        headers.set('Authorization', `Bearer ${authStore.accessToken}`);
       }
-      throw error;
-    }
+
+      try {
+        const response = await originalFetch(url, {
+          ...init,
+          headers,
+          credentials: "include"
+        });
+
+        if (response.status === 401 && retryCount === 0) {
+          retryCount++;
+          const newToken = await attemptRefresh();
+          
+          if (newToken) {
+            headers.set('Authorization', `Bearer ${newToken}`);
+            return executeRequest();
+          }
+        }
+
+        return response;
+
+      } catch (error: any) {
+        if (error.status === 401 && retryCount === 0) {
+          retryCount++;
+          const newToken = await attemptRefresh();
+          
+          if (newToken) {
+            headers.set('Authorization', `Bearer ${newToken}`);
+            return executeRequest();
+          }
+        }
+        throw error;
+      }
+    };
+
+    return executeRequest();
   };
 
   globalThis.$fetch = newFetch;

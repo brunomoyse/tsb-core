@@ -36,7 +36,7 @@
 
       <!-- Products -->
       <section class="mx-auto px-4 mb-8">
-        <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-6">
+        <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-5">
           <ProductCard
             v-for="(product, index) in filteredProducts"
             :key="product.id"
