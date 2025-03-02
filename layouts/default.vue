@@ -43,7 +43,7 @@
       <!-- Cookie consent tooltip always visible across pages -->
       <CookieConsent />
       <!-- Global Cart Button -->
-      <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')" />
+      <CartButton class="lg:hidden" v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')" />
 
     </Body>
 
