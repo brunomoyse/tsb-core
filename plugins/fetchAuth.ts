@@ -21,7 +21,7 @@ export default defineNuxtPlugin(() => {
     // Server-side check
     if (process.server) {
       const { req } = useRequestEvent();
-      if (!req?.headers.cookie) {
+      if (!req?.headers?.cookie) {
         return false;
       }
       return req.headers.cookie.split(';').some((cookie) => {
