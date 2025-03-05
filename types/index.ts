@@ -7,7 +7,7 @@ export interface Product {
   price: number;
   code: string;
   slug: string;
-  pieces: number;
+  pieceCount: number;
   isHalal: boolean;
   isVegan: boolean;
   isAvailable: boolean;

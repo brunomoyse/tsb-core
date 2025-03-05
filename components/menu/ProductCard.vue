@@ -27,7 +27,7 @@
 
         <!-- Pieces -->
         <span class="text-gray-500 text-xs mb-1">
-          {{ product?.pieces }} {{ product?.pieces ? product?.pieces > 1 ? $t('menu.pieces') : $t('menu.piece') : "" }}
+          {{ product?.pieceCount }} {{ product?.pieceCount ? product?.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') : "" }}
         </span>
       </div>
 
