@@ -100,9 +100,15 @@
     "cart": {
         "title": "Panier",
         "empty": "Votre panier est vide",
+        "delivery": "Livraison",
+        "pickup": "À emporter",
+        "subtotal": "Sous-total",
+        "deliveryFee": "Frais de livraison",
+        "pickupDiscount": "Remise à emporter",
         "total": "Total",
-        "checkout": "Payer",
-        "removeItem": "Supprimer l'article"
+        "minimumOrderAmountIs": "Le montant minimum est de 20€",
+        "checkout": "Valider la commande",
+        "removeItem": "Retirer l'article"
     },
     "404": {
         "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",

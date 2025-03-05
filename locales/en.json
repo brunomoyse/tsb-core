@@ -100,7 +100,13 @@
     "cart": {
         "title": "Cart",
         "empty": "Your cart is empty",
+        "delivery": "Delivery",
+        "pickup": "Pickup",
+        "subtotal": "Subtotal",
+        "deliveryFee": "Delivery Fee",
+        "pickupDiscount": "Pickup Discount",
         "total": "Total",
+        "minimumOrderAmountIs": "Minimum order amount is 20€",
         "checkout": "Checkout",
         "removeItem": "Remove item"
     },

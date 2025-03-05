@@ -99,10 +99,16 @@
     },
     "cart": {
         "title": "购物车",
-        "empty": "您的购物车是空的",
+        "empty": "您的购物车为空",
+        "delivery": "送货",
+        "pickup": "自取",
+        "subtotal": "小计",
+        "deliveryFee": "运费",
+        "pickupDiscount": "自取优惠",
         "total": "总计",
+        "minimumOrderAmountIs": "最低订单金额为 20 欧元",
         "checkout": "结账",
-        "removeItem": "删除商品"
+        "removeItem": "移除商品"
     },
     "404": {
         "message": "抱歉，我们找不到您正在寻找的页面。",
