@@ -145,6 +145,7 @@ const formattedPhone = computed(() => {
     const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
     return phoneUtil.format(number, PhoneNumberFormat.E164)
   } catch (error) {
+    console.error('Phone formatting error:', error)
     return phoneLocal.value
   }
 })

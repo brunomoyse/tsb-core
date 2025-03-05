@@ -72,7 +72,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  // @ts-ignore-next-line
+  // @ts-expect-error property googleFonts does not exist
   googleFonts: {
     families: {
       Montserrat: [400, 500, 600, 700],

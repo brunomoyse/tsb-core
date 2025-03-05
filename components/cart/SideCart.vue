@@ -6,17 +6,12 @@
         {{ $t('cart.title') }}
       </h2>
       <div class="flex gap-1 rounded-full bg-gray-100 p-1">
-        <button
-          v-for="option in deliveryOptions"
-          :key="option.value"
-          @click="deliveryOption = option.value"
-          :class="[
-            'px-3 py-1 text-sm rounded-full transition-colors',
-            deliveryOption === option.value 
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:bg-gray-50'
-          ]"
-        >
+        <button v-for="option in deliveryOptions" :key="option.value" @click="handleOrderType(option.value)" :class="[
+          'px-3 py-1 text-sm rounded-full transition-colors',
+          deliveryOption === option.value
+            ? 'bg-white text-gray-900 shadow-sm'
+            : 'text-gray-500 hover:bg-gray-50'
+        ]">
           {{ option.label }}
         </button>
       </div>
@@ -28,7 +23,7 @@
         {{ $t('cart.empty') }}
       </p>
       <div v-else class="space-y-4">
-        <div v-for="(item, index) in cartStore.products" :key="item.product.id"
+        <div v-for="item in cartStore.products" :key="item.product.id"
           class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg">
           <!-- Product Image -->
           <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
@@ -84,28 +79,22 @@
 
     <!-- Footer -->
     <footer class="p-4 space-y-4">
-            <!-- Price Breakdown -->
-            <div class="space-y-2">
+      <!-- Price Breakdown -->
+      <div class="space-y-2">
         <div class="flex justify-between items-center text-sm text-gray-600">
           <span>{{ $t('cart.subtotal') }}:</span>
           <span>{{ formatPrice(subtotal) }}</span>
         </div>
-        <div 
-          v-if="deliveryOption === 'pickup'" 
-          class="flex justify-between items-center text-sm text-green-600"
-        >
+        <div v-if="deliveryOption === 'pickup'" class="flex justify-between items-center text-sm text-green-600">
           <span>{{ $t('cart.pickupDiscount') }}:</span>
           <span>-{{ formatPrice(totalDiscount) }}</span>
         </div>
-        <div 
-          v-if="deliveryOption === 'delivery'" 
-          class="flex justify-between items-center text-sm text-gray-600"
-        >
+        <div v-if="deliveryOption === 'delivery'" class="flex justify-between items-center text-sm text-gray-600">
           <span>{{ $t('cart.deliveryFee') }}:</span>
           <span>+{{ formatPrice(deliveryFee) }}</span>
         </div>
         <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
-          <span>{{ $t('cart.total')}}:</span>
+          <span>{{ $t('cart.total') }}:</span>
           <span>{{ formatPrice(cartTotal) }}</span>
         </div>
       </div>
@@ -133,7 +122,7 @@ import { computed, ref, useFetch, useRuntimeConfig, useNuxtApp, navigateTo } fro
 import { useCartStore } from '@/stores/cart';
 import { useAuthStore } from '@/stores/auth';
 import { formatPrice } from '~/lib/price';
-import type { Order, CartItem } from '@/types';
+import type { Order, CartItem, Product } from '@/types';
 import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
@@ -148,6 +137,10 @@ const deliveryOptions = [
 ];
 const deliveryOption = ref<'delivery' | 'pickup'>('delivery');
 const deliveryFee = 3.5;
+
+const handleOrderType = (option: string) => {
+  deliveryOption.value = option as 'delivery' | 'pickup';
+};
 
 // Price calculations
 const subtotal = computed(() =>
@@ -186,11 +179,11 @@ const handleIncrementQuantity = (productId: string): void => {
   }
 };
 
-const handleDecrementQuantity = (product: any): void => {
+const handleDecrementQuantity = (product: Product): void => {
   cartStore.decrementQuantity(product);
 };
 
-const handleRemoveFromCart = (product: any): void => {
+const handleRemoveFromCart = (product: Product): void => {
   cartStore.removeFromCart(product);
 };
 

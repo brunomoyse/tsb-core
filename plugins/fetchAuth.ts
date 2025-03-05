@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck 
 // plugins/fetchAuth.ts
 import { defineNuxtPlugin } from "#app";
 import { useAuthStore } from "@/stores/auth";

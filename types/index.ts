@@ -12,6 +12,7 @@ export interface Product {
   isVegan: boolean;
   isAvailable: boolean;
   categoryId: string;
+  discountable: boolean;
   category?: ProductCategory | null;
 }
 

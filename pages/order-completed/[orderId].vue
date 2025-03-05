@@ -54,9 +54,7 @@ const authStore = useAuthStore()
 
 const orderId = route.params.orderId as string
 
-const baseUrl = $apiBaseUrl()
-
-const { data: order, error } = await useFetch<Order>(`${baseUrl}/orders/${orderId}`, {
+const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/orders/${orderId}`, {
     headers: {
         Authorization: `Bearer ${authStore.accessToken}`
     },
