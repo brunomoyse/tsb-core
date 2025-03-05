@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("auth", {
         const config = useRuntimeConfig();
 
         const response: { accessToken?: string; user?: User } = await $fetch(
-          /* @ts-ignore */
+          /* @ts-expect-error config.public.server type unknown */
           `${config.public.server.apiBaseUrl}/tokens/refresh`,
           {
             method: "POST",
@@ -44,7 +44,7 @@ export const useAuthStore = defineStore("auth", {
         const config = useRuntimeConfig();
 
         // Call the backend endpoint to revoke tokens.
-        /* @ts-ignore */
+        /* @ts-expect-error config.public.server type unknown */
         await $fetch(`${config.public.server.apiBaseUrl}/tokens/revoke`, {
           method: "POST",
           credentials: "include",

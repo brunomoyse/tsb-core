@@ -69,12 +69,11 @@ import SearchBar from '~/components/menu/SearchBar.vue'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import { ref, computed, reactive, watch } from 'vue'
 import { useDebounce } from '@vueuse/core'
-import { useFetch, useNuxtApp, useCartStore, useI18n, useAsyncData } from '#imports'
+import { useFetch, useNuxtApp, useI18n, useAsyncData } from '#imports'
 
 import type { Product, ProductCategory } from '@/types'
 
 const { $apiBaseUrl } = useNuxtApp()
-const cartStore = useCartStore()
 const { locale: userLocale, t } = useI18n()
 
 const filterOptions = reactive<Record<string, boolean>>({
@@ -111,7 +110,7 @@ const selectCategory = async (categoryId: string) => {
 }
 
 // Fetch products by category
-const { data: products, error } = await useAsyncData(
+const { data: products } = await useAsyncData(
   'products',
   () => $fetch<Product[]>(`${$apiBaseUrl()}/products`, {
     headers: { 'accept-language': userLocale.value }
@@ -137,7 +136,7 @@ const filteredProducts = computed(() => {
 
     // Check if the product meets all active filter criteria
     const passesFilters = Object.entries(filterOptions).every(
-      ([key, isActive]) => !isActive || (p as any)[key]
+      ([key, isActive]) => !isActive || (p as any)[key]  
     )
 
     if (!matchesCategory || !passesFilters) return false

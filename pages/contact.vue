@@ -116,7 +116,6 @@
 <script setup>
 const latitude = 50.642394;
 const longitude = 5.574711;
-const zoom = 18;
 const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`;
 const googleMapsLink = `https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7`;
 </script>

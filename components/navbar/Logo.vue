@@ -16,9 +16,6 @@
 </template>
 
 <script setup lang="ts">
-const handleClick = () => {
-    
-}
 interface NavItemProps {
     to: string
     icon: string

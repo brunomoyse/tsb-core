@@ -118,7 +118,7 @@
 
 
 <script setup lang="ts">
-import { useNuxtApp, useRuntimeConfig, useFetch, navigateTo } from "#app";
+import { useNuxtApp, useRuntimeConfig, useFetch, navigateTo } from "#imports";
 import { useCartStore } from "@/stores/cart";
 import { useAuthStore } from "@/stores/auth";
 import { formatPrice } from "~/lib/price";

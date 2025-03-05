@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useRoute, watch, useLocalePath } from '#imports';
+import { ref, watch } from '#imports';
 import { useAuthStore } from '@/stores/auth'
 import MobileNavItem from './MobileNavItem.vue';
 import Logo from './Logo.vue';
