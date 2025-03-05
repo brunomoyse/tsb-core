@@ -2,7 +2,9 @@
   <aside class="bg-tsb-two rounded-l-xl flex flex-col divide-y divide-gray-200">
     <!-- Header with Toggle -->
     <header class="px-4 py-5 flex items-center justify-between gap-4">
-      <h2 class="text-xl font-bold text-gray-900">Cart</h2>
+      <h2 class="text-xl font-bold text-gray-900">
+        {{ $t('cart.title') }}
+      </h2>
       <div class="flex gap-1 rounded-full bg-gray-100 p-1">
         <button
           v-for="option in deliveryOptions"
@@ -23,7 +25,7 @@
     <!-- Cart Items -->
     <div class="flex-1 overflow-y-auto p-4 space-y-4">
       <p v-if="cartStore.products.length === 0" class="text-gray-500 text-center py-8">
-        No items in cart
+        {{ $t('cart.empty') }}
       </p>
       <div v-else class="space-y-4">
         <div v-for="(item, index) in cartStore.products" :key="item.product.id"
@@ -45,7 +47,7 @@
             <div class="flex justify-between items-start">
               <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
                 {{ item.product.name }}
-                <span v-if="deliveryOption === 'takeaway' && item.product.discountable"
+                <span v-if="deliveryOption === 'pickup' && item.product.discountable"
                   class="text-xs text-green-600 ml-1">
                   (-10%)
                 </span>
@@ -85,32 +87,32 @@
             <!-- Price Breakdown -->
             <div class="space-y-2">
         <div class="flex justify-between items-center text-sm text-gray-600">
-          <span>Subtotal:</span>
+          <span>{{ $t('cart.subtotal') }}:</span>
           <span>{{ formatPrice(subtotal) }}</span>
         </div>
         <div 
-          v-if="deliveryOption === 'takeaway'" 
+          v-if="deliveryOption === 'pickup'" 
           class="flex justify-between items-center text-sm text-green-600"
         >
-          <span>Takeaway discount:</span>
+          <span>{{ $t('cart.pickupDiscount') }}:</span>
           <span>-{{ formatPrice(totalDiscount) }}</span>
         </div>
         <div 
           v-if="deliveryOption === 'delivery'" 
           class="flex justify-between items-center text-sm text-gray-600"
         >
-          <span>Delivery fee:</span>
+          <span>{{ $t('cart.deliveryFee') }}:</span>
           <span>+{{ formatPrice(deliveryFee) }}</span>
         </div>
         <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
-          <span>Total:</span>
+          <span>{{ $t('cart.total')}}:</span>
           <span>{{ formatPrice(cartTotal) }}</span>
         </div>
       </div>
 
       <!-- Minimum Order Warning -->
       <div v-if="cartTotal < 20" class="text-sm text-red-600 text-center">
-        Minimum order amount is {{ formatPrice(20) }}
+        {{ $t('cart.minimumOrderAmountIs') }}
       </div>
 
       <!-- Checkout Button -->
@@ -132,17 +134,19 @@ import { useCartStore } from '@/stores/cart';
 import { useAuthStore } from '@/stores/auth';
 import { formatPrice } from '~/lib/price';
 import type { Order, CartItem } from '@/types';
+import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
+const { t } = useI18n()
 
 // Delivery options setup
 const deliveryOptions = [
-  { value: 'delivery', label: 'Delivery' },
-  { value: 'takeaway', label: 'Takeaway' }
+  { value: 'delivery', label: t('cart.delivery') },
+  { value: 'pickup', label: t('cart.pickup') }
 ];
-const deliveryOption = ref<'delivery' | 'takeaway'>('delivery');
+const deliveryOption = ref<'delivery' | 'pickup'>('delivery');
 const deliveryFee = 3.5;
 
 // Price calculations
@@ -152,7 +156,7 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() =>
-  deliveryOption.value === 'takeaway'
+  deliveryOption.value === 'pickup'
     ? cartStore.products.reduce((acc, item) =>
       item.product.discountable
         ? acc + (item.product.price * item.quantity * 0.1)
@@ -168,7 +172,7 @@ const cartTotal = computed(() => {
 
 const calculateItemPrice = (item: CartItem) => {
   const basePrice = item.product.price * item.quantity;
-  if (deliveryOption.value === 'takeaway' && item.product.discountable) {
+  if (deliveryOption.value === 'pickup' && item.product.discountable) {
     return basePrice * 0.9;
   }
   return basePrice;
