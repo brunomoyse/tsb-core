@@ -96,7 +96,7 @@ import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber'
 
 const localePath = useLocalePath()
 
-const t = useI18n().t
+const { locale: userLocale, t } = useI18n()
 
 const phoneUtil = PhoneNumberUtil.getInstance()
 
@@ -171,6 +171,7 @@ const registerUser = async () => {
   try {
     await $fetch(`${$apiBaseUrl()}/register`, {
       method: 'POST',
+      headers: { 'Accept-Language': userLocale.value },
       body: {
         name: fullName.value,
         email: email.value,
