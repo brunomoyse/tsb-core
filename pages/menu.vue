@@ -101,7 +101,7 @@ watch(debouncedSearchValue, (newValue) => {
 
 // Fetch categories
 const { data: categories } = await useFetch<ProductCategory[]>(`${$apiBaseUrl()}/categories`, {
-  headers: { 'accept-language': userLocale }
+  headers: { 'Accept-Language': userLocale }
 })
 const selectedCategory = ref(categories.value?.[0] || null)
 
