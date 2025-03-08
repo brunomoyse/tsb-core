@@ -126,29 +126,35 @@ const productData = computed(() =>
 )
 
 const filteredProducts = computed(() => {
-  const query = debouncedSearchValue.value.trim().toLowerCase()
+    const query = debouncedSearchValue.value.trim().toLowerCase();
 
-  return productData.value?.filter((p) => {
-    // Match the selected category (if one is selected)
-    const matchesCategory =
-      !selectedCategory.value ||
-      p.category?.id === selectedCategory.value.id
+    return productData.value?.filter((p) => {
+        // Check for exact code match first
+        const exactCodeMatch = query && p.code?.toLowerCase() === query;
 
-    // Check if the product meets all active filter criteria
-    const passesFilters = Object.entries(filterOptions).every(
-      ([key, isActive]) => !isActive || (p as any)[key]  
-    )
+        // Apply category filter
+        const matchesCategory = !selectedCategory.value ||
+            p.category?.id === selectedCategory.value.id;
 
-    if (!matchesCategory || !passesFilters) return false
+        // Apply active filters
+        const passesFilters = Object.entries(filterOptions).every(
+            ([key, isActive]) => !isActive || (p as any)[key]
+        );
 
-    // If there's no query, include the product.
-    if (!query) return true
+        // If exact code match found, bypass other checks
+        if (exactCodeMatch) return true;
 
-    // Search within category name and product name.
-    const nameToSearch = `${p.category?.name} ${p.name}`.toLowerCase()
-    return nameToSearch.includes(query)
-  }) || []
-})
+        // Apply regular filters
+        if (!matchesCategory || !passesFilters) return false;
+
+        // No search query - include item
+        if (!query) return true;
+
+        // Extended search: code, category name, and product name
+        const searchString = `${p.category?.name} ${p.name}`.toLowerCase();
+        return searchString.includes(query);
+    }) || [];
+});
 
 </script>
 
