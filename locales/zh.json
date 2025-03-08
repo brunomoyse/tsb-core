@@ -1,123 +1,144 @@
 {
-    "head": {
-        "title": "Tokyo Sushi Bar"
+  "head": {
+    "title": "Tokyo Sushi Bar"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "menu": "菜单",
+    "book": "预订",
+    "contact": "联系我们",
+    "login": "登录",
+    "logout": "登出",
+    "myAccount": "我的账户",
+    "search": "搜索",
+    "cart": "购物车",
+    "language": "选择语言"
+  },
+  "home": {
+    "about": "关于我们",
+    "menu": "菜单",
+    "book": "预订",
+    "contact": "联系我们"
+  },
+  "contact": {
+    "title": "📍 联系我们",
+    "subtitle": "找到我们，打电话给我们，或立即预订餐桌！",
+    "viewLargerMap": "查看更大的地图",
+    "addressTitle": "地址",
+    "address": "Rue de la Cathédrale 59, 列日, 比利时",
+    "phoneTitle": "电话",
+    "emailTitle": "电子邮件",
+    "reservationsTitle": "预订",
+    "reservationsLink": "预订餐桌",
+    "openingHoursTitle": "📆 营业时间",
+    "day": "天",
+    "hours": "时间",
+    "weekdays": "周一 - 周五",
+    "weekends": "周六 - 周日"
+  },
+  "about": {
+    "heroTitle": "欢迎来到 Tokyo Sushi Bar",
+    "heroSubtitle": "在列日体验最地道的日本风味",
+    "ourStoryTitle": "我们的故事",
+    "ourStoryText": "Tokyo Sushi Bar 成立于2016年，源于对正宗日本料理的热爱。我们将传统与现代相结合，为您提供难忘的用餐体验。",
+    "ourValuesTitle": "我们的价值观",
+    "valueFresh": "新鲜食材",
+    "valueFreshDesc": "每天早上，新鲜鱼类都会送到我们的餐厅，并由我们的厨师精心准备，确保每一口都无可挑剔。",
+    "valueExcellence": "卓越",
+    "valueExcellenceDesc": "我们坚持最高标准，提供反映技艺、精确和对质量奉献的菜肴。",
+    "valueInnovation": "创新",
+    "valueInnovationDesc": "我们将传统技术与创意相结合，提供独特且不断发展的寿司体验。",
+    "meetTheTeamTitle": "认识我们的团队",
+    "chefName": "朱猛猛",
+    "chefRole": "主厨",
+    "waitressName": "徐飒",
+    "waitressRole": "餐厅经理",
+    "ctaTitle": "加入我们，享受难忘的体验",
+    "ctaText": "立即预订餐桌或订购您最喜爱的寿司外卖！",
+    "ctaButtonReserve": "预订餐桌",
+    "ctaButtonOrder": "立即订购"
+  },
+  "menu": {
+    "pickCategory": "选择类别",
+    "choices": "选择",
+    "noProduct": "没有产品可用",
+    "halal": "清真",
+    "vegan": "纯素",
+    "pc": "个",
+    "pcs": "个"
+  },
+  "login": {
+    "title": "登录",
+    "email": "电子邮件",
+    "emailPlaceholder": "输入您的电子邮件",
+    "password": "密码",
+    "passwordPlaceholder": "输入您的密码",
+    "dividerOr": "或",
+    "forgot": "忘记密码？",
+    "noAccount": "没有账户？",
+    "register": "创建账户",
+    "submit": "登录",
+    "ssoGoogle": "使用 Google 登录"
+  },
+  "register": {
+    "title": "注册",
+    "fullName": "姓名",
+    "fullNamePlaceholder": "请输入您的姓名",
+    "email": "邮箱",
+    "emailPlaceholder": "请输入您的邮箱",
+    "password": "密码",
+    "passwordPlaceholder": "请输入您的密码",
+    "confirmPassword": "确认密码",
+    "confirmPasswordPlaceholder": "请再次输入您的密码",
+    "phone": "电话",
+    "phonePlaceholder": "请输入您的电话号码",
+    "address": "地址",
+    "addressPlaceholder": "请输入您的地址",
+    "submit": "注册"
+  },
+  "me": {
+    "orders": {
+      "title": "我的订单",
+      "loading": "加载订单中...",
+      "order": "订单",
+      "items": "商品",
+      "total": "总计",
+      "status": {
+        "pending": "待处理",
+        "preparing": "准备中",
+        "delivering": "配送中",
+        "delivered": "已送达",
+        "cancelled": "已取消"
+      }
     },
-    "nav": {
-        "home": "首页",
-        "about": "关于我们",
-        "menu": "菜单",
-        "book": "预订",
-        "contact": "联系我们",
-        "login": "登录",
-        "logout": "登出",
-        "myAccount": "我的账户",
-        "search": "搜索",
-        "cart": "购物车",
-        "language": "选择语言"
+    "profile": {
+      "title": "我的资料",
+      "name": "姓名",
+      "email": "电子邮件",
+      "phone": "电话",
+      "address": "地址",
+      "phoneNumber": "电话号码",
+      "update": "更新资料"
     },
-    "home": {
-        "about": "关于我们",
-        "menu": "菜单",
-        "book": "预订",
-        "contact": "联系我们"
-    },
-    "contact": {
-        "title": "📍 联系我们",
-        "subtitle": "找到我们，打电话给我们，或立即预订餐桌！",
-        "viewLargerMap": "查看更大的地图",
-        "addressTitle": "地址",
-        "address": "Rue de la Cathédrale 59, 列日, 比利时",
-        "phoneTitle": "电话",
-        "emailTitle": "电子邮件",
-        "reservationsTitle": "预订",
-        "reservationsLink": "预订餐桌",
-        "openingHoursTitle": "📆 营业时间",
-        "day": "天",
-        "hours": "时间",
-        "weekdays": "周一 - 周五",
-        "weekends": "周六 - 周日"
-    },
-    "about": {
-        "heroTitle": "欢迎来到 Tokyo Sushi Bar",
-        "heroSubtitle": "在列日体验最地道的日本风味",
-        "ourStoryTitle": "我们的故事",
-        "ourStoryText": "Tokyo Sushi Bar 成立于2016年，源于对正宗日本料理的热爱。我们将传统与现代相结合，为您提供难忘的用餐体验。",
-        "ourValuesTitle": "我们的价值观",
-        "valueFresh": "新鲜食材",
-        "valueFreshDesc": "每天早上，新鲜鱼类都会送到我们的餐厅，并由我们的厨师精心准备，确保每一口都无可挑剔。",
-        "valueExcellence": "卓越",
-        "valueExcellenceDesc": "我们坚持最高标准，提供反映技艺、精确和对质量奉献的菜肴。",
-        "valueInnovation": "创新",
-        "valueInnovationDesc": "我们将传统技术与创意相结合，提供独特且不断发展的寿司体验。",
-        "meetTheTeamTitle": "认识我们的团队",
-        "chefName": "朱猛猛",
-        "chefRole": "主厨",
-        "waitressName": "徐飒",
-        "waitressRole": "餐厅经理",
-        "ctaTitle": "加入我们，享受难忘的体验",
-        "ctaText": "立即预订餐桌或订购您最喜爱的寿司外卖！",
-        "ctaButtonReserve": "预订餐桌",
-        "ctaButtonOrder": "立即订购"
-    },
-    "menu": {
-        "pickCategory": "选择类别",
-        "choices": "选择",
-        "noProduct": "没有产品可用",
-        "halal": "清真",
-        "vegan": "纯素",
-        "pc": "个",
-        "pcs": "个"
-    },
-    "login": {
-        "title": "登录",
-        "email": "电子邮件",
-        "emailPlaceholder": "输入您的电子邮件",
-        "password": "密码",
-        "passwordPlaceholder": "输入您的密码",
-        "dividerOr": "或",
-        "forgot": "忘记密码？",
-        "noAccount": "没有账户？",
-        "register": "创建账户",
-        "submit": "登录",
-        "ssoGoogle": "使用 Google 登录"
-    },
-    "register": {
-        "title": "注册",
-        "fullName": "姓名",
-        "fullNamePlaceholder": "请输入您的姓名",
-        "email": "邮箱",
-        "emailPlaceholder": "请输入您的邮箱",
-        "password": "密码",
-        "passwordPlaceholder": "请输入您的密码",
-        "confirmPassword": "确认密码",
-        "confirmPasswordPlaceholder": "请再次输入您的密码",
-        "phone": "电话",
-        "phonePlaceholder": "请输入您的电话号码",
-        "address": "地址",
-        "addressPlaceholder": "请输入您的地址",
-        "submit": "注册"
-    },
-    "me": {
-        "orders": {
-            "title": "我的订单"
-        }
-    },
-    "cart": {
-        "title": "购物车",
-        "empty": "您的购物车为空",
-        "delivery": "送货",
-        "pickup": "自取",
-        "subtotal": "小计",
-        "deliveryFee": "运费",
-        "pickupDiscount": "自取优惠",
-        "total": "总计",
-        "minimumOrderAmountIs": "最低订单金额为 20 欧元",
-        "checkout": "结账",
-        "removeItem": "移除商品"
-    },
-    "404": {
-        "message": "抱歉，我们找不到您正在寻找的页面。",
-        "homeButton": "首页",
-        "menuButton": "查看菜单"
-    }
+    "logout": "您已成功登出"
+  },
+  "cart": {
+    "title": "购物车",
+    "empty": "您的购物车为空",
+    "delivery": "送货",
+    "pickup": "自取",
+    "subtotal": "小计",
+    "deliveryFee": "运费",
+    "pickupDiscount": "自取优惠",
+    "total": "总计",
+    "minimumOrderAmountIs": "最低订单金额为 20 欧元",
+    "checkout": "结账",
+    "removeItem": "移除商品"
+  },
+  "404": {
+    "message": "抱歉，我们找不到您正在寻找的页面。",
+    "homeButton": "首页",
+    "menuButton": "查看菜单"
+  }
 }

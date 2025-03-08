@@ -1,123 +1,144 @@
 {
-    "head": {
-        "title": "Tokyo Sushi Bar"
+  "head": {
+    "title": "Tokyo Sushi Bar"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "menu": "Menu",
+    "book": "Reservations",
+    "contact": "Contact",
+    "login": "Login",
+    "logout": "Logout",
+    "myAccount": "My account",
+    "search": "Search...",
+    "cart": "Cart",
+    "language": "Select Language"
+  },
+  "home": {
+    "about": "About",
+    "menu": "Menu",
+    "book": "Reservations",
+    "contact": "Contact"
+  },
+  "contact": {
+    "title": "📍 Contact Us",
+    "subtitle": "Find us, call us, or reserve a table today!",
+    "viewLargerMap": "View Larger Map",
+    "addressTitle": "Address",
+    "address": "Rue de la Cathédrale 59, Liège, Belgium",
+    "phoneTitle": "Phone",
+    "emailTitle": "Email",
+    "reservationsTitle": "Reservations",
+    "reservationsLink": "Reserve a Table",
+    "openingHoursTitle": "📆 Opening Hours",
+    "day": "Day",
+    "hours": "Hours",
+    "weekdays": "Monday - Friday",
+    "weekends": "Saturday - Sunday"
+  },
+  "about": {
+    "heroTitle": "Welcome to Tokyo Sushi Bar",
+    "heroSubtitle": "Experience the best flavors of Japan in Liège",
+    "ourStoryTitle": "Our Story",
+    "ourStoryText": "Founded in 2016, Tokyo Sushi Bar was born out of a passion for genuine Japanese cuisine. We blend tradition with modernity to offer an unforgettable dining experience.",
+    "ourValuesTitle": "Our Values",
+    "valueFresh": "Fresh Ingredients",
+    "valueFreshDesc": "Every morning, fresh fish is delivered to our restaurant and expertly prepared by our chef, ensuring unmatched quality in every bite.",
+    "valueExcellence": "Excellence",
+    "valueExcellenceDesc": "We hold ourselves to the highest standards, serving dishes that reflect skill, precision, and dedication to quality.",
+    "valueInnovation": "Innovation",
+    "valueInnovationDesc": "We combine traditional techniques with creative ideas to offer a unique and evolving sushi experience.",
+    "meetTheTeamTitle": "Meet the Team",
+    "chefName": "Zhu Mengmeng",
+    "chefRole": "Executive Chef",
+    "waitressName": "Xu Sa",
+    "waitressRole": "Restaurant Manager",
+    "ctaTitle": "Join Us for an Unforgettable Experience",
+    "ctaText": "Book a table now or order your favorite sushi for takeaway!",
+    "ctaButtonReserve": "Reserve a Table",
+    "ctaButtonOrder": "Order Now"
+  },
+  "menu": {
+    "pickCategory": "Pick a category",
+    "choices": "choices",
+    "noProduct": "No products available",
+    "halal": "Halal",
+    "vegan": "Vegan",
+    "pc": "piece",
+    "pcs": "pieces"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "dividerOr": "or",
+    "forgot": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "register": "Create an account",
+    "submit": "Login",
+    "ssoGoogle": "Login with Google"
+  },
+  "register": {
+    "title": "Register",
+    "fullName": "Name",
+    "fullNamePlaceholder": "Enter your name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter your phone number",
+    "address": "Address",
+    "addressPlaceholder": "Enter your address",
+    "submit": "Register"
+  },
+  "me": {
+    "orders": {
+      "title": "My orders",
+      "loading": "Loading orders...",
+      "order": "Order",
+      "items": "Items",
+      "total": "Total",
+      "status": {
+        "pending": "Pending",
+        "preparing": "Preparing",
+        "delivering": "Delivering",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
     },
-    "nav": {
-        "home": "Home",
-        "about": "About",
-        "menu": "Menu",
-        "book": "Reservations",
-        "contact": "Contact",
-        "login": "Login",
-        "logout": "Logout",
-        "myAccount": "My account",
-        "search": "Search...",
-        "cart": "Cart",
-        "language": "Select Language"
+    "profile": {
+      "title": "My Profile",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "phoneNumber": "Phone Number",
+      "update": "Update Profile"
     },
-    "home": {
-        "about": "About",
-        "menu": "Menu",
-        "book": "Reservations",
-        "contact": "Contact"
-    },
-    "contact": {
-        "title": "📍 Contact Us",
-        "subtitle": "Find us, call us, or reserve a table today!",
-        "viewLargerMap": "View Larger Map",
-        "addressTitle": "Address",
-        "address": "Rue de la Cathédrale 59, Liège, Belgium",
-        "phoneTitle": "Phone",
-        "emailTitle": "Email",
-        "reservationsTitle": "Reservations",
-        "reservationsLink": "Reserve a Table",
-        "openingHoursTitle": "📆 Opening Hours",
-        "day": "Day",
-        "hours": "Hours",
-        "weekdays": "Monday - Friday",
-        "weekends": "Saturday - Sunday"
-    },
-    "about": {
-        "heroTitle": "Welcome to Tokyo Sushi Bar",
-        "heroSubtitle": "Experience the best flavors of Japan in Liège",
-        "ourStoryTitle": "Our Story",
-        "ourStoryText": "Founded in 2016, Tokyo Sushi Bar was born out of a passion for genuine Japanese cuisine. We blend tradition with modernity to offer an unforgettable dining experience.",
-        "ourValuesTitle": "Our Values",
-        "valueFresh": "Fresh Ingredients",
-        "valueFreshDesc": "Every morning, fresh fish is delivered to our restaurant and expertly prepared by our chef, ensuring unmatched quality in every bite.",
-        "valueExcellence": "Excellence",
-        "valueExcellenceDesc": "We hold ourselves to the highest standards, serving dishes that reflect skill, precision, and dedication to quality.",
-        "valueInnovation": "Innovation",
-        "valueInnovationDesc": "We combine traditional techniques with creative ideas to offer a unique and evolving sushi experience.",
-        "meetTheTeamTitle": "Meet the Team",
-        "chefName": "Zhu Mengmeng",
-        "chefRole": "Executive Chef",
-        "waitressName": "Xu Sa",
-        "waitressRole": "Restaurant Manager",
-        "ctaTitle": "Join Us for an Unforgettable Experience",
-        "ctaText": "Book a table now or order your favorite sushi for takeaway!",
-        "ctaButtonReserve": "Reserve a Table",
-        "ctaButtonOrder": "Order Now"
-    },
-    "menu": {
-        "pickCategory": "Pick a category",
-        "choices": "choices",
-        "noProduct": "No products available",
-        "halal": "Halal",
-        "vegan": "Vegan",
-        "pc": "piece",
-        "pcs": "pieces"
-    },
-    "login": {
-        "title": "Login",
-        "email": "Email",
-        "emailPlaceholder": "Enter your email",
-        "password": "Password",
-        "passwordPlaceholder": "Enter your password",
-        "dividerOr": "or",
-        "forgot": "Forgot password?",
-        "noAccount": "Don't have an account?",
-        "register": "Create an account",
-        "submit": "Login",
-        "ssoGoogle": "Login with Google"
-    },
-    "register": {
-        "title": "Register",
-        "fullName": "Name",
-        "fullNamePlaceholder": "Enter your name",
-        "email": "Email",
-        "emailPlaceholder": "Enter your email",
-        "password": "Password",
-        "passwordPlaceholder": "Enter your password",
-        "confirmPassword": "Confirm Password",
-        "confirmPasswordPlaceholder": "Confirm your password",
-        "phone": "Phone",
-        "phonePlaceholder": "Enter your phone number",
-        "address": "Address",
-        "addressPlaceholder": "Enter your address",
-        "submit": "Register"
-    },
-        "me": {
-            "orders": {
-                "title": "My Orders"
-            }
-        },
-    "cart": {
-        "title": "Cart",
-        "empty": "Your cart is empty",
-        "delivery": "Delivery",
-        "pickup": "Pickup",
-        "subtotal": "Subtotal",
-        "deliveryFee": "Delivery Fee",
-        "pickupDiscount": "Pickup Discount",
-        "total": "Total",
-        "minimumOrderAmountIs": "Minimum order amount is 20€",
-        "checkout": "Checkout",
-        "removeItem": "Remove item"
-    },
-    "404": {
-        "message": "Sorry, we couldn't find the page you are looking for.",
-        "homeButton": "Home",
-        "menuButton": "View Menu"
-    }
+    "logout": "Logout"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "delivery": "Delivery",
+    "pickup": "Pickup",
+    "subtotal": "Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "pickupDiscount": "Pickup Discount",
+    "total": "Total",
+    "minimumOrderAmountIs": "Minimum order amount is 20€",
+    "checkout": "Checkout",
+    "removeItem": "Remove item"
+  },
+  "404": {
+    "message": "Sorry, we couldn't find the page you are looking for.",
+    "homeButton": "Home",
+    "menuButton": "View Menu"
+  }
 }
