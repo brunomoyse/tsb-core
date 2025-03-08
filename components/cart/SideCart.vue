@@ -7,12 +7,13 @@
       </h2>
       <div class="flex gap-1 rounded-full bg-gray-100 p-1">
         <button v-for="option in deliveryOptions" :key="option.value" @click="handleOrderType(option.value)" :class="[
-          'px-3 py-1 text-sm rounded-full transition-colors',
+          'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
           deliveryOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-500 hover:bg-gray-50'
         ]">
-          {{ option.label }}
+          <img :src="option.icon" :alt="option.label" class="w-5 h-5" />
+          <span v-if="deliveryOption === option.value">{{ option.label }}</span>
         </button>
       </div>
     </header>
@@ -26,22 +27,24 @@
         <div v-for="item in cartStore.products" :key="item.product.id"
           class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg">
           <!-- Product Image -->
-          <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
-            <picture>
-              <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.avif`"
-                type="image/avif" />
-              <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.webp`"
-                type="image/webp" />
-              <img :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.png`"
-                :alt="item.product.name" class="w-full object-cover" draggable="false" />
-            </picture>
-          </div>
+          <!-- Product Image -->
+          <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+  <picture>
+    <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.avif`" type="image/avif" />
+    <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.webp`" type="image/webp" />
+    <img :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.png`"
+         :alt="item.product.name"
+         class="max-w-full max-h-full"
+         draggable="false" />
+  </picture>
+</div>
 
           <!-- Product Details -->
           <div class="flex flex-col justify-between">
             <div class="flex justify-between items-start">
               <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
-                {{ item.product.name }}
+                <!-- {{ item.product.category?.name + ' ' + item.product.name + ' ' + (item.product.pieceCount ? ('(' + item.product.pieceCount + 'x)') : '')}}-->
+                {{ item.product.code ? item.product.code : item.product.category?.name + ' ' + item.product.name }}
                 <span v-if="deliveryOption === 'pickup' && item.product.discountable"
                   class="text-xs text-green-600 ml-1">
                   (-10%)
@@ -132,8 +135,8 @@ const { t } = useI18n()
 
 // Delivery options setup
 const deliveryOptions = [
-  { value: 'delivery', label: t('cart.delivery') },
-  { value: 'pickup', label: t('cart.pickup') }
+  { value: 'delivery', label: t('cart.delivery'), icon: '/icons/moped-icon.svg' },
+  { value: 'pickup', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg' }
 ];
 const deliveryOption = ref<'delivery' | 'pickup'>('delivery');
 const deliveryFee = 3.5;
