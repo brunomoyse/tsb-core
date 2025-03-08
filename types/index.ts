@@ -41,6 +41,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  address: string;
+  phoneNumber: string;
 }
 
 export interface Order {

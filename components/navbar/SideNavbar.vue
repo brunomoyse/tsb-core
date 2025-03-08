@@ -7,7 +7,9 @@
     <ul class="flex flex-col items-center space-y-6 mt-6">
       <Logo to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" :tooltipText="$t('nav.home')" />
       <NavItem to="menu" icon="/icons/menu-icon.svg" alt="Menu Icon" :tooltipText="$t('nav.menu')" />
+      <!--
       <NavItem to="reservation" icon="/icons/reservation-icon.svg" alt="Reservation Icon" :tooltipText="$t('nav.book')" />
+      -->
       <NavItem to="contact" icon="/icons/contact-icon.svg" alt="Contact Icon" :tooltipText="$t('nav.contact')" />
     </ul>
 
