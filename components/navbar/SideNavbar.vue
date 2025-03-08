@@ -14,7 +14,7 @@
     <!-- Bottom Navigation Items -->
     <ul class="flex flex-col items-center space-y-6 mb-6">
       <NavItem v-if="!isUserConnected" to="login" icon="/icons/login-icon.svg" alt="Login Icon" :tooltipText="$t('nav.login')" />
-      <NavItem v-if="isUserConnected" to="logout" icon="/icons/logout-icon.svg" alt="Logout Icon" :tooltipText="$t('nav.logout')" />
+      <NavItem v-if="isUserConnected" to="my-account" icon="/icons/account-circle-icon.svg" alt="My account Icon" :tooltipText="$t('nav.myAccount')" />
       <!-- Language picker -->
       <LanguagePicker icon="/icons/translate-icon.svg" alt="Choose language Icon" :tooltipText="$t('nav.language')" />
     </ul>

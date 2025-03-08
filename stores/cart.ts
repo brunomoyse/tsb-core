@@ -1,7 +1,7 @@
 // stores/cart.ts
 
 import { defineStore } from "pinia";
-import type { CartState, CartItem, ProductInfo } from "@/types";
+import type { CartState, CartItem, Product } from "@/types";
 
 /**
  * Pinia store for managing the shopping cart.
@@ -50,7 +50,7 @@ export const useCartStore = defineStore("cart", {
      * Increments the quantity of a product in the cart.
      * @param productId - The ID of the product to increment.
      */
-    incrementQuantity(product: ProductInfo): void {
+    incrementQuantity(product: Product): void {
       const cartItem = this.products.find(
         (item) => item.product.id === product.id
       );
@@ -69,7 +69,7 @@ export const useCartStore = defineStore("cart", {
      * If the quantity reaches 0, the product is removed from the cart.
      * @param productId - The ID of the product to decrement.
      */
-    decrementQuantity(product: ProductInfo): void {
+    decrementQuantity(product: Product): void {
       const cartItem = this.products.find(
         (item) => item.product.id === product.id
       );
@@ -91,7 +91,7 @@ export const useCartStore = defineStore("cart", {
      * Removes a product from the cart based on its ID.
      * @param product - The product to remove.
      */
-    removeFromCart(product: ProductInfo): void {
+    removeFromCart(product: Product): void {
       // Find the cart item based on the product ID
       const cartItem = this.products.find(
         (item) => item.product.id === product.id
@@ -120,4 +120,5 @@ export const useCartStore = defineStore("cart", {
       this.isCartVisible = !this.isCartVisible;
     },
   },
+  persist: true,
 });

@@ -97,6 +97,11 @@
         "addressPlaceholder": "请输入您的地址",
         "submit": "注册"
     },
+    "me": {
+        "orders": {
+            "title": "我的订单"
+        }
+    },
     "cart": {
         "title": "购物车",
         "empty": "您的购物车为空",

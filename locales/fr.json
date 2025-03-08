@@ -97,6 +97,11 @@
         "addressPlaceholder": "Entrez votre adresse",
         "submit": "S'inscrire"
     },
+    "me": {
+        "orders": {
+            "title": "Mes commandes"
+        }
+    },
     "cart": {
         "title": "Panier",
         "empty": "Votre panier est vide",
