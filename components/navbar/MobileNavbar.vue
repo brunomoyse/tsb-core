@@ -75,9 +75,11 @@ watch(
 
 const isUserConnected = authStore.user !== null
 
+/*
 const handleLogOut = () => {
     authStore.logout()
 }
+*/
 
 const closeMenu = () => {
     if (menuToggle.value) {

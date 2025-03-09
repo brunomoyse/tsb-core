@@ -20,8 +20,6 @@
 }
 
 @font-face {
-    font-family: Channel;
-    src: url("../fonts/channel.ttf") format("opentype");
     font-display: swap;
     font-family: "Montserrat", sans-serif;
 }
@@ -73,12 +71,12 @@ textarea {
 }
 
 .add-btn:hover::before {
-    width: 0px;
+    width: 0;
     background: #fff;
 }
 
 .add-btn:hover::after {
-    height: 0px;
+    height: 0;
     background: #fff;
 }
 
