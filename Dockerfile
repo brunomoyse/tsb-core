@@ -5,10 +5,9 @@ WORKDIR /usr/src/app
 
 # Set environment variables
 # @TODO: Use .env file
-ENV API_BASE_URL_CLIENT="https://nuagemagique.dev/api/v1"
-ENV API_BASE_URL_SERVER="https://nuagemagique.dev/api/v1"
-ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
 ENV BASE_URL="https://nuagemagique.dev"
+ENV API_BASE_URL="https://nuagemagique.dev/api/v1"
+ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
