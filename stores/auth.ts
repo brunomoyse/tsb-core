@@ -1,67 +1,34 @@
-import { defineStore } from "pinia";
-import { useRuntimeConfig } from "#imports"; // Import Nuxt runtime config
-import type { User } from "@/types";
+import {defineStore} from "pinia";
+import type {User} from "@/types";
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    accessToken: null as string | null,
-    user: null as User | null,
-  }),
-  actions: {
-    setAccessToken(token: string) {
-      this.accessToken = token;
-    },
-    setUser(user: User) {
-      this.user = user;
-    },
-    async refreshAccessToken() {
-      try {
-        const config = useRuntimeConfig();
-
-        const response: { accessToken?: string; user?: User } = await $fetch(
-          /* @ts-expect-error config.public.server type unknown */
-          `${config.public.server.apiBaseUrl}/tokens/refresh`,
-          {
-            method: "POST",
-            credentials: "include", // Sends HTTP-only refresh token cookie
-          }
-        );
-
-        if (response.accessToken) {
-          this.setAccessToken(response.accessToken);
+    state: () => ({
+        accessToken: null as string | null,
+        user: null as User | null,
+    }),
+    actions: {
+        setAccessToken(token: string | null) {
+            this.accessToken = token;
+        },
+        setUser(user: User) {
+            this.user = user;
+        },
+        async logout(config?: { apiUrl: string }) {
+            try {
+                // Only attempt token revocation if we have a config
+                if (config?.apiUrl) {
+                    await $fetch('/tokens/revoke', {
+                        baseURL: config.apiUrl,
+                        method: 'POST',
+                        credentials: 'include'
+                    })
+                }
+            } catch (error) {
+                console.error('Revocation error:', error)
+            } finally {
+                this.accessToken = null
+            }
         }
-
-        if (response.user) {
-          this.setUser(response.user);
-        }
-      } catch (error) {
-        console.error("Token refresh failed:", error);
-        this.logout();
-      }
     },
-    async logout() {
-      try {
-        const config = useRuntimeConfig();
-
-        // Call the backend endpoint to revoke tokens.
-        /* @ts-expect-error config.public.server type unknown */
-        await $fetch(`${config.public.server.apiBaseUrl}/tokens/revoke`, {
-          method: "POST",
-          credentials: "include",
-        });
-      } catch (error) {
-        console.error("Failed to revoke tokens:", error);
-        // Depending on your needs, you might want to handle this error
-        // or continue to clear the client-side session anyway.
-      }
-
-      // Clear authentication state.
-      this.accessToken = null;
-      this.user = null;
-
-      // Optionally, reload the page or redirect to a public route.
-      // window.location.reload();
-    },
-  },
-  persist: true,
+    persist: true,
 });
