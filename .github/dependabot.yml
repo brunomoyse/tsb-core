@@ -1,8 +1,5 @@
-# .github/dependabot.yml
-
 version: 2
 updates:
-  # 🔄 Updates for Node.js dependencies managed by npm
   - package-ecosystem: "npm"
     directory: "/" # Location of package.json
     schedule:
@@ -11,16 +8,15 @@ updates:
       time: "05:00"      # Time of day (UTC) to check for updates
     open-pull-requests-limit: 10
     allow:
-      - dependency-type: "direct"    # Update direct dependencies
-      - dependency-type: "indirect"  # Update indirect dependencies (transitive)
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
     ignore:
-      - dependency-name: "nuxt"      # Example: Ignore updates for Nuxt if needed
+      - dependency-name: "nuxt"
         versions:
-          - ">=2.0.0 <3.0.0"         # Specify version ranges to ignore
+          - ">=2.0.0 <3.0.0"
 
-  # 🔄 Updates for GitHub Actions workflows
   - package-ecosystem: "github-actions"
-    directory: "/" # Location of workflows (usually .github/workflows/)
+    directory: ".github/workflows/"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -29,7 +25,6 @@ updates:
     allow:
       - dependency-type: "direct"
 
-  # 🔒 Security Updates
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -40,7 +35,6 @@ updates:
       - dependency-type: "indirect"
     labels:
       - "security"
-    # Automatically apply security updates without creating a PR
     automerged_updates:
       - match:
           update_type: "security"

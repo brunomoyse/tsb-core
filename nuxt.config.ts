@@ -65,12 +65,6 @@ export default defineNuxtConfig({
         public: {
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
-            client: {
-                apiBaseUrl: process.env.API_BASE_URL_CLIENT,
-            },
-            server: {
-                apiBaseUrl: process.env.API_BASE_URL_SERVER,
-            },
         },
     },
     // @ts-expect-error property googleFonts does not exist
