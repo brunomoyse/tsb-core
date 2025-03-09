@@ -1,11 +1,14 @@
 <template>
     <nav class="mobile-only bg-white text-tsb-gray fixed z-50 h-20 w-full">
         <div class="px-4 flex justify-between items-center h-full mx-auto">
+            <!-- Mobile Logo -->
+            <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/icons/tsb-logo.svg" to="/"/>
+
             <!-- Hamburger Menu -->
             <div class="flex flex-col items-center">
-                <input type="checkbox" id="menu-toggle" class="hidden" ref="menuToggle" />
-                <label for="menu-toggle" class="hamburger cursor-pointer focus:outline-none"
-                    aria-label="Toggle navigation menu" tabindex="0">
+                <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
+                <label aria-label="Toggle navigation menu" class="hamburger cursor-pointer focus:outline-none"
+                       for="menu-toggle" tabindex="0">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -13,43 +16,41 @@
 
                 <!-- Mobile Sidebar Menu -->
                 <div id="mobile-menu"
-                    class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
+                     class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
 
                     <!-- Top Section -->
                     <div class="flex flex-col items-center space-y-6 mt-4">
-
-
                         <ul class="flex flex-col items-center space-y-6 w-full">
-                            <Logo @click="closeMenu" to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" class="mb-6" />
-                            <MobileNavItem @click="closeMenu" to="menu" icon="/icons/menu-icon.svg" :label="$t('nav.menu')" />
-                            <MobileNavItem @click="closeMenu" to="reservation" icon="/icons/reservation-icon.svg"
-                                :label="$t('nav.book')" />
-                            <MobileNavItem @click="closeMenu" to="contact" icon="/icons/contact-icon.svg" :label="$t('nav.contact')" />
+                            <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/icons/tsb-logo.svg" to="/"
+                                  @click="closeMenu"/>
+                            <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg" to="menu"
+                                           @click="closeMenu"/>
+                            <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg" to="contact"
+                                           @click="closeMenu"/>
+                            <MobileNavItem v-if="!isUserConnected" :label="$t('nav.login')" icon="/icons/login-icon.svg"
+                                           to="login"
+                                           @click="closeMenu"/>
+                            <MobileNavItem v-if="isUserConnected" :label="$t('nav.myAccount')" icon="/icons/account-circle-icon.svg"
+                                           to="my-account"
+                                           @click="closeMenu"/>
+
+                            <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
+                                            class="justify-center" icon="/icons/translate-icon.svg"
+                                            tooltipText="Change Language"/>
                         </ul>
                     </div>
 
                     <!-- Bottom Section -->
-                    <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full">
-                        <MobileNavItem @click="closeMenu" v-if="!isUserConnected" to="login" icon="/icons/login-icon.svg"
-                            :label="$t('nav.login')" />
-                        <MobileNavItem @click="closeMenu" v-if="isUserConnected" to="logout" icon="/icons/logout-icon.svg"
-                            :label="$t('nav.logout')" @click.prevent="handleLogOut" />
-
-                        <LanguagePicker icon="/icons/translate-icon.svg" alt="Translate Icon"
-                            tooltipText="Change Language" :label="$t('nav.language')" class="justify-center" />
-                    </ul>
+                    <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full"></ul>
                 </div>
             </div>
-
-            <!-- Mobile Logo -->
-            <Logo to="/" icon="/icons/tsb-logo.svg" alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" />
         </div>
     </nav>
 </template>
 
-<script setup lang="ts">
-import { ref, watch } from '#imports';
-import { useAuthStore } from '@/stores/auth'
+<script lang="ts" setup>
+import {ref, watch} from '#imports';
+import {useAuthStore} from '@/stores/auth'
 import MobileNavItem from './MobileNavItem.vue';
 import Logo from './Logo.vue';
 import LanguagePicker from './LanguagePicker.vue';
@@ -78,9 +79,9 @@ const handleLogOut = () => {
 }
 
 const closeMenu = () => {
-  if (menuToggle.value) {
-    menuToggle.value.checked = false
-  }
+    if (menuToggle.value) {
+        menuToggle.value.checked = false
+    }
 }
 
 </script>
@@ -108,15 +109,15 @@ const closeMenu = () => {
 }
 
 /* Transform the hamburger into an X when checked */
-#menu-toggle:checked+.hamburger span:nth-child(1) {
+#menu-toggle:checked + .hamburger span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
 
-#menu-toggle:checked+.hamburger span:nth-child(2) {
+#menu-toggle:checked + .hamburger span:nth-child(2) {
     opacity: 0;
 }
 
-#menu-toggle:checked+.hamburger span:nth-child(3) {
+#menu-toggle:checked + .hamburger span:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
 }
 
@@ -143,7 +144,7 @@ const closeMenu = () => {
 }
 
 /* When menu is checked, show the mobile menu */
-#menu-toggle:checked~#mobile-menu {
+#menu-toggle:checked ~ #mobile-menu {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
@@ -175,11 +176,11 @@ const closeMenu = () => {
 }
 
 /* Apply animations */
-#menu-toggle:checked~#mobile-menu {
+#menu-toggle:checked ~ #mobile-menu {
     animation: fadeIn 0.4s forwards;
 }
 
-#menu-toggle:not(:checked)~#mobile-menu {
+#menu-toggle:not(:checked) ~ #mobile-menu {
     animation: fadeOut 0.4s forwards;
 }
 </style>
