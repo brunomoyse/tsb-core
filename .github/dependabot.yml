@@ -42,5 +42,5 @@ updates:
       - "security"
     # Automatically apply security updates without creating a PR
     automerged_updates:
-       - match:
-           update_type: "security"
+      - match:
+          update_type: "security"

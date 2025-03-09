@@ -1,7 +1,7 @@
 <template>
     <article
-        class="rounded-2xl bg-tsb-two p-6 shadow-sm transition-all hover:shadow-md"
         aria-labelledby="personal-info-heading"
+        class="rounded-2xl bg-tsb-two p-6 shadow-sm transition-all hover:shadow-md"
     >
         <header class="border-b border-gray-100 pb-4">
             <h2
@@ -15,7 +15,7 @@
         <dl class="mt-4 space-y-4">
             <div class="flex items-center justify-between">
                 <dt class="text-gray-500">{{ $t('me.profile.name') }}</dt>
-                <dd class="font-medium" :title="authStore?.user?.name">
+                <dd :title="authStore?.user?.name" class="font-medium">
                     {{ authStore?.user?.name || '–' }}
                 </dd>
             </div>
@@ -31,7 +31,7 @@
 
             <div class="flex items-center justify-between">
                 <dt class="text-gray-500">{{ $t('me.profile.address') }}</dt>
-                <dd class="font-medium" :title="authStore?.user?.address">
+                <dd :title="authStore?.user?.address" class="font-medium">
                     {{ authStore?.user?.address || '–' }}
                 </dd>
             </div>
@@ -53,9 +53,9 @@
 
         <footer class="mt-6">
             <button
-                type="button"
-                class="w-full rounded-lg bg-blue-100 px-4 py-2 text-blue-700 hover:bg-blue-200 transition-colors"
                 aria-label="{{ $t('me.profile.update') }}"
+                class="w-full rounded-lg bg-blue-100 px-4 py-2 text-blue-700 hover:bg-blue-200 transition-colors"
+                type="button"
             >
                 {{ $t('me.profile.update') }}
             </button>
@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useAuthStore } from "~/stores/auth"
+import {useAuthStore} from "~/stores/auth"
 
 const authStore = useAuthStore()
 </script>

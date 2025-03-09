@@ -22,24 +22,30 @@
                     @click="toggleOrder(order.id)"
                 >
                     <div>
-                        <h3 class="font-semibold text-gray-700">{{ $t('me.orders.order') }} {{ generateOrderReference(order.id, order.createdAt)}}</h3>
+                        <h3 class="font-semibold text-gray-700">{{ $t('me.orders.order') }}
+                            {{ generateOrderReference(order.id, order.createdAt) }}</h3>
                         <p class="mt-1 text-sm text-gray-500">
-                            {{ new Date(order.createdAt).toLocaleString("fr-BE", {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        }) }}
+                            {{
+                                new Date(order.createdAt).toLocaleString("fr-BE", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })
+                            }}
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium uppercase text-blue-700">
+                        <span
+                            class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium uppercase text-blue-700">
                             {{ getStatus(order.status) }}
                         </span>
-                        <span class="text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': isExpanded(order.id) }">
+                        <span :class="{ 'rotate-180': isExpanded(order.id) }"
+                              class="text-gray-400 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"
+                                      stroke-width="2"/>
                             </svg>
                         </span>
                     </div>
@@ -48,9 +54,9 @@
                 <!-- Accordion Content -->
                 <transition
                     enter-active-class="transition-all duration-300 ease-out"
-                    leave-active-class="transition-all duration-200 ease-in"
                     enter-from-class="max-h-0 opacity-0"
                     enter-to-class="max-h-[1000px] opacity-100"
+                    leave-active-class="transition-all duration-200 ease-in"
                     leave-from-class="max-h-[1000px] opacity-100"
                     leave-to-class="max-h-0 opacity-0"
                 >
@@ -78,7 +84,12 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-500">{{ $t('me.orders.total') }}</span>
                                 <span class="font-medium text-gray-900">
-                                    {{ new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR' }).format(totalPrice(order)) }}
+                                    {{
+                                        new Intl.NumberFormat('fr-BE', {
+                                            style: 'currency',
+                                            currency: 'EUR'
+                                        }).format(totalPrice(order))
+                                    }}
                                 </span>
                             </div>
                         </div>
@@ -95,11 +106,12 @@
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from '#imports'
-import type { Order } from '~/types'
-import { ref } from 'vue'
+import type {PropType} from '#imports'
+import type {Order} from '~/types'
+import {ref} from 'vue'
 import {useI18n} from "vue-i18n";
-const { t } = useI18n()
+
+const {t} = useI18n()
 
 defineProps({
     orders: {

@@ -1,11 +1,11 @@
 <template>
-    <div class="fixed bottom-8 right-8 z-50" v-if="!isCartEmpty && !isCartVisible">
-        <button type="button" @click="handleToggleCart"
-            class="relative w-14 h-14 bg-white border border-red-500 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition">
+    <div v-if="!isCartEmpty && !isCartVisible" class="fixed bottom-8 right-8 z-50">
+        <button class="relative w-14 h-14 bg-white border border-red-500 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition" type="button"
+                @click="handleToggleCart">
             <!-- Cart Icon -->
             <div
                 class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible">
-                <img src="/icons/shopping-bag-icon.svg" alt="Cart Icon" class="w-6 h-6" />
+                <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
 
                 <!-- Tooltip positioned below -->
                 <span
@@ -13,11 +13,11 @@
                     Panier
                 </span>
             </div>
-            <img />
+            <img/>
 
             <!-- Badge for cart count -->
             <div v-if="cartCount > 0"
-                class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
+                 class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
                 {{ cartCount }}
             </div>
             <span class="sr-only">Cart Notifications</span>
@@ -25,9 +25,9 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
-import { useCartStore } from '@/stores/cart';
+<script lang="ts" setup>
+import {computed} from 'vue';
+import {useCartStore} from '@/stores/cart';
 
 const handleToggleCart = () => {
     cartStore.toggleCartVisibility();

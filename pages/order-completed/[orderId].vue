@@ -5,7 +5,7 @@
             <h1 class="text-3xl font-bold">Order Completed</h1>
             <p class="mt-4 text-gray-600">
                 Thank you for your purchase! Your order
-                <span class="font-semibold" v-if="order">#{{ orderId }}</span> was completed successfully.
+                <span v-if="order" class="font-semibold">#{{ orderId }}</span> was completed successfully.
             </p>
 
             <!-- Order Details -->
@@ -36,8 +36,8 @@
 
             <!-- Return Home Button -->
             <div class="mt-8 text-right">
-                <NuxtLink to="/"
-                    class="inline-block px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600">
+                <NuxtLink class="inline-block px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600"
+                          to="/">
                     Return to Home
                 </NuxtLink>
             </div>
@@ -45,19 +45,17 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import type { Order } from '@/types'
-import { useRoute, useNuxtApp, useFetch, useAuthStore } from '#imports';
-const { $apiBaseUrl } = useNuxtApp()
+<script lang="ts" setup>
+import type {Order} from '@/types'
+import {useNuxtApp, useRoute} from '#imports';
+import {useAsyncData} from "#app";
+
 const route = useRoute()
-const authStore = useAuthStore()
+const {$api} = useNuxtApp()
 
 const orderId = route.params.orderId as string
 
-const { data: order } = await useFetch<Order>(`${$apiBaseUrl()}/orders/${orderId}`, {
-    headers: {
-        Authorization: `Bearer ${authStore.accessToken}`
-    },
-    credentials: 'include'
-})
+const {data: order} = await useAsyncData<Order>('order', () =>
+    $api(`/orders/${orderId}`)
+);
 </script>

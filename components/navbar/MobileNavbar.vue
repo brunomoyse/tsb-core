@@ -30,7 +30,8 @@
                             <MobileNavItem v-if="!isUserConnected" :label="$t('nav.login')" icon="/icons/login-icon.svg"
                                            to="login"
                                            @click="closeMenu"/>
-                            <MobileNavItem v-if="isUserConnected" :label="$t('nav.myAccount')" icon="/icons/account-circle-icon.svg"
+                            <MobileNavItem v-if="isUserConnected" :label="$t('nav.myAccount')"
+                                           icon="/icons/account-circle-icon.svg"
                                            to="my-account"
                                            @click="closeMenu"/>
 
