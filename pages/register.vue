@@ -122,7 +122,6 @@ const { $apiBaseUrl } = useNuxtApp()
 
 // Validate and format phone number using google-libphonenumber.
 const validatePhone = (): boolean => {
-  console.log('Parsed number...')
   try {
     const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
 
