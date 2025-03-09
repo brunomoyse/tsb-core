@@ -98,7 +98,6 @@ class Sakura {
 
         const color = this.randomArrayElem(this.settings.colors);
         petal.style.background = `linear-gradient(${color.gradientColorDegree}deg, ${color.gradientColorStart}, ${color.gradientColorEnd})`;
-        petal.style.webkitAnimation = animations;
         petal.style.animation = animations;
         petal.style.borderRadius = `${this.randomInt(this.settings.maxSize, this.settings.maxSize + Math.floor(Math.random() * 10))}px ${this.randomInt(1, Math.floor(width / 4))}px`;
         petal.style.height = `${height}px`;

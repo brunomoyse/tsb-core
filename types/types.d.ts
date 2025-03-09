@@ -1,6 +1,4 @@
 // types.d.ts or similar file
-// eslint-disable-next-line
-// eslint-disable-next-line
 
 declare module '#app' {
     interface NuxtApp {

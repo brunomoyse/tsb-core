@@ -5,7 +5,7 @@ import {useAuthStore} from '@/stores/auth'
 const authStore = useAuthStore();
 
 onMounted(async () => {
-    authStore.logout()
+    await authStore.logout()
     window.location.href = '/'
 })
 
