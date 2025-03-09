@@ -1,7 +1,7 @@
 <template>
-  <div>
-    booking
-  </div>
+    <div>
+        booking
+    </div>
 </template>
 
 <script lang="ts" setup>

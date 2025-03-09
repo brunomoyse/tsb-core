@@ -1,100 +1,106 @@
-// @ts-nocheck 
-// plugins/fetchAuth.ts
-import { defineNuxtPlugin } from "#app";
-import { useAuthStore } from "@/stores/auth";
-import { useRuntimeConfig } from "#imports";
+import {defineNuxtPlugin, storeToRefs, useAuthStore, useRequestHeaders, useRuntimeConfig} from '#imports'
+import type {RefreshTokenResponse} from '~/types'
+import type {FetchContext} from 'ofetch'
+
+type HttpMethod = 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'
 
 export default defineNuxtPlugin(() => {
-  const authStore = useAuthStore();
-  const config = useRuntimeConfig();
-  const originalFetch = globalThis.$fetch;
-  let refreshPromise: Promise<string | null> | null = null;
+    const config = useRuntimeConfig()
+    const authStore = useAuthStore()
+    const {accessToken} = storeToRefs(authStore)
 
-  async function refreshAccessToken(): Promise<string | null> {
-    try {
-      console.log('Attempting token refresh...');
-      const data = await originalFetch(`${config.public.server.apiBaseUrl}/tokens/refresh`, {
-        method: "POST",
-        credentials: "include",
-        headers: { 
-          "Content-Type": "application/json",
-        },
-      });
-      
-      if (!data?.accessToken) {
-        console.error('No access token in response');
-        return null;
-      }
+    let refreshTokenPromise: Promise<RefreshTokenResponse | null> | null = null
 
-      console.log('New access token received');
-      authStore.setAccessToken(data.accessToken);
-      authStore.setUser(data.user);
-      return data.accessToken;
-
-    } catch (error) {
-      console.error("Refresh failed completely:", error);
-      authStore.setAccessToken(null);
-      authStore.setUser(null);
-      return null;
+    // Server-side only: Capture initial request headers at plugin initialization
+    let serverCookies = ''
+    if (import.meta.server) {
+        const headers = useRequestHeaders(['cookie'])
+        serverCookies = headers.cookie || ''
     }
-  }
 
-  async function attemptRefresh(): Promise<string | null> {
-    if (refreshPromise) return refreshPromise;
-    
-    refreshPromise = refreshAccessToken()
-      .finally(() => {
-        refreshPromise = null;
-      });
+    const parseAccessTokenFromCookies = (cookieString: string): string | null => {
+        const match = cookieString.match(/(?:^|;\s*)access_token=([^;]+)/)
+        return match ? decodeURIComponent(match[1]) : null
+    }
 
-    return refreshPromise;
-  }
+    async function refreshToken(requestCookies?: string): Promise<RefreshTokenResponse | null> {
+        if (!refreshTokenPromise) {
+            refreshTokenPromise = (async () => {
+                try {
+                    const headers = import.meta.server
+                        ? {cookie: requestCookies || serverCookies}
+                        : undefined
 
-  const newFetch = async (input: string, init: RequestInit = {}) => {
-    const url = input.toString();
-    const headers = new Headers(init.headers);
-    let retryCount = 0;
+                    const newToken = await $fetch<RefreshTokenResponse>('/tokens/refresh', {
+                        baseURL: config.public.api as string,
+                        method: "POST",
+                        credentials: 'include',
+                        headers
+                    })
 
-    const executeRequest = async (): Promise<Response> => {
-      if (authStore.accessToken) {
-        headers.set('Authorization', `Bearer ${authStore.accessToken}`);
-      }
-
-      try {
-        const response = await originalFetch(url, {
-          ...init,
-          headers,
-          credentials: "include"
-        });
-
-        if (response.status === 401 && retryCount === 0) {
-          retryCount++;
-          const newToken = await attemptRefresh();
-          
-          if (newToken) {
-            headers.set('Authorization', `Bearer ${newToken}`);
-            return executeRequest();
-          }
+                    authStore.setAccessToken(newToken.accessToken)
+                    return newToken
+                } catch (error) {
+                    await authStore.logout({apiUrl: config.public.api as string})
+                    console.error('Token refresh failed:', error)
+                    throw error
+                } finally {
+                    refreshTokenPromise = null
+                }
+            })()
         }
+        return refreshTokenPromise
+    }
 
-        return response;
+    const $api = $fetch.create({
+        baseURL: config.public.api as string,
+        credentials: 'include',
+        retry: 1,
+        retryStatusCodes: [401],
+        async onRequest({options}) {
+            let token = accessToken.value
 
-      } catch (error: any) {
-        if (error.status === 401 && retryCount === 0) {
-          retryCount++;
-          const newToken = await attemptRefresh();
-          
-          if (newToken) {
-            headers.set('Authorization', `Bearer ${newToken}`);
-            return executeRequest();
-          }
+            // Server-side: Use pre-captured cookies from plugin initialization
+            if (import.meta.server) {
+                const initialToken = parseAccessTokenFromCookies(serverCookies)
+                if (initialToken) token = initialToken
+            }
+
+            if (token) {
+                const headers = new Headers(options.headers)
+                headers.set('Authorization', `Bearer ${token}`)
+                options.headers = headers
+            }
+        },
+        async onResponse(context: FetchContext<any>): Promise<any> {
+            const {response, request, options} = context
+            const requestUrl = typeof request === 'string' ? request : request.url
+
+            if (response?.status === 401 && !requestUrl.includes('/tokens/refresh')) {
+                try {
+                    // Pass along cookies for server-side refresh
+                    const cookies = import.meta.server ? serverCookies : undefined
+                    await refreshToken(cookies)
+
+                    const headers = new Headers(options.headers)
+                    headers.set('Authorization', `Bearer ${accessToken.value}`)
+
+                    const newRequest = request instanceof Request ? request : new Request(request)
+                    const {method, ...restOptions} = options
+
+                    return $api(newRequest, {
+                        ...restOptions,
+                        method: method as HttpMethod,
+                        headers,
+                    })
+                } catch (error) {
+                    options.retry = false
+                    throw error
+                }
+            }
+            return response
         }
-        throw error;
-      }
-    };
+    })
 
-    return executeRequest();
-  };
-
-  globalThis.$fetch = newFetch;
-});
+    return {provide: {api: $api, refreshToken}}
+})

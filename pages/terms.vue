@@ -2,10 +2,10 @@
     <div class="prose mx-auto p-4">
         <h2 id="conditions-g-n-rales-de-vente-cgv-">CONDITIONS GÉNÉRALES DE VENTE (CGV)</h2>
         <p><strong>TOKYO SUSHI BAR – Société à responsabilité limitée (SRL)</strong><br><strong>Adresse du siège social
-                :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique<br><strong>Numéro d’entreprise :</strong>
+            :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique<br><strong>Numéro d’entreprise :</strong>
             BE0772.499.585<br><strong>Téléphone :</strong> +32 4 222 98 88<br><strong>Administrateurs :</strong> CHENG
             Yanjie, XU Sa, ZHU Mengmeng </p>
-        <p><strong>Dernière mise à jour : 01/04/2025</strong> </p>
+        <p><strong>Dernière mise à jour : 01/04/2025</strong></p>
         <hr>
         <h3 id="1-objet-et-champ-d-application">1. Objet et champ d’application</h3>
         <p>Les présentes Conditions Générales de Vente (ci-après « CGV ») ont pour objet de définir les droits et
@@ -17,11 +17,11 @@
         <hr>
         <h3 id="2-informations-l-gales">2. Informations légales</h3>
         <ul>
-            <li><strong>Dénomination sociale :</strong> TOKYO SUSHI BAR </li>
-            <li><strong>Forme juridique :</strong> Société à responsabilité limitée (SRL) </li>
-            <li><strong>Siège social :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique </li>
-            <li><strong>Numéro d’entreprise :</strong> BE0772.499.585 </li>
-            <li><strong>Téléphone :</strong> +32 4 222 98 88 </li>
+            <li><strong>Dénomination sociale :</strong> TOKYO SUSHI BAR</li>
+            <li><strong>Forme juridique :</strong> Société à responsabilité limitée (SRL)</li>
+            <li><strong>Siège social :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique</li>
+            <li><strong>Numéro d’entreprise :</strong> BE0772.499.585</li>
+            <li><strong>Téléphone :</strong> +32 4 222 98 88</li>
         </ul>
         <p>Le Restaurant est représenté par ses administrateurs : CHENG Yanjie, XU Sa et ZHU Mengmeng.</p>
         <hr>
@@ -30,9 +30,10 @@
             horaires d’ouverture sont indiqués sur le Site et peuvent être sujets à des modifications ponctuelles.</p>
         <p>Les Clients peuvent passer commande de l’une des manières suivantes : </p>
         <ul>
-            <li><strong>En personne</strong> : Les commandes sur place sont prioritaires. </li>
+            <li><strong>En personne</strong> : Les commandes sur place sont prioritaires.</li>
             <li><strong>Par téléphone</strong> : Les commandes téléphoniques sont traitées après les commandes en
-                personne. </li>
+                personne.
+            </li>
             <li><strong>Via le Site</strong> : Les commandes en ligne sont traitées en dernier, dans l’ordre d’arrivée.
             </li>
         </ul>
@@ -44,17 +45,17 @@
         <p>Le Restaurant assure la livraison <strong>dans un rayon maximal de 10 km</strong> autour de la Rue de la
             Cathédrale 59, 4000 Liège, selon les conditions suivantes : </p>
         <ul>
-            <li><strong>De 0 à 4 km</strong> : Livraison gratuite. </li>
-            <li><strong>De 4 à 8 km</strong> : 3 € de frais de livraison. </li>
-            <li><strong>De 8 à 10 km</strong> : 5 € de frais de livraison. </li>
+            <li><strong>De 0 à 4 km</strong> : Livraison gratuite.</li>
+            <li><strong>De 4 à 8 km</strong> : 3 € de frais de livraison.</li>
+            <li><strong>De 8 à 10 km</strong> : 5 € de frais de livraison.</li>
             <li><strong>Au-delà de 10 km</strong> : Aucune livraison n’est possible.</li>
         </ul>
         <h4 id="4-2-d-lais-de-livraison">4.2 Délais de livraison</h4>
         <p>Le délai moyen de livraison est <strong>d’environ 45 minutes</strong> à compter de l’acceptation de la
             commande. Ce délai est fourni à titre indicatif et peut varier en fonction : </p>
         <ul>
-            <li>Du volume de commandes en cours, </li>
-            <li>Des conditions de circulation, </li>
+            <li>Du volume de commandes en cours,</li>
+            <li>Des conditions de circulation,</li>
             <li>Des aléas (conditions météorologiques, incidents techniques, etc.).</li>
         </ul>
         <p>Le Restaurant s’engage à faire ses meilleurs efforts pour respecter les délais annoncés, sans toutefois
@@ -62,21 +63,24 @@
         <h4 id="4-3-absence-du-client-lors-de-la-livraison">4.3 Absence du Client lors de la livraison</h4>
         <p>En cas d’absence du Client à l’adresse de livraison : </p>
         <ul>
-            <li>La commande retournera au Restaurant, </li>
+            <li>La commande retournera au Restaurant,</li>
             <li>Le Client devra se déplacer pour récupérer sa commande le jour même.<br>Si la commande n’est pas
                 récupérée le jour même, elle sera considérée comme définitivement perdue et <strong>aucun
-                    remboursement</strong> ne pourra être exigé par le Client.</li>
+                    remboursement</strong> ne pourra être exigé par le Client.
+            </li>
         </ul>
         <hr>
         <h3 id="5-commandes-emporter">5. Commandes à emporter</h3>
         <p>Le Client peut choisir l’option « à emporter » pour sa commande. Dans ce cas : </p>
         <ul>
-            <li>Le Client se rend au Restaurant (Rue de la Cathédrale 59, 4000 Liège) aux heures d’ouverture, </li>
+            <li>Le Client se rend au Restaurant (Rue de la Cathédrale 59, 4000 Liège) aux heures d’ouverture,</li>
             <li>Le Client doit se présenter avec le numéro de commande ou tout autre justificatif permettant de
-                l’identifier, </li>
-            <li>Si la commande est acceptée, il n’est plus possible de l’annuler ou de la modifier, </li>
+                l’identifier,
+            </li>
+            <li>Si la commande est acceptée, il n’est plus possible de l’annuler ou de la modifier,</li>
             <li>Toute commande non récupérée le jour même est considérée comme perdue ; aucun remboursement ne sera
-                effectué.</li>
+                effectué.
+            </li>
         </ul>
         <hr>
         <h3 id="6-tarifs-et-modalit-s-de-paiement">6. Tarifs et modalités de paiement</h3>
@@ -89,17 +93,17 @@
             <li>
                 <p><strong>En ligne</strong> (pour les commandes passées via le Site) : </p>
                 <ul>
-                    <li>Carte de crédit </li>
-                    <li>Bancontact </li>
+                    <li>Carte de crédit</li>
+                    <li>Bancontact</li>
                 </ul>
             </li>
             <li>
                 <p><strong>Au Restaurant</strong> (pour les commandes passées en personne ou pour le paiement à
                     l’emporter/livraison) : </p>
                 <ul>
-                    <li>Carte de crédit </li>
-                    <li>Bancontact </li>
-                    <li>Espèces </li>
+                    <li>Carte de crédit</li>
+                    <li>Bancontact</li>
+                    <li>Espèces</li>
                 </ul>
             </li>
         </ul>
@@ -108,7 +112,7 @@
         <h3 id="7-absence-de-droit-de-r-tractation-et-annulation">7. Absence de droit de rétractation et annulation</h3>
         <h4 id="7-1-produits-alimentaires-p-rissables">7.1 Produits alimentaires périssables</h4>
         <p>Conformément à la législation applicable aux produits alimentaires périssables, <strong>aucun droit de
-                rétractation ne peut être exercé</strong> une fois la commande acceptée, conformément à l’Article VI.53,
+            rétractation ne peut être exercé</strong> une fois la commande acceptée, conformément à l’Article VI.53,
             4° du Code de droit économique belge (ou toute autre disposition en vigueur).</p>
         <h4 id="7-2-annulation-de-commande">7.2 Annulation de commande</h4>
         <p>Une fois qu’une commande a été acceptée par le Restaurant, <strong>il est impossible de l’annuler</strong> ou
@@ -123,11 +127,13 @@
         <h4 id="8-2-limitation-de-responsabilit-">8.2 Limitation de responsabilité</h4>
         <p>Le Restaurant ne peut être tenu pour responsable : </p>
         <ul>
-            <li>Des dommages résultant de la mauvaise utilisation des produits par le Client, </li>
+            <li>Des dommages résultant de la mauvaise utilisation des produits par le Client,</li>
             <li>Des retards ou impossibilités de livraison dus à un cas de force majeure (grève, intempéries, pannes
-                techniques, etc.), </li>
+                techniques, etc.),
+            </li>
             <li>Des informations erronées transmises par le Client (adresse de livraison incorrecte, numéro de téléphone
-                non valide, etc.).</li>
+                non valide, etc.).
+            </li>
         </ul>
         <p>En tout état de cause, si la responsabilité du Restaurant devait être engagée, elle serait strictement
             limitée au montant de la commande en cause.</p>
@@ -136,16 +142,16 @@
         <h4 id="9-1-donn-es-collect-es">9.1 Données collectées</h4>
         <p>Dans le cadre de la passation de commandes, le Restaurant collecte les données suivantes : </p>
         <ul>
-            <li><strong>Nom</strong> </li>
-            <li><strong>Adresse e-mail</strong> </li>
-            <li><strong>Adresse de livraison</strong> </li>
+            <li><strong>Nom</strong></li>
+            <li><strong>Adresse e-mail</strong></li>
+            <li><strong>Adresse de livraison</strong></li>
             <li><strong>Coordonnées de facturation</strong> (si différentes)</li>
         </ul>
         <h4 id="9-2-finalit-s">9.2 Finalités</h4>
         <p>Les données personnelles sont traitées pour : </p>
         <ul>
-            <li>L’exécution et le suivi de la commande (confirmation, facturation, notification de statut, etc.), </li>
-            <li>La récupération de mot de passe sur le Site, </li>
+            <li>L’exécution et le suivi de la commande (confirmation, facturation, notification de statut, etc.),</li>
+            <li>La récupération de mot de passe sur le Site,</li>
             <li>Des fins statistiques internes (analyse des zones de livraison).</li>
         </ul>
         <h4 id="9-3-base-l-gale-et-dur-e-de-conservation">9.3 Base légale et durée de conservation</h4>
@@ -159,14 +165,14 @@
             de ses données. </p>
         <p>Pour exercer ces droits, le Client peut contacter le Restaurant aux coordonnées suivantes : </p>
         <ul>
-            <li><strong>Par courrier :</strong> TOKYO SUSHI BAR, Rue de la Cathédrale 59, 4000 Liège </li>
+            <li><strong>Par courrier :</strong> TOKYO SUSHI BAR, Rue de la Cathédrale 59, 4000 Liège</li>
         </ul>
         <p>Le Client dispose également du droit d’introduire une réclamation auprès de l’Autorité de protection des
             données (APD) en Belgique.</p>
         <hr>
         <h3 id="10-h-bergement-du-site">10. Hébergement du Site</h3>
         <p>Le Site est hébergé par :<br><strong>Amazon Web Services (AWS) – Centre de données à Francfort
-                (Allemagne)</strong></p>
+            (Allemagne)</strong></p>
         <hr>
         <h3 id="11-force-majeure">11. Force majeure</h3>
         <p>Aucune des parties ne pourra être tenue pour responsable d’un manquement à ses obligations contractuelles si
