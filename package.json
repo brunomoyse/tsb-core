@@ -15,7 +15,7 @@
     "@vueuse/core": "^13.0.0",
     "class-variance-authority": "^0.7.1",
     "google-libphonenumber": "^3.2.40",
-    "nuxt": "^3.16.0",
+    "nuxt": "^3.16.1",
     "pinia-plugin-persistedstate": "^4.2.0"
   },
   "devDependencies": {
