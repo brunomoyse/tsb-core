@@ -1,7 +1,8 @@
 <template>
     <div class="flex">
         <!-- Main Central Content -->
-        <div class="sm:w-[calc(100vw-142px)] lg:w-[calc(67vw-71px)]">
+        <div class="sm:w-[calc(100vw-142px)]"
+             :class="cartStore.products.length === 0 ? 'lg:w-[calc(100vw-142px)]' : 'lg:w-[calc(67vw-71px)]'">
             <!-- Search Section -->
             <section class="mb-4 px-4">
                 <SearchBar v-model="searchValue"/>
@@ -36,13 +37,17 @@
 
             <!-- Products -->
             <section class="mx-auto px-4 mb-8">
-                <div v-if="filteredProducts.length" class="flex flex-wrap justify-center gap-5">
+                <div
+                    v-if="filteredProducts.length"
+                    class="grid gap-5 justify-start"
+                    style="grid-template-columns: repeat(auto-fit, minmax(175px, auto));"
+                >
                     <ProductCard
                         v-for="(product, index) in filteredProducts"
                         :key="product.id"
                         :index="index"
                         :product="product"
-                        class="flex-[1_0_100%] sm:flex-[0_1_48%] md:flex-[0_1_30%] lg:flex-[0_1_23%] xl:flex-[0_1_23%]"
+                        class="w-full"
                     />
                 </div>
                 <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
@@ -50,7 +55,9 @@
         </div>
 
         <!-- Cart Sidebar -->
-        <aside class="hidden lg:block lg:w-[calc(30vw-71px)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
+        <aside v-if="cartStore.products.length"
+               class="hidden lg:w-[calc(30vw-71px)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]"
+               :class="cartStore.products.length === 0 ? 'hidden' : 'lg:block'">
             <SideCart/>
         </aside>
 
@@ -70,11 +77,13 @@ import CategoryCard from '~/components/menu/CategoryCard.vue'
 import {computed, reactive, ref, watch} from 'vue'
 import {useDebounce} from '@vueuse/core'
 import {useAsyncData, useI18n, useNuxtApp} from '#imports'
+import {useCartStore} from '@/stores/cart';
 
 import type {Product, ProductCategory} from '@/types'
 
 const {locale: userLocale, t} = useI18n()
 const {$api} = useNuxtApp()
+const cartStore = useCartStore();
 
 const filterOptions = reactive<Record<string, boolean>>({
     isHalal: false,

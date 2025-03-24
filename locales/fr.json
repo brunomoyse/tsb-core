@@ -133,7 +133,7 @@
     "total": "Total",
     "minimumOrderAmountIs": "Le montant minimum est de 20€",
     "checkout": "Valider la commande",
-    "removeItem": "Retirer l'article"
+    "removeItem": "Retirer"
   },
   "404": {
     "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
