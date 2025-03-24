@@ -134,7 +134,7 @@
     "total": "Total",
     "minimumOrderAmountIs": "Minimum order amount is 20€",
     "checkout": "Checkout",
-    "removeItem": "Remove item"
+    "removeItem": "Remove"
   },
   "404": {
     "message": "Sorry, we couldn't find the page you are looking for.",

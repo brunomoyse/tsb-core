@@ -79,7 +79,7 @@
                             </div>
                             <button class="text-xs text-red-600 hover:text-red-700 transition-colors"
                                     @click="handleRemoveFromCart(item.product)">
-                                Remove
+                                {{ $t('cart.removeItem') }}
                             </button>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
           ? 'bg-red-500 text-white hover:bg-red-600'
           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
       ]" :disabled="cartTotal < 20" @click="handlePayment">
-                Checkout
+                {{ $t('cart.checkout') }}
             </button>
         </footer>
     </aside>
