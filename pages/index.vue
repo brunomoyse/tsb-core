@@ -69,11 +69,13 @@
                     to="menu">
                     {{ $t('about.ctaButtonOrder') }}
                 </NuxtLinkLocale>
+                <!--
                 <NuxtLinkLocale
                     class="inline-block bg-gray-800 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-gray-900 transition"
                     to="reservations">
                     {{ $t('about.ctaButtonReserve') }}
                 </NuxtLinkLocale>
+                -->
             </div>
         </div>
     </section>
