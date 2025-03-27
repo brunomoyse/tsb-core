@@ -7,7 +7,7 @@ export const useCartStore = defineStore("cart", {
     state: (): CartState => ({
         products: [] as CartItem[],
         isCartVisible: false,
-        // Removed totalPrice from state
+        deliveryOption: 'delivery',
     }),
 
     getters: {
@@ -21,6 +21,7 @@ export const useCartStore = defineStore("cart", {
                 0
             );
         },
+
     },
 
     actions: {

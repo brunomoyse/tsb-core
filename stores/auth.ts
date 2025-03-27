@@ -6,6 +6,14 @@ export const useAuthStore = defineStore("auth", {
         accessToken: null as string | null,
         user: null as User | null,
     }),
+
+    getters: {
+        deliveryFee(): number {
+            // @TODO: Calculate depending on user's address
+            return 3.5;
+        }
+    },
+
     actions: {
         setAccessToken(token: string | null) {
             this.accessToken = token;

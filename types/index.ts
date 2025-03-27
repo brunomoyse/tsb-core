@@ -27,9 +27,20 @@ export interface CartItem {
     quantity: number;
 }
 
+export interface OrderProductLine {
+    product : {
+        id: string;
+        name: string;
+    },
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+}
+
 export interface CartState {
     products: CartItem[];
     isCartVisible: boolean;
+    deliveryOption: 'delivery' | 'pickup';
 }
 
 export interface LoginResponse {
@@ -54,7 +65,7 @@ export interface Order {
     molliePaymentId: string;
     molliePaymentUrl: string;
     status: string;
-    products: CartItem[];
+    products: OrderProductLine[];
 }
 
 export interface RefreshTokenResponse {

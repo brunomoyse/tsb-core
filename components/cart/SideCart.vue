@@ -28,7 +28,6 @@
                 <div v-for="item in cartStore.products" :key="item.product.id"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg">
                     <!-- Product Image -->
-                    <!-- Product Image -->
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                         <picture>
                             <source
@@ -117,31 +116,30 @@
             </div>
 
             <!-- Checkout Button -->
-            <button :class="[
-        'w-full py-3 rounded-lg font-medium transition-colors',
-        cartTotal >= 20
-          ? 'bg-red-500 text-white hover:bg-red-600'
-          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-      ]" :disabled="cartTotal < 20" @click="handlePayment">
-                {{ $t('cart.checkout') }}
-            </button>
+            <NuxtLinkLocale to="checkout">
+                <button :class="[
+            'w-full py-3 rounded-lg font-medium transition-colors',
+            cartTotal >= 20
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          ]" :disabled="cartTotal < 20">
+                    {{ $t('cart.checkout') }}
+                </button>
+            </NuxtLinkLocale>
         </footer>
     </aside>
 </template>
 
 <script lang="ts" setup>
-import {computed, navigateTo, ref, useAsyncData, useNuxtApp, useRuntimeConfig} from '#imports';
+import {computed, ref, useRuntimeConfig} from '#imports';
 import {useCartStore} from '@/stores/cart';
-import {useAuthStore} from '@/stores/auth';
 import {formatPrice} from '~/lib/price';
-import type {CartItem, Order, Product} from '@/types';
+import type {CartItem, Product} from '@/types';
 import {useI18n} from 'vue-i18n';
 
-const authStore = useAuthStore();
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const {t} = useI18n()
-const {$api} = useNuxtApp();
 
 // Delivery options setup
 const deliveryOptions = [
@@ -153,6 +151,7 @@ const deliveryFee = 3.5;
 
 const handleOrderType = (option: string) => {
     deliveryOption.value = option as 'delivery' | 'pickup';
+    cartStore.deliveryOption = option as 'delivery' | 'pickup';
 };
 
 // Price calculations
@@ -200,42 +199,4 @@ const handleRemoveFromCart = (product: Product): void => {
     cartStore.removeFromCart(product);
 };
 
-// Payment handling
-const handlePayment = async () => {
-    if (cartTotal.value < 20) {
-        console.error("Minimum order not reached");
-        return;
-    }
-
-    if (!authStore.accessToken) {
-        console.error("User is not authenticated");
-        return;
-    }
-
-    const orderData = {
-        products: cartStore.products,
-        order_type: deliveryOption.value,
-        delivery_fee: deliveryOption.value === 'delivery' ? deliveryFee : 0,
-        total_discount: totalDiscount.value
-    };
-
-    try {
-        const {data: order} = await useAsyncData<Order>('order', () =>
-            $api('/orders', {
-                method: 'POST',
-                body: JSON.stringify(orderData),
-                headers: {'Content-Type': 'application/json'}
-            })
-        );
-
-        if (order.value?.molliePaymentUrl) {
-            navigateTo(order.value.molliePaymentUrl, {external: true});
-        }
-
-        cartStore.clearCart();
-        cartStore.toggleCartVisibility();
-    } catch (error) {
-        console.error("Payment processing failed:", error);
-    }
-};
 </script>
