@@ -39,7 +39,7 @@
             <section class="mx-auto px-4 mb-8">
                 <div
                     v-if="filteredProducts.length"
-                    class="grid gap-5 justify-start"
+                    class="grid gap-5 justify-center sm:justify-start"
                     style="grid-template-columns: repeat(auto-fit, minmax(175px, auto));"
                 >
                     <ProductCard
@@ -171,31 +171,3 @@ const filteredProducts = computed(() => {
 });
 
 </script>
-
-<style>
-/* Slide-down transition */
-.slide-down-enter-active,
-.slide-down-leave-active {
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.slide-down-enter-from {
-    transform: translateY(-100%);
-    opacity: 0;
-}
-
-.slide-down-enter-to {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.slide-down-leave-from {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.slide-down-leave-to {
-    transform: translateY(-100%);
-    opacity: 0;
-}
-</style>
