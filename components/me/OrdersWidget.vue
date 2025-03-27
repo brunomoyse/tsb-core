@@ -134,23 +134,29 @@ const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
 
 // Total price calculation remains the same
 const totalPrice = (order: Order) => {
-    return order.products.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
+    return order.products.reduce((acc, item) => acc + (item.totalPrice ?? 0), 0)
 }
 
 const getStatus = (status: string) => {
     switch (status) {
-        case 'OPEN':
+        case 'PENDING':
             return t('me.orders.status.pending')
-        case 'pending':
-            return t('me.orders.status.pending')
-        case 'confirmed':
+        case 'CONFIRMED':
             return t('me.orders.status.confirmed')
-        case 'shipped':
-            return t('me.orders.status.shipped')
-        case 'delivered':
+        case 'PREPARING':
+            return t('me.orders.status.preparing')
+        case 'AWAITING_PAYMENT':
+            return t('me.orders.status.awaitingPayment')
+        case 'PICKED_UP':
+            return t('me.orders.status.pickedUp')
+        case 'OUT_FOR_DELIVERY':
+            return t('me.orders.status.outForDelivery')
+        case 'DELIVERED':
             return t('me.orders.status.delivered')
-        case 'cancelled':
+        case 'CANCELLED':
             return t('me.orders.status.cancelled')
+        case 'FAILED':
+            return t('me.orders.status.failed')
         default:
             return ''
     }
