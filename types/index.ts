@@ -61,6 +61,7 @@ export interface Order {
     createdAt: string;
     updatedAt: string;
     userId: string;
+    deliveryOption: string;
     paymentMethod: string;
     molliePaymentId: string;
     molliePaymentUrl: string;
