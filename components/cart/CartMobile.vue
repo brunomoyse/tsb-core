@@ -108,10 +108,12 @@
                             {{ $t('cart.total') }}:</span>
                         <span class="text-xl font-semibold text-gray-900">{{ formatPrice(cartStore.totalPrice) }}</span>
                     </div>
-                    <button class="w-full bg-red-500 text-white uppercase py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2"
-                            @click="handlePayment">
-                        {{ $t('cart.checkout') }}
-                    </button>
+
+                    <NuxtLinkLocale to="checkout">
+                        <button class="w-full bg-red-500 text-white uppercase py-2 px-4 rounded-lg hover:bg-tsb-red-dark transition duration-200 focus:outline-none focus:ring-2 focus:ring-tsb-red focus:ring-offset-2">
+                            {{ $t('cart.checkout') }}
+                        </button>
+                    </NuxtLinkLocale>
                 </div>
             </div>
         </aside>
