@@ -37,7 +37,7 @@
                             <!-- Product Details -->
                             <div>
                                 <p class="font-medium">
-                                    {{ item.product.code ? item.product.code + ' - ' : '' + (item.product.category?.name || '') + ' ' + item.product.name }}
+                                    {{ (item.product.code ? item.product.code + ' - ' : '') + (item.product.category?.name || '') + ' ' + item.product.name.toLowerCase() }}
                                 </p>
                                 <p class="text-sm text-gray-500">x{{ item.quantity }}</p>
                             </div>
