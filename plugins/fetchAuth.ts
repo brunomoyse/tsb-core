@@ -1,44 +1,52 @@
-import {defineNuxtPlugin, storeToRefs, useAuthStore, useRequestHeaders, useRuntimeConfig} from '#imports'
-import type {RefreshTokenResponse} from '~/types'
-import type {FetchContext} from 'ofetch'
+import { defineNuxtPlugin, storeToRefs, useAuthStore, useRuntimeConfig, useCookie } from '#imports'
+import type { RefreshTokenResponse } from '~/types'
+import type { FetchContext } from 'ofetch'
 
-type HttpMethod = | 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'
+type HttpMethod =
+    | 'get'
+    | 'head'
+    | 'patch'
+    | 'post'
+    | 'put'
+    | 'delete'
+    | 'connect'
+    | 'options'
+    | 'trace'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     const authStore = useAuthStore()
-    const {accessToken} = storeToRefs(authStore)
+    const { accessToken } = storeToRefs(authStore)
+
+    // Capture the refresh token cookie at plugin initialization (SSR only)
+    let refreshTokenCookie: ReturnType<typeof useCookie> | undefined
+    if (import.meta.server) {
+        refreshTokenCookie = useCookie('refresh_token')
+    }
 
     // This promise ensures only one refresh call happens at a time.
     let refreshTokenPromise: Promise<RefreshTokenResponse | null> | null = null
 
-    // Server-side only: Capture initial request headers at plugin initialization.
-    let serverCookies = ''
-    if (import.meta.server) {
-        const headers = useRequestHeaders(['cookie'])
-        serverCookies = headers.cookie || ''
-    }
-
-    const parseAccessTokenFromCookies = (cookieString: string): string | null => {
-        const match = cookieString.match(/(?:^|;\s*)access_token=([^;]+)/)
-        return match ? decodeURIComponent(match[1]) : null
-    }
-
-    async function refreshToken(requestCookies?: string): Promise<RefreshTokenResponse | null> {
+    async function refreshToken(): Promise<RefreshTokenResponse | null> {
         if (!refreshTokenPromise) {
             refreshTokenPromise = (async () => {
                 try {
-                    // Use passed-in cookies (or the pre-captured server cookies) in SSR.
-                    const headers = import.meta.server ? {cookie: requestCookies || serverCookies} : undefined
+                    let cookieHeader = ''
+                    if (import.meta.server && refreshTokenCookie) {
+                        cookieHeader = `refresh_token=${refreshTokenCookie.value || ''}`
+                    }
 
                     const newToken = await $fetch<RefreshTokenResponse>('/tokens/refresh', {
-                        baseURL: config.public.api as string, method: 'POST', credentials: 'include', headers
+                        baseURL: config.public.api as string,
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: import.meta.server ? { cookie: cookieHeader } : undefined
                     })
 
                     authStore.setAccessToken(newToken.accessToken)
                     return newToken
                 } catch (error) {
-                    await authStore.logout({apiUrl: config.public.api as string})
+                    await authStore.logout({ apiUrl: config.public.api as string })
                     console.error('Token refresh failed:', error)
                     throw error
                 } finally {
@@ -54,13 +62,14 @@ export default defineNuxtPlugin(() => {
         credentials: 'include',
         retry: 1,
         retryStatusCodes: [401],
-        async onRequest({options}) {
+        async onRequest({ options }) {
             let token = accessToken.value
-
-            // Server-side: Use pre-captured cookies from plugin initialization.
             if (import.meta.server) {
-                const initialToken = parseAccessTokenFromCookies(serverCookies)
-                if (initialToken) token = initialToken
+                // As a fallback on SSR, read the access token from the 'access_token' cookie.
+                const accessTokenCookie = useCookie('access_token')
+                if (accessTokenCookie.value) {
+                    token = accessTokenCookie.value
+                }
             }
 
             if (token) {
@@ -70,26 +79,33 @@ export default defineNuxtPlugin(() => {
             }
         },
         async onResponse(context: FetchContext<any>): Promise<any> {
-            const {response, request, options} = context
+            const { response, request, options } = context
             const requestUrl = typeof request === 'string' ? request : request.url
 
-            if (response?.status === 401 && !requestUrl.includes('/tokens/refresh')) {
+            // Only retry once for 401 errors on endpoints other than /tokens/refresh or login.
+            if (
+                response?.status === 401 &&
+                !requestUrl.includes('/tokens/refresh') &&
+                !requestUrl.includes('login') &&
+                !(options as any)._retry
+            ) {
+                (options as any)._retry = true
+
                 try {
-                    // Pass along cookies for server-side refresh if available.
-                    const cookies = import.meta.server ? serverCookies : undefined
-                    await refreshToken(cookies)
+                    await refreshToken()
 
                     const headers = new Headers(options.headers)
                     headers.set('Authorization', `Bearer ${accessToken.value}`)
 
                     const newRequest = request instanceof Request ? request : new Request(request)
-                    const {method, ...restOptions} = options
+                    const { method, ...restOptions } = options
 
                     return $api(newRequest, {
-                        ...restOptions, method: method as HttpMethod, headers
+                        ...restOptions,
+                        method: method as HttpMethod,
+                        headers
                     })
                 } catch (error) {
-                    options.retry = false
                     throw error
                 }
             }
@@ -99,7 +115,8 @@ export default defineNuxtPlugin(() => {
 
     return {
         provide: {
-            api: $api, refreshToken
+            api: $api,
+            refreshToken
         }
     }
 })
