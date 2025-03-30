@@ -106,8 +106,10 @@
       "total": "总计",
       "status": {
         "pending": "待处理",
+        "confirmed": "已确认",
         "preparing": "准备中",
-        "delivering": "配送中",
+        "awaitingPickUp": "等待自取",
+        "outForDelivery": "配送中",
         "delivered": "已送达",
         "cancelled": "已取消"
       }

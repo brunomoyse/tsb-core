@@ -106,8 +106,10 @@
       "total": "Total",
       "status": {
         "pending": "Pending",
+        "confirmed": "Confirmed",
         "preparing": "Preparing",
-        "delivering": "Delivering",
+        "awaitingPickUp": "Awaiting Pickup",
+        "outForDelivery": "Out for Delivery",
         "delivered": "Delivered",
         "cancelled": "Cancelled"
       }
