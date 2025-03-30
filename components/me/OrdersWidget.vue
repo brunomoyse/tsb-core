@@ -71,8 +71,10 @@
                                     class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                                 >
                                     <div>
-                                        <p class="text-sm font-medium text-gray-900">{{ item.product.name }}</p>
-                                        <p class="text-xs text-gray-500">{{ item.product.category }}</p>
+                                        <p class="text-sm font-medium text-gray-900">
+                                            {{ item.product.code ? item.product.code + ' - ' : '' }}
+                                            {{ item.product.categoryName + ' ' + item.product.name }}
+                                        </p>
                                     </div>
                                     <span class="text-sm font-medium text-gray-700">x{{ item.quantity }}</span>
                                 </div>
