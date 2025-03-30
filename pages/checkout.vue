@@ -143,6 +143,7 @@
                 <!-- Go to Payment Button -->
                 <button
                     @click="handleCheckout"
+                    :disabled="isCheckoutProcessing"
                     class="w-full py-3 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
                 >
                     {{ selectedPayment === 'ONLINE' ?  $t('checkout.goToPayment', 'Go to Payment') : $t('checkout.placeOrder', 'Place Order') }}
@@ -167,6 +168,8 @@ const { $api } = useNuxtApp()
 // Payment method: ONLINE or CASH
 const selectedPayment = ref<'ONLINE' | 'CASH'>('ONLINE')
 
+const isCheckoutProcessing = ref(false)
+
 // Extras: add chopsticks, and choose up to 2 soy sauces (default is "none")
 const addChopsticks = ref(true)
 const sauce1 = ref('sweet')
@@ -183,6 +186,9 @@ const finalTotal = computed(() =>
 )
 
 const handleCheckout = async () => {
+    if (isCheckoutProcessing.value) return
+    isCheckoutProcessing.value = true
+
     if (cartStore.products.length === 0) {
         console.error('Cart is empty')
         return
