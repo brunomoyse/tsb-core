@@ -30,6 +30,8 @@ export interface CartItem {
 export interface OrderProductLine {
     product : {
         id: string;
+        code: string;
+        categoryName: string;
         name: string;
     },
     quantity: number;
