@@ -135,6 +135,27 @@
     "checkout": "Valider la commande",
     "removeItem": "Retirer"
   },
+  "checkout": {
+    "title": "Finalisation de la commande",
+    "orderSummary": "Résumé de votre commande",
+    "emptyCart": "Votre panier est vide.",
+    "subtotal": "Sous-total :",
+    "deliveryFee": "Frais de livraison :",
+    "deliveryAddress": "Adresse de livraison :",
+    "total": "Total :",
+    "extrasAndPayment": "Options supplémentaires et paiement",
+    "paymentMethod": "Mode de paiement",
+    "online": "Paiement en ligne",
+    "cash": "Espèces",
+    "extras": "Options supplémentaires",
+    "addChopsticks": "Ajouter des baguettes",
+    "soySauce": "Sauce soja (choisissez jusqu'à 2) :",
+    "none": "Aucune",
+    "sweet": "Sucré",
+    "salty": "Salé",
+    "goToPayment": "Procéder au paiement",
+    "placeOrder": "Passer commande"
+  },
   "404": {
     "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
     "homeButton": "Accueil",

@@ -136,6 +136,27 @@
     "checkout": "结账",
     "removeItem": "移除商品"
   },
+  "checkout": {
+    "title": "结账",
+    "orderSummary": "订单摘要",
+    "emptyCart": "您的购物车是空的。",
+    "subtotal": "小计：",
+    "deliveryFee": "配送费：",
+    "deliveryAddress": "收货地址：",
+    "total": "总计：",
+    "extrasAndPayment": "附加项及付款方式",
+    "paymentMethod": "付款方式",
+    "online": "在线支付",
+    "cash": "现金",
+    "extras": "附加项",
+    "addChopsticks": "添加筷子",
+    "soySauce": "酱油（最多选择2种）：",
+    "none": "无",
+    "sweet": "甜味",
+    "salty": "咸味",
+    "goToPayment": "去付款",
+    "placeOrder": "下订单"
+  },
   "404": {
     "message": "抱歉，我们找不到您正在寻找的页面。",
     "homeButton": "首页",
