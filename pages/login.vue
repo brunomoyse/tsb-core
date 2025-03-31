@@ -84,7 +84,7 @@ import {useAuthStore} from '@/stores/auth'
 const authStore = useAuthStore()
 const {$api} = useNuxtApp()
 const config = useRuntimeConfig()
-const apiUrl: string = config.public.apiUrl as string
+const apiUrl: string = config.public.api as string
 
 const email = ref('')
 const password = ref('')
@@ -111,12 +111,10 @@ const loginWithGoogle = () => {
 };
 
 const loginSuccess = async () => {
-    const {data: user} = await useAsyncData<User>('me', () =>
-        $api('/my-profile')
-    );
-    if (!user.value) throw new Error('User not found')
-
-    authStore.setUser(user.value)
+    if (import.meta.client) {
+        const user = await $api<User>('/my-profile')
+        if (user) authStore.setUser(user)
+    }
 }
 
 onMounted(async () => {
