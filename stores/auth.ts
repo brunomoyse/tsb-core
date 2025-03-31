@@ -31,18 +31,11 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.removeItem('token_expires');
             }
         },
-        async logout(config?: { apiUrl: string }) {
+        async logout() {
             try {
-                // Only attempt token revocation if we have a config
-                if (config?.apiUrl) {
-                    await $fetch('/tokens/revoke', {
-                        baseURL: config.apiUrl,
-                        method: 'POST',
-                        credentials: 'include'
-                    })
-                }
+                // @TODO: To implement
             } catch (error) {
-                console.error('Revocation error:', error)
+                console.error('Token evocation error:', error)
             } finally {
                 this.accessValid = false
             }
