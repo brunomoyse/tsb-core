@@ -159,6 +159,14 @@
     "goToPayment": "Go to Payment",
     "placeOrder": "Place Order"
   },
+  "orderCompleted": {
+    "title": "Order Completed",
+    "thankYou": "Thank you for your purchase! Your order was placed successfully.",
+    "placedAt": "Order placed at:",
+    "items": "Items",
+    "loading": "Loading order details...",
+    "returnHome": "Return to Home"
+  },
   "404": {
     "message": "Sorry, we couldn't find the page you are looking for.",
     "homeButton": "Home",

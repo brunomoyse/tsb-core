@@ -1,44 +1,64 @@
 <template>
-    <div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="flex items-center justify-center bg-gray-100 p-4">
         <!-- Card -->
         <div class="max-w-2xl w-full bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-3xl font-bold">Order Completed</h1>
+            <h1 class="text-3xl font-bold">
+                {{ $t('orderCompleted.title', 'Order Completed') }}
+            </h1>
             <p class="mt-4 text-gray-600">
-                Thank you for your purchase! Your order
-                <span v-if="order" class="font-semibold">#{{ orderId }}</span> was completed successfully.
+                {{ $t('orderCompleted.thankYou', 'Thank you for your purchase! Your order was placed successfully.') }}
             </p>
 
             <!-- Order Details -->
             <div v-if="order" class="mt-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-2">Order Details</h2>
                 <div class="space-y-4">
                     <!-- Order creation time -->
                     <p class="text-gray-700">
-                        <span class="font-medium">Created At:</span>
-                        {{ order.createdAt }}
+                        {{ $t('orderCompleted.placedAt', 'Order placed at: ') }}
+                        {{
+                            new Date(order.createdAt).toLocaleString("fr-BE", {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })
+                        }}
                     </p>
 
                     <!-- List of items -->
-                    <div>
-                        <h3 class="font-medium text-gray-800 mb-1">Items:</h3>
-                        <ul class="list-disc list-inside text-gray-600">
-                            <li v-for="item in order.products" :key="item.product.id">
-                                {{ item.quantity }} x {{ item.product.name }} ({{ item.product.price }} EUR each)
-                            </li>
-                        </ul>
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-medium text-gray-900">{{ $t('orderCompleted.items', 'Articles:') }}</h4>
+                        <div class="space-y-3">
+                            <div
+                                v-for="(item, index) in order.products"
+                                :key="index"
+                                class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                            >
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ item.product.code ? item.product.code + ' - ' : '' }}
+                                        {{ item.product.categoryName + ' ' + item.product.name }}
+                                    </p>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">x{{ item.quantity }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Placeholder while loading -->
             <div v-else>
-                <p class="text-sm text-gray-500 mt-4">Loading order details...</p>
+                <p class="text-sm text-gray-500 mt-4">
+                    {{ $t('orderCompleted.loading', 'Loading order details...') }}
+                </p>
             </div>
 
             <!-- Return Home Button -->
             <div class="mt-8 text-right">
-                <NuxtLink class="inline-block px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600"
+                <NuxtLink class="inline-block px-4 py-2 rounded bg-tsb-two text-black border border-gray-300 font-semibold"
                           to="/">
-                    Return to Home
+                    {{ $t('orderCompleted.returnHome', 'Return to Home') }}
                 </NuxtLink>
             </div>
         </div>
@@ -47,8 +67,11 @@
 
 <script lang="ts" setup>
 import type {Order} from '@/types'
-import {useNuxtApp, useRoute} from '#imports';
-import {useAsyncData} from "#app";
+import {useNuxtApp, useRoute, useAsyncData, definePageMeta} from '#imports';
+
+definePageMeta({
+    public: false
+})
 
 const route = useRoute()
 const {$api} = useNuxtApp()
