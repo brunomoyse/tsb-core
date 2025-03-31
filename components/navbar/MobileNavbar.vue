@@ -27,10 +27,10 @@
                                            @click="closeMenu"/>
                             <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg" to="contact"
                                            @click="closeMenu"/>
-                            <MobileNavItem v-if="!isUserConnected" :label="$t('nav.login')" icon="/icons/login-icon.svg"
+                            <MobileNavItem v-if="!authStore.accessValid" :label="$t('nav.login')" icon="/icons/login-icon.svg"
                                            to="login"
                                            @click="closeMenu"/>
-                            <MobileNavItem v-if="isUserConnected" :label="$t('nav.myAccount')"
+                            <MobileNavItem v-if="authStore.accessValid" :label="$t('nav.myAccount')"
                                            icon="/icons/account-circle-icon.svg"
                                            to="my-account"
                                            @click="closeMenu"/>
@@ -72,14 +72,6 @@ watch(
         }
     }
 );
-
-const isUserConnected = authStore.user !== null
-
-/*
-const handleLogOut = () => {
-    authStore.logout()
-}
-*/
 
 const closeMenu = () => {
     if (menuToggle.value) {

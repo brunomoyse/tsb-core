@@ -3,8 +3,8 @@ import type {User} from "@/types";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
-        accessToken: null as string | null,
         user: null as User | null,
+        accessValid: false
     }),
 
     getters: {
@@ -15,11 +15,21 @@ export const useAuthStore = defineStore("auth", {
     },
 
     actions: {
-        setAccessToken(token: string | null) {
-            this.accessToken = token;
-        },
         setUser(user: User) {
             this.user = user;
+            this.accessValid = true;
+        },
+        clearUser() {
+            this.user = null
+            this.accessValid = false
+        },
+        setAccessValid(valid: boolean) {
+            this.accessValid = valid
+            if (valid) {
+                localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
+            } else {
+                localStorage.removeItem('token_expires');
+            }
         },
         async logout(config?: { apiUrl: string }) {
             try {
@@ -34,7 +44,7 @@ export const useAuthStore = defineStore("auth", {
             } catch (error) {
                 console.error('Revocation error:', error)
             } finally {
-                this.accessToken = null
+                this.accessValid = false
             }
         }
     },

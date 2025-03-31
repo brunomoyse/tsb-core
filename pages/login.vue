@@ -77,13 +77,14 @@
 </template>
 
 <script lang="ts" setup>
-import {navigateTo, onMounted, ref, useLocalePath, useNuxtApp} from '#imports';
-import type {LoginResponse} from '@/types';
+import {onMounted, ref, useNuxtApp, useRuntimeConfig, useAsyncData} from '#imports';
+import type {LoginResponse, User} from '@/types';
 import {useAuthStore} from '@/stores/auth'
 
 const authStore = useAuthStore()
-const localePath = useLocalePath()
-const {$api, $apiBaseUrl, $refreshToken} = useNuxtApp()
+const {$api} = useNuxtApp()
+const config = useRuntimeConfig()
+const apiUrl: string = config.public.apiUrl as string
 
 const email = ref('')
 const password = ref('')
@@ -91,42 +92,45 @@ const password = ref('')
 // Regular email/password login
 const login = async () => {
     try {
-        const response = await $api<LoginResponse>('/login', {
+        await $api<LoginResponse>('/login', {
             method: 'POST',
             body: {
                 email: email.value,
                 password: password.value
             },
-        })
-
-        if (!response.accessToken) {
-            console.error('Login failed')
-            return
-        }
-
-        // Store access token in Pinia
-        authStore.setAccessToken(response.accessToken)
-        authStore.setUser(response.user)
-
+        });
     } catch (error) {
         console.error('Login error:', error)
+        return
     }
+    await loginSuccess()
 }
 
 const loginWithGoogle = () => {
-    window.location.href = `${$apiBaseUrl()}/oauth/google`;
+    window.location.href = `${apiUrl}/oauth/google`;
 };
+
+const loginSuccess = async () => {
+    const {data: user} = await useAsyncData<User>('me', () =>
+        $api('/my-profile')
+    );
+    if (!user.value) throw new Error('User not found')
+
+    authStore.setUser(user.value)
+}
 
 onMounted(async () => {
     const params = new URLSearchParams(window.location.search)
-    const success = params.get('success')
-    if (success === 'true') {
-        const res = await $refreshToken();
-        authStore.setUser(res.user)
-        authStore.setAccessToken(res.accessToken)
 
-        // Redirect to home page after successful login
-        navigateTo(localePath('/'))
+    const success = params.get('success')
+
+    // if success, then fetch /me to fill the auth store with user credentials
+    if (success) {
+        try {
+            await loginSuccess()
+        } catch (error) {
+            console.error('Login error:', error)
+        }
     }
 })
 </script>

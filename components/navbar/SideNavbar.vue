@@ -12,9 +12,9 @@
 
         <!-- Bottom Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mb-6">
-            <NavItem v-if="!isUserConnected" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
+            <NavItem v-if="!authStore.accessValid" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
                      to="login"/>
-            <NavItem v-if="isUserConnected" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
+            <NavItem v-if="authStore.accessValid" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
                      to="my-account"/>
             <!-- Language picker -->
             <LanguagePicker :tooltipText="$t('nav.language')" alt="Choose language Icon"
@@ -24,12 +24,10 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from '#imports'
 import NavItem from './NavItem.vue';
 import Logo from './Logo.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import {useAuthStore} from '@/stores/auth'
 
 const authStore = useAuthStore();
-const isUserConnected = computed(() => authStore.user !== null)
 </script>
