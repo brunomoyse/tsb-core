@@ -1,5 +1,5 @@
 // middleware/auth.global.ts
-import { defineNuxtRouteMiddleware, useRequestEvent, navigateTo, useRuntimeConfig} from 'nuxt/app'
+import { defineNuxtRouteMiddleware, useRequestEvent, navigateTo, useRuntimeConfig, useCookie} from 'nuxt/app'
 import { useAuthStore } from '@/stores/auth'
 import { useLocalePath } from "#imports";
 
@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (to.meta.public !== false) return
     const config = useRuntimeConfig()
     const localePath = useLocalePath()
-    const apiUrl: string = config.public.apiUrl as string
+    const apiUrl: string = config.public.api as string
 
     // Server-side handling
     if (import.meta.server) {
@@ -25,13 +25,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
             const isValid = checkTokenExpiration(cookies.access_token)
             if (isValid) return
         }
+
         // 3. Attempt refresh if no valid access token
         try {
             const refreshResponse = await $fetch.raw(`${apiUrl}/tokens/refresh`, {
                 method: 'POST',
                 headers: { cookie: event?.node.req.headers.cookie || '' }
             })
-
+            localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
 
             // Update client cookies
             const setCookies = refreshResponse.headers.get('set-cookie')
@@ -54,6 +55,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
         // 2. Check localStorage for expiration timestamp
         const expiresAt = localStorage.getItem('token_expires')
         if (expiresAt && Date.now() < Number(expiresAt)) return
+
+        const refreshToken = useCookie('refresh_token')
+        if (!refreshToken.value) {
+            return navigateTo(localePath('login'));
+        }
 
         try {
             // 3. Silent refresh attempt
