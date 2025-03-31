@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     ],
 
     plugins: [
-        '~/plugins/fetchAuth',
+        '~/plugins/api',
     ],
 
     i18n: {
@@ -65,6 +65,18 @@ export default defineNuxtConfig({
         public: {
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
+            cookie: {
+                accessToken: {
+                    name: 'access_token',
+                    httpOnly: true,
+                    maxAge: 900, // 15 minutes
+                },
+                refreshToken: {
+                    name: 'refresh_token',
+                    httpOnly: true,
+                    maxAge: 604800, // 7 days
+                },
+            }
         },
     },
     // @ts-expect-error property googleFonts does not exist

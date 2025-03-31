@@ -11,7 +11,7 @@ export default [
             ".output",
             ".vscode",
             "node_modules",
-            "plugins/fetchAuth.ts"
+            "plugins/api.ts"
         ],
     },
     {

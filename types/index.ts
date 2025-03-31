@@ -46,7 +46,6 @@ export interface CartState {
 }
 
 export interface LoginResponse {
-    accessToken: string;
     user: User;
 }
 
@@ -69,9 +68,4 @@ export interface Order {
     molliePaymentUrl: string;
     status: string;
     products: OrderProductLine[];
-}
-
-export interface RefreshTokenResponse {
-    accessToken: string,
-    user: User,
 }

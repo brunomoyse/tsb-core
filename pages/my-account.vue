@@ -17,23 +17,18 @@
 </template>
 
 <script lang="ts" setup>
-import {definePageMeta, useAsyncData, useI18n, useNuxtApp} from '#imports'
+import {definePageMeta, useAsyncData, useNuxtApp} from '#imports'
 import OrdersWidget from '@/components/me/OrdersWidget.vue'
 import ProfileWidget from '@/components/me/ProfileWidget.vue'
 import type {Order} from '~/types'
 
 definePageMeta({
-    middleware: ['auth']
+    public: false
 })
 
 const {$api} = useNuxtApp()
-const {locale: userLocale} = useI18n()
 
 const {data: orders} = await useAsyncData<Order[]>('orders', () =>
-    $api('/me/orders', {
-        headers: {
-            "Accept-Language": userLocale.value
-        }
-    })
+    $api('/me/orders')
 );
 </script>
