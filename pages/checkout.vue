@@ -157,8 +157,12 @@
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { formatPrice } from '~/lib/price'
-import { navigateTo, useAsyncData, useAuthStore, useNuxtApp, useRuntimeConfig } from '#imports'
+import {definePageMeta, navigateTo, useAsyncData, useAuthStore, useNuxtApp, useRuntimeConfig} from '#imports'
 import type { Order } from '~/types'
+
+definePageMeta({
+    public: false
+})
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -199,7 +203,7 @@ const handleCheckout = async () => {
         return
     }
 
-    if (!authStore.accessToken) {
+    if (!authStore.accessValid) {
         console.error('User is not authenticated')
         return
     }

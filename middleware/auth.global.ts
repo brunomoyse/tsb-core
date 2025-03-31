@@ -1,10 +1,12 @@
 // middleware/auth.global.ts
 import { defineNuxtRouteMiddleware, useRequestEvent, navigateTo, useRuntimeConfig} from 'nuxt/app'
 import { useAuthStore } from '@/stores/auth'
+import { useLocalePath } from "#imports";
 
 export default defineNuxtRouteMiddleware(async (to) => {
     if (to.meta.public !== false) return
     const config = useRuntimeConfig()
+    const localePath = useLocalePath()
     const apiUrl: string = config.public.apiUrl as string
 
     // Server-side handling
@@ -15,7 +17,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
         // 1. Check for refresh token existence
         if (!cookies.refresh_token) {
-            return navigateTo('/fr/login')
+            return navigateTo(localePath('login'));
         }
 
         // 2. Validate access token expiration if present
@@ -39,7 +41,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
                 event.node.req.headers.cookie = setCookies
             }
         } catch {
-            return navigateTo('/fr/login')
+            return navigateTo(localePath('login'));
         }
     }
     // Client-side handling
@@ -64,7 +66,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
             authStore.setAccessValid(true)
         } catch {
             await authStore.logout()
-            return navigateTo('/fr/login')
+            return navigateTo(localePath('login'));
         }
     }
 })
