@@ -1,5 +1,5 @@
 <template>
-    <Transition class="md:hidden" name="slide-down">
+    <Transition class="lg:hidden" name="slide-down">
         <aside v-if="cartStore.isCartVisible"
                class="fixed top-20 right-0 w-full h-full bg-white shadow-lg p-8 overflow-y-auto z-40">
 
