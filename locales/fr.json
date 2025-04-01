@@ -2,6 +2,10 @@
   "head": {
     "title": "Tokyo Sushi Bar"
   },
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
   "nav": {
     "home": "Accueil",
     "about": "À propos",
@@ -93,6 +97,7 @@
     "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
     "phone": "Téléphone",
     "phonePlaceholder": "Entrez votre numéro de téléphone",
+    "invalidPhone": "Numéro de téléphone invalide",
     "address": "Adresse",
     "addressPlaceholder": "Entrez votre adresse",
     "submit": "S'inscrire"
