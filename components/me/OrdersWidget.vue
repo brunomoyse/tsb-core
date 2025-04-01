@@ -1,5 +1,5 @@
 <template>
-    <article class="bg-tsb-two rounded-2xl p-6 shadow-sm transition-all hover:shadow-md">
+    <article class="bg-tsb-two rounded-2xl p-6 shadow-sm">
         <div class="border-b border-gray-100 pb-4">
             <h2 class="text-lg font-semibold text-gray-900">{{ $t('me.orders.title') }}</h2>
         </div>
@@ -22,8 +22,8 @@
                     @click="toggleOrder(order.id)"
                 >
                     <div>
-                        <h3 class="font-semibold text-gray-700">{{ $t('me.orders.order') }}
-                            {{ generateOrderReference(order.id, order.createdAt) }}</h3>
+                        <h3 class="font-semibold text-gray-700">
+                            {{ $t(`cart.${order.deliveryOption.toLowerCase()}`) }}</h3>
                         <p class="mt-1 text-sm text-gray-500">
                             {{
                                 new Date(order.createdAt).toLocaleString("fr-BE", {
@@ -38,8 +38,10 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span
-                            class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium uppercase text-blue-700">
-                            {{ getStatus(order.status) }}
+                            class="inline-block px-3 py-1 rounded-full text-sm font-medium text-white"
+                            :class="getStatusColorClass(order.status)"
+                        >
+                          {{ getStatus(order.status) }}
                         </span>
                         <span :class="{ 'rotate-180': isExpanded(order.id) }"
                               class="text-gray-400 transition-transform duration-200">
@@ -63,7 +65,6 @@
                     <div v-show="isExpanded(order.id)" class="px-4 pb-4">
                         <!-- Order Items -->
                         <div class="space-y-4">
-                            <h4 class="text-sm font-medium text-gray-900">{{ $t('me.orders.items') }}</h4>
                             <div class="space-y-3">
                                 <div
                                     v-for="(item, index) in order.products"
@@ -73,7 +74,7 @@
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">
                                             {{ item.product.code ? item.product.code + ' - ' : '' }}
-                                            {{ item.product.categoryName + ' ' + item.product.name }}
+                                            {{ item.product.categoryName + ' - ' + item.product.name }}
                                         </p>
                                     </div>
                                     <span class="text-sm font-medium text-gray-700">x{{ item.quantity }}</span>
@@ -164,24 +165,21 @@ const getStatus = (status: string) => {
     }
 }
 
-const generateOrderReference = (orderID: string, createdAt: string) => {
-    // Parse the createdAt datetime string into a Date object.
-    const date = new Date(createdAt);
-    if (isNaN(date.getTime())) {
-        throw new Error("Invalid date format");
+// Status color mapping
+const getStatusColorClass = (status: string): string => {
+    const map: Record<string, string> = {
+        PENDING: 'bg-orange-500',
+        CONFIRMED: 'bg-blue-500',
+        PREPARING: 'bg-cyan-500',
+        AWAITING_PICK_UP: 'bg-amber-500',
+        OUT_FOR_DELIVERY: 'bg-purple-500',
+        DELIVERED: 'bg-green-500',
+        PICKED_UP: 'bg-green-500',
+        FAILED: 'bg-red-500',
+        CANCELLED: 'bg-red-500',
     }
 
-    // Format the date as YYYYMMDD.
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const formattedDate = `${year}${month}${day}`;
-
-    // Take the first 8 characters of the orderID and convert them to uppercase.
-    const shortUUID = orderID.substring(0, 8).toUpperCase();
-
-    // Return the formatted order reference.
-    return `#${formattedDate}-${shortUUID}`;
+    return map[status] || 'bg-gray-400'
 }
 
 </script>

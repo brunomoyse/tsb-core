@@ -66,6 +66,11 @@ export interface Order {
     paymentMethod: string;
     molliePaymentId: string;
     molliePaymentUrl: string;
-    status: string;
+    status: OrderStatus;
     products: OrderProductLine[];
 }
+
+export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
+
+export type OrderDeliveryStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'FAILED'
+export type OrderPickUpStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'PICKED_UP' | 'CANCELLED' | 'FAILED'
