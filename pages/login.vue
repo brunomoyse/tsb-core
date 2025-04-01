@@ -113,7 +113,7 @@ const loginWithGoogle = () => {
 
 const loginSuccess = async () => {
     if (import.meta.client) {
-        const user = await $api<User>('/my-profile')
+        const user = await $api<User>('/me')
         if (user) authStore.setUser(user)
     }
     navigateTo(localePath('my-account'))
