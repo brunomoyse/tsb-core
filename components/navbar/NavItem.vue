@@ -35,6 +35,12 @@ const props = defineProps<NavItemProps>();
 // Get the current route
 const route = useRoute();
 
-// Check if the current route matches the link's `to` prop
-const isActive = computed(() => typeof route.name === 'string' && route.name.startsWith(props.to));
+// Updated active state check using path
+const isActive = computed(() => {
+    // Normalize props.to to always start with "/"
+    const normalizedTo = props.to.startsWith('/') ? props.to : `/${props.to}`;
+    // Remove the first segment (locale) from route.path, e.g. "/fr/me" becomes "/me"
+    const normalizedPath = route.path.replace(/^\/[^/]+/, '');
+    return normalizedPath === normalizedTo || normalizedPath.startsWith(`${normalizedTo}/`);
+});
 </script>

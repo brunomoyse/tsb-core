@@ -19,6 +19,14 @@ export const useAuthStore = defineStore("auth", {
             this.user = user;
             this.accessValid = true;
         },
+        updateUser(user: User) {
+            if (this.user) {
+                this.user.name = user.name;
+                this.user.email = user.email;
+                this.user.address = user.address;
+                this.user.phoneNumber = user.phoneNumber;
+            }
+        },
         clearUser() {
             this.user = null
             this.accessValid = false

@@ -24,9 +24,14 @@
                 <div class="flex items-center justify-between">
                     <dt class="text-gray-500">{{ $t('me.profile.email') }}</dt>
                     <dd class="font-medium">
-                    <span class="text-gray-900">
                         {{ authStore?.user?.email || '–' }}
-                    </span>
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <dt class="text-gray-500">{{ $t('me.profile.phoneNumber') }}</dt>
+                    <dd :title="authStore?.user?.phoneNumber" class="font-medium">
+                        {{ authStore?.user?.phoneNumber }}
                     </dd>
                 </div>
 
@@ -34,20 +39,6 @@
                     <dt class="text-gray-500">{{ $t('me.profile.address') }}</dt>
                     <dd :title="authStore?.user?.address" class="font-medium">
                         {{ authStore?.user?.address || '–' }}
-                    </dd>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <dt class="text-gray-500">{{ $t('me.profile.phoneNumber') }}</dt>
-                    <dd class="font-medium">
-                        <a
-                            v-if="authStore?.user?.phoneNumber"
-                            :href="`tel:${authStore.user.phoneNumber}`"
-                            class="hover:text-blue-600 transition-colors"
-                        >
-                            {{ authStore.user.phoneNumber }}
-                        </a>
-                        <span v-else>–</span>
                     </dd>
                 </div>
             </dl>
@@ -181,8 +172,10 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '~/stores/auth'
 import {PhoneNumberFormat, PhoneNumberUtil} from 'google-libphonenumber'
-import {computed} from "#imports";
+import {computed, useAsyncData, useNuxtApp} from "#imports";
+import type {User} from "~/types";
 
+const {$api} = useNuxtApp()
 const { t } = useI18n()
 const authStore = useAuthStore()
 
@@ -237,8 +230,24 @@ const formattedPhone = computed(() => {
 const openModal = () => {
     fullName.value = authStore.user?.name || ''
     email.value = authStore.user?.email || ''
-    phoneLocal.value = authStore.user?.phoneNumber || ''
     address.value = authStore.user?.address || ''
+
+    // Process the stored phone number.
+    const storedPhone = authStore.user?.phoneNumber || ''
+    if (storedPhone) {
+        // Find a country whose prefix matches the beginning of the stored phone.
+        const matchingCountry = countries.find(country => storedPhone.startsWith(country.prefix))
+        if (matchingCountry) {
+            selectedCountry.value = matchingCountry.code
+            // Remove the country prefix from the stored phone.
+            phoneLocal.value = storedPhone.substring(matchingCountry.prefix.length)
+        } else {
+            // If no prefix is found, leave the phone as is.
+            phoneLocal.value = storedPhone
+        }
+    } else {
+        phoneLocal.value = ''
+    }
     showModal.value = true
 }
 
@@ -251,9 +260,31 @@ const submitProfileUpdate = async () => {
     if (!fullName.value || !email.value || !phoneLocal.value) return
     if (!validatePhone()) return
 
-    // @TODO: Call API to update profile
-    // // use formattedPhone.value
-    // ...
+    const payload = {
+        name: fullName.value,
+        email: email.value,
+        phone: formattedPhone.value,
+        address: address.value,
+    };
+
+    const filteredPayload = Object.fromEntries(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        Object.entries(payload).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const { data: updatedUser } = await useAsyncData<User>('/me', () =>
+        $api('/me', {
+            method: 'PATCH',
+            body: filteredPayload,
+        })
+    );
+
+    if (!updatedUser.value) {
+        console.error('Failed to update user profile')
+        return
+    }
+
+    authStore.updateUser(updatedUser.value)
 
     closeModal()
 }
