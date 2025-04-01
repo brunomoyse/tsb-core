@@ -1,7 +1,7 @@
 <template>
     <article
         aria-labelledby="personal-info-heading"
-        class="rounded-2xl bg-tsb-two p-6 shadow-sm transition-all hover:shadow-md"
+        class="rounded-2xl bg-tsb-two p-6 shadow-sm"
     >
         <header class="border-b border-gray-100 pb-4">
             <h2

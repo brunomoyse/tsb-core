@@ -77,10 +77,11 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, useNuxtApp, useRuntimeConfig, useAsyncData} from '#imports';
+import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath} from '#imports';
 import type {LoginResponse, User} from '@/types';
 import {useAuthStore} from '@/stores/auth'
 
+const localePath = useLocalePath()
 const authStore = useAuthStore()
 const {$api} = useNuxtApp()
 const config = useRuntimeConfig()
@@ -115,9 +116,15 @@ const loginSuccess = async () => {
         const user = await $api<User>('/my-profile')
         if (user) authStore.setUser(user)
     }
+    navigateTo(localePath('my-account'))
 }
 
 onMounted(async () => {
+    // Check if the user is already logged in on page load
+    if (authStore.accessValid) {
+        navigateTo(localePath('my-account')) // Redirect to my-account if user is logged in
+    }
+
     const params = new URLSearchParams(window.location.search)
 
     const success = params.get('success')
@@ -131,6 +138,7 @@ onMounted(async () => {
         }
     }
 })
+
 </script>
 
 <style>
