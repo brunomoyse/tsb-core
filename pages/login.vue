@@ -116,13 +116,13 @@ const loginSuccess = async () => {
         const user = await $api<User>('/me')
         if (user) authStore.setUser(user)
     }
-    navigateTo(localePath('my-account'))
+    navigateTo(localePath('me'))
 }
 
 onMounted(async () => {
     // Check if the user is already logged in on page load
     if (authStore.accessValid) {
-        navigateTo(localePath('my-account')) // Redirect to my-account if user is logged in
+        navigateTo(localePath('me'))
     }
 
     const params = new URLSearchParams(window.location.search)

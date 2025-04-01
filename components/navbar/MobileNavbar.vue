@@ -32,7 +32,7 @@
                                            @click="closeMenu"/>
                             <MobileNavItem v-if="authStore.accessValid" :label="$t('nav.myAccount')"
                                            icon="/icons/account-circle-icon.svg"
-                                           to="my-account"
+                                           to="me"
                                            @click="closeMenu"/>
 
                             <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"

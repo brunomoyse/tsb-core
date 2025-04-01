@@ -15,7 +15,7 @@
             <NavItem v-if="!authStore.accessValid" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
                      to="login"/>
             <NavItem v-if="authStore.accessValid" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
-                     to="my-account"/>
+                     to="me"/>
             <!-- Language picker -->
             <LanguagePicker :tooltipText="$t('nav.language')" alt="Choose language Icon"
                             icon="/icons/translate-icon.svg"/>
