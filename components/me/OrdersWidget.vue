@@ -5,28 +5,28 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="orders === null" class="mt-6 text-center text-gray-500">
+        <div v-if="orderResponses === null" class="mt-6 text-center text-gray-500">
             {{ $t('me.orders.loading') }}
         </div>
 
         <!-- Orders List -->
-        <div v-else-if="orders?.length" class="mt-4 space-y-2">
+        <div v-else-if="orderResponses?.length" class="mt-4 space-y-2">
             <div
-                v-for="order in orders"
-                :key="order.id"
+                v-for="orderResponse in orderResponses"
+                :key="orderResponse.order.id"
                 class="bg-white rounded-xl border border-gray-100 transition-all"
             >
                 <!-- Accordion Header -->
                 <div
                     class="p-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
-                    @click="toggleOrder(order.id)"
+                    @click="toggleOrder(orderResponse.order.id)"
                 >
                     <div>
                         <h3 class="font-semibold text-gray-700">
-                            {{ $t(`cart.${order.deliveryOption.toLowerCase()}`) }}</h3>
+                            {{ $t(`cart.${orderResponse.order.orderType.toLowerCase()}`) }}</h3>
                         <p class="mt-1 text-sm text-gray-500">
                             {{
-                                new Date(order.createdAt).toLocaleString("fr-BE", {
+                                new Date(orderResponse.order.createdAt).toLocaleString("fr-BE", {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
@@ -39,11 +39,11 @@
                     <div class="flex items-center gap-2">
                         <span
                             class="inline-block px-3 py-1 rounded-full text-sm font-medium text-white"
-                            :class="getStatusColorClass(order.status)"
+                            :class="getStatusColorClass(orderResponse.order.orderStatus)"
                         >
-                          {{ getStatus(order.status) }}
+                          {{ getStatus(orderResponse.order.orderStatus) }}
                         </span>
-                        <span :class="{ 'rotate-180': isExpanded(order.id) }"
+                        <span :class="{ 'rotate-180': isExpanded(orderResponse.order.id) }"
                               class="text-gray-400 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"
@@ -62,12 +62,12 @@
                     leave-from-class="max-h-[1000px] opacity-100"
                     leave-to-class="max-h-0 opacity-0"
                 >
-                    <div v-show="isExpanded(order.id)" class="px-4 pb-4">
+                    <div v-show="isExpanded(orderResponse.order.id)" class="px-4 pb-4">
                         <!-- Order Items -->
                         <div class="space-y-4">
                             <div class="space-y-3">
                                 <div
-                                    v-for="(item, index) in order.products"
+                                    v-for="(item, index) in orderResponse.products"
                                     :key="index"
                                     class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                                 >
@@ -91,7 +91,7 @@
                                         new Intl.NumberFormat('fr-BE', {
                                             style: 'currency',
                                             currency: 'EUR'
-                                        }).format(totalPrice(order))
+                                        }).format(parseFloat(orderResponse.order.totalPrice))
                                     }}
                                 </span>
                             </div>
@@ -110,15 +110,15 @@
 
 <script lang="ts" setup>
 import type {PropType} from '#imports'
-import type {Order} from '~/types'
+import type {OrderResponse} from '~/types'
 import {ref} from 'vue'
 import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()
 
 defineProps({
-    orders: {
-        type: Array as PropType<Order[] | null>,
+    orderResponses: {
+        type: Array as PropType<OrderResponse[] | null>,
         required: true
     }
 })
@@ -134,11 +134,6 @@ const toggleOrder = (orderId: string) => {
 }
 
 const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
-
-// Total price calculation remains the same
-const totalPrice = (order: Order) => {
-    return order.products.reduce((acc, item) => acc + (item.totalPrice ?? 0), 0)
-}
 
 const getStatus = (status: string) => {
     switch (status) {

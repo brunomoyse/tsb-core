@@ -9,7 +9,7 @@
                 </div>
                 <!-- Orders Widget -->
                 <div class="lg:col-span-1 lg:row-span-1">
-                    <OrdersWidget :orders="orders"/>
+                    <OrdersWidget :order-responses="orderResponses"/>
                 </div>
             </div>
         </div>
@@ -20,7 +20,7 @@
 import {definePageMeta, useAsyncData, useNuxtApp} from '#imports'
 import OrdersWidget from '@/components/me/OrdersWidget.vue'
 import ProfileWidget from '@/components/me/ProfileWidget.vue'
-import type {Order} from '~/types'
+import type {OrderResponse} from '~/types'
 
 definePageMeta({
     public: false
@@ -28,7 +28,7 @@ definePageMeta({
 
 const {$api} = useNuxtApp()
 
-const {data: orders} = await useAsyncData<Order[]>('orders', () =>
+const {data: orderResponses} = await useAsyncData<OrderResponse[]>('orders', () =>
     $api('/me/orders')
 );
 </script>
