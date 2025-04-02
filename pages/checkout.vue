@@ -157,13 +157,22 @@
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { formatPrice } from '~/lib/price'
-import {definePageMeta, navigateTo, useAsyncData, useAuthStore, useNuxtApp, useRuntimeConfig} from '#imports'
+import {
+    definePageMeta,
+    navigateTo,
+    useAsyncData,
+    useAuthStore,
+    useLocalePath,
+    useNuxtApp,
+    useRuntimeConfig
+} from '#imports'
 import type {CreateOrderRequest, OrderResponse} from '~/types'
 
 definePageMeta({
     public: false
 })
 
+const localePath = useLocalePath()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
@@ -249,8 +258,11 @@ const handleCheckout = async () => {
             })
         )
 
-        if (orderResponse.value?.payment?.paymentUrl) {
+        if (isOnlinePayment.value && orderResponse.value?.payment?.paymentUrl) {
             navigateTo(orderResponse.value?.payment?.paymentUrl, { external: true })
+        } else {
+            const orderId = orderResponse.value?.order.id
+            navigateTo(localePath(`/order-completed/${orderId}`))
         }
 
         cartStore.clearCart()
