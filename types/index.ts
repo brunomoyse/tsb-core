@@ -64,7 +64,7 @@ export interface Order {
     deliveryFee: string | null;
     totalPrice: string;
     estimatedReadyTime: string | null;
-    addressID: string | null;
+    addressId: string | null;
     addressExtra: string | null;
     extraComment: string | null;
     orderExtra: {

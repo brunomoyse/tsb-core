@@ -51,7 +51,7 @@
                                 {{
                                     item.product.code ? item.product.code : item.product.category?.name + ' ' + item.product.name
                                 }}
-                                <span v-if="deliveryOption === 'pickup' && item.product.discountable"
+                                <span v-if="deliveryOption === 'PICKUP' && item.product.discountable"
                                       class="text-xs text-green-600 ml-1">
                   (-10%)
                 </span>
@@ -94,12 +94,12 @@
                     <span>{{ $t('cart.subtotal') }}:</span>
                     <span>{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="deliveryOption === 'pickup'"
+                <div v-if="deliveryOption === 'PICKUP'"
                      class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span>-{{ formatPrice(totalDiscount) }}</span>
                 </div>
-                <div v-if="deliveryOption === 'delivery'"
+                <div v-if="deliveryOption === 'DELIVERY'"
                      class="flex justify-between items-center text-sm text-gray-600">
                     <span>{{ $t('cart.deliveryFee') }}:</span>
                     <span>+{{ formatPrice(deliveryFee) }}</span>
@@ -143,15 +143,15 @@ const {t} = useI18n()
 
 // Delivery options setup
 const deliveryOptions = [
-    {value: 'delivery', label: t('cart.delivery'), icon: '/icons/moped-icon.svg'},
-    {value: 'pickup', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
+    {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg'},
+    {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
 ];
-const deliveryOption = ref<'delivery' | 'pickup'>('delivery');
+const deliveryOption = ref<'DELIVERY' | 'PICKUP'>('DELIVERY');
 const deliveryFee = 3.5;
 
 const handleOrderType = (option: string) => {
-    deliveryOption.value = option as 'delivery' | 'pickup';
-    cartStore.deliveryOption = option as 'delivery' | 'pickup';
+    deliveryOption.value = option as 'DELIVERY' | 'PICKUP';
+    cartStore.deliveryOption = option as 'DELIVERY' | 'PICKUP';
 };
 
 // Price calculations
@@ -161,7 +161,7 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() =>
-    deliveryOption.value === 'pickup'
+    deliveryOption.value === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.discountable
                 ? acc + (item.product.price * item.quantity * 0.1)
@@ -171,13 +171,13 @@ const totalDiscount = computed(() =>
 
 const cartTotal = computed(() => {
     let total = subtotal.value - totalDiscount.value;
-    if (deliveryOption.value === 'delivery') total += deliveryFee;
+    if (deliveryOption.value === 'DELIVERY') total += deliveryFee;
     return Math.max(total, 0);
 });
 
 const calculateItemPrice = (item: CartItem) => {
     const basePrice = item.product.price * item.quantity;
-    if (deliveryOption.value === 'pickup' && item.product.discountable) {
+    if (deliveryOption.value === 'PICKUP' && item.product.discountable) {
         return basePrice * 0.9;
     }
     return basePrice;
