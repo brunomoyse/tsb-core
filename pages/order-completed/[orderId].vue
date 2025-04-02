@@ -10,13 +10,13 @@
             </p>
 
             <!-- Order Details -->
-            <div v-if="order" class="mt-6">
+            <div v-if="orderResponse" class="mt-6">
                 <div class="space-y-4">
                     <!-- Order creation time -->
                     <p class="text-gray-700">
                         {{ $t('orderCompleted.placedAt', 'Order placed at: ') }}
                         {{
-                            new Date(order.createdAt).toLocaleString("fr-BE", {
+                            new Date(orderResponse.order.createdAt).toLocaleString("fr-BE", {
                                 year: "numeric",
                                 month: "2-digit",
                                 day: "2-digit",
@@ -31,7 +31,7 @@
                         <h4 class="text-sm font-medium text-gray-900">{{ $t('orderCompleted.items', 'Articles:') }}</h4>
                         <div class="space-y-3">
                             <div
-                                v-for="(item, index) in order.products"
+                                v-for="(item, index) in orderResponse.products"
                                 :key="index"
                                 class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                             >
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts" setup>
-import type {Order} from '@/types'
+import type {OrderResponse} from '@/types'
 import {useNuxtApp, useRoute, useAsyncData, definePageMeta} from '#imports';
 
 definePageMeta({
@@ -78,7 +78,7 @@ const {$api} = useNuxtApp()
 
 const orderId = route.params.orderId as string
 
-const {data: order} = await useAsyncData<Order>('order', () =>
+const {data: orderResponse} = await useAsyncData<OrderResponse>('order', () =>
     $api(`/orders/${orderId}`)
 );
 </script>

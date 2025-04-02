@@ -50,12 +50,12 @@
                         <span>{{ formatPrice(cartTotal) }}</span>
                     </div>
                     <!-- Delivery Fee (only for delivery orders) -->
-                    <div v-if="cartStore.deliveryOption === 'delivery'" class="flex justify-between text-gray-700">
+                    <div v-if="cartStore.deliveryOption === 'DELIVERY'" class="flex justify-between text-gray-700">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
                         <span>{{ formatPrice(authStore.deliveryFee) }}</span>
                     </div>
                     <!-- Delivery Address (only for delivery orders) -->
-                    <div v-if="cartStore.deliveryOption === 'delivery' && authStore.user && authStore.user.address" class="flex flex-col text-gray-700">
+                    <div v-if="cartStore.deliveryOption === 'DELIVERY' && authStore.user && authStore.user.address" class="flex flex-col text-gray-700">
                         <span class="font-medium">{{ $t('checkout.deliveryAddress', 'Delivery Address:') }}</span>
                         <span>{{ authStore.user.address }}</span>
                     </div>
@@ -77,8 +77,8 @@
                     <div class="flex gap-4">
                         <!-- Online Payment Card -->
                         <div
-                            @click="selectedPayment = 'ONLINE'"
-                            :class="selectedPayment === 'ONLINE' ? 'border-red-500' : 'border-gray-300 bg-gray-50'"
+                            @click="isOnlinePayment = true"
+                            :class="isOnlinePayment ? 'border-red-500' : 'border-gray-300 bg-gray-50'"
                             class="cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md"
                         >
                             <img src="/icons/online-payment-icon.svg" alt="Online Payment" class="w-10 h-10 mb-2" />
@@ -86,8 +86,8 @@
                         </div>
                         <!-- Cash -->
                         <div
-                            @click="selectedPayment = 'CASH'"
-                            :class="selectedPayment === 'CASH' ? 'border-red-500' : 'border-gray-300 bg-gray-50'"
+                            @click="isOnlinePayment = false"
+                            :class="!isOnlinePayment ? 'border-red-500' : 'border-gray-300 bg-gray-50'"
                             class="cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md"
                         >
                             <img src="/icons/cash-payment-icon.svg" alt="Cash" class="w-10 h-10 mb-2" />
@@ -146,7 +146,7 @@
                     :disabled="isCheckoutProcessing"
                     class="w-full py-3 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
                 >
-                    {{ selectedPayment === 'ONLINE' ?  $t('checkout.goToPayment', 'Go to Payment') : $t('checkout.placeOrder', 'Place Order') }}
+                    {{ isOnlinePayment ?  $t('checkout.goToPayment', 'Go to Payment') : $t('checkout.placeOrder', 'Place Order') }}
                 </button>
             </section>
         </div>
@@ -158,7 +158,7 @@ import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { formatPrice } from '~/lib/price'
 import {definePageMeta, navigateTo, useAsyncData, useAuthStore, useNuxtApp, useRuntimeConfig} from '#imports'
-import type { Order } from '~/types'
+import type {CreateOrderRequest, OrderResponse} from '~/types'
 
 definePageMeta({
     public: false
@@ -169,10 +169,8 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { $api } = useNuxtApp()
 
-// Payment method: ONLINE or CASH
-const selectedPayment = ref<'ONLINE' | 'CASH'>('ONLINE')
-
 const isCheckoutProcessing = ref(false)
+const isOnlinePayment = ref(true) // Default to online payment
 
 // Extras: add chopsticks, and choose up to 2 soy sauces (default is "none")
 const addChopsticks = ref(true)
@@ -186,7 +184,7 @@ const cartTotal = computed(() =>
 
 // Calculate final total including delivery fee if applicable
 const finalTotal = computed(() =>
-    cartTotal.value + (cartStore.deliveryOption === 'delivery' ? authStore.deliveryFee : 0)
+    cartTotal.value + (cartStore.deliveryOption === 'DELIVERY' ? authStore.deliveryFee : 0)
 )
 
 const handleCheckout = async () => {
@@ -208,21 +206,42 @@ const handleCheckout = async () => {
         return
     }
 
-    const orderData = {
-        products: cartStore.products.map(item => ({
+    const orderExtra: { name: string; options?: string[] }[] = [];
+
+    if (addChopsticks.value) {
+        orderExtra.push({ name: 'chopsticks' });
+    }
+
+    if (sauce1.value !== 'none' || sauce2.value !== 'none') {
+        const paramSauce: { name: string; options: string[] } = {
+            name: 'sauce',
+            options: []
+        };
+
+        if (sauce1.value !== 'none') {
+            paramSauce.options.push(sauce1.value);
+        }
+        if (sauce2.value !== 'none') {
+            paramSauce.options.push(sauce2.value);
+        }
+        orderExtra.push(paramSauce);
+    }
+
+    const orderData: CreateOrderRequest = {
+        orderType: cartStore.deliveryOption,
+        isOnlinePayment: isOnlinePayment.value,
+        addressId: null,
+        addressExtra: null,
+        extraComment: null,
+        orderExtra: orderExtra,
+        orderProducts: cartStore.products.map(item => ({
             productId: item.product.id,
             quantity: item.quantity,
         })),
-        order_type: cartStore.deliveryOption,
-        paymentMode: selectedPayment.value,
-        extras: {
-            chopsticks: addChopsticks.value,
-            sauces: [sauce1.value, sauce2.value].filter(sauce => sauce !== 'none'),
-        },
     }
 
     try {
-        const { data: order } = await useAsyncData<Order>('order', () =>
+        const { data: orderResponse } = await useAsyncData<OrderResponse>('order', () =>
             $api('/orders', {
                 method: 'POST',
                 body: JSON.stringify(orderData),
@@ -230,8 +249,8 @@ const handleCheckout = async () => {
             })
         )
 
-        if (order.value?.molliePaymentUrl) {
-            navigateTo(order.value.molliePaymentUrl, { external: true })
+        if (orderResponse.value?.payment?.paymentUrl) {
+            navigateTo(orderResponse.value?.payment?.paymentUrl, { external: true })
         }
 
         cartStore.clearCart()
