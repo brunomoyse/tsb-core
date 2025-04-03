@@ -254,15 +254,17 @@ const handleCheckout = async () => {
             $api('/orders', {
                 method: 'POST',
                 body: JSON.stringify(orderData),
-                headers: { 'Content-Type': 'application/json' },
             })
         )
 
         if (isOnlinePayment.value && orderResponse.value?.payment?.paymentUrl) {
             navigateTo(orderResponse.value?.payment?.paymentUrl, { external: true })
         } else {
-            const orderId = orderResponse.value?.order.id
-            navigateTo(localePath(`/order-completed/${orderId}`))
+            if (orderResponse.value?.order.id) {
+                // If the order is completed, navigate to the order completed page
+                const orderId = orderResponse.value?.order.id
+                navigateTo(localePath(`/order-completed/${orderId}`))
+            }
         }
 
         cartStore.clearCart()

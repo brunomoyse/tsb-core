@@ -106,6 +106,7 @@
     "orders": {
       "title": "My orders",
       "loading": "Loading orders...",
+      "empty": "No orders found",
       "order": "Order",
       "items": "Items",
       "total": "Total",

@@ -106,6 +106,7 @@
     "orders": {
       "title": "Mes commandes",
       "loading": "Chargement des commandes...",
+      "empty": "Aucune commande trouvée",
       "order": "Commande",
       "items": "Articles",
       "total": "Total",
