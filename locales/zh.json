@@ -106,6 +106,7 @@
     "orders": {
       "title": "我的订单",
       "loading": "加载订单中...",
+      "empty": "没有找到订单",
       "order": "订单",
       "items": "商品",
       "total": "总计",
