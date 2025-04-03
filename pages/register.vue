@@ -188,8 +188,8 @@ const registerUser = async () => {
                 name: fullName.value,
                 email: email.value,
                 password: password.value,
-                phone: formattedPhone.value,
-                address: address.value,
+                phoneNumber: formattedPhone.value ?? null,
+                address: address.value ?? null,
             }
         })
     )

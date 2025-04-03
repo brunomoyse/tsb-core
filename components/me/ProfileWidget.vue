@@ -263,8 +263,8 @@ const submitProfileUpdate = async () => {
     const payload = {
         name: fullName.value,
         email: email.value,
-        phone: formattedPhone.value,
-        address: address.value,
+        phoneNumber: formattedPhone.value ?? null,
+        address: address.value ?? null,
     };
 
     const filteredPayload = Object.fromEntries(
