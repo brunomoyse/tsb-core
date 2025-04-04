@@ -1,99 +1,189 @@
 <template>
     <div class="flex justify-center">
         <div class="w-[500px]">
-            <!-- Title -->
             <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">
                 {{ $t('register.title') }}
             </h2>
 
-            <!-- Registration Form -->
             <form class="space-y-4" @submit.prevent="registerUser">
-                <!-- Full Name -->
+                <!-- Personal Information Fields -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="fullName">
                         {{ $t('register.fullName') }}
                     </label>
-                    <input id="fullName" v-model="fullName" :placeholder="$t('register.fullNamePlaceholder')"
-                           autocomplete="name"
+                    <input id="fullName" v-model="fullName"
+                           :placeholder="$t('register.fullNamePlaceholder')"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                           name="fullName" required
-                           type="text"/>
+                           required type="text"/>
                 </div>
 
-                <!-- Email -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="email">
                         {{ $t('register.email') }}
                     </label>
-                    <input id="email" v-model="email" :placeholder="$t('register.emailPlaceholder')"
-                           autocomplete="email"
+                    <input id="email" v-model="email"
+                           :placeholder="$t('register.emailPlaceholder')"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                           name="email" required
-                           type="email"/>
+                           required type="email"/>
                 </div>
 
-                <!-- Password -->
+                <!-- Password Fields -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="password">
                         {{ $t('register.password') }}
                     </label>
-                    <input id="password" v-model="password" :placeholder="$t('register.passwordPlaceholder')"
-                           autocomplete="new-password"
+                    <input id="password" v-model="password"
+                           :placeholder="$t('register.passwordPlaceholder')"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                           name="password" required
-                           type="password"/>
+                           required type="password"/>
                 </div>
 
-                <!-- Confirm Password -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="confirmPassword">
                         {{ $t('register.confirmPassword') }}
                     </label>
                     <input id="confirmPassword" v-model="confirmPassword"
-                           :placeholder="$t('register.confirmPasswordPlaceholder')" autocomplete="new-password"
+                           :placeholder="$t('register.confirmPasswordPlaceholder')"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                           name="confirmPassword" required
-                           type="password"/>
+                           required type="password"/>
                 </div>
 
-                <!-- Phone Number with Country Selector -->
+                <!-- Phone Input -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="phone">
                         {{ $t('register.phone') }}
                     </label>
                     <div class="flex space-x-2">
-                        <!-- Country selector with flags -->
-                        <select id="country" v-model="selectedCountry" autocomplete="off"
-                                class="p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                                name="country">
-                            <option v-for="country in countries" :key="country.code" :value="country.code">
+                        <select id="country" v-model="selectedCountry"
+                                class="p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200">
+                            <option v-for="country in countries"
+                                    :key="country.code"
+                                    :value="country.code">
                                 {{ country.flag }} {{ country.prefix }}
                             </option>
                         </select>
-                        <!-- Phone number input -->
-                        <input id="phone" v-model="phoneLocal" :placeholder="$t('register.phonePlaceholder')"
-                               autocomplete="tel"
+                        <input id="phone" v-model="phoneLocal"
+                               :placeholder="$t('register.phonePlaceholder')"
                                class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                               name="phone" required
-                               type="tel"/>
+                               required type="tel"/>
                     </div>
                     <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
                 </div>
 
-                <!-- Address with Autocompletion -->
-                <div>
-                    <label class="block text-sm text-gray-700 mb-1" for="address">
-                        {{ $t('register.address') }}
-                    </label>
-                    <input id="address" v-model="address" :placeholder="$t('register.addressPlaceholder')"
-                           autocomplete="street-address"
-                           class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                           name="address"
-                           type="text"/>
-                    <!-- TODO: integrate geocoder API for address autocompletion -->
+                <!-- Address Autocomplete Section -->
+                <!-- STREET FIELD -->
+                <div class="relative">
+                    <input
+                        id="street"
+                        ref="streetInput"
+                        v-model="streetQuery"
+                        :placeholder="$t('register.streetPlaceholder')"
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
+                        @focus="isStreetFocused = true"
+                        @blur="onStreetBlur"
+                        @keydown.enter.prevent="selectFirstStreet"
+                        :disabled="Boolean(selectedStreet)"
+                    />
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
+                        <svg v-if="selectedStreet" @mousedown.prevent="clearStreet" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-if="selectedStreet" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <ul
+                        v-show="isStreetFocused && !selectedStreet && streets.length > 0"
+                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
+                        @mousedown.prevent
+                    >
+                        <li
+                            v-for="street in streets"
+                            :key="street.id"
+                            class="p-2 hover:bg-gray-100 cursor-pointer"
+                            @mousedown="selectStreet(street)"
+                        >
+                            {{ street.streetName }} - {{ street.municipalityName }}, {{ street.postcode }}
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- Submit Button -->
+                <!-- HOUSE FIELD -->
+                <div class="relative mt-3" v-if="selectedStreet">
+                    <input
+                        id="houseNumber"
+                        ref="houseInput"
+                        v-model="houseQuery"
+                        :placeholder="$t('register.houseNumberPlaceholder')"
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
+                        @focus="isHouseFocused = true"
+                        @blur="onHouseBlur"
+                        @keydown.enter.prevent="handleHouseEnter"
+                        :disabled="houseConfirmed"
+                    />
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
+                        <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-if="houseConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <ul
+                        v-show="isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
+                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
+                        @mousedown.prevent
+                    >
+                        <li
+                            v-for="house in filteredHouseNumbers"
+                            :key="house"
+                            class="p-2 hover:bg-gray-100 cursor-pointer"
+                            @mousedown="selectHouse(house)"
+                        >
+                            {{ house }}
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- BOX FIELD -->
+                <div class="relative mt-3" v-if="selectedHouseNumber && boxNumbers.length > 1">
+                    <input
+                        id="boxNumber"
+                        ref="boxInput"
+                        v-model="boxQuery"
+                        :placeholder="$t('register.boxNumberPlaceholder')"
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                        @focus="isBoxFocused = true"
+                        @blur="onBoxBlur"
+                        @keydown.enter.prevent="selectFirstBox"
+                        :disabled="boxConfirmed"
+                    />
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
+                        <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-if="boxConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <ul
+                        v-show="isBoxFocused && !boxConfirmed"
+                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
+                        @mousedown.prevent
+                    >
+                        <li
+                            v-for="box in filteredBoxNumbers"
+                            :key="box === null || box === '' ? 'none' : box"
+                            class="p-2 hover:bg-gray-100 cursor-pointer"
+                            @mousedown="selectBox(box)"
+                        >
+                            {{ box === null ? '\u00A0' : box }}
+                        </li>
+                    </ul>
+                </div>
+
+                <input type="hidden" v-model="finalAddressID" />
+
                 <button class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
                     {{ $t('register.submit') }}
                 </button>
@@ -103,119 +193,425 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, navigateTo, ref, useAsyncData, useLocalePath, useNuxtApp} from '#imports'
-import {useI18n} from 'vue-i18n'
-import {PhoneNumberFormat, PhoneNumberUtil} from 'google-libphonenumber'
+import { ref, watch, computed, nextTick } from 'vue'
+import { navigateTo, useAsyncData, useLocalePath, useNuxtApp } from '#imports'
+import { useI18n } from 'vue-i18n'
+import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
+import type { Address, Street } from '~/types'
 
+const { $api } = useNuxtApp()
+const { t } = useI18n()
 const localePath = useLocalePath()
-const {$api} = useNuxtApp()
-const {locale: userLocale, t} = useI18n()
-
 const phoneUtil = PhoneNumberUtil.getInstance()
 
+// Reactive State
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const phoneLocal = ref('')
-const address = ref('')
-const selectedCountry = ref('BE') // Default country code.
+const selectedCountry = ref('BE')
 
+const streetQuery = ref('')
+const streets = ref<Street[]>([])
+const selectedStreet = ref<Street | null>(null)
+
+const houseNumbers = ref<string[]>([])
+const houseQuery = ref('')
+const selectedHouseNumber = ref('')
+const houseConfirmed = ref(false)
+
+const boxNumbers = ref<(string | null)[]>([])
+const boxQuery = ref<(string | null)>(null)
+const selectedBoxNumber = ref<(string | null)>(null)
+const boxConfirmed = ref(false)
+
+const finalAddressID = ref<string | null>(null)
 const phoneError = ref('')
 
-const countries = [
-    {prefix: '+31', code: 'NL', flag: '🇳🇱'},
-    {prefix: '+32', code: 'BE', flag: '🇧🇪'},
-    {prefix: '+33', code: 'FR', flag: '🇫🇷'},
-    {prefix: '+352', code: 'LU', flag: '🇱🇺'},
-    {prefix: '+44', code: 'DE', flag: '🇩🇪'},
-]
+// Focus states
+const isStreetFocused = ref(false)
+const isHouseFocused = ref(false)
+const isBoxFocused = ref(false)
 
-// Validate and format phone number using google-libphonenumber.
-const validatePhone = (): boolean => {
+// Debounce Handlers
+let debounceStreetTimer: ReturnType<typeof setTimeout> | null = null
+let debounceHouseTimer: ReturnType<typeof setTimeout> | null = null
+let debounceBoxTimer: ReturnType<typeof setTimeout> | null = null
+
+// Input blur events
+function onStreetBlur() {
+    setTimeout(() => {
+        isStreetFocused.value = false
+    }, 100)
+}
+
+function onHouseBlur() {
+    setTimeout(() => {
+        isHouseFocused.value = false
+    }, 100)
+}
+
+function onBoxBlur() {
+    setTimeout(() => {
+        isBoxFocused.value = false
+    }, 100)
+}
+
+// Computed Properties
+const formattedPhone = computed(() => {
     try {
         const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
+        return phoneUtil.format(number, PhoneNumberFormat.E164)
+    } catch {
+        return phoneLocal.value
+    }
+})
 
-        if (!phoneUtil.isValidNumber(number)) {
-            phoneError.value = t('register.invalidPhone')
-            return false
-        }
-        phoneError.value = ''
-        return true
-    } catch (error) {
-        console.error('Phone validation error:', error)
+const filteredHouseNumbers = computed(() => {
+    if (!houseQuery.value) return houseNumbers.value
+    return houseNumbers.value.filter(h =>
+        h.toLowerCase().includes(houseQuery.value.toLowerCase())
+    )
+})
+
+const filteredBoxNumbers = computed(() => {
+    const query = boxQuery.value || ''
+    if (!query) return boxNumbers.value
+    return boxNumbers.value.filter(b => {
+        const val = b || ''
+        return val.toLowerCase().includes(query.toLowerCase())
+    })
+})
+
+// Watchers
+watch(streetQuery, () => handleStreetSearch())
+watch(selectedStreet, () => handleStreetSelection())
+watch(selectedHouseNumber, () => handleHouseNumberSelection())
+watch(filteredBoxNumbers, (newVal) => {
+    if (newVal.length === 1) selectedBoxNumber.value = newVal[0]
+})
+
+// Phone Validation
+const validatePhone = () => {
+    try {
+        const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
+        phoneError.value = phoneUtil.isValidNumber(number) ? '' : t('register.invalidPhone')
+        return !phoneError.value
+    } catch {
         phoneError.value = t('register.invalidPhone')
         return false
     }
 }
 
-const formattedPhone = computed(() => {
-    if (!phoneLocal.value) return ''
-    try {
-        const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
-        return phoneUtil.format(number, PhoneNumberFormat.E164)
-    } catch (error) {
-        console.error('Phone formatting error:', error)
-        return phoneLocal.value
-    }
-})
+// Address Search Handlers
+const handleStreetSearch = async () => {
+    if (debounceStreetTimer) clearTimeout(debounceStreetTimer)
+    debounceStreetTimer = setTimeout(async () => {
+        if (streetQuery.value.trim().length < 3) return
 
-// Register user.
-const registerUser = async () => {
-    // Validate required fields.
-    if (!fullName.value || !email.value || !password.value || !phoneLocal.value) {
-        console.error('Missing required fields')
-        return
-    }
+        const { data } = await useAsyncData<Street[]>('streets', () => {
+            return $api('/addresses/streets', { params: { q: streetQuery.value } })
+        })
 
-    // Check if both passwords match.
-    if (password.value !== confirmPassword.value) {
-        console.error('Passwords do not match')
-        return
-    }
+        if (data.value) {
+            streets.value = data.value;
+            const exactMatches = data.value.filter(s =>
+                s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
+            );
+            if (exactMatches.length === 1) {
+                await selectStreet(exactMatches[0]);
+            }
+        }
+    }, 500)
+}
 
-    if (!validatePhone()) {
-        console.error('Invalid phone number')
-        return
+const handleStreetSelection = () => {
+    houseNumbers.value = []
+    selectedHouseNumber.value = ''
+    houseQuery.value = ''
+    if (selectedStreet.value) loadHouseNumbers()
+}
+
+const loadHouseNumbers = async () => {
+    if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
+    debounceHouseTimer = setTimeout(async () => {
+        const { data } = await useAsyncData<string[]>('houseNumbers', () => {
+            return $api('/addresses/house-numbers', { params: { street_id: selectedStreet.value!.id } })
+        })
+
+        if (data.value) {
+            houseNumbers.value = data.value
+            houseQuery.value = '' // Reset query
+        }
+    }, 500)
+}
+
+const handleHouseNumberSelection = () => {
+    // Clear box-related state
+    boxNumbers.value = []
+    selectedBoxNumber.value = null
+    boxQuery.value = ''
+    // Reset boxConfirmed so that its watcher will trigger later
+    boxConfirmed.value = false
+
+    // Set houseConfirmed only if the selected house number is nonempty
+    if (selectedHouseNumber.value && selectedHouseNumber.value.trim() !== '') {
+        houseConfirmed.value = true
+        loadBoxNumbers()
+    } else {
+        houseConfirmed.value = false
     }
-    const {error} = await useAsyncData('register', () =>
-        $api('/register', {
-            method: 'POST',
-            headers: {
-                'Accept-Language': userLocale.value
-            },
-            body: {
-                name: fullName.value,
-                email: email.value,
-                password: password.value,
-                phoneNumber: formattedPhone.value ?? null,
-                address: address.value ?? null,
+}
+
+const loadBoxNumbers = async () => {
+    if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
+    debounceBoxTimer = setTimeout(async () => {
+        const { data } = await useAsyncData<(string | null)[]>('boxNumbers', () => {
+            return $api('/addresses/box-numbers', {
+                params: {
+                    street_id: selectedStreet.value!.id,
+                    house_number: selectedHouseNumber.value
+                }
+            })
+        })
+
+        if (data.value) {
+
+            boxNumbers.value = data.value
+            boxQuery.value = '' // Reset query
+            // Auto-select the first value even if it is null or empty
+            if (data.value.length === 1) {
+                selectedBoxNumber.value = data.value[0]
+                boxConfirmed.value = true
+            }
+            if (data.value.length > 1 && data.value[0] === null) {
+                selectedBoxNumber.value = null
+                boxConfirmed.value = false
+            }
+            if (data.value.length > 0) {
+                // Wait a tick, then focus on box input.
+                await nextTick()
+                const boxEl = document.getElementById('boxNumber') as HTMLInputElement
+                if (boxEl) {
+                    boxEl.focus()
+                }
+            }
+        }
+    }, 500)
+}
+
+watch(boxConfirmed,
+    (newVal) => {
+        // If the box is confirmed, load the final address.
+        // If the box is not confirmed, set finalAddressID to null.
+        if (newVal === true) {
+            loadFinalAddress()
+        } else {
+            finalAddressID.value = null
+        }
+    },
+    { immediate: true, deep: true }
+)
+
+const loadFinalAddress = async () => {
+    if (!selectedStreet.value || !selectedHouseNumber.value) return
+
+    const { data } = await useAsyncData<Address>('finalAddress', () =>
+        $api('/addresses/final-address', {
+            method: 'GET',
+            params: {
+                street_id: selectedStreet.value!.id,
+                house_number: selectedHouseNumber.value,
+                box_number: selectedBoxNumber.value || ''
             }
         })
     )
 
-    if (!error.value) {
-        navigateTo(localePath('/login'))
-    } else {
-        console.error('Registration error:', error.value)
+    if (data.value) {
+        finalAddressID.value = data.value.id
     }
 }
+
+// Selection Handlers
+const selectStreet = async (street: Street) => {
+    selectedStreet.value = street
+    streetQuery.value = `${street.streetName} - ${street.municipalityName}, ${street.postcode}`
+    streets.value = []
+    houseNumbers.value = []
+    selectedHouseNumber.value = ''
+    houseQuery.value = ''
+    boxNumbers.value = []
+    selectedBoxNumber.value = null
+    boxQuery.value = ''
+
+    // Load house numbers and wait for next tick.
+    await loadHouseNumbers()
+    await nextTick()
+    const houseEl = document.getElementById('houseNumber') as HTMLInputElement
+    if (houseEl) {
+        houseEl.focus()
+    }
+}
+
+const selectFirstStreet = () => {
+    if (streets.value.length > 0) {
+        selectStreet(streets.value[0])
+    }
+}
+
+const selectHouse = async (hn: string) => {
+    selectedHouseNumber.value = hn
+    houseQuery.value = hn
+    houseConfirmed.value = true
+    isHouseFocused.value = false
+}
+
+const selectFirstHouse = () => {
+    if (filteredHouseNumbers.value.length > 0) {
+        selectHouse(filteredHouseNumbers.value[0])
+    }
+}
+
+function handleHouseEnter(event: KeyboardEvent) {
+    // If the user hasn't typed anything, don't auto-select.
+    if (houseQuery.value.trim() === '') {
+        event.preventDefault();
+        return;
+    }
+    // Otherwise, select the first suggestion.
+    selectFirstHouse();
+}
+
+const selectBox = (box: string | null) => {
+    selectedBoxNumber.value = box
+    boxQuery.value = box
+    boxConfirmed.value = true
+    isBoxFocused.value = false
+    // Load final address
+    loadFinalAddress()
+}
+
+const selectFirstBox = () => {
+    if (filteredBoxNumbers.value.length > 0) {
+        selectBox(filteredBoxNumbers.value[0])
+    }
+}
+
+// Clear functions
+const clearStreet = () => {
+    streets.value = []
+    selectedStreet.value = null
+    streetQuery.value = ''
+    houseNumbers.value = []
+    selectedHouseNumber.value = ''
+    houseQuery.value = ''
+    boxNumbers.value = []
+    selectedBoxNumber.value = null
+    boxQuery.value = ''
+    isStreetFocused.value = true
+
+    // Use nextTick to ensure the state update is applied before refocusing.
+    nextTick(() => {
+        const streetEl = document.getElementById('street') as HTMLInputElement
+        if (streetEl) streetEl.focus()
+    })
+}
+
+const clearHouse = () => {
+    houseQuery.value = ''
+    selectedHouseNumber.value = ''
+    houseConfirmed.value = false
+    isHouseFocused.value = true
+
+    // Use nextTick to ensure the state update is applied before refocusing.
+    nextTick(() => {
+        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
+        if (houseEl) houseEl.focus()
+    })
+}
+
+const clearBox = () => {
+    selectedBoxNumber.value = null
+    boxQuery.value = ''
+    boxConfirmed.value = false
+    isBoxFocused.value = true
+
+    // Use nextTick to ensure the state update is applied before refocusing.
+    nextTick(() => {
+        const boxEl = document.getElementById('boxNumber') as HTMLInputElement
+        if (boxEl) boxEl.focus()
+    })
+}
+
+// Form Submission
+const registerUser = async () => {
+    if (!validatePhone()) return
+    if (password.value !== confirmPassword.value) return
+    if (!fullName.value || !email.value || !finalAddressID.value) return
+
+    const { error } = await useAsyncData('register', () =>
+        $api('/register', {
+            method: 'POST',
+            body: {
+                name: fullName.value,
+                email: email.value,
+                password: password.value,
+                phoneNumber: formattedPhone.value,
+                addressId: finalAddressID.value
+            }
+        })
+    )
+
+    if (!error.value) navigateTo(localePath('/login'))
+}
+
+// Country List
+const countries = [
+    { prefix: '+31', code: 'NL', flag: '🇳🇱' },
+    { prefix: '+32', code: 'BE', flag: '🇧🇪' },
+    { prefix: '+33', code: 'FR', flag: '🇫🇷' },
+    { prefix: '+352', code: 'LU', flag: '🇱🇺' },
+    { prefix: '+44', code: 'DE', flag: '🇩🇪' },
+]
 </script>
 
 <style scoped>
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
-
 .animate-fadeIn {
     animation: fadeIn 0.2s ease-out;
+}
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background: white;
+}
+li {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+li:hover {
+    background-color: #f3f4f6;
+}
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.checkmark {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 </style>

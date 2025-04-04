@@ -115,3 +115,19 @@ export interface CreateOrderRequest {
         quantity: number;
     }[]
 }
+export interface Street {
+    id: string;
+    streetName: string;
+    municipalityName: string;
+    postcode: string;
+}
+
+export interface Address {
+    id: string;
+    streetName: string;
+    houseNumber: string;
+    boxNumber: string | null;
+    municipalityName: string;
+    postcode: string;
+    distance: number;
+}
