@@ -87,20 +87,25 @@
   },
   "register": {
     "title": "Inscription",
-    "fullName": "Nom",
-    "fullNamePlaceholder": "Entrez votre nom",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Entrez votre prénom",
+    "lastName": "Nom de famille",
+    "lastNamePlaceholder": "Entrez votre nom de famille",
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre adresse e-mail",
     "password": "Mot de passe",
     "passwordPlaceholder": "Entrez votre mot de passe",
     "confirmPassword": "Confirmez le mot de passe",
-    "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+    "confirmPasswordPlaceholder": "Ré-entrez votre mot de passe",
     "phone": "Téléphone",
     "phonePlaceholder": "Entrez votre numéro de téléphone",
     "invalidPhone": "Numéro de téléphone invalide",
     "address": "Adresse",
-    "addressPlaceholder": "Entrez votre adresse",
-    "submit": "S'inscrire"
+    "streetPlaceholder": "Entrez le nom de votre rue",
+    "houseNumberPlaceholder": "Entrez votre numéro de maison",
+    "boxNumberPlaceholder": "Entrez votre numéro de boîte",
+    "submit": "Soumettre",
+    "confirmAddress": "Confirmez que ceci est bien votre adresse"
   },
   "me": {
     "orders": {

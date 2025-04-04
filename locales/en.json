@@ -87,20 +87,25 @@
   },
   "register": {
     "title": "Register",
-    "fullName": "Name",
-    "fullNamePlaceholder": "Enter your name",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
     "email": "Email",
-    "emailPlaceholder": "Enter your email",
+    "emailPlaceholder": "Enter your email address",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "Confirm your password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
     "phone": "Phone",
     "phonePlaceholder": "Enter your phone number",
     "invalidPhone": "Invalid phone number",
     "address": "Address",
-    "addressPlaceholder": "Enter your address",
-    "submit": "Register"
+    "streetPlaceholder": "Enter your street",
+    "houseNumberPlaceholder": "Enter your house number",
+    "boxNumberPlaceholder": "Enter your box number",
+    "submit": "Submit",
+    "confirmAddress": "Confirm that this is your address"
   },
   "me": {
     "orders": {
