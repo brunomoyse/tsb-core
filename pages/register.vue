@@ -9,13 +9,26 @@
                 <!-- Personal Information Fields -->
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="fullName">
-                        {{ $t('register.fullName') }}
+                        {{ $t('register.firstName') }}
                     </label>
-                    <input id="fullName" v-model="fullName"
-                           :placeholder="$t('register.fullNamePlaceholder')"
+                    <input id="firstName" v-model="firstName"
+                           :placeholder="$t('register.firstNamePlaceholder')"
+                           autocomplete="given-name"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                            required type="text"/>
                 </div>
+
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1" for="fullName">
+                        {{ $t('register.lastName') }}
+                    </label>
+                    <input id="lastName" v-model="lastName"
+                           :placeholder="$t('register.lastNamePlaceholder')"
+                           autocomplete="name"
+                           class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                           required type="text"/>
+                </div>
+
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-1" for="email">
@@ -23,6 +36,7 @@
                     </label>
                     <input id="email" v-model="email"
                            :placeholder="$t('register.emailPlaceholder')"
+                           autocomplete="email"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                            required type="email"/>
                 </div>
@@ -34,6 +48,7 @@
                     </label>
                     <input id="password" v-model="password"
                            :placeholder="$t('register.passwordPlaceholder')"
+                           autocomplete="new-password"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                            required type="password"/>
                 </div>
@@ -44,6 +59,7 @@
                     </label>
                     <input id="confirmPassword" v-model="confirmPassword"
                            :placeholder="$t('register.confirmPasswordPlaceholder')"
+                           autocomplete="new-password"
                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                            required type="password"/>
                 </div>
@@ -72,11 +88,20 @@
 
                 <!-- Address Autocomplete Section -->
                 <AddressAutocomplete
-                    @update:finalAddress="(address: Address) => finalAddress = address"
+                    @update:finalAddress="(address: Address | null) => finalAddress = address"
                 />
 
-                <!-- Hidden field storing finalAddress for the form -->
-                <input type="hidden" v-model="finalAddress" />
+                <!-- Checkbox to confirm the selected address -->
+                <div v-if="finalAddress" class="mt-2">
+                    <Checkbox v-model="addressConfirmed">
+                        <span>
+                          <strong>{{ $t('register.confirmAddress') }}</strong><br />
+                          {{ finalAddress.streetName }} {{ finalAddress.houseNumber }},
+                          {{ finalAddress.postcode }} – {{ finalAddress.municipalityName }}
+                          {{ finalAddress.boxNumber ? " / " + finalAddress.boxNumber : "" }}
+                        </span>
+                    </Checkbox>
+                </div>
 
                 <button class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
                     {{ $t('register.submit') }}
@@ -88,10 +113,11 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { navigateTo, useAsyncData, useLocalePath, useNuxtApp } from '#imports'
+import { navigateTo, useAsyncData, useLocalePath, useNuxtApp, watch } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
 import AddressAutocomplete from "~/components/form/AddressAutocomplete.vue";
+import Checkbox from "~/components/Checkbox.vue";
 import type {Address} from "~/types";
 
 const { $api } = useNuxtApp()
@@ -100,7 +126,8 @@ const localePath = useLocalePath()
 const phoneUtil = PhoneNumberUtil.getInstance()
 
 // Reactive State
-const fullName = ref('')
+const firstName = ref('')
+const lastName = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -108,6 +135,7 @@ const phoneLocal = ref('')
 const selectedCountry = ref('BE')
 
 const finalAddress = ref<Address | null>(null)
+const addressConfirmed = ref(false)
 const phoneError = ref('')
 
 // Computed Properties
@@ -118,6 +146,11 @@ const formattedPhone = computed(() => {
     } catch {
         return phoneLocal.value
     }
+})
+
+// Watch finalAddress: if it changes, uncheck the box
+watch(finalAddress, () => {
+    addressConfirmed.value = false
 })
 
 // Phone Validation
@@ -136,13 +169,13 @@ const validatePhone = () => {
 const registerUser = async () => {
     if (!validatePhone()) return
     if (password.value !== confirmPassword.value) return
-    if (!fullName.value || !email.value || !password.value) return
+    if (!firstName.value || !lastName.value || !email.value || !password.value) return
 
     const { error } = await useAsyncData('register', () =>
         $api('/register', {
             method: 'POST',
             body: {
-                name: fullName.value,
+                name: firstName.value + ' ' + lastName.value,
                 email: email.value,
                 password: password.value,
                 phoneNumber: formattedPhone.value ? formattedPhone.value : null,

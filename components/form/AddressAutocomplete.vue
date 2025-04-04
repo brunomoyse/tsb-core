@@ -1,8 +1,10 @@
 <template>
     <div>
-        <!-- Address Autocomplete Section -->
         <!-- STREET FIELD -->
         <div class="relative">
+            <label class="block text-sm text-gray-700 mb-1">
+                {{ $t('register.address') }}
+            </label>
             <input
                 id="street"
                 ref="streetInput"
@@ -116,10 +118,10 @@
 
 <script lang="ts" setup>
 import { ref, watch, computed, nextTick } from 'vue'
-import { useAsyncData, useNuxtApp } from '#imports'
+import { useNuxtApp } from '#imports'
 import type { Address, Street } from '~/types'
 
-const emit = defineEmits(['update:finalAddressId'])
+const emit = defineEmits<{ (e: 'update:finalAddress', address: Address | null): void }>();
 const { $api } = useNuxtApp()
 
 // Reactive State
@@ -193,7 +195,6 @@ watch(filteredBoxNumbers, (newVal) => {
     if (newVal.length === 1) selectedBoxNumber.value = newVal[0]
 })
 watch(finalAddress, (newVal) => {
-    // Whenever finalAddress changes here, we emit to the parent
     emit('update:finalAddress', newVal)
 })
 
@@ -203,13 +204,13 @@ const handleStreetSearch = async () => {
     debounceStreetTimer = setTimeout(async () => {
         if (streetQuery.value.trim().length < 3) return
 
-        const { data } = await useAsyncData<Street[]>('streets', () => {
-            return $api('/addresses/streets', { params: { q: streetQuery.value } })
-        })
+        const data: Street[] = await $api('/addresses/streets', {
+            params: { q: streetQuery.value }
+        });
 
-        if (data.value) {
-            streets.value = data.value;
-            const exactMatches = data.value.filter(s =>
+        if (data) {
+            streets.value = data;
+            const exactMatches = data.filter(s =>
                 s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
             );
             if (exactMatches.length === 1) {
@@ -229,13 +230,12 @@ const handleStreetSelection = () => {
 const loadHouseNumbers = async () => {
     if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
     debounceHouseTimer = setTimeout(async () => {
-        const { data } = await useAsyncData<string[]>('houseNumbers', () => {
-            return $api('/addresses/house-numbers', { params: { street_id: selectedStreet.value!.id } })
-        })
-
-        if (data.value) {
-            houseNumbers.value = data.value
-            houseQuery.value = '' // Reset query
+        const data: string[] = await $api('/addresses/house-numbers', {
+            params: { street_id: selectedStreet.value!.id }
+        });
+        if (data) {
+            houseNumbers.value = data;
+            houseQuery.value = ''; // Reset query
         }
     }, 500)
 }
@@ -260,34 +260,30 @@ const handleHouseNumberSelection = () => {
 const loadBoxNumbers = async () => {
     if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
     debounceBoxTimer = setTimeout(async () => {
-        const { data } = await useAsyncData<(string | null)[]>('boxNumbers', () => {
-            return $api('/addresses/box-numbers', {
-                params: {
-                    street_id: selectedStreet.value!.id,
-                    house_number: selectedHouseNumber.value
-                }
-            })
-        })
+        const data: (string | null)[] = await $api('/addresses/box-numbers', {
+            params: {
+                street_id: selectedStreet.value!.id,
+                house_number: selectedHouseNumber.value
+            }
+        });
 
-        if (data.value) {
-
-            boxNumbers.value = data.value
-            boxQuery.value = '' // Reset query
+        if (data) {
+            boxNumbers.value = data;
+            boxQuery.value = '';
             // Auto-select the first value even if it is null or empty
-            if (data.value.length === 1) {
-                selectedBoxNumber.value = data.value[0]
-                boxConfirmed.value = true
+            if (data.length === 1) {
+                selectedBoxNumber.value = data[0];
+                boxConfirmed.value = true;
             }
-            if (data.value.length > 1 && data.value[0] === null) {
-                selectedBoxNumber.value = null
-                boxConfirmed.value = false
+            if (data.length > 1 && data[0] === null) {
+                selectedBoxNumber.value = null;
+                boxConfirmed.value = false;
             }
-            if (data.value.length > 0) {
-                // Wait a tick, then focus on box input.
-                await nextTick()
-                const boxEl = document.getElementById('boxNumber') as HTMLInputElement
+            if (data.length > 0) {
+                await nextTick();
+                const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
                 if (boxEl) {
-                    boxEl.focus()
+                    boxEl.focus();
                 }
             }
         }
@@ -310,19 +306,17 @@ watch(boxConfirmed,
 const loadFinalAddress = async () => {
     if (!selectedStreet.value || !selectedHouseNumber.value) return
 
-    const { data } = await useAsyncData<Address>('finalAddress', () =>
-        $api('/addresses/final-address', {
-            method: 'GET',
-            params: {
-                street_id: selectedStreet.value!.id,
-                house_number: selectedHouseNumber.value,
-                box_number: selectedBoxNumber.value || ''
-            }
-        })
-    )
+    const data: (Address | null) = await $api('/addresses/final-address', {
+        method: 'GET',
+        params: {
+            street_id: selectedStreet.value!.id,
+            house_number: selectedHouseNumber.value,
+            box_number: selectedBoxNumber.value || ''
+        }
+    });
 
-    if (data.value) {
-        finalAddress.value = data.value
+    if (data) {
+        finalAddress.value = data;
     }
 }
 
