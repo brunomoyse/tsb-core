@@ -71,118 +71,12 @@
                 </div>
 
                 <!-- Address Autocomplete Section -->
-                <!-- STREET FIELD -->
-                <div class="relative">
-                    <input
-                        id="street"
-                        ref="streetInput"
-                        v-model="streetQuery"
-                        :placeholder="$t('register.streetPlaceholder')"
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
-                        @focus="isStreetFocused = true"
-                        @blur="onStreetBlur"
-                        @keydown.enter.prevent="selectFirstStreet"
-                        :disabled="Boolean(selectedStreet)"
-                    />
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                        <svg v-if="selectedStreet" @mousedown.prevent="clearStreet" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        <svg v-if="selectedStreet" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <ul
-                        v-show="isStreetFocused && !selectedStreet && streets.length > 0"
-                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
-                        @mousedown.prevent
-                    >
-                        <li
-                            v-for="street in streets"
-                            :key="street.id"
-                            class="p-2 hover:bg-gray-100 cursor-pointer"
-                            @mousedown="selectStreet(street)"
-                        >
-                            {{ street.streetName }} - {{ street.municipalityName }}, {{ street.postcode }}
-                        </li>
-                    </ul>
-                </div>
+                <AddressAutocomplete
+                    @update:finalAddress="(address: Address) => finalAddress = address"
+                />
 
-                <!-- HOUSE FIELD -->
-                <div class="relative mt-3" v-if="selectedStreet">
-                    <input
-                        id="houseNumber"
-                        ref="houseInput"
-                        v-model="houseQuery"
-                        :placeholder="$t('register.houseNumberPlaceholder')"
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
-                        @focus="isHouseFocused = true"
-                        @blur="onHouseBlur"
-                        @keydown.enter.prevent="handleHouseEnter"
-                        :disabled="houseConfirmed"
-                    />
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                        <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        <svg v-if="houseConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <ul
-                        v-show="isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
-                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
-                        @mousedown.prevent
-                    >
-                        <li
-                            v-for="house in filteredHouseNumbers"
-                            :key="house"
-                            class="p-2 hover:bg-gray-100 cursor-pointer"
-                            @mousedown="selectHouse(house)"
-                        >
-                            {{ house }}
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- BOX FIELD -->
-                <div class="relative mt-3" v-if="selectedHouseNumber && boxNumbers.length > 1">
-                    <input
-                        id="boxNumber"
-                        ref="boxInput"
-                        v-model="boxQuery"
-                        :placeholder="$t('register.boxNumberPlaceholder')"
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                        @focus="isBoxFocused = true"
-                        @blur="onBoxBlur"
-                        @keydown.enter.prevent="selectFirstBox"
-                        :disabled="boxConfirmed"
-                    />
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                        <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        <svg v-if="boxConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <ul
-                        v-show="isBoxFocused && !boxConfirmed"
-                        class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
-                        @mousedown.prevent
-                    >
-                        <li
-                            v-for="box in filteredBoxNumbers"
-                            :key="box === null || box === '' ? 'none' : box"
-                            class="p-2 hover:bg-gray-100 cursor-pointer"
-                            @mousedown="selectBox(box)"
-                        >
-                            {{ box === null ? '\u00A0' : box }}
-                        </li>
-                    </ul>
-                </div>
-
-                <input type="hidden" v-model="finalAddressID" />
+                <!-- Hidden field storing finalAddress for the form -->
+                <input type="hidden" v-model="finalAddress" />
 
                 <button class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
                     {{ $t('register.submit') }}
@@ -193,11 +87,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { navigateTo, useAsyncData, useLocalePath, useNuxtApp } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
-import type { Address, Street } from '~/types'
+import AddressAutocomplete from "~/components/form/AddressAutocomplete.vue";
+import type {Address} from "~/types";
 
 const { $api } = useNuxtApp()
 const { t } = useI18n()
@@ -212,51 +107,8 @@ const confirmPassword = ref('')
 const phoneLocal = ref('')
 const selectedCountry = ref('BE')
 
-const streetQuery = ref('')
-const streets = ref<Street[]>([])
-const selectedStreet = ref<Street | null>(null)
-
-const houseNumbers = ref<string[]>([])
-const houseQuery = ref('')
-const selectedHouseNumber = ref('')
-const houseConfirmed = ref(false)
-
-const boxNumbers = ref<(string | null)[]>([])
-const boxQuery = ref<(string | null)>(null)
-const selectedBoxNumber = ref<(string | null)>(null)
-const boxConfirmed = ref(false)
-
-const finalAddressID = ref<string | null>(null)
+const finalAddress = ref<Address | null>(null)
 const phoneError = ref('')
-
-// Focus states
-const isStreetFocused = ref(false)
-const isHouseFocused = ref(false)
-const isBoxFocused = ref(false)
-
-// Debounce Handlers
-let debounceStreetTimer: ReturnType<typeof setTimeout> | null = null
-let debounceHouseTimer: ReturnType<typeof setTimeout> | null = null
-let debounceBoxTimer: ReturnType<typeof setTimeout> | null = null
-
-// Input blur events
-function onStreetBlur() {
-    setTimeout(() => {
-        isStreetFocused.value = false
-    }, 100)
-}
-
-function onHouseBlur() {
-    setTimeout(() => {
-        isHouseFocused.value = false
-    }, 100)
-}
-
-function onBoxBlur() {
-    setTimeout(() => {
-        isBoxFocused.value = false
-    }, 100)
-}
 
 // Computed Properties
 const formattedPhone = computed(() => {
@@ -266,30 +118,6 @@ const formattedPhone = computed(() => {
     } catch {
         return phoneLocal.value
     }
-})
-
-const filteredHouseNumbers = computed(() => {
-    if (!houseQuery.value) return houseNumbers.value
-    return houseNumbers.value.filter(h =>
-        h.toLowerCase().includes(houseQuery.value.toLowerCase())
-    )
-})
-
-const filteredBoxNumbers = computed(() => {
-    const query = boxQuery.value || ''
-    if (!query) return boxNumbers.value
-    return boxNumbers.value.filter(b => {
-        const val = b || ''
-        return val.toLowerCase().includes(query.toLowerCase())
-    })
-})
-
-// Watchers
-watch(streetQuery, () => handleStreetSearch())
-watch(selectedStreet, () => handleStreetSelection())
-watch(selectedHouseNumber, () => handleHouseNumberSelection())
-watch(filteredBoxNumbers, (newVal) => {
-    if (newVal.length === 1) selectedBoxNumber.value = newVal[0]
 })
 
 // Phone Validation
@@ -304,251 +132,11 @@ const validatePhone = () => {
     }
 }
 
-// Address Search Handlers
-const handleStreetSearch = async () => {
-    if (debounceStreetTimer) clearTimeout(debounceStreetTimer)
-    debounceStreetTimer = setTimeout(async () => {
-        if (streetQuery.value.trim().length < 3) return
-
-        const { data } = await useAsyncData<Street[]>('streets', () => {
-            return $api('/addresses/streets', { params: { q: streetQuery.value } })
-        })
-
-        if (data.value) {
-            streets.value = data.value;
-            const exactMatches = data.value.filter(s =>
-                s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
-            );
-            if (exactMatches.length === 1) {
-                await selectStreet(exactMatches[0]);
-            }
-        }
-    }, 500)
-}
-
-const handleStreetSelection = () => {
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    if (selectedStreet.value) loadHouseNumbers()
-}
-
-const loadHouseNumbers = async () => {
-    if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
-    debounceHouseTimer = setTimeout(async () => {
-        const { data } = await useAsyncData<string[]>('houseNumbers', () => {
-            return $api('/addresses/house-numbers', { params: { street_id: selectedStreet.value!.id } })
-        })
-
-        if (data.value) {
-            houseNumbers.value = data.value
-            houseQuery.value = '' // Reset query
-        }
-    }, 500)
-}
-
-const handleHouseNumberSelection = () => {
-    // Clear box-related state
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    // Reset boxConfirmed so that its watcher will trigger later
-    boxConfirmed.value = false
-
-    // Set houseConfirmed only if the selected house number is nonempty
-    if (selectedHouseNumber.value && selectedHouseNumber.value.trim() !== '') {
-        houseConfirmed.value = true
-        loadBoxNumbers()
-    } else {
-        houseConfirmed.value = false
-    }
-}
-
-const loadBoxNumbers = async () => {
-    if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
-    debounceBoxTimer = setTimeout(async () => {
-        const { data } = await useAsyncData<(string | null)[]>('boxNumbers', () => {
-            return $api('/addresses/box-numbers', {
-                params: {
-                    street_id: selectedStreet.value!.id,
-                    house_number: selectedHouseNumber.value
-                }
-            })
-        })
-
-        if (data.value) {
-
-            boxNumbers.value = data.value
-            boxQuery.value = '' // Reset query
-            // Auto-select the first value even if it is null or empty
-            if (data.value.length === 1) {
-                selectedBoxNumber.value = data.value[0]
-                boxConfirmed.value = true
-            }
-            if (data.value.length > 1 && data.value[0] === null) {
-                selectedBoxNumber.value = null
-                boxConfirmed.value = false
-            }
-            if (data.value.length > 0) {
-                // Wait a tick, then focus on box input.
-                await nextTick()
-                const boxEl = document.getElementById('boxNumber') as HTMLInputElement
-                if (boxEl) {
-                    boxEl.focus()
-                }
-            }
-        }
-    }, 500)
-}
-
-watch(boxConfirmed,
-    (newVal) => {
-        // If the box is confirmed, load the final address.
-        // If the box is not confirmed, set finalAddressID to null.
-        if (newVal === true) {
-            loadFinalAddress()
-        } else {
-            finalAddressID.value = null
-        }
-    },
-    { immediate: true, deep: true }
-)
-
-const loadFinalAddress = async () => {
-    if (!selectedStreet.value || !selectedHouseNumber.value) return
-
-    const { data } = await useAsyncData<Address>('finalAddress', () =>
-        $api('/addresses/final-address', {
-            method: 'GET',
-            params: {
-                street_id: selectedStreet.value!.id,
-                house_number: selectedHouseNumber.value,
-                box_number: selectedBoxNumber.value || ''
-            }
-        })
-    )
-
-    if (data.value) {
-        finalAddressID.value = data.value.id
-    }
-}
-
-// Selection Handlers
-const selectStreet = async (street: Street) => {
-    selectedStreet.value = street
-    streetQuery.value = `${street.streetName} - ${street.municipalityName}, ${street.postcode}`
-    streets.value = []
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-
-    // Load house numbers and wait for next tick.
-    await loadHouseNumbers()
-    await nextTick()
-    const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-    if (houseEl) {
-        houseEl.focus()
-    }
-}
-
-const selectFirstStreet = () => {
-    if (streets.value.length > 0) {
-        selectStreet(streets.value[0])
-    }
-}
-
-const selectHouse = async (hn: string) => {
-    selectedHouseNumber.value = hn
-    houseQuery.value = hn
-    houseConfirmed.value = true
-    isHouseFocused.value = false
-}
-
-const selectFirstHouse = () => {
-    if (filteredHouseNumbers.value.length > 0) {
-        selectHouse(filteredHouseNumbers.value[0])
-    }
-}
-
-function handleHouseEnter(event: KeyboardEvent) {
-    // If the user hasn't typed anything, don't auto-select.
-    if (houseQuery.value.trim() === '') {
-        event.preventDefault();
-        return;
-    }
-    // Otherwise, select the first suggestion.
-    selectFirstHouse();
-}
-
-const selectBox = (box: string | null) => {
-    selectedBoxNumber.value = box
-    boxQuery.value = box
-    boxConfirmed.value = true
-    isBoxFocused.value = false
-    // Load final address
-    loadFinalAddress()
-}
-
-const selectFirstBox = () => {
-    if (filteredBoxNumbers.value.length > 0) {
-        selectBox(filteredBoxNumbers.value[0])
-    }
-}
-
-// Clear functions
-const clearStreet = () => {
-    streets.value = []
-    selectedStreet.value = null
-    streetQuery.value = ''
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    isStreetFocused.value = true
-
-    // Use nextTick to ensure the state update is applied before refocusing.
-    nextTick(() => {
-        const streetEl = document.getElementById('street') as HTMLInputElement
-        if (streetEl) streetEl.focus()
-    })
-}
-
-const clearHouse = () => {
-    houseQuery.value = ''
-    selectedHouseNumber.value = ''
-    houseConfirmed.value = false
-    isHouseFocused.value = true
-
-    // Use nextTick to ensure the state update is applied before refocusing.
-    nextTick(() => {
-        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-        if (houseEl) houseEl.focus()
-    })
-}
-
-const clearBox = () => {
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    boxConfirmed.value = false
-    isBoxFocused.value = true
-
-    // Use nextTick to ensure the state update is applied before refocusing.
-    nextTick(() => {
-        const boxEl = document.getElementById('boxNumber') as HTMLInputElement
-        if (boxEl) boxEl.focus()
-    })
-}
-
 // Form Submission
 const registerUser = async () => {
     if (!validatePhone()) return
     if (password.value !== confirmPassword.value) return
-    if (!fullName.value || !email.value || !finalAddressID.value) return
+    if (!fullName.value || !email.value || !password.value) return
 
     const { error } = await useAsyncData('register', () =>
         $api('/register', {
@@ -557,8 +145,8 @@ const registerUser = async () => {
                 name: fullName.value,
                 email: email.value,
                 password: password.value,
-                phoneNumber: formattedPhone.value,
-                addressId: finalAddressID.value
+                phoneNumber: formattedPhone.value ? formattedPhone.value : null,
+                addressId: finalAddress.value ? finalAddress.value.id : null
             }
         })
     )
@@ -607,11 +195,5 @@ input:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-.checkmark {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
+
 </style>
