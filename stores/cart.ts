@@ -1,13 +1,18 @@
 // stores/cart.ts
 
 import {defineStore} from "pinia";
+import {useAuthStore} from "@/stores/auth";
 import type {CartItem, CartState, Product} from "@/types";
+
+const authStore = useAuthStore();
 
 export const useCartStore = defineStore("cart", {
     state: (): CartState => ({
         products: [] as CartItem[],
         isCartVisible: false,
-        deliveryOption: 'DELIVERY',
+        collectionOption: 'DELIVERY',
+        paymentOption: 'ONLINE',
+        address: authStore.user?.address ?? null,
     }),
 
     getters: {
