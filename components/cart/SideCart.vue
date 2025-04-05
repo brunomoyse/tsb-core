@@ -8,13 +8,13 @@
             <div class="flex gap-1 rounded-full bg-gray-100 p-1">
                 <button v-for="option in deliveryOptions" :key="option.value" :class="[
           'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
-          deliveryOption === option.value
+          cartStore.collectionOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-500 hover:bg-gray-50'
         ]"
                         @click="handleOrderType(option.value)">
                     <img :alt="option.label" :src="option.icon" class="w-5 h-5"/>
-                    <span v-if="deliveryOption === option.value">{{ option.label }}</span>
+                    <span v-if="cartStore.collectionOption === option.value">{{ option.label }}</span>
                 </button>
             </div>
         </header>
@@ -51,7 +51,7 @@
                                 {{
                                     item.product.code ? item.product.code : item.product.category?.name + ' ' + item.product.name
                                 }}
-                                <span v-if="deliveryOption === 'PICKUP' && item.product.discountable"
+                                <span v-if="cartStore.collectionOption === 'PICKUP' && item.product.discountable"
                                       class="text-xs text-green-600 ml-1">
                   (-10%)
                 </span>
@@ -94,7 +94,7 @@
                     <span>{{ $t('cart.subtotal') }}:</span>
                     <span>{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="deliveryOption === 'PICKUP'"
+                <div v-if="cartStore.collectionOption === 'PICKUP'"
                      class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span>-{{ formatPrice(totalDiscount) }}</span>
@@ -108,7 +108,7 @@
             <!-- Minimum Order Warning -->
             <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
 
-                {{ deliveryOption === 'DELIVERY'
+                {{ cartStore.collectionOption === 'DELIVERY'
                     ? $t('cart.minimumDelivery', { amount: 25})
                     : $t('cart.minimumPickup', { amount: 20}) }}
             </div>
@@ -129,7 +129,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, useRuntimeConfig} from '#imports';
+import {computed, useRuntimeConfig} from '#imports';
 import {useCartStore} from '@/stores/cart';
 import {formatPrice} from '~/lib/price';
 import type {CartItem, Product} from '@/types';
@@ -144,11 +144,9 @@ const deliveryOptions = [
     {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg'},
     {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
 ];
-const deliveryOption = ref<'DELIVERY' | 'PICKUP'>('DELIVERY');
 
 const handleOrderType = (option: string) => {
-    deliveryOption.value = option as 'DELIVERY' | 'PICKUP';
-    cartStore.deliveryOption = option as 'DELIVERY' | 'PICKUP';
+    cartStore.collectionOption = option as 'DELIVERY' | 'PICKUP';
 };
 
 // Price calculations
@@ -158,7 +156,7 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() =>
-    deliveryOption.value === 'PICKUP'
+    cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.discountable
                 ? acc + (item.product.price * item.quantity * 0.1)
@@ -172,16 +170,16 @@ const cartTotal = computed(() => {
 });
 
 const isMinimumReached = computed(() => {
-    if (deliveryOption.value === 'DELIVERY') {
+    if (cartStore.collectionOption === 'DELIVERY') {
         return cartTotal.value >= 25;
-    } else if (deliveryOption.value === 'PICKUP') {
+    } else if (cartStore.collectionOption === 'PICKUP') {
         return cartTotal.value >= 20;
     }
 })
 
 const calculateItemPrice = (item: CartItem) => {
     const basePrice = item.product.price * item.quantity;
-    if (deliveryOption.value === 'PICKUP' && item.product.discountable) {
+    if (cartStore.collectionOption === 'PICKUP' && item.product.discountable) {
         return basePrice * 0.9;
     }
     return basePrice;

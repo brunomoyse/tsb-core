@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, defineProps } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'

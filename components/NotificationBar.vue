@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const props = defineProps({
     message: { type: String, required: true },

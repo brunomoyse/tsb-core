@@ -30,7 +30,9 @@ export interface CartItem {
 export interface CartState {
     products: CartItem[];
     isCartVisible: boolean;
-    deliveryOption: 'DELIVERY' | 'PICKUP';
+    collectionOption: OrderType;
+    paymentOption: 'ONLINE' | 'CASH';
+    address: Address | null;
 }
 
 export interface LoginResponse {
