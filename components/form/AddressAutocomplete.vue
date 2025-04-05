@@ -5,24 +5,26 @@
             <label class="block text-sm text-gray-700 mb-1">
                 {{ $t('register.address') }}
             </label>
-            <input
-                id="street"
-                ref="streetInput"
-                v-model="streetQuery"
-                :placeholder="$t('register.streetPlaceholder')"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
-                @focus="isStreetFocused = true"
-                @blur="onStreetBlur"
-                @keydown.enter.prevent="selectFirstStreet"
-                :disabled="Boolean(selectedStreet)"
-            />
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                <svg v-if="selectedStreet" @mousedown.prevent="clearStreet" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                <svg v-if="selectedStreet" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
+            <div class="relative">
+                <input
+                    id="street"
+                    ref="streetInput"
+                    v-model="streetQuery"
+                    :placeholder="$t('register.streetPlaceholder')"
+                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                    @focus="isStreetFocused = true"
+                    @blur="onStreetBlur"
+                    @keydown.enter.prevent="selectFirstStreet"
+                    :disabled="Boolean(selectedStreet)"
+                />
+                <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
+                    <svg v-if="selectedStreet" @mousedown.prevent="clearStreet" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg v-if="selectedStreet" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
             </div>
             <ul
                 v-show="isStreetFocused && !selectedStreet && streets.length > 0"
@@ -42,24 +44,26 @@
 
         <!-- HOUSE FIELD -->
         <div class="relative mt-3" v-if="selectedStreet">
-            <input
-                id="houseNumber"
-                ref="houseInput"
-                v-model="houseQuery"
-                :placeholder="$t('register.houseNumberPlaceholder')"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 pr-10"
-                @focus="isHouseFocused = true"
-                @blur="onHouseBlur"
-                @keydown.enter.prevent="handleHouseEnter"
-                :disabled="houseConfirmed"
-            />
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                <svg v-if="houseConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
+            <div class="relative">
+                <input
+                    id="houseNumber"
+                    ref="houseInput"
+                    v-model="houseQuery"
+                    :placeholder="$t('register.houseNumberPlaceholder')"
+                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                    @focus="isHouseFocused = true"
+                    @blur="onHouseBlur"
+                    @keydown.enter.prevent="handleHouseEnter"
+                    :disabled="houseConfirmed"
+                />
+                <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
+                    <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg v-if="houseConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
             </div>
             <ul
                 v-show="isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
@@ -79,24 +83,26 @@
 
         <!-- BOX FIELD -->
         <div class="relative mt-3" v-if="selectedHouseNumber && boxNumbers.length > 1">
-            <input
-                id="boxNumber"
-                ref="boxInput"
-                v-model="boxQuery"
-                :placeholder="$t('register.boxNumberPlaceholder')"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                @focus="isBoxFocused = true"
-                @blur="onBoxBlur"
-                @keydown.enter.prevent="selectFirstBox"
-                :disabled="boxConfirmed"
-            />
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 items-center">
-                <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                <svg v-if="boxConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
+            <div class="relative">
+                <input
+                    id="boxNumber"
+                    ref="boxInput"
+                    v-model="boxQuery"
+                    :placeholder="$t('register.boxNumberPlaceholder')"
+                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                    @focus="isBoxFocused = true"
+                    @blur="onBoxBlur"
+                    @keydown.enter.prevent="selectFirstBox"
+                    :disabled="boxConfirmed"
+                />
+                <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
+                    <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg v-if="boxConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
             </div>
             <ul
                 v-show="isBoxFocused && !boxConfirmed"
@@ -121,7 +127,7 @@ import { ref, watch, computed, nextTick } from 'vue'
 import { useNuxtApp } from '#imports'
 import type { Address, Street } from '~/types'
 
-const emit = defineEmits<{ (e: 'update:finalAddress', address: Address | null): void }>();
+const emit = defineEmits<{ (e: 'update:address', address: Address | null): void }>();
 const { $api } = useNuxtApp()
 
 // Reactive State
@@ -139,7 +145,7 @@ const boxQuery = ref<(string | null)>(null)
 const selectedBoxNumber = ref<(string | null)>(null)
 const boxConfirmed = ref(false)
 
-const finalAddress = ref<Address | null>(null)
+const address = ref<Address | null>(null)
 
 // Focus states
 const isStreetFocused = ref(false)
@@ -194,8 +200,8 @@ watch(selectedHouseNumber, () => handleHouseNumberSelection())
 watch(filteredBoxNumbers, (newVal) => {
     if (newVal.length === 1) selectedBoxNumber.value = newVal[0]
 })
-watch(finalAddress, (newVal) => {
-    emit('update:finalAddress', newVal)
+watch(address, (newVal) => {
+    emit('update:address', newVal)
 })
 
 // Address Search Handlers
@@ -293,17 +299,17 @@ const loadBoxNumbers = async () => {
 watch(boxConfirmed,
     (newVal) => {
         // If the box is confirmed, load the final address.
-        // If the box is not confirmed, set finalAddressID to null.
+        // If the box is not confirmed, set address to null.
         if (newVal === true) {
-            loadFinalAddress()
+            loadAddress()
         } else {
-            finalAddress.value = null
+            address.value = null
         }
     },
     { immediate: true, deep: true }
 )
 
-const loadFinalAddress = async () => {
+const loadAddress = async () => {
     if (!selectedStreet.value || !selectedHouseNumber.value) return
 
     const data: (Address | null) = await $api('/addresses/final-address', {
@@ -316,7 +322,7 @@ const loadFinalAddress = async () => {
     });
 
     if (data) {
-        finalAddress.value = data;
+        address.value = data;
     }
 }
 
@@ -376,7 +382,7 @@ const selectBox = (box: string | null) => {
     boxConfirmed.value = true
     isBoxFocused.value = false
     // Load final address
-    loadFinalAddress()
+    loadAddress()
 }
 
 const selectFirstBox = () => {
@@ -431,29 +437,3 @@ const clearBox = () => {
     })
 }
 </script>
-
-<style scoped>
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    background: white;
-}
-li {
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-li:hover {
-    background-color: #f3f4f6;
-}
-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-</style>

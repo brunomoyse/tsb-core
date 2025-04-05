@@ -40,9 +40,18 @@ export interface LoginResponse {
 export interface User {
     id: string;
     email: string;
-    name: string;
-    address: string;
-    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    address: Address | null;
+    phoneNumber: string | null;
+}
+
+export interface UpdateUserRequest {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string | null;
+    addressId: string | null;
 }
 
 export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
