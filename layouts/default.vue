@@ -40,8 +40,15 @@
                 </div>
             </footer>
         </div>
-        <!-- Cookie consent tooltip always visible across pages -->
-        <CookieConsent/>
+        <!-- Notification tooltip always visible across pages -->
+        <NotificationBar
+            v-if="showNotification && notification"
+            :message="notification.message"
+            :persistent="notification.persistent"
+            :duration="notification.duration"
+            :variant="notification.variant"
+            @close="showNotification = false"
+        />
         <!-- Global Cart Button -->
         <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
                     class="lg:hidden"/>
@@ -54,17 +61,48 @@
 
 <script lang="ts" setup>
 import {useRoute} from 'vue-router'
-import {computed} from 'vue'
+import {computed, ref, onUnmounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useLocaleHead} from '#i18n'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
-
+import NotificationBar from "~/components/NotificationBar.vue";
+import {eventBus} from "~/eventBus";
 
 const route = useRoute()
 const {t} = useI18n()
 const head = useLocaleHead()
 const currentRoute = useRoute();
+
+const showNotification = ref(false)
+const notification = ref({
+    message: '',
+    persistent: false,
+    duration: 5000,
+    variant: 'neutral'
+})
+
+const notifyHandler = (payload: any) => {
+    notification.value = {
+        message: payload.message,
+        persistent: payload.persistent ?? false,
+        duration: payload.duration ?? 5000,
+        variant: payload.variant ?? 'neutral'
+    }
+    showNotification.value = true
+
+    if (!notification.value.persistent) {
+        setTimeout(() => {
+            showNotification.value = false
+        }, notification.value.duration)
+    }
+}
+
+eventBus.on('notify', notifyHandler)
+
+onUnmounted(() => {
+    eventBus.off('notify', notifyHandler)
+})
 
 const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
 </script>

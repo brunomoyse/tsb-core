@@ -80,6 +80,7 @@
 import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath} from '#imports';
 import type {LoginResponse, User} from '@/types';
 import {useAuthStore} from '@/stores/auth'
+import {eventBus} from "~/eventBus";
 
 const localePath = useLocalePath()
 const authStore = useAuthStore()
@@ -128,6 +129,7 @@ onMounted(async () => {
     const params = new URLSearchParams(window.location.search)
 
     const success = params.get('success')
+    const emailVerified = params.get('email_verified')
 
     // if success, then fetch /me to fill the auth store with user credentials
     if (success) {
@@ -136,6 +138,16 @@ onMounted(async () => {
         } catch (error) {
             console.error('Login error:', error)
         }
+    }
+
+    if (emailVerified) {
+        // Show a notification if the email is verified
+        eventBus.emit('notify', {
+            message: 'Your email has been verified. You can now log in.',
+            persistent: false,
+            duration: 5000,
+            variant: 'success',
+        })
     }
 })
 

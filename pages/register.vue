@@ -81,7 +81,7 @@
                         <input id="phone" v-model="phoneLocal"
                                :placeholder="$t('register.phonePlaceholder')"
                                class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                               required type="tel"/>
+                               type="tel"/>
                     </div>
                     <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
                 </div>
@@ -119,6 +119,7 @@ import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
 import AddressAutocomplete from "~/components/form/AddressAutocomplete.vue";
 import Checkbox from "~/components/Checkbox.vue";
 import type {Address} from "~/types";
+import {eventBus} from "~/eventBus";
 
 const { $api } = useNuxtApp()
 const { t } = useI18n()
@@ -167,7 +168,7 @@ const validatePhone = () => {
 
 // Form Submission
 const registerUser = async () => {
-    if (!validatePhone()) return
+    if (phoneLocal.value && !validatePhone()) return
     if (password.value !== confirmPassword.value) return
     if (!firstName.value || !lastName.value || !email.value || !password.value) return
 
@@ -184,7 +185,15 @@ const registerUser = async () => {
         })
     )
 
-    if (!error.value) navigateTo(localePath('/login'))
+    if (!error.value) {
+        eventBus.emit('notify', {
+            message: 'An email has been sent to you for verification. Please check your inbox.',
+            persistent: false,
+            duration: 5000,
+            variant: 'success',
+        })
+        navigateTo(localePath('/login'))
+    }
 }
 
 // Country List
