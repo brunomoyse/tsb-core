@@ -10,6 +10,7 @@
                 {{ $t('checkout.paymentMethod', 'Payment Method') }}
             </h3>
             <div class="flex gap-4">
+                <!-- Online Payment Card -->
                 <div
                     @click="setOnlinePayment(true)"
                     :class="[
@@ -20,6 +21,7 @@
                     <img src="/icons/online-payment-icon.svg" alt="Online Payment" class="w-10 h-10 mb-2" />
                     <span class="font-semibold">{{ $t('checkout.online', 'Online Payment') }}</span>
                 </div>
+                <!-- Cash Payment Card -->
                 <div
                     @click="setOnlinePayment(false)"
                     :class="[
@@ -39,6 +41,7 @@
                 {{ $t('checkout.extras', 'Extras') }}
             </h3>
             <div class="grid grid-cols-1 gap-4">
+                <!-- Chopsticks Card -->
                 <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <input
                         type="checkbox"
@@ -50,6 +53,7 @@
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
                     </label>
                 </div>
+                <!-- Soy Sauce Options Card -->
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <p class="font-medium text-gray-700 mb-3">
                         {{ $t('checkout.soySauce', 'Soy Sauce (choose up to 2):') }}
@@ -95,7 +99,7 @@
 
         <!-- Checkout Button -->
         <button
-            @click="$emit('checkout')"
+            @click="handleCheckout"
             :disabled="isCheckoutProcessing"
             class="w-full py-3 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
         >
@@ -109,16 +113,105 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useCartStore } from '#imports'
 
-const isOnlinePayment = ref(true)
-const addChopsticks = ref(true)
-const sauce1 = ref('sweet')
-const sauce2 = ref('salty')
-const orderComment = ref('')
-const isCheckoutProcessing = ref(false)
+const cartStore = useCartStore()
+
+const emit = defineEmits(['checkout'])
 
 const setOnlinePayment = (value: boolean) => {
-    isOnlinePayment.value = value
+    isOnlinePayment.value = value;
+}
+
+// Computed binding for payment option
+const isOnlinePayment = computed({
+    get: () => cartStore.paymentOption === 'ONLINE',
+    set: (value: boolean) => {
+        cartStore.paymentOption = value ? 'ONLINE' : 'CASH'
+    }
+})
+
+
+// Computed binding for chopsticks
+const addChopsticks = computed({
+    get: () => cartStore.orderExtra?.some(o => o.name === 'chopsticks') || false,
+    set: (value: boolean) => {
+        if (!cartStore.orderExtra) cartStore.orderExtra = []
+        const idx = cartStore.orderExtra.findIndex(o => o.name === 'chopsticks')
+        if (value) {
+            if (idx === -1) {
+                cartStore.orderExtra.push({ name: 'chopsticks' })
+            }
+        } else {
+            if (idx !== -1) {
+                cartStore.orderExtra.splice(idx, 1)
+            }
+        }
+    }
+})
+
+// Helper computed property for sauces as an array of two strings
+const sauces = computed({
+    get() {
+        const item = cartStore.orderExtra?.find(o => o.name === 'sauces')
+        if (item && item.options) {
+            return [item.options[0] || 'none', item.options[1] || 'none']
+        }
+        return ['none', 'none']
+    },
+    set(newVal: [string, string]) {
+        const [s1, s2] = newVal
+        const arr: string[] = []
+        if (s1 !== 'none') arr.push(s1)
+        if (s2 !== 'none') arr.push(s2)
+        if (!cartStore.orderExtra) cartStore.orderExtra = []
+        const idx = cartStore.orderExtra.findIndex(o => o.name === 'sauces')
+        if (arr.length > 0) {
+            if (idx !== -1) {
+                cartStore.orderExtra[idx].options = arr
+            } else {
+                cartStore.orderExtra.push({ name: 'sauces', options: arr })
+            }
+        } else {
+            if (idx !== -1) {
+                cartStore.orderExtra.splice(idx, 1)
+            }
+        }
+    }
+})
+
+// Computed binding for individual sauces
+const sauce1 = computed({
+    get() {
+        return sauces.value[0]
+    },
+    set(val: string) {
+        sauces.value = [val, sauces.value[1]]
+    }
+})
+const sauce2 = computed({
+    get() {
+        return sauces.value[1]
+    },
+    set(val: string) {
+        sauces.value = [sauces.value[0], val]
+    }
+})
+
+// Computed binding for order comment
+const orderComment = computed({
+    get: () => cartStore.orderNote || '',
+    set: (val: string) => {
+        cartStore.orderNote = val
+    }
+})
+
+const isCheckoutProcessing = ref(false)
+
+const handleCheckout = async () => {
+    if (isCheckoutProcessing.value) return
+    isCheckoutProcessing.value = true
+    emit('checkout')
 }
 </script>

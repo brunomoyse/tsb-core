@@ -6,7 +6,7 @@
         <!-- Delivery/Pickup Options with Icons -->
         <div class="flex gap-4 mb-6">
             <div
-                v-for="option in deliveryOptions"
+                v-for="option in collectionOptions"
                 :key="option.value"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
@@ -24,8 +24,8 @@
             <label class="font-medium">
                 {{ $t('checkout.deliveryAddress', 'Delivery Address') }}
             </label>
-            <div v-if="deliveryAddress" class="flex flex-col text-gray-700 bg-gray-50 rounded p-3">
-                <span>{{ formatAddress(deliveryAddress) }}</span>
+            <div v-if="cartStore.address" class="flex flex-col text-gray-700 bg-gray-50 rounded p-3">
+                <span>{{ formatAddress(cartStore.address) }}</span>
                 <button @click="openAddressModal" class="text-blue-600 underline text-sm mt-2 self-start">
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
@@ -40,12 +40,12 @@
             </div>
 
             <!-- Additional Address Comment -->
-            <label for="addressComment" class="block text-sm text-gray-700 mt-4">
+            <label for="addressExtra" class="block text-sm text-gray-700 mt-4">
                 {{ $t('checkout.addressComment', 'Additional Info for Address') }}
             </label>
             <textarea
-                id="addressComment"
-                v-model="addressComment"
+                id="addressExtra"
+                v-model="addressExtra"
                 rows="3"
                 class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                 :placeholder="$t('checkout.addressCommentPlaceholder', 'e.g. Ring the bell twice')"
@@ -58,7 +58,7 @@
                 {{ $t('checkout.preferredTime', 'Preferred Time') }}
             </label>
             <select
-                v-model="selectedTime"
+                v-model="preferredReadyTime"
                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
             >
                 <option value="ASAP">{{ asapLabel }}</option>
@@ -73,15 +73,15 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
-import { useAuthStore } from '@/stores/auth'
 import { formatAddress } from '~/utils/utils'
 import { useI18n } from 'vue-i18n'
 
+const emit = defineEmits(['open-address-modal' ])
+
 const { t } = useI18n()
-const authStore = useAuthStore()
 const cartStore = useCartStore()
 
-const deliveryOptions = [
+const collectionOptions = [
     { value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg' },
     { value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg' }
 ]
@@ -90,9 +90,18 @@ const setDeliveryOption = (value: 'DELIVERY' | 'PICKUP') => {
     cartStore.collectionOption = value
 }
 
-const deliveryAddress = ref(authStore.user?.address ?? null)
-const addressComment = ref('')
-const selectedTime = ref('ASAP')
+const addressExtra = computed({
+    get: () => cartStore.addressExtra || '',
+    set: (val: string) => {
+        cartStore.addressExtra = val
+    }
+})
+const preferredReadyTime = computed({
+    get: () => cartStore.preferredReadyTime || 'ASAP',
+    set: (val: string) => {
+        cartStore.preferredReadyTime = val
+    }
+})
 
 const timeToMinutes = (timeStr: string): number => {
     const [hours, minutes] = timeStr.split(':').map(Number)
@@ -132,13 +141,14 @@ const availableTimeSlots = computed(() => {
 
 const asapLabel = computed(() => {
     return cartStore.collectionOption === 'DELIVERY'
-        ? t('checkout.asapDelivery', 'ASAP (estimated 40 min)')
-        : t('checkout.asapPickup', 'ASAP (estimated 30 min)')
+        ? t('checkout.asapDelivery', 'ASAP (± 40 min)')
+        : t('checkout.asapPickup', 'ASAP (± 30 min)')
 })
 
 // For modal handling (address editing)
 const showAddressModal = ref(false)
 const openAddressModal = () => {
+    emit('open-address-modal')
     showAddressModal.value = true
 }
 </script>

@@ -33,6 +33,13 @@ export interface CartState {
     collectionOption: OrderType;
     paymentOption: 'ONLINE' | 'CASH';
     address: Address | null;
+    addressExtra: string | null;
+    orderExtra: {
+        name: string;
+        options?: string[];
+    }[] | null;
+    orderNote: string | null;
+    preferredReadyTime: string | null;
 }
 
 export interface LoginResponse {
@@ -77,7 +84,7 @@ export interface Order {
     estimatedReadyTime: string | null;
     addressId: string | null;
     addressExtra: string | null;
-    extraComment: string | null;
+    orderNote: string | null;
     orderExtra: {
         name: string | null
         options: string[] | null
@@ -117,7 +124,8 @@ export interface CreateOrderRequest {
     isOnlinePayment: boolean;
     addressId: string | null;
     addressExtra: string | null;
-    extraComment: string | null;
+    orderNote: string | null;
+    preferredReadyTime: string | null;
     orderExtra: {
         name: string
         options?: string[]
