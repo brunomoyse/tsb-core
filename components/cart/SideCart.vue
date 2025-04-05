@@ -99,11 +99,6 @@
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span>-{{ formatPrice(totalDiscount) }}</span>
                 </div>
-                <div v-if="deliveryOption === 'DELIVERY'"
-                     class="flex justify-between items-center text-sm text-gray-600">
-                    <span>{{ $t('cart.deliveryFee') }}:</span>
-                    <span>+{{ formatPrice(deliveryFee) }}</span>
-                </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
                     <span>{{ formatPrice(cartTotal) }}</span>
@@ -111,8 +106,11 @@
             </div>
 
             <!-- Minimum Order Warning -->
-            <div v-if="cartTotal < 20" class="text-sm text-red-600 text-center">
-                {{ $t('cart.minimumOrderAmountIs') }}
+            <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
+
+                {{ deliveryOption === 'DELIVERY'
+                    ? $t('cart.minimumDelivery', { amount: 25})
+                    : $t('cart.minimumPickup', { amount: 20}) }}
             </div>
 
             <!-- Checkout Button -->
@@ -147,7 +145,6 @@ const deliveryOptions = [
     {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
 ];
 const deliveryOption = ref<'DELIVERY' | 'PICKUP'>('DELIVERY');
-const deliveryFee = 3.5;
 
 const handleOrderType = (option: string) => {
     deliveryOption.value = option as 'DELIVERY' | 'PICKUP';
@@ -171,9 +168,16 @@ const totalDiscount = computed(() =>
 
 const cartTotal = computed(() => {
     let total = subtotal.value - totalDiscount.value;
-    if (deliveryOption.value === 'DELIVERY') total += deliveryFee;
     return Math.max(total, 0);
 });
+
+const isMinimumReached = computed(() => {
+    if (deliveryOption.value === 'DELIVERY') {
+        return cartTotal.value >= 25;
+    } else if (deliveryOption.value === 'PICKUP') {
+        return cartTotal.value >= 20;
+    }
+})
 
 const calculateItemPrice = (item: CartItem) => {
     const basePrice = item.product.price * item.quantity;

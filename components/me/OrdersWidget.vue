@@ -16,14 +16,14 @@
                 :key="orderResponse.order.id"
                 class="bg-white rounded-xl border border-gray-100 transition-all"
             >
-                <!-- Accordion Header -->
                 <div
                     class="p-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
                     @click="toggleOrder(orderResponse.order.id)"
                 >
                     <div>
                         <h3 class="font-semibold text-gray-700">
-                            {{ $t(`cart.${orderResponse.order.orderType.toLowerCase()}`) }}</h3>
+                            {{ $t(`cart.${orderResponse.order.orderType.toLowerCase()}`) }}
+                        </h3>
                         <p class="mt-1 text-sm text-gray-500">
                             {{
                                 new Date(orderResponse.order.createdAt).toLocaleString("fr-BE", {
@@ -41,13 +41,12 @@
                             class="inline-block px-3 py-1 rounded-full text-sm font-medium text-white"
                             :class="getStatusColorClass(orderResponse.order.orderStatus)"
                         >
-                          {{ getStatus(orderResponse.order.orderStatus) }}
+                            {{ getStatus(orderResponse.order.orderStatus) }}
                         </span>
                         <span :class="{ 'rotate-180': isExpanded(orderResponse.order.id) }"
-                              class="text-gray-400 transition-transform duration-200">
+                                              class="text-gray-400 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"
-                                      stroke-width="2"/>
+                                <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                             </svg>
                         </span>
                     </div>
@@ -63,7 +62,17 @@
                     leave-to-class="max-h-0 opacity-0"
                 >
                     <div v-show="isExpanded(orderResponse.order.id)" class="px-4 pb-4">
-                        <!-- Order Items -->
+                        <!-- Delivery Address Section -->
+                        <div v-if="orderResponse.address" class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h4 class="text-sm font-semibold text-gray-700">
+                                {{ $t('checkout.deliveryAddress', 'Delivery Address') }}
+                            </h4>
+                            <p class="mt-1 text-sm text-gray-600">
+                                {{ formatAddress(orderResponse.address) }}
+                            </p>
+                        </div>
+
+                        <!-- Order Items Section -->
                         <div class="space-y-4">
                             <div class="space-y-3">
                                 <div
@@ -77,7 +86,9 @@
                                             {{ item.product.categoryName + ' - ' + item.product.name }}
                                         </p>
                                     </div>
-                                    <span class="text-sm font-medium text-gray-700">x{{ item.quantity }}</span>
+                                    <span class="text-sm font-medium text-gray-700">
+                        x{{ item.quantity }}
+                    </span>
                                 </div>
                             </div>
                         </div>
@@ -85,15 +96,17 @@
                         <!-- Order Footer -->
                         <div class="mt-6 border-t border-gray-100 pt-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">{{ $t('me.orders.total') }}</span>
+                <span class="text-sm text-gray-500">
+                    {{ $t('me.orders.total') }}
+                </span>
                                 <span class="font-medium text-gray-900">
-                                    {{
+                    {{
                                         new Intl.NumberFormat('fr-BE', {
                                             style: 'currency',
                                             currency: 'EUR'
                                         }).format(parseFloat(orderResponse.order.totalPrice))
                                     }}
-                                </span>
+                </span>
                             </div>
                         </div>
                     </div>

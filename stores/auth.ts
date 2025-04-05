@@ -7,13 +7,6 @@ export const useAuthStore = defineStore("auth", {
         accessValid: false
     }),
 
-    getters: {
-        deliveryFee(): number {
-            // @TODO: Calculate depending on user's address
-            return 3.5;
-        }
-    },
-
     actions: {
         setUser(user: User) {
             this.user = user;
@@ -21,7 +14,8 @@ export const useAuthStore = defineStore("auth", {
         },
         updateUser(user: User) {
             if (this.user) {
-                this.user.name = user.name;
+                this.user.firstName = user.firstName;
+                this.user.lastName = user.lastName;
                 this.user.email = user.email;
                 this.user.address = user.address;
                 this.user.phoneNumber = user.phoneNumber;

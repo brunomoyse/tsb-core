@@ -79,6 +79,9 @@ export const useCartStore = defineStore("cart", {
         toggleCartVisibility(): void {
             this.isCartVisible = !this.isCartVisible;
         },
+        setCartVisibility(visible: boolean): void {
+            this.isCartVisible = visible;
+        }
     },
     persist: true,
 });

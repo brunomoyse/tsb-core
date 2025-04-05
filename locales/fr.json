@@ -144,7 +144,8 @@
     "deliveryFee": "Frais de livraison",
     "pickupDiscount": "Remise à emporter",
     "total": "Total",
-    "minimumOrderAmountIs": "Le montant minimum est de 20€",
+    "minimumDelivery": "Livraison minimum de {amount} €",
+    "minimumPickup": "À emporter minimum de {amount} €",
     "checkout": "Valider la commande",
     "removeItem": "Retirer"
   },

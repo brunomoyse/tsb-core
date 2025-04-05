@@ -52,12 +52,21 @@
                     <!-- Delivery Fee (only for delivery orders) -->
                     <div v-if="cartStore.deliveryOption === 'DELIVERY'" class="flex justify-between text-gray-700">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
-                        <span>{{ formatPrice(authStore.deliveryFee) }}</span>
+                        <span>{{ formatPrice(deliveryFee) }}</span>
                     </div>
                     <!-- Delivery Address (only for delivery orders) -->
-                    <div v-if="cartStore.deliveryOption === 'DELIVERY' && authStore.user && authStore.user.address" class="flex flex-col text-gray-700">
+                    <div
+                        v-if="cartStore.deliveryOption === 'DELIVERY' && authStore.user && deliveryAddress"
+                        class="flex flex-col text-gray-700"
+                    >
                         <span class="font-medium">{{ $t('checkout.deliveryAddress', 'Delivery Address:') }}</span>
-                        <span>{{ authStore.user.address }}</span>
+                        <span>{{ formatAddress(deliveryAddress) }}</span>
+                        <button
+                            @click="openAddressModal"
+                            class="text-blue-600 underline text-sm mt-2 self-start"
+                        >
+                            {{ $t('checkout.editAddress', 'Edit Address') }}
+                        </button>
                     </div>
                     <!-- Final Total -->
                     <div class="flex justify-between font-semibold text-lg mt-4">
@@ -150,15 +159,47 @@
                 </button>
             </section>
         </div>
+        <!-- Address Modal -->
+        <div
+            v-if="showAddressModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            @click.self="closeAddressModal"
+            tabindex="0"
+        >
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full" @click.stop>
+                <h3 class="text-xl font-semibold text-gray-900 text-center mb-6">
+                    {{ $t('checkout.editAddress', 'Edit Address') }}
+                </h3>
+                <!-- Only the AddressAutocomplete component -->
+                <AddressAutocomplete @update:address="handleAddressUpdate" />
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="closeAddressModal"
+                        class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm"
+                    >
+                        {{ $t('common.cancel', 'Cancel') }}
+                    </button>
+                    <button
+                        type="button"
+                        @click="confirmAddress"
+                        class="px-4 py-2 rounded bg-black text-white hover:bg-gray-800 text-sm"
+                    >
+                        {{ $t('common.save', 'Save') }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import type { ComputedRef } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { formatPrice } from '~/lib/price'
 import {
-    definePageMeta,
+    definePageMeta, formatAddress,
     navigateTo,
     useAsyncData,
     useAuthStore,
@@ -166,7 +207,9 @@ import {
     useNuxtApp,
     useRuntimeConfig
 } from '#imports'
-import type {CreateOrderRequest, OrderResponse} from '~/types'
+import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+
+import type {Address, CreateOrderRequest, OrderResponse} from '~/types'
 
 definePageMeta({
     public: false
@@ -177,6 +220,42 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { $api } = useNuxtApp()
+
+const deliveryAddress = ref<Address | null>(authStore.user?.address ?? null)
+const deliveryFee = computed(() => {
+    if (cartStore.deliveryOption !== 'DELIVERY' || !deliveryAddress.value) return 0;
+    const { distance } = deliveryAddress.value;
+    const thresholds = [4000, 5000, 6000, 7000, 8000, 9000, 10001];
+    const fee = thresholds.findIndex(threshold => distance < threshold);
+    return fee === -1 ? 0 : fee;
+});
+
+// For the modal state
+const showAddressModal = ref(false)
+const tempAddress = ref<Address|null>(null)
+
+// Open modal and initialize tempAddress with current deliveryAddress
+const openAddressModal = () => {
+    tempAddress.value = deliveryAddress.value
+    showAddressModal.value = true
+}
+
+// Close the modal without saving changes
+const closeAddressModal = () => {
+    showAddressModal.value = false
+}
+
+// Handle updates from the AddressAutocomplete component
+const handleAddressUpdate = (updatedAddress: any) => {
+    tempAddress.value = updatedAddress
+}
+
+// Confirm the new address and close the modal
+const confirmAddress = () => {
+    deliveryAddress.value = tempAddress.value
+    // Optionally update authStore or cart store here if needed.
+    closeAddressModal()
+}
 
 const isCheckoutProcessing = ref(false)
 const isOnlinePayment = ref(true) // Default to online payment
@@ -192,8 +271,8 @@ const cartTotal = computed(() =>
 )
 
 // Calculate final total including delivery fee if applicable
-const finalTotal = computed(() =>
-    cartTotal.value + (cartStore.deliveryOption === 'DELIVERY' ? authStore.deliveryFee : 0)
+const finalTotal: ComputedRef<number> = computed(() =>
+    cartTotal.value + (cartStore.deliveryOption === 'DELIVERY' ? deliveryFee.value : 0)
 )
 
 const handleCheckout = async () => {
@@ -212,6 +291,11 @@ const handleCheckout = async () => {
 
     if (!authStore.accessValid) {
         console.error('User is not authenticated')
+        return
+    }
+
+    if (cartStore.deliveryOption === 'DELIVERY' && !deliveryAddress.value) {
+        console.error('Delivery address is required for delivery orders')
         return
     }
 
@@ -239,7 +323,7 @@ const handleCheckout = async () => {
     const orderData: CreateOrderRequest = {
         orderType: cartStore.deliveryOption,
         isOnlinePayment: isOnlinePayment.value,
-        addressId: null,
+        addressId: deliveryAddress.value?.id ?? null,
         addressExtra: null,
         extraComment: null,
         orderExtra: orderExtra,
@@ -250,12 +334,17 @@ const handleCheckout = async () => {
     }
 
     try {
-        const { data: orderResponse } = await useAsyncData<OrderResponse>('order', () =>
+        const { data: orderResponse, error } = await useAsyncData<OrderResponse>('order', () =>
             $api('/orders', {
                 method: 'POST',
                 body: JSON.stringify(orderData),
             })
         )
+
+        if (error.value) {
+            console.error('Error creating order:', error.value)
+            return
+        }
 
         if (isOnlinePayment.value && orderResponse.value?.payment?.paymentUrl) {
             navigateTo(orderResponse.value?.payment?.paymentUrl, { external: true })
@@ -266,9 +355,6 @@ const handleCheckout = async () => {
                 navigateTo(localePath(`/order-completed/${orderId}`))
             }
         }
-
-        cartStore.clearCart()
-        cartStore.toggleCartVisibility()
     } catch (error) {
         console.error('Payment processing failed:', error)
     }

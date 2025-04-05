@@ -107,6 +107,7 @@ export interface OrderResponse {
     order: Order;
     products: OrderProduct[];
     payment: MolliePayment | null;
+    address: Address | null;
 }
 
 export interface CreateOrderRequest {
