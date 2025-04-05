@@ -118,7 +118,7 @@ import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import Checkbox from '~/components/Checkbox.vue'
 import { formatAddress } from '~/utils/utils'
-import type {Address, UpdateUserRequest} from '~/types'
+import type {Address, CreateUserRequest, UpdateUserRequest} from '~/types'
 
 // Define props to allow passing initial values and mode
 const props = defineProps({
@@ -208,13 +208,26 @@ const handleSubmit = () => {
     if (!firstName.value || !lastName.value || !email.value || (props.mode === 'register' && !password.value)) return
     if (address.value?.id && !addressConfirmed.value) return
 
-    const form: UpdateUserRequest = {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        email: email.value,
-        phoneNumber: formattedPhone.value || null,
-        addressId: addressConfirmed.value ? (address.value?.id || null) : null,
+    let form: CreateUserRequest | UpdateUserRequest;
+
+    if (props.mode === 'register') {
+        form = {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            email: email.value,
+            password: password.value,
+            phoneNumber: formattedPhone.value || null,
+            addressId: addressConfirmed.value ? (address.value?.id || null) : null,
+        } as CreateUserRequest;
+    } else {
+        form = {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            phoneNumber: formattedPhone.value || null,
+            addressId: addressConfirmed.value ? (address.value?.id || null) : null,
+        } as UpdateUserRequest;
     }
+
     // Emit the form data to the parent
     emit('submit', form)
 }

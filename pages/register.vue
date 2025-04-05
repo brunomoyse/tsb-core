@@ -26,7 +26,8 @@ const registerUser = async (formData: any) => {
         $api('/register', {
             method: 'POST',
             body: {
-                name: firstName + ' ' + lastName,
+                firstName,
+                lastName,
                 email,
                 password,
                 phoneNumber,
