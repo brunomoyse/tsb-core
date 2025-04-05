@@ -56,9 +56,17 @@ export interface User {
 }
 
 export interface UpdateUserRequest {
+    firstName: string | null;
+    lastName: string | null;
+    phoneNumber: string | null;
+    addressId: string | null;
+}
+
+export interface CreateUserRequest {
     firstName: string;
     lastName: string;
     email: string;
+    password: string;
     phoneNumber: string | null;
     addressId: string | null;
 }
