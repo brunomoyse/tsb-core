@@ -8,7 +8,7 @@
         <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
-            <CheckoutCollectionOptions />
+            <CheckoutCollectionOptions @open-address-modal="openAddressModal" />
             <CheckoutPaymentExtras @checkout="handleCheckout" />
         </div>
 
@@ -51,7 +51,7 @@ import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import { useAuthStore, useCartStore, useNuxtApp, useLocalePath } from '#imports'
+import { useAuthStore, useCartStore, useNuxtApp, useLocalePath, onMounted } from '#imports'
 import type { Address, CreateOrderRequest, OrderResponse } from '~/types'
 import { navigateTo, useAsyncData } from '#imports'
 
@@ -64,6 +64,16 @@ const localePath = useLocalePath()
 const showAddressModal = ref(false)
 const tempAddress = ref<Address | null>(null)
 
+const openAddressModal = () => {
+    showAddressModal.value = true
+    // Pre-fill the address if available
+    if (cartStore.address) {
+        tempAddress.value = cartStore.address
+    } else {
+        tempAddress.value = null
+    }
+}
+
 const closeAddressModal = () => {
     showAddressModal.value = false
 }
@@ -74,6 +84,13 @@ const confirmAddress = () => {
     cartStore.address = tempAddress.value
     showAddressModal.value = false
 }
+
+onMounted(() => {
+    // If the user is logged in and has an address, pre-fill the cart address
+    if (authStore.user?.address && !cartStore.address) {
+        cartStore.address = authStore.user.address
+    }
+})
 
 // Checkout logic (simplified; extras and time selection are handled in CheckoutPaymentExtras component)
 const isCheckoutProcessing = ref(false)
@@ -90,27 +107,26 @@ const handleCheckout = async () => {
             console.error('User is not authenticated')
             return
         }
-        if (cartStore.collectionOption === 'DELIVERY' && !deliveryAddress.value) {
+        if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
             console.error('Delivery address is required for delivery orders')
             return
         }
 
-        const orderExtra: { name: string; options?: string[] }[] = []
         // Extras could be managed globally or via events; this is a placeholder.
         const orderData: CreateOrderRequest = {
             orderType: cartStore.collectionOption,
-            isOnlinePayment: true, // Or get this from CheckoutPaymentExtras via an event
+            isOnlinePayment: cartStore.paymentOption === 'ONLINE',
             addressId: cartStore.collectionOption === 'DELIVERY'
-                ? (deliveryAddress.value?.id ?? null)
+                ? (cartStore.address?.id ?? null)
                 : null,
-            addressExtra: '',
-            extraComment: '',
-            orderExtra,
+            addressExtra: cartStore.addressExtra,
+            orderNote: cartStore.orderNote,
+            orderExtra: cartStore.orderExtra,
             orderProducts: cartStore.products.map((item) => ({
                 productId: item.product.id,
                 quantity: item.quantity
             })),
-            // preferredTime: 'ASAP'
+            preferredReadyTime: 'ASAP'
         }
 
         const { data: orderResponse, error } = await useAsyncData<OrderResponse>('order', () =>

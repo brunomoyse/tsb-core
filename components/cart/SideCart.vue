@@ -6,7 +6,7 @@
                 {{ $t('cart.title') }}
             </h2>
             <div class="flex gap-1 rounded-full bg-gray-100 p-1">
-                <button v-for="option in deliveryOptions" :key="option.value" :class="[
+                <button v-for="option in collectionOptions" :key="option.value" :class="[
           'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
           cartStore.collectionOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
@@ -140,7 +140,7 @@ const cartStore = useCartStore();
 const {t} = useI18n()
 
 // Delivery options setup
-const deliveryOptions = [
+const collectionOptions = [
     {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg'},
     {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
 ];
