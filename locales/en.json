@@ -145,7 +145,8 @@
     "deliveryFee": "Delivery Fee",
     "pickupDiscount": "Pickup Discount",
     "total": "Total",
-    "minimumOrderAmountIs": "Minimum order amount is 20€",
+    "minimumDelivery": "Delivery minimum order amount is {amount}€",
+    "minimumPickup": "Pickup minimum order amount is {amount}€",
     "checkout": "Checkout",
     "removeItem": "Remove"
   },

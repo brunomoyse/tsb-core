@@ -145,7 +145,8 @@
     "deliveryFee": "运费",
     "pickupDiscount": "自取优惠",
     "total": "总计",
-    "minimumOrderAmountIs": "最低订单金额为 20 欧元",
+    "minimumDelivery": "最低配送订单金额为 {amount}€",
+    "minimumPickup": "最低自取订单金额为 {amount}€",
     "checkout": "结账",
     "removeItem": "移除商品"
   },

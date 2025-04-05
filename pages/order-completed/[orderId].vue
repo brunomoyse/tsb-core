@@ -67,7 +67,7 @@
 
 <script lang="ts" setup>
 import type {OrderResponse} from '@/types'
-import {useNuxtApp, useRoute, useAsyncData, definePageMeta} from '#imports';
+import {useNuxtApp, useRoute, useAsyncData, definePageMeta, useCartStore, onMounted} from '#imports';
 
 definePageMeta({
     public: false
@@ -75,10 +75,19 @@ definePageMeta({
 
 const route = useRoute()
 const {$api} = useNuxtApp()
+const cartStore = useCartStore()
 
 const orderId = route.params.orderId as string
 
 const {data: orderResponse} = await useAsyncData<OrderResponse>('order', () =>
     $api(`/orders/${orderId}`)
 );
+
+onMounted(() => {
+    if (orderId) {
+        cartStore.clearCart()
+        cartStore.setCartVisibility(false)
+    }
+})
+
 </script>
