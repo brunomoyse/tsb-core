@@ -119,7 +119,7 @@
         "pending": "En attente",
         "confirmed": "Confirmé",
         "preparing": "En préparation",
-        "awaitingPickUp": "En attente de retrait",
+        "awaitingPickup": "En attente de retrait",
         "outForDelivery": "En livraison",
         "delivered": "Livré",
         "cancelled": "Annulé"

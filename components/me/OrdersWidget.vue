@@ -87,8 +87,8 @@
                                         </p>
                                     </div>
                                     <span class="text-sm font-medium text-gray-700">
-                        x{{ item.quantity }}
-                    </span>
+                                        x{{ item.quantity }}
+                                    </span>
                                 </div>
                             </div>
                         </div>

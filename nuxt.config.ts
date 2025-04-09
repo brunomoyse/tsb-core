@@ -36,6 +36,9 @@ export default defineNuxtConfig({
     ],
 
     i18n: {
+        bundle: {
+            optimizeTranslationDirective: false,
+        },
         defaultLocale: 'fr',
         locales: [
             {
@@ -86,5 +89,5 @@ export default defineNuxtConfig({
         },
     },
 
-    compatibilityDate: "2025-03-01",
+    compatibilityDate: "2025-04-07",
 });

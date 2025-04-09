@@ -159,3 +159,10 @@ export interface Address {
     postcode: string;
     distance: number;
 }
+
+export interface EventData {
+    event: string
+    orderID: string
+    timestamp: string
+    newStatus: string
+}

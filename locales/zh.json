@@ -119,7 +119,7 @@
         "pending": "待处理",
         "confirmed": "已确认",
         "preparing": "准备中",
-        "awaitingPickUp": "等待自取",
+        "awaitingPickup": "等待自取",
         "outForDelivery": "配送中",
         "delivered": "已送达",
         "cancelled": "已取消"
