@@ -1,66 +1,62 @@
 <template>
-    <div class="flex items-center justify-center bg-gray-100 p-4">
-        <!-- Card -->
-        <div class="max-w-2xl w-full bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-3xl font-bold">
+    <div class="flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+        <!-- Main Card -->
+        <div class="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 dark:border dark:border-gray-700">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {{ $t('orderCompleted.title', 'Order Completed') }}
             </h1>
-            <p class="mt-4 text-gray-600">
+            <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
                 {{ $t('orderCompleted.thankYou', 'Thank you for your purchase! Your order was placed successfully.') }}
             </p>
 
             <!-- Order Details -->
             <div v-if="orderResponse" class="mt-6">
-                <div class="space-y-4">
-                    <!-- Order creation time -->
-                    <p class="text-gray-700">
-                        {{ $t('orderCompleted.placedAt', 'Order placed at: ') }}
-                        {{
-                            new Date(orderResponse.order.createdAt).toLocaleString("fr-BE", {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })
-                        }}
-                    </p>
-
-                    <!-- List of items -->
+                <div class="space-y-5">
+                    <!-- Items List -->
                     <div class="space-y-4">
-                        <h4 class="text-sm font-medium text-gray-900">{{ $t('orderCompleted.items', 'Articles:') }}</h4>
-                        <div class="space-y-3">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                            {{ $t('orderCompleted.items', 'Dishes:') }}
+                        </h3>
+                        <div class="space-y-2">
                             <div
                                 v-for="(item, index) in orderResponse.products"
                                 :key="index"
-                                class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                                class="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">
-                                        {{ item.product.code ? item.product.code + ' - ' : '' }}
-                                        {{ item.product.categoryName + ' ' + item.product.name }}
+                                <div class="flex-1 min-w-0 pr-2">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                        <span v-if="item.product.code" class="text-gray-500 dark:text-gray-400">
+                                            {{ item.product.code }} -
+                                        </span>
+                                        {{ item.product.categoryName }} {{ item.product.name }}
                                     </p>
                                 </div>
-                                <span class="text-sm font-medium text-gray-700">x{{ item.quantity }}</span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                                    x{{ item.quantity }}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <OrderStatusTimeline :order="orderResponse.order" />
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200 mt-6">
+                    {{ $t('orderCompleted.status', 'Status') }}
+                </h3>
+                <OrderStatusTimeline :order="orderResponse.order" class="mt-6" />
             </div>
-            <!-- Placeholder while loading -->
-            <div v-else>
-                <p class="text-sm text-gray-500 mt-4">
+
+            <!-- Loading State -->
+            <div v-else class="mt-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ $t('orderCompleted.loading', 'Loading order details...') }}
                 </p>
             </div>
 
-
-
             <!-- Return Home Button -->
-            <div class="mt-8 text-right">
-                <NuxtLink class="inline-block px-4 py-2 rounded bg-tsb-two text-black border border-gray-300 font-semibold"
-                          to="/">
+            <div class="mt-6">
+                <NuxtLink
+                    to="/"
+                    class="w-full flex items-center justify-center px-4 py-2.5 rounded-lg bg-tsb-one hover:bg-tsb-four text-sm font-medium text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-900"
+                >
                     {{ $t('orderCompleted.returnHome', 'Return to Home') }}
                 </NuxtLink>
             </div>
