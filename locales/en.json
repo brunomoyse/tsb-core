@@ -119,7 +119,7 @@
         "pending": "Pending",
         "confirmed": "Confirmed",
         "preparing": "Preparing",
-        "awaitingPickUp": "Awaiting Pickup",
+        "awaitingPickup": "Awaiting Pickup",
         "outForDelivery": "Out for Delivery",
         "delivered": "Delivered",
         "cancelled": "Cancelled"

@@ -46,6 +46,7 @@
                         </div>
                     </div>
                 </div>
+                <OrderStatusTimeline :order="orderResponse.order" />
             </div>
             <!-- Placeholder while loading -->
             <div v-else>
@@ -53,6 +54,8 @@
                     {{ $t('orderCompleted.loading', 'Loading order details...') }}
                 </p>
             </div>
+
+
 
             <!-- Return Home Button -->
             <div class="mt-8 text-right">
@@ -66,8 +69,9 @@
 </template>
 
 <script lang="ts" setup>
-import type {OrderResponse} from '@/types'
-import {useNuxtApp, useRoute, useAsyncData, definePageMeta, useCartStore, onMounted} from '#imports';
+import type {EventData, OrderResponse} from '@/types'
+import {definePageMeta, onMounted, useAsyncData, useCartStore, useNuxtApp, useRoute, watch} from '#imports';
+import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 
 definePageMeta({
     public: false
@@ -83,10 +87,39 @@ const {data: orderResponse} = await useAsyncData<OrderResponse>('order', () =>
     $api(`/orders/${orderId}`)
 );
 
+const updateOrderById = async (orderId: string) => {
+    try {
+        orderResponse.value = await $api(`/orders/${orderId}`)
+    } catch (error) {
+        console.error('Error fetching order details:', error)
+    }
+}
+
+const initSseListener = () => {
+    const { $sse } = useNuxtApp()
+    if (!$sse) {
+        console.error('$sse is undefined; make sure the SSE plugin is properly registered on the client.')
+        return
+    }
+    // Watch the reactive SSE events array and update orders when a new event is detected.
+    watch(
+        () => $sse.events.value,
+        (events) => {
+            events.forEach((ev: EventData) => {
+                if (ev.orderID === orderResponse.value?.order.id) {
+                    updateOrderById(ev.orderID)
+                }
+            })
+        },
+        { deep: true }
+    )
+}
+
 onMounted(() => {
     if (orderId) {
         cartStore.clearCart()
         cartStore.setCartVisibility(false)
+        initSseListener()
     }
 })
 
