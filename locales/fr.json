@@ -113,7 +113,7 @@
       "loading": "Chargement des commandes...",
       "empty": "Aucune commande trouvée",
       "order": "Commande",
-      "items": "Articles",
+      "items": "Plats",
       "total": "Total",
       "status": {
         "pending": "En attente",
@@ -185,7 +185,7 @@
     "title": "Commande reçue",
     "thankYou": "Merci pour votre achat ! Votre commande a été passée avec succès.",
     "placedAt": "Commande passée le :",
-    "items": "Articles",
+    "items": "Plats",
     "loading": "Chargement des détails de la commande...",
     "returnHome": "Retour à l'accueil"
   },
