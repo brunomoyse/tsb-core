@@ -45,14 +45,30 @@
                 </div>
             </section>
 
-            <!-- Filters -->
+            <!-- Filters Section -->
             <section v-if="searchValue.trim().length < 1" class="m-4">
-                <h2 class="text-lg font-medium mb-1">Filtres</h2>
-                <div class="flex space-x-4">
+                <h2 class="text-lg font-medium mb-3">{{ $t('menu.pickFilters') }}</h2>
+                <div class="flex flex-wrap gap-3">
                     <template v-for="tag in filters" :key="tag.slug">
-                        <Checkbox v-model="filterOptions[tag.slug]">
+                        <label class="cursor-pointer w-full sm:w-auto">
+                            <div
+                                class="px-4 py-2.5 rounded-xl border transition-all duration-200"
+                                :class="[
+                        filterOptions[tag.slug]
+                            ? 'bg-tsb-four border-tsb-two shadow-sm dark:bg-gray-700 dark:border-gray-600'
+                            : 'bg-white border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:border-gray-700'
+                    ]"
+                            >
+                                <Checkbox
+                                    v-model="filterOptions[tag.slug]"
+                                    class="!mt-0 w-full"
+                                >
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ tag.name }}
-                        </Checkbox>
+                        </span>
+                                </Checkbox>
+                            </div>
+                        </label>
                     </template>
                 </div>
             </section>
