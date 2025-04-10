@@ -156,8 +156,8 @@ const getStatus = (status: string) => {
             return t('me.orders.status.confirmed')
         case 'PREPARING':
             return t('me.orders.status.preparing')
-        case 'AWAITING_PAYMENT':
-            return t('me.orders.status.awaitingPayment')
+        case 'AWAITING_PICK_UP':
+            return t('me.orders.status.awaitingPickup')
         case 'PICKED_UP':
             return t('me.orders.status.pickedUp')
         case 'OUT_FOR_DELIVERY':
