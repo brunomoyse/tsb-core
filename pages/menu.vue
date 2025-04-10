@@ -39,8 +39,7 @@
             <section class="mx-auto px-4 mb-8">
                 <div
                     v-if="filteredProducts.length"
-                    class="grid gap-5 justify-center sm:justify-start"
-                    style="grid-template-columns: repeat(auto-fit, minmax(175px, auto));"
+                    class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(175px,auto))]"
                 >
                     <ProductCard
                         v-for="(product, index) in filteredProducts"
