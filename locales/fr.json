@@ -64,6 +64,8 @@
     "ctaButtonOrder": "Commander Maintenant"
   },
   "menu": {
+    "showMore": "Voir plus",
+    "showLess": "Voir moins",
     "pickCategory": "Choisissez une catégorie",
     "choices": "choix",
     "noProduct": "Aucun produit disponible",
