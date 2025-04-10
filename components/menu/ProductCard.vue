@@ -1,7 +1,7 @@
 <template>
     <div :class="{ 'pointer-events-none opacity-50': !product.isAvailable }">
         <div v-if="product" :key="product.id"
-             class="min-w-[150px] max-w-[185px] w-full h-[260px]  bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
+             class="min-w-[140px] max-w-[185px] w-full h-[260px]  bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
             <!-- Product Image -->
             <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent>
                 <picture class="w-full h-full flex justify-center items-center">

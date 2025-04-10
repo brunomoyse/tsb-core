@@ -1,8 +1,13 @@
-<!-- CategoryCard.vue -->
 <template>
-    <button :aria-pressed="active" :class="chipClasses" role="button" @click="handleClick">
-        <!-- Category Name -->
-        <span class="whitespace-nowrap">{{ category.name }}</span>
+    <button
+        :aria-pressed="active"
+        :class="chipClasses"
+        role="button"
+        @click="handleClick"
+    >
+        <span class="truncate text-sm font-medium px-2">
+            {{ category.name.includes('bento') ? 'Bento' : category.name }}
+        </span>
     </button>
 </template>
 
@@ -10,35 +15,30 @@
 import {computed} from 'vue'
 import type {ProductCategory} from "@/types";
 
-// Define props
 const props = defineProps<{
     category: ProductCategory;
     active: boolean;
-    showIcon?: boolean; // Optional prop to show/hide icon
+    showIcon?: boolean;
 }>();
 
-// Define emits
 const emit = defineEmits<{
     (e: 'select', id: string): void;
 }>();
 
-// Handle button click
 const handleClick = () => {
     emit('select', props.category.id);
 };
 
-// Compute dynamic classes based on active state
 const chipClasses = computed(() => {
     return `
-      inline-flex items-center px-4 py-1.5 rounded-2xl text-sm font-medium transition-all duration-200 shadow-sm
-      ${props.active
-        ? 'bg-black text-white border border-slate-800'
-        : 'bg-tsb-two text-black border border-slate-300 hover:bg-slate-200'
+        w-full h-14 p-2 rounded-lg flex items-center justify-center
+        transition-all duration-150 border
+        ${
+        props.active
+            ? 'bg-tsb-four border-tsb-three shadow-md'
+            : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
     }
+        md:hover:scale-[1.02] md:hover:shadow-sm
     `;
 });
 </script>
-
-<style scoped>
-/* Optional: Add any additional component-specific styles here */
-</style>

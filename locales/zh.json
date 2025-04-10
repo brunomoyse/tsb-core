@@ -64,6 +64,8 @@
     "ctaButtonOrder": "立即订购"
   },
   "menu": {
+    "showMore": "查看更多",
+    "showLess": "收起",
     "pickCategory": "选择类别",
     "choices": "选择",
     "noProduct": "没有产品可用",

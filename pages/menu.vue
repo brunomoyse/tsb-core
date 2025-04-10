@@ -10,16 +10,38 @@
 
             <!-- Categories -->
             <section v-if="searchValue.trim().length < 1" class="m-4">
-                <h2 class="text-lg font-medium mb-1">{{ $t('menu.pickCategory') }}</h2>
-                <div class="flex overflow-x-auto space-x-4 no-scrollbar">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-medium">{{ $t('menu.pickCategory') }}</h2>
+                    <button
+                        v-if="categories && categories.length > initialVisibleCount"
+                        @click="showAllCategories = !showAllCategories"
+                        class="hidden sm:inline-block text-sm text-primary-600 hover:text-primary-700"
+                    >
+                        {{ showAllCategories ? $t('menu.showLess') : $t('menu.showMore') }}
+                    </button>
+                </div>
+
+                <!-- Mobile Horizontal Scroll -->
+                <div class="flex overflow-x-auto gap-2 pb-2 sm:hidden no-scrollbar">
                     <CategoryCard
                         v-for="category in categories"
                         :key="category.id"
                         :active="selectedCategory?.id === category.id"
                         :category="category"
-                        :show-icon="false"
+                        class="min-w-[150px]"
                         @select="selectCategory"
                     />
+                </div>
+
+                <!-- Desktop Grid -->
+                <div class="hidden sm:grid grid-cols-3 lg:grid-cols-4 gap-2">
+                    <template v-for="category in visibleCategories" :key="category.id">
+                        <CategoryCard
+                            :active="selectedCategory?.id === category.id"
+                            :category="category"
+                            @select="selectCategory"
+                        />
+                    </template>
                 </div>
             </section>
 
@@ -39,7 +61,7 @@
             <section class="mx-auto px-4 mb-8">
                 <div
                     v-if="filteredProducts.length"
-                    class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(175px,auto))]"
+                    class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                 >
                     <ProductCard
                         v-for="(product, index) in filteredProducts"
@@ -83,6 +105,15 @@ import type {Product, ProductCategory} from '@/types'
 const {locale: userLocale, t} = useI18n()
 const {$api} = useNuxtApp()
 const cartStore = useCartStore();
+
+const initialVisibleCount = 8; // Show 8 categories initially on desktop
+const showAllCategories = ref(false);
+
+const visibleCategories = computed(() => {
+    return showAllCategories.value
+        ? categories.value
+        : categories.value?.slice(0, initialVisibleCount) || [];
+});
 
 const filterOptions = reactive<Record<string, boolean>>({
     isHalal: false,
