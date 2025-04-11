@@ -123,9 +123,11 @@
         "confirmed": "已确认",
         "preparing": "准备中",
         "awaitingPickup": "等待自取",
+        "pickedUp": "已自取",
         "outForDelivery": "配送中",
         "delivered": "已送达",
-        "cancelled": "已取消"
+        "cancelled": "已取消",
+        "failed": "失败"
       }
     },
     "profile": {

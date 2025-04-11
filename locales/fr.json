@@ -123,9 +123,11 @@
         "confirmed": "Confirmé",
         "preparing": "En préparation",
         "awaitingPickup": "En attente de retrait",
+        "pickedUp": "Retiré",
         "outForDelivery": "En livraison",
         "delivered": "Livré",
-        "cancelled": "Annulé"
+        "cancelled": "Annulé",
+        "failed": "Échoué"
       }
     },
     "profile": {
