@@ -54,6 +54,7 @@
                     </div>
                 </div>
                 <!-- Email -->
+                <!--
                 <div class="flex items-center space-x-3">
                     <span class="text-2xl">✉️</span>
                     <div>
@@ -65,18 +66,7 @@
                         </p>
                     </div>
                 </div>
-                <!-- Reservations -->
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl">🍽️</span>
-                    <div>
-                        <h2 class="font-semibold">{{ $t('contact.reservationsTitle') }}</h2>
-                        <p>
-                            <NuxtLinkLocale class="text-blue-500 hover:underline" to="reservation">
-                                {{ $t('contact.reservationsLink') }}
-                            </NuxtLinkLocale>
-                        </p>
-                    </div>
-                </div>
+                -->
             </div>
         </div>
 
