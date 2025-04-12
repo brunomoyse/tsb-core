@@ -120,6 +120,17 @@
       "total": "总计",
       "follow": "跟踪",
       "status": {
+        "details": {
+          "title": {
+            "pending": "已下单",
+            "confirmed": "餐厅已确认",
+            "preparing": "正在准备您的订单",
+            "awaitingPickUp": "等待取货",
+            "outForDelivery": "正在派送",
+            "delivered": "已送达",
+            "pickedUp": "已取货"
+          }
+        },
         "pending": "待处理",
         "confirmed": "已确认",
         "preparing": "准备中",

@@ -120,6 +120,17 @@
       "total": "Total",
       "follow": "Follow",
       "status": {
+        "details": {
+          "title": {
+            "pending": "Order placed",
+            "confirmed": "Confirmed by the restaurant",
+            "preparing": "Preparing your order",
+            "awaitingPickUp": "Awaiting pick-up",
+            "outForDelivery": "Out for delivery",
+            "delivered": "Delivered",
+            "pickedUp": "Picked Up"
+          }
+        },
         "pending": "Pending",
         "confirmed": "Confirmed",
         "preparing": "Preparing",

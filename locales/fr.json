@@ -120,6 +120,17 @@
       "total": "Total",
       "follow": "Suivre",
       "status": {
+        "details": {
+          "title": {
+            "pending": "Commande reçue",
+            "confirmed": "Confirmé par le restaurant",
+            "preparing": "Préparation",
+            "awaitingPickUp": "En attente de retrait",
+            "outForDelivery": "En cours de livraison",
+            "delivered": "Livré",
+            "pickedUp": "Retiré"
+          }
+        },
         "pending": "En attente",
         "confirmed": "Confirmé",
         "preparing": "En préparation",
