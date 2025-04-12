@@ -118,6 +118,7 @@
       "order": "Order",
       "items": "Items",
       "total": "Total",
+      "follow": "Follow",
       "status": {
         "pending": "Pending",
         "confirmed": "Confirmed",

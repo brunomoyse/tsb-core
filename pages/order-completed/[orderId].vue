@@ -41,7 +41,11 @@
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200 mt-6">
                     {{ $t('orderCompleted.status', 'Status') }}
                 </h3>
-                <OrderStatusTimeline :order="orderResponse.order" class="mt-6" />
+                <OrderStatusTimeline
+                    @update-order="updateOrderById"
+                    :order="orderResponse.order"
+                    class="mt-6"
+                />
             </div>
 
             <!-- Loading State -->
@@ -65,8 +69,8 @@
 </template>
 
 <script lang="ts" setup>
-import type {EventData, OrderResponse} from '@/types'
-import {definePageMeta, onMounted, useAsyncData, useCartStore, useNuxtApp, useRoute, watch} from '#imports';
+import type {OrderResponse} from '@/types'
+import {definePageMeta, onMounted, useAsyncData, useCartStore, useNuxtApp, useRoute} from '#imports';
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 
 definePageMeta({
@@ -91,31 +95,10 @@ const updateOrderById = async (orderId: string) => {
     }
 }
 
-const initSseListener = () => {
-    const { $sse } = useNuxtApp()
-    if (!$sse) {
-        console.error('$sse is undefined; make sure the SSE plugin is properly registered on the client.')
-        return
-    }
-    // Watch the reactive SSE events array and update orders when a new event is detected.
-    watch(
-        () => $sse.events.value,
-        (events) => {
-            events.forEach((ev: EventData) => {
-                if (ev.orderID === orderResponse.value?.order.id) {
-                    updateOrderById(ev.orderID)
-                }
-            })
-        },
-        { deep: true }
-    )
-}
-
 onMounted(() => {
     if (orderId) {
         cartStore.clearCart()
         cartStore.setCartVisibility(false)
-        initSseListener()
     }
 })
 

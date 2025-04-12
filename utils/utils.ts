@@ -15,3 +15,12 @@ export function formatAddress(address: Address | null): string {
     formatted += `, ${postcode} – ${municipalityName}`;
     return formatted;
 }
+
+export function toCamelCase(str: string): string {
+    // Split the input string by underscore and convert every part to lower case
+    const words = str.split('_').map(word => word.toLowerCase());
+    // If there's no word, return an empty string
+    if (words.length === 0) return '';
+    // Return the first word as is, and capitalize the first letter of every subsequent word
+    return words[0] + words.slice(1).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+}
