@@ -118,6 +118,7 @@
       "order": "Commande",
       "items": "Plats",
       "total": "Total",
+      "follow": "Suivre",
       "status": {
         "pending": "En attente",
         "confirmed": "Confirmé",

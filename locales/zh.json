@@ -118,6 +118,7 @@
       "order": "订单",
       "items": "商品",
       "total": "总计",
+      "follow": "跟踪",
       "status": {
         "pending": "待处理",
         "confirmed": "已确认",
