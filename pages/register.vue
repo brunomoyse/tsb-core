@@ -20,7 +20,7 @@ const localePath = useLocalePath()
 
 // Handle the submitted data from UserForm
 const registerUser = async (formData: any) => {
-    const { firstName, lastName, email, password, phoneNumber, finalAddress } = formData
+    const { firstName, lastName, email, password, phoneNumber, addressId } = formData
 
     const { error } = await useAsyncData('register', () =>
         $api('/register', {
@@ -31,7 +31,7 @@ const registerUser = async (formData: any) => {
                 email,
                 password,
                 phoneNumber,
-                addressId: finalAddress ? finalAddress.id : null
+                addressId,
             }
         })
     )
