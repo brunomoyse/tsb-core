@@ -117,29 +117,33 @@ function iconBackgroundClass(index: number): string {
 // Adjust these values or integrate your order's data as needed.
 const statusDetails: Record<string, { title: string; description?: string }> = {
     PENDING: {
-        title: 'Order placed',
+        title: t('me.orders.status.details.title.pending'),
         //description: '19 Nov 2023, 10:45'
     },
     CONFIRMED: {
-        title: 'Confirmed by the restaurant',
+        title: t('me.orders.status.details.title.confirmed'),
         //description: '19 Nov 2023, 10:47'
     },
     PREPARING: {
-        title: 'Preparing your order',
+        title: t('me.orders.status.details.title.preparing'),
         //description: '22 Nov 2023, 12:27'
     },
     AWAITING_PICK_UP: {
-        title: 'Awaiting pick-up',
+        title: t('me.orders.status.details.title.awaitingPickUp'),
         //description: '23 Nov 2023, 15:15'
     },
     OUT_FOR_DELIVERY: {
-        title: 'Out for delivery',
+        title: t('me.orders.status.details.title.outForDelivery'),
         //description: 'Products being delivered'
     },
     DELIVERED: {
-        title: 'Delivered',
+        title: t('me.orders.status.details.title.delivered'),
         //description: 'Products delivered'
-    }
+    },
+    PICKED_UP: {
+        title: t('me.orders.status.details.title.pickedUp'),
+        //description: 'Products picked up'
+    },
 }
 
 const isOrderCompleted = (status: string) => {
