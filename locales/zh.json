@@ -206,7 +206,8 @@
       "placedAt": "下单时间：",
       "items": "商品",
       "loading": "正在加载订单详情...",
-      "returnHome": "返回首页"
+      "returnHome": "返回首页",
+      "status": "状态"
     }
   },
   "404": {

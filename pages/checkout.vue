@@ -98,6 +98,13 @@ const handleCheckout = async () => {
     if (isCheckoutProcessing.value) return
     isCheckoutProcessing.value = true
 
+    // Check if user is authenticated
+    if (!authStore.accessValid) {
+        // Redirect to login
+        navigateTo(localePath('/login?from_checkout=true'))
+        return
+    }
+
     try {
         if (cartStore.products.length === 0) {
             console.error('Cart is empty')
