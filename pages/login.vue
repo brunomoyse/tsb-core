@@ -130,6 +130,7 @@ onMounted(async () => {
 
     const success = params.get('success')
     const emailVerified = params.get('email_verified')
+    const fromCheckout = params.get('from_checkout')
 
     // if success, then fetch /me to fill the auth store with user credentials
     if (success) {
@@ -147,6 +148,16 @@ onMounted(async () => {
             persistent: false,
             duration: 5000,
             variant: 'success',
+        })
+    }
+
+    if (fromCheckout) {
+        // Show a notification if the user was redirected from checkout
+        eventBus.emit('notify', {
+            message: 'Veuillez vous connecter pour valider votre panier.',
+            persistent: false,
+            duration: 10000,
+            variant: 'info',
         })
     }
 })
