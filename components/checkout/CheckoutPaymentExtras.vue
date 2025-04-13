@@ -99,7 +99,7 @@
 
         <!-- Checkout Button -->
         <button
-            @click="handleCheckout"
+            @click.once="debouncedCheckout"
             :disabled="isCheckoutProcessing"
             class="w-full py-3 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
         >
@@ -113,8 +113,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import { useCartStore } from '#imports'
+import { useDebounceFn } from '@vueuse/core'
 
 const cartStore = useCartStore()
 
@@ -207,11 +208,20 @@ const orderComment = computed({
     }
 })
 
+// Reactive flag used for display (disabled button, etc.)
 const isCheckoutProcessing = ref(false)
 
 const handleCheckout = async () => {
-    if (isCheckoutProcessing.value) return
-    isCheckoutProcessing.value = true
-    emit('checkout')
+    isCheckoutProcessing.value = true  // Update reactive flag as well.
+    await nextTick()
+    try {
+        emit('checkout')
+    } finally {
+        isCheckoutProcessing.value = false
+    }
 }
+
+// Create a debounced version of handleCheckout.
+const debouncedCheckout = useDebounceFn(handleCheckout, 300)
+
 </script>
