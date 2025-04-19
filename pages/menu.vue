@@ -113,13 +113,42 @@ import SearchBar from '~/components/menu/SearchBar.vue'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import {computed, reactive, ref, watch} from 'vue'
 import {useDebounce} from '@vueuse/core'
-import {useAsyncData, useI18n, useNuxtApp} from '#imports'
+import {useI18n} from '#imports'
 import {useCartStore} from '@/stores/cart';
-
 import type {Product, ProductCategory} from '@/types'
+import gql from 'graphql-tag'
+import { print } from 'graphql'
+import {useGqlQuery} from "~/composables/useGqlQuery";
 
-const {locale: userLocale, t} = useI18n()
-const {$api} = useNuxtApp()
+const PRODUCTS = gql`
+    query {
+        products {
+             id
+             name
+             price
+             code
+             slug
+             pieceCount
+             isAvailable
+             isHalal
+             category {
+                id
+                name
+             }
+        }
+    }
+`
+
+const PRODUCT_CATEGORIES = gql`
+    query {
+        productCategories {
+             id
+             name
+             order
+        }
+    }
+`
+const {t} = useI18n()
 const cartStore = useCartStore();
 
 const initialVisibleCount = 8; // Show 8 categories initially on desktop
@@ -155,40 +184,25 @@ watch(debouncedSearchValue, (newValue) => {
 })
 
 // Fetch categories
-const {data: categories} = await useAsyncData<ProductCategory[]>('categories', () =>
-    $api('/categories', {
-        headers: {
-            'Accept-Language': userLocale.value
-        }
-    })
+const { data: dataCategories } = await useGqlQuery<{ productCategories: ProductCategory[] }>(print(PRODUCT_CATEGORIES))
+const categories = computed(() => dataCategories.value?.productCategories ?? [])
+
+const selectedCategory = ref<ProductCategory | null>(
+    categories.value?.[0] || null
 );
-const selectedCategory = ref(categories.value?.[0] || null)
 
 const selectCategory = async (categoryId: string) => {
     selectedCategory.value = categories.value?.find((cat) => cat.id === categoryId) || null
 }
 
 // Fetch products by category
-const {data: products} = await useAsyncData<Product[]>('products', () =>
-    $api('/products', {
-        headers: {
-            'Accept-Language': userLocale.value
-        }
-    })
-);
-
-const productData = computed(() =>
-    // Add property "category" to each product based on the category ID
-    products.value?.flatMap((p) => ({
-        ...p,
-        category: categories.value?.find((c) => c.id === p.categoryId) || null
-    }))
-)
+const {data: dataProducts} = await useGqlQuery<{ products: Product[] }>(print(PRODUCTS))
+const products = computed(() => dataProducts.value?.products ?? [])
 
 const filteredProducts = computed(() => {
     const query = debouncedSearchValue.value.trim().toLowerCase();
 
-    return productData.value?.filter((p) => {
+    return products.value?.filter((p) => {
         // Check for exact code match first
         const exactCodeMatch = query && p.code?.toLowerCase() === query;
 
