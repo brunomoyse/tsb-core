@@ -5,29 +5,29 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="orderResponses === null" class="mt-6 text-center text-gray-500">
+        <div v-if="orders === null" class="mt-6 text-center text-gray-500">
             {{ $t('me.orders.loading') }}
         </div>
 
         <!-- Orders List -->
-        <div v-else-if="orderResponses?.length" class="mt-4 space-y-2">
+        <div v-else-if="orders?.length" class="mt-4 space-y-2">
             <div
-                v-for="orderResponse in orderResponses"
-                :key="orderResponse.order.id"
+                v-for="order in orders"
+                :key="order.id"
                 class="bg-white rounded-xl border border-gray-100 transition-all"
             >
                 <!-- Order Header -->
                 <div
                     class="p-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
-                    @click="toggleOrder(orderResponse.order.id)"
+                    @click="toggleOrder(order.id)"
                 >
                     <div>
                         <h3 class="font-semibold text-gray-700">
-                            {{ $t(`cart.${orderResponse.order.orderType.toLowerCase()}`) }}
+                            {{ $t(`cart.${order.type.toLowerCase()}`) }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500">
                             {{
-                                new Date(orderResponse.order.createdAt).toLocaleString("fr-BE", {
+                                new Date(order.createdAt).toLocaleString("fr-BE", {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
@@ -40,22 +40,22 @@
                     <div class="flex items-center gap-2">
                         <!-- Order Status -->
                         <span
-                            v-if="isOrderCompleted(orderResponse.order.orderStatus)"
+                            v-if="isOrderCompleted(order.status)"
                             class="inline-block px-3 py-1 rounded-full text-sm font-medium text-white"
-                            :class="getStatusColorClass(orderResponse.order.orderStatus)"
+                            :class="getStatusColorClass(order.status)"
                         >
-                          {{ getStatus(orderResponse.order.orderStatus) }}
+                          {{ getStatus(order.status) }}
                         </span>
                         <!-- Follow Button -->
                         <button
                             v-else
-                            @click.stop="openTimeline(orderResponse.order)"
+                            @click.stop="openTimeline(order)"
                             class="inline-block px-3 py-1 rounded-full text-sm font-medium text-black bg-gray-100 hover:bg-red-200 focus:outline-none"
                         >
                             {{ $t('me.orders.follow') }}
                         </button>
                         <span
-                            :class="{ 'rotate-180': isExpanded(orderResponse.order.id) }"
+                            :class="{ 'rotate-180': isExpanded(order.id) }"
                             class="text-gray-400 transition-transform duration-200"
                         >
                           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,17 +79,17 @@
                     leave-from-class="max-h-[1000px] opacity-100"
                     leave-to-class="max-h-0 opacity-0"
                 >
-                    <div v-show="isExpanded(orderResponse.order.id)" class="px-4 pb-4">
+                    <div v-show="isExpanded(order.id)" class="px-4 pb-4">
                         <!-- Delivery Address Section -->
                         <div
-                            v-if="orderResponse.address"
+                            v-if="order.address"
                             class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
                         >
                             <h4 class="text-sm font-semibold text-gray-700">
                                 {{ $t('checkout.deliveryAddress', 'Delivery Address') }}
                             </h4>
                             <p class="mt-1 text-sm text-gray-600">
-                                {{ formatAddress(orderResponse.address) }}
+                                {{ formatAddress(order.address) }}
                             </p>
                         </div>
 
@@ -97,14 +97,14 @@
                         <div class="space-y-4">
                             <div class="space-y-3">
                                 <div
-                                    v-for="(item, index) in orderResponse.products"
+                                    v-for="(item, index) in order.items"
                                     :key="index"
                                     class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                                 >
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">
                                             {{ item.product.code ? item.product.code + ' - ' : '' }}
-                                            {{ item.product.categoryName + ' - ' + item.product.name }}
+                                            {{ item.product.category.name + ' - ' + item.product.name }}
                                         </p>
                                     </div>
                                     <span class="text-sm font-medium text-gray-700">
@@ -125,7 +125,7 @@
                                         new Intl.NumberFormat("fr-BE", {
                                             style: "currency",
                                             currency: "EUR",
-                                        }).format(parseFloat(orderResponse.order.totalPrice))
+                                        }).format(parseFloat(order.totalPrice))
                                     }}
                                 </span>
                             </div>
@@ -162,7 +162,6 @@
                     </button>
                     <!-- Order Status Timeline Component -->
                     <OrderStatusTimeline
-                        @update-order="updateOrderById"
                         :order="currentTimelineOrder "
                     />
                 </div>
@@ -172,17 +171,66 @@
 </template>
 
 <script lang="ts" setup>
-import { useAsyncData, useNuxtApp } from "#imports"
-import type { Order, OrderResponse } from "~/types"
+import { useGqlQuery } from "#imports"
+import type {Order} from "~/types"
 import { ref, computed } from "vue"
 import { useI18n } from "vue-i18n"
 import { formatAddress } from "~/utils/utils"
 import OrderStatusTimeline from "~/components/order/OrderStatusTimeline.vue"
+import gql from 'graphql-tag'
+import {print} from "graphql/index";
 
 const { t } = useI18n()
-const { $api } = useNuxtApp()
 
-const { data: orderResponses } = await useAsyncData<OrderResponse[]>('orders', () => $api('/me/orders'));
+const MY_ORDERS = gql`
+    {
+        myOrders {
+                id
+                createdAt
+                updatedAt
+                status
+                type
+                isOnlinePayment
+                discountAmount
+                deliveryFee
+                totalPrice
+                estimatedReadyTime
+                addressExtra
+                orderNote
+                orderExtra
+
+                address {
+                    streetName
+                    municipalityName
+                    postcode
+                }
+                customer {
+                    id
+                    firstName
+                    lastName
+                }
+                payment {
+                    status
+                }
+                items {
+                    unitPrice
+                    quantity
+                    totalPrice
+                    product {
+                        id
+                        name
+                        category {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+    }
+`
+
+const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
+const orders = computed(() => dataOrders.value?.myOrders ?? [])
 
 const expandedOrders = ref<Set<string>>(new Set())
 
@@ -192,11 +240,11 @@ const timelineOrder = ref<Order | null>(null)
 // Compute currentTimelineOrder based on the updated orders.
 // Adding an explicit generic here ensures that the computed value is properly typed.
 const currentTimelineOrder = computed<Order | null>(() => {
-    if (!timelineOrder.value || !orderResponses.value) return null
-    const foundOrder = orderResponses.value.find(
-        (orderResp: OrderResponse) => orderResp.order.id === timelineOrder.value!.id
+    if (!timelineOrder.value || !orders.value) return null
+    const foundOrder = orders.value.find(
+        (orderResp: Order) => orderResp.id === timelineOrder.value!.id
     )
-    return foundOrder ? foundOrder.order : timelineOrder.value
+    return foundOrder ? foundOrder : timelineOrder.value
 })
 
 const toggleOrder = (orderId: string) => {
@@ -248,32 +296,6 @@ const isOrderCompleted = (status: string) => {
     return status === "DELIVERED" || status === "PICKED_UP" || status === "CANCELLED" || status === "FAILED"
 }
 
-const updateOrderById = async (orderId: string) => {
-    try {
-        if (!orderResponses.value) return
-
-        const res: OrderResponse = await $api(`/orders/${orderId}`)
-        const orderResponse = orderResponses.value.find((order) => order.order.id === orderId)
-
-        if (orderResponse) {
-            orderResponse.order = res.order
-            orderResponse.products = res.products
-            orderResponse.address = res.address
-        }
-
-        // Close the timeline modal if the order is completed.
-        if (isOrderCompleted(res.order.orderStatus)) {
-            closeTimeline()
-        }
-
-        // Update timelineOrder if it's the one currently shown.
-        if (timelineOrder.value && timelineOrder.value.id === orderId) {
-            timelineOrder.value = res.order
-        }
-    } catch (error) {
-        console.error('Error fetching order details:', error)
-    }
-}
 </script>
 
 <style>

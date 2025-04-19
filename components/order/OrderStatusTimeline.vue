@@ -2,15 +2,15 @@
     <div class="mt-4 mx-auto max-w-3xl">
         <div class="space-y-4">
             <div
-                v-for="(status, index) in (order.orderType === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)"
+                v-for="(status, index) in (order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)"
                 :key="status"
                 class="flex items-center p-3 rounded-lg transition-colors"
                 :class="[
                         index < currentIndex
                             ? 'border border-green-100 bg-green-50 dark:bg-gray-700'
-                            : index === currentIndex && !isOrderCompleted(order.orderStatus)
+                            : index === currentIndex && !isOrderCompleted(order.status)
                                 ? 'border border-yellow-300 bg-yellow-50 dark:bg-gray-900'
-                                : isOrderCompleted(order.orderStatus)
+                                : isOrderCompleted(order.status)
                                     ? 'border border-green-100 bg-green-50 dark:bg-gray-700'
                                     :'border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800',
                     ]"
@@ -18,15 +18,15 @@
                 <!-- Icon -->
                 <div class="relative flex-shrink-0 mr-3">
                         <span
-                            :class="isOrderCompleted(order.orderStatus) ? 'bg-green-300' : iconBackgroundClass(index)"
+                            :class="isOrderCompleted(order.status) ? 'bg-green-300' : iconBackgroundClass(index)"
                             class="flex h-8 w-8 items-center justify-center rounded-lg"
                         >
                             <span
-                                v-if="index === currentIndex && !isOrderCompleted(order.orderStatus)"
+                                v-if="index === currentIndex && !isOrderCompleted(order.status)"
                                 class="absolute inset-0 rounded-lg bg-yellow-300 opacity-75 animate-ping"
                             ></span>
                             <img
-                                :src="(index < currentIndex) || isOrderCompleted(order.orderStatus) ? '/icons/status/mdi-check.svg' : `/icons/status/${iconMapping[status]}.svg`"
+                                :src="(index < currentIndex) || isOrderCompleted(order.status) ? '/icons/status/mdi-check.svg' : `/icons/status/${iconMapping[status]}.svg`"
                                 alt=""
                                 class="h-4 w-4"
                             />
@@ -50,14 +50,11 @@
 <script lang="ts" setup>
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
-import type {EventData, Order} from '@/types'
-import {onMounted, useNuxtApp, watch} from "#imports";
+import type {Order} from '@/types'
 import {toCamelCase} from "~/utils/utils";
 
 const props = defineProps<{ order: Order }>()
 const {t} = useI18n()
-
-const emit = defineEmits(['updateOrder'])
 
 // Define the statuses in the order they should appear.
 const deliveryStatuses = [
@@ -92,8 +89,8 @@ const iconMapping: Record<string, string> = {
 
 // Compute the index of the current order status.
 const currentIndex = computed(() => {
-    const statuses = props.order.orderType === 'DELIVERY' ? deliveryStatuses : pickUpStatuses
-    const idx = statuses.indexOf(props.order.orderStatus)
+    const statuses = props.order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses
+    const idx = statuses.indexOf(props.order.status)
     return idx === -1 ? 0 : idx
 })
 

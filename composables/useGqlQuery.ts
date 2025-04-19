@@ -6,29 +6,27 @@ import { useAsyncData, useNuxtApp } from '#imports'
 import type { AsyncData } from 'nuxt/app'
 
 type Vars = Record<string, unknown> | (() => Record<string, unknown>)
+interface Options {
+    immediate?: boolean
+    cache?: boolean
+}
 
 export async function useGqlQuery<T>(
     rawQuery: string | import('graphql').DocumentNode,
     variables: Vars = {},
-    opts: { immediate?: boolean } = { immediate: true },
-): Promise<
-    AsyncData<T, any> & { refetch: () => Promise<void> }
-> {
+    opts: Options = { immediate: true, cache: false },   // ⬅ default cache:false
+): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
     const { $gqlFetch } = useNuxtApp()
+    const getVars = () => (typeof variables === 'function' ? variables() : variables)
+    const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
 
-    const getVars = () =>
-        typeof variables === 'function' ? variables() : variables
+    // choose overload: with key (cache) or without key (no cache)
+    const asyncData = opts.cache
+        ? await useAsyncData<T, T>(`gql:${hash(printIfAst(rawQuery))}`, handler, {
+            immediate: opts.immediate,
+        })
+        : await useAsyncData<T>(handler, { immediate: opts.immediate })
 
-    const key = `gql:${hash(printIfAst(rawQuery))}`
-
-    /** run the query (SSR‑cached) */
-    const asyncData = await useAsyncData<T, T>(
-        key,
-        () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() }),
-        { immediate: opts.immediate },
-    )
-
-    /** watch reactive variables */
     if (typeof variables === 'function') {
         watch(
             () => variables(),
@@ -40,7 +38,6 @@ export async function useGqlQuery<T>(
     return Object.assign(asyncData, { refetch: asyncData.refresh })
 }
 
-/* helper */
 function printIfAst(q: string | import('graphql').DocumentNode): string {
     return typeof q === 'string' ? q : print(q)
 }

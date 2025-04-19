@@ -10,7 +10,7 @@
             </p>
 
             <!-- Order Details -->
-            <div v-if="orderResponse" class="mt-6">
+            <div v-if="order" class="mt-6">
                 <div class="space-y-5">
                     <!-- Items List -->
                     <div class="space-y-4">
@@ -19,7 +19,7 @@
                         </h3>
                         <div class="space-y-2">
                             <div
-                                v-for="(item, index) in orderResponse.products"
+                                v-for="(item, index) in order.items"
                                 :key="index"
                                 class="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
@@ -28,7 +28,7 @@
                                         <span v-if="item.product.code" class="text-gray-500 dark:text-gray-400">
                                             {{ item.product.code }} -
                                         </span>
-                                        {{ item.product.categoryName }} {{ item.product.name }}
+                                        {{ item.product.category.name }} {{ item.product.name }}
                                     </p>
                                 </div>
                                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
@@ -42,8 +42,7 @@
                     {{ $t('orderCompleted.status', 'Status') }}
                 </h3>
                 <OrderStatusTimeline
-                    @update-order="updateOrderById"
-                    :order="orderResponse.order"
+                    :order="order"
                     class="mt-6"
                 />
             </div>
@@ -69,36 +68,111 @@
 </template>
 
 <script lang="ts" setup>
-import type {OrderResponse} from '@/types'
-import {definePageMeta, onMounted, useAsyncData, useCartStore, useNuxtApp, useRoute} from '#imports';
+import {definePageMeta, onMounted, useCartStore, useGqlQuery, useGqlSubscription, useRoute, watch} from '#imports';
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
+import type {Order} from '@/types'
+import gql from "graphql-tag";
+import { print } from 'graphql'
+import {computed} from 'vue'
+
+const ORDER = gql`
+    query ($orderId: ID!) {
+            order(id: $orderId) {
+                id
+                createdAt
+                updatedAt
+                status
+                type
+                isOnlinePayment
+                discountAmount
+                deliveryFee
+                totalPrice
+                estimatedReadyTime
+                addressExtra
+                orderNote
+                orderExtra
+
+                address {
+                    streetName
+                    municipalityName
+                    postcode
+                }
+                customer {
+                    id
+                    firstName
+                    lastName
+                }
+                payment {
+                    status
+                }
+                items {
+                    unitPrice
+                    quantity
+                    totalPrice
+                    product {
+                        id
+                        name
+                        category {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+`
+
+const ORDER_UPDATED = gql`
+  subscription ($orderId: ID!) {
+    orderUpdated(orderId: $orderId) {
+      id
+      status
+      updatedAt
+      estimatedReadyTime
+    }
+  }
+`
 
 definePageMeta({
     public: false
 })
 
 const route = useRoute()
-const {$api} = useNuxtApp()
 const cartStore = useCartStore()
 
 const orderId = route.params.orderId as string
 
-const {data: orderResponse} = await useAsyncData<OrderResponse>('order', () =>
-    $api(`/orders/${orderId}`)
+const {data: dataOrder} = await useGqlQuery<{order: Order}>(
+    print(ORDER),
+    {
+        orderId
+    }
 );
 
-const updateOrderById = async (orderId: string) => {
-    try {
-        orderResponse.value = await $api(`/orders/${orderId}`)
-    } catch (error) {
-        console.error('Error fetching order details:', error)
-    }
+const order = computed(() => dataOrder.value?.order ?? null);
+
+if (import.meta.client) {
+    const { data: liveUpdate } = useGqlSubscription<{ orderUpdated: Partial<Order> }>(
+        ORDER_UPDATED,
+        { orderId }
+    )
+
+    // merge every incoming patch into the existing reactive order
+    watch(liveUpdate, (val) => {
+        if (val?.orderUpdated && dataOrder.value?.order) {
+            dataOrder.value.order = {
+                ...dataOrder.value.order,
+                ...val.orderUpdated,
+            }
+        }
+    })
 }
 
 onMounted(() => {
     if (orderId) {
-        cartStore.clearCart()
         cartStore.setCartVisibility(false)
+        cartStore.clearCart()
     }
 })
 

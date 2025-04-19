@@ -1,7 +1,7 @@
 // composables/useGqlSubscription.ts
 import { ref, onScopeDispose } from 'vue'
 import { print } from 'graphql'
-import { useNuxtApp, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig, useCookie } from '#imports'
 
 /* lazy‑import because we only need it client‑side */
 let wsClient: ReturnType<typeof import('graphql-ws')['createClient']> | null = null
@@ -12,13 +12,13 @@ export function useGqlSubscription<T = unknown>(
 ) {
     const cfg  = useRuntimeConfig()
     const data = ref<T>()
-    const error = ref<any>()
+    const error = ref<never>()
 
-    if (process.client) {
+    if (import.meta.client) {
         if (!wsClient) {
             const { createClient } = await import('graphql-ws')
             wsClient = createClient({
-                url: cfg.public.graphqlWs,                 // e.g. wss://…/graphql
+                url: cfg.public.graphqlWs as string,      // e.g. wss://…/graphql
                 connectionParams: {                       // forward cookies / token
                     Authorization: useCookie('access_token').value
                         ? `Bearer ${useCookie('access_token').value}`
