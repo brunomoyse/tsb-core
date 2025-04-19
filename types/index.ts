@@ -13,7 +13,7 @@ export interface Product {
     isAvailable: boolean;
     categoryId: string;
     discountable: boolean;
-    category?: ProductCategory | null;
+    category: ProductCategory;
 }
 
 export interface ProductCategory {
