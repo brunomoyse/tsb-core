@@ -25,9 +25,12 @@
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.5",
     "@graphql-codegen/client-preset": "4.8.0",
+    "@graphql-codegen/graphql-modules-preset": "^4.0.16",
     "@graphql-codegen/introspection": "4.0.3",
     "@graphql-codegen/typescript": "^4.1.6",
     "@graphql-codegen/typescript-apollo-client-helpers": "^3.0.0",
+    "@graphql-codegen/typescript-operations": "^4.6.0",
+    "@graphql-codegen/typescript-vue-apollo": "^4.1.1",
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/i18n": "^9.4.0",
