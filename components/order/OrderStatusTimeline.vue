@@ -158,27 +158,4 @@ const getStatusDescription = (status: string): string => {
     return statusDetails[status]?.description || ''
 }
 
-const initSseListener = () => {
-    const { $sse } = useNuxtApp()
-    if (!$sse) {
-        console.error('$sse is undefined; make sure the SSE plugin is properly registered on the client.')
-        return
-    }
-    // Watch the reactive SSE events array and update orders when a new event is detected.
-    watch(
-        () => $sse.events.value,
-        (events) => {
-            events.forEach((ev: EventData) => {
-                if (ev.orderID === props.order.id) {
-                    emit('updateOrder', ev.orderID)
-                }
-            })
-        },
-        { deep: true }
-    )
-}
-
-onMounted(() => {
-    initSseListener()
-})
 </script>
