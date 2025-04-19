@@ -82,8 +82,8 @@ export interface Order {
     createdAt: string;
     updatedAt: string;
     userId: string;
-    orderStatus: OrderStatus;
-    orderType: OrderType;
+    status: OrderStatus;
+    type: OrderType;
     isOnlinePayment: boolean;
     paymentID: string | null;
     discountAmount: string;
@@ -97,15 +97,13 @@ export interface Order {
         name: string | null
         options: string[] | null
     }[] | null;
+    payment: MolliePayment | null;
+    address: Address | null;
+    items: OrderProduct[];
 }
 
 export interface OrderProduct {
-    product: {
-        id: string;
-        code: string | null;
-        categoryName: string
-        name: string;
-    };
+    product: Product;
     quantity: number;
     unitPrice: string;
     totalPrice: string;
@@ -118,13 +116,6 @@ export interface MolliePayment {
     status: string;
     createdAt: string;
     paidAt: string | null;
-}
-
-export interface OrderResponse {
-    order: Order;
-    products: OrderProduct[];
-    payment: MolliePayment | null;
-    address: Address | null;
 }
 
 export interface CreateOrderRequest {

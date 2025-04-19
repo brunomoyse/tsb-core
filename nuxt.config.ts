@@ -70,6 +70,7 @@ export default defineNuxtConfig({
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
             graphqlHttp: process.env.API_BASE_URL + '/graphql',
+            graphqlWs: process.env.GRAPHQL_WS_URL,
             cookie: {
                 accessToken: {
                     name: 'access_token',

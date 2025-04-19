@@ -14,11 +14,7 @@ export const useAuthStore = defineStore("auth", {
         },
         updateUser(user: User) {
             if (this.user) {
-                this.user.firstName = user.firstName;
-                this.user.lastName = user.lastName;
-                this.user.email = user.email;
-                this.user.address = user.address;
-                this.user.phoneNumber = user.phoneNumber;
+                this.user = user
             }
         },
         clearUser() {
