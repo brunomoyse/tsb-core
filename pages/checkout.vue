@@ -51,18 +51,71 @@ import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import { useAuthStore, useCartStore, useNuxtApp, useLocalePath, onMounted } from '#imports'
-import type { Address, CreateOrderRequest, OrderResponse } from '~/types'
-import { navigateTo, useAsyncData } from '#imports'
+import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation} from '#imports'
+import type {Address, CreateOrderRequest, Order} from '~/types'
+import { navigateTo } from '#imports'
+import gql from "graphql-tag";
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const { $api } = useNuxtApp()
 const localePath = useLocalePath()
 
 // Manage address modal state and delivery address
 const showAddressModal = ref(false)
 const tempAddress = ref<Address | null>(null)
+
+const CREATE_ORDER = gql`
+    mutation CreateOrder($input: CreateOrderInput!) {
+        createOrder(input: $input) {
+            id:
+            createdAt
+            updatedAt
+            status
+            type
+            isOnlinePayment
+            discountAmount
+            deliveryFee
+            totalPrice
+            estimatedReadyTime
+            addressExtra
+            orderNote
+            orderExtra
+            address {
+                id
+                streetName
+                houseNumber
+                boxNumber
+                postcode
+                municipalityName
+                distance
+            }
+            payment {
+                id
+                links
+                status
+            }
+            customer {
+                id
+                firstName
+                lastName
+            }
+            items {
+                unitPrice
+                quantity
+                totalPrice
+                product {
+                    id
+                    name
+                    category {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    }
+`
+const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(CREATE_ORDER)
 
 const openAddressModal = () => {
     showAddressModal.value = true
@@ -129,30 +182,30 @@ const handleCheckout = async () => {
             addressExtra: cartStore.addressExtra,
             orderNote: cartStore.orderNote,
             orderExtra: cartStore.orderExtra,
-            orderProducts: cartStore.products.map((item) => ({
+            items: cartStore.products.map((item) => ({
                 productId: item.product.id,
                 quantity: item.quantity
             })),
             preferredReadyTime: 'ASAP'
         }
 
-        const { data: orderResponse, error } = await useAsyncData<OrderResponse>('order', () =>
-            $api('/orders', {
-                method: 'POST',
-                body: JSON.stringify(orderData)
+        try {
+            const res : { createOrder: Order } = await mutationCreateOrder({
+                input: orderData
             })
-        )
 
-        if (error.value) {
-            console.error('Error creating order:', error.value)
+            const order = res.createOrder
+
+            if (order?.payment?.links) {
+                navigateTo(order.payment.links.checkout.href, { external: true })
+            } else if (order?.id) {
+                navigateTo(localePath(`/order-completed/${order.id}`))
+            }
+        } catch (err) {
+            console.error('Error creating order:', err)
             return
         }
 
-        if (orderResponse.value?.payment?.paymentUrl) {
-            navigateTo(orderResponse.value.payment.paymentUrl, { external: true })
-        } else if (orderResponse.value?.order.id) {
-            navigateTo(localePath(`/order-completed/${orderResponse.value.order.id}`))
-        }
     } catch (err) {
         console.error('Order processing failed:', err)
     } finally {

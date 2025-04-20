@@ -111,7 +111,7 @@ export interface OrderProduct {
 
 export interface MolliePayment {
     id: string;
-    paymentUrl: string;
+    links: object;
     orderId: string;
     status: string;
     createdAt: string;
@@ -129,7 +129,7 @@ export interface CreateOrderRequest {
         name: string
         options?: string[]
     }[] | null;
-    orderProducts: {
+    items: {
         productId: string;
         quantity: number;
     }[]

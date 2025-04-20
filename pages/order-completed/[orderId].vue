@@ -120,12 +120,11 @@ const ORDER = gql`
                 }
             }
         }
-    }
 `
 
 const ORDER_UPDATED = gql`
   subscription ($orderId: ID!) {
-    orderUpdated(orderId: $orderId) {
+    myOrderUpdated(orderId: $orderId) {
       id
       status
       updatedAt
@@ -133,6 +132,7 @@ const ORDER_UPDATED = gql`
     }
   }
 `
+
 
 definePageMeta({
     public: false
@@ -153,20 +153,22 @@ const {data: dataOrder} = await useGqlQuery<{order: Order}>(
 const order = computed(() => dataOrder.value?.order ?? null);
 
 if (import.meta.client) {
-    const { data: liveUpdate } = useGqlSubscription<{ orderUpdated: Partial<Order> }>(
+
+    const { data: liveUpdate } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
         ORDER_UPDATED,
         { orderId }
     )
 
     // merge every incoming patch into the existing reactive order
     watch(liveUpdate, (val) => {
-        if (val?.orderUpdated && dataOrder.value?.order) {
+        if (val?.myOrderUpdated && dataOrder.value?.order) {
             dataOrder.value.order = {
                 ...dataOrder.value.order,
-                ...val.orderUpdated,
+                ...val.myOrderUpdated,
             }
         }
     })
+
 }
 
 onMounted(() => {
