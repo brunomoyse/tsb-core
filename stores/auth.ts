@@ -14,7 +14,9 @@ export const useAuthStore = defineStore("auth", {
         },
         updateUser(user: User) {
             if (this.user) {
-                this.user = user
+                Object.assign(this.user, user);
+            } else {
+                this.user = user;
             }
         },
         clearUser() {
