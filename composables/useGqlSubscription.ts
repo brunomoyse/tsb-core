@@ -3,50 +3,65 @@ import { ref, onScopeDispose } from 'vue'
 import { print } from 'graphql'
 import { useRuntimeConfig, useCookie } from '#imports'
 
-/* lazy‑import because we only need it client‑side */
-let wsClient: ReturnType<typeof import('graphql-ws')['createClient']> | null = null
+let wsClient:
+    | ReturnType<typeof import('graphql-ws')['createClient']>
+    | null = null
 
-export function useGqlSubscription<T = unknown>(
+export function useGqlSubscription<T = any>(
     rawSub: string | import('graphql').DocumentNode,
-    variables: Record<string, unknown> = {},
+    variables: Record<string, unknown> = {}
 ) {
-    const cfg  = useRuntimeConfig()
-    const data = ref<T>()
-    const error = ref<never>()
+    const cfg   = useRuntimeConfig()
+    const data  = ref<T>()
+    const error = ref<any>(null)
 
     if (import.meta.client) {
-        if (!wsClient) {
-            const { createClient } = await import('graphql-ws')
-            wsClient = createClient({
-                url: cfg.public.graphqlWs as string,      // e.g. wss://…/graphql
-                connectionParams: {                       // forward cookies / token
-                    Authorization: useCookie('access_token').value
-                        ? `Bearer ${useCookie('access_token').value}`
-                        : undefined,
-                },
-                retryAttempts: Infinity,
-            })
-        }
+        ;(async () => {
+            try {
+                // 1) lazy create the client once
+                if (!wsClient) {
+                    const { createClient } = await import('graphql-ws')
+                    wsClient = createClient({
+                        url: cfg.public.graphqlWs as string,
+                        connectionParams: {
+                            Authorization: useCookie('access_token').value
+                                ? `Bearer ${useCookie('access_token').value}`
+                                : undefined,
+                        },
+                        retryAttempts: Infinity,
+                    })
+                }
 
-        const dispose = wsClient!.subscribe(
-            {
-                query: printIfAst(rawSub),
-                variables,
-            },
-            {
-                next: (val)   => (data.value = val.data as T),
-                error: (err) => (error.value = err),
-                complete: () => {},
-            },
-        )
+                // 2) subscribe
+                const dispose = wsClient.subscribe(
+                    {
+                        query: typeof rawSub === 'string' ? rawSub : print(rawSub),
+                        variables,
+                    },
+                    {
+                        next: (msg) => {
+                            if (msg.data) data.value = msg.data as T
+                        },
+                        error: (e) => {
+                            error.value = e
+                        },
+                        complete: () => {
+                            /* no‑op */
+                        },
+                    }
+                )
 
-        onScopeDispose(() => dispose())
+                // 3) cleanup on unmount
+                onScopeDispose(() => {
+                    dispose()
+                })
+            } catch (e: any) {
+                // catch dynamic‐import or subscribe errors
+                error.value = e
+                // you can also console.error(e) if you like
+            }
+        })()
     }
 
-    /* on the server we simply expose empty refs */
     return { data, error }
-}
-
-function printIfAst(q: string | import('graphql').DocumentNode): string {
-    return typeof q === 'string' ? q : print(q)
 }

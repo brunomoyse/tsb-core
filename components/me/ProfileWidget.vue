@@ -104,7 +104,6 @@ const UPDATE_ME = gql`
     }
 `
 
-// call this once during setup
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
 
 // Modal visibility
