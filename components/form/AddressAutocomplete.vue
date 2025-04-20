@@ -125,10 +125,41 @@
 <script lang="ts" setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { useNuxtApp } from '#imports'
+import gql from 'graphql-tag'
+import { print } from 'graphql'
 import type { Address, Street } from '~/types'
 
 const emit = defineEmits<{ (e: 'update:address', address: Address | null): void }>();
-const { $api } = useNuxtApp()
+const { $gqlFetch } = useNuxtApp()
+
+const SEARCH_STREETS = gql`query ($query: String!) {
+    streets(query: $query) {
+        id
+        streetName
+        municipalityName
+        postcode
+    }
+}`
+
+const SEARCH_HOUSE_NUMBERS = gql`query ($streetId: String!) {
+    houseNumbers(streetId: $streetId)
+}`
+
+const SEARCH_BOX_NUMBERS = gql`query ($streetId: String!, $houseNumber: String!) {
+    boxNumbers(streetId: $streetId, houseNumber: $houseNumber)
+}`
+
+const ADDRESS_BY_ID = gql`query ($streetId: String!, $houseNumber: String!, $boxNumber: String) {
+    addressByLocation(streetID: $streetId, houseNumber: $houseNumber, boxNumber: $boxNumber) {
+        id
+        postcode
+        municipalityName
+        streetName
+        houseNumber
+        boxNumber
+        distance
+    }
+}`
 
 // Reactive State
 const streetQuery = ref('')
@@ -210,13 +241,19 @@ const handleStreetSearch = async () => {
     debounceStreetTimer = setTimeout(async () => {
         if (streetQuery.value.trim().length < 3) return
 
-        const data: Street[] = await $api('/addresses/streets', {
-            params: { q: streetQuery.value }
-        });
+        const data: {streets: Street[]}  = await $gqlFetch(
+            print(SEARCH_STREETS),
+            {
+                variables: {
+                    query: streetQuery.value,
+                }
+            },
+            { immediate: true, cache: false }
+        );
 
-        if (data) {
-            streets.value = data;
-            const exactMatches = data.filter(s =>
+        if (data.streets) {
+            streets.value = data.streets;
+            const exactMatches = data.streets.filter(s =>
                 s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
             );
             if (exactMatches.length === 1) {
@@ -236,11 +273,18 @@ const handleStreetSelection = () => {
 const loadHouseNumbers = async () => {
     if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
     debounceHouseTimer = setTimeout(async () => {
-        const data: string[] = await $api('/addresses/house-numbers', {
-            params: { street_id: selectedStreet.value!.id }
-        });
-        if (data) {
-            houseNumbers.value = data;
+
+        const data: { houseNumbers: string[]} = await $gqlFetch(
+            print(SEARCH_HOUSE_NUMBERS),
+            {
+                variables: {
+                    streetId: selectedStreet.value!.id
+                }
+            },
+            { immediate: true, cache: false }
+        );
+        if (data.houseNumbers) {
+            houseNumbers.value = data.houseNumbers;
             houseQuery.value = ''; // Reset query
         }
     }, 500)
@@ -266,26 +310,30 @@ const handleHouseNumberSelection = () => {
 const loadBoxNumbers = async () => {
     if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
     debounceBoxTimer = setTimeout(async () => {
-        const data: (string | null)[] = await $api('/addresses/box-numbers', {
-            params: {
-                street_id: selectedStreet.value!.id,
-                house_number: selectedHouseNumber.value
-            }
-        });
+        const data: { boxNumbers: (string | null)[]} = await $gqlFetch(
+            print(SEARCH_BOX_NUMBERS),
+            {
+                variables: {
+                    streetId: selectedStreet.value!.id,
+                    houseNumber: selectedHouseNumber.value
+                }
+            },
+            { immediate: true, cache: false }
+        );
 
-        if (data) {
-            boxNumbers.value = data;
+        if (data.boxNumbers) {
+            boxNumbers.value = data.boxNumbers;
             boxQuery.value = '';
             // Auto-select the first value even if it is null or empty
-            if (data.length === 1) {
-                selectedBoxNumber.value = data[0];
+            if (data.boxNumbers.length === 1) {
+                selectedBoxNumber.value = data.boxNumbers[0];
                 boxConfirmed.value = true;
             }
-            if (data.length > 1 && data[0] === null) {
+            if (data.boxNumbers.length > 1 && data.boxNumbers[0] === null) {
                 selectedBoxNumber.value = null;
                 boxConfirmed.value = false;
             }
-            if (data.length > 0) {
+            if (data.boxNumbers.length > 0) {
                 await nextTick();
                 const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
                 if (boxEl) {
@@ -310,21 +358,26 @@ watch(boxConfirmed,
 )
 
 const loadAddress = async () => {
-    if (!selectedStreet.value || !selectedHouseNumber.value) return
+    if (!selectedStreet.value || !selectedHouseNumber.value) return;
 
-    const data: (Address | null) = await $api('/addresses/final-address', {
-        method: 'GET',
-        params: {
-            street_id: selectedStreet.value!.id,
-            house_number: selectedHouseNumber.value,
-            box_number: selectedBoxNumber.value || ''
-        }
-    });
-
-    if (data) {
-        address.value = data;
+    try {
+        const data: {addressByLocation: Address}= await $gqlFetch(
+            print(ADDRESS_BY_ID),
+            {
+                variables: {
+                    streetId: selectedStreet.value.id,
+                    houseNumber: selectedHouseNumber.value,
+                    boxNumber: selectedBoxNumber.value || ""
+                }
+            }
+        );
+        address.value = data.addressByLocation;
+    } catch (err) {
+        // you’ll now see the real error shape in the console
+        console.error("loadAddress failed:", err);
+        address.value = null;
     }
-}
+};
 
 // Selection Handlers
 const selectStreet = async (street: Street) => {
