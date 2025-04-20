@@ -113,12 +113,11 @@ import SearchBar from '~/components/menu/SearchBar.vue'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import {computed, reactive, ref, watch} from 'vue'
 import {useDebounce} from '@vueuse/core'
-import {useI18n} from '#imports'
+import {useI18n, useGqlQuery} from '#imports'
 import {useCartStore} from '@/stores/cart';
 import type {Product, ProductCategory} from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import {useGqlQuery} from "~/composables/useGqlQuery";
 
 const PRODUCTS = gql`
     query {
@@ -184,7 +183,13 @@ watch(debouncedSearchValue, (newValue) => {
 })
 
 // Fetch categories
-const { data: dataCategories } = await useGqlQuery<{ productCategories: ProductCategory[] }>(print(PRODUCT_CATEGORIES))
+const { data: dataCategories } = await useGqlQuery<
+    { productCategories: ProductCategory[] }
+>(
+    print(PRODUCT_CATEGORIES),
+    {},
+    { immediate: true, cache: true }
+)
 const categories = computed(() => dataCategories.value?.productCategories ?? [])
 
 const selectedCategory = ref<ProductCategory | null>(

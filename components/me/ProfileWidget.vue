@@ -165,23 +165,9 @@ const closeModal = () => {
 
 // Handle profile update submission from UserForm
 const submitProfileUpdate = async (formData: UpdateUserRequest) => {
-    const payload: UpdateUserRequest = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        // email: formData.email,
-        phoneNumber: formData.phoneNumber || null,
-        addressId: formData.addressId || null,
-    }
-
-    const filteredPayload = Object.fromEntries(
-        Object.entries(payload).filter(
-            ([, value]) => value !== undefined && value !== null && value !== ''
-        )
-    )
-
     try {
         const res: { updateMe: User } = await mutationUpdateMe(
-            { input: filteredPayload },
+            { input: formData },
         )
 
         const updatedUser = res.updateMe
