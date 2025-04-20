@@ -1,3 +1,4 @@
+// plugins/gqlFetch.ts
 import {
     defineNuxtPlugin,
     useRuntimeConfig,
@@ -13,9 +14,9 @@ interface GqlOptions {
 }
 
 export default defineNuxtPlugin(() => {
-    const cfg = useRuntimeConfig()
-    const httpURL: string = cfg.public.graphqlHttp as string
-    const apiURL: string  = cfg.public.api as string
+    const cfg     = useRuntimeConfig()
+    const httpURL = cfg.public.graphqlHttp as string
+    const apiURL  = cfg.public.api as string
 
     /** Typed helper: POST /graphql with cookies + headers */
     async function gqlFetch<T = unknown>(
@@ -28,21 +29,48 @@ export default defineNuxtPlugin(() => {
         }
 
         let res: any
+
+        // 1) Try the HTTP-level fetch (and 401→refresh→retry)
         try {
             res = await doFetch(body, signal)
         } catch (err: any) {
-            // first failure could be 401 – attempt 1 refresh & retry
             if (err?.status === 401) {
-                const refreshed = await attemptRefresh(apiURL)
-                if (refreshed) res = await doFetch(body, signal)
-                else throw err
-            } else throw err
+                const ok = await attemptRefresh()
+                if (ok) {
+                    res = await doFetch(body, signal)
+                } else {
+                    throw err
+                }
+            } else {
+                throw err
+            }
         }
 
-        if (res.errors?.length) throw res.errors
+        // 2) Handle GraphQL-level errors
+        if (res.errors?.length) {
+            // look for your UNAUTHENTICATED extension code
+            const unauth = (res.errors as any[]).find(
+                (e) => e.extensions?.code === 'UNAUTHENTICATED'
+            )
+            if (unauth) {
+                // refresh the token and retry once
+                const ok = await attemptRefresh()
+                if (ok) {
+                    res = await doFetch(body, signal)
+                    if (res.errors?.length) {
+                        throw res.errors
+                    }
+                    return res.data as T
+                }
+            }
+            // otherwise bubble up all GraphQL errors
+            throw res.errors
+        }
+
         return res.data as T
     }
 
+    /** low‑level POST that returns the raw { data, errors } */
     async function doFetch(body: any, signal?: AbortSignal) {
         const userLocale = useCookie('i18n_redirected').value ?? 'fr'
         return await $fetch.raw(httpURL, {
@@ -51,25 +79,25 @@ export default defineNuxtPlugin(() => {
             credentials: 'include',
             signal,
             headers: buildHeaders(userLocale),
-        }).then(r => r._data)
+        }).then((r) => r._data)
     }
 
+    /** build the JSON headers + forward cookies SSR */
     function buildHeaders(locale: string) {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             'Accept-Language': locale,
         }
-
-        /* Forward cookies during SSR so the access‑token cookie is seen */
         if (import.meta.server) {
             const ev = useRequestEvent()
-            if (ev?.node.req.headers.cookie)
-                headers.cookie = ev.node.req.headers.cookie
+            const cook = ev?.node.req.headers.cookie
+            if (cook) headers.cookie = cook
         }
         return headers
     }
 
-    async function attemptRefresh(apiURL: string) {
+    /** attempt a refresh via your REST endpoint */
+    async function attemptRefresh(): Promise<boolean> {
         try {
             await $fetch(`${apiURL}/tokens/refresh`, {
                 method: 'POST',
@@ -77,6 +105,7 @@ export default defineNuxtPlugin(() => {
             })
             return true
         } catch {
+            // refresh failed → revoke & redirect to login
             await $fetch(`${apiURL}/tokens/revoke`, { credentials: 'include' })
             navigateTo('/login')
             return false
