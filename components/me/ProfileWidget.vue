@@ -73,15 +73,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref} from 'vue'
 import { useAuthStore } from '~/stores/auth'
-import { useAsyncData, useNuxtApp } from '#imports'
+import { useGqlMutation} from '#imports'
 import UserForm from '~/components/form/UserForm.vue'
+import gql from 'graphql-tag'
+import { formatAddress } from "~/utils/utils";
 import type {Address, UpdateUserRequest, User} from '~/types'
-import {formatAddress} from "~/utils/utils";
 
-const { $api } = useNuxtApp()
 const authStore = useAuthStore()
+
+const UPDATE_ME = gql`
+    mutation ($input: UpdateUserInput!) {
+        updateMe(input: $input) {
+            id
+            firstName
+            lastName
+            email
+            phoneNumber
+            address {
+                id
+                postcode
+                municipalityName
+                streetName
+                houseNumber
+                boxNumber
+                distance
+            }
+        }
+    }
+`
+
+// call this once during setup
+const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
 
 // Modal visibility
 const showModal = ref(false)
@@ -145,7 +169,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
     const payload: UpdateUserRequest = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: formData.email,
+        // email: formData.email,
         phoneNumber: formData.phoneNumber || null,
         addressId: formData.addressId || null,
     }
@@ -156,19 +180,18 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         )
     )
 
-    const { data: updatedUser } = await useAsyncData<User>('/me', () =>
-        $api('/me', {
-            method: 'PATCH',
-            body: filteredPayload,
-        })
-    )
+    try {
+        const res: { updateMe: User } = await mutationUpdateMe(
+            { input: filteredPayload },
+        )
 
-    if (!updatedUser.value) {
-        console.error('Failed to update user profile')
+        const updatedUser = res.updateMe
+        authStore.updateUser(updatedUser)
+    } catch (error) {
+        console.error('Error during profile update:', error)
         return
     }
 
-    authStore.updateUser(updatedUser.value)
     closeModal()
 }
 </script>

@@ -5,32 +5,37 @@ import { useNuxtApp } from '#imports'
 
 type Vars = Record<string, unknown>
 
+/**
+ * Returns a mutate() you can await anywhere (even inside handlers),
+ * plus reactive data/loading/error for your UI.
+ */
 export function useGqlMutation<T = unknown>(
     rawMutation: string | import('graphql').DocumentNode,
 ) {
   const { $gqlFetch } = useNuxtApp()
+  const data    = ref<T>()
+  const loading = ref(false)
+  const error   = ref<any>()
 
-  const data     = ref<T>()
-  const loading  = ref(false)
-  const error    = ref<any>()
-
-  async function execute(variables: Vars = {}) {
+  /** call this and await the result */
+  async function mutate(variables: Vars = {}): Promise<T> {
     loading.value = true
     error.value   = undefined
     try {
-      data.value = await $gqlFetch<T>(printIfAst(rawMutation), { variables })
-    } catch (err) {
-      error.value = err
-      throw err
+      const queryStr = typeof rawMutation === 'string'
+          ? rawMutation
+          : print(rawMutation)
+
+      const res = await $gqlFetch<T>(queryStr, { variables })
+      data.value = res
+      return res
+    } catch (e) {
+      error.value = e
+      throw e
     } finally {
       loading.value = false
     }
-    return data.value
   }
 
-  return { execute, data, loading, error }
-}
-
-function printIfAst(q: string | import('graphql').DocumentNode): string {
-  return typeof q === 'string' ? q : print(q)
+  return { mutate, data, loading, error }
 }
