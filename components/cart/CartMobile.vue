@@ -122,17 +122,13 @@
 
 
 <script lang="ts" setup>
-import {navigateTo, useAsyncData, useI18n, useNuxtApp, useRuntimeConfig} from "#imports";
+import {useRuntimeConfig} from "#imports";
 import {useCartStore} from "@/stores/cart";
-import {useAuthStore} from "@/stores/auth";
 import {formatPrice} from "~/lib/price";
-import type {Order, Product} from "@/types";
+import type {Product} from "@/types";
 
-const authStore = useAuthStore();
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
-const {$api} = useNuxtApp()
-const {locale: userLocale} = useI18n()
 
 const handleIncrementQuantity = (productId: string): void => {
     const product = getProductById(productId);
@@ -145,37 +141,6 @@ const handleDecrementQuantity = (product: Product): void => {
 
 const handleRemoveFromCart = (product: Product): void => {
     cartStore.removeFromCart(product);
-};
-
-const handlePayment = async () => {
-    if (cartStore.products.length === 0) {
-        console.error("Cart is empty.");
-        return;
-    }
-
-    if (authStore.accessToken === null) {
-        console.error("User is not authenticated.");
-        return;
-    }
-
-    // Implement your payment logic here
-    const {data: order} = await useAsyncData<Order>('order', () =>
-        $api('/orders', {
-            method: 'POST',
-            body: JSON.stringify({
-                products: cartStore.products
-            }),
-            headers: {
-                "Accept-Language": userLocale.value
-            }
-        })
-    );
-    // Redirect to payment
-    navigateTo(order.value?.molliePaymentUrl, {external: true});
-
-    // After successful payment, clear the cart and hide the sidebar
-    cartStore.clearCart();
-    cartStore.toggleCartVisibility();
 };
 
 const getProductById = (productId: string): Product => {
