@@ -66,17 +66,30 @@
         </div>
     </div>
 </template>
-
-<script lang="ts" setup>
-import {definePageMeta, onMounted, useCartStore, useGqlQuery, useGqlSubscription, useRoute, watch} from '#imports';
+<script setup lang="ts">
+import {
+    definePageMeta,
+    useCartStore,
+    useGqlQuery,
+    useGqlSubscription,
+    useRoute,
+} from '#imports'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
-import type {Order} from '@/types'
-import gql from "graphql-tag";
+import type { Order } from '@/types'
+import gql from 'graphql-tag'
 import { print } from 'graphql'
-import {computed} from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 
-const ORDER = gql`
-    query ($orderId: ID!) {
+definePageMeta({ public: false })
+
+const route     = useRoute()
+const cartStore = useCartStore()
+const orderId   = route.params.orderId as string
+
+// 1) Fetch the order once (SSR)
+const { data: dataOrder } = await useGqlQuery<{ order: Order }>(
+    print(gql`
+        query ($orderId: ID!) {
             order(id: $orderId) {
                 id
                 createdAt
@@ -120,46 +133,31 @@ const ORDER = gql`
                 }
             }
         }
-`
+  `),
+    { orderId }
+)
 
-const ORDER_UPDATED = gql`
-  subscription ($orderId: ID!) {
-    myOrderUpdated(orderId: $orderId) {
-      id
-      status
-      updatedAt
-      estimatedReadyTime
-    }
-  }
-`
+const order = computed(() => dataOrder.value?.order ?? null)
 
+// 2) subscribe to updates on mount
+let closeWs: () => void = () => {}
 
-definePageMeta({
-    public: false
-})
-
-const route = useRoute()
-const cartStore = useCartStore()
-
-const orderId = route.params.orderId as string
-
-const {data: dataOrder} = await useGqlQuery<{order: Order}>(
-    print(ORDER),
-    {
-        orderId
-    }
-);
-
-const order = computed(() => dataOrder.value?.order ?? null);
-
-if (import.meta.client) {
-
-    const { data: liveUpdate } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
-        ORDER_UPDATED,
+onMounted(() => {
+    // now destructure the `close` out of your updated composable
+    const { data: liveUpdate, close } = useGqlSubscription<{
+        myOrderUpdated: Partial<Order>
+    }>(
+        print(gql`
+      subscription ($orderId: ID!) {
+        myOrderUpdated(orderId: $orderId) { id status updatedAt estimatedReadyTime }
+      }
+    `),
         { orderId }
     )
 
-    // merge every incoming patch into the existing reactive order
+    // store it
+    closeWs = close
+
     watch(liveUpdate, (val) => {
         if (val?.myOrderUpdated && dataOrder.value?.order) {
             dataOrder.value.order = {
@@ -169,13 +167,14 @@ if (import.meta.client) {
         }
     })
 
-}
-
-onMounted(() => {
-    if (orderId) {
-        cartStore.setCartVisibility(false)
-        cartStore.clearCart()
-    }
+    cartStore.setCartVisibility(false)
+    cartStore.clearCart()
 })
 
+onUnmounted(() => {
+    // only call if it's a real function
+    if (typeof closeWs === 'function') {
+        closeWs()
+    }
+})
 </script>

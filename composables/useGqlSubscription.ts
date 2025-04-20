@@ -2,10 +2,9 @@
 import { ref, onScopeDispose } from 'vue'
 import { print } from 'graphql'
 import { useRuntimeConfig, useCookie } from '#imports'
+import type { Client } from 'graphql-ws'
 
-let wsClient:
-    | ReturnType<typeof import('graphql-ws')['createClient']>
-    | null = null
+let wsClient: Client | null = null
 
 export function useGqlSubscription<T = any>(
     rawSub: string | import('graphql').DocumentNode,
@@ -15,10 +14,21 @@ export function useGqlSubscription<T = any>(
     const data  = ref<T>()
     const error = ref<any>(null)
 
+    // placeholder for the unsubscribe function
+    let stop: () => void = () => {}
+    // placeholder for the full-close function
+    let close: () => void = () => {}
+
+    // always register cleanup _in_ the setup scope
+    onScopeDispose(() => {
+        stop()               // unsubscribe
+        wsClient?.dispose()  // tear down the socket
+        wsClient = null
+    })
+
     if (import.meta.client) {
         ;(async () => {
             try {
-                // 1) lazy create the client once
                 if (!wsClient) {
                     const { createClient } = await import('graphql-ws')
                     wsClient = createClient({
@@ -32,36 +42,30 @@ export function useGqlSubscription<T = any>(
                     })
                 }
 
-                // 2) subscribe
-                const dispose = wsClient.subscribe(
+                // start subscription & capture the unsubscribe handle
+                stop = wsClient.subscribe(
                     {
                         query: typeof rawSub === 'string' ? rawSub : print(rawSub),
                         variables,
                     },
                     {
-                        next: (msg) => {
-                            if (msg.data) data.value = msg.data as T
-                        },
-                        error: (e) => {
-                            error.value = e
-                        },
-                        complete: () => {
-                            /* no‑op */
-                        },
+                        next: (msg) => msg.data && (data.value = msg.data as T),
+                        error: (e) => (error.value = e),
+                        complete: () => {},
                     }
                 )
 
-                // 3) cleanup on unmount
-                onScopeDispose(() => {
-                    dispose()
-                })
+                // expose a full-close that calls both stop() and dispose()
+                close = () => {
+                    stop()
+                    wsClient?.dispose()
+                    wsClient = null
+                }
             } catch (e: any) {
-                // catch dynamic‐import or subscribe errors
                 error.value = e
-                // you can also console.error(e) if you like
             }
         })()
     }
 
-    return { data, error }
+    return { data, error, stop, close }
 }
