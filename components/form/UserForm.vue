@@ -83,11 +83,10 @@
         <!-- Checkbox to confirm the selected address -->
         <div v-if="address" class="mt-2">
             <Checkbox v-model="addressConfirmed">
-        <span>
-          <strong>{{ $t('register.confirmAddress') }}</strong><br />
-          {{ formatAddress(address) }}
-
-        </span>
+                <span>
+                  <strong>{{ $t('register.confirmAddress') }}</strong><br />
+                  {{ formatAddress(address) }}
+                </span>
             </Checkbox>
         </div>
 

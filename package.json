@@ -7,7 +7,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
@@ -15,10 +16,22 @@
     "@vueuse/core": "^13.1.0",
     "class-variance-authority": "^0.7.1",
     "google-libphonenumber": "^3.2.40",
+    "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
+    "graphql-ws": "^6.0.4",
     "nuxt": "^3.16.2",
     "pinia-plugin-persistedstate": "^4.2.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.5",
+    "@graphql-codegen/client-preset": "4.8.0",
+    "@graphql-codegen/graphql-modules-preset": "^4.0.16",
+    "@graphql-codegen/introspection": "4.0.3",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^3.0.0",
+    "@graphql-codegen/typescript-operations": "^4.6.0",
+    "@graphql-codegen/typescript-vue-apollo": "^4.1.1",
+    "@nuxtjs/apollo": "^5.0.0-alpha.14",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/i18n": "^9.4.0",
     "@nuxtjs/tailwindcss": "^6.13.2",

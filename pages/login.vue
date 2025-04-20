@@ -77,10 +77,12 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath} from '#imports';
+import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath, useGqlQuery} from '#imports';
 import type {LoginResponse, User} from '@/types';
 import {useAuthStore} from '@/stores/auth'
 import {eventBus} from "~/eventBus";
+import gql from 'graphql-tag'
+import { print } from 'graphql'
 
 const localePath = useLocalePath()
 const authStore = useAuthStore()
@@ -90,6 +92,26 @@ const apiUrl: string = config.public.api as string
 
 const email = ref('')
 const password = ref('')
+
+const ME = gql`
+    query {
+        me {
+            id
+            email
+            firstName
+            lastName
+            phoneNumber
+            address {
+                id
+                streetName
+                houseNumber
+                municipalityName
+                postcode
+                distance
+            }
+        }
+    }
+`
 
 // Regular email/password login
 const login = async () => {
@@ -114,8 +136,8 @@ const loginWithGoogle = () => {
 
 const loginSuccess = async () => {
     if (import.meta.client) {
-        const user = await $api<User>('/me')
-        if (user) authStore.setUser(user)
+        const { data: dataUser } = await useGqlQuery<{ me: User }>(print(ME))
+        if (dataUser.value) authStore.setUser(dataUser.value.me)
     }
     navigateTo(localePath('me'))
 }
