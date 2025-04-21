@@ -84,7 +84,9 @@ import {eventBus} from "~/eventBus";
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useI18n } from "vue-i18n"
+import {useCartStore} from "@/stores/cart";
 
+const cartStore = useCartStore();
 const { t } = useI18n()
 const localePath = useLocalePath()
 const authStore = useAuthStore()
@@ -140,8 +142,15 @@ const loginSuccess = async () => {
     if (import.meta.client) {
         const data = await $gqlFetch<{ me: User }>(print(ME))
         if (data) authStore.setUser(data.me)
+
+        // If the cart is not empty, navigate to checkout
+        if (cartStore.products.length > 0) {
+            navigateTo(localePath('checkout'))
+        } else {
+            // If the cart is empty, navigate to user profile
+            navigateTo(localePath('me'))
+        }
     }
-    navigateTo(localePath("me"))
 }
 
 onMounted(async () => {
