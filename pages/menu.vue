@@ -124,6 +124,7 @@ const PRODUCTS = gql`
         products {
              id
              name
+             description
              price
              code
              slug
