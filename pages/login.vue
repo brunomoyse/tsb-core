@@ -83,7 +83,9 @@ import {useAuthStore} from '@/stores/auth'
 import {eventBus} from "~/eventBus";
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { useI18n } from "vue-i18n"
 
+const { t } = useI18n()
 const localePath = useLocalePath()
 const authStore = useAuthStore()
 const {$api, $gqlFetch} = useNuxtApp()
@@ -166,7 +168,7 @@ onMounted(async () => {
     if (emailVerified) {
         // Show a notification if the email is verified
         eventBus.emit('notify', {
-            message: 'Your email has been verified. You can now log in.',
+            message: t('notify.emailVerified'),
             persistent: false,
             duration: 5000,
             variant: 'success',
@@ -176,7 +178,7 @@ onMounted(async () => {
     if (fromCheckout) {
         // Show a notification if the user was redirected from checkout
         eventBus.emit('notify', {
-            message: 'Veuillez vous connecter pour valider votre panier.',
+            message: t('notify.loginToValidate'),
             persistent: false,
             duration: 10000,
             variant: 'info',

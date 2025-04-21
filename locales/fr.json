@@ -211,5 +211,10 @@
     "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
     "homeButton": "Accueil",
     "menuButton": "Voir le Menu"
+  },
+  "notify": {
+    "verificationEmailSent": "Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.",
+    "emailVerified": "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.",
+    "loginToValidateCart": "Veuillez vous connecter pour valider votre panier."
   }
 }

@@ -214,5 +214,10 @@
     "message": "抱歉，我们找不到您正在寻找的页面。",
     "homeButton": "首页",
     "menuButton": "查看菜单"
+  },
+  "notify": {
+    "verificationEmailSent": "已向您发送了一封验证邮件。请检查您的收件箱。",
+    "emailVerified": "您的电子邮件已通过验证。您现在可以登录。",
+    "loginToValidateCart": "请登录以验证您的购物车。"
   }
 }

@@ -212,5 +212,10 @@
     "message": "Sorry, we couldn't find the page you are looking for.",
     "homeButton": "Home",
     "menuButton": "View Menu"
+  },
+  "notify": {
+    "verificationEmailSent": "An email has been sent to you for verification. Please check your inbox.",
+    "emailVerified": "Your email has been verified. You can now log in.",
+    "loginToValidateCart": "Please log in to validate your cart.\n"
   }
 }
