@@ -187,7 +187,7 @@ onMounted(async () => {
     if (fromCheckout) {
         // Show a notification if the user was redirected from checkout
         eventBus.emit('notify', {
-            message: t('notify.loginToValidate'),
+            message: t('notify.loginToValidateCart'),
             persistent: false,
             duration: 10000,
             variant: 'info',
