@@ -1,19 +1,22 @@
 // types/index.ts
 
 export interface Product {
+    categoryId: string;
+    code: string | null;
+    discountable: boolean;
     id: string;
-    name: string;
-    description: string;
-    price: number;
-    code: string;
-    slug: string;
-    pieceCount: number;
+    isAvailable: boolean;
+    isDiscountable: boolean;
     isHalal: boolean;
     isVegan: boolean;
     isVisible: boolean
-    isAvailable: boolean;
-    categoryId: string;
-    discountable: boolean;
+    pieceCount: number | null;
+    price: number;
+    slug: string;
+
+    description: string;
+    name: string;
+
     category: ProductCategory;
 }
 
@@ -29,18 +32,15 @@ export interface CartItem {
 }
 
 export interface CartState {
-    products: CartItem[];
-    isCartVisible: boolean;
-    collectionOption: OrderType;
-    paymentOption: 'ONLINE' | 'CASH';
     address: Address | null;
     addressExtra: string | null;
-    orderExtra: {
-        name: string;
-        options?: string[];
-    }[] | null;
+    collectionOption: OrderType;
+    isCartVisible: boolean;
+    orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;
+    paymentOption: 'ONLINE' | 'CASH';
     preferredReadyTime: string | null;
+    products: CartItem[];
 }
 
 export interface LoginResponse {
@@ -48,28 +48,29 @@ export interface LoginResponse {
 }
 
 export interface User {
-    id: string;
     email: string;
     firstName: string;
+    id: string;
     lastName: string;
-    address: Address | null;
     phoneNumber: string | null;
+
+    address: Address | null;
 }
 
 export interface UpdateUserRequest {
+    addressId: string | null;
     firstName: string | null;
     lastName: string | null;
     phoneNumber: string | null;
-    addressId: string | null;
 }
 
 export interface CreateUserRequest {
+    addressId: string | null;
+    email: string;
     firstName: string;
     lastName: string;
-    email: string;
     password: string;
     phoneNumber: string | null;
-    addressId: string | null;
 }
 
 export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
@@ -79,75 +80,68 @@ export type OrderPickUpStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITIN
 export type OrderType = 'DELIVERY' | 'PICKUP';
 
 export interface Order {
-    id: string;
+    addressExtra: string | null;
+    addressId: string | null;
     createdAt: string;
+    deliveryFee: string | null;
+    discountAmount: string;
+    estimatedReadyTime: string | null;
+    id: string;
+    isOnlinePayment: boolean;
+    orderExtra: { name: string | null; options: string[] | null }[] | null;
+    orderNote: string | null;
+    paymentID: string | null;
+    status: OrderStatus;
+    totalPrice: string;
+    type: OrderType;
     updatedAt: string;
     userId: string;
-    status: OrderStatus;
-    type: OrderType;
-    isOnlinePayment: boolean;
-    paymentID: string | null;
-    discountAmount: string;
-    deliveryFee: string | null;
-    totalPrice: string;
-    estimatedReadyTime: string | null;
-    addressId: string | null;
-    addressExtra: string | null;
-    orderNote: string | null;
-    orderExtra: {
-        name: string | null
-        options: string[] | null
-    }[] | null;
-    payment: MolliePayment | null;
+
     address: Address | null;
     items: OrderProduct[];
+    payment: MolliePayment | null;
 }
 
 export interface OrderProduct {
-    product: Product;
     quantity: number;
-    unitPrice: string;
     totalPrice: string;
+    unitPrice: string;
+
+    product: Product;
 }
 
 export interface MolliePayment {
+    createdAt: string;
     id: string;
     links: object;
     orderId: string;
-    status: string;
-    createdAt: string;
     paidAt: string | null;
+    status: string;
 }
 
 export interface CreateOrderRequest {
-    orderType: OrderType;
-    isOnlinePayment: boolean;
-    addressId: string | null;
     addressExtra: string | null;
+    addressId: string | null;
+    isOnlinePayment: boolean;
+    items: { productId: string; quantity: number; }[]
+    orderExtra: { name: string; options?: string[] }[] | null;
     orderNote: string | null;
+    orderType: OrderType;
     preferredReadyTime: string | null;
-    orderExtra: {
-        name: string
-        options?: string[]
-    }[] | null;
-    items: {
-        productId: string;
-        quantity: number;
-    }[]
 }
 export interface Street {
     id: string;
-    streetName: string;
     municipalityName: string;
     postcode: string;
+    streetName: string;
 }
 
 export interface Address {
-    id: string;
-    streetName: string;
-    houseNumber: string;
     boxNumber: string | null;
+    distance: number;
+    houseNumber: string;
+    id: string;
     municipalityName: string;
     postcode: string;
-    distance: number;
+    streetName: string;
 }
