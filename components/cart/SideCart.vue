@@ -1,5 +1,16 @@
 <template>
-    <aside class="bg-tsb-two rounded-l-xl flex flex-col divide-y divide-gray-200">
+    <aside
+        class="
+            bg-tsb-two
+            rounded-l-xl
+            flex
+            flex-col
+            divide-y
+            divide-gray-200
+            max-h-[calc(100vh-32px)]
+            overflow-y-auto
+         "
+    >
         <!-- Header with Toggle -->
         <header class="px-4 py-5 flex items-center justify-between gap-4">
             <h2 class="text-xl font-bold text-gray-900">
@@ -87,7 +98,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="p-4 space-y-4">
+        <footer class="p-4 space-y-4 flex-none">
             <!-- Price Breakdown -->
             <div class="space-y-2">
                 <div class="flex justify-between items-center text-sm text-gray-600">
