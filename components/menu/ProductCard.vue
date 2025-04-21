@@ -25,7 +25,10 @@
                     </span>
 
                     <!-- Product Name -->
-                    <span class="text-black font-semibold text-sm truncate mb-1">
+                    <span
+                        class="text-black font-semibold text-sm truncate mb-1"
+                        :title="product.name"
+                    >
                       {{ product.name }}
                     </span>
 
