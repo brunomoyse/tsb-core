@@ -14,7 +14,7 @@ interface Options {
 export async function useGqlQuery<T>(
     rawQuery: string | import('graphql').DocumentNode,
     variables: Vars = {},
-    opts: Options = { immediate: true, cache: false },   // ⬅ default cache:false
+    opts: Options = { immediate: true, cache: false },
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
     const { $gqlFetch } = useNuxtApp()
     const getVars = () => (typeof variables === 'function' ? variables() : variables)
