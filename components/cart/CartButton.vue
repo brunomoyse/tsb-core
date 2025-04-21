@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isCartEmpty && !isCartVisible" class="fixed bottom-8 right-8 z-50">
+    <div v-if="!isCartEmpty && !isCartVisible" class="fixed bottom-8 left-8 z-50">
         <button class="relative w-14 h-14 bg-white border border-red-500 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition" type="button"
                 @click="handleToggleCart">
             <!-- Cart Icon -->
@@ -10,7 +10,7 @@
                 <!-- Tooltip positioned below -->
                 <span
                     class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
-                    Panier
+                    {{ $t('nav.cart') }}
                 </span>
             </div>
             <img/>

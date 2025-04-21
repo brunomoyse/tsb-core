@@ -45,9 +45,9 @@
                     <template v-if="!showControls">
                         <!-- Price -->
                         <div>
-                <span class="text-black font-semibold text-sm">
-                  {{ formatPrice(product.price) }}
-                </span>
+                            <span class="text-black font-semibold text-sm">
+                              {{ formatPrice(product.price) }}
+                            </span>
                         </div>
 
                         <!-- Cart Controls -->
@@ -56,16 +56,13 @@
                             <button v-if="!isInCart" aria-label="Add to Cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     @click="addToCart">
-                                <svg aria-hidden="true" class="w-5 h-5 fill-current" focusable="false" viewBox="0 0 16 16">
-                                    <path clip-rule="evenodd" d="M3.666 11.333h10.333l1.334-8h-11l-.267-2h-3.4v2h1.667l1.333 8zm1.333 3.334A1.333 1.333 0 105 12a1.333 1.333 0 000 2.667zm9.334-1.334a1.333 1.333 0 11-2.667 0 1.333 1.333 0 012.667 0z"
-                                          fill-rule="evenodd"/>
-                                </svg>
+                                <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
 
                             <!-- Quantity Display -->
                             <!-- Make it clickable so that when user clicks, the expanded controls show -->
                             <div v-else
-                                 class="flex items-center justify-center w-10 h-10 text-black font-semibold border border-gray-300 bg-tsb-four rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
+                                 class="flex items-center justify-center w-10 h-10 text-gray-800 font-semibold border-2 border-red-500 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                  @click="showExpandedControls">
                                 {{ cardQuantity }}
                             </div>

@@ -53,6 +53,9 @@
         <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
                     class="lg:hidden"/>
 
+        <ScrollToTopButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
+                    class="sm:hidden"/>
+
         </Body>
 
         </Html>
@@ -68,6 +71,7 @@ import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
 import NotificationBar from "~/components/NotificationBar.vue";
 import {eventBus} from "~/eventBus";
+import ScrollToTopButton from "~/components/ScrollToTopButton.vue";
 
 const route = useRoute()
 const {t} = useI18n()
