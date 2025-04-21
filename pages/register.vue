@@ -11,10 +11,11 @@
 
 <script lang="ts" setup>
 import UserForm from '~/components/form/UserForm.vue'
-import { useNuxtApp, navigateTo, useLocalePath } from '#imports'
+import { useNuxtApp, useAsyncData, navigateTo, useLocalePath } from '#imports'
 import { eventBus } from '~/eventBus'
-import { useAsyncData } from '#imports'
+import { useI18n } from "vue-i18n"
 
+const { t } = useI18n()
 const { $api } = useNuxtApp()
 const localePath = useLocalePath()
 
@@ -38,7 +39,7 @@ const registerUser = async (formData: any) => {
 
     if (!error.value) {
         eventBus.emit('notify', {
-            message: 'An email has been sent to you for verification. Please check your inbox.',
+            message: t('notify.verificationEmailSent'),
             persistent: false,
             duration: 5000,
             variant: 'success',
