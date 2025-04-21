@@ -200,9 +200,11 @@ const selectCategory = async (categoryId: string) => {
     selectedCategory.value = categories.value?.find((cat) => cat.id === categoryId) || null
 }
 
-// Fetch products by category
+// Fetch products
 const {data: dataProducts} = await useGqlQuery<{ products: Product[] }>(print(PRODUCTS))
-const products = computed(() => dataProducts.value?.products ?? [])
+const products = computed(() =>
+    (dataProducts.value?.products ?? []).filter(p => p.isVisible)
+)
 
 const filteredProducts = computed(() => {
     const query = debouncedSearchValue.value.trim().toLowerCase();

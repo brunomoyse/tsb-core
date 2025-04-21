@@ -10,6 +10,7 @@ export interface Product {
     pieceCount: number;
     isHalal: boolean;
     isVegan: boolean;
+    isVisible: boolean
     isAvailable: boolean;
     categoryId: string;
     discountable: boolean;
@@ -149,11 +150,4 @@ export interface Address {
     municipalityName: string;
     postcode: string;
     distance: number;
-}
-
-export interface EventData {
-    event: string
-    orderID: string
-    timestamp: string
-    newStatus: string
 }

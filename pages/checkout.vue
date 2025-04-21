@@ -67,7 +67,7 @@ const tempAddress = ref<Address | null>(null)
 const CREATE_ORDER = gql`
     mutation CreateOrder($input: CreateOrderInput!) {
         createOrder(input: $input) {
-            id:
+            id
             createdAt
             updatedAt
             status
