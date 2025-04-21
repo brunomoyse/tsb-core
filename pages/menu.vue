@@ -128,6 +128,7 @@ const PRODUCTS = gql`
              code
              slug
              pieceCount
+             isVisible
              isAvailable
              isHalal
              category {
