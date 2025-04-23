@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 ENV BASE_URL="https://nuagemagique.dev"
 ENV API_BASE_URL="https://nuagemagique.dev/api/v1"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
+ENV GRAPHQL_WS_URL="wss://nuagemagique.dev/api/v1/graphql"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
