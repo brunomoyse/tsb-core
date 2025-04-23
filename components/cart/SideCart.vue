@@ -186,6 +186,7 @@ const isMinimumReached = computed(() => {
     } else if (cartStore.collectionOption === 'PICKUP') {
         return cartTotal.value >= 20;
     }
+    return false
 })
 
 const calculateItemPrice = (item: CartItem) => {
