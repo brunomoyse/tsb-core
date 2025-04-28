@@ -218,6 +218,7 @@
   "notify": {
     "verificationEmailSent": "已向您发送了一封验证邮件。请检查您的收件箱。",
     "emailVerified": "您的电子邮件已通过验证。您现在可以登录。",
-    "loginToValidateCart": "请登录以验证您的购物车。"
+    "loginToValidateCart": "请登录以验证您的购物车。",
+    "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)"
   }
 }
