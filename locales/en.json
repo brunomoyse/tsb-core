@@ -216,6 +216,7 @@
   "notify": {
     "verificationEmailSent": "An email has been sent to you for verification. Please check your inbox.",
     "emailVerified": "Your email has been verified. You can now log in.",
-    "loginToValidateCart": "Please log in to validate your cart.\n"
+    "loginToValidateCart": "Please log in to validate your cart.\n",
+    "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km."
   }
 }

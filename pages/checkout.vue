@@ -55,7 +55,10 @@ import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation} fr
 import type {Address, CreateOrderRequest, Order} from '~/types'
 import { navigateTo } from '#imports'
 import gql from "graphql-tag";
+import {eventBus} from "~/eventBus";
+import { useI18n } from "vue-i18n"
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
@@ -169,6 +172,19 @@ const handleCheckout = async () => {
         }
         if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
             console.error('Delivery address is required for delivery orders')
+            return
+        }
+
+        if (cartStore.address?.distance && cartStore.address?.distance >= 9000) {
+            eventBus.emit('notify', {
+                message: t('notify.deliveryAddressTooFar', {
+                    distance: 9
+                }),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
+            console.error('Delivery address is too far')
             return
         }
 
