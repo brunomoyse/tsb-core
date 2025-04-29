@@ -15,7 +15,7 @@
     "@vueuse/core": "^13.1.0",
     "class-variance-authority": "^0.7.1",
     "google-libphonenumber": "^3.2.40",
-    "graphql": "^16.10.0",
+    "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^6.0.4",
     "nuxt": "^3.16.2",
