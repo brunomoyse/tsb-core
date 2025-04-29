@@ -28,7 +28,7 @@
     "@types/google-libphonenumber": "^7.4.30",
     "@types/node": "^22.15.2",
     "eslint": "9.25",
-    "eslint-plugin-vue": "^10.0.0",
+    "eslint-plugin-vue": "^10.0.1",
     "globals": "^16.0.0",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",
