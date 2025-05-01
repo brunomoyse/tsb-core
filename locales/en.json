@@ -26,7 +26,7 @@
     "contact": "Contact"
   },
   "contact": {
-    "title": "📍 Contact Us",
+    "title": "Contact Us",
     "subtitle": "Find us, call us, or reserve a table today!",
     "viewLargerMap": "View Larger Map",
     "addressTitle": "Address",
@@ -35,7 +35,8 @@
     "emailTitle": "Email",
     "reservationsTitle": "Reservations",
     "reservationsLink": "Reserve a Table",
-    "openingHoursTitle": "📆 Opening Hours",
+    "openingHoursTitle": "Opening Hours",
+    "followUs": "Follow us",
     "day": "Day",
     "hours": "Hours",
     "weekdays": "Monday - Friday",

@@ -26,7 +26,7 @@
     "contact": "联系我们"
   },
   "contact": {
-    "title": "📍 联系我们",
+    "title": "联系我们",
     "subtitle": "找到我们，打电话给我们，或立即预订餐桌！",
     "viewLargerMap": "查看更大的地图",
     "addressTitle": "地址",
@@ -35,7 +35,8 @@
     "emailTitle": "电子邮件",
     "reservationsTitle": "预订",
     "reservationsLink": "预订餐桌",
-    "openingHoursTitle": "📆 营业时间",
+    "openingHoursTitle": "营业时间",
+    "followUs": "关注我们",
     "day": "天",
     "hours": "时间",
     "weekdays": "周一 - 周五",
