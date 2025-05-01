@@ -2,49 +2,61 @@
     <nav class="mobile-only bg-white text-tsb-gray fixed z-50 h-20 w-full">
         <div class="px-4 flex justify-between items-center h-full mx-auto">
             <!-- Mobile Logo -->
-            <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/icons/tsb-logo.svg" to="/"/>
+            <div class="flex items-center">
+                <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/icons/tsb-logo.svg" to="/"/>
+                <span class="font-semibold text-lg ml-2"></span>
+            </div>
 
-            <!-- Hamburger Menu -->
-            <div class="flex flex-col items-center">
-                <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
-                <label aria-label="Toggle navigation menu" class="hamburger cursor-pointer focus:outline-none"
-                       for="menu-toggle" tabindex="0">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </label>
+            <!-- Right part -->
+            <div class="flex items-center">
+                <!-- Cart icon -->
+                <div>
+                    <CartButton />
+                </div>
 
-                <!-- Mobile Sidebar Menu -->
-                <div id="mobile-menu"
-                     class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
+                <!-- Hamburger Menu -->
+                <div class="flex flex-col items-center ml-6">
+                    <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
+                    <label aria-label="Toggle navigation menu" class="hamburger cursor-pointer focus:outline-none"
+                           for="menu-toggle" tabindex="0">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
 
-                    <!-- Top Section -->
-                    <div class="flex flex-col items-center space-y-6 mt-4">
-                        <ul class="flex flex-col items-center space-y-6 w-full">
-                            <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/icons/tsb-logo.svg" to="/"
-                                  @click="closeMenu"/>
-                            <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg" to="menu"
-                                           @click="closeMenu"/>
-                            <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg" to="contact"
-                                           @click="closeMenu"/>
-                            <MobileNavItem v-if="!authStore.accessValid" :label="$t('nav.login')" icon="/icons/login-icon.svg"
-                                           to="login"
-                                           @click="closeMenu"/>
-                            <MobileNavItem v-if="authStore.accessValid" :label="$t('nav.myAccount')"
-                                           icon="/icons/account-circle-icon.svg"
-                                           to="me"
-                                           @click="closeMenu"/>
+                    <!-- Mobile Sidebar Menu -->
+                    <div id="mobile-menu"
+                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
 
-                            <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
-                                            class="justify-center" icon="/icons/translate-icon.svg"
-                                            tooltipText="Change Language"/>
-                        </ul>
+                        <!-- Top Section -->
+                        <div class="flex flex-col items-center space-y-6 mt-4">
+                            <ul class="flex flex-col items-center space-y-6 w-full">
+                                <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/icons/tsb-logo.svg" to="/"
+                                      @click="closeMenu"/>
+                                <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg" to="menu"
+                                               @click="closeMenu"/>
+                                <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg" to="contact"
+                                               @click="closeMenu"/>
+                                <MobileNavItem v-if="!authStore.accessValid" :label="$t('nav.login')" icon="/icons/login-icon.svg"
+                                               to="login"
+                                               @click="closeMenu"/>
+                                <MobileNavItem v-if="authStore.accessValid" :label="$t('nav.myAccount')"
+                                               icon="/icons/account-circle-icon.svg"
+                                               to="me"
+                                               @click="closeMenu"/>
+
+                                <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
+                                                class="justify-center" icon="/icons/translate-icon.svg"
+                                                tooltipText="Change Language"/>
+                            </ul>
+                        </div>
+
+                        <!-- Bottom Section -->
+                        <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full"></ul>
                     </div>
-
-                    <!-- Bottom Section -->
-                    <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full"></ul>
                 </div>
             </div>
+
         </div>
     </nav>
 </template>
@@ -52,6 +64,7 @@
 <script lang="ts" setup>
 import {ref, watch} from '#imports';
 import {useAuthStore} from '@/stores/auth'
+import CartButton from "~/components/cart/CartButton.vue";
 import MobileNavItem from './MobileNavItem.vue';
 import Logo from './Logo.vue';
 import LanguagePicker from './LanguagePicker.vue';
