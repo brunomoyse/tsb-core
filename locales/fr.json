@@ -26,8 +26,8 @@
     "contact": "Contact"
   },
   "contact": {
-    "title": "📍 Contactez-nous",
-    "subtitle": "Trouvez-nous, appelez-nous ou réservez une table dès aujourd'hui !",
+    "title": "Contactez-nous",
+    "subtitle": "Rendez-nous visite, appelez-nous ou réservez une table dès aujourd'hui !",
     "viewLargerMap": "Voir la carte en grand",
     "addressTitle": "Adresse",
     "address": "Rue de la Cathédrale 59, Liège, Belgique",
@@ -35,7 +35,8 @@
     "emailTitle": "E-mail",
     "reservationsTitle": "Réservations",
     "reservationsLink": "Réserver une table",
-    "openingHoursTitle": "📆 Horaires d'ouverture",
+    "openingHoursTitle": "Horaires d'ouverture",
+    "followUs": "Suivez-nous",
     "day": "Jour",
     "hours": "Horaires",
     "weekdays": "Lundi - Vendredi",
