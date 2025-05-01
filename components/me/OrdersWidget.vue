@@ -202,6 +202,8 @@ const MY_ORDERS = gql`
                 address {
                     streetName
                     municipalityName
+                    houseNumber
+                    boxNumber
                     postcode
                 }
                 customer {
