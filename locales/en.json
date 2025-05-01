@@ -4,7 +4,8 @@
   },
   "common": {
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "toTop": "Back to top"
   },
   "nav": {
     "home": "Home",

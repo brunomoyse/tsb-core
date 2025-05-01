@@ -1,242 +1,331 @@
 <template>
     <div class="flex">
-        <!-- Main Central Content -->
-        <div class="sm:w-[calc(100vw-142px)]"
-             :class="cartStore.products.length === 0 ? 'lg:w-[calc(100vw-142px)]' : 'lg:w-[calc(67vw-71px)]'">
-            <!-- Search Section -->
-            <section class="mb-4 px-4">
-                <SearchBar v-model="searchValue"/>
-            </section>
+        <!-- Main Content -->
+        <div
+            ref="contentContainer"
+            class="sm:w-[calc(100vw-142px)]"
+            :class="cartStore.products.length === 0
+        ? 'lg:w-[calc(100vw-142px)]'
+        : 'lg:w-[calc(67vw-71px)]'"
+        >
+            <!-- Sticky Categories Header -->
+            <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:py-0 bg-tsb-one">
+                <!-- Search Section -->
+                <section class="mb-4 md:pt-8 px-4">
+                    <SearchBar v-model="searchValue" />
+                </section>
 
-            <!-- Categories -->
-            <section v-if="searchValue.trim().length < 1" class="m-4">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-lg font-medium">{{ $t('menu.pickCategory') }}</h2>
+                <!-- Categories Scroll -->
+                <section v-if="!searchValue.trim().length" class="relative m-4">
+                    <!-- Left Arrow -->
                     <button
-                        v-if="categories && categories.length > initialVisibleCount"
-                        @click="showAllCategories = !showAllCategories"
-                        class="hidden sm:inline-block text-sm text-primary-600 hover:text-primary-700"
+                        v-show="canScrollLeft"
+                        @click="scrollPrev"
+                        class="absolute left-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full"
                     >
-                        {{ showAllCategories ? $t('menu.showLess') : $t('menu.showMore') }}
+                        ‹
                     </button>
-                </div>
 
-                <!-- Mobile Horizontal Scroll -->
-                <div class="flex overflow-x-auto gap-2 pb-2 sm:hidden no-scrollbar">
-                    <CategoryCard
-                        v-for="category in categories"
-                        :key="category.id"
-                        :active="selectedCategory?.id === category.id"
-                        :category="category"
-                        class="min-w-[150px]"
-                        @select="selectCategory"
-                    />
-                </div>
-
-                <!-- Desktop Grid -->
-                <div class="hidden sm:grid grid-cols-3 lg:grid-cols-4 gap-2">
-                    <template v-for="category in visibleCategories" :key="category.id">
+                    <!-- Scrollable Category Cards -->
+                    <div
+                        ref="scrollContainer"
+                        @mousedown="startDrag"
+                        @mousemove="onDrag"
+                        @mouseup="stopDrag"
+                        @mouseleave="stopDrag"
+                        :class="[
+              'flex overflow-x-auto gap-2 pb-4 no-scrollbar',
+              isDragging ? 'cursor-grabbing' : 'cursor-grab'
+            ]"
+                    >
                         <CategoryCard
-                            :active="selectedCategory?.id === category.id"
-                            :category="category"
-                            @select="selectCategory"
+                            v-for="cat in displayedCategories"
+                            :key="cat.id"
+                            :id="`category-card-${cat.id}`"
+                            :active="activeCategory === cat.id"
+                            :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
+                            class="snap-start"
+                            @select="scrollToCategory"
                         />
-                    </template>
-                </div>
+                    </div>
+
+                    <!-- Right Arrow -->
+                    <button
+                        v-show="canScrollRight"
+                        @click="scrollNext"
+                        class="absolute right-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full"
+                    >
+                        ›
+                    </button>
+                </section>
             </section>
 
-            <!-- Filters Section -->
-            <section v-if="searchValue.trim().length < 1" class="m-4">
-                <h2 class="text-lg font-medium mb-3">{{ $t('menu.pickFilters') }}</h2>
-                <div class="flex flex-wrap gap-3">
-                    <template v-for="tag in filters" :key="tag.slug">
-                        <label class="cursor-pointer w-full sm:w-auto">
-                            <div
-                                class="px-4 py-2.5 rounded-xl border transition-all duration-200"
-                                :class="[
-                        filterOptions[tag.slug]
-                            ? 'bg-tsb-four border-tsb-two shadow-sm dark:bg-gray-700 dark:border-gray-600'
-                            : 'bg-white border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:border-gray-700'
-                    ]"
-                            >
-                                <Checkbox
-                                    v-model="filterOptions[tag.slug]"
-                                    class="!mt-0 w-full"
-                                >
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {{ tag.name }}
-                        </span>
-                                </Checkbox>
-                            </div>
-                        </label>
-                    </template>
-                </div>
-            </section>
-
-            <!-- Products -->
-            <section class="mx-auto px-4 mb-8">
+            <!-- Products Grid -->
+            <section class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div
-                    v-if="filteredProducts.length"
-                    class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+                    v-for="cat in displayedCategories"
+                    :key="cat.id"
+                    :id="`category-${cat.id}`"
+                    class="space-y-4"
                 >
-                    <ProductCard
-                        v-for="(product, index) in filteredProducts"
-                        :key="product.id"
-                        :index="index"
-                        :product="product"
-                        class="w-full"
-                    />
+                    <!-- Category Title -->
+                    <h2
+                        class="inline-block mx-auto text-2xl font-semibold text-gray-800 border-b-2 border-black pb-2 uppercase tracking-wide text-center"
+                    >
+                        {{ cat.name }}
+                    </h2>
+
+                    <!-- Product Cards -->
+                    <div
+                        v-if="cat.products.length"
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
+                    >
+                        <ProductCard
+                            v-for="(prod, idx) in cat.products"
+                            :key="prod.id"
+                            :index="idx"
+                            :product="prod"
+                            class="w-full"
+                        />
+                    </div>
+
+                    <!-- Empty State -->
+                    <div v-else class="text-center text-gray-500 italic">
+                        {{ $t('menu.noProduct') }}
+                    </div>
                 </div>
-                <div v-else class="text-center">{{ $t('menu.noProduct') }}</div>
             </section>
         </div>
 
-        <!-- Cart Sidebar -->
-        <aside v-if="cartStore.products.length"
-               class="hidden lg:w-[calc(30vw-71px)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]"
-               :class="cartStore.products.length === 0 ? 'hidden' : 'lg:block'">
-            <SideCart/>
+        <!-- Desktop Cart Sidebar -->
+        <aside
+            v-if="cartStore.products.length"
+            class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+        >
+            <SideCart />
         </aside>
 
         <!-- Mobile Cart -->
-        <div class="lg:hidden">
-            <CartMobile/>
-        </div>
+        <CartMobile class="lg:hidden" />
     </div>
 </template>
 
-<script lang="ts" setup>
-import CartMobile from '~/components/cart/CartMobile.vue'
-import SideCart from '~/components/cart/SideCart.vue'
-import ProductCard from '~/components/menu/ProductCard.vue'
-import SearchBar from '~/components/menu/SearchBar.vue'
-import CategoryCard from '~/components/menu/CategoryCard.vue'
-import {computed, reactive, ref, watch} from 'vue'
-import {useDebounce} from '@vueuse/core'
-import {useI18n, useGqlQuery} from '#imports'
-import {useCartStore} from '@/stores/cart';
-import type {Product, ProductCategory} from '@/types'
+<script setup lang="ts">
+/**
+ * Imports
+ */
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { useDebounce } from '@vueuse/core'
+import { useGqlQuery } from '#imports'
+import { useCartStore } from '@/stores/cart'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 
-const PRODUCTS = gql`
-    query {
-        products {
-             id
-             name
-             description
-             price
-             code
-             slug
-             pieceCount
-             isVisible
-             isAvailable
-             isHalal
-             category {
-                id
-                name
-             }
-        }
-    }
-`
+import SearchBar from '~/components/menu/SearchBar.vue'
+import CategoryCard from '~/components/menu/CategoryCard.vue'
+import ProductCard from '~/components/menu/ProductCard.vue'
+import SideCart from '~/components/cart/SideCart.vue'
+import CartMobile from '~/components/cart/CartMobile.vue'
+import type { ProductCategory, Product } from '@/types'
 
+/**
+ * GraphQL Query
+ */
 const PRODUCT_CATEGORIES = gql`
-    query {
-        productCategories {
-             id
-             name
-             order
-        }
+  query {
+    productCategories {
+      id
+      name
+      order
+      products {
+        id
+        name
+        price
+        code
+        slug
+        pieceCount
+        isVisible
+        isAvailable
+        isHalal
+        category { id name }
+      }
     }
+  }
 `
-const {t} = useI18n()
-const cartStore = useCartStore();
 
-const initialVisibleCount = 8; // Show 8 categories initially on desktop
-const showAllCategories = ref(false);
+/**
+ * Stores & Data Fetch
+ */
+const cartStore = useCartStore()
+const { data: dataCategories } = await useGqlQuery<{
+    productCategories: ProductCategory[]
+}>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
 
-const visibleCategories = computed(() => {
-    return showAllCategories.value
-        ? categories.value
-        : categories.value?.slice(0, initialVisibleCount) || [];
-});
-
-const filterOptions = reactive<Record<string, boolean>>({
-    isHalal: false,
-    isVegan: false
-})
-
-const filters = [
-    {slug: 'isHalal', name: t('menu.halal')},
-    {slug: 'isVegan', name: t('menu.vegan')}
-]
-
+/**
+ * Refs & Reactive State
+ */
 const searchValue = ref('')
-// Debounce the user input to reduce frequent filtering
 const debouncedSearchValue = useDebounce(searchValue, 300)
+const activeCategory = ref<string>('')
+const scrollContainer = ref<HTMLElement | null>(null)
+const isDragging = ref(false)
+const dragStartX = ref(0)
+const scrollStartX = ref(0)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
 
-// Watch search input: If search is typed, unselect category
-watch(debouncedSearchValue, (newValue) => {
-    if (newValue.trim() !== '') {
-        selectedCategory.value = null
-    } else {
-        selectedCategory.value = categories.value?.[0] || null
-    }
+/**
+ * Computed: Categories & Products
+ */
+// Base categories with only visible products, sorted
+const baseCategories = computed(() =>
+    (dataCategories.value?.productCategories ?? [])
+        .map(cat => ({
+            ...cat,
+            products: cat.products.filter(p => p.isVisible)
+        }))
+        .filter(cat => cat.products.length)
+        .sort((a, b) => a.order - b.order)
+)
+
+// All products flattened for search
+const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =>
+        cat.products.map(p => ({ ...p, category: cat }))
+    )
+)
+
+// Filtered list based on search query
+const filteredProducts = computed(() => {
+    const q = debouncedSearchValue.value.trim().toLowerCase()
+    if (!q) return allProducts.value
+    return allProducts.value.filter(p =>
+        p.code?.toLowerCase().includes(q) ||
+        p.name.toLowerCase().includes(q) ||
+        p.category.name.toLowerCase().includes(q)
+    )
 })
 
-// Fetch categories
-const { data: dataCategories } = await useGqlQuery<
-    { productCategories: ProductCategory[] }
->(
-    print(PRODUCT_CATEGORIES),
-    {},
-    { immediate: true, cache: true }
-)
-const categories = computed(() => dataCategories.value?.productCategories ?? [])
+// Categories displayed, grouping filtered products
+const displayedCategories = computed<ProductCategory[]>(() => {
+    const q = debouncedSearchValue.value.trim().toLowerCase()
+    if (!q) return baseCategories.value
+    const map = new Map<string, ProductCategory & { products: Product[] }>()
+    filteredProducts.value.forEach(prod => {
+        const cat = prod.category
+        if (!map.has(cat.id)) map.set(cat.id, { ...cat, products: [] })
+        map.get(cat.id)!.products.push(prod)
+    })
+    return Array.from(map.values()).sort((a, b) => a.order - b.order)
+})
 
-const selectedCategory = ref<ProductCategory | null>(
-    categories.value?.[0] || null
-);
-
-const selectCategory = async (categoryId: string) => {
-    selectedCategory.value = categories.value?.find((cat) => cat.id === categoryId) || null
+/**
+ * Utility: Update Arrow Visibility
+ */
+const updateScrollButtons = () => {
+    const el = scrollContainer.value!
+    canScrollLeft.value = el.scrollLeft > 0
+    canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
 }
 
-// Fetch products
-const {data: dataProducts} = await useGqlQuery<{ products: Product[] }>(print(PRODUCTS))
-const products = computed(() =>
-    (dataProducts.value?.products ?? []).filter(p => p.isVisible)
-)
+/**
+ * Drag-to-scroll Handlers
+ */
+const startDrag = (e: MouseEvent) => {
+    isDragging.value = true
+    dragStartX.value = e.pageX
+    scrollStartX.value = scrollContainer.value!.scrollLeft
+}
+const onDrag = (e: MouseEvent) => {
+    if (!isDragging.value) return
+    const dx = e.pageX - dragStartX.value
+    scrollContainer.value!.scrollLeft = scrollStartX.value - dx
+    updateScrollButtons()
+}
+const stopDrag = () => {
+    isDragging.value = false
+    updateScrollButtons()
+}
 
-const filteredProducts = computed(() => {
-    const query = debouncedSearchValue.value.trim().toLowerCase();
+/**
+ * Arrow Click Handlers
+ */
+const scrollPrev = () => {
+    scrollContainer.value!.scrollBy({ left: -150, behavior: 'smooth' })
+    setTimeout(updateScrollButtons, 300)
+}
+const scrollNext = () => {
+    scrollContainer.value!.scrollBy({ left: 150, behavior: 'smooth' })
+    setTimeout(updateScrollButtons, 300)
+}
 
-    return products.value?.filter((p) => {
-        // Check for exact code match first
-        const exactCodeMatch = query && p.code?.toLowerCase() === query;
+/**
+ * Scroll-to-Category Method
+ */
+const scrollToCategory = (categoryId: string) => {
+    const header = document.querySelector('.sticky.top-\\[80px\\]') as HTMLElement
+    const element = document.getElementById(`category-${categoryId}`)
+    if (!element || !header) return
 
-        // Apply category filter
-        const matchesCategory = !selectedCategory.value ||
-            p.category?.id === selectedCategory.value.id;
+    const headerHeight = header.offsetHeight
+    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - 80
+    window.scrollTo({ top: position, behavior: 'smooth' })
+}
 
-        // Apply active filters
-        const passesFilters = Object.entries(filterOptions).every(
-            ([key, isActive]) => !isActive || (p as any)[key]
-        );
+/**
+ * Watchers
+ */
+// Initialize active category when list changes
+watch(displayedCategories, cats => {
+    if (!activeCategory.value && cats.length) activeCategory.value = cats[0].id
+}, { immediate: true })
 
-        // If exact code match found, bypass other checks
-        if (exactCodeMatch) return true;
+// Center active card on change
+watch(activeCategory, newVal => {
+    nextTick(() => {
+        if (!scrollContainer.value || !newVal) return
+        const card = document.getElementById(`category-card-${newVal}`)
+        if (!card) return
 
-        // Apply regular filters
-        if (!matchesCategory || !passesFilters) return false;
+        const container = scrollContainer.value
+        const scrollPosition = card.offsetLeft - container.offsetLeft - 36
+        container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
+    })
+})
 
-        // No search query - include item
-        if (!query) return true;
+/**
+ * IntersectionObserver: Scroll Spy
+ */
+onMounted(() => {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                activeCategory.value = entry.target.id.replace('category-', '')
+            }
+        })
+    }, {
+        threshold: 0.1,
+        rootMargin: '-80px 0px -40% 0px'
+    })
 
-        // Extended search: code, category name, and product name
-        const searchString = `${p.category?.name} ${p.name}`.toLowerCase();
-        return searchString.includes(query);
-    }) || [];
-});
+    // Observe each category section
+    const observeSections = () => {
+        observer.disconnect()
+        nextTick(() => {
+            displayedCategories.value.forEach(cat => {
+                const el = document.getElementById(`category-${cat.id}`)
+                if (el) observer.observe(el)
+            })
+        })
+    }
 
+    observeSections()
+    watch(displayedCategories, observeSections, { deep: true })
+    updateScrollButtons()
+    scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
+})
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

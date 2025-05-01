@@ -11,7 +11,8 @@
             <div class="flex items-center">
                 <!-- Cart icon -->
                 <div>
-                    <CartButton />
+                    <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
+                                class="lg:hidden"/>
                 </div>
 
                 <!-- Hamburger Menu -->
@@ -68,7 +69,9 @@ import CartButton from "~/components/cart/CartButton.vue";
 import MobileNavItem from './MobileNavItem.vue';
 import Logo from './Logo.vue';
 import LanguagePicker from './LanguagePicker.vue';
+import {useRoute} from 'vue-router'
 
+const currentRoute = useRoute();
 const authStore = useAuthStore()
 
 // Reference to the menu toggle checkbox

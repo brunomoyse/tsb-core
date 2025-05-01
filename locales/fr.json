@@ -4,7 +4,8 @@
   },
   "common": {
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "toTop": "Haut de page"
   },
   "nav": {
     "home": "Accueil",

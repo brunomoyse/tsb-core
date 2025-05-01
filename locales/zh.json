@@ -4,7 +4,8 @@
   },
   "common": {
     "cancel": "取消",
-    "save": "保存"
+    "save": "保存",
+    "toTop": "返回顶部"
   },
   "nav": {
     "home": "首页",

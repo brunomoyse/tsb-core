@@ -24,6 +24,7 @@ export interface ProductCategory {
     id: string;
     name: string;
     order: number;
+    products: Product[];
 }
 
 export interface CartItem {

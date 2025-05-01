@@ -17,12 +17,12 @@
         <div class="min-h-screen flex flex-col">
             <header>
                 <MobileNavbar/>
+                <div class="mobile-only h-20"/>
                 <SideNavbar/>
             </header>
 
-            <main class="flex-1 bg-tsb-one p-4 sm:ml-[142px] pt-8">
+            <main class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]">
                 <!-- Spacer for mobile navbar -->
-                <div class="mobile-only h-20"/>
                 <slot/>
             </main>
 
@@ -49,9 +49,6 @@
             :variant="notification.variant"
             @close="showNotification = false"
         />
-        <!-- Global Cart Button -->
-        <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
-                    class="lg:hidden"/>
 
         <ScrollToTopButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
                     class="sm:hidden"/>
