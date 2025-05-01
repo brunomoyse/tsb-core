@@ -16,7 +16,6 @@
         <div
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            @click.self="closeAddressModal"
             tabindex="0"
         >
             <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full" @click.stop>
