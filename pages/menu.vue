@@ -81,11 +81,12 @@
                         class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                     >
                         <ProductCard
-                            v-for="(prod, idx) in cat.products"
-                            :key="prod.id"
                             :index="idx"
                             :product="prod"
                             class="min-width-[200px]"
+                            v-for="(prod, idx) in cat.products"
+                            @openProductModal="openModal(prod.id)"
+                            :key="prod.id"
                         />
                     </div>
 
@@ -107,6 +108,14 @@
 
         <!-- Mobile Cart -->
         <CartMobile class="lg:hidden" />
+
+        <ClientOnly>
+            <ProductModal
+                v-if="route.query.product"
+                :product="route.query.product"
+                @close="closeModal"
+            />
+        </ClientOnly>
     </div>
 </template>
 
@@ -116,7 +125,7 @@
  */
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useDebounce } from '@vueuse/core'
-import { useGqlQuery } from '#imports'
+import { useGqlQuery, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
@@ -127,6 +136,20 @@ import ProductCard from '~/components/menu/ProductCard.vue'
 import SideCart from '~/components/cart/SideCart.vue'
 import CartMobile from '~/components/cart/CartMobile.vue'
 import type { ProductCategory, Product } from '@/types'
+import ProductModal from "~/components/menu/ProductModal.vue";
+
+const route = useRoute()
+const router = useRouter()
+
+const openModal = (id: string) => {
+    // Add productId to URL query
+    router.push({ query: { product: id } })
+}
+
+const closeModal = () => {
+    // Remove query parameter
+    router.push({ query: {} })
+}
 
 /**
  * GraphQL Query
