@@ -36,22 +36,38 @@
                     <div class="space-y-4">
                         <div class="flex items-baseline gap-4">
                             <div class="flex gap-2">
-                                <span v-if="p.isHalal" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Halal</span>
-                                <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Vegan</span>
+                                <span v-if="p.isHalal" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                                    {{ $t('menu.halal') }}
+                                </span>
+                                <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                                    {{ $t('menu.vegan') }}
+                                </span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <div class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">Prix</p>
+                                <p class="text-sm text-gray-500 mb-1">
+                                    {{ $t('menu.price') }}
+                                </p>
                                 <p class="font-medium text-gray-900">{{ formatPrice(p.price) }}</p>
                             </div>
-                            <div v-if="p.pieceCount" class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">Pieces</p>
+                            <div v-if="p.pieceCount && p.pieceCount === 1" class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">
+                                    {{ $t('menu.piece') }}
+                                </p>
+                                <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
+                            </div>
+                            <div v-else-if="p.pieceCount && p.pieceCount > 1" class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">
+                                    {{ $t('menu.pieces') }}
+                                </p>
                                 <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg" v-if="p.code">
-                                <p class="text-sm text-gray-500 mb-1">Code</p>
+                                <p class="text-sm text-gray-500 mb-1">
+                                    {{ $t('menu.code') }}
+                                </p>
                                 <p class="font-medium text-gray-900">{{ p.code || 'N/A' }}</p>
                             </div>
                         </div>
@@ -86,14 +102,16 @@
                                 :class="{ 'opacity-50 cursor-not-allowed': !p.isAvailable }"
                                 :disabled="!p.isAvailable"
                             >
-                                {{ !p.isAvailable ? 'Out of Stock' : 'Ajouter' }}
+                                {{ $t('menu.addToCart') }}
                             </button>
                         </div>
                     </div>
 
                     <!-- Description -->
                     <div class="prose prose-sm border-t pt-4" v-if="p.description">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                            {{ $t('menu.description') }}
+                        </h3>
                         <p class="text-gray-600 text-sm">{{ p.description }}</p>
                     </div>
                 </div>
@@ -103,11 +121,13 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref, watch, useRuntimeConfig, useGqlQuery } from '#imports'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import type { Product } from "@/types"
 import {formatPrice} from "~/lib/price";
 import {useCartStore} from "~/stores/cart";
+import type { Product } from "@/types"
+
 
 const cartStore = useCartStore();
 const config = useRuntimeConfig()
@@ -154,6 +174,14 @@ onMounted(() => {
     }
     document.addEventListener('keydown', handleEscape)
     onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+
+    // Prevent background from scrolling
+    document.body.style.overflow = 'hidden'
+})
+
+onUnmounted(() => {
+    // Restore scrolling
+    document.body.style.overflow = ''
 })
 
 const addToCart = () => {
@@ -165,7 +193,7 @@ const addToCart = () => {
 }
 
 // Reset quantity when product changes
-watch(() => p.value, () => {
+watch(() => p, () => {
     quantity.value = 1
 })
 
