@@ -169,7 +169,7 @@
     "removeItem": "Retirer"
   },
   "checkout": {
-    "title": "Caisse",
+    "title": "Commande",
     "orderSummary": "Votre commande",
     "emptyCart": "Votre panier est vide.",
     "subtotal": "Sous-total :",

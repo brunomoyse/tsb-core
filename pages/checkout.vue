@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
             <CheckoutCollectionOptions @open-address-modal="openAddressModal" />
-            <CheckoutPaymentExtras @checkout="handleCheckout" />
+            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" />
         </div>
 
         <!-- Address Modal -->
@@ -50,7 +50,7 @@ import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation} from '#imports'
+import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation, computed} from '#imports'
 import type {Address, CreateOrderRequest, Order} from '~/types'
 import { navigateTo } from '#imports'
 import gql from "graphql-tag";
@@ -227,4 +227,31 @@ const handleCheckout = async () => {
         isCheckoutProcessing.value = false
     }
 }
+const cartTotal = computed(() => {
+    let total = subtotal.value - totalDiscount.value;
+    return Math.max(total, 0);
+});
+
+const subtotal = computed(() =>
+    cartStore.products.reduce((acc, item) =>
+        acc + (item.product.price * item.quantity), 0)
+);
+
+const totalDiscount = computed(() =>
+    cartStore.collectionOption === 'PICKUP'
+        ? cartStore.products.reduce((acc, item) =>
+            item.product.discountable
+                ? acc + (item.product.price * item.quantity * 0.1)
+                : acc, 0)
+        : 0
+);
+
+const isMinimumReached = computed(() => {
+    if (cartStore.collectionOption === 'DELIVERY') {
+        return cartTotal.value >= 25;
+    } else if (cartStore.collectionOption === 'PICKUP') {
+        return cartTotal.value >= 20;
+    }
+    return false
+})
 </script>

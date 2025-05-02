@@ -97,12 +97,20 @@
             ></textarea>
         </div>
 
+        <!-- Minimum Order Warning -->
+        <div v-if="!props.isMinimumReached" class="text-sm text-red-600 text-center">
+            {{ cartStore.collectionOption === 'DELIVERY'
+            ? $t('cart.minimumDelivery', { amount: 25})
+            : $t('cart.minimumPickup', { amount: 20}) }}
+        </div>
+
         <!-- Checkout Button -->
-        <button
-            @click.once="debouncedCheckout"
-            :disabled="isCheckoutProcessing"
-            class="w-full py-3 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
-        >
+        <button @click.once="debouncedCheckout" :class="[
+            'w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
+            isMinimumReached
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          ]" :disabled="!props.isMinimumReached || isCheckoutProcessing">
             {{
                 isOnlinePayment
                     ? $t('checkout.goToPayment', 'Go to Payment')
@@ -116,6 +124,13 @@
 import { computed, ref, nextTick } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
+
+const props = defineProps({
+    isMinimumReached: {
+        type: Boolean,
+        default: false
+    }
+})
 
 const cartStore = useCartStore()
 
@@ -153,31 +168,31 @@ const addChopsticks = computed({
 })
 
 // Helper computed property for sauces as an array of two strings
-const sauces = computed({
+const sauces = computed<[string,string]>({
     get() {
         const item = cartStore.orderExtra?.find(o => o.name === 'sauces')
-        if (item && item.options) {
-            return [item.options[0] || 'none', item.options[1] || 'none']
-        }
-        return ['none', 'none']
+        const opts = item?.options ?? []
+        // always return a 2-element tuple
+        return [ opts[0] || 'none', opts[1] || 'none' ]
     },
-    set(newVal: [string, string]) {
-        const [s1, s2] = newVal
-        const arr: string[] = []
-        if (s1 !== 'none') arr.push(s1)
-        if (s2 !== 'none') arr.push(s2)
+    set([s1, s2]) {
+        // if both are none, remove the entry
+        const allNone = s1 === 'none' && s2 === 'none'
         if (!cartStore.orderExtra) cartStore.orderExtra = []
+
         const idx = cartStore.orderExtra.findIndex(o => o.name === 'sauces')
-        if (arr.length > 0) {
-            if (idx !== -1) {
-                cartStore.orderExtra[idx].options = arr
-            } else {
-                cartStore.orderExtra.push({ name: 'sauces', options: arr })
-            }
+
+        if (allNone) {
+            if (idx !== -1) cartStore.orderExtra.splice(idx, 1)
+            return
+        }
+
+        const payload = { name: 'sauces', options: [s1, s2] }
+
+        if (idx === -1) {
+            cartStore.orderExtra.push(payload)
         } else {
-            if (idx !== -1) {
-                cartStore.orderExtra.splice(idx, 1)
-            }
+            cartStore.orderExtra[idx].options = payload.options
         }
     }
 })
