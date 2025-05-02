@@ -34,7 +34,9 @@
                     <button
                         type="button"
                         @click="confirmAddress"
-                        class="px-4 py-2 rounded bg-black text-white hover:bg-gray-800 text-sm"
+                        :disabled="!tempAddress"
+                        class="px-4 py-2 rounded  text-white text-sm"
+                        :class="!tempAddress ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'"
                     >
                         {{ $t('common.save', 'Save') }}
                     </button>
@@ -121,12 +123,7 @@ const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(C
 
 const openAddressModal = () => {
     showAddressModal.value = true
-    // Pre-fill the address if available
-    if (cartStore.address) {
-        tempAddress.value = cartStore.address
-    } else {
-        tempAddress.value = null
-    }
+    tempAddress.value = null
 }
 
 const closeAddressModal = () => {
