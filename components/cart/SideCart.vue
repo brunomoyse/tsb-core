@@ -9,6 +9,7 @@
             divide-gray-200
             max-h-[calc(100vh-32px)]
             overflow-y-auto
+            mt-4
          "
     >
         <!-- Header with Toggle -->

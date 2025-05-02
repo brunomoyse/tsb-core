@@ -81,7 +81,7 @@ module.exports = {
                 },
             },
             fontFamily: {
-                'logo': 'Channel',
+                channel: ['Channel', 'sans-serif'],
             },
             borderRadius: {
                 lg: "var(--radius)",
