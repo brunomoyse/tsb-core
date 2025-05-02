@@ -63,10 +63,6 @@
                                 {{
                                     item.product.code ? item.product.code : item.product.category?.name + ' ' + item.product.name
                                 }}
-                                <span v-if="cartStore.collectionOption === 'PICKUP' && item.product.discountable"
-                                      class="text-xs text-green-600 ml-1">
-                  (-10%)
-                </span>
                             </h3>
                             <span class="text-sm font-medium ml-2">
                 {{ formatPrice(calculateItemPrice(item)) }}
@@ -106,7 +102,7 @@
                     <span>{{ $t('cart.subtotal') }}:</span>
                     <span>{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'PICKUP'"
+                <div v-if="cartStore.collectionOption === 'PICKUP' && totalDiscount > 0"
                      class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span>-{{ formatPrice(totalDiscount) }}</span>
@@ -129,10 +125,10 @@
             <NuxtLinkLocale to="checkout">
                 <button :class="[
             'w-full py-3 rounded-lg font-medium transition-colors',
-            cartTotal >= 20
+            isMinimumReached
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="cartTotal < 20">
+          ]" :disabled="!isMinimumReached">
                     {{ $t('cart.checkout') }}
                 </button>
             </NuxtLinkLocale>
