@@ -75,7 +75,11 @@
     "halal": "Halal",
     "vegan": "Vegan",
     "pc": "pièce",
-    "pcs": "pièces"
+    "pcs": "pièces",
+    "addToCart": "Ajouter",
+    "price": "Prix",
+    "code": "Code",
+    "description": "Description"
   },
   "login": {
     "title": "Connexion",

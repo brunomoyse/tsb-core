@@ -75,7 +75,11 @@
     "halal": "清真",
     "vegan": "纯素",
     "pc": "个",
-    "pcs": "个"
+    "pcs": "个",
+    "addToCart": "添加",
+    "price": "价格",
+    "code": "代码",
+    "description": "描述"
   },
   "login": {
     "title": "登录",
