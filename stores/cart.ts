@@ -34,6 +34,19 @@ export const useCartStore = defineStore("cart", {
     },
 
     actions: {
+        addProduct(product: Product, quantity: number): void {
+            const cartItem = this.products.find(
+                (item) => item.product.id === product.id
+            );
+            if (cartItem) {
+                cartItem.quantity += quantity;
+            } else {
+                this.products.push({
+                    product,
+                    quantity,
+                });
+            }
+        },
         incrementQuantity(product: Product): void {
             const cartItem = this.products.find(
                 (item) => item.product.id === product.id

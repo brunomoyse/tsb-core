@@ -3,7 +3,7 @@
         <div v-if="product" :key="product.id"
              class="min-w-[140px] max-w-[185px] w-full h-[260px]  bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
             <!-- Product Image -->
-            <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent>
+            <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
                 <picture class="w-full h-full flex justify-center items-center">
                     <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.avif`"
                             type="image/avif"/>
@@ -107,6 +107,8 @@ const props = defineProps<{
     index: number;
     product: Product;
 }>();
+
+const emit = defineEmits(['openProductModal']);
 
 const showControls = ref(false);
 const timeoutId = ref<NodeJS.Timeout | null>(null);

@@ -55,7 +55,7 @@
             @close="showNotification = false"
         />
 
-        <ScrollToTopButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
+        <ScrollToTopButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && !isProductDetailsPage"
                     class="sm:hidden"/>
 
         </Body>
@@ -93,7 +93,6 @@ const {t} = useI18n()
 const head = useLocaleHead()
 const currentRoute = useRoute();
 
-
 const showNotification = ref(false)
 const notification = ref({
     message: '',
@@ -125,4 +124,9 @@ onUnmounted(() => {
 })
 
 const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
+// check if has argument "product"
+const isProductDetailsPage = computed(() => {
+    const productId = route.query.product
+    return typeof productId === 'string' && productId.length > 0
+})
 </script>
