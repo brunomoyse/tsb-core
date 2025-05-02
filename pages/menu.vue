@@ -34,9 +34,9 @@
                         @mouseup="stopDrag"
                         @mouseleave="stopDrag"
                         :class="[
-              'flex overflow-x-auto gap-2 pb-4 no-scrollbar',
-              isDragging ? 'cursor-grabbing' : 'cursor-grab'
-            ]"
+                          'flex overflow-x-auto gap-2 pb-4 no-scrollbar',
+                          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+                        ]"
                     >
                         <CategoryCard
                             v-for="cat in displayedCategories"
@@ -70,7 +70,7 @@
                 >
                     <!-- Category Title -->
                     <h2
-                        class="inline-block mx-auto text-2xl font-semibold text-gray-800 border-b-2 border-black pb-2 uppercase tracking-wide text-center"
+                        class="font-channel inline-block mx-auto text-xl font-semibold text-gray-800 border-b-2 border-black pb-2 ml-4 tracking-wide text-center"
                     >
                         {{ cat.name }}
                     </h2>
@@ -78,14 +78,14 @@
                     <!-- Product Cards -->
                     <div
                         v-if="cat.products.length"
-                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
+                        class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                     >
                         <ProductCard
                             v-for="(prod, idx) in cat.products"
                             :key="prod.id"
                             :index="idx"
                             :product="prod"
-                            class="w-full"
+                            class="min-width-[200px]"
                         />
                     </div>
 
@@ -267,7 +267,11 @@ const scrollToCategory = (categoryId: string) => {
     if (!element || !header) return
 
     const headerHeight = header.offsetHeight
-    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - 80
+    let position = element.getBoundingClientRect().top + window.scrollY - headerHeight - 90
+    // if >= sm, add 60px for the sticky header
+    if (window.innerWidth >= 640) {
+        position += 60
+    }
     window.scrollTo({ top: position, behavior: 'smooth' })
 }
 

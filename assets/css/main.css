@@ -24,6 +24,14 @@
     font-family: "Montserrat", sans-serif;
 }
 
+@font-face {
+    font-family: 'Channel';
+    src: url('/fonts/channel.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     max-width: 100%;
     font-family: "Montserrat", sans-serif;

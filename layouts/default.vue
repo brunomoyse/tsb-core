@@ -21,7 +21,12 @@
                 <SideNavbar/>
             </header>
 
-            <main class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]">
+            <main
+                class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]"
+                :class="{
+                    'pt-8': !(typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')),
+                }"
+            >
                 <!-- Spacer for mobile navbar -->
                 <slot/>
             </main>
@@ -61,7 +66,7 @@
 
 <script lang="ts" setup>
 import {useRoute} from 'vue-router'
-import {computed, ref, onUnmounted} from 'vue'
+import {computed, ref, onUnmounted, } from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useLocaleHead} from '#i18n'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
@@ -69,11 +74,25 @@ import SideNavbar from '~/components/navbar/SideNavbar.vue'
 import NotificationBar from "~/components/NotificationBar.vue";
 import {eventBus} from "~/eventBus";
 import ScrollToTopButton from "~/components/ScrollToTopButton.vue";
+import { useHead } from '#imports'
+
+useHead({
+    link: [
+        {
+            rel: 'preload',
+            href: '/fonts/channel.ttf',
+            as: 'font',
+            type: 'font/ttf',
+            crossorigin: 'anonymous'
+        }
+    ]
+})
 
 const route = useRoute()
 const {t} = useI18n()
 const head = useLocaleHead()
 const currentRoute = useRoute();
+
 
 const showNotification = ref(false)
 const notification = ref({
