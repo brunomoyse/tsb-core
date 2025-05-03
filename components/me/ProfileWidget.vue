@@ -43,7 +43,7 @@
             <footer class="mt-6">
                 <button
                     aria-label="{{ $t('me.profile.update') }}"
-                    class="w-full rounded-lg bg-blue-100 px-4 py-2 text-blue-700 hover:bg-blue-200 transition-colors"
+                    class="w-full rounded-lg bg-tsb-four px-4 py-2 text-black hover:bg-tsb-three transition-colors"
                     type="button"
                     @click="openModal"
                 >

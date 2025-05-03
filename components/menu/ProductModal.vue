@@ -12,7 +12,7 @@
 
             <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Image Section -->
-                <div class="relative h-44 md:h-96 bg-gray-50 rounded-xl overflow-hidden">
+                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden">
                     <picture class="w-full h-full flex justify-center items-center p-4">
                         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.avif`" type="image/avif"/>
                         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.webp`" type="image/webp"/>
@@ -36,7 +36,7 @@
                     <div class="space-y-4">
                         <div class="flex items-baseline gap-4">
                             <div class="flex gap-2">
-                                <span v-if="p.isHalal" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                                <span v-if="p.isHalal" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                                     {{ $t('menu.halal') }}
                                 </span>
                                 <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
