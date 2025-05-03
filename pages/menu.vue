@@ -9,9 +9,9 @@
         : 'lg:w-[calc(67vw-71px)]'"
         >
             <!-- Sticky Categories Header -->
-            <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:py-0 bg-tsb-one">
+            <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one">
                 <!-- Search Section -->
-                <section class="mb-4 md:pt-8 px-4">
+                <section class="mb-4 px-4">
                     <SearchBar v-model="searchValue" />
                 </section>
 

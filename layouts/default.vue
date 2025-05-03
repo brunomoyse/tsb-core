@@ -23,9 +23,6 @@
 
             <main
                 class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]"
-                :class="{
-                    'pt-8': !(typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')),
-                }"
             >
                 <!-- Spacer for mobile navbar -->
                 <slot/>

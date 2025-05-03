@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-tsb-one md:px-8">
+    <div class="min-h-screen bg-tsb-one pt-8 md:px-8">
         <!-- Widgets Grid -->
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">

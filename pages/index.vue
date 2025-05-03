@@ -1,5 +1,5 @@
 <template>
-    <section class="max-w-5xl mx-auto p-6 space-y-12">
+    <section class="max-w-5xl mx-auto p-6 pt-9 space-y-12">
         <!-- Hero Section -->
         <div class="relative h-64 sm:h-96 overflow-hidden rounded-lg shadow-lg">
             <img alt="Tokyo Sushi Bar" class="absolute inset-0 w-full h-full object-cover"

@@ -207,7 +207,9 @@
     "orderCommentPlaceholder": "例如：过敏或特殊说明",
     "goToPayment": "去支付",
     "placeOrder": "下单",
-    "discount": "折扣"
+    "discount": "折扣",
+    "restaurantClosed": "餐厅已关闭",
+    "orderDisabled": "订单已禁用"
   },
   "zh": {
     "orderCompleted": {

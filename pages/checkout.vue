@@ -64,7 +64,7 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
 
-// Manage address modal state and delivery address
+// Manage the address modal state and delivery address
 const showAddressModal = ref(false)
 const tempAddress = ref<Address | null>(null)
 

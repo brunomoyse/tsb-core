@@ -207,7 +207,9 @@
     "orderComment": "Order Comment",
     "orderCommentPlaceholder": "e.g. Allergies or special instructions",
     "goToPayment": "Go to Payment",
-    "placeOrder": "Place Order"
+    "placeOrder": "Place Order",
+    "restaurantClosed": "Restaurant is currently closed. Please check the opening hours.",
+    "orderDisabled": "Ordering is disabled at the moment. Please try again later."
   },
   "orderCompleted": {
     "title": "Order Completed",

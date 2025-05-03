@@ -206,7 +206,9 @@
     "orderComment": "Commentaire de commande",
     "orderCommentPlaceholder": "ex. Allergies ou instructions particulières",
     "goToPayment": "Aller au paiement",
-    "placeOrder": "Passer la commande"
+    "placeOrder": "Passer la commande",
+    "restaurantClosed": "Le restaurant est actuellement fermé. Veuillez vérifier les horaires d'ouverture.",
+    "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard."
   },
   "orderCompleted": {
     "title": "Commande reçue",
