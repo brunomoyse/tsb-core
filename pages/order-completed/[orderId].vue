@@ -1,37 +1,52 @@
 <template>
-    <div class="flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div class="flex items-center justify-center bg-gray-50 p-4">
         <!-- Main Card -->
-        <div class="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 dark:border dark:border-gray-700">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div class="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6">
+            <h1 class="text-2xl font-bold text-gray-900">
                 {{ $t('orderCompleted.title', 'Order Completed') }}
             </h1>
-            <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
+            <p class="mt-3 text-gray-600 text-sm">
                 {{ $t('orderCompleted.thankYou', 'Thank you for your purchase! Your order was placed successfully.') }}
             </p>
+
+            <!-- Estimated arrival time / estimated ready time -->
+            <div v-if="order && order.estimatedReadyTime" class="mt-4">
+                <p class="text-sm text-gray-500">
+                    <span v-if="order.type === 'DELIVERY'">
+                        {{ $t('orderCompleted.estimatedDeliveredTime', 'Estimated delivered time:') }}
+                    </span>
+                    <span v-else>
+                        {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
+                    </span>
+                    <strong class="text-gray-900">
+                        {{ new Date(order.estimatedReadyTime).toLocaleString() }}
+                    </strong>
+                </p>
+            </div>
 
             <!-- Order Details -->
             <div v-if="order" class="mt-6">
                 <div class="space-y-5">
                     <!-- Items List -->
                     <div class="space-y-4">
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                        <h3 class="text-sm font-semibold text-gray-900">
                             {{ $t('orderCompleted.items', 'Dishes:') }}
                         </h3>
                         <div class="space-y-2">
                             <div
                                 v-for="(item, index) in order.items"
                                 :key="index"
-                                class="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                class="flex items-center justify-between p-3 rounded-lg border border-gray-100  bg-white transition-colors"
                             >
                                 <div class="flex-1 min-w-0 pr-2">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                        <span v-if="item.product.code" class="text-gray-500 dark:text-gray-400">
+                                    <p class="text-sm font-medium text-gray-900 truncate">
+                                        <span v-if="item.product.code" class="text-gray-500">
                                             {{ item.product.code }} -
                                         </span>
                                         {{ item.product.category.name }} {{ item.product.name }}
                                     </p>
                                 </div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                                <span class="text-sm font-medium text-gray-700 shrink-0">
                                     x{{ item.quantity }}
                                 </span>
                             </div>
@@ -39,7 +54,7 @@
                     </div>
                 </div>
                 <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'">
-                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200 mt-6">
+                    <h3 class="text-sm font-semibold text-gray-900 mt-6">
                         {{ $t('orderCompleted.status', 'Status') }}
                     </h3>
                     <OrderStatusTimeline
@@ -55,8 +70,8 @@
             </div>
 
             <!-- Loading State -->
-            <div v-else class="mt-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+            <div v-else class="mt-6 p-4 rounded-lg bg-gray-50">
+                <p class="text-sm text-gray-500">
                     {{ $t('orderCompleted.loading', 'Loading order details...') }}
                 </p>
             </div>
@@ -65,7 +80,7 @@
             <div class="mt-6">
                 <NuxtLink
                     to="/"
-                    class="w-full flex items-center justify-center px-4 py-2.5 rounded-lg bg-tsb-one hover:bg-tsb-four text-sm font-medium text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-900"
+                    class="w-full flex items-center justify-center px-4 py-2.5 rounded-lg bg-tsb-one hover:bg-tsb-four text-sm font-medium text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
                 >
                     {{ $t('orderCompleted.returnHome', 'Return to Home') }}
                 </NuxtLink>
@@ -73,6 +88,7 @@
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
 import {
     definePageMeta,

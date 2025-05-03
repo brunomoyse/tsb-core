@@ -58,6 +58,7 @@ import { navigateTo } from '#imports'
 import gql from "graphql-tag";
 import {eventBus} from "~/eventBus";
 import { useI18n } from "vue-i18n"
+import {timeToRFC3339} from "~/utils/utils";
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -202,6 +203,12 @@ const handleCheckout = async () => {
             return
         }
 
+        // Send asap as null
+        let preferredReadyTime = null
+        if (cartStore.preferredReadyTime !== 'ASAP' && cartStore.preferredReadyTime) {
+            preferredReadyTime = timeToRFC3339(cartStore.preferredReadyTime)
+        }
+
         // Extras could be managed globally or via events; this is a placeholder.
         const orderData: CreateOrderRequest = {
             orderType: cartStore.collectionOption,
@@ -216,7 +223,7 @@ const handleCheckout = async () => {
                 productId: item.product.id,
                 quantity: item.quantity
             })),
-            preferredReadyTime: 'ASAP'
+            preferredReadyTime: preferredReadyTime,
         }
 
         try {
