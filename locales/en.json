@@ -216,7 +216,8 @@
     "items": "Items",
     "loading": "Loading order details...",
     "returnHome": "Return to Home",
-    "status": "Status"
+    "status": "Status",
+    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88."
   },
   "404": {
     "message": "Sorry, we couldn't find the page you are looking for.",
