@@ -159,21 +159,39 @@ const handleCheckout = async () => {
 
     try {
         if (cartStore.products.length === 0) {
+            eventBus.emit('notify', {
+                message: t('notify.errors.cartEmpty', 'Your cart is empty.'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
             console.error('Cart is empty')
             return
         }
         if (!authStore.accessValid) {
+            eventBus.emit('notify', {
+                message: t('notify.errors.notAuthenticated', 'You are not authenticated.'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
             console.error('User is not authenticated')
             return
         }
         if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
+            eventBus.emit('notify', {
+                message: t('notify.errors.addressRequired', 'Delivery address is required.'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
             console.error('Delivery address is required for delivery orders')
             return
         }
 
         if (cartStore.address?.distance && cartStore.address?.distance >= 9000) {
             eventBus.emit('notify', {
-                message: t('notify.deliveryAddressTooFar', {
+                message: t('notify.errors.deliveryAddressTooFar', {
                     distance: 9
                 }),
                 persistent: false,

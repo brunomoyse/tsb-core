@@ -58,6 +58,10 @@
                 <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
                 <span>{{ formatPrice(deliveryFee) }}</span>
             </div>
+            <div v-if="cartStore.collectionOption === 'PICKUP'" class="flex justify-between text-gray-700">
+                <span>{{ $t('checkout.discount') }}</span>
+                <span>-{{ formatPrice(totalDiscount) }}</span>
+            </div>
             <div class="flex justify-between font-semibold text-lg mt-4">
                 <span>{{ $t('checkout.total', 'Total:') }}</span>
                 <span>{{ formatPrice(finalTotal) }}</span>
@@ -90,7 +94,16 @@ const deliveryFee = computed(() => {
     return fee === -1 ? 0 : fee
 })
 
+const totalDiscount = computed(() => {
+    return cartStore.collectionOption === 'PICKUP'
+        ? cartStore.products.reduce((acc, item) =>
+            item.product.isDiscountable
+                ? acc + (item.product.price * item.quantity * 0.1)
+                : acc, 0)
+        : 0
+});
+
 const finalTotal: ComputedRef<number> = computed(() => {
-    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0)
+    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0) - totalDiscount.value
 })
 </script>

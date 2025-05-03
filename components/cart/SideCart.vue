@@ -163,7 +163,6 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() => {
-    console.log(cartStore.products)
     return cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
@@ -188,7 +187,7 @@ const isMinimumReached = computed(() => {
 
 const calculateItemPrice = (item: CartItem) => {
     const basePrice = item.product.price * item.quantity;
-    if (cartStore.collectionOption === 'PICKUP' && item.product.discountable) {
+    if (cartStore.collectionOption === 'PICKUP' && item.product.isDiscountable) {
         return basePrice * 0.9;
     }
     return basePrice;
