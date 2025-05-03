@@ -38,13 +38,20 @@
                         </div>
                     </div>
                 </div>
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200 mt-6">
-                    {{ $t('orderCompleted.status', 'Status') }}
-                </h3>
-                <OrderStatusTimeline
-                    :order="order"
-                    class="mt-6"
-                />
+                <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200 mt-6">
+                        {{ $t('orderCompleted.status', 'Status') }}
+                    </h3>
+                    <OrderStatusTimeline
+                        :order="order"
+                        class="mt-6"
+                    />
+                </div>
+                <div class="py-4 font-bold" v-else>
+                    <p class="text-sm text-red-500">
+                        {{ $t('orderCompleted.orderCanceled') }}
+                    </p>
+                </div>
             </div>
 
             <!-- Loading State -->
@@ -73,6 +80,7 @@ import {
     useGqlQuery,
     useGqlSubscription,
     useRoute,
+    ref
 } from '#imports'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import type { Order } from '@/types'
@@ -85,6 +93,7 @@ definePageMeta({ public: false })
 const route     = useRoute()
 const cartStore = useCartStore()
 const orderId   = route.params.orderId as string
+const orderFailed = ref(false)
 
 // 1) Fetch the order once (SSR)
 const { data: dataOrder } = await useGqlQuery<{ order: Order }>(
@@ -159,6 +168,9 @@ onMounted(() => {
     closeWs = close
 
     watch(liveUpdate, (val) => {
+        if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
+            orderFailed.value = true
+        }
         if (val?.myOrderUpdated && dataOrder.value?.order) {
             dataOrder.value.order = {
                 ...dataOrder.value.order,

@@ -90,8 +90,7 @@ const iconMapping: Record<string, string> = {
 // Compute the index of the current order status.
 const currentIndex = computed(() => {
     const statuses = props.order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses
-    const idx = statuses.indexOf(props.order.status)
-    return idx === -1 ? 0 : idx
+    return statuses.indexOf(props.order.status)
 })
 
 /**
@@ -144,7 +143,7 @@ const statusDetails: Record<string, { title: string; description?: string }> = {
 }
 
 const isOrderCompleted = (status: string) => {
-    return status === "DELIVERED" || status === "PICKED_UP" || status === "CANCELLED" || status === "FAILED"
+    return status === "DELIVERED" || status === "PICKED_UP"
 }
 
 const getStatusTitle = (status: string): string => {
