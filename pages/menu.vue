@@ -170,6 +170,7 @@ const PRODUCT_CATEGORIES = gql`
         isVisible
         isAvailable
         isHalal
+        isDiscountable
         category { id name }
       }
     }

@@ -79,7 +79,10 @@
     "addToCart": "Ajouter",
     "price": "Prix",
     "code": "Code",
-    "description": "Description"
+    "description": "Description",
+    "discountable": "Remise possible",
+    "yes": "Oui",
+    "no": "Non"
   },
   "login": {
     "title": "Connexion",

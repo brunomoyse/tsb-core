@@ -65,8 +65,8 @@
                                 }}
                             </h3>
                             <span class="text-sm font-medium ml-2">
-                {{ formatPrice(calculateItemPrice(item)) }}
-              </span>
+                                {{ formatPrice(calculateItemPrice(item)) }}
+                            </span>
                         </div>
 
                         <!-- Quantity Controls -->
@@ -115,7 +115,6 @@
 
             <!-- Minimum Order Warning -->
             <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
-
                 {{ cartStore.collectionOption === 'DELIVERY'
                     ? $t('cart.minimumDelivery', { amount: 25})
                     : $t('cart.minimumPickup', { amount: 20}) }}
@@ -163,14 +162,15 @@ const subtotal = computed(() =>
         acc + (item.product.price * item.quantity), 0)
 );
 
-const totalDiscount = computed(() =>
-    cartStore.collectionOption === 'PICKUP'
+const totalDiscount = computed(() => {
+    console.log(cartStore.products)
+    return cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
-            item.product.discountable
+            item.product.isDiscountable
                 ? acc + (item.product.price * item.quantity * 0.1)
                 : acc, 0)
         : 0
-);
+});
 
 const cartTotal = computed(() => {
     let total = subtotal.value - totalDiscount.value;

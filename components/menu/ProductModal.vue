@@ -70,6 +70,13 @@
                                 </p>
                                 <p class="font-medium text-gray-900">{{ p.code || 'N/A' }}</p>
                             </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">
+                                    {{ $t('menu.discountable') }}
+                                </p>
+                                <p v-if="p.isDiscountable" class="font-medium text-gray-900">{{ $t('menu.yes') }}</p>
+                                <p v-else class="font-medium text-gray-900">{{ $t('menu.no') }}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -152,6 +159,7 @@ const PRODUCT_QUERY = gql`
       isAvailable
       isHalal
       isVegan
+      isDiscountable
       pieceCount
       code
       category {

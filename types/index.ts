@@ -3,7 +3,6 @@
 export interface Product {
     categoryId: string;
     code: string | null;
-    discountable: boolean;
     id: string;
     isAvailable: boolean;
     isDiscountable: boolean;
