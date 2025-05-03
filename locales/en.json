@@ -79,7 +79,10 @@
     "addToCart": "Add",
     "price": "Price",
     "code": "Code",
-    "description": "Description"
+    "description": "Description",
+    "discountable": "Discountable",
+    "yes": "Yes",
+    "no": "No"
   },
   "login": {
     "title": "Login",
