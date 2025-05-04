@@ -115,7 +115,7 @@ const orderFailed = ref(false)
 const { data: dataOrder } = await useGqlQuery<{ order: Order }>(
     print(gql`
         query ($orderId: ID!) {
-            order(id: $orderId) {
+            myOrder(id: $orderId) {
                 id
                 createdAt
                 updatedAt
