@@ -40,7 +40,7 @@
                 </p>
                 <button
                     @click="openAddressModal"
-                    class="mt-1 px-3 py-2 bg-blue-100 text-blue-800 rounded text-sm"
+                    class="mt-1 px-3 py-2 bg-red-50 text-red-700 border-2 border-red-700 rounded text-sm"
                 >
                     {{ $t('checkout.addAddress', 'Add Address') }}
                 </button>

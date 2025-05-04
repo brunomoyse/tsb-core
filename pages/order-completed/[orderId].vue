@@ -112,7 +112,7 @@ const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 
 // 1) Fetch the order once (SSR)
-const { data: dataOrder } = await useGqlQuery<{ order: Order }>(
+const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
     print(gql`
         query ($orderId: ID!) {
             myOrder(id: $orderId) {
@@ -162,7 +162,7 @@ const { data: dataOrder } = await useGqlQuery<{ order: Order }>(
     { orderId }
 )
 
-const order = computed(() => dataOrder.value?.order ?? null)
+const order = computed(() => dataOrder.value?.myOrder ?? null)
 
 // 2) subscribe to updates on mount
 let closeWs: () => void = () => {}
@@ -187,9 +187,10 @@ onMounted(() => {
         if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
             orderFailed.value = true
         }
-        if (val?.myOrderUpdated && dataOrder.value?.order) {
-            dataOrder.value.order = {
-                ...dataOrder.value.order,
+
+        if (val?.myOrderUpdated && dataOrder.value?.myOrder) {
+            dataOrder.value.myOrder = {
+                ...dataOrder.value.myOrder,
                 ...val.myOrderUpdated,
             }
         }
