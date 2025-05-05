@@ -19,7 +19,7 @@
     "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^6.0.4",
-    "nuxt": "^3.17.1",
+    "nuxt": "^3.17.2",
     "pinia-plugin-persistedstate": "^4.2.0"
   },
   "devDependencies": {
