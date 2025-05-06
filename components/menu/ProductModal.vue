@@ -90,12 +90,9 @@
                                         class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600"
                                         :disabled="quantity === 1"
                                     >−</button>
-                                    <input
-                                        v-model.number="quantity"
-                                        type="number"
-                                        min="1"
+                                    <span
                                         class="w-12 text-center border-0 focus:ring-0"
-                                    >
+                                    >{{quantity}}</span>
                                     <button
                                         @click="quantity++"
                                         class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600"
