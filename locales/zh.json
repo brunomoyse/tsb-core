@@ -41,7 +41,8 @@
     "day": "天",
     "hours": "时间",
     "weekdays": "周一 - 周五",
-    "weekends": "周六 - 周日"
+    "weekends": "周六 - 周日",
+    "closedTuesday": "周二休息"
   },
   "about": {
     "heroTitle": "欢迎来到 Tokyo Sushi Bar",

@@ -72,6 +72,9 @@
                                 <dt class="font-medium">{{ $t('contact.weekends') }}</dt>
                                 <dd>12:00 – 15:00 | 18:00 – 23:00</dd>
                             </div>
+                            <div class="mt-1">
+                                <dt class="font-medium">{{ $t('contact.closedTuesday') }}</dt>
+                            </div>
                         </dl>
                     </div>
                 </div>
