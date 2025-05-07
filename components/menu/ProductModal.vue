@@ -54,13 +54,13 @@
                             </div>
                             <div v-if="p.pieceCount && p.pieceCount === 1" class="p-4 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.piece') }}
+                                    {{ $t('menu.pc').charAt(0).toUpperCase() + $t('menu.pc').slice(1) }}
                                 </p>
                                 <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
                             </div>
                             <div v-else-if="p.pieceCount && p.pieceCount > 1" class="p-4 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.pieces') }}
+                                    {{ $t('menu.pcs').charAt(0).toUpperCase() + $t('menu.pcs').slice(1) }}
                                 </p>
                                 <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
                             </div>
