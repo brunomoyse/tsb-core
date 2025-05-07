@@ -41,7 +41,8 @@
     "day": "Jour",
     "hours": "Horaires",
     "weekdays": "Lundi - Vendredi",
-    "weekends": "Samedi - Dimanche"
+    "weekends": "Samedi - Dimanche",
+    "closedTuesday": "Fermé le mardi"
   },
   "about": {
     "heroTitle": "Bienvenue chez Tokyo Sushi Bar",
