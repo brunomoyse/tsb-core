@@ -143,7 +143,7 @@
         <!-- Modal for Order Status Timeline -->
         <transition name="fade">
             <div
-                v-if="currentTimelineOrder"
+                v-if="activeOrder"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
             >
                 <div class="bg-white rounded-lg p-6 relative dark:bg-gray-800">
@@ -162,7 +162,7 @@
                     </button>
                     <!-- Order Status Timeline Component -->
                     <OrderStatusTimeline
-                        :order="currentTimelineOrder "
+                        :order="activeOrder"
                     />
                 </div>
             </div>
@@ -171,133 +171,169 @@
 </template>
 
 <script lang="ts" setup>
-import { useGqlQuery } from "#imports"
-import type {Order} from "~/types"
-import { ref, computed } from "vue"
+import { useGqlQuery, useGqlSubscription } from "#imports"
+import { ref, computed, watch, onUnmounted, onMounted } from "vue"
 import { useI18n } from "vue-i18n"
 import { formatAddress } from "~/utils/utils"
 import OrderStatusTimeline from "~/components/order/OrderStatusTimeline.vue"
 import gql from 'graphql-tag'
-import {print} from "graphql/index";
+import { print } from "graphql/index"
+import type { Order } from "~/types"
 
 const { t } = useI18n()
 
+// GraphQL query for initial orders
 const MY_ORDERS = gql`
-    {
-        myOrders {
-                id
-                createdAt
-                updatedAt
-                status
-                type
-                isOnlinePayment
-                discountAmount
-                deliveryFee
-                totalPrice
-                estimatedReadyTime
-                addressExtra
-                orderNote
-                orderExtra
-
-                address {
-                    streetName
-                    municipalityName
-                    houseNumber
-                    boxNumber
-                    postcode
-                }
-                customer {
-                    id
-                    firstName
-                    lastName
-                }
-                payment {
-                    status
-                }
-                items {
-                    unitPrice
-                    quantity
-                    totalPrice
-                    product {
-                        id
-                        name
-                        category {
-                            id
-                            name
-                        }
-                    }
-                }
-            }
+  {
+    myOrders {
+      id
+      createdAt
+      updatedAt
+      status
+      type
+      isOnlinePayment
+      discountAmount
+      deliveryFee
+      totalPrice
+      estimatedReadyTime
+      addressExtra
+      orderNote
+      orderExtra
+      address {
+        streetName
+        municipalityName
+        houseNumber
+        boxNumber
+        postcode
+      }
+      customer {
+        id
+        firstName
+        lastName
+      }
+      payment { status }
+      items {
+        unitPrice
+        quantity
+        totalPrice
+        product {
+          id
+          name
+          category { id name }
+        }
+      }
     }
+  }
 `
 
+// Fetch orders
 const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
 
-const expandedOrders = ref<Set<string>>(new Set())
+// Track expanded items and the single active order (for details/timeline)
+const expandedOrders = ref(new Set<string>())
+const activeOrder = ref<Order | null>(null)
 
-// Declare timelineOrder as type Order or null.
-const timelineOrder = ref<Order | null>(null)
+// Subscription cleanup handle
+let unsubscribe = () => {}
 
-// Compute currentTimelineOrder based on the updated orders.
-// Adding an explicit generic here ensures that the computed value is properly typed.
-const currentTimelineOrder = computed<Order | null>(() => {
-    if (!timelineOrder.value || !orders.value) return null
-    const foundOrder = orders.value.find(
-        (orderResp: Order) => orderResp.id === timelineOrder.value!.id
-    )
-    return foundOrder ? foundOrder : timelineOrder.value
+// Start/stop subscription whenever activeOrder changes
+watch(activeOrder, (order) => {
+    // tear down previous subscription
+    if (typeof unsubscribe === 'function') {
+        unsubscribe()
+        unsubscribe = () => {}
+    }
+
+    if (order) {
+        // subscribe to updates for this order
+        const SUB_ORDER_UPDATES = gql`
+      subscription ($orderId: ID!) {
+        myOrderUpdated(orderId: $orderId) {
+          id
+          status
+          updatedAt
+          estimatedReadyTime
+          payment { status }
+        }
+      }
+    `
+        const { data: liveUpdate, close } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
+            print(SUB_ORDER_UPDATES), { orderId: order.id }
+        )
+
+        unsubscribe = close
+
+        // merge incoming changes into activeOrder
+        watch(liveUpdate, (val) => {
+            if (val?.myOrderUpdated && activeOrder.value) {
+                activeOrder.value = {
+                    ...activeOrder.value,
+                    ...val.myOrderUpdated
+                }
+            }
+        })
+    }
+}, { immediate: true })
+
+// Cleanup
+onUnmounted(() => {
+    if (typeof unsubscribe === 'function') unsubscribe()
 })
 
-const toggleOrder = (orderId: string) => {
+// UI methods
+function toggleOrder(orderId: string) {
     if (expandedOrders.value.has(orderId)) {
         expandedOrders.value.delete(orderId)
+        activeOrder.value = null
     } else {
         expandedOrders.value.add(orderId)
+        const order = orders.value.find(o => o.id === orderId) ?? null
+        activeOrder.value = order
     }
+}
+
+function openTimeline(order: Order) {
+    activeOrder.value = order
+    expandedOrders.value.add(order.id)
+}
+
+function closeTimeline() {
+    activeOrder.value = null
 }
 
 const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
+const isOrderCompleted = (status: string) => ['DELIVERED','PICKED_UP','CANCELLED','FAILED'].includes(status)
 
-const getStatus = (status: string) => {
+function getStatus(status: string) {
     switch (status) {
-        case "PICKED_UP":
-            return t("me.orders.status.pickedUp")
-        case "DELIVERED":
-            return t("me.orders.status.delivered")
-        case "CANCELLED":
-            return t("me.orders.status.cancelled")
-        case "FAILED":
-            return t("me.orders.status.failed")
-        default:
-            return ""
+        case 'PICKED_UP': return t('me.orders.status.pickedUp')
+        case 'DELIVERED': return t('me.orders.status.delivered')
+        case 'CANCELLED': return t('me.orders.status.cancelled')
+        case 'FAILED': return t('me.orders.status.failed')
+        default: return ''
     }
 }
 
-// Status color mapping
-const getStatusColorClass = (status: string): string => {
-    const map: Record<string, string> = {
-        DELIVERED: "bg-green-500",
-        PICKED_UP: "bg-green-500",
-        FAILED: "bg-red-500",
-        CANCELLED: "bg-red-500",
+function getStatusColorClass(status: string) {
+    const map: Record<string,string> = {
+        DELIVERED: 'bg-green-500',
+        PICKED_UP:  'bg-green-500',
+        CANCELLED: 'bg-red-500',
+        FAILED:    'bg-red-500'
     }
-    return map[status] || "bg-gray-400"
+    return map[status] || 'bg-gray-400'
 }
 
-// Timeline modal state
-const openTimeline = (order: Order) => {
-    timelineOrder.value = order
-}
-
-const closeTimeline = () => {
-    timelineOrder.value = null
-}
-
-const isOrderCompleted = (status: string) => {
-    return status === "DELIVERED" || status === "PICKED_UP" || status === "CANCELLED" || status === "FAILED"
-}
-
+// Handle `?followOrder=...` on mount
+onMounted(() => {
+    const params = new URLSearchParams(window.location.search)
+    const followId = params.get('followOrder')
+    if (followId) {
+        const order = orders.value.find(o => o.id === followId)
+        if (order) openTimeline(order)
+    }
+})
 </script>
 
 <style>
