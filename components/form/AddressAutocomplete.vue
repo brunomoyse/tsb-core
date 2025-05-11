@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <form autocomplete="off">
         <!-- STREET FIELD -->
         <div class="relative">
             <label class="block text-sm text-gray-700 mb-1">
@@ -43,7 +43,7 @@
         </div>
 
         <!-- HOUSE FIELD -->
-        <div class="relative mt-3" v-if="selectedStreet">
+        <div class="relative mt-3">
             <div class="relative">
                 <input
                     id="houseNumber"
@@ -54,7 +54,7 @@
                     @focus="isHouseFocused = true"
                     @blur="onHouseBlur"
                     @keydown.enter.prevent="handleHouseEnter"
-                    :disabled="houseConfirmed"
+                    :disabled="houseConfirmed || !selectedStreet"
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
                     <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
@@ -82,9 +82,10 @@
         </div>
 
         <!-- BOX FIELD -->
-        <div class="relative mt-3" v-if="selectedHouseNumber && boxNumbers.length > 1">
+        <div class="relative mt-3" v-if="boxNumbers.length > 1">
             <div class="relative">
                 <input
+                    :disabled="!(selectedHouseNumber)"
                     id="boxNumber"
                     ref="boxInput"
                     v-model="boxQuery"
@@ -93,7 +94,7 @@
                     @focus="isBoxFocused = true"
                     @blur="onBoxBlur"
                     @keydown.enter.prevent="selectFirstBox"
-                    :disabled="boxConfirmed"
+
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
                     <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
@@ -105,7 +106,7 @@
                 </div>
             </div>
             <ul
-                v-show="isBoxFocused && !boxConfirmed"
+                v-show="isBoxFocused"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
             >
@@ -119,7 +120,7 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </form>
 </template>
 
 <script lang="ts" setup>
@@ -331,8 +332,9 @@ const loadBoxNumbers = async () => {
             }
             if (data.boxNumbers.length > 1 && data.boxNumbers[0] === null) {
                 selectedBoxNumber.value = null;
-                boxConfirmed.value = false;
+                boxConfirmed.value = true;
             }
+            /*
             if (data.boxNumbers.length > 0) {
                 await nextTick();
                 const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
@@ -340,6 +342,7 @@ const loadBoxNumbers = async () => {
                     boxEl.focus();
                 }
             }
+            */
         }
     }, 500)
 }
