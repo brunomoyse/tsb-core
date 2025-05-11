@@ -94,10 +94,6 @@ export const useCartStore = defineStore("cart", {
             }
         },
 
-        clearCart(): void {
-            this.products = [];
-        },
-
         resetState(): void {
             this.products = [];
             this.isCartVisible = false;
