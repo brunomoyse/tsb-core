@@ -98,6 +98,21 @@ export const useCartStore = defineStore("cart", {
             this.products = [];
         },
 
+        resetState(): void {
+            this.products = [];
+            this.isCartVisible = false;
+            this.collectionOption = 'DELIVERY';
+            this.paymentOption = 'ONLINE';
+            this.address = null;
+            this.addressExtra = null;
+            this.orderExtra = [
+                {name: "chopsticks"},
+                {name: "sauces", options: ["sweet", "salty"]},
+            ];
+            this.orderNote = null;
+            this.preferredReadyTime = null;
+        },
+
         toggleCartVisibility(): void {
             this.isCartVisible = !this.isCartVisible;
         },
