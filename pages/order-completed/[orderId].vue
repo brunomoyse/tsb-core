@@ -197,7 +197,7 @@ onMounted(() => {
     })
 
     cartStore.setCartVisibility(false)
-    cartStore.clearCart()
+    cartStore.resetState()
 })
 
 onUnmounted(() => {
