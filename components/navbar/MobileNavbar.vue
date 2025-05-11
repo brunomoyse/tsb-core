@@ -34,16 +34,18 @@
                             <ul class="flex flex-col items-center space-y-6 w-full">
                                 <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/icons/tsb-logo.svg" to="/"
                                       @click="closeMenu"/>
-                                <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg" to="menu"
+                                <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
+                                               to="/menu"
                                                @click="closeMenu"/>
-                                <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg" to="contact"
+                                <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg"
+                                               to="/contact"
                                                @click="closeMenu"/>
                                 <MobileNavItem v-if="!authStore.accessValid" :label="$t('nav.login')" icon="/icons/login-icon.svg"
-                                               to="login"
+                                               to="/login"
                                                @click="closeMenu"/>
                                 <MobileNavItem v-if="authStore.accessValid" :label="$t('nav.myAccount')"
                                                icon="/icons/account-circle-icon.svg"
-                                               to="me"
+                                               to="/me"
                                                @click="closeMenu"/>
 
                                 <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
