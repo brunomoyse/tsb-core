@@ -333,6 +333,12 @@ const menuItemSchemas = computed(() => {
         '@id': `${config.public.baseUrl}/menu#${product.id}`,
         name: product.name,
         description: product.name,
+        image: product.slug ? {
+            '@type': 'ImageObject',
+            url: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.png`,
+            contentUrl: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.webp`,
+            thumbnail: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.png`
+        } : undefined,
         offers: {
             '@type': 'Offer',
             price: product.price,
