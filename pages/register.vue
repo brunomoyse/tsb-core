@@ -23,7 +23,8 @@ const localePath = useLocalePath()
 const registerUser = async (formData: any) => {
     const { firstName, lastName, email, password, phoneNumber, addressId } = formData
 
-    const { error } = await useAsyncData('register', () =>
+    // Nuxt 4: No key for one-time mutations to avoid singleton behavior
+    const { error } = await useAsyncData(() =>
         $api('/register', {
             method: 'POST',
             body: {
