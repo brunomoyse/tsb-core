@@ -321,6 +321,51 @@ watch(activeCategory, newVal => {
 })
 
 /**
+ * Schema.org Structured Data
+ */
+const config = useRuntimeConfig()
+
+// Generate MenuItem schemas for all products
+const menuItemSchemas = computed(() => {
+    return allProducts.value.map(product => ({
+        '@type': 'MenuItem',
+        '@id': `${config.public.baseUrl}/menu#${product.id}`,
+        name: product.name,
+        description: product.name,
+        offers: {
+            '@type': 'Offer',
+            price: product.price,
+            priceCurrency: 'EUR',
+            availability: product.isAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+        },
+        menuAddOn: product.category ? {
+            '@type': 'MenuSection',
+            name: product.category.name
+        } : undefined,
+        suitableForDiet: product.isHalal ? ['https://schema.org/HalalDiet'] : undefined
+    }))
+})
+
+// Update schema whenever products change
+watch(allProducts, () => {
+    useSchemaOrg([
+        defineWebPage({
+            '@type': 'WebPage',
+            name: 'Menu - Tokyo Sushi Bar',
+            description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine'
+        }),
+        ...menuItemSchemas.value
+    ])
+}, { immediate: true })
+
+useSeoMeta({
+    title: 'Menu - Tokyo Sushi Bar',
+    ogTitle: 'Menu - Tokyo Sushi Bar',
+    description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
+    ogDescription: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
+})
+
+/**
  * IntersectionObserver: Scroll Spy
  */
 onMounted(() => {
