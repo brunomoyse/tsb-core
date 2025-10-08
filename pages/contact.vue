@@ -133,12 +133,13 @@ const googleMapsLink = `https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7`;
 
 // Schema.org structured data
 const config = useRuntimeConfig()
+const { t } = useI18n()
 
 useSchemaOrg([
     defineWebPage({
         '@type': 'ContactPage',
-        name: 'Contact Us - Tokyo Sushi Bar',
-        description: 'Find us, call us, or reserve a table today!'
+        name: t('schema.contact.title'),
+        description: t('schema.contact.description')
     }),
     {
         '@type': 'BreadcrumbList',
@@ -146,13 +147,13 @@ useSchemaOrg([
             {
                 '@type': 'ListItem',
                 position: 1,
-                name: 'Home',
+                name: t('schema.breadcrumb.home'),
                 item: config.public.baseUrl
             },
             {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Contact',
+                name: t('schema.breadcrumb.contact'),
                 item: `${config.public.baseUrl}/contact`
             }
         ]
@@ -160,10 +161,10 @@ useSchemaOrg([
 ])
 
 useSeoMeta({
-    title: 'Contact Us - Tokyo Sushi Bar',
-    ogTitle: 'Contact Us - Tokyo Sushi Bar',
-    description: 'Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium',
-    ogDescription: 'Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium',
+    title: t('schema.contact.title'),
+    ogTitle: t('schema.contact.title'),
+    description: t('schema.contact.description'),
+    ogDescription: t('schema.contact.description'),
 })
 </script>
 
