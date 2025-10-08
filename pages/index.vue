@@ -1,3 +1,28 @@
+<script setup lang="ts">
+const config = useRuntimeConfig()
+
+useSchemaOrg([
+    defineWebSite({
+        name: 'Tokyo Sushi Bar',
+        description: 'Experience the best flavors of Japan in Liège',
+    }),
+    defineWebPage({
+        '@type': 'WebPage',
+        name: 'Tokyo Sushi Bar - Home',
+        description: 'Experience the best flavors of Japan in Liège'
+    })
+])
+
+useSeoMeta({
+    title: 'Tokyo Sushi Bar - Japanese Restaurant in Liège',
+    ogTitle: 'Tokyo Sushi Bar - Japanese Restaurant in Liège',
+    description: 'Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine.',
+    ogDescription: 'Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine.',
+    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    twitterCard: 'summary_large_image',
+})
+</script>
+
 <template>
     <section class="max-w-5xl mx-auto p-6 pt-9 space-y-12">
         <!-- Hero Section -->
