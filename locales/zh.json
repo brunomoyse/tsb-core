@@ -239,5 +239,33 @@
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)"
     }
+  },
+  "schema": {
+    "siteName": "Tokyo Sushi Bar",
+    "siteDescription": "在列日体验最地道的日本风味",
+    "restaurantName": "Tokyo Sushi Bar",
+    "cuisine": "日本料理",
+    "home": {
+      "title": "Tokyo Sushi Bar - 列日日本料理餐厅",
+      "description": "在列日体验最地道的日本风味。新鲜寿司、生鱼片和正宗日本料理。"
+    },
+    "menu": {
+      "title": "菜单 - Tokyo Sushi Bar",
+      "description": "探索我们的新鲜寿司、生鱼片和正宗日本料理菜单",
+      "name": "Tokyo Sushi Bar 菜单"
+    },
+    "contact": {
+      "title": "联系我们 - Tokyo Sushi Bar",
+      "description": "找到我们，打电话给我们，或立即预订餐桌！Rue de la Cathédrale 59, 列日, 比利时"
+    },
+    "orderConfirmation": {
+      "title": "订单确认 - Tokyo Sushi Bar",
+      "description": "您的订单已确认"
+    },
+    "breadcrumb": {
+      "home": "首页",
+      "menu": "菜单",
+      "contact": "联系我们"
+    }
   }
 }
