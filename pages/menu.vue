@@ -346,6 +346,23 @@ const menuItemSchemas = computed(() => {
     }))
 })
 
+// Generate ItemList schema for the menu
+const itemListSchema = computed(() => ({
+    '@type': 'ItemList',
+    '@id': `${config.public.baseUrl}/menu#itemlist`,
+    name: 'Tokyo Sushi Bar Menu',
+    numberOfItems: allProducts.value.length,
+    itemListElement: allProducts.value.map((product, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+            '@type': 'MenuItem',
+            '@id': `${config.public.baseUrl}/menu#${product.id}`,
+            name: product.name
+        }
+    }))
+}))
+
 // Update schema whenever products change
 watch(allProducts, () => {
     useSchemaOrg([
@@ -354,6 +371,7 @@ watch(allProducts, () => {
             name: 'Menu - Tokyo Sushi Bar',
             description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine'
         }),
+        itemListSchema.value,
         ...menuItemSchemas.value
     ])
 }, { immediate: true })
