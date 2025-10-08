@@ -28,7 +28,8 @@ export default defineNuxtConfig({
         "@nuxtjs/google-fonts",
         "@nuxtjs/i18n",
         "@pinia/nuxt",
-        'pinia-plugin-persistedstate/nuxt'
+        'pinia-plugin-persistedstate/nuxt',
+        'nuxt-schema-org'
     ],
 
     plugins: [
@@ -84,6 +85,15 @@ export default defineNuxtConfig({
                 },
             }
         },
+    },
+
+    schemaOrg: {
+        identity: {
+            type: 'Organization',
+            name: 'Tokyo Sushi Bar',
+            url: process.env.BASE_URL,
+            logo: process.env.BASE_URL + '/logo.png',
+        }
     },
     // @ts-expect-error property googleFonts does not exist
     googleFonts: {
