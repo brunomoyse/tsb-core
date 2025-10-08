@@ -237,5 +237,33 @@
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km."
     }
+  },
+  "schema": {
+    "siteName": "Tokyo Sushi Bar",
+    "siteDescription": "Experience the best flavors of Japan in Liège",
+    "restaurantName": "Tokyo Sushi Bar",
+    "cuisine": "Japanese",
+    "home": {
+      "title": "Tokyo Sushi Bar - Japanese Restaurant in Liège",
+      "description": "Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine."
+    },
+    "menu": {
+      "title": "Menu - Tokyo Sushi Bar",
+      "description": "Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine",
+      "name": "Tokyo Sushi Bar Menu"
+    },
+    "contact": {
+      "title": "Contact Us - Tokyo Sushi Bar",
+      "description": "Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium"
+    },
+    "orderConfirmation": {
+      "title": "Order Confirmation - Tokyo Sushi Bar",
+      "description": "Your order has been confirmed"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "menu": "Menu",
+      "contact": "Contact"
+    }
   }
 }
