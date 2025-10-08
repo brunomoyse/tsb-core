@@ -9,12 +9,39 @@ export default defineNuxtPlugin(() => {
                 'https://www.facebook.com/sushiliege'
             ]
         }),
+        {
+            '@type': 'Offer',
+            '@id': useRuntimeConfig().public.baseUrl + '#pickup-discount',
+            name: '10% Pickup Discount',
+            description: 'Get 10% off on all discountable items when you choose pickup',
+            discount: '10%',
+            availableAtOrFrom: {
+                '@type': 'Restaurant',
+                name: 'Tokyo Sushi Bar'
+            },
+            validFrom: '2024-01-01',
+            priceSpecification: {
+                '@type': 'UnitPriceSpecification',
+                priceCurrency: 'EUR',
+                price: 0,
+                referenceQuantity: {
+                    '@type': 'QuantitativeValue',
+                    value: 1
+                }
+            }
+        },
         defineLocalBusiness({
             '@type': 'Restaurant',
             name: 'Tokyo Sushi Bar',
             image: '/logo.png',
             telephone: '+3242229888',
             email: 'tokyosushibar888@gmail.com',
+            makesOffer: {
+                '@type': 'Offer',
+                name: '10% Pickup Discount',
+                description: 'Get 10% off on all discountable items when you choose pickup',
+                discount: '10%'
+            },
             address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Rue de la Cathédrale 59',
