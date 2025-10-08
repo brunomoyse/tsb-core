@@ -267,5 +267,48 @@
       "menu": "菜单",
       "contact": "联系我们"
     }
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "找到关于 Tokyo Sushi Bar 的问题答案",
+    "stillHaveQuestions": "还有其他问题？",
+    "contactUs": "联系我们",
+    "schemaTitle": "常见问题 - Tokyo Sushi Bar",
+    "schemaDescription": "关于 Tokyo Sushi Bar 的常见问题 - 配送、营业时间、清真选项等",
+    "breadcrumb": "常见问题",
+    "questions": {
+      "delivery": {
+        "question": "你们提供配送吗？配送范围是什么？",
+        "answer": "是的，我们在餐厅周围 5 公里范围内提供配送服务，餐厅位于列日 Rue de la Cathédrale 59。配送费根据距离而定。您可以在下单时查看您的地址。"
+      },
+      "hours": {
+        "question": "营业时间是什么时候？",
+        "answer": "我们周一至周五 12:00-14:30 和 18:00-22:30 营业。周六和周日 12:00-15:00 和 18:00-23:00 营业。周二休息。"
+      },
+      "halal": {
+        "question": "你们提供清真食品吗？",
+        "answer": "是的！我们提供清真菜肴，在菜单上用清真图标清楚地标注。我们所有的清真产品都按照伊斯兰标准准备。"
+      },
+      "discount": {
+        "question": "自取订单有折扣吗？",
+        "answer": "有的！选择自取选项时，所有可折扣商品享受 10% 折扣。折扣会在结账时自动应用。"
+      },
+      "payment": {
+        "question": "你们接受什么付款方式？",
+        "answer": "我们接受在线支付（信用卡/借记卡）和配送或自取时的现金支付。在线订单的支付是安全的。"
+      },
+      "allergens": {
+        "question": "你们有过敏原信息吗？",
+        "answer": "请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 04 222 98 88 获取有关我们菜肴的详细过敏原信息。"
+      },
+      "freshness": {
+        "question": "你们的鱼新鲜吗？",
+        "answer": "当然！每天早上，新鲜的鱼都会直接送到我们的餐厅，由我们的厨师精心准备。我们保证卓越的新鲜度和质量。"
+      },
+      "parking": {
+        "question": "附近有停车场吗？",
+        "answer": "我们的餐厅位于列日市中心。附近有几个公共停车场：Parking Cathédrale、Parking Opéra 以及街边停车位（付费）。"
+      }
+    }
   }
 }

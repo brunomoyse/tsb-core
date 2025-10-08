@@ -265,5 +265,48 @@
       "menu": "Menu",
       "contact": "Contact"
     }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to your questions about Tokyo Sushi Bar",
+    "stillHaveQuestions": "Still have questions?",
+    "contactUs": "Contact Us",
+    "schemaTitle": "FAQ - Tokyo Sushi Bar",
+    "schemaDescription": "Frequently asked questions about Tokyo Sushi Bar - delivery, hours, halal options and more",
+    "breadcrumb": "FAQ",
+    "questions": {
+      "delivery": {
+        "question": "Do you deliver? What is the delivery area?",
+        "answer": "Yes, we deliver within a 5 km radius of our restaurant located at Rue de la Cathédrale 59, Liège. Delivery fees vary based on distance. You can check your address when placing an order."
+      },
+      "hours": {
+        "question": "What are your opening hours?",
+        "answer": "We are open Monday to Friday from 12:00 to 14:30 and 18:00 to 22:30. Saturday and Sunday from 12:00 to 15:00 and 18:00 to 23:00. We are closed on Tuesdays."
+      },
+      "halal": {
+        "question": "Do you offer halal options?",
+        "answer": "Yes! We offer a selection of halal dishes, clearly marked on our menu with the Halal icon. All our halal products are prepared according to Islamic standards."
+      },
+      "discount": {
+        "question": "Is there a discount for pickup orders?",
+        "answer": "Yes! Enjoy 10% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
+      },
+      "payment": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept online payment (credit/debit card) and cash payment on delivery or pickup. For online orders, payment is secure."
+      },
+      "allergens": {
+        "question": "Do you have allergen information?",
+        "answer": "Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at 04 222 98 88 for detailed allergen information about our dishes."
+      },
+      "freshness": {
+        "question": "Is your fish fresh?",
+        "answer": "Absolutely! Every morning, fresh fish is delivered directly to our restaurant and carefully prepared by our chef. We guarantee exceptional freshness and quality."
+      },
+      "parking": {
+        "question": "Is there parking nearby?",
+        "answer": "Our restaurant is located in the center of Liège. There are several public parking lots nearby: Parking Cathédrale, Parking Opéra, and street parking spaces (paid)."
+      }
+    }
   }
 }
