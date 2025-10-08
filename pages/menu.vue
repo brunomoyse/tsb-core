@@ -324,6 +324,7 @@ watch(activeCategory, newVal => {
  * Schema.org Structured Data
  */
 const config = useRuntimeConfig()
+const { t } = useI18n()
 
 // Generate MenuItem schemas for all products
 const menuItemSchemas = computed(() => {
@@ -350,7 +351,7 @@ const menuItemSchemas = computed(() => {
 const itemListSchema = computed(() => ({
     '@type': 'ItemList',
     '@id': `${config.public.baseUrl}/menu#itemlist`,
-    name: 'Tokyo Sushi Bar Menu',
+    name: t('schema.menu.name'),
     numberOfItems: allProducts.value.length,
     itemListElement: allProducts.value.map((product, index) => ({
         '@type': 'ListItem',
@@ -364,43 +365,43 @@ const itemListSchema = computed(() => ({
 }))
 
 // Breadcrumb schema
-const breadcrumbSchema = {
+const breadcrumbSchema = computed(() => ({
     '@type': 'BreadcrumbList',
     itemListElement: [
         {
             '@type': 'ListItem',
             position: 1,
-            name: 'Home',
+            name: t('schema.breadcrumb.home'),
             item: config.public.baseUrl
         },
         {
             '@type': 'ListItem',
             position: 2,
-            name: 'Menu',
+            name: t('schema.breadcrumb.menu'),
             item: `${config.public.baseUrl}/menu`
         }
     ]
-}
+}))
 
 // Update schema whenever products change
 watch(allProducts, () => {
     useSchemaOrg([
         defineWebPage({
             '@type': 'WebPage',
-            name: 'Menu - Tokyo Sushi Bar',
-            description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine'
+            name: t('schema.menu.title'),
+            description: t('schema.menu.description')
         }),
-        breadcrumbSchema,
+        breadcrumbSchema.value,
         itemListSchema.value,
         ...menuItemSchemas.value
     ])
 }, { immediate: true })
 
 useSeoMeta({
-    title: 'Menu - Tokyo Sushi Bar',
-    ogTitle: 'Menu - Tokyo Sushi Bar',
-    description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
-    ogDescription: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
+    title: t('schema.menu.title'),
+    ogTitle: t('schema.menu.title'),
+    description: t('schema.menu.description'),
+    ogDescription: t('schema.menu.description'),
 })
 
 /**
