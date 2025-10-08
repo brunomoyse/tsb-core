@@ -59,6 +59,13 @@ export default defineNuxtPlugin(() => {
             servesCuisine: 'Japanese',
             priceRange: '$$',
             acceptsReservations: true,
+            hasMenu: {
+                '@type': 'Menu',
+                '@id': useRuntimeConfig().public.baseUrl + '/menu',
+                name: 'Tokyo Sushi Bar Menu',
+                description: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
+                inLanguage: ['fr-BE', 'en', 'zh-CN']
+            },
             aggregateRating: {
                 '@type': 'AggregateRating',
                 ratingValue: 4.7,
