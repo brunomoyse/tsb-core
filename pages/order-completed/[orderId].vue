@@ -164,6 +164,69 @@ const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
 
 const order = computed(() => dataOrder.value?.myOrder ?? null)
 
+// Schema.org Order structured data
+const config = useRuntimeConfig()
+
+watch(order, (orderData) => {
+    if (!orderData) return
+
+    useSchemaOrg([
+        defineWebPage({
+            '@type': 'WebPage',
+            name: `Order Confirmation - Tokyo Sushi Bar`,
+            description: 'Your order has been confirmed'
+        }),
+        {
+            '@type': 'Order',
+            '@id': `${config.public.baseUrl}/order-completed/${orderId}`,
+            orderNumber: orderData.id,
+            orderStatus: orderData.status === 'COMPLETED' ? 'https://schema.org/OrderDelivered'
+                : orderData.status === 'FAILED' || orderData.status === 'CANCELLED' ? 'https://schema.org/OrderCancelled'
+                : orderData.status === 'PROCESSING' ? 'https://schema.org/OrderProcessing'
+                : 'https://schema.org/OrderProblem',
+            orderDate: orderData.createdAt,
+            acceptedOffer: orderData.items.map(item => ({
+                '@type': 'Offer',
+                itemOffered: {
+                    '@type': 'MenuItem',
+                    name: item.product.name
+                },
+                price: item.unitPrice,
+                priceCurrency: 'EUR',
+                eligibleQuantity: {
+                    '@type': 'QuantitativeValue',
+                    value: item.quantity
+                }
+            })),
+            customer: orderData.customer ? {
+                '@type': 'Person',
+                name: `${orderData.customer.firstName} ${orderData.customer.lastName}`
+            } : undefined,
+            broker: {
+                '@type': 'Restaurant',
+                name: 'Tokyo Sushi Bar'
+            },
+            orderDelivery: orderData.type === 'DELIVERY' && orderData.address ? {
+                '@type': 'ParcelDelivery',
+                expectedArrivalFrom: orderData.estimatedReadyTime,
+                deliveryAddress: {
+                    '@type': 'PostalAddress',
+                    streetAddress: orderData.address.streetName,
+                    addressLocality: orderData.address.municipalityName,
+                    postalCode: orderData.address.postcode,
+                    addressCountry: 'BE'
+                }
+            } : undefined
+        }
+    ])
+
+    // SEO meta
+    useSeoMeta({
+        title: `Order #${orderData.id} - Tokyo Sushi Bar`,
+        robots: 'noindex,nofollow' // Order pages should not be indexed
+    })
+}, { immediate: true })
+
 // 2) subscribe to updates on mount
 let closeWs: () => void = () => {}
 
