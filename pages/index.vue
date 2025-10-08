@@ -6,6 +6,14 @@ useSchemaOrg([
     defineWebSite({
         name: t('schema.siteName'),
         description: t('schema.siteDescription'),
+        potentialAction: {
+            '@type': 'SearchAction',
+            'target': {
+                '@type': 'EntryPoint',
+                'urlTemplate': `${config.public.baseUrl}/menu?q={search_term_string}`
+            },
+            'query-input': 'required name=search_term_string'
+        }
     }),
     defineWebPage({
         '@type': 'WebPage',
