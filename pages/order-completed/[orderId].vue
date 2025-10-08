@@ -166,6 +166,7 @@ const order = computed(() => dataOrder.value?.myOrder ?? null)
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()
+const { t } = useI18n()
 
 watch(order, (orderData) => {
     if (!orderData) return
@@ -173,8 +174,8 @@ watch(order, (orderData) => {
     useSchemaOrg([
         defineWebPage({
             '@type': 'WebPage',
-            name: `Order Confirmation - Tokyo Sushi Bar`,
-            description: 'Your order has been confirmed'
+            name: t('schema.orderConfirmation.title'),
+            description: t('schema.orderConfirmation.description')
         }),
         {
             '@type': 'Order',
@@ -204,7 +205,7 @@ watch(order, (orderData) => {
             } : undefined,
             broker: {
                 '@type': 'Restaurant',
-                name: 'Tokyo Sushi Bar'
+                name: t('schema.restaurantName')
             },
             orderDelivery: orderData.type === 'DELIVERY' && orderData.address ? {
                 '@type': 'ParcelDelivery',
