@@ -363,6 +363,25 @@ const itemListSchema = computed(() => ({
     }))
 }))
 
+// Breadcrumb schema
+const breadcrumbSchema = {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: config.public.baseUrl
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Menu',
+            item: `${config.public.baseUrl}/menu`
+        }
+    ]
+}
+
 // Update schema whenever products change
 watch(allProducts, () => {
     useSchemaOrg([
@@ -371,6 +390,7 @@ watch(allProducts, () => {
             name: 'Menu - Tokyo Sushi Bar',
             description: 'Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine'
         }),
+        breadcrumbSchema,
         itemListSchema.value,
         ...menuItemSchemas.value
     ])

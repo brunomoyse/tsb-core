@@ -130,6 +130,41 @@ const latitude = 50.642394;
 const longitude = 5.574711;
 const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`;
 const googleMapsLink = `https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7`;
+
+// Schema.org structured data
+const config = useRuntimeConfig()
+
+useSchemaOrg([
+    defineWebPage({
+        '@type': 'ContactPage',
+        name: 'Contact Us - Tokyo Sushi Bar',
+        description: 'Find us, call us, or reserve a table today!'
+    }),
+    {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: config.public.baseUrl
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Contact',
+                item: `${config.public.baseUrl}/contact`
+            }
+        ]
+    }
+])
+
+useSeoMeta({
+    title: 'Contact Us - Tokyo Sushi Bar',
+    ogTitle: 'Contact Us - Tokyo Sushi Bar',
+    description: 'Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium',
+    ogDescription: 'Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium',
+})
 </script>
 
 <style scoped>
