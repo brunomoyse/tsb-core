@@ -59,9 +59,8 @@ export default defineNuxtConfig({
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
-            redirectOn: 'root' // recommended for SEO
+            redirectOn: 'all' // v10: stricter redirection with prefix strategy
         },
-        baseUrl: process.env.BASE_URL,
         strategy: 'prefix',
         vueI18n: "../i18n.config.ts",
     },
@@ -103,5 +102,5 @@ export default defineNuxtConfig({
         },
     },
 
-    compatibilityDate: "2025-04-07",
+    compatibilityDate: "2025-07-08", // Nuxt 4 RC release date
 });
