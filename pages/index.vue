@@ -1,23 +1,24 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
+const { t } = useI18n()
 
 useSchemaOrg([
     defineWebSite({
-        name: 'Tokyo Sushi Bar',
-        description: 'Experience the best flavors of Japan in Liège',
+        name: t('schema.siteName'),
+        description: t('schema.siteDescription'),
     }),
     defineWebPage({
         '@type': 'WebPage',
-        name: 'Tokyo Sushi Bar - Home',
-        description: 'Experience the best flavors of Japan in Liège'
+        name: t('schema.home.title'),
+        description: t('schema.home.description')
     })
 ])
 
 useSeoMeta({
-    title: 'Tokyo Sushi Bar - Japanese Restaurant in Liège',
-    ogTitle: 'Tokyo Sushi Bar - Japanese Restaurant in Liège',
-    description: 'Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine.',
-    ogDescription: 'Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine.',
+    title: t('schema.home.title'),
+    ogTitle: t('schema.home.title'),
+    description: t('schema.home.description'),
+    ogDescription: t('schema.home.description'),
     ogImage: config.public.baseUrl + '/images/about-hero.png',
     twitterCard: 'summary_large_image',
 })
