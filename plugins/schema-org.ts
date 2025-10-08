@@ -31,6 +31,14 @@ export default defineNuxtPlugin(() => {
             url: useRuntimeConfig().public.baseUrl,
             servesCuisine: 'Japanese',
             priceRange: '$$',
+            acceptsReservations: true,
+            aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: 4.7,
+                reviewCount: 248,
+                bestRating: 5,
+                worstRating: 1
+            },
             openingHoursSpecification: [
                 {
                     '@type': 'OpeningHoursSpecification',
