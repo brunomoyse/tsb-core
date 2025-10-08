@@ -264,5 +264,48 @@
       "menu": "Menu",
       "contact": "Contact"
     }
+  },
+  "faq": {
+    "title": "Questions Fréquentes",
+    "subtitle": "Trouvez les réponses à vos questions sur Tokyo Sushi Bar",
+    "stillHaveQuestions": "Vous avez encore des questions ?",
+    "contactUs": "Contactez-nous",
+    "schemaTitle": "FAQ - Tokyo Sushi Bar",
+    "schemaDescription": "Questions fréquentes sur Tokyo Sushi Bar - livraison, horaires, options halal et plus",
+    "breadcrumb": "FAQ",
+    "questions": {
+      "delivery": {
+        "question": "Livrez-vous ? Quelle est la zone de livraison ?",
+        "answer": "Oui, nous livrons dans un rayon de 5 km autour de notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance. Vous pouvez vérifier votre adresse lors du passage de commande."
+      },
+      "hours": {
+        "question": "Quels sont vos horaires d'ouverture ?",
+        "answer": "Nous sommes ouverts du lundi au vendredi de 12h à 14h30 et de 18h à 22h30. Le samedi et dimanche de 12h à 15h et de 18h à 23h. Nous sommes fermés le mardi."
+      },
+      "halal": {
+        "question": "Proposez-vous des options halal ?",
+        "answer": "Oui ! Nous proposons une sélection de plats halal, clairement identifiés sur notre menu avec l'icône Halal. Tous nos produits halal sont préparés selon les normes islamiques."
+      },
+      "discount": {
+        "question": "Y a-t-il une réduction pour les commandes à emporter ?",
+        "answer": "Oui ! Profitez de 10% de réduction sur tous les articles remisables lorsque vous choisissez l'option à emporter. La réduction est automatiquement appliquée lors du paiement."
+      },
+      "payment": {
+        "question": "Quels modes de paiement acceptez-vous ?",
+        "answer": "Nous acceptons le paiement en ligne (carte bancaire) et le paiement en espèces à la livraison ou au retrait. Pour les commandes en ligne, le paiement est sécurisé."
+      },
+      "allergens": {
+        "question": "Avez-vous des informations sur les allergènes ?",
+        "answer": "Veuillez nous informer de toute allergie ou restriction alimentaire dans les commentaires de commande. Contactez-nous directement au 04 222 98 88 pour des informations détaillées sur les allergènes de nos plats."
+      },
+      "freshness": {
+        "question": "Vos poissons sont-ils frais ?",
+        "answer": "Absolument ! Chaque matin, du poisson frais est livré directement à notre restaurant et soigneusement préparé par notre chef. Nous garantissons une fraîcheur et une qualité exceptionnelles."
+      },
+      "parking": {
+        "question": "Y a-t-il un parking à proximité ?",
+        "answer": "Notre restaurant est situé en centre-ville de Liège. Il y a plusieurs parkings publics à proximité : Parking Cathédrale, Parking Opéra, et des places de stationnement dans la rue (payant)."
+      }
+    }
   }
 }
