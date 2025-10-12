@@ -1,14 +1,14 @@
-FROM node:22.14-alpine3.21 AS builder
+FROM node:24.10-alpine3.22 AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
 
 # Set environment variables
 # @TODO: Use .env file
-ENV BASE_URL="https://nuagemagique.dev"
-ENV API_BASE_URL="https://nuagemagique.dev/api/v1"
+ENV BASE_URL="http://192.168.0.88:8888"
+ENV API_BASE_URL="http://192.168.0.88:8888/api/v1"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
-ENV GRAPHQL_WS_URL="wss://nuagemagique.dev/api/v1/graphql"
+ENV GRAPHQL_WS_URL="ws://192.168.0.88:8888/v1/graphql"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -23,7 +23,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:22-alpine3.21
+FROM node:24.10-alpine3.22
 
 # Set working directory
 WORKDIR /usr/src/app
