@@ -10,8 +10,8 @@ env:
   IMAGE_NAME: ${{ github.actor }}/tsb-core:latest
 
 jobs:
-  build_and_publish:
-    name: Build and Publish Docker Image
+  build_amd64:
+    name: Build AMD64 Image
     runs-on: ubuntu-latest
 
     steps:
@@ -24,15 +24,55 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      - name: Build and Push Docker Image
+      - name: Build and Push AMD64 Image
         run: |
           docker buildx build . \
-            --platform linux/amd64,linux/arm64 \
-            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --platform linux/amd64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-amd64 \
             --build-arg API_URL=${{ secrets.API_URL }} \
             --build-arg DB_HOST=${{ secrets.DB_HOST }} \
             --build-arg DB_PASS=${{ secrets.DB_PASS }} \
             --push
+
+  build_arm64:
+    name: Build ARM64 Image
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push ARM64 Image
+        run: |
+          docker buildx build . \
+            --platform linux/arm64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-arm64 \
+            --build-arg API_URL=${{ secrets.API_URL }} \
+            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+            --build-arg DB_PASS=${{ secrets.DB_PASS }} \
+            --push
+
+  create_manifest:
+    name: Create Multi-Architecture Manifest
+    runs-on: ubuntu-latest
+    needs: [build_amd64, build_arm64]
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Create and Push Manifest
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }} \
+            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-amd64 \
+            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-arm64
 
   # deploy:
   #   needs: build_and_publish

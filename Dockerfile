@@ -1,4 +1,4 @@
-FROM node:24.10-alpine3.22 AS builder
+FROM node:24.10-slim AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -13,8 +13,19 @@ ENV GRAPHQL_WS_URL="ws://192.168.0.88:8888/v1/graphql"
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies (including dev dependencies for building)
-RUN npm install --frozen-lockfile
+# Install dependencies without running postinstall scripts
+RUN npm ci --ignore-scripts
+
+# Install platform-specific bindings for the current architecture only
+# This avoids EBADPLATFORM errors when building multi-platform images
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+      npm install --no-save --force @oxc-minify/binding-linux-x64-gnu @esbuild/linux-x64 || true; \
+    elif [ "$(uname -m)" = "aarch64" ]; then \
+      npm install --no-save --force @oxc-minify/binding-linux-arm64-gnu @esbuild/linux-arm64 || true; \
+    fi
+
+# Now run nuxt prepare manually
+RUN npm run postinstall
 
 # Copy the rest of the application code
 COPY . .
@@ -36,8 +47,8 @@ ENV NITRO_PRESET=node-server
 COPY --from=builder /usr/src/app/.output ./.output
 COPY --from=builder /usr/src/app/package*.json ./
 
-# Install only production dependencies
-RUN npm install --production --frozen-lockfile
+# Install only production dependencies (skip postinstall since .output is already built)
+RUN npm install --production --ignore-scripts
 
 # Clean npm cache to reduce image size
 RUN npm cache clean --force
