@@ -3,7 +3,7 @@
         <div class="px-4 flex justify-between items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center">
-                <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/icons/tsb-logo.svg" to="/"/>
+                <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/images/tsb-logo-b.png" to="/"/>
                 <span class="font-semibold text-lg ml-2"></span>
             </div>
 
@@ -32,7 +32,7 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/icons/tsb-logo.svg" to="/"
+                                <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-logo-b.png" to="/"
                                       @click="closeMenu"/>
                                 <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
                                                to="/menu"
