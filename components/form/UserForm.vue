@@ -245,15 +245,26 @@ const handleSubmit = () => {
             addressId: addressConfirmed.value ? (address.value?.id || null) : null,
         } as CreateUserRequest;
     } else {
-        // For edit mode, we need to explicitly handle address removal
+        // For edit mode, we need to explicitly handle address and phone removal
         // If there was an initial address but now there's none, send empty string to trigger deletion
         const hasInitialAddress = props.initialValues.address !== null && props.initialValues.address !== undefined
         const hasCurrentAddress = address.value !== null
 
+        // Handle phone number deletion: if there was a phone initially but now it's empty, send empty string
+        const hasInitialPhone = props.initialValues.phoneLocal && props.initialValues.phoneLocal.trim() !== ''
+        const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
+
+        let phoneValue = null
+        if (hasCurrentPhone) {
+            phoneValue = formattedPhone.value
+        } else if (hasInitialPhone) {
+            phoneValue = '' // Send empty string to trigger deletion
+        }
+
         form = {
             firstName: firstName.value,
             lastName: lastName.value,
-            phoneNumber: formattedPhone.value || null,
+            phoneNumber: phoneValue,
             addressId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
         } as UpdateUserRequest;
     }
