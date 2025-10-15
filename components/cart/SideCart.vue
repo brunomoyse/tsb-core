@@ -56,21 +56,28 @@
                     </div>
 
                     <!-- Product Details -->
-                    <div class="flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
-                                <!-- {{ item.product.category?.name + ' ' + item.product.name + ' ' + (item.product.pieceCount ? ('(' + item.product.pieceCount + 'x)') : '')}}-->
-                                {{
-                                    item.product.code ? item.product.code : item.product.category?.name + ' ' + item.product.name
-                                }}
-                            </h3>
-                            <span class="text-sm font-medium ml-2">
+                    <div class="flex flex-col justify-between gap-2">
+                        <!-- Product Info and Price -->
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <h3 class="text-sm font-medium text-gray-900 break-words">
+                                    {{ item.product.name }}
+                                </h3>
+                                <span class="text-xs text-gray-500">
+                                    {{ item.product.category?.name }}
+                                </span>
+                                <span v-if="item.product.pieceCount" class="text-xs text-gray-500">
+                                    {{ item.product.pieceCount }}
+                                    {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
+                                </span>
+                            </div>
+                            <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
                                 {{ formatPrice(calculateItemPrice(item)) }}
                             </span>
                         </div>
 
-                        <!-- Quantity Controls -->
-                        <div class="flex items-center justify-between">
+                        <!-- Quantity Controls and Remove -->
+                        <div class="flex items-center justify-between mt-auto">
                             <div class="flex items-center gap-2">
                                 <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                                         @click="handleDecrementQuantity(item.product)">
