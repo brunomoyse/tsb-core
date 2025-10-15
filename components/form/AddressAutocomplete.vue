@@ -325,24 +325,21 @@ const loadBoxNumbers = async () => {
         if (data.boxNumbers) {
             boxNumbers.value = data.boxNumbers;
             boxQuery.value = '';
-            // Auto-select the first value even if it is null or empty
+            // Auto-select and confirm only if there's exactly one box option
             if (data.boxNumbers.length === 1) {
                 selectedBoxNumber.value = data.boxNumbers[0];
                 boxConfirmed.value = true;
             }
-            if (data.boxNumbers.length > 1 && data.boxNumbers[0] === null) {
-                selectedBoxNumber.value = null;
-                boxConfirmed.value = true;
-            }
-            /*
-            if (data.boxNumbers.length > 0) {
+            // If there are multiple boxes, give user time to choose
+            // Focus on the box input field
+            if (data.boxNumbers.length > 1) {
                 await nextTick();
                 const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
                 if (boxEl) {
                     boxEl.focus();
+                    isBoxFocused.value = true;
                 }
             }
-            */
         }
     }, 500)
 }

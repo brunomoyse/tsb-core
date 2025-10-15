@@ -5,7 +5,8 @@
   "common": {
     "cancel": "取消",
     "save": "保存",
-    "toTop": "返回顶部"
+    "toTop": "返回顶部",
+    "remove": "删除"
   },
   "nav": {
     "home": "首页",
