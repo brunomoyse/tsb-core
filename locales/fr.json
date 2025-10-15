@@ -234,7 +234,8 @@
         "cartEmpty": "Votre panier est vide.",
         "notAuthenticated": "Veuillez vous connecter pour commander.",
         "addressRequired": "Une adresse est requise pour une livraison.",
-        "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km."
+        "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
+        "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer."
     }
   },
   "schema": {

@@ -237,7 +237,8 @@
       "cartEmpty": "您的购物车为空。",
       "notAuthenticated": "您尚未认证。",
       "addressRequired": "需要地址。",
-      "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)"
+      "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
+      "invalidCredentials": "电子邮件或密码无效。请重试。"
     }
   },
   "schema": {

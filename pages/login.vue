@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-center">
+    <div class="flex justify-center pt-8">
         <div class="w-[500px]">
             <!-- Title -->
             <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('login.title') }}</h2>
@@ -129,6 +129,12 @@ const login = async () => {
         });
     } catch (error) {
         console.error('Login error:', error)
+        eventBus.emit('notify', {
+            message: t('notify.errors.invalidCredentials'),
+            persistent: false,
+            duration: 5000,
+            variant: 'warning',
+        })
         return
     }
     await loginSuccess()
