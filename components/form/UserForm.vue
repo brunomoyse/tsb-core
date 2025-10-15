@@ -82,12 +82,27 @@
 
         <!-- Checkbox to confirm the selected address -->
         <div v-if="address" class="mt-2">
-            <Checkbox v-model="addressConfirmed">
+            <Checkbox v-if="mode === 'register'" v-model="addressConfirmed">
                 <span>
                   <strong>{{ $t('register.confirmAddress') }}</strong><br />
                   {{ formatAddress(address) }}
                 </span>
             </Checkbox>
+            <div v-else class="p-3 border border-gray-300 rounded-md bg-gray-50">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <strong class="text-sm text-gray-700">{{ $t('register.address') }}</strong>
+                        <p class="text-sm text-gray-600 mt-1">{{ formatAddress(address) }}</p>
+                    </div>
+                    <button
+                        type="button"
+                        @click="removeAddress"
+                        class="ml-3 text-sm text-red-600 hover:text-red-700 font-medium"
+                    >
+                        {{ $t('common.remove') }}
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Buttons Section -->
@@ -172,15 +187,26 @@ const formattedPhone = computed(() => {
 
 // Reset address confirmation when address changes
 watch(address, () => {
-    addressConfirmed.value = false
+    // In edit mode, auto-confirm the address
+    if (props.mode === 'edit') {
+        addressConfirmed.value = address.value !== null
+    } else {
+        addressConfirmed.value = false
+    }
 })
 
-// When checked box becomes unchecked, reset address
+// When checked box becomes unchecked in register mode, reset address
 watch(addressConfirmed, (newValue) => {
-    if (newValue === false) {
+    if (props.mode === 'register' && newValue === false) {
         address.value = null
     }
 })
+
+// Function to remove address
+const removeAddress = () => {
+    address.value = null
+    addressConfirmed.value = false
+}
 
 // Phone validation function
 const validatePhone = () => {
@@ -219,11 +245,16 @@ const handleSubmit = () => {
             addressId: addressConfirmed.value ? (address.value?.id || null) : null,
         } as CreateUserRequest;
     } else {
+        // For edit mode, we need to explicitly handle address removal
+        // If there was an initial address but now there's none, send empty string to trigger deletion
+        const hasInitialAddress = props.initialValues.address !== null && props.initialValues.address !== undefined
+        const hasCurrentAddress = address.value !== null
+
         form = {
             firstName: firstName.value,
             lastName: lastName.value,
             phoneNumber: formattedPhone.value || null,
-            addressId: addressConfirmed.value ? (address.value?.id || null) : null,
+            addressId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
         } as UpdateUserRequest;
     }
 

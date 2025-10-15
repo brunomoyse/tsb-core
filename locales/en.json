@@ -5,7 +5,8 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
-    "toTop": "Back to top"
+    "toTop": "Back to top",
+    "remove": "Remove"
   },
   "nav": {
     "home": "Home",
