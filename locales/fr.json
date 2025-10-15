@@ -160,7 +160,13 @@
       "phone": "Téléphone",
       "address": "Adresse",
       "phoneNumber": "Numéro de téléphone",
-      "update": "Mettre à jour le profil"
+      "update": "Mettre à jour le profil",
+      "updateSuccess": "Le profil a correctement été mis à jour.",
+      "deleteAccount": "Supprimer le compte",
+      "deleteAccountConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données seront définitivement supprimées.",
+      "deleteAccountSuccess": "Votre compte a été supprimé avec succès.",
+      "deleteAccountTyping": "Tapez \"delete\" pour confirmer :",
+      "deleteAccountPlaceholder": "Tapez delete"
     }
   },
   "cart": {
