@@ -119,7 +119,17 @@
     "houseNumberPlaceholder": "请输入门牌号",
     "boxNumberPlaceholder": "请输入门牌附加号",
     "submit": "提交",
-    "confirmAddress": "确认这是您的地址"
+    "confirmAddress": "确认这是您的地址",
+    "passwordVeryWeak": "非常弱",
+    "passwordWeak": "弱",
+    "passwordFair": "一般",
+    "passwordGood": "良好",
+    "passwordStrong": "强",
+    "passwordMinLength": "至少8个字符",
+    "passwordUpperCase": "一个大写字母",
+    "passwordLowerCase": "一个小写字母",
+    "passwordNumber": "一个数字",
+    "passwordSpecialChar": "一个特殊字符"
   },
   "me": {
     "orders": {

@@ -44,6 +44,39 @@
                    autocomplete="new-password"
                    class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                    required type="password"/>
+
+            <!-- Password Strength Indicator -->
+            <div v-if="password" class="mt-2">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-medium" :class="passwordStrength.color">
+                        {{ passwordStrength.text }}
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                    <div
+                        class="h-1.5 rounded-full transition-all duration-300"
+                        :class="passwordStrength.bgColor"
+                        :style="{ width: passwordStrength.width }"
+                    ></div>
+                </div>
+                <ul class="mt-2 space-y-1 text-xs text-gray-600">
+                    <li :class="passwordRequirements.minLength ? 'text-green-600' : 'text-gray-500'">
+                        {{ passwordRequirements.minLength ? '✓' : '○' }} {{ $t('register.passwordMinLength') }}
+                    </li>
+                    <li :class="passwordRequirements.hasUpperCase ? 'text-green-600' : 'text-gray-500'">
+                        {{ passwordRequirements.hasUpperCase ? '✓' : '○' }} {{ $t('register.passwordUpperCase') }}
+                    </li>
+                    <li :class="passwordRequirements.hasLowerCase ? 'text-green-600' : 'text-gray-500'">
+                        {{ passwordRequirements.hasLowerCase ? '✓' : '○' }} {{ $t('register.passwordLowerCase') }}
+                    </li>
+                    <li :class="passwordRequirements.hasNumber ? 'text-green-600' : 'text-gray-500'">
+                        {{ passwordRequirements.hasNumber ? '✓' : '○' }} {{ $t('register.passwordNumber') }}
+                    </li>
+                    <li :class="passwordRequirements.hasSpecialChar ? 'text-green-600' : 'text-gray-500'">
+                        {{ passwordRequirements.hasSpecialChar ? '✓' : '○' }} {{ $t('register.passwordSpecialChar') }}
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <div v-if="mode === 'register'">
@@ -182,6 +215,63 @@ const formattedPhone = computed(() => {
         return phoneUtil.format(number, PhoneNumberFormat.E164)
     } catch {
         return phoneLocal.value
+    }
+})
+
+// Password strength validation
+const passwordRequirements = computed(() => ({
+    minLength: password.value.length >= 8,
+    hasUpperCase: /[A-Z]/.test(password.value),
+    hasLowerCase: /[a-z]/.test(password.value),
+    hasNumber: /[0-9]/.test(password.value),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password.value),
+}))
+
+const passwordStrength = computed(() => {
+    const reqs = passwordRequirements.value
+    const score = [
+        reqs.minLength,
+        reqs.hasUpperCase,
+        reqs.hasLowerCase,
+        reqs.hasNumber,
+        reqs.hasSpecialChar,
+    ].filter(Boolean).length
+
+    if (score === 0) {
+        return {
+            text: t('register.passwordVeryWeak'),
+            color: 'text-red-600',
+            bgColor: 'bg-red-500',
+            width: '20%',
+        }
+    } else if (score <= 2) {
+        return {
+            text: t('register.passwordWeak'),
+            color: 'text-red-600',
+            bgColor: 'bg-red-500',
+            width: '40%',
+        }
+    } else if (score === 3) {
+        return {
+            text: t('register.passwordFair'),
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-500',
+            width: '60%',
+        }
+    } else if (score === 4) {
+        return {
+            text: t('register.passwordGood'),
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-500',
+            width: '80%',
+        }
+    } else {
+        return {
+            text: t('register.passwordStrong'),
+            color: 'text-green-600',
+            bgColor: 'bg-green-500',
+            width: '100%',
+        }
     }
 })
 
