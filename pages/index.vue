@@ -78,17 +78,17 @@ useSeoMeta({
         <!-- Meet the Team Section -->
         <div class="px-4">
             <h2 class="text-3xl font-bold text-center mb-6">{{ $t('about.meetTheTeamTitle') }}</h2>
-            <div class="flex justify-center gap-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 max-w-2xl mx-auto">
                 <div class="flex flex-col items-center">
                     <img alt="Chef Zhu Mengmeng" class="w-32 h-32 rounded-full object-cover shadow-md"
                          src="/images/chef.png"/>
-                    <h3 class="mt-4 font-semibold">{{ $t('about.chefName') }}</h3>
-                    <p class="text-gray-600">{{ $t('about.chefRole') }}</p>
+                    <h3 class="mt-4 font-semibold text-center">{{ $t('about.chefName') }}</h3>
+                    <p class="text-gray-600 text-center">{{ $t('about.chefRole') }}</p>
                 </div>
                 <div class="flex flex-col items-center">
                     <img alt="Xu Sa" class="w-32 h-32 rounded-full object-cover shadow-md" src="/images/waitress.png"/>
-                    <h3 class="mt-4 font-semibold">{{ $t('about.waitressName') }}</h3>
-                    <p class="text-gray-600">{{ $t('about.waitressRole') }}</p>
+                    <h3 class="mt-4 font-semibold text-center">{{ $t('about.waitressName') }}</h3>
+                    <p class="text-gray-600 text-center">{{ $t('about.waitressRole') }}</p>
                 </div>
             </div>
         </div>
