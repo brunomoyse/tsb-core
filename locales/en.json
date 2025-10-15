@@ -235,7 +235,8 @@
       "cartEmpty": "Your cart is empty.",
       "notAuthenticated": "You are not authenticated.",
       "addressRequired": "Address is required.",
-      "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km."
+      "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
+      "invalidCredentials": "Invalid email or password. Please try again."
     }
   },
   "schema": {
