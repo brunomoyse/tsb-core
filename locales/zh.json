@@ -183,6 +183,7 @@
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",
     "deliveryFee": "配送费：",
+    "deliveryFeeInfo": "配送费按距离计算：\n• 4公里以内：免费\n• 4-5公里：1€\n• 5-6公里：2€\n• 6-7公里：3€\n• 7-8公里：4€\n• 8-9公里：5€",
     "total": "总计：",
     "collection": "取货/配送",
     "deliveryAddress": "配送地址",

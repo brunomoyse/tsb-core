@@ -183,6 +183,7 @@
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
     "deliveryFee": "Delivery Fee:",
+    "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 4 km: Free\n• 4-5 km: €1\n• 5-6 km: €2\n• 6-7 km: €3\n• 7-8 km: €4\n• 8-9 km: €5",
     "discount": "Pick-up discount",
     "total": "Total:",
     "collection": "Collection",
