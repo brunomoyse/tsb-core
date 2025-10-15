@@ -119,7 +119,17 @@
     "houseNumberPlaceholder": "Enter your house number",
     "boxNumberPlaceholder": "Enter your box number",
     "submit": "Submit",
-    "confirmAddress": "Confirm that this is your address"
+    "confirmAddress": "Confirm that this is your address",
+    "passwordVeryWeak": "Very Weak",
+    "passwordWeak": "Weak",
+    "passwordFair": "Fair",
+    "passwordGood": "Good",
+    "passwordStrong": "Strong",
+    "passwordMinLength": "At least 8 characters",
+    "passwordUpperCase": "One uppercase letter",
+    "passwordLowerCase": "One lowercase letter",
+    "passwordNumber": "One number",
+    "passwordSpecialChar": "One special character"
   },
   "me": {
     "orders": {

@@ -119,7 +119,17 @@
     "houseNumberPlaceholder": "Entrez votre numéro de maison",
     "boxNumberPlaceholder": "Entrez votre numéro de boîte",
     "submit": "Soumettre",
-    "confirmAddress": "Confirmez que ceci est bien votre adresse"
+    "confirmAddress": "Confirmez que ceci est bien votre adresse",
+    "passwordVeryWeak": "Très faible",
+    "passwordWeak": "Faible",
+    "passwordFair": "Moyen",
+    "passwordGood": "Bon",
+    "passwordStrong": "Fort",
+    "passwordMinLength": "Au moins 8 caractères",
+    "passwordUpperCase": "Une lettre majuscule",
+    "passwordLowerCase": "Une lettre minuscule",
+    "passwordNumber": "Un chiffre",
+    "passwordSpecialChar": "Un caractère spécial"
   },
   "me": {
     "orders": {
