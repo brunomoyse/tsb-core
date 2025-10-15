@@ -5,10 +5,10 @@ WORKDIR /usr/src/app
 
 # Set environment variables
 # @TODO: Use .env file
-ENV BASE_URL="http://192.168.0.88:8888"
-ENV API_BASE_URL="http://192.168.0.88:8888/api/v1"
+ENV BASE_URL="https://tokyo.brunomoyse.be"
+ENV API_BASE_URL="https://tokyo.brunomoyse.be/api/v1"
 ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
-ENV GRAPHQL_WS_URL="ws://192.168.0.88:8888/v1/graphql"
+ENV GRAPHQL_WS_URL="wss://tokyo.brunomoyse.be/v1/graphql"
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
