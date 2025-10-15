@@ -160,7 +160,13 @@
       "phone": "电话",
       "address": "地址",
       "phoneNumber": "电话号码",
-      "update": "更新资料"
+      "update": "更新资料",
+      "updateSuccess": "您的资料已成功更新。",
+      "deleteAccount": "删除账户",
+      "deleteAccountConfirm": "您确定要删除您的账户吗？此操作不可逆转，您的所有数据将被永久删除。",
+      "deleteAccountSuccess": "您的账户已成功删除。",
+      "deleteAccountTyping": "输入 \"delete\" 以确认：",
+      "deleteAccountPlaceholder": "输入 delete"
     },
     "logout": "您已成功登出"
   },
