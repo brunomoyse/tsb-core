@@ -12,6 +12,11 @@
             <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" />
         </div>
 
+        <!-- Extras Suggestion -->
+        <div class="mt-8">
+            <CheckoutExtrasSuggestion />
+        </div>
+
         <!-- Address Modal -->
         <div
             v-if="showAddressModal"
@@ -51,6 +56,7 @@ import { ref } from 'vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
+import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation, computed} from '#imports'
 import type {Address, CreateOrderRequest, Order} from '~/types'
