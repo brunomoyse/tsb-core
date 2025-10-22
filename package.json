@@ -42,7 +42,7 @@
     "@esbuild/linux-x64": "^0.24.2",
     "@esbuild/linux-arm64": "^0.24.2",
     "@oxc-parser/binding-linux-x64-gnu": "^0.51.0",
-    "@oxc-parser/binding-linux-arm64-gnu": "^0.51.0",
+    "@oxc-parser/binding-linux-arm64-gnu": "^0.95.0",
     "@oxc-transform/binding-linux-x64-gnu": "^0.51.0",
     "@oxc-transform/binding-linux-arm64-gnu": "^0.51.0",
     "@oxc-minify/binding-linux-x64-gnu": "^0.51.0",
