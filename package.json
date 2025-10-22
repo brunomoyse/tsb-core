@@ -39,6 +39,19 @@
     "vue-tsc": "^3.1.1"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-musl": "^4.52.5"
+    "@esbuild/linux-x64": "^0.24.2",
+    "@esbuild/linux-arm64": "^0.24.2",
+    "@oxc-parser/binding-linux-x64-gnu": "^0.51.0",
+    "@oxc-parser/binding-linux-arm64-gnu": "^0.51.0",
+    "@oxc-transform/binding-linux-x64-gnu": "^0.51.0",
+    "@oxc-transform/binding-linux-arm64-gnu": "^0.51.0",
+    "@oxc-minify/binding-linux-x64-gnu": "^0.51.0",
+    "@oxc-minify/binding-linux-arm64-gnu": "^0.51.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.52.5",
+    "@rollup/rollup-linux-arm64-gnu": "^4.52.5",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.1.15",
+    "@tailwindcss/oxide-linux-arm64-gnu": "^4.1.15",
+    "lightningcss-linux-x64-gnu": "^1.30.1",
+    "lightningcss-linux-arm64-gnu": "^1.30.1"
   }
 }

@@ -13,19 +13,8 @@ ENV GRAPHQL_WS_URL="wss://tokyo.brunomoyse.be/v1/graphql"
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies without running postinstall scripts
-RUN npm ci --ignore-scripts
-
-# Install platform-specific bindings for the current architecture only
-# This avoids EBADPLATFORM errors when building multi-platform images
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-      npm install --no-save --force @oxc-minify/binding-linux-x64-gnu @esbuild/linux-x64 || true; \
-    elif [ "$(uname -m)" = "aarch64" ]; then \
-      npm install --no-save --force @oxc-minify/binding-linux-arm64-gnu @esbuild/linux-arm64 || true; \
-    fi
-
-# Now run nuxt prepare manually
-RUN npm run postinstall
+# Install dependencies (optionalDependencies in package.json handle native bindings)
+RUN npm ci --prefer-offline --no-audit
 
 # Copy the rest of the application code
 COPY . .
