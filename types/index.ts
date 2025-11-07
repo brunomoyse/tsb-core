@@ -10,10 +10,10 @@ export interface Product {
     isVegan: boolean;
     isVisible: boolean
     pieceCount: number | null;
-    price: number;
+    price: string;
     slug: string;
 
-    description: string;
+    description: string | null;
     name: string;
 
     category: ProductCategory;
