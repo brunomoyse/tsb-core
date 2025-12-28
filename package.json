@@ -48,7 +48,7 @@
     "@oxc-minify/binding-linux-x64-gnu": "^0.51.0",
     "@oxc-minify/binding-linux-arm64-gnu": "^0.96.0",
     "@rollup/rollup-linux-x64-gnu": "^4.52.5",
-    "@rollup/rollup-linux-arm64-gnu": "^4.52.5",
+    "@rollup/rollup-linux-arm64-gnu": "^4.54.0",
     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.15",
     "@tailwindcss/oxide-linux-arm64-gnu": "^4.1.15",
     "lightningcss-linux-x64-gnu": "^1.30.1",
