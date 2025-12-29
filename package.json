@@ -44,7 +44,7 @@
     "@oxc-parser/binding-linux-x64-gnu": "^0.105.0",
     "@oxc-parser/binding-linux-arm64-gnu": "^0.97.0",
     "@oxc-transform/binding-linux-x64-gnu": "^0.105.0",
-    "@oxc-transform/binding-linux-arm64-gnu": "^0.96.0",
+    "@oxc-transform/binding-linux-arm64-gnu": "^0.106.0",
     "@oxc-minify/binding-linux-x64-gnu": "^0.51.0",
     "@oxc-minify/binding-linux-arm64-gnu": "^0.96.0",
     "@rollup/rollup-linux-x64-gnu": "^4.52.5",
