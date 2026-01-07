@@ -13,7 +13,7 @@
     "@intlify/core-base": "^11.2.7",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.11.3",
-    "@vueuse/core": "^14.0.0",
+    "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "google-libphonenumber": "^3.2.43",
     "graphql": "^16.11.0",
