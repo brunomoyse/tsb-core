@@ -29,7 +29,7 @@
     "@types/google-libphonenumber": "^7.4.30",
     "@types/node": "^25.0.9",
     "eslint": "^9.39.2",
-    "eslint-plugin-vue": "^10.5.1",
+    "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.0.0",
     "nuxt-schema-org": "^5.0.9",
     "tailwind-merge": "^3.4.0",
