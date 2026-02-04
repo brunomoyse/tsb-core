@@ -46,7 +46,7 @@
     "@oxc-transform/binding-linux-x64-gnu": "^0.105.0",
     "@oxc-transform/binding-linux-arm64-gnu": "^0.111.0",
     "@oxc-minify/binding-linux-x64-gnu": "^0.112.0",
-    "@oxc-minify/binding-linux-arm64-gnu": "^0.96.0",
+    "@oxc-minify/binding-linux-arm64-gnu": "^0.112.0",
     "@rollup/rollup-linux-x64-gnu": "^4.57.0",
     "@rollup/rollup-linux-arm64-gnu": "^4.57.1",
     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.18",
