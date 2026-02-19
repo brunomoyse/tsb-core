@@ -230,17 +230,15 @@
     "restaurantClosed": "餐厅已关闭",
     "orderDisabled": "订单已禁用"
   },
-  "zh": {
-    "orderCompleted": {
-      "title": "订单完成",
-      "thankYou": "感谢您的购买！您的订单已成功下达。",
-      "placedAt": "下单时间：",
-      "items": "商品",
-      "loading": "正在加载订单详情...",
-      "returnHome": "返回首页",
-      "status": "状态",
-      "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。"
-    }
+  "orderCompleted": {
+    "title": "订单完成",
+    "thankYou": "感谢您的购买！您的订单已成功下达。",
+    "placedAt": "下单时间：",
+    "items": "商品",
+    "loading": "正在加载订单详情...",
+    "returnHome": "返回首页",
+    "status": "状态",
+    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。"
   },
   "404": {
     "message": "抱歉，我们找不到您正在寻找的页面。",
