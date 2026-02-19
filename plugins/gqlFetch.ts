@@ -13,6 +13,8 @@ interface GqlOptions {
     signal?: AbortSignal
 }
 
+let refreshPromise: Promise<boolean> | null = null
+
 export default defineNuxtPlugin(() => {
     const cfg     = useRuntimeConfig()
     const httpURL = cfg.public.graphqlHttp as string
@@ -35,7 +37,7 @@ export default defineNuxtPlugin(() => {
             res = await doFetch(body, signal)
         } catch (err: any) {
             if (err?.status === 401) {
-                const ok = await attemptRefresh()
+                const ok = await attemptRefreshOnce()
                 if (ok) {
                     res = await doFetch(body, signal)
                 } else {
@@ -54,7 +56,7 @@ export default defineNuxtPlugin(() => {
             )
             if (unauth) {
                 // refresh the token and retry once
-                const ok = await attemptRefresh()
+                const ok = await attemptRefreshOnce()
                 if (ok) {
                     res = await doFetch(body, signal)
                     if (res.errors?.length) {
@@ -110,6 +112,16 @@ export default defineNuxtPlugin(() => {
             navigateTo('/login')
             return false
         }
+    }
+
+    /** Coalesce concurrent refresh calls into a single request */
+    function attemptRefreshOnce(): Promise<boolean> {
+        if (!refreshPromise) {
+            refreshPromise = attemptRefresh().finally(() => {
+                refreshPromise = null
+            })
+        }
+        return refreshPromise
     }
 
     return { provide: { gqlFetch } }
