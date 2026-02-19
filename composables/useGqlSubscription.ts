@@ -1,7 +1,7 @@
 // composables/useGqlSubscription.ts
 import { ref, onScopeDispose } from 'vue'
 import { print } from 'graphql'
-import { useRuntimeConfig, useCookie } from '#imports'
+import { useRuntimeConfig } from '#imports'
 import type { Client } from 'graphql-ws'
 
 let wsClient: Client | null = null
@@ -33,11 +33,6 @@ export function useGqlSubscription<T = any>(
                     const { createClient } = await import('graphql-ws')
                     wsClient = createClient({
                         url: cfg.public.graphqlWs as string,
-                        connectionParams: {
-                            Authorization: useCookie('access_token').value
-                                ? `Bearer ${useCookie('access_token').value}`
-                                : undefined,
-                        },
                         retryAttempts: Infinity,
                     })
                 }

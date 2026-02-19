@@ -5,6 +5,7 @@ import {
     useCookie,
     useRequestEvent,
     navigateTo,
+    useLocalePath,
 } from '#imports'
 import { print } from 'graphql'
 
@@ -19,6 +20,7 @@ export default defineNuxtPlugin(() => {
     const cfg     = useRuntimeConfig()
     const httpURL = cfg.public.graphqlHttp as string
     const apiURL  = cfg.public.api as string
+    const localePath = useLocalePath()
 
     /** Typed helper: POST /graphql with cookies + headers */
     async function gqlFetch<T = unknown>(
@@ -109,7 +111,7 @@ export default defineNuxtPlugin(() => {
         } catch {
             // refresh failed → revoke & redirect to login
             await $fetch(`${apiURL}/tokens/revoke`, { credentials: 'include' })
-            navigateTo('/login')
+            navigateTo(localePath('login'))
             return false
         }
     }

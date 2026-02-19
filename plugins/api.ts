@@ -1,10 +1,11 @@
 // plugins/api.ts
-import { defineNuxtPlugin, useRequestEvent, navigateTo, useCookie, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin, useRequestEvent, navigateTo, useCookie, useRuntimeConfig, useLocalePath } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig();
     const apiUrl: string = config.public.api as string;
     const userLocale = useCookie('i18n_redirected').value ?? 'fr';
+    const localePath = useLocalePath();
 
     const api = $fetch.create({
         baseURL: apiUrl,
@@ -50,7 +51,7 @@ export default defineNuxtPlugin(() => {
                     }
                 } catch (error) {
                     await $fetch(`${apiUrl}/tokens/revoke`, { credentials: 'include' })
-                    navigateTo('/fr/login')
+                    navigateTo(localePath('login'))
                 }
             }
         }

@@ -25,10 +25,12 @@ export const useAuthStore = defineStore("auth", {
         },
         setAccessValid(valid: boolean) {
             this.accessValid = valid
-            if (valid) {
-                localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
-            } else {
-                localStorage.removeItem('token_expires');
+            if (import.meta.client) {
+                if (valid) {
+                    localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
+                } else {
+                    localStorage.removeItem('token_expires');
+                }
             }
         },
         async logout() {
@@ -43,7 +45,9 @@ export const useAuthStore = defineStore("auth", {
             } finally {
                 this.user = null
                 this.accessValid = false
-                localStorage.removeItem('token_expires')
+                if (import.meta.client) {
+                    localStorage.removeItem('token_expires')
+                }
             }
         }
     },

@@ -32,8 +32,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
                 method: 'POST',
                 headers: { cookie: event?.node.req.headers.cookie || '' }
             })
-            localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
-
             // Update client cookies
             const setCookies = refreshResponse.headers.get('set-cookie')
             if (setCookies && event) {
@@ -90,9 +88,13 @@ function checkTokenExpiration(token: string): boolean {
 
 // Simplified cookie helper functions
 function parseCookies(cookieHeader: string): Record<string, string> {
+    if (!cookieHeader) return {}
     return cookieHeader.split(';').reduce((cookies, item) => {
-        const [name, value] = item.trim().split('=')
-        cookies[name] = decodeURIComponent(value)
+        const idx = item.indexOf('=')
+        if (idx === -1) return cookies
+        const name = item.substring(0, idx).trim()
+        const value = item.substring(idx + 1).trim()
+        try { cookies[name] = decodeURIComponent(value) } catch { cookies[name] = value }
         return cookies
     }, {} as Record<string, string>)
 }
