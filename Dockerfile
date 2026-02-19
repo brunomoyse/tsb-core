@@ -3,12 +3,16 @@ FROM node:24.10-slim AS builder
 # Set working directory
 WORKDIR /usr/src/app
 
-# Set environment variables
-# @TODO: Use .env file
-ENV BASE_URL="https://tokyo.brunomoyse.be"
-ENV API_BASE_URL="https://tokyo.brunomoyse.be/api/v1"
-ENV S3_BUCKET_URL="https://d1sq9yypil8nox.cloudfront.net"
-ENV GRAPHQL_WS_URL="wss://tokyo.brunomoyse.be/v1/graphql"
+# Build arguments for environment variables
+ARG BASE_URL
+ARG API_BASE_URL
+ARG S3_BUCKET_URL
+ARG GRAPHQL_WS_URL
+
+ENV BASE_URL=${BASE_URL}
+ENV API_BASE_URL=${API_BASE_URL}
+ENV S3_BUCKET_URL=${S3_BUCKET_URL}
+ENV GRAPHQL_WS_URL=${GRAPHQL_WS_URL}
 
 # Copy package.json and package-lock.json
 COPY package*.json ./

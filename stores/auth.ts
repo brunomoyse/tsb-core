@@ -32,12 +32,18 @@ export const useAuthStore = defineStore("auth", {
             }
         },
         async logout() {
+            const apiUrl = useRuntimeConfig().public.api as string
             try {
-                // @TODO: To implement
+                await $fetch(`${apiUrl}/logout`, {
+                    method: 'POST',
+                    credentials: 'include',
+                })
             } catch (error) {
-                console.error('Token evocation error:', error)
+                console.error('Logout error:', error)
             } finally {
+                this.user = null
                 this.accessValid = false
+                localStorage.removeItem('token_expires')
             }
         }
     },
