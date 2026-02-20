@@ -4,3 +4,19 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      oxc-toolchain:
+        patterns:
+          - "@oxc-*"
+      esbuild-platforms:
+        patterns:
+          - "@esbuild/*"
+      rollup-platforms:
+        patterns:
+          - "@rollup/*"
+      tailwindcss-platforms:
+        patterns:
+          - "@tailwindcss/oxide-*"
+      lightningcss-platforms:
+        patterns:
+          - "lightningcss-*"
