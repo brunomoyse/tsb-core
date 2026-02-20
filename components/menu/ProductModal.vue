@@ -126,6 +126,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, useRuntimeConfig, useGqlQuery } from '#imports'
+import { useTracking } from '~/composables/useTracking'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import {formatPrice} from "~/lib/price";
@@ -135,6 +136,7 @@ import type { Product } from "@/types"
 
 const cartStore = useCartStore();
 const config = useRuntimeConfig()
+const { trackEvent } = useTracking()
 const props = defineProps<{
     product: string
 }>()
@@ -180,6 +182,16 @@ onMounted(() => {
     document.addEventListener('keydown', handleEscape)
     onUnmounted(() => document.removeEventListener('keydown', handleEscape))
 
+    // Track product view
+    if (p) {
+        trackEvent('product_viewed', {
+            product_id: p.id,
+            product_name: p.name,
+            category_name: p.category?.name,
+            price: p.price,
+        })
+    }
+
     // Prevent background from scrolling
     document.body.style.overflow = 'hidden'
 })
@@ -193,6 +205,13 @@ const addToCart = () => {
     if (!p || !p.isAvailable) return
 
     cartStore.addProduct(p, quantity.value)
+    trackEvent('product_added_to_cart', {
+        product_id: p.id,
+        product_name: p.name,
+        price: p.price,
+        quantity: quantity.value,
+        source: 'modal',
+    })
 
     emit('close')
 }

@@ -99,9 +99,11 @@ import {formatPrice} from "~/lib/price";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import type {Product} from "@/types";
 import {useRuntimeConfig} from "#imports";
+import {useTracking} from "~/composables/useTracking";
 
 const cartStore = useCartStore();
 const config = useRuntimeConfig();
+const { trackEvent } = useTracking();
 
 const props = defineProps<{
     index: number;
@@ -135,6 +137,13 @@ const cardQuantity = computed(() => {
 
 const addToCart = () => {
     cartStore.incrementQuantity(props.product);
+    trackEvent('product_added_to_cart', {
+        product_id: props.product.id,
+        product_name: props.product.name,
+        price: props.product.price,
+        quantity: 1,
+        source: 'card',
+    });
     showControls.value = true;
     resetTimeout();
 };

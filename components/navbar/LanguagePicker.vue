@@ -14,7 +14,7 @@
             class="absolute left-full bottom-0 ml-2 bg-white border border-gray-200 rounded shadow-lg z-50 min-w-max">
             <li v-for="loc in localesToPick" :key="loc.code" class="whitespace-nowrap">
                 <NuxtLink :to="switchLocalePath(loc.code)" class="block px-4 py-2 hover:bg-gray-100"
-                          @click="hideDropdown">
+                          @click="hideDropdown(loc.code)">
                     {{ loc.label }}
                 </NuxtLink>
             </li>
@@ -26,9 +26,11 @@
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useSwitchLocalePath} from '#i18n'
+import {useTracking} from '~/composables/useTracking'
 
 const {locale, availableLocales} = useI18n()
 const switchLocalePath = useSwitchLocalePath()
+const { trackEvent } = useTracking()
 
 const codeAvailables = computed(() => availableLocales.filter((code) => code !== locale.value))
 
@@ -48,8 +50,11 @@ const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value
 };
 
-const hideDropdown = () => {
+const hideDropdown = (toLocale?: string) => {
     showDropdown.value = false
+    if (toLocale) {
+        trackEvent('language_changed', { from_locale: locale.value, to_locale: toLocale })
+    }
 }
 
 interface LanguagePickerProps {

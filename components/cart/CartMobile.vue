@@ -119,17 +119,23 @@ import {useRuntimeConfig} from "#imports";
 import {useCartStore} from "@/stores/cart";
 import {formatPrice} from "~/lib/price";
 import type {Product} from "@/types";
+import {useTracking} from "~/composables/useTracking";
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
+const { trackEvent } = useTracking();
 
 const handleIncrementQuantity = (productId: string): void => {
     const product = getProductById(productId);
     cartStore.incrementQuantity(product);
+    const item = cartStore.products.find(i => i.product.id === productId)
+    trackEvent('product_quantity_incremented', { product_id: productId, new_quantity: item?.quantity })
 };
 
 const handleDecrementQuantity = (product: Product): void => {
     cartStore.decrementQuantity(product);
+    const item = cartStore.products.find(i => i.product.id === product.id)
+    trackEvent('product_quantity_decremented', { product_id: product.id, new_quantity: item?.quantity ?? 0 })
 };
 
 const handleRemoveFromCart = (product: Product): void => {

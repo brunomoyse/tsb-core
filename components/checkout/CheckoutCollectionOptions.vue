@@ -99,10 +99,12 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { formatAddress } from '~/utils/utils'
 import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
 
 const emit = defineEmits(['open-address-modal'])
 const { t } = useI18n()
 const cartStore = useCartStore()
+const { trackEvent } = useTracking()
 
 // Manual disable flag @TODO: SYNC WITH DB
 const isOrderingDisabled = ref(false)
@@ -113,6 +115,7 @@ const collectionOptions = [
     { value: 'PICKUP',   label: t('cart.pickup'),   icon: '/icons/shopping-bag-icon.svg' }
 ]
 const setDeliveryOption = (v: 'DELIVERY' | 'PICKUP') => {
+    trackEvent('collection_option_changed', { option: v })
     cartStore.collectionOption = v
 }
 
@@ -180,6 +183,7 @@ const preferredReadyTime = computed<string>({
         if (v === 'ASAP') {
             cartStore.preferredReadyTime = null
         } else {
+            trackEvent('preferred_time_selected', { time: v })
             cartStore.preferredReadyTime = v
         }
     }

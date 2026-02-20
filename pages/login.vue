@@ -85,6 +85,7 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useI18n } from "vue-i18n"
 import {useCartStore} from "@/stores/cart";
+import {useTracking} from "~/composables/useTracking";
 
 definePageMeta({
     public: true
@@ -92,6 +93,7 @@ definePageMeta({
 
 const cartStore = useCartStore();
 const { t } = useI18n()
+const { trackEvent, identifyUser } = useTracking()
 const localePath = useLocalePath()
 const authStore = useAuthStore()
 const {$api, $gqlFetch} = useNuxtApp()
@@ -147,6 +149,7 @@ const login = async () => {
         });
     } catch (error) {
         console.error('Login error:', error)
+        trackEvent('login_error', { error_type: 'invalid_credentials' })
         eventBus.emit('notify', {
             message: t('notify.errors.invalidCredentials'),
             persistent: false,
@@ -155,17 +158,22 @@ const login = async () => {
         })
         return
     }
+    trackEvent('user_logged_in', { method: 'email' })
     await loginSuccess()
 }
 
 const loginWithGoogle = () => {
+    trackEvent('oauth_click', { provider: 'google' })
     window.location.href = `${apiUrl}/oauth/google`;
 };
 
 const loginSuccess = async () => {
     if (import.meta.client) {
         const data = await $gqlFetch<{ me: User }>(print(ME))
-        if (data) authStore.setUser(data.me)
+        if (data) {
+            authStore.setUser(data.me)
+            identifyUser(data.me)
+        }
 
         // If the cart is not empty, navigate to checkout
         if (cartStore.products.length > 0) {
@@ -192,6 +200,7 @@ onMounted(async () => {
     // if success, then fetch /me to fill the auth store with user credentials
     if (success) {
         try {
+            trackEvent('user_logged_in', { method: 'google_oauth' })
             await loginSuccess()
         } catch (error) {
             console.error('Login error:', error)

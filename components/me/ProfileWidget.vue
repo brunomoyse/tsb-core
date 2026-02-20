@@ -160,10 +160,12 @@ import { formatAddress } from "~/utils/utils";
 import { eventBus } from '~/eventBus'
 import { useI18n } from "vue-i18n"
 import type {Address, UpdateUserRequest, User} from '~/types'
+import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const localePath = useLocalePath()
+const { trackEvent } = useTracking()
 
 const UPDATE_ME = gql`
     mutation ($input: UpdateUserInput!) {
@@ -264,6 +266,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         const updatedUser = res.updateMe
         authStore.updateUser(updatedUser)
 
+        trackEvent('profile_updated')
         eventBus.emit('notify', {
             message: t('me.profile.updateSuccess'),
             persistent: false,

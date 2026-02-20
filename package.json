@@ -19,7 +19,8 @@
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^6.0.7",
     "nuxt": "^4.3.0",
-    "pinia-plugin-persistedstate": "^4.7.1"
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "posthog-js": "^1.352.0"
   },
   "devDependencies": {
     "@nuxtjs/i18n": "^10.2.1",

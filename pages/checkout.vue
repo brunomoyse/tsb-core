@@ -65,11 +65,13 @@ import gql from "graphql-tag";
 import {eventBus} from "~/eventBus";
 import { useI18n } from "vue-i18n"
 import {timeToRFC3339} from "~/utils/utils";
+import {useTracking} from "~/composables/useTracking";
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
+const { trackEvent } = useTracking()
 
 useSeoMeta({
     title: t('schema.checkout.title'),
@@ -134,6 +136,7 @@ const CREATE_ORDER = gql`
 const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(CREATE_ORDER)
 
 const openAddressModal = () => {
+    trackEvent('delivery_address_modal_opened')
     showAddressModal.value = true
     tempAddress.value = null
 }
@@ -146,6 +149,7 @@ const handleAddressUpdate = (updatedAddress: Address | null) => {
 }
 const confirmAddress = () => {
     cartStore.address = tempAddress.value
+    trackEvent('delivery_address_set', { distance: tempAddress.value?.distance })
     showAddressModal.value = false
 }
 
@@ -154,6 +158,14 @@ onMounted(() => {
     if (authStore.user?.address && !cartStore.address) {
         cartStore.address = authStore.user.address
     }
+
+    trackEvent('checkout_page_loaded', {
+        total_items: cartStore.totalItems,
+        total_price: cartTotal.value,
+        collection_option: cartStore.collectionOption,
+        has_address: !!cartStore.address,
+        is_authenticated: authStore.accessValid,
+    })
 })
 
 // Checkout logic (simplified; extras and time selection are handled in CheckoutPaymentExtras component)
@@ -171,6 +183,7 @@ const handleCheckout = async () => {
 
     try {
         if (cartStore.products.length === 0) {
+            trackEvent('checkout_error_cart_empty')
             eventBus.emit('notify', {
                 message: t('notify.errors.cartEmpty', 'Your cart is empty.'),
                 persistent: false,
@@ -180,6 +193,7 @@ const handleCheckout = async () => {
             return
         }
         if (!authStore.accessValid) {
+            trackEvent('checkout_error_not_authenticated')
             eventBus.emit('notify', {
                 message: t('notify.errors.notAuthenticated', 'You are not authenticated.'),
                 persistent: false,
@@ -189,6 +203,7 @@ const handleCheckout = async () => {
             return
         }
         if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
+            trackEvent('checkout_error_address_required')
             eventBus.emit('notify', {
                 message: t('notify.errors.addressRequired', 'Delivery address is required.'),
                 persistent: false,
@@ -199,6 +214,7 @@ const handleCheckout = async () => {
         }
 
         if (cartStore.address?.distance && cartStore.address?.distance >= 9000) {
+            trackEvent('checkout_error_address_too_far')
             eventBus.emit('notify', {
                 message: t('notify.errors.deliveryAddressTooFar', {
                     distance: 9
@@ -240,7 +256,16 @@ const handleCheckout = async () => {
 
             const order = res.createOrder
 
+            trackEvent('order_placed', {
+                order_id: order?.id,
+                order_type: cartStore.collectionOption,
+                is_online_payment: cartStore.paymentOption === 'ONLINE',
+                total_price: cartTotal.value,
+                items_count: cartStore.totalItems,
+            })
+
             if (order?.payment?.links) {
+                trackEvent('payment_redirect', { order_id: order.id })
                 navigateTo(order.payment.links.checkout.href, { external: true })
             } else if (order?.id) {
                 navigateTo(localePath(`/order-completed/${order.id}`))

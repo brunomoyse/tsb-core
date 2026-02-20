@@ -55,6 +55,8 @@
         <ScrollToTopButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && !isProductDetailsPage"
                     class="sm:hidden"/>
 
+        <CookieConsent />
+
         </Body>
 
         </Html>
