@@ -20,3 +20,7 @@ updates:
       lightningcss-platforms:
         patterns:
           - "lightningcss-*"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
