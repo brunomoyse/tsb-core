@@ -16,6 +16,7 @@
                 <summary class="font-semibold text-lg cursor-pointer hover:text-tsb-red transition-colors">
                     {{ faq.question }}
                 </summary>
+                <!-- Safe: content sourced from i18n translation files, not user input -->
                 <div class="mt-3 text-gray-700 leading-relaxed" v-html="faq.answer"></div>
             </details>
         </div>

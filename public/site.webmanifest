@@ -2,7 +2,7 @@
   "name": "Tokyo Sushi Bar",
   "short_name": "Tokyo Sushi",
   "description": "Restaurant japonais a Liege - commandez en ligne sushi, sashimi et plats japonais authentiques",
-  "start_url": "/fr",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#ffffff",

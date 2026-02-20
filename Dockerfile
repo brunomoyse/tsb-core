@@ -49,5 +49,8 @@ RUN npm cache clean --force
 # Expose the port that the application will run on
 EXPOSE 3000
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3000/ || exit 1
+
 # Command to run the Nuxt server
 CMD ["node", ".output/server/index.mjs"]

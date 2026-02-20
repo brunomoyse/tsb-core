@@ -76,11 +76,13 @@ export default defineNuxtConfig({
                 accessToken: {
                     name: 'access_token',
                     httpOnly: true,
+                    sameSite: 'lax',
                     maxAge: 900, // 15 minutes
                 },
                 refreshToken: {
                     name: 'refresh_token',
                     httpOnly: true,
+                    sameSite: 'lax',
                     maxAge: 604800, // 7 days
                 },
             }
@@ -110,6 +112,7 @@ export default defineNuxtConfig({
                 'Referrer-Policy': 'strict-origin-when-cross-origin',
                 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
                 'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+                'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://d1sq9yypil8nox.cloudfront.net; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.tokyosushi.be wss://api.tokyosushi.be;",
             },
         },
     },
