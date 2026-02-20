@@ -60,6 +60,15 @@
                         ›
                     </button>
                 </section>
+
+                <!-- Allergen Notice -->
+                <div class="mx-4 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-2 text-amber-800 text-xs">
+                    <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
+                    <p>
+                        {{ $t('menu.allergenNotice') }}
+                        <a href="tel:042229888" class="underline font-medium">{{ $t('menu.allergenNoticeLink') }}</a>
+                    </p>
+                </div>
             </section>
 
             <!-- Skeleton Loading State -->

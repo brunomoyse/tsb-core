@@ -170,6 +170,23 @@
         <p>Le Client dispose également du droit d’introduire une réclamation auprès de l’Autorité de protection des
             données (APD) en Belgique.</p>
         <hr>
+        <h3 id="9bis-politique-cookies">9bis. Politique en matière de cookies</h3>
+        <h4 id="9bis-1-cookies-essentiels">9bis.1 Cookies essentiels</h4>
+        <p>Le Site utilise des cookies strictement nécessaires au fonctionnement du service. Ces cookies ne peuvent pas être désactivés :</p>
+        <ul>
+            <li><strong>Jetons d'authentification</strong> : cookies httpOnly utilisés pour maintenir la session de l'utilisateur (jeton d'accès : 15 minutes, jeton de rafraîchissement : 7 jours).</li>
+            <li><strong>Préférence linguistique</strong> : cookie permettant de mémoriser la langue choisie par l'utilisateur.</li>
+        </ul>
+        <h4 id="9bis-2-cookies-analytiques">9bis.2 Cookies analytiques (optionnels)</h4>
+        <p>Le Site utilise <strong>PostHog</strong>, un outil d'analyse, pour comprendre comment les visiteurs utilisent le Site (pages consultées, parcours de navigation, etc.). Ces cookies sont <strong>optionnels</strong> et ne sont activés que si le Client les accepte via la bannière de consentement affichée lors de la première visite.</p>
+        <p>Les données collectées par PostHog sont utilisées uniquement à des fins d'amélioration du Site et ne sont pas partagées avec des tiers à des fins commerciales.</p>
+        <h4 id="9bis-3-gestion-des-preferences">9bis.3 Gestion des préférences</h4>
+        <p>Le Client peut gérer ses préférences en matière de cookies de la manière suivante :</p>
+        <ul>
+            <li><strong>Bannière de consentement</strong> : lors de la première visite, une bannière permet d'accepter ou de refuser les cookies analytiques.</li>
+            <li><strong>Paramètres du navigateur</strong> : le Client peut également configurer son navigateur pour bloquer ou supprimer les cookies. Veuillez noter que la suppression des cookies essentiels peut affecter le fonctionnement du Site.</li>
+        </ul>
+        <hr>
         <h3 id="10-h-bergement-du-site">10. Hébergement du Site</h3>
         <p>Le Site est hébergé par :<br><strong>Amazon Web Services (AWS) – Centre de données à Francfort
             (Allemagne)</strong></p>

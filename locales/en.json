@@ -67,7 +67,15 @@
     "ctaText": "Book a table now or order your favorite sushi for takeaway!",
     "ctaButtonReserve": "Reserve a Table",
     "ctaButtonOrder": "Order Now",
-    "heroButton": "View Menu"
+    "heroButton": "View Menu",
+    "infoCards": {
+      "freeDelivery": "Free delivery",
+      "freeDeliveryDesc": "Free within 4 km from 25 EUR. Beyond that, fees scale by distance zone (1 EUR to 5 EUR).",
+      "takeawayDiscount": "Takeaway -10%",
+      "takeawayDiscountDesc": "10% discount on eligible items from 20 EUR for all pickup orders.",
+      "freshDaily": "Fresh daily",
+      "freshDailyDesc": "Our fish is cut fresh every morning by our chef for uncompromising quality."
+    }
   },
   "menu": {
     "showMore": "See more",
@@ -76,6 +84,8 @@
     "pickFilters": "Filters",
     "choices": "choices",
     "noProduct": "No products available",
+    "allergenNotice": "Our products may contain fish, shellfish and lactose. Please inform us of any allergies.",
+    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Unavailable",
     "noResults": "No results for \"{query}\"",
     "previousCategory": "Previous category",
@@ -333,7 +343,7 @@
     }
   },
   "cookies": {
-    "message": "We use cookies to analyze traffic and improve your experience.",
+    "message": "This site uses essential cookies for authentication. We also use analytics cookies to understand how you use our site. You can accept or decline analytics cookies.",
     "learnMore": "Learn more",
     "accept": "Accept",
     "decline": "Decline"
@@ -349,7 +359,7 @@
     "questions": {
       "delivery": {
         "question": "Do you deliver? What is the delivery area?",
-        "answer": "Yes, we deliver within a 5 km radius of our restaurant located at Rue de la Cathédrale 59, Liège. Delivery fees vary based on distance. You can check your address when placing an order."
+        "answer": "Yes, we deliver from our restaurant at Rue de la Cathédrale 59, Liège. Delivery fees vary by distance:<br><br>• Under 4 km: <strong>Free</strong> (minimum 25 EUR)<br>• 4-5 km: 1 EUR<br>• 5-6 km: 2 EUR<br>• 6-7 km: 3 EUR<br>• 7-8 km: 4 EUR<br>• 8-9 km: 5 EUR<br><br>Beyond 9 km, delivery is not available unless your order is 130 EUR or more. You can check your address when placing an order."
       },
       "hours": {
         "question": "What are your opening hours?",
@@ -369,7 +379,11 @@
       },
       "allergens": {
         "question": "Do you have allergen information?",
-        "answer": "Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at 04 222 98 88 for detailed allergen information about our dishes."
+        "answer": "Our products generally contain <strong>fish</strong>, <strong>shellfish</strong> and <strong>lactose</strong>. Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at 04 222 98 88 for detailed allergen information about our dishes."
+      },
+      "invoice": {
+        "question": "How do I request an invoice?",
+        "answer": "All invoice requests must be made on the same day as your order. Contact us at <strong>04 222 98 88</strong> to make your request."
       },
       "freshness": {
         "question": "Is your fish fresh?",

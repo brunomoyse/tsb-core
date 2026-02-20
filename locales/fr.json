@@ -67,7 +67,15 @@
     "ctaText": "Réservez une table maintenant ou commandez vos sushis préférés à emporter !",
     "ctaButtonReserve": "Réserver une Table",
     "ctaButtonOrder": "Commander Maintenant",
-    "heroButton": "Voir le Menu"
+    "heroButton": "Voir le Menu",
+    "infoCards": {
+      "freeDelivery": "Livraison gratuite",
+      "freeDeliveryDesc": "Gratuite dans un rayon de 4 km dès 25 €. Au-delà, frais progressifs selon la distance (1 € à 5 €).",
+      "takeawayDiscount": "À emporter -10%",
+      "takeawayDiscountDesc": "10 % de réduction sur les articles remisables dès 20 € pour toute commande à emporter.",
+      "freshDaily": "Frais chaque jour",
+      "freshDailyDesc": "Notre poisson est découpé frais chaque matin par notre chef pour une qualité irréprochable."
+    }
   },
   "menu": {
     "showMore": "Voir plus",
@@ -76,6 +84,8 @@
     "pickFilters": "Choisissez des filtres",
     "choices": "choix",
     "noProduct": "Aucun produit disponible",
+    "allergenNotice": "Nos produits peuvent contenir du poisson, des crustacés et du lactose. Merci de nous informer de toute allergie.",
+    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Indisponible",
     "noResults": "Aucun résultat pour \"{query}\"",
     "previousCategory": "Catégorie précédente",
@@ -332,7 +342,7 @@
     }
   },
   "cookies": {
-    "message": "Nous utilisons des cookies pour analyser le trafic et améliorer votre expérience.",
+    "message": "Ce site utilise des cookies essentiels pour l'authentification. Nous utilisons également des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez accepter ou refuser les cookies analytiques.",
     "learnMore": "En savoir plus",
     "accept": "Accepter",
     "decline": "Refuser"
@@ -348,7 +358,7 @@
     "questions": {
       "delivery": {
         "question": "Livrez-vous ? Quelle est la zone de livraison ?",
-        "answer": "Oui, nous livrons dans un rayon de 5 km autour de notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance. Vous pouvez vérifier votre adresse lors du passage de commande."
+        "answer": "Oui, nous livrons depuis notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance :<br><br>• Moins de 4 km : <strong>Gratuit</strong> (minimum 25 €)<br>• 4-5 km : 1 €<br>• 5-6 km : 2 €<br>• 6-7 km : 3 €<br>• 7-8 km : 4 €<br>• 8-9 km : 5 €<br><br>Au-delà de 9 km, la livraison n'est pas disponible sauf pour les commandes de 130 € ou plus. Vous pouvez vérifier votre adresse lors du passage de commande."
       },
       "hours": {
         "question": "Quels sont vos horaires d'ouverture ?",
@@ -368,7 +378,11 @@
       },
       "allergens": {
         "question": "Avez-vous des informations sur les allergènes ?",
-        "answer": "Veuillez nous informer de toute allergie ou restriction alimentaire dans les commentaires de commande. Contactez-nous directement au 04 222 98 88 pour des informations détaillées sur les allergènes de nos plats."
+        "answer": "Nos produits contiennent généralement du <strong>poisson</strong>, des <strong>crustacés</strong> et du <strong>lactose</strong>. Veuillez nous informer de toute allergie ou restriction alimentaire dans les commentaires de commande. Contactez-nous directement au 04 222 98 88 pour des informations détaillées sur les allergènes de nos plats."
+      },
+      "invoice": {
+        "question": "Comment demander une facture ?",
+        "answer": "Toute demande de facture doit être effectuée le jour même de votre commande. Contactez-nous au <strong>04 222 98 88</strong> pour en faire la demande."
       },
       "freshness": {
         "question": "Vos poissons sont-ils frais ?",
