@@ -408,6 +408,8 @@ useSeoMeta({
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
+    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    twitterCard: 'summary_large_image',
 })
 
 /**

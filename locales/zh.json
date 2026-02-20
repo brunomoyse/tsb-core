@@ -283,6 +283,24 @@
       "title": "联系我们 - Tokyo Sushi Bar",
       "description": "找到我们，打电话给我们，或立即预订餐桌！Rue de la Cathédrale 59, 列日, 比利时"
     },
+    "terms": {
+      "title": "销售条款 - Tokyo Sushi Bar",
+      "description": "Tokyo Sushi Bar 的销售条款。法律信息、配送、付款和退货政策。"
+    },
+    "login": {
+      "title": "登录 - Tokyo Sushi Bar",
+      "description": "登录您的 Tokyo Sushi Bar 账户"
+    },
+    "register": {
+      "title": "注册 - Tokyo Sushi Bar",
+      "description": "创建您的 Tokyo Sushi Bar 账户"
+    },
+    "checkout": {
+      "title": "结账 - Tokyo Sushi Bar"
+    },
+    "myAccount": {
+      "title": "我的账户 - Tokyo Sushi Bar"
+    },
     "orderConfirmation": {
       "title": "订单确认 - Tokyo Sushi Bar",
       "description": "您的订单已确认"
@@ -290,7 +308,10 @@
     "breadcrumb": {
       "home": "首页",
       "menu": "菜单",
-      "contact": "联系我们"
+      "contact": "联系我们",
+      "terms": "条款",
+      "login": "登录",
+      "register": "注册"
     }
   },
   "faq": {

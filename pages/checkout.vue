@@ -71,6 +71,11 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
 
+useSeoMeta({
+    title: t('schema.checkout.title'),
+    robots: 'noindex,nofollow',
+})
+
 // Manage the address modal state and delivery address
 const showAddressModal = ref(false)
 const tempAddress = ref<Address | null>(null)

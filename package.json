@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
+    "@nuxtjs/sitemap": "^7.6.0",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/core": "^14.2.0",
     "google-libphonenumber": "^3.2.44",

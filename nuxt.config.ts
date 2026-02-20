@@ -7,7 +7,11 @@ export default defineNuxtConfig({
 
     $meta: {
         title: "Tokyo Sushi Bar",
-        description: "Tokyo Sushi Bar",
+        description: "Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.",
+    },
+
+    site: {
+        url: process.env.BASE_URL,
     },
 
     app: {
@@ -17,9 +21,15 @@ export default defineNuxtConfig({
             meta: [
                 {charset: "utf-8"},
                 {name: "viewport", content: "width=device-width, initial-scale=1"},
-                {name: "description", content: "Tokyo Sushi Bar"},
+                {name: "description", content: "Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter."},
             ],
-            link: [{rel: "icon", type: "image/x-icon", href: "/favicon.ico"}],
+            link: [
+                {rel: "icon", type: "image/x-icon", href: "/favicon.ico"},
+                {rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png"},
+                {rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png"},
+                {rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png"},
+                {rel: "manifest", href: "/site.webmanifest"},
+            ],
         },
     },
 
@@ -29,7 +39,8 @@ export default defineNuxtConfig({
         "@nuxtjs/i18n",
         "@pinia/nuxt",
         'pinia-plugin-persistedstate/nuxt',
-        'nuxt-schema-org'
+        'nuxt-schema-org',
+        '@nuxtjs/sitemap'
     ],
 
     plugins: [
@@ -91,11 +102,22 @@ export default defineNuxtConfig({
 
     schemaOrg: {
         identity: {
-            type: 'Organization',
+            type: 'Restaurant',
             name: 'Tokyo Sushi Bar',
             url: process.env.BASE_URL,
-            logo: process.env.BASE_URL + '/logo.png',
+            logo: process.env.BASE_URL + '/images/tsb-logo-b.png',
         }
+    },
+
+    sitemap: {
+        exclude: [
+            '/**/login',
+            '/**/register',
+            '/**/checkout',
+            '/**/me',
+            '/**/logout',
+            '/**/order-completed/**',
+        ],
     },
     // @ts-expect-error property googleFonts does not exist
     googleFonts: {

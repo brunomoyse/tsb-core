@@ -200,6 +200,49 @@
     </div>
 </template>
 
+<script setup lang="ts">
+const config = useRuntimeConfig()
+const { t } = useI18n()
+
+definePageMeta({
+    public: true
+})
+
+useSchemaOrg([
+    defineWebPage({
+        '@type': 'WebPage',
+        name: t('schema.terms.title'),
+        description: t('schema.terms.description')
+    }),
+    {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: t('schema.breadcrumb.home'),
+                item: config.public.baseUrl
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: t('schema.breadcrumb.terms'),
+                item: `${config.public.baseUrl}/terms`
+            }
+        ]
+    }
+])
+
+useSeoMeta({
+    title: t('schema.terms.title'),
+    ogTitle: t('schema.terms.title'),
+    description: t('schema.terms.description'),
+    ogDescription: t('schema.terms.description'),
+    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    twitterCard: 'summary_large_image',
+})
+</script>
+
 <style scoped>
 /* Optional: further style links inside the rendered content */
 .prose :global(a) {
