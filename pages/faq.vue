@@ -65,6 +65,10 @@ const faqs = computed(() => [
         answer: t('faq.questions.allergens.answer')
     },
     {
+        question: t('faq.questions.invoice.question'),
+        answer: t('faq.questions.invoice.answer')
+    },
+    {
         question: t('faq.questions.freshness.question'),
         answer: t('faq.questions.freshness.answer')
     },

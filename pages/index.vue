@@ -59,6 +59,27 @@ useSeoMeta({
             </p>
         </div>
 
+        <!-- Info Cards Section -->
+        <div class="px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F69A;</div>
+                    <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.freeDelivery') }}</h3>
+                    <p class="text-gray-600 text-sm">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F6CD;</div>
+                    <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.takeawayDiscount') }}</h3>
+                    <p class="text-gray-600 text-sm">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F3A3;</div>
+                    <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.freshDaily') }}</h3>
+                    <p class="text-gray-600 text-sm">{{ $t('about.infoCards.freshDailyDesc') }}</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Our Values Section -->
         <div class="px-4">
             <h2 class="text-3xl font-bold text-center mb-6">{{ $t('about.ourValuesTitle') }}</h2>

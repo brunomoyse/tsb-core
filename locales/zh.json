@@ -67,7 +67,15 @@
     "ctaText": "立即预订餐桌或订购您最喜爱的寿司外卖！",
     "ctaButtonReserve": "预订餐桌",
     "ctaButtonOrder": "立即订购",
-    "heroButton": "查看菜单"
+    "heroButton": "查看菜单",
+    "infoCards": {
+      "freeDelivery": "免费配送",
+      "freeDeliveryDesc": "4公里内满25欧元免费配送。超出部分按距离收费（1欧元至5欧元）。",
+      "takeawayDiscount": "自取享9折",
+      "takeawayDiscountDesc": "满20欧元自取订单，所有可折扣商品享受10%折扣。",
+      "freshDaily": "每日新鲜",
+      "freshDailyDesc": "我们的鱼每天早上由厨师现场切割，保证无可挑剔的品质。"
+    }
   },
   "menu": {
     "showMore": "查看更多",
@@ -76,6 +84,8 @@
     "pickFilters": "选择过滤器",
     "choices": "选择",
     "noProduct": "没有产品可用",
+    "allergenNotice": "我们的产品可能含有鱼类、贝类和乳糖。请告知我们您的任何过敏情况。",
+    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "暂时缺货",
     "noResults": "未找到 \"{query}\" 的结果",
     "previousCategory": "上一类别",
@@ -333,7 +343,7 @@
     }
   },
   "cookies": {
-    "message": "我们使用 Cookie 来分析流量并改善您的体验。",
+    "message": "本网站使用必要的 Cookie 进行身份验证。我们还使用分析 Cookie 来了解您如何使用我们的网站。您可以接受或拒绝分析 Cookie。",
     "learnMore": "了解更多",
     "accept": "接受",
     "decline": "拒绝"
@@ -349,7 +359,7 @@
     "questions": {
       "delivery": {
         "question": "你们提供配送吗？配送范围是什么？",
-        "answer": "是的，我们在餐厅周围 5 公里范围内提供配送服务，餐厅位于列日 Rue de la Cathédrale 59。配送费根据距离而定。您可以在下单时查看您的地址。"
+        "answer": "是的，我们从位于列日 Rue de la Cathédrale 59 的餐厅提供配送服务。配送费按距离收取：<br><br>• 4公里以内：<strong>免费</strong>（最低25欧元）<br>• 4-5公里：1欧元<br>• 5-6公里：2欧元<br>• 6-7公里：3欧元<br>• 7-8公里：4欧元<br>• 8-9公里：5欧元<br><br>超过9公里不提供配送，除非订单金额达到130欧元或以上。您可以在下单时查看您的地址。"
       },
       "hours": {
         "question": "营业时间是什么时候？",
@@ -369,7 +379,11 @@
       },
       "allergens": {
         "question": "你们有过敏原信息吗？",
-        "answer": "请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 04 222 98 88 获取有关我们菜肴的详细过敏原信息。"
+        "answer": "我们的产品通常含有<strong>鱼类</strong>、<strong>贝类</strong>和<strong>乳糖</strong>。请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 04 222 98 88 获取有关我们菜肴的详细过敏原信息。"
+      },
+      "invoice": {
+        "question": "如何申请发票？",
+        "answer": "所有发票申请必须在下单当天提出。请致电 <strong>04 222 98 88</strong> 提出申请。"
       },
       "freshness": {
         "question": "你们的鱼新鲜吗？",
