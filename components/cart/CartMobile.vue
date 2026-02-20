@@ -24,7 +24,7 @@
             <ul class="flex-1 overflow-y-auto p-4 space-y-3">
                 <li
                     v-for="item in cartStore.products"
-                    :key="item.product.id"
+                    :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
                     class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
                 >
                     <!-- IMAGE -->
@@ -49,6 +49,9 @@
                     <div class="col-span-3 flex flex-col justify-center text-sm">
                         <span class="font-medium text-gray-800">{{ item.product.name }}</span>
                         <span class="text-gray-500">{{ item.product.category.name }}</span>
+                        <span v-if="item.selectedChoice" class="text-xs text-red-600">
+                            {{ item.selectedChoice.name }}
+                        </span>
                         <span
                             v-if="item.product.pieceCount"
                             class="text-gray-500 text-xs mt-1"
@@ -63,7 +66,7 @@
                         <button
                             aria-label="Decrement Quantity"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-8 w-8"
-                            @click="handleDecrementQuantity(item.product)"
+                            @click="handleDecrementQuantity(item)"
                         >
                             <img
                                 src="/icons/minus-icon.svg"
@@ -75,7 +78,7 @@
                         <button
                             aria-label="Increment Quantity"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-8 w-8"
-                            @click="handleIncrementQuantity(item.product.id)"
+                            @click="handleIncrementQuantity(item)"
                         >
                             <img
                                 src="/icons/plus-icon.svg"
@@ -118,32 +121,20 @@
 import {useRuntimeConfig} from "#imports";
 import {useCartStore} from "@/stores/cart";
 import {formatPrice} from "~/lib/price";
-import type {Product} from "@/types";
+import type {CartItem} from "@/types";
 import {useTracking} from "~/composables/useTracking";
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const { trackEvent } = useTracking();
 
-const handleIncrementQuantity = (productId: string): void => {
-    const product = getProductById(productId);
-    cartStore.incrementQuantity(product);
-    const item = cartStore.products.find(i => i.product.id === productId)
-    trackEvent('product_quantity_incremented', { product_id: productId, new_quantity: item?.quantity })
+const handleIncrementQuantity = (cartItem: CartItem): void => {
+    cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
+    trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
-const handleDecrementQuantity = (product: Product): void => {
-    cartStore.decrementQuantity(product);
-    const item = cartStore.products.find(i => i.product.id === product.id)
-    trackEvent('product_quantity_decremented', { product_id: product.id, new_quantity: item?.quantity ?? 0 })
-};
-
-const getProductById = (productId: string): Product => {
-    const cartItem = cartStore.products.find(item => item.product.id === productId);
-    if (cartItem) {
-        return cartItem.product;
-    } else {
-        throw new Error(`Product with ID ${productId} not found in cart.`);
-    }
+const handleDecrementQuantity = (cartItem: CartItem): void => {
+    cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
+    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 </script>

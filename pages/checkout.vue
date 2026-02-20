@@ -1,5 +1,13 @@
 <template>
     <div class="max-w-7xl mx-auto p-4">
+        <!-- Restaurant Closed Banner -->
+        <div v-if="!isOrderingAvailable" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <p class="text-amber-800 font-medium">{{ $t('checkout.restaurantClosed') }}</p>
+        </div>
+
         <!-- Page Title -->
         <h1 class="text-2xl font-bold mb-4">
             {{ $t('checkout.title', 'Checkout') }}
@@ -9,7 +17,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
             <CheckoutCollectionOptions @open-address-modal="openAddressModal" />
-            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" />
+            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" />
         </div>
 
         <!-- Extras Suggestion -->
@@ -77,12 +85,17 @@ import {eventBus} from "~/eventBus";
 import { useI18n } from "vue-i18n"
 import {timeToRFC3339} from "~/utils/utils";
 import {useTracking} from "~/composables/useTracking";
+import {useRestaurantConfig} from "~/composables/useRestaurantConfig";
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
 const { trackEvent } = useTracking()
+
+// Check restaurant ordering status
+const { config: restaurantConfig } = await useRestaurantConfig()
+const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
 
 useSeoMeta({
     title: t('schema.checkout.title'),
@@ -210,6 +223,16 @@ const handleCheckout = async () => {
     }
 
     try {
+        if (!isOrderingAvailable.value) {
+            eventBus.emit('notify', {
+                message: t('notify.errors.orderingUnavailable'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
+            return
+        }
+
         if (cartStore.products.length === 0) {
             trackEvent('checkout_error_cart_empty')
             eventBus.emit('notify', {
@@ -262,7 +285,8 @@ const handleCheckout = async () => {
             orderExtra: cartStore.orderExtra,
             items: cartStore.products.map((item) => ({
                 productId: item.product.id,
-                quantity: item.quantity
+                quantity: item.quantity,
+                ...(item.selectedChoice ? { choiceId: item.selectedChoice.id } : {}),
             })),
             preferredReadyTime: preferredReadyTime,
         }

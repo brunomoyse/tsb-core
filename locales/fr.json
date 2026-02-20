@@ -85,6 +85,7 @@
     "pc": "pièce",
     "pcs": "pièces",
     "addToCart": "Ajouter",
+    "selectChoice": "Choisir une option",
     "price": "Prix",
     "code": "Code",
     "description": "Description",
@@ -277,7 +278,8 @@
         "notAuthenticated": "Veuillez vous connecter pour commander.",
         "addressRequired": "Une adresse est requise pour une livraison.",
         "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
-        "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer."
+        "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
+        "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard."
     }
   },
   "schema": {

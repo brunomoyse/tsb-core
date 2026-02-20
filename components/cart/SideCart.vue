@@ -37,7 +37,7 @@
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
-                <div v-for="item in cartStore.products" :key="item.product.id"
+                <div v-for="item in cartStore.products" :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg">
                     <!-- Product Image -->
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
@@ -66,6 +66,9 @@
                                 <span class="text-xs text-gray-500">
                                     {{ item.product.category?.name }}
                                 </span>
+                                <span v-if="item.selectedChoice" class="text-xs text-red-600">
+                                    {{ item.selectedChoice.name }}
+                                </span>
                                 <span v-if="item.product.pieceCount" class="text-xs text-gray-500">
                                     {{ item.product.pieceCount }}
                                     {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
@@ -80,19 +83,19 @@
                         <div class="flex items-center justify-between mt-auto">
                             <div class="flex items-center gap-2">
                                 <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
-                                        @click="handleDecrementQuantity(item.product)">
+                                        @click="handleDecrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                     -
                                 </button>
                                 <span class="text-sm w-6 text-center">{{ item.quantity }}</span>
                                 <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
-                                        @click="handleIncrementQuantity(item.product.id)">
+                                        @click="handleIncrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                                     +
                                 </button>
                             </div>
                             <button class="text-xs text-red-600 hover:text-red-700 transition-colors"
-                                    @click="handleRemoveFromCart(item.product)">
+                                    @click="handleRemoveFromCart(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>
                         </div>
@@ -149,7 +152,7 @@
 import {computed, useRuntimeConfig} from '#imports';
 import {useCartStore} from '@/stores/cart';
 import {formatPrice} from '~/lib/price';
-import type {CartItem, Product} from '@/types';
+import type {CartItem} from '@/types';
 import {useI18n} from 'vue-i18n';
 import {useTracking} from '~/composables/useTracking';
 
@@ -171,16 +174,22 @@ const handleOrderType = (option: string) => {
 };
 
 // Price calculations
+const getItemUnitPrice = (item: CartItem) => {
+    const base = Number(item.product.price)
+    const modifier = item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0
+    return base + modifier
+}
+
 const subtotal = computed(() =>
     cartStore.products.reduce((acc, item) =>
-        acc + (item.product.price * item.quantity), 0)
+        acc + (getItemUnitPrice(item) * item.quantity), 0)
 );
 
 const totalDiscount = computed(() => {
     return cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
-                ? acc + (item.product.price * item.quantity * 0.1)
+                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
                 : acc, 0)
         : 0
 });
@@ -200,7 +209,7 @@ const isMinimumReached = computed(() => {
 })
 
 const calculateItemPrice = (item: CartItem) => {
-    const basePrice = item.product.price * item.quantity;
+    const basePrice = getItemUnitPrice(item) * item.quantity;
     if (cartStore.collectionOption === 'PICKUP' && item.product.isDiscountable) {
         return basePrice * 0.9;
     }
@@ -208,24 +217,19 @@ const calculateItemPrice = (item: CartItem) => {
 };
 
 // Cart actions
-const handleIncrementQuantity = (productId: string): void => {
-    const product = cartStore.products.find(item => item.product.id === productId)?.product;
-    if (product) {
-        cartStore.incrementQuantity(product);
-        const item = cartStore.products.find(i => i.product.id === productId)
-        trackEvent('product_quantity_incremented', { product_id: productId, new_quantity: item?.quantity })
-    }
+const handleIncrementQuantity = (cartItem: CartItem): void => {
+    cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
+    trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
-const handleDecrementQuantity = (product: Product): void => {
-    cartStore.decrementQuantity(product);
-    const item = cartStore.products.find(i => i.product.id === product.id)
-    trackEvent('product_quantity_decremented', { product_id: product.id, new_quantity: item?.quantity ?? 0 })
+const handleDecrementQuantity = (cartItem: CartItem): void => {
+    cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
+    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
-const handleRemoveFromCart = (product: Product): void => {
-    trackEvent('product_removed_from_cart', { product_id: product.id, product_name: product.name })
-    cartStore.removeFromCart(product);
+const handleRemoveFromCart = (cartItem: CartItem): void => {
+    trackEvent('product_removed_from_cart', { product_id: cartItem.product.id, product_name: cartItem.product.name })
+    cartStore.removeFromCart(cartItem.product, cartItem.selectedChoice);
 };
 
 </script>

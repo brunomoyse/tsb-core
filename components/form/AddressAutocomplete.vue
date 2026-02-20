@@ -211,9 +211,24 @@ function onBoxBlur() {
 // Computed Properties
 const filteredHouseNumbers = computed(() => {
     if (!houseQuery.value) return houseNumbers.value
-    return houseNumbers.value.filter(h =>
-        h.toLowerCase().includes(houseQuery.value.toLowerCase())
+
+    const query = houseQuery.value.toLowerCase()
+
+    // 1. Try exact substring match first
+    const substringMatches = houseNumbers.value.filter(h =>
+        h.toLowerCase().includes(query)
     )
+    if (substringMatches.length > 0) return substringMatches
+
+    // 2. Fuzzy match: extract numeric part and find close matches
+    const queryNum = parseInt(query.replace(/\D/g, ''), 10)
+    if (isNaN(queryNum)) return []
+
+    return houseNumbers.value.filter(h => {
+        const hNum = parseInt(h.replace(/\D/g, ''), 10)
+        if (isNaN(hNum)) return false
+        return Math.abs(hNum - queryNum) <= 3
+    })
 })
 
 const filteredBoxNumbers = computed(() => {

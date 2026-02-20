@@ -191,6 +191,7 @@ const PRODUCT_CATEGORIES = gql`
         isHalal
         isDiscountable
         category { id name }
+        choices { id }
       }
     }
   }

@@ -1,7 +1,11 @@
 // stores/cart.ts
 
 import {defineStore} from "pinia";
-import type {CartItem, CartState, Product} from "@/types";
+import type {CartItem, CartState, Product, ProductChoice} from "@/types";
+
+function matchesCartItem(item: CartItem, productId: string, choiceId: string | null): boolean {
+    return item.product.id === productId && (item.selectedChoice?.id ?? null) === choiceId;
+}
 
 export const useCartStore = defineStore("cart", {
     state: (): CartState => ({
@@ -34,9 +38,10 @@ export const useCartStore = defineStore("cart", {
     },
 
     actions: {
-        addProduct(product: Product, quantity: number): void {
+        addProduct(product: Product, quantity: number, choice: ProductChoice | null = null): void {
+            const choiceId = choice?.id ?? null;
             const cartItem = this.products.find(
-                (item) => item.product.id === product.id
+                (item) => matchesCartItem(item, product.id, choiceId)
             );
             if (cartItem) {
                 cartItem.quantity += quantity;
@@ -44,12 +49,14 @@ export const useCartStore = defineStore("cart", {
                 this.products.push({
                     product,
                     quantity,
+                    selectedChoice: choice,
                 });
             }
         },
-        incrementQuantity(product: Product): void {
+        incrementQuantity(product: Product, choice: ProductChoice | null = null): void {
+            const choiceId = choice?.id ?? null;
             const cartItem = this.products.find(
-                (item) => item.product.id === product.id
+                (item) => matchesCartItem(item, product.id, choiceId)
             );
             if (cartItem) {
                 cartItem.quantity += 1;
@@ -57,29 +64,31 @@ export const useCartStore = defineStore("cart", {
                 this.products.push({
                     product,
                     quantity: 1,
+                    selectedChoice: choice,
                 });
             }
         },
 
-        decrementQuantity(product: Product): void {
+        decrementQuantity(product: Product, choice: ProductChoice | null = null): void {
+            const choiceId = choice?.id ?? null;
             const cartItem = this.products.find(
-                (item) => item.product.id === product.id
+                (item) => matchesCartItem(item, product.id, choiceId)
             );
             if (cartItem) {
                 if (cartItem.quantity > 1) {
                     cartItem.quantity -= 1;
                 } else {
-                    // Remove the product if quantity is 1
                     this.products = this.products.filter(
-                        (item) => item.product.id !== product.id
+                        (item) => !matchesCartItem(item, product.id, choiceId)
                     );
                 }
             }
         },
 
-        removeFromCart(product: Product): void {
+        removeFromCart(product: Product, choice: ProductChoice | null = null): void {
+            const choiceId = choice?.id ?? null;
             this.products = this.products.filter(
-                (item) => item.product.id !== product.id
+                (item) => !matchesCartItem(item, product.id, choiceId)
             );
         },
 

@@ -85,6 +85,7 @@
     "pc": "piece",
     "pcs": "pieces",
     "addToCart": "Add",
+    "selectChoice": "Select an option",
     "price": "Price",
     "code": "Code",
     "description": "Description",
@@ -278,7 +279,8 @@
       "notAuthenticated": "You are not authenticated.",
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
-      "invalidCredentials": "Invalid email or password. Please try again."
+      "invalidCredentials": "Invalid email or password. Please try again.",
+      "orderingUnavailable": "Ordering is currently unavailable. Please try again later."
     }
   },
   "schema": {

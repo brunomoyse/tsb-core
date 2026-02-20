@@ -9,7 +9,7 @@
         <div v-else class="space-y-4">
             <div
                 v-for="item in cartStore.products"
-                :key="item.product.id"
+                :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
                 class="flex items-center justify-between border-b pb-2"
             >
                 <div class="flex items-center">
@@ -41,11 +41,12 @@
                                 item.product.name
                             }}
                         </p>
+                        <p v-if="item.selectedChoice" class="text-xs text-red-600">{{ item.selectedChoice.name }}</p>
                         <p class="text-sm text-gray-500">x{{ item.quantity }}</p>
                     </div>
                 </div>
                 <p class="font-medium">
-                    {{ formatPrice(item.product.price * item.quantity) }}
+                    {{ formatPrice((Number(item.product.price) + (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)) * item.quantity) }}
                 </p>
             </div>
 
@@ -113,8 +114,14 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const showTooltip = ref(false)
 
+const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
+    const base = Number(item.product.price)
+    const modifier = item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0
+    return base + modifier
+}
+
 const cartTotal = computed(() =>
-    cartStore.products.reduce((total, item) => total + item.product.price * item.quantity, 0)
+    cartStore.products.reduce((total, item) => total + getItemUnitPrice(item) * item.quantity, 0)
 )
 
 const deliveryFee = computed(() => {
@@ -131,7 +138,7 @@ const totalDiscount = computed(() => {
     return cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
-                ? acc + (item.product.price * item.quantity * 0.1)
+                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
                 : acc, 0)
         : 0
 });
