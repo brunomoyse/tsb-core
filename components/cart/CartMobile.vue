@@ -138,10 +138,6 @@ const handleDecrementQuantity = (product: Product): void => {
     trackEvent('product_quantity_decremented', { product_id: product.id, new_quantity: item?.quantity ?? 0 })
 };
 
-const handleRemoveFromCart = (product: Product): void => {
-    cartStore.removeFromCart(product);
-};
-
 const getProductById = (productId: string): Product => {
     const cartItem = cartStore.products.find(item => item.product.id === productId);
     if (cartItem) {

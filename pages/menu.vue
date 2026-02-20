@@ -21,6 +21,7 @@
                     <button
                         v-show="canScrollLeft"
                         @click="scrollPrev"
+                        :aria-label="$t('menu.previousCategory')"
                         class="absolute left-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full"
                     >
                         ‹
@@ -53,6 +54,7 @@
                     <button
                         v-show="canScrollRight"
                         @click="scrollNext"
+                        :aria-label="$t('menu.nextCategory')"
                         class="absolute right-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full"
                     >
                         ›
@@ -60,8 +62,18 @@
                 </section>
             </section>
 
+            <!-- Skeleton Loading State -->
+            <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+                <div v-for="i in 3" :key="i" class="space-y-4">
+                    <div class="h-6 w-32 bg-gray-200 rounded animate-pulse ml-4"></div>
+                    <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
+                        <div v-for="j in 4" :key="j" class="h-[260px] bg-gray-200 rounded-xl animate-pulse"></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Products Grid -->
-            <section class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+            <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div
                     v-for="cat in displayedCategories"
                     :key="cat.id"
@@ -95,6 +107,11 @@
                         {{ $t('menu.noProduct') }}
                     </div>
                 </div>
+
+                <!-- Search No Results -->
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                    <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
+                </div>
             </section>
         </div>
 
@@ -123,7 +140,7 @@
 /**
  * Imports
  */
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useGqlQuery, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
@@ -427,8 +444,10 @@ useSeoMeta({
 /**
  * IntersectionObserver: Scroll Spy
  */
+let observer: IntersectionObserver | null = null
+
 onMounted(() => {
-    const observer = new IntersectionObserver(entries => {
+    observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 activeCategory.value = entry.target.id.replace('category-', '')
@@ -454,6 +473,11 @@ onMounted(() => {
     watch(displayedCategories, observeSections, { deep: true })
     updateScrollButtons()
     scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
+})
+
+onUnmounted(() => {
+    observer?.disconnect()
+    scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
 })
 </script>
 

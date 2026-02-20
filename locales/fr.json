@@ -19,7 +19,8 @@
     "myAccount": "Mon compte",
     "search": "Rechercher...",
     "cart": "Panier",
-    "language": "Sélectionner la langue"
+    "language": "Sélectionner la langue",
+    "toggleMenu": "Ouvrir/fermer le menu"
   },
   "home": {
     "about": "À propos",
@@ -65,7 +66,8 @@
     "ctaTitle": "Rejoignez-nous pour une expérience inoubliable",
     "ctaText": "Réservez une table maintenant ou commandez vos sushis préférés à emporter !",
     "ctaButtonReserve": "Réserver une Table",
-    "ctaButtonOrder": "Commander Maintenant"
+    "ctaButtonOrder": "Commander Maintenant",
+    "heroButton": "Voir le Menu"
   },
   "menu": {
     "showMore": "Voir plus",
@@ -74,6 +76,10 @@
     "pickFilters": "Choisissez des filtres",
     "choices": "choix",
     "noProduct": "Aucun produit disponible",
+    "unavailable": "Indisponible",
+    "noResults": "Aucun résultat pour \"{query}\"",
+    "previousCategory": "Catégorie précédente",
+    "nextCategory": "Catégorie suivante",
     "halal": "Halal",
     "vegan": "Vegan",
     "pc": "pièce",
@@ -191,7 +197,9 @@
     "minimumDelivery": "Livraison minimum de {amount} €",
     "minimumPickup": "À emporter minimum de {amount} €",
     "checkout": "Valider la commande",
-    "removeItem": "Retirer"
+    "removeItem": "Retirer",
+    "decreaseQty": "Diminuer la quantité",
+    "increaseQty": "Augmenter la quantité"
   },
   "checkout": {
     "title": "Commande",
@@ -226,6 +234,7 @@
     "orderCommentPlaceholder": "ex. Allergies ou instructions particulières",
     "goToPayment": "Aller au paiement",
     "placeOrder": "Passer la commande",
+    "processing": "Traitement en cours...",
     "restaurantClosed": "Le restaurant est actuellement fermé. Veuillez vérifier les horaires d'ouverture.",
     "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard."
   },
@@ -236,6 +245,8 @@
     "items": "Plats",
     "loading": "Chargement des détails de la commande...",
     "returnHome": "Retour à l'accueil",
+    "viewOrders": "Voir mes commandes",
+    "orderAgain": "Commander à nouveau",
     "status": "Status",
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations."
   },
@@ -252,7 +263,12 @@
     "serverError": "Une erreur est survenue. Veuillez réessayer plus tard.",
     "generic": "Quelque chose s'est mal passé. Veuillez réessayer."
   },
+  "footer": {
+    "terms": "CGV",
+    "hours": "Lun-Ven 12h-14h30, 18h-22h30 · Sam-Dim 12h-15h, 18h-23h · Fermé mardi"
+  },
   "notify": {
+    "addedToCart": "{product} ajouté au panier",
     "verificationEmailSent": "Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.",
     "emailVerified": "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.",
     "loginToValidateCart": "Veuillez vous connecter pour valider votre panier.",

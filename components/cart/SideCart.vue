@@ -81,13 +81,13 @@
                             <div class="flex items-center gap-2">
                                 <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                                         @click="handleDecrementQuantity(item.product)">
-                                    <span class="sr-only">Decrease quantity</span>
+                                    <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                     -
                                 </button>
                                 <span class="text-sm w-6 text-center">{{ item.quantity }}</span>
                                 <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                                         @click="handleIncrementQuantity(item.product.id)">
-                                    <span class="sr-only">Increase quantity</span>
+                                    <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                                     +
                                 </button>
                             </div>
@@ -128,15 +128,18 @@
             </div>
 
             <!-- Checkout Button -->
-            <NuxtLinkLocale to="checkout">
-                <button :class="[
-            'w-full py-3 rounded-lg font-medium transition-colors',
-            isMinimumReached
-              ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!isMinimumReached">
-                    {{ $t('cart.checkout') }}
-                </button>
+            <NuxtLinkLocale
+                to="checkout"
+                :class="[
+                    'w-full py-3 rounded-lg font-medium transition-colors text-center block',
+                    isMinimumReached
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-gray-300 text-gray-500 pointer-events-none'
+                ]"
+                :tabindex="isMinimumReached ? 0 : -1"
+                :aria-disabled="!isMinimumReached"
+            >
+                {{ $t('cart.checkout') }}
             </NuxtLinkLocale>
         </footer>
     </aside>

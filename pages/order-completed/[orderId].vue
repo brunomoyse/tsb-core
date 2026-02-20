@@ -76,14 +76,26 @@
                 </p>
             </div>
 
-            <!-- Return Home Button -->
-            <div class="mt-6">
-                <NuxtLink
+            <!-- Navigation Actions -->
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <NuxtLinkLocale
+                    to="/me"
+                    class="flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
+                >
+                    {{ $t('orderCompleted.viewOrders', 'View My Orders') }}
+                </NuxtLinkLocale>
+                <NuxtLinkLocale
+                    to="/menu"
+                    class="flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                >
+                    {{ $t('orderCompleted.orderAgain', 'Order Again') }}
+                </NuxtLinkLocale>
+                <NuxtLinkLocale
                     to="/"
-                    class="w-full flex items-center justify-center px-4 py-2.5 rounded-lg bg-tsb-one hover:bg-tsb-four text-sm font-medium text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    class="flex items-center justify-center px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
                 >
                     {{ $t('orderCompleted.returnHome', 'Return to Home') }}
-                </NuxtLink>
+                </NuxtLinkLocale>
             </div>
         </div>
     </div>

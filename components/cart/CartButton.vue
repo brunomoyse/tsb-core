@@ -15,7 +15,7 @@
         </div>
         <!-- Badge for cart count -->
         <div v-if="cartCount > 0"
-             class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
+             :class="['absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900', animating ? 'animate-bounce' : '']">
             {{ cartCount }}
         </div>
         <span class="sr-only">Cart Notifications</span>
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue';
+import {computed, ref, watch} from 'vue';
 import {useCartStore} from '@/stores/cart';
 import {useTracking} from '~/composables/useTracking';
 
@@ -39,9 +39,13 @@ const handleToggleCart = () => {
 // Initialize the cart store
 const cartStore = useCartStore();
 
-const isCartEmpty = computed(() => cartStore.products.length === 0);
-const isCartVisible = computed(() => cartStore.isCartVisible);
-
 // Computed property for the total quantity of products
 const cartCount = computed(() => cartStore.totalItems);
+
+// Badge bounce animation
+const animating = ref(false);
+watch(cartCount, () => {
+    animating.value = true;
+    setTimeout(() => { animating.value = false; }, 300);
+});
 </script>

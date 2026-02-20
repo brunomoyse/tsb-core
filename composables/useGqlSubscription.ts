@@ -6,13 +6,13 @@ import type { Client } from 'graphql-ws'
 
 let wsClient: Client | null = null
 
-export function useGqlSubscription<T = any>(
+export function useGqlSubscription<T = unknown>(
     rawSub: string | import('graphql').DocumentNode,
     variables: Record<string, unknown> = {}
 ) {
     const cfg   = useRuntimeConfig()
     const data  = ref<T>()
-    const error = ref<any>(null)
+    const error = ref<unknown>(null)
 
     // placeholder for the unsubscribe function
     let stop: () => void = () => {}
@@ -56,7 +56,7 @@ export function useGqlSubscription<T = any>(
                     wsClient?.dispose()
                     wsClient = null
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
                 error.value = e
             }
         })()

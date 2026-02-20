@@ -32,13 +32,13 @@ export default defineNuxtPlugin(() => {
             variables,
         }
 
-        let res: any
+        let res: { data?: unknown; errors?: Array<{ extensions?: { code?: string }; message?: string }> }
 
         // 1) Try the HTTP-level fetch (and 401→refresh→retry)
         try {
             res = await doFetch(body, signal)
-        } catch (err: any) {
-            if (err?.status === 401) {
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 401) {
                 const ok = await attemptRefreshOnce()
                 if (ok) {
                     res = await doFetch(body, signal)
@@ -53,7 +53,7 @@ export default defineNuxtPlugin(() => {
         // 2) Handle GraphQL-level errors
         if (res.errors?.length) {
             // look for your UNAUTHENTICATED extension code
-            const unauth = (res.errors as any[]).find(
+            const unauth = res.errors.find(
                 (e) => e.extensions?.code === 'UNAUTHENTICATED'
             )
             if (unauth) {
@@ -75,7 +75,7 @@ export default defineNuxtPlugin(() => {
     }
 
     /** low‑level POST that returns the raw { data, errors } */
-    async function doFetch(body: any, signal?: AbortSignal) {
+    async function doFetch(body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal) {
         const userLocale = useCookie('i18n_redirected').value ?? 'fr'
         return await $fetch.raw(httpURL, {
             method: 'POST',

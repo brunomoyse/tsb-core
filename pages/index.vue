@@ -42,6 +42,12 @@ useSeoMeta({
                 class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center text-white px-4">
                 <h1 class="text-4xl font-bold">{{ $t('about.heroTitle') }}</h1>
                 <p class="mt-4 text-lg">{{ $t('about.heroSubtitle') }}</p>
+                <NuxtLinkLocale
+                    to="/menu"
+                    class="mt-6 inline-block bg-white/20 backdrop-blur-sm text-white border border-white/40 py-2.5 px-6 rounded-md text-lg font-semibold hover:bg-white/30 transition"
+                >
+                    {{ $t('about.heroButton') }}
+                </NuxtLinkLocale>
             </div>
         </div>
 
