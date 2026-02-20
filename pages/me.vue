@@ -24,4 +24,11 @@ import ProfileWidget from '@/components/me/ProfileWidget.vue'
 definePageMeta({
     public: false
 })
+
+const { t } = useI18n()
+
+useSeoMeta({
+    title: t('schema.myAccount.title'),
+    robots: 'noindex,nofollow',
+})
 </script>

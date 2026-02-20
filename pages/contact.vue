@@ -142,6 +142,60 @@ useSchemaOrg([
         description: t('schema.contact.description')
     }),
     {
+        '@type': 'Restaurant',
+        name: t('schema.restaurantName'),
+        url: config.public.baseUrl,
+        logo: `${config.public.baseUrl}/images/tsb-logo-b.png`,
+        image: `${config.public.baseUrl}/images/about-hero.png`,
+        telephone: '+32 4 222 98 88',
+        email: 'tokyosushibar888@gmail.com',
+        servesCuisine: [t('schema.cuisine')],
+        priceRange: '€€',
+        acceptsReservations: false,
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'Rue de la Cathédrale 59',
+            addressLocality: 'Liège',
+            postalCode: '4000',
+            addressCountry: 'BE'
+        },
+        geo: {
+            '@type': 'GeoCoordinates',
+            latitude: latitude,
+            longitude: longitude
+        },
+        openingHoursSpecification: [
+            {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday', 'Wednesday', 'Thursday', 'Friday'],
+                opens: '12:00',
+                closes: '14:30'
+            },
+            {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday', 'Wednesday', 'Thursday', 'Friday'],
+                opens: '18:00',
+                closes: '22:30'
+            },
+            {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Saturday', 'Sunday'],
+                opens: '12:00',
+                closes: '15:00'
+            },
+            {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Saturday', 'Sunday'],
+                opens: '18:00',
+                closes: '23:00'
+            }
+        ],
+        sameAs: [
+            'https://www.instagram.com/tokyo_sushi_bar_liege/',
+            'https://www.facebook.com/sushiliege'
+        ]
+    },
+    {
         '@type': 'BreadcrumbList',
         itemListElement: [
             {
@@ -165,6 +219,8 @@ useSeoMeta({
     ogTitle: t('schema.contact.title'),
     description: t('schema.contact.description'),
     ogDescription: t('schema.contact.description'),
+    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    twitterCard: 'summary_large_image',
 })
 </script>
 

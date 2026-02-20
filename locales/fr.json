@@ -282,6 +282,24 @@
       "title": "Contactez-nous - Tokyo Sushi Bar",
       "description": "Rendez-nous visite, appelez-nous ou réservez une table dès aujourd'hui ! Rue de la Cathédrale 59, Liège, Belgique"
     },
+    "terms": {
+      "title": "Conditions Générales de Vente - Tokyo Sushi Bar",
+      "description": "Conditions générales de vente de Tokyo Sushi Bar. Informations légales, livraison, paiement et politique de retour."
+    },
+    "login": {
+      "title": "Connexion - Tokyo Sushi Bar",
+      "description": "Connectez-vous à votre compte Tokyo Sushi Bar"
+    },
+    "register": {
+      "title": "Inscription - Tokyo Sushi Bar",
+      "description": "Créez votre compte Tokyo Sushi Bar"
+    },
+    "checkout": {
+      "title": "Commande - Tokyo Sushi Bar"
+    },
+    "myAccount": {
+      "title": "Mon compte - Tokyo Sushi Bar"
+    },
     "orderConfirmation": {
       "title": "Confirmation de commande - Tokyo Sushi Bar",
       "description": "Votre commande a été confirmée"
@@ -289,7 +307,10 @@
     "breadcrumb": {
       "home": "Accueil",
       "menu": "Menu",
-      "contact": "Contact"
+      "contact": "Contact",
+      "terms": "CGV",
+      "login": "Connexion",
+      "register": "Inscription"
     }
   },
   "faq": {

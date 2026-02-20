@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath} from '#imports';
+import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath, definePageMeta} from '#imports';
 import type {LoginResponse, User} from '@/types';
 import {useAuthStore} from '@/stores/auth'
 import {eventBus} from "~/eventBus";
@@ -86,6 +86,10 @@ import { print } from 'graphql'
 import { useI18n } from "vue-i18n"
 import {useCartStore} from "@/stores/cart";
 
+definePageMeta({
+    public: true
+})
+
 const cartStore = useCartStore();
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -93,6 +97,20 @@ const authStore = useAuthStore()
 const {$api, $gqlFetch} = useNuxtApp()
 const config = useRuntimeConfig()
 const apiUrl: string = config.public.api as string
+
+useSchemaOrg([
+    defineWebPage({
+        '@type': 'WebPage',
+        name: t('schema.login.title'),
+        description: t('schema.login.description')
+    })
+])
+
+useSeoMeta({
+    title: t('schema.login.title'),
+    description: t('schema.login.description'),
+    robots: 'noindex,nofollow',
+})
 
 const email = ref('')
 const password = ref('')

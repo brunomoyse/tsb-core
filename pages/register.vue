@@ -11,13 +11,31 @@
 
 <script lang="ts" setup>
 import UserForm from '~/components/form/UserForm.vue'
-import { useNuxtApp, useAsyncData, navigateTo, useLocalePath } from '#imports'
+import { useNuxtApp, useAsyncData, navigateTo, useLocalePath, definePageMeta } from '#imports'
 import { eventBus } from '~/eventBus'
 import { useI18n } from "vue-i18n"
+
+definePageMeta({
+    public: true
+})
 
 const { t } = useI18n()
 const { $api } = useNuxtApp()
 const localePath = useLocalePath()
+
+useSchemaOrg([
+    defineWebPage({
+        '@type': 'WebPage',
+        name: t('schema.register.title'),
+        description: t('schema.register.description')
+    })
+])
+
+useSeoMeta({
+    title: t('schema.register.title'),
+    description: t('schema.register.description'),
+    robots: 'noindex,nofollow',
+})
 
 // Handle the submitted data from UserForm
 const registerUser = async (formData: any) => {

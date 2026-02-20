@@ -79,10 +79,7 @@ useSchemaOrg([
     defineWebPage({
         '@type': 'FAQPage',
         name: t('faq.schemaTitle'),
-        description: t('faq.schemaDescription')
-    }),
-    {
-        '@type': 'FAQPage',
+        description: t('faq.schemaDescription'),
         mainEntity: faqs.value.map(faq => ({
             '@type': 'Question',
             name: faq.question,
@@ -91,7 +88,7 @@ useSchemaOrg([
                 text: faq.answer
             }
         }))
-    },
+    }),
     {
         '@type': 'BreadcrumbList',
         itemListElement: [
@@ -116,5 +113,7 @@ useSeoMeta({
     ogTitle: t('faq.schemaTitle'),
     description: t('faq.schemaDescription'),
     ogDescription: t('faq.schemaDescription'),
+    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    twitterCard: 'summary_large_image',
 })
 </script>
