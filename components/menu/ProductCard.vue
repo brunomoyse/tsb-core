@@ -10,6 +10,7 @@
                     <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.webp`"
                             type="image/webp"/>
                     <img ref="imageElement" :alt="product.name"
+                         width="185" height="130"
                          :class="[loaded ? 'opacity-100' : 'opacity-0', !product.isAvailable ? 'grayscale' : '']"
                          :draggable="false" :fetchpriority="index < 6 ? 'high' : 'low'"
                          :loading="index > 5 ? 'lazy' : 'eager'"
@@ -26,7 +27,7 @@
 
                     <!-- Product Name -->
                     <span
-                        class="text-black font-semibold text-sm truncate mb-1"
+                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-1"
                         :title="product.name"
                     >
                       {{ product.name }}
@@ -87,7 +88,7 @@
                     </div>
                 </div>
 
-                <div v-else class="flex self-center">Indisponible</div>
+                <div v-else class="flex self-center text-sm text-gray-500">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>
@@ -100,10 +101,13 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 import type {Product} from "@/types";
 import {useRuntimeConfig} from "#imports";
 import {useTracking} from "~/composables/useTracking";
+import {eventBus} from "~/eventBus";
+import {useI18n} from "vue-i18n";
 
 const cartStore = useCartStore();
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
+const { t } = useI18n();
 
 const props = defineProps<{
     index: number;
@@ -143,6 +147,11 @@ const addToCart = () => {
         price: props.product.price,
         quantity: 1,
         source: 'card',
+    });
+    eventBus.emit('notify', {
+        message: t('notify.addedToCart', { product: props.product.name }),
+        duration: 2000,
+        variant: 'success',
     });
     showControls.value = true;
     resetTimeout();

@@ -1,6 +1,6 @@
 <template>
     <div class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div ref="modalRef" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
                 @click="emit('close')"
                 class="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors"
@@ -126,6 +126,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, useRuntimeConfig, useGqlQuery } from '#imports'
+import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useTracking } from '~/composables/useTracking'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
@@ -144,6 +145,9 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'close'): void
 }>()
+
+const modalRef = ref<HTMLElement | null>(null)
+useFocusTrap(modalRef)
 
 const quantity = ref(1)
 

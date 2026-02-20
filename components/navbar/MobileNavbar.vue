@@ -18,7 +18,7 @@
                 <!-- Hamburger Menu -->
                 <div class="flex flex-col items-center ml-6">
                     <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
-                    <label aria-label="Toggle navigation menu" class="hamburger cursor-pointer focus:outline-none"
+                    <label :aria-label="$t('nav.toggleMenu')" class="hamburger cursor-pointer focus:outline-none"
                            for="menu-toggle" tabindex="0">
                         <span></span>
                         <span></span>

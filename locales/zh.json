@@ -19,7 +19,8 @@
     "myAccount": "我的账户",
     "search": "搜索",
     "cart": "购物车",
-    "language": "选择语言"
+    "language": "选择语言",
+    "toggleMenu": "切换菜单"
   },
   "home": {
     "about": "关于我们",
@@ -65,7 +66,8 @@
     "ctaTitle": "加入我们，享受难忘的体验",
     "ctaText": "立即预订餐桌或订购您最喜爱的寿司外卖！",
     "ctaButtonReserve": "预订餐桌",
-    "ctaButtonOrder": "立即订购"
+    "ctaButtonOrder": "立即订购",
+    "heroButton": "查看菜单"
   },
   "menu": {
     "showMore": "查看更多",
@@ -74,6 +76,10 @@
     "pickFilters": "选择过滤器",
     "choices": "选择",
     "noProduct": "没有产品可用",
+    "unavailable": "暂时缺货",
+    "noResults": "未找到 \"{query}\" 的结果",
+    "previousCategory": "上一类别",
+    "nextCategory": "下一类别",
     "halal": "清真",
     "vegan": "纯素",
     "pc": "个",
@@ -192,7 +198,9 @@
     "minimumDelivery": "最低配送订单金额为 {amount}€",
     "minimumPickup": "最低自取订单金额为 {amount}€",
     "checkout": "结账",
-    "removeItem": "移除商品"
+    "removeItem": "移除商品",
+    "decreaseQty": "减少数量",
+    "increaseQty": "增加数量"
   },
   "checkout": {
     "title": "结账",
@@ -226,6 +234,7 @@
     "orderCommentPlaceholder": "例如：过敏或特殊说明",
     "goToPayment": "去支付",
     "placeOrder": "下单",
+    "processing": "处理中...",
     "discount": "折扣",
     "restaurantClosed": "餐厅已关闭",
     "orderDisabled": "订单已禁用"
@@ -237,6 +246,8 @@
     "items": "商品",
     "loading": "正在加载订单详情...",
     "returnHome": "返回首页",
+    "viewOrders": "查看我的订单",
+    "orderAgain": "再次订购",
     "status": "状态",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。"
   },
@@ -253,7 +264,12 @@
     "serverError": "服务器错误。请稍后再试。",
     "generic": "出了点问题。请重试。"
   },
+  "footer": {
+    "terms": "条款",
+    "hours": "周一至五 12-14:30, 18-22:30 · 周末 12-15, 18-23 · 周二休息"
+  },
   "notify": {
+    "addedToCart": "{product} 已加入购物车",
     "verificationEmailSent": "已向您发送了一封验证邮件。请检查您的收件箱。",
     "emailVerified": "您的电子邮件已通过验证。您现在可以登录。",
     "loginToValidateCart": "请登录以验证您的购物车。",

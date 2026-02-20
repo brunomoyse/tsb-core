@@ -105,29 +105,41 @@
         </div>
 
         <!-- Checkout Button -->
-        <button @click.once="debouncedCheckout" :class="[
+        <button @click="debouncedCheckout" :class="[
             'w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
-            isMinimumReached
+            props.isMinimumReached && !props.loading
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!props.isMinimumReached || isCheckoutProcessing">
-            {{
-                isOnlinePayment
+          ]" :disabled="!props.isMinimumReached || props.loading">
+            <span v-if="props.loading" class="inline-flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                {{ $t('checkout.processing', 'Processing...') }}
+            </span>
+            <span v-else>
+                {{ isOnlinePayment
                     ? $t('checkout.goToPayment', 'Go to Payment')
                     : $t('checkout.placeOrder', 'Place Order')
-            }}
+                }}
+            </span>
         </button>
     </section>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, nextTick } from 'vue'
+import { computed } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
 import { useTracking } from '~/composables/useTracking'
 
 const props = defineProps({
     isMinimumReached: {
+        type: Boolean,
+        default: false
+    },
+    loading: {
         type: Boolean,
         default: false
     }
@@ -226,20 +238,10 @@ const orderComment = computed({
     }
 })
 
-// Reactive flag used for display (disabled button, etc.)
-const isCheckoutProcessing = ref(false)
-
-const handleCheckout = async () => {
-    isCheckoutProcessing.value = true  // Update reactive flag as well.
-    await nextTick()
-    try {
-        emit('checkout')
-    } finally {
-        isCheckoutProcessing.value = false
-    }
+const handleCheckout = () => {
+    emit('checkout')
 }
 
-// Create a debounced version of handleCheckout.
 const debouncedCheckout = useDebounceFn(handleCheckout, 300)
 
 </script>

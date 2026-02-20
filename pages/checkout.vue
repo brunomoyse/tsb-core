@@ -9,7 +9,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
             <CheckoutCollectionOptions @open-address-modal="openAddressModal" />
-            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" />
+            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" />
         </div>
 
         <!-- Extras Suggestion -->
@@ -22,8 +22,18 @@
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             tabindex="0"
+            @click.self="closeAddressModal"
         >
-            <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full" @click.stop>
+            <div ref="addressModalRef" class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative" @click.stop>
+                <button
+                    type="button"
+                    @click="closeAddressModal"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
                 <h3 class="text-xl font-semibold text-gray-900 text-center mb-6">
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </h3>
@@ -52,7 +62,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
+import { useFocusTrap } from '~/composables/useFocusTrap'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
@@ -81,6 +92,8 @@ useSeoMeta({
 // Manage the address modal state and delivery address
 const showAddressModal = ref(false)
 const tempAddress = ref<Address | null>(null)
+const addressModalRef = ref<HTMLElement | null>(null)
+useFocusTrap(addressModalRef)
 
 const CREATE_ORDER = gql`
     mutation CreateOrder($input: CreateOrderInput!) {
@@ -144,6 +157,21 @@ const openAddressModal = () => {
 const closeAddressModal = () => {
     showAddressModal.value = false
 }
+
+// Close address modal on Escape key
+const handleEscapeKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeAddressModal()
+}
+watch(showAddressModal, (open) => {
+    if (open) {
+        document.addEventListener('keydown', handleEscapeKey)
+    } else {
+        document.removeEventListener('keydown', handleEscapeKey)
+    }
+})
+onUnmounted(() => {
+    document.removeEventListener('keydown', handleEscapeKey)
+})
 const handleAddressUpdate = (updatedAddress: Address | null) => {
     tempAddress.value = updatedAddress
 }
@@ -186,16 +214,6 @@ const handleCheckout = async () => {
             trackEvent('checkout_error_cart_empty')
             eventBus.emit('notify', {
                 message: t('notify.errors.cartEmpty', 'Your cart is empty.'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
-        if (!authStore.accessValid) {
-            trackEvent('checkout_error_not_authenticated')
-            eventBus.emit('notify', {
-                message: t('notify.errors.notAuthenticated', 'You are not authenticated.'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',

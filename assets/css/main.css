@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 @layer utilities {
     .min-h-calc {
         min-height: calc(100vh - 60px);
@@ -26,7 +34,8 @@
 
 @font-face {
     font-family: 'Channel';
-    src: url('/fonts/channel.ttf') format('truetype');
+    src: url('/fonts/channel.woff2') format('woff2'),
+         url('/fonts/channel.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
