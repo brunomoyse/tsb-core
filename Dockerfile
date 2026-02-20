@@ -27,7 +27,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:24.10-alpine3.22
+FROM node:24.10-alpine3.23
 
 # Set working directory
 WORKDIR /usr/src/app
