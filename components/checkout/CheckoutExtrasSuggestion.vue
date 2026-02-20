@@ -71,10 +71,12 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { eventBus } from '~/eventBus'
 import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
+const { trackEvent } = useTracking()
 
 // Query to fetch all product categories
 const PRODUCT_CATEGORIES = gql`
@@ -122,6 +124,7 @@ const accompagnements = computed<Product[]>(() => {
 // Add product to cart
 const addToCart = (product: Product) => {
     cartStore.addToCart(product)
+    trackEvent('extras_suggestion_added', { product_id: product.id, product_name: product.name })
 
     eventBus.emit('notify', {
         message: t('notify.success.addedToCart', { product: product.name }),

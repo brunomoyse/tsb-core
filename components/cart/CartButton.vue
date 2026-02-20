@@ -25,8 +25,14 @@
 <script lang="ts" setup>
 import {computed} from 'vue';
 import {useCartStore} from '@/stores/cart';
+import {useTracking} from '~/composables/useTracking';
+
+const { trackEvent } = useTracking()
 
 const handleToggleCart = () => {
+    if (!cartStore.isCartVisible) {
+        trackEvent('cart_viewed', { total_items: cartStore.totalItems, total_price: cartStore.totalPrice })
+    }
     cartStore.toggleCartVisibility();
 }
 

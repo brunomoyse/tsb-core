@@ -83,6 +83,8 @@ export default defineNuxtConfig({
             api: process.env.API_BASE_URL,
             graphqlHttp: process.env.API_BASE_URL + '/graphql',
             graphqlWs: process.env.GRAPHQL_WS_URL,
+            posthogApiKey: process.env.POSTHOG_API_KEY || '',
+            posthogHost: process.env.POSTHOG_HOST || 'https://eu.i.posthog.com',
             cookie: {
                 accessToken: {
                     name: 'access_token',
@@ -134,7 +136,7 @@ export default defineNuxtConfig({
                 'Referrer-Policy': 'strict-origin-when-cross-origin',
                 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
                 'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
-                'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://d1sq9yypil8nox.cloudfront.net; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.tokyosushi.be wss://api.tokyosushi.be;",
+                'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://eu-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://d1sq9yypil8nox.cloudfront.net; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.tokyosushi.be wss://api.tokyosushi.be https://eu.i.posthog.com https://eu-assets.i.posthog.com; worker-src 'self' blob:;",
             },
         },
     },

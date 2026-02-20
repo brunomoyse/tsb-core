@@ -103,6 +103,7 @@ import type { Order } from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
 
@@ -110,6 +111,7 @@ const route     = useRoute()
 const cartStore = useCartStore()
 const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
+const { trackEvent } = useTracking()
 
 // 1) Fetch the order once (SSR)
 const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
@@ -248,6 +250,13 @@ onMounted(() => {
     closeWs = close
 
     watch(liveUpdate, (val) => {
+        if (val?.myOrderUpdated?.status) {
+            trackEvent('order_status_updated', {
+                order_id: orderId,
+                new_status: val.myOrderUpdated.status,
+            })
+        }
+
         if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
             orderFailed.value = true
         }
@@ -262,6 +271,16 @@ onMounted(() => {
 
     cartStore.setCartVisibility(false)
     cartStore.resetState()
+
+    // Track page view with order details
+    if (order.value) {
+        trackEvent('order_completed_page_viewed', {
+            order_id: orderId,
+            order_type: order.value.type,
+            total_price: order.value.totalPrice,
+            items_count: order.value.items?.length,
+        })
+    }
 })
 
 onUnmounted(() => {

@@ -14,6 +14,7 @@ import UserForm from '~/components/form/UserForm.vue'
 import { useNuxtApp, useAsyncData, navigateTo, useLocalePath, definePageMeta } from '#imports'
 import { eventBus } from '~/eventBus'
 import { useI18n } from "vue-i18n"
+import { useTracking } from "~/composables/useTracking"
 
 definePageMeta({
     public: true
@@ -22,6 +23,7 @@ definePageMeta({
 const { t } = useI18n()
 const { $api } = useNuxtApp()
 const localePath = useLocalePath()
+const { trackEvent } = useTracking()
 
 useSchemaOrg([
     defineWebPage({
@@ -56,7 +58,12 @@ const registerUser = async (formData: any) => {
         })
     )
 
+    if (error.value) {
+        trackEvent('registration_error', { error_type: 'server_error' })
+    }
+
     if (!error.value) {
+        trackEvent('user_registered')
         eventBus.emit('notify', {
             message: t('notify.verificationEmailSent'),
             persistent: false,

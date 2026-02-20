@@ -314,6 +314,12 @@
       "register": "注册"
     }
   },
+  "cookies": {
+    "message": "我们使用 Cookie 来分析流量并改善您的体验。",
+    "learnMore": "了解更多",
+    "accept": "接受",
+    "decline": "拒绝"
+  },
   "faq": {
     "title": "常见问题",
     "subtitle": "找到关于 Tokyo Sushi Bar 的问题答案",

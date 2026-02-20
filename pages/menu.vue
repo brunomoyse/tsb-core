@@ -127,6 +127,7 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useGqlQuery, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
+import { useTracking } from '~/composables/useTracking'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 
@@ -140,6 +141,7 @@ import ProductModal from "~/components/menu/ProductModal.vue";
 
 const route = useRoute()
 const router = useRouter()
+const { trackEvent } = useTracking()
 
 const openModal = (id: string) => {
     // Add productId to URL query
@@ -302,6 +304,16 @@ const scrollToCategory = (categoryId: string) => {
 /**
  * Watchers
  */
+// Track search queries
+watch(debouncedSearchValue, (newVal, oldVal) => {
+    const q = newVal.trim()
+    if (q.length > 0) {
+        trackEvent('search_query_entered', { query: q, results_count: filteredProducts.value.length })
+    } else if (oldVal && oldVal.trim().length > 0) {
+        trackEvent('search_cleared')
+    }
+})
+
 // Initialize active category when list changes
 watch(displayedCategories, cats => {
     if (!activeCategory.value && cats.length) activeCategory.value = cats[0].id

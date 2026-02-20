@@ -124,6 +124,7 @@
 import { computed, ref, nextTick } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
+import { useTracking } from '~/composables/useTracking'
 
 const props = defineProps({
     isMinimumReached: {
@@ -133,10 +134,12 @@ const props = defineProps({
 })
 
 const cartStore = useCartStore()
+const { trackEvent } = useTracking()
 
 const emit = defineEmits(['checkout'])
 
 const setOnlinePayment = (value: boolean) => {
+    trackEvent('payment_method_selected', { method: value ? 'ONLINE' : 'CASH' })
     isOnlinePayment.value = value;
 }
 
