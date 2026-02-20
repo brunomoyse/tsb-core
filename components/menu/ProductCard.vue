@@ -126,6 +126,8 @@ onUnmounted(() => {
     }
 });
 
+const hasChoices = computed(() => props.product.choices?.length > 0);
+
 const isInCart = computed(() => {
     return cartStore.products.some(
         (cartItem) => cartItem.product.id === props.product.id
@@ -133,13 +135,16 @@ const isInCart = computed(() => {
 });
 
 const cardQuantity = computed(() => {
-    const cartItem = cartStore.products.find(
-        (cartItem) => cartItem.product.id === props.product.id
-    );
-    return cartItem ? cartItem.quantity : 0;
+    return cartStore.products
+        .filter((cartItem) => cartItem.product.id === props.product.id)
+        .reduce((sum, item) => sum + item.quantity, 0);
 });
 
 const addToCart = () => {
+    if (hasChoices.value) {
+        emit('openProductModal');
+        return;
+    }
     cartStore.incrementQuantity(props.product);
     trackEvent('product_added_to_cart', {
         product_id: props.product.id,
@@ -158,6 +163,10 @@ const addToCart = () => {
 };
 
 const showExpandedControls = () => {
+    if (hasChoices.value) {
+        emit('openProductModal');
+        return;
+    }
     // Show the expanded - + UI when the user clicks on the existing quantity
     showControls.value = true;
     resetTimeout();

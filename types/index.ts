@@ -1,7 +1,16 @@
 // types/index.ts
 
+export interface ProductChoice {
+    id: string;
+    productId: string;
+    priceModifier: string;
+    sortOrder: number;
+    name: string;
+}
+
 export interface Product {
     categoryId: string;
+    choices: ProductChoice[];
     code: string | null;
     id: string;
     isAvailable: boolean;
@@ -29,6 +38,7 @@ export interface ProductCategory {
 export interface CartItem {
     product: Product;
     quantity: number;
+    selectedChoice: ProductChoice | null;
 }
 
 export interface CartState {
@@ -108,6 +118,7 @@ export interface OrderProduct {
     unitPrice: string;
 
     product: Product;
+    choice: ProductChoice | null;
 }
 
 export interface MolliePayment {
@@ -123,7 +134,7 @@ export interface CreateOrderRequest {
     addressExtra: string | null;
     addressId: string | null;
     isOnlinePayment: boolean;
-    items: { productId: string; quantity: number; }[]
+    items: { productId: string; quantity: number; choiceId?: string; }[]
     orderExtra: { name: string; options?: string[] }[] | null;
     orderNote: string | null;
     orderType: OrderType;

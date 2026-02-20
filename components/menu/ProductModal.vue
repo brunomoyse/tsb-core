@@ -50,7 +50,7 @@
                                 <p class="text-sm text-gray-500 mb-1">
                                     {{ $t('menu.price') }}
                                 </p>
-                                <p class="font-medium text-gray-900">{{ formatPrice(p.price) }}</p>
+                                <p class="font-medium text-gray-900">{{ formatPrice(displayPrice) }}</p>
                             </div>
                             <div v-if="p.pieceCount && p.pieceCount === 1" class="p-4 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-500 mb-1">
@@ -80,6 +80,31 @@
                         </div>
                     </div>
 
+                    <!-- Choice Selection -->
+                    <div v-if="hasChoices" class="space-y-3 border-t pt-4">
+                        <h3 class="text-sm font-semibold text-gray-700">{{ $t('menu.selectChoice') }}</h3>
+                        <div class="space-y-2">
+                            <label
+                                v-for="choice in sortedChoices"
+                                :key="choice.id"
+                                class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
+                                :class="selectedChoiceId === choice.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'"
+                            >
+                                <input
+                                    type="radio"
+                                    name="product-choice"
+                                    :value="choice.id"
+                                    v-model="selectedChoiceId"
+                                    class="w-4 h-4 text-red-500 focus:ring-red-500"
+                                />
+                                <span class="flex-1 text-sm text-gray-900">{{ choice.name }}</span>
+                                <span v-if="Number(choice.priceModifier) !== 0" class="text-sm text-gray-500">
+                                    {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Cart Controls -->
                     <div class="space-y-4 border-t pt-4">
                         <div class="flex items-center justify-between gap-4">
@@ -103,8 +128,8 @@
                             <button
                                 @click="addToCart"
                                 class="flex-1 bg-red-500 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-small md:font-medium transition-colors"
-                                :class="{ 'opacity-50 cursor-not-allowed': !p.isAvailable }"
-                                :disabled="!p.isAvailable"
+                                :class="{ 'opacity-50 cursor-not-allowed': !canAddToCart }"
+                                :disabled="!canAddToCart"
                             >
                                 {{ $t('menu.addToCart') }}
                             </button>
@@ -125,14 +150,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, useRuntimeConfig, useGqlQuery } from '#imports'
+import { onMounted, onUnmounted, ref, computed, watch, useRuntimeConfig, useGqlQuery } from '#imports'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useTracking } from '~/composables/useTracking'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import {formatPrice} from "~/lib/price";
 import {useCartStore} from "~/stores/cart";
-import type { Product } from "@/types"
+import type { Product, ProductChoice } from "@/types"
 
 
 const cartStore = useCartStore();
@@ -150,6 +175,7 @@ const modalRef = ref<HTMLElement | null>(null)
 useFocusTrap(modalRef)
 
 const quantity = ref(1)
+const selectedChoiceId = ref<string | null>(null)
 
 const PRODUCT_QUERY = gql`
   query Product($id: ID!) {
@@ -168,6 +194,13 @@ const PRODUCT_QUERY = gql`
       category {
         name
       }
+      choices {
+        id
+        productId
+        priceModifier
+        sortOrder
+        name
+      }
     }
   }
 `
@@ -177,6 +210,31 @@ const { data: dataProduct } = await useGqlQuery<{
 }>(print(PRODUCT_QUERY), { id: props.product }, { immediate: true, cache: true })
 
 const p = dataProduct.value?.product
+
+const hasChoices = computed(() => p?.choices && p.choices.length > 0)
+
+const sortedChoices = computed(() => {
+    if (!p?.choices) return []
+    return [...p.choices].sort((a, b) => a.sortOrder - b.sortOrder)
+})
+
+const selectedChoice = computed((): ProductChoice | null => {
+    if (!selectedChoiceId.value || !p?.choices) return null
+    return p.choices.find(c => c.id === selectedChoiceId.value) ?? null
+})
+
+const displayPrice = computed(() => {
+    if (!p) return '0'
+    const base = Number(p.price)
+    const modifier = selectedChoice.value ? Number(selectedChoice.value.priceModifier) : 0
+    return String(base + modifier)
+})
+
+const canAddToCart = computed(() => {
+    if (!p?.isAvailable) return false
+    if (hasChoices.value && !selectedChoiceId.value) return false
+    return true
+})
 
 // Close modal on escape key
 onMounted(() => {
@@ -206,14 +264,15 @@ onUnmounted(() => {
 })
 
 const addToCart = () => {
-    if (!p || !p.isAvailable) return
+    if (!p || !canAddToCart.value) return
 
-    cartStore.addProduct(p, quantity.value)
+    cartStore.addProduct(p, quantity.value, selectedChoice.value)
     trackEvent('product_added_to_cart', {
         product_id: p.id,
         product_name: p.name,
         price: p.price,
         quantity: quantity.value,
+        choice_id: selectedChoice.value?.id,
         source: 'modal',
     })
 
@@ -223,6 +282,7 @@ const addToCart = () => {
 // Reset quantity when product changes
 watch(() => p, () => {
     quantity.value = 1
+    selectedChoiceId.value = null
 })
 
 </script>
