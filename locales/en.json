@@ -245,6 +245,14 @@
     "homeButton": "Home",
     "menuButton": "View Menu"
   },
+  "error": {
+    "homeButton": "Back to Home",
+    "menuButton": "View Menu",
+    "notFound": "Oops! This page seems to have disappeared...",
+    "forbidden": "Access forbidden. You don't have permission to view this page.",
+    "serverError": "A server error occurred. Please try again later.",
+    "generic": "Something went wrong. Please try again."
+  },
   "notify": {
     "verificationEmailSent": "An email has been sent to you for verification. Please check your inbox.",
     "emailVerified": "Your email has been verified. You can now log in.",

@@ -172,7 +172,6 @@ const handleCheckout = async () => {
                 duration: 5000,
                 variant: 'error',
             })
-            console.error('Cart is empty')
             return
         }
         if (!authStore.accessValid) {
@@ -182,7 +181,6 @@ const handleCheckout = async () => {
                 duration: 5000,
                 variant: 'error',
             })
-            console.error('User is not authenticated')
             return
         }
         if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
@@ -192,7 +190,6 @@ const handleCheckout = async () => {
                 duration: 5000,
                 variant: 'error',
             })
-            console.error('Delivery address is required for delivery orders')
             return
         }
 
@@ -205,7 +202,6 @@ const handleCheckout = async () => {
                 duration: 5000,
                 variant: 'error',
             })
-            console.error('Delivery address is too far')
             return
         }
 

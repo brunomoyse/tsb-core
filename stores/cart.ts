@@ -74,24 +74,13 @@ export const useCartStore = defineStore("cart", {
                         (item) => item.product.id !== product.id
                     );
                 }
-            } else {
-                console.warn(`Product with ID ${product.id} not found in the cart.`);
             }
         },
 
         removeFromCart(product: Product): void {
-            // Find the cart item based on the product ID
-            const cartItem = this.products.find(
-                (item) => item.product.id === product.id
+            this.products = this.products.filter(
+                (item) => item.product.id !== product.id
             );
-
-            if (cartItem) {
-                this.products = this.products.filter(
-                    (item) => item.product.id !== product.id
-                );
-            } else {
-                console.warn(`Product with ID ${product.id} not found in the cart.`);
-            }
         },
 
         resetState(): void {
