@@ -70,7 +70,7 @@
                     <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
                     <p class="flex-1">
                         {{ $t('menu.allergenNotice') }}
-                        <a href="tel:042229888" class="underline font-medium">{{ $t('menu.allergenNoticeLink') }}</a>
+                        <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
                     </p>
                     <button @click="showAllergenNotice = false" class="ml-1 p-0.5 hover:bg-amber-100 rounded" :aria-label="$t('common.close')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
