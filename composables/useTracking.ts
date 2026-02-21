@@ -33,19 +33,19 @@ export function useTracking() {
     }
 
     const optIn = () => {
+        localStorage.setItem('cookie_consent', 'accepted')
         const ph = getPosthog()
         if (!ph) return
         ph.opt_in_capturing()
         // Enable session recording after consent
         ph.startSessionRecording()
-        localStorage.setItem('cookie_consent', 'accepted')
     }
 
     const optOut = () => {
+        localStorage.setItem('cookie_consent', 'declined')
         const ph = getPosthog()
         if (!ph) return
         ph.opt_out_capturing()
-        localStorage.setItem('cookie_consent', 'declined')
     }
 
     const hasOptedIn = (): boolean => {
