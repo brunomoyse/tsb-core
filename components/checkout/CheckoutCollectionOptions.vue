@@ -1,7 +1,7 @@
 <template>
     <section class="bg-white rounded-lg shadow p-4 w-full mx-auto space-y-6">
         <h2 class="text-xl font-semibold mb-4">
-            {{ $t('checkout.collection', 'Collection') }}
+            {{ $t('checkout.collection', 'Delivery / Pickup') }}
         </h2>
 
         <!-- Delivery/Pickup Options -->
@@ -35,17 +35,19 @@
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
             </div>
-            <div v-else>
-                <p class="text-sm text-gray-500">
-                    {{ $t('checkout.noAddress', 'No address selected') }}
-                </p>
-                <button
-                    @click="openAddressModal"
-                    class="mt-1 px-3 py-2 bg-red-50 text-red-700 border-2 border-red-700 rounded text-sm"
-                >
-                    {{ $t('checkout.addAddress', 'Add Address') }}
-                </button>
-            </div>
+            <!-- Prominent "Add address" placeholder card -->
+            <button
+                v-else
+                @click="openAddressModal"
+                class="w-full flex flex-col items-center justify-center gap-2 p-6 rounded-lg bg-gray-50 border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="font-medium text-gray-700">{{ $t('checkout.addAddress', 'Add Address') }}</span>
+                <span class="text-sm text-gray-500">{{ $t('checkout.noAddress', 'No address selected') }}</span>
+            </button>
 
             <label for="addressExtra" class="block text-sm text-gray-700 mt-4">
                 {{ $t('checkout.addressComment', 'Additional Info for Address') }}
@@ -103,13 +105,26 @@ import { formatAddress } from '~/utils/utils'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
+interface OpeningHourEntry {
+    open: string
+    close: string
+    dinnerOpen?: string
+    dinnerClose?: string
+}
+
+const props = defineProps<{
+    openingHours?: Record<string, OpeningHourEntry | null>
+    orderingEnabled?: boolean
+    isCurrentlyOpen?: boolean
+}>()
+
 const emit = defineEmits(['open-address-modal'])
 const { t } = useI18n()
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
 
-// Manual disable flag @TODO: SYNC WITH DB
-const isOrderingDisabled = ref(false)
+// Use backend ordering status when available
+const isOrderingDisabled = computed(() => !(props.orderingEnabled ?? true))
 
 // Delivery/Pickup options
 const collectionOptions = [
@@ -129,15 +144,37 @@ onMounted(() => {
 })
 onUnmounted(() => { clearInterval(timerId) })
 
-// Business hours map (0=Sun … 6=Sat), Tue omitted = closed
-const hoursMap: Record<number, [string, string][]> = {
-    1: [['11:45','14:00'], ['17:45','22:00']], // Mon
-    3: [['11:45','14:00'], ['17:45','22:00']], // Wed
-    4: [['11:45','14:00'], ['17:45','22:00']], // Thu
-    5: [['11:45','14:00'], ['17:45','22:00']], // Fri
-    6: [['11:45','14:30'], ['17:45','22:15']], // Sat
-    0: [['11:45','14:30'], ['17:45','22:15']], // Sun
+// Day name mapping for backend opening hours
+const dayNameToNumber: Record<string, number> = {
+    sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+    thursday: 4, friday: 5, saturday: 6,
 }
+
+// Convert backend opening hours to hoursMap format
+const hoursMap = computed<Record<number, [string, string][]>>(() => {
+    if (props.openingHours) {
+        const result: Record<number, [string, string][]> = {}
+        for (const [dayName, entry] of Object.entries(props.openingHours)) {
+            const dayNum = dayNameToNumber[dayName.toLowerCase()]
+            if (dayNum === undefined || !entry) continue
+            const ranges: [string, string][] = [[entry.open, entry.close]]
+            if (entry.dinnerOpen && entry.dinnerClose) {
+                ranges.push([entry.dinnerOpen, entry.dinnerClose])
+            }
+            result[dayNum] = ranges
+        }
+        return result
+    }
+    // Fallback: hardcoded hours
+    return {
+        1: [['11:45','14:00'], ['17:45','22:00']], // Mon
+        3: [['11:45','14:00'], ['17:45','22:00']], // Wed
+        4: [['11:45','14:00'], ['17:45','22:00']], // Thu
+        5: [['11:45','14:00'], ['17:45','22:00']], // Fri
+        6: [['11:45','14:30'], ['17:45','22:15']], // Sat
+        0: [['11:45','14:30'], ['17:45','22:15']], // Sun
+    }
+})
 
 // Helpers
 const toMins = (hm: string) => {
@@ -168,10 +205,10 @@ const generateTimeSlots = (start: string, end: string) => {
     return slots
 }
 
-// Filtered slots ≥ minAllowedTime
+// Filtered slots >= minAllowedTime
 const availableTimeSlots = computed(() => {
     const day = now.value.getDay()
-    const ranges = hoursMap[day] || []
+    const ranges = hoursMap.value[day] || []
     const raw: string[] = []
     for (const [s,e] of ranges) {
         raw.push(...generateTimeSlots(s,e))
@@ -206,10 +243,13 @@ watch(
     { immediate: true }
 )
 
-// Is restaurant open by hours?
+// Is restaurant open? Use backend value when available, fallback to local hours check
 const isOpen = computed(() => {
+    if (props.isCurrentlyOpen !== undefined) {
+        return props.isCurrentlyOpen
+    }
     const day = now.value.getDay()
-    const ranges = hoursMap[day] || []
+    const ranges = hoursMap.value[day] || []
     const cur = now.value.getHours() * 60 + now.value.getMinutes()
     return ranges.some(([s,e]) => {
         const start = toMins(s), end = toMins(e)

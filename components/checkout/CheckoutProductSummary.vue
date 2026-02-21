@@ -1,56 +1,108 @@
 <template>
     <section class="bg-white rounded-lg shadow p-4 w-full mx-auto overflow-visible">
-        <h2 class="text-xl font-semibold mb-4">
-            {{ $t('checkout.orderSummary', 'Your Order') }}
-        </h2>
-        <div v-if="cartStore.products.length === 0" class="text-gray-500 text-center">
+        <!-- Collapsible header -->
+        <button
+            class="w-full flex items-center justify-between xl:cursor-default"
+            @click="isCollapsed = !isCollapsed"
+        >
+            <h2 class="text-xl font-semibold">
+                {{ $t('checkout.orderSummary', 'Your Order') }}
+                <span class="text-sm font-normal text-gray-500 ml-1">
+                    ({{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }})
+                </span>
+            </h2>
+            <!-- Chevron (mobile/tablet only) -->
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400 transition-transform duration-200 xl:hidden"
+                :class="{ 'rotate-180': !isCollapsed }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        <div v-if="cartStore.products.length === 0" class="text-gray-500 text-center mt-4">
             {{ $t('checkout.emptyCart', 'Your cart is empty.') }}
         </div>
-        <div v-else class="space-y-4">
+        <div v-else class="space-y-4 mt-4">
+            <!-- Collapsible item list -->
             <div
-                v-for="item in cartStore.products"
-                :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
-                class="flex items-center justify-between border-b pb-2"
+                class="overflow-hidden transition-all duration-200 xl:max-h-none"
+                :class="isCollapsed ? 'max-h-0 xl:max-h-none' : 'max-h-[2000px]'"
             >
-                <div class="flex items-center">
-                    <!-- Product Picture -->
-                    <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center mr-3">
-                        <picture>
-                            <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
-                                type="image/avif"
-                            />
-                            <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.webp`"
-                                type="image/webp"
-                            />
-                            <img
-                                :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
-                                alt="Product Image"
-                                class="w-full h-full object-cover"
-                            />
-                        </picture>
-                    </div>
-                    <!-- Product Details -->
-                    <div>
-                        <p class="font-medium">
-                            {{
-                                (item.product.code ? item.product.code + ' - ' : '') +
-                                (item.product.category?.name || '') +
-                                ' ' +
-                                item.product.name
-                            }}
+                <div class="space-y-4">
+                    <div
+                        v-for="item in cartStore.products"
+                        :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                        class="flex items-center justify-between border-b pb-2"
+                    >
+                        <div class="flex items-center flex-1 min-w-0">
+                            <!-- Product Picture -->
+                            <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+                                <picture>
+                                    <source
+                                        :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
+                                        type="image/avif"
+                                    />
+                                    <source
+                                        :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.webp`"
+                                        type="image/webp"
+                                    />
+                                    <img
+                                        :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
+                                        alt="Product Image"
+                                        class="w-full h-full object-cover"
+                                    />
+                                </picture>
+                            </div>
+                            <!-- Product Details -->
+                            <div class="min-w-0 flex-1">
+                                <p class="font-medium text-sm truncate">
+                                    {{
+                                        (item.product.code ? item.product.code + ' - ' : '') +
+                                        (item.product.category?.name || '') +
+                                        ' ' +
+                                        item.product.name
+                                    }}
+                                </p>
+                                <p v-if="item.selectedChoice" class="text-xs text-red-600">{{ item.selectedChoice.name }}</p>
+                                <!-- Quantity controls -->
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button
+                                        class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                        @click="handleDecrementQuantity(item)"
+                                    >
+                                        <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
+                                        -
+                                    </button>
+                                    <span class="text-sm w-6 text-center">{{ item.quantity }}</span>
+                                    <button
+                                        class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                        @click="handleIncrementQuantity(item)"
+                                    >
+                                        <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
+                                        +
+                                    </button>
+                                    <button
+                                        class="text-xs text-red-600 hover:text-red-700 ml-2"
+                                        @click="handleRemoveFromCart(item)"
+                                    >
+                                        {{ $t('cart.removeItem') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="font-medium ml-2 shrink-0">
+                            {{ formatPrice((Number(item.product.price) + (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)) * item.quantity) }}
                         </p>
-                        <p v-if="item.selectedChoice" class="text-xs text-red-600">{{ item.selectedChoice.name }}</p>
-                        <p class="text-sm text-gray-500">x{{ item.quantity }}</p>
                     </div>
                 </div>
-                <p class="font-medium">
-                    {{ formatPrice((Number(item.product.price) + (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)) * item.quantity) }}
-                </p>
             </div>
 
-            <!-- Price Summary -->
+            <!-- Price Summary (always visible) -->
             <div class="flex justify-between text-gray-700">
                 <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
                 <span>{{ formatPrice(cartTotal) }}</span>
@@ -89,7 +141,8 @@
                         </div>
                     </button>
                 </div>
-                <span>{{ formatPrice(deliveryFee) }}</span>
+                <span v-if="deliveryFee === 0" class="text-green-600 font-medium">{{ $t('checkout.free') }}</span>
+                <span v-else>{{ formatPrice(deliveryFee) }}</span>
             </div>
             <div v-if="cartStore.collectionOption === 'PICKUP'" class="flex justify-between text-gray-700">
                 <span>{{ $t('checkout.discount') }}</span>
@@ -109,10 +162,12 @@ import { useCartStore } from '@/stores/cart'
 import { useRuntimeConfig } from '#imports'
 import { formatPrice } from '~/lib/price'
 import type { ComputedRef } from 'vue'
+import type { CartItem } from '~/types'
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const showTooltip = ref(false)
+const isCollapsed = ref(true)
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)
@@ -146,4 +201,17 @@ const totalDiscount = computed(() => {
 const finalTotal: ComputedRef<number> = computed(() => {
     return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0) - totalDiscount.value
 })
+
+// Quantity control handlers
+const handleIncrementQuantity = (item: CartItem) => {
+    cartStore.incrementQuantity(item.product, item.selectedChoice)
+}
+
+const handleDecrementQuantity = (item: CartItem) => {
+    cartStore.decrementQuantity(item.product, item.selectedChoice)
+}
+
+const handleRemoveFromCart = (item: CartItem) => {
+    cartStore.removeFromCart(item.product, item.selectedChoice)
+}
 </script>
