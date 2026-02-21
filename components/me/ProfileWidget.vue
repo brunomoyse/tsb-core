@@ -67,12 +67,22 @@
             >
                 {{ $t('me.profile.update') }}
             </button>
+            <!-- Request Deletion / Cancel Deletion Request -->
             <button
+                v-if="!authStore.user?.deletionRequestedAt"
                 class="w-full rounded-lg border border-red-300 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
                 type="button"
-                @click="confirmDeleteAccount"
+                @click="handleRequestDeletion"
             >
-                {{ $t('me.profile.deleteAccount') }}
+                {{ $t('me.profile.requestDeletion') }}
+            </button>
+            <button
+                v-else
+                class="w-full rounded-lg border border-amber-400 bg-amber-50 px-4 py-2.5 text-amber-700 hover:bg-amber-100 transition-colors font-medium text-sm"
+                type="button"
+                @click="handleCancelDeletionRequest"
+            >
+                {{ $t('me.profile.cancelDeletionRequest') }}
             </button>
         </div>
 
@@ -93,67 +103,13 @@
                 </div>
             </div>
         </transition>
-
-        <!-- Delete Account Confirmation Modal -->
-        <transition name="fade">
-            <div
-                v-if="showDeleteModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-                @click.self="closeDeleteModal"
-                @keydown.esc="closeDeleteModal"
-                tabindex="0"
-            >
-                <div class="bg-white rounded-lg shadow-xl p-6 max-w-xl w-full mx-4" @click.stop>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">
-                        {{ $t('me.profile.deleteAccount') }}
-                    </h3>
-                    <p class="text-gray-600 mb-4">
-                        {{ $t('me.profile.deleteAccountConfirm') }}
-                    </p>
-                    <div class="mb-4">
-                        <label for="deleteConfirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ $t('me.profile.deleteAccountTyping') }}
-                        </label>
-                        <input
-                            id="deleteConfirmation"
-                            v-model="deleteConfirmationText"
-                            type="text"
-                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-red-200 focus:border-red-500"
-                            :placeholder="$t('me.profile.deleteAccountPlaceholder')"
-                        />
-                    </div>
-                    <div class="flex gap-2">
-                        <button
-                            class="flex-1 rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors font-medium"
-                            type="button"
-                            @click="closeDeleteModal"
-                        >
-                            {{ $t('common.cancel') }}
-                        </button>
-                        <button
-                            :disabled="deleteConfirmationText !== 'delete'"
-                            :class="[
-                                'flex-1 rounded-md px-3 py-1.5 text-sm text-white transition-colors font-medium',
-                                deleteConfirmationText === 'delete'
-                                    ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                                    : 'bg-red-300 cursor-not-allowed'
-                            ]"
-                            type="button"
-                            @click="deleteAccount"
-                        >
-                            {{ $t('me.profile.deleteAccount') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </transition>
     </article>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
-import { useGqlMutation, navigateTo, useLocalePath } from '#imports'
+import { useGqlMutation } from '#imports'
 import UserForm from '~/components/form/UserForm.vue'
 import gql from 'graphql-tag'
 import { formatAddress } from "~/utils/utils";
@@ -164,7 +120,6 @@ import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const localePath = useLocalePath()
 const { trackEvent } = useTracking()
 
 const UPDATE_ME = gql`
@@ -188,19 +143,30 @@ const UPDATE_ME = gql`
     }
 `
 
-const DELETE_ME = gql`
+const REQUEST_DELETION = gql`
     mutation {
-        deleteMe
+        requestDeletion {
+            id
+            deletionRequestedAt
+        }
+    }
+`
+
+const CANCEL_DELETION_REQUEST = gql`
+    mutation {
+        cancelDeletionRequest {
+            id
+            deletionRequestedAt
+        }
     }
 `
 
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
-const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELETE_ME)
+const { mutate: mutationRequestDeletion } = useGqlMutation<{ requestDeletion: User }>(REQUEST_DELETION)
+const { mutate: mutationCancelDeletionRequest } = useGqlMutation<{ cancelDeletionRequest: User }>(CANCEL_DELETION_REQUEST)
 
 // Modal visibility
 const showModal = ref(false)
-const showDeleteModal = ref(false)
-const deleteConfirmationText = ref('')
 
 // Define initial values for the UserForm
 const userInitialValues = ref({
@@ -215,11 +181,11 @@ const userInitialValues = ref({
 
 // Country list (used for processing the phone number)
 const countries = [
-    { prefix: '+31', code: 'NL', flag: '🇳🇱' },
-    { prefix: '+32', code: 'BE', flag: '🇧🇪' },
-    { prefix: '+33', code: 'FR', flag: '🇫🇷' },
-    { prefix: '+352', code: 'LU', flag: '🇱🇺' },
-    { prefix: '+44', code: 'DE', flag: '🇩🇪' },
+    { prefix: '+31', code: 'NL', flag: '\u{1F1F3}\u{1F1F1}' },
+    { prefix: '+32', code: 'BE', flag: '\u{1F1E7}\u{1F1EA}' },
+    { prefix: '+33', code: 'FR', flag: '\u{1F1EB}\u{1F1F7}' },
+    { prefix: '+352', code: 'LU', flag: '\u{1F1F1}\u{1F1FA}' },
+    { prefix: '+44', code: 'DE', flag: '\u{1F1E9}\u{1F1EA}' },
 ]
 
 // Open modal and set UserForm initial values based on authStore.user
@@ -281,41 +247,39 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
     closeModal()
 }
 
-// Delete account functions
-const confirmDeleteAccount = () => {
-    showDeleteModal.value = true
-}
+// Deletion request functions
+const handleRequestDeletion = async () => {
+    if (!confirm(t('me.profile.requestDeletionConfirm'))) return
 
-const closeDeleteModal = () => {
-    showDeleteModal.value = false
-    deleteConfirmationText.value = ''
-}
-
-const deleteAccount = async () => {
     try {
-        await mutationDeleteMe()
+        const res = await mutationRequestDeletion()
+        authStore.updateUser({ deletionRequestedAt: res.requestDeletion.deletionRequestedAt })
 
         eventBus.emit('notify', {
-            message: t('me.profile.deleteAccountSuccess'),
+            message: t('me.profile.requestDeletionSuccess'),
             persistent: false,
             duration: 3000,
             variant: 'success',
         })
-
-        // Logout and redirect
-        authStore.logout()
-        navigateTo(localePath('/'))
     } catch (error) {
-        console.error('Error during account deletion:', error)
-        eventBus.emit('notify', {
-            message: 'An error occurred while deleting your account',
-            persistent: false,
-            duration: 5000,
-            variant: 'error',
-        })
+        console.error('Error requesting deletion:', error)
     }
+}
 
-    closeDeleteModal()
+const handleCancelDeletionRequest = async () => {
+    try {
+        const res = await mutationCancelDeletionRequest()
+        authStore.updateUser({ deletionRequestedAt: res.cancelDeletionRequest.deletionRequestedAt })
+
+        eventBus.emit('notify', {
+            message: t('me.profile.cancelDeletionSuccess'),
+            persistent: false,
+            duration: 3000,
+            variant: 'success',
+        })
+    } catch (error) {
+        console.error('Error canceling deletion request:', error)
+    }
 }
 </script>
 

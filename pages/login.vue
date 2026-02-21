@@ -138,6 +138,7 @@ const ME = gql`
             firstName
             lastName
             phoneNumber
+            deletionRequestedAt
             address {
                 id
                 streetName

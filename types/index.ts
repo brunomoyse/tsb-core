@@ -58,6 +58,7 @@ export interface LoginResponse {
 }
 
 export interface User {
+    deletionRequestedAt: string | null;
     email: string;
     firstName: string;
     id: string;
