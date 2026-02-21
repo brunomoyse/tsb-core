@@ -161,7 +161,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import Checkbox from '~/components/Checkbox.vue'
 import { formatAddress } from '~/utils/utils'
@@ -183,7 +183,6 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'close'])
 
 const { t } = useI18n()
-const phoneUtil = PhoneNumberUtil.getInstance()
 
 // Reactive state with defaults and initial values
 const firstName = ref(props.initialValues.firstName || '')
@@ -210,12 +209,8 @@ const countries = [
 
 // Computed property for formatted phone
 const formattedPhone = computed(() => {
-    try {
-        const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
-        return phoneUtil.format(number, PhoneNumberFormat.E164)
-    } catch {
-        return phoneLocal.value
-    }
+    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
+    return parsed?.format('E.164') ?? phoneLocal.value
 })
 
 // Password strength validation
@@ -300,14 +295,9 @@ const removeAddress = () => {
 
 // Phone validation function
 const validatePhone = () => {
-    try {
-        const number = phoneUtil.parseAndKeepRawInput(phoneLocal.value, selectedCountry.value)
-        phoneError.value = phoneUtil.isValidNumber(number) ? '' : t('register.invalidPhone')
-        return !phoneError.value
-    } catch {
-        phoneError.value = t('register.invalidPhone')
-        return false
-    }
+    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
+    phoneError.value = parsed?.isValid() ? '' : t('register.invalidPhone')
+    return !phoneError.value
 }
 
 // Submit button text based on mode
