@@ -59,6 +59,9 @@
     "waitressName": "Xu Sa",
     "waitressRole": "Restaurant Manager",
     "heroButton": "View Menu",
+    "visitUsTitle": "Visit Us",
+    "openingHoursLabel": "Opening Hours",
+    "contactLink": "Get in touch",
     "infoCards": {
       "freeDelivery": "Free delivery",
       "freeDeliveryDesc": "Free from 25 EUR, with delivery fees based on distance beyond.",

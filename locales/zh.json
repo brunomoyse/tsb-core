@@ -59,6 +59,9 @@
     "waitressName": "徐飒",
     "waitressRole": "餐厅经理",
     "heroButton": "查看菜单",
+    "visitUsTitle": "来访我们",
+    "openingHoursLabel": "营业时间",
+    "contactLink": "联系我们",
     "infoCards": {
       "freeDelivery": "免费配送",
       "freeDeliveryDesc": "满25欧元免费配送，超出范围按距离收取配送费。",
