@@ -199,11 +199,11 @@
       "phoneNumber": "电话号码",
       "update": "更新资料",
       "updateSuccess": "您的资料已成功更新。",
-      "deleteAccount": "删除账户",
-      "deleteAccountConfirm": "您确定要删除您的账户吗？此操作不可逆转，您的所有数据将被永久删除。",
-      "deleteAccountSuccess": "您的账户已成功删除。",
-      "deleteAccountTyping": "输入 \"delete\" 以确认：",
-      "deleteAccountPlaceholder": "输入 delete"
+      "requestDeletion": "请求删除账户",
+      "requestDeletionConfirm": "您确定要请求删除您的账户吗？餐厅团队将收到通知。",
+      "requestDeletionSuccess": "您的删除请求已发送。",
+      "cancelDeletionRequest": "取消删除请求",
+      "cancelDeletionSuccess": "您的删除请求已取消。"
     },
     "logout": "您已成功登出"
   },

@@ -199,11 +199,11 @@
       "phoneNumber": "Phone Number",
       "update": "Update Profile",
       "updateSuccess": "Your profile has been successfully updated.",
-      "deleteAccount": "Delete Account",
-      "deleteAccountConfirm": "Are you sure you want to delete your account? This action is irreversible and all your data will be permanently deleted.",
-      "deleteAccountSuccess": "Your account has been successfully deleted.",
-      "deleteAccountTyping": "Type \"delete\" to confirm:",
-      "deleteAccountPlaceholder": "Type delete"
+      "requestDeletion": "Request Account Deletion",
+      "requestDeletionConfirm": "Are you sure you want to request the deletion of your account? The restaurant team will be notified.",
+      "requestDeletionSuccess": "Your deletion request has been sent.",
+      "cancelDeletionRequest": "Cancel Deletion Request",
+      "cancelDeletionSuccess": "Your deletion request has been cancelled."
     },
     "logout": "Logout"
   },
