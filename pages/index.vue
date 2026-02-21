@@ -33,13 +33,13 @@ useSeoMeta({
 </script>
 
 <template>
-    <section class="max-w-5xl mx-auto p-6 pt-9 space-y-12">
+    <section class="max-w-5xl mx-auto p-6 pt-9 space-y-16">
         <!-- Hero Section -->
         <div class="relative h-64 sm:h-96 overflow-hidden rounded-lg shadow-lg">
             <img alt="Tokyo Sushi Bar" class="absolute inset-0 w-full h-full object-cover"
                  src="/images/about-hero.png"/>
             <div
-                class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center text-white px-4">
+                class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white px-4">
                 <h1 class="text-4xl font-bold">{{ $t('about.heroTitle') }}</h1>
                 <p class="mt-4 text-lg">{{ $t('about.heroSubtitle') }}</p>
                 <NuxtLinkLocale
@@ -52,10 +52,13 @@ useSeoMeta({
         </div>
 
         <!-- Our Story Section -->
-        <div class="px-4">
-            <h2 class="text-3xl font-bold text-center mb-4">{{ $t('about.ourStoryTitle') }}</h2>
-            <p class="text-gray-700 text-center max-w-3xl mx-auto">
-                {{ $t('about.ourStoryText') }}
+        <div class="px-4 max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-6">{{ $t('about.ourStoryTitle') }}</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                {{ $t('about.ourStoryText1') }}
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                {{ $t('about.ourStoryText2') }}
             </p>
         </div>
 
@@ -63,41 +66,16 @@ useSeoMeta({
         <div class="px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <div class="bg-white rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F69A;</div>
                     <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.freeDelivery') }}</h3>
                     <p class="text-gray-600 text-sm">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
                 </div>
                 <div class="bg-white rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F6CD;</div>
                     <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.takeawayDiscount') }}</h3>
                     <p class="text-gray-600 text-sm">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
                 </div>
                 <div class="bg-white rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl mb-3" aria-hidden="true">&#x1F3A3;</div>
                     <h3 class="font-semibold text-lg mb-2">{{ $t('about.infoCards.freshDaily') }}</h3>
                     <p class="text-gray-600 text-sm">{{ $t('about.infoCards.freshDailyDesc') }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Our Values Section -->
-        <div class="px-4">
-            <h2 class="text-3xl font-bold text-center mb-6">{{ $t('about.ourValuesTitle') }}</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div class="flex flex-col items-center text-center">
-                    <span class="text-4xl mb-2">🌿</span>
-                    <h3 class="font-semibold">{{ $t('about.valueFresh') }}</h3>
-                    <p class="text-gray-600">{{ $t('about.valueFreshDesc') }}</p>
-                </div>
-                <div class="flex flex-col items-center text-center">
-                    <span class="text-4xl mb-2">🏆</span>
-                    <h3 class="font-semibold">{{ $t('about.valueExcellence') }}</h3>
-                    <p class="text-gray-600">{{ $t('about.valueExcellenceDesc') }}</p>
-                </div>
-                <div class="flex flex-col items-center text-center">
-                    <span class="text-4xl mb-2">💡</span>
-                    <h3 class="font-semibold">{{ $t('about.valueInnovation') }}</h3>
-                    <p class="text-gray-600">{{ $t('about.valueInnovationDesc') }}</p>
                 </div>
             </div>
         </div>
@@ -117,26 +95,6 @@ useSeoMeta({
                     <h3 class="mt-4 font-semibold text-center">{{ $t('about.waitressName') }}</h3>
                     <p class="text-gray-600 text-center">{{ $t('about.waitressRole') }}</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Call-to-Action Section -->
-        <div class="text-center px-4">
-            <h2 class="text-3xl font-bold mb-4">{{ $t('about.ctaTitle') }}</h2>
-            <p class="text-gray-700 mb-6 max-w-xl mx-auto">{{ $t('about.ctaText') }}</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <NuxtLinkLocale
-                    class="inline-block bg-red-500 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-tsb-red-darker transition"
-                    to="menu">
-                    {{ $t('about.ctaButtonOrder') }}
-                </NuxtLinkLocale>
-                <!--
-                <NuxtLinkLocale
-                    class="inline-block bg-gray-800 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-gray-900 transition"
-                    to="reservations">
-                    {{ $t('about.ctaButtonReserve') }}
-                </NuxtLinkLocale>
-                -->
             </div>
         </div>
     </section>
