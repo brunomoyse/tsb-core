@@ -104,6 +104,25 @@
     "yes": "Oui",
     "no": "Non"
   },
+  "forgotPassword": {
+    "title": "Mot de passe oublié",
+    "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "submit": "Envoyer le lien",
+    "successTitle": "E-mail envoyé",
+    "successMessage": "Si un compte existe avec cet e-mail, vous recevrez un lien de réinitialisation sous peu. Veuillez vérifier votre boîte de réception.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "resetPassword": {
+    "title": "Réinitialiser le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+    "submit": "Réinitialiser le mot de passe",
+    "successTitle": "Mot de passe réinitialisé",
+    "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.",
+    "invalidToken": "Ce lien de réinitialisation est invalide ou a expiré.",
+    "requestNewLink": "Demander un nouveau lien",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas."
+  },
   "login": {
     "title": "Connexion",
     "email": "E-mail",
@@ -290,7 +309,8 @@
         "addressRequired": "Une adresse est requise pour une livraison.",
         "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
         "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
-        "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard."
+        "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
+        "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer."
     }
   },
   "schema": {
@@ -322,6 +342,14 @@
     "register": {
       "title": "Inscription - Tokyo Sushi Bar",
       "description": "Créez votre compte Tokyo Sushi Bar"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié - Tokyo Sushi Bar",
+      "description": "Réinitialisez le mot de passe de votre compte Tokyo Sushi Bar"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le mot de passe - Tokyo Sushi Bar",
+      "description": "Définissez un nouveau mot de passe pour votre compte Tokyo Sushi Bar"
     },
     "checkout": {
       "title": "Commande - Tokyo Sushi Bar"

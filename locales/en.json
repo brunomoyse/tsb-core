@@ -104,6 +104,25 @@
     "yes": "Yes",
     "no": "No"
   },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "submit": "Send Reset Link",
+    "successTitle": "Email Sent",
+    "successMessage": "If an account exists with this email, you will receive a password reset link shortly. Please check your inbox.",
+    "backToLogin": "Back to Login"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "submit": "Reset Password",
+    "successTitle": "Password Reset",
+    "successMessage": "Your password has been successfully reset. You will be redirected to the login page shortly.",
+    "invalidToken": "This reset link is invalid or has expired.",
+    "requestNewLink": "Request a new link",
+    "passwordsMismatch": "Passwords do not match."
+  },
   "login": {
     "title": "Login",
     "email": "Email",
@@ -291,7 +310,8 @@
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
       "invalidCredentials": "Invalid email or password. Please try again.",
-      "orderingUnavailable": "Ordering is currently unavailable. Please try again later."
+      "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
+      "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again."
     }
   },
   "schema": {
@@ -323,6 +343,14 @@
     "register": {
       "title": "Register - Tokyo Sushi Bar",
       "description": "Create your Tokyo Sushi Bar account"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password - Tokyo Sushi Bar",
+      "description": "Reset your Tokyo Sushi Bar account password"
+    },
+    "resetPassword": {
+      "title": "Reset Password - Tokyo Sushi Bar",
+      "description": "Set a new password for your Tokyo Sushi Bar account"
     },
     "checkout": {
       "title": "Checkout - Tokyo Sushi Bar"
