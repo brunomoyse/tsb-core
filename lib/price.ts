@@ -1,6 +1,6 @@
-export function formatPrice(price: number): string {
+export function formatPrice(price: number | string): string {
     return new Intl.NumberFormat("fr-BE", {
         style: "currency",
         currency: "EUR",
-    }).format(price);
+    }).format(Number(price));
 }

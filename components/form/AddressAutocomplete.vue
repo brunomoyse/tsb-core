@@ -245,7 +245,7 @@ watch(streetQuery, () => handleStreetSearch())
 watch(selectedStreet, () => handleStreetSelection())
 watch(selectedHouseNumber, () => handleHouseNumberSelection())
 watch(filteredBoxNumbers, (newVal) => {
-    if (newVal.length === 1) selectedBoxNumber.value = newVal[0]
+    if (newVal.length === 1) selectedBoxNumber.value = newVal[0]!
 })
 watch(address, (newVal) => {
     emit('update:address', newVal)
@@ -263,8 +263,7 @@ const handleStreetSearch = async () => {
                 variables: {
                     query: streetQuery.value,
                 }
-            },
-            { immediate: true, cache: false }
+            }
         );
 
         if (data.streets) {
@@ -273,7 +272,7 @@ const handleStreetSearch = async () => {
                 s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
             );
             if (exactMatches.length === 1) {
-                await selectStreet(exactMatches[0]);
+                await selectStreet(exactMatches[0]!);
             }
         }
     }, 500)
@@ -296,8 +295,7 @@ const loadHouseNumbers = async () => {
                 variables: {
                     streetId: selectedStreet.value!.id
                 }
-            },
-            { immediate: true, cache: false }
+            }
         );
         if (data.houseNumbers) {
             houseNumbers.value = data.houseNumbers;
@@ -333,8 +331,7 @@ const loadBoxNumbers = async () => {
                     streetId: selectedStreet.value!.id,
                     houseNumber: selectedHouseNumber.value
                 }
-            },
-            { immediate: true, cache: false }
+            }
         );
 
         if (data.boxNumbers) {
@@ -342,7 +339,7 @@ const loadBoxNumbers = async () => {
             boxQuery.value = '';
             // Auto-select and confirm only if there's exactly one box option
             if (data.boxNumbers.length === 1) {
-                selectedBoxNumber.value = data.boxNumbers[0];
+                selectedBoxNumber.value = data.boxNumbers[0]!;
                 boxConfirmed.value = true;
             }
             // If there are multiple boxes, give user time to choose
@@ -417,7 +414,7 @@ const selectStreet = async (street: Street) => {
 
 const selectFirstStreet = () => {
     if (streets.value.length > 0) {
-        selectStreet(streets.value[0])
+        selectStreet(streets.value[0]!)
     }
 }
 
@@ -430,7 +427,7 @@ const selectHouse = async (hn: string) => {
 
 const selectFirstHouse = () => {
     if (filteredHouseNumbers.value.length > 0) {
-        selectHouse(filteredHouseNumbers.value[0])
+        selectHouse(filteredHouseNumbers.value[0]!)
     }
 }
 
@@ -455,7 +452,7 @@ const selectBox = (box: string | null) => {
 
 const selectFirstBox = () => {
     if (filteredBoxNumbers.value.length > 0) {
-        selectBox(filteredBoxNumbers.value[0])
+        selectBox(filteredBoxNumbers.value[0]!)
     }
 }
 

@@ -78,7 +78,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 // utils/jwt.ts
 function checkTokenExpiration(token: string): boolean {
     try {
-        const payload = JSON.parse(atob(token.split('.')[1]))
+        const payload = JSON.parse(atob(token.split('.')[1]!))
         return payload.exp * 1000 > Date.now()
     } catch {
         return false

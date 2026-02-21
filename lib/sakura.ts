@@ -145,8 +145,9 @@ class Sakura {
                 const petals = document.getElementsByClassName(this.settings.className);
 
                 while (petals.length > 0) {
-                    if (petals[0].parentNode) {
-                        petals[0].parentNode.removeChild(petals[0]);
+                    const petal = petals[0]!;
+                    if (petal.parentNode) {
+                        petal.parentNode.removeChild(petal);
                     }
                 }
             }, this.settings.delay + 50);
@@ -154,7 +155,7 @@ class Sakura {
     }
 
     private randomArrayElem<T>(arr: T[]): T {
-        return arr[Math.floor(Math.random() * arr.length)];
+        return arr[Math.floor(Math.random() * arr.length)]!;
     }
 
     private randomInt(min: number, max: number): number {

@@ -84,7 +84,7 @@ useSchemaOrg([
         '@type': 'FAQPage',
         name: t('faq.schemaTitle'),
         description: t('faq.schemaDescription'),
-        mainEntity: faqs.value.map(faq => ({
+        mainEntity: faqs.value.map((faq: { question: string; answer: string }) => ({
             '@type': 'Question',
             name: faq.question,
             acceptedAnswer: {

@@ -1,5 +1,23 @@
 import {defineNuxtConfig} from "nuxt/config";
 
+// Derive origins for CSP from environment variables (dev defaults)
+const apiOrigin = process.env.BASE_URL || 'http://localhost:8080'
+const wsOrigin = apiOrigin.replace(/^http/, 'ws')
+const s3Url = process.env.S3_BUCKET_URL
+const osm = 'https://www.openstreetmap.org'
+const posthogHost = process.env.POSTHOG_HOST || 'https://eu.i.posthog.com'
+
+const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://eu-assets.i.posthog.com",
+    "style-src 'self' 'unsafe-inline'",
+    `img-src 'self' data:${s3Url ? ' ' + s3Url : ''}`,
+    "font-src 'self' https://fonts.gstatic.com",
+    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${osm} ${posthogHost} https://eu-assets.i.posthog.com`,
+    `frame-src ${osm}`,
+    "worker-src 'self' blob:",
+].join('; ') + ';'
+
 export default defineNuxtConfig({
     ssr: true,
 
@@ -50,6 +68,7 @@ export default defineNuxtConfig({
 
     i18n: {
         bundle: {
+            // @ts-expect-error i18n v10 option not yet in published types
             optimizeTranslationDirective: false,
         },
         defaultLocale: 'fr',
@@ -121,7 +140,6 @@ export default defineNuxtConfig({
             '/**/order-completed/**',
         ],
     },
-    // @ts-expect-error property googleFonts does not exist
     googleFonts: {
         families: {
             Montserrat: [400, 500, 600, 700],
@@ -136,7 +154,7 @@ export default defineNuxtConfig({
                 'Referrer-Policy': 'strict-origin-when-cross-origin',
                 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
                 'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
-                'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://eu-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://d1sq9yypil8nox.cloudfront.net; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.tokyosushi.be wss://api.tokyosushi.be https://eu.i.posthog.com https://eu-assets.i.posthog.com; worker-src 'self' blob:;",
+                'Content-Security-Policy': csp,
             },
         },
     },

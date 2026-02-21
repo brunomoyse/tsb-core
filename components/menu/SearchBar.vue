@@ -6,7 +6,7 @@
 
         <!-- The actual input field -->
         <input id="searchInput" :placeholder="$t('nav.search')" :value="modelValue" class="w-full px-10 py-2 rounded-2xl bg-tsb-two"
-               type="text"
+               type="search"
                @input="onInput"/>
         <!-- Magnifying glass icon (inline SVG) -->
         <img alt="Search" class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2"
@@ -40,3 +40,9 @@ function onClear() {
     emit('update:modelValue', '')
 }
 </script>
+
+<style scoped>
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+</style>

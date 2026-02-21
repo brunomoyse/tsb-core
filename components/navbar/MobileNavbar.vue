@@ -51,6 +51,24 @@
                                 <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
                                                 class="justify-center" icon="/icons/translate-icon.svg"
                                                 tooltipText="Change Language"/>
+
+                                <!-- Divider -->
+                                <li class="w-full border-t border-gray-200 my-2"></li>
+
+                                <!-- Opening Hours -->
+                                <li class="text-center text-xs text-gray-500">
+                                    {{ $t('footer.hours') }}
+                                </li>
+
+                                <!-- Phone (tap-to-call) -->
+                                <li>
+                                    <a href="tel:042229888"
+                                       class="flex items-center justify-center space-x-2 p-3 rounded-xl hover:bg-tsb-one transition-colors"
+                                       @click="closeMenu">
+                                        <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
+                                        <span class="text-sm font-medium">04 222 98 88</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
 
@@ -147,7 +165,7 @@ const closeMenu = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     opacity: 0;
     transform: translateY(-20px);
     pointer-events: none;

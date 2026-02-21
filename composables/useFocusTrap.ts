@@ -23,8 +23,8 @@ export function useFocusTrap(containerRef: Ref<HTMLElement | null>) {
         const focusable = getFocusableElements()
         if (focusable.length === 0) return
 
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
+        const first = focusable[0]!
+        const last = focusable[focusable.length - 1]!
 
         if (e.shiftKey) {
             if (document.activeElement === first) {
@@ -46,7 +46,7 @@ export function useFocusTrap(containerRef: Ref<HTMLElement | null>) {
         // Focus first focusable element
         const focusable = getFocusableElements()
         if (focusable.length > 0) {
-            focusable[0].focus()
+            focusable[0]!.focus()
         }
     }
 

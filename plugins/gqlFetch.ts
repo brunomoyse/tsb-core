@@ -75,15 +75,15 @@ export default defineNuxtPlugin(() => {
     }
 
     /** low‑level POST that returns the raw { data, errors } */
-    async function doFetch(body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal) {
+    async function doFetch(body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<{ data?: unknown; errors?: Array<{ extensions?: { code?: string }; message?: string }> }> {
         const userLocale = useCookie('i18n_redirected').value ?? 'fr'
-        return await $fetch.raw(httpURL, {
+        return await $fetch(httpURL, {
             method: 'POST',
             body,
             credentials: 'include',
             signal,
             headers: buildHeaders(userLocale),
-        }).then((r) => r._data)
+        })
     }
 
     /** build the JSON headers + forward cookies SSR */

@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center">
-        <div class="w-[500px]">
+        <div class="w-full max-w-[500px] px-4">
             <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">
                 {{ $t('register.title') }}
             </h2>

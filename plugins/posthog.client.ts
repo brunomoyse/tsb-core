@@ -1,8 +1,8 @@
-import posthog from 'posthog-js'
+import posthog, { type PostHog } from 'posthog-js'
 import { defineNuxtPlugin, useRuntimeConfig, useRouter } from '#imports'
 import { useAuthStore } from '~/stores/auth'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => {
     const config = useRuntimeConfig()
     const apiKey = config.public.posthogApiKey as string
 

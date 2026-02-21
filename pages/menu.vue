@@ -135,10 +135,13 @@
         <!-- Mobile Cart -->
         <CartMobile class="lg:hidden" />
 
+        <!-- Floating Cart Bar (mobile only) -->
+        <FloatingCartBar />
+
         <ClientOnly>
             <ProductModal
                 v-if="route.query.product"
-                :product="route.query.product"
+                :product="route.query.product as string"
                 @close="closeModal"
             />
         </ClientOnly>
@@ -162,6 +165,7 @@ import CategoryCard from '~/components/menu/CategoryCard.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import SideCart from '~/components/cart/SideCart.vue'
 import CartMobile from '~/components/cart/CartMobile.vue'
+import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
 import type { ProductCategory, Product } from '@/types'
 import ProductModal from "~/components/menu/ProductModal.vue";
 
@@ -320,12 +324,10 @@ const scrollToCategory = (categoryId: string) => {
     if (!element || !header) return
 
     const headerHeight = header.offsetHeight
-    let position = element.getBoundingClientRect().top + window.scrollY - headerHeight - 90
-    // if >= sm, add 60px for the sticky header
-    if (window.innerWidth >= 640) {
-        position += 60
-    }
-    window.scrollTo({ top: position, behavior: 'smooth' })
+    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // h-20 on mobile only
+    const gap = 16
+    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
+    window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
 }
 
 /**
@@ -343,7 +345,7 @@ watch(debouncedSearchValue, (newVal, oldVal) => {
 
 // Initialize active category when list changes
 watch(displayedCategories, cats => {
-    if (!activeCategory.value && cats.length) activeCategory.value = cats[0].id
+    if (!activeCategory.value && cats.length) activeCategory.value = cats[0]!.id
 }, { immediate: true })
 
 // Center active card on change
@@ -470,11 +472,11 @@ onMounted(() => {
 
     // Observe each category section
     const observeSections = () => {
-        observer.disconnect()
+        observer!.disconnect()
         nextTick(() => {
             displayedCategories.value.forEach(cat => {
                 const el = document.getElementById(`category-${cat.id}`)
-                if (el) observer.observe(el)
+                if (el) observer!.observe(el)
             })
         })
     }

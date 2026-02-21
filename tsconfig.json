@@ -1,6 +1,9 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "types": ["pinia-plugin-persistedstate"]
+  },
   "include": [
     "./**/*.ts",
     "./**/*.d.ts",

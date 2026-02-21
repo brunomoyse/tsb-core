@@ -37,7 +37,9 @@ const displayName = computed(() => {
 });
 
 const chipClasses = computed(() => [
-    'rounded-full px-3 py-2 text-sm font-semibold',
-    props.active ? 'bg-black text-white' : 'bg-white text-gray-600',
+    'rounded-full px-3 py-2 text-sm font-semibold transition-colors',
+    props.active
+        ? 'bg-black text-white shadow-sm'
+        : 'bg-white text-gray-700 border border-gray-200',
 ].join(' '));
 </script>
