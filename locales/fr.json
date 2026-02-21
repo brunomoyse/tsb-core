@@ -92,7 +92,8 @@
     "description": "Description",
     "discountable": "Remise possible",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "pickupDiscountBadge": "10% de remise à emporter"
   },
   "forgotPassword": {
     "title": "Mot de passe oublié",

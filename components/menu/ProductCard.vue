@@ -3,7 +3,7 @@
         <div v-if="product" :key="product.id"
              data-testid="product-card"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2">
+             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2 transition-shadow duration-200 hover:shadow-lg">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
                 <picture class="w-full h-full flex justify-center items-center">
@@ -85,12 +85,12 @@ import type {Product} from "@/types";
 import {useRuntimeConfig} from "#imports";
 import {useTracking} from "~/composables/useTracking";
 import {eventBus} from "~/eventBus";
-import {useI18n} from "vue-i18n";
+import { useI18n } from 'vue-i18n'
 
 const cartStore = useCartStore();
+const { t } = useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
-const { t } = useI18n();
 
 const props = defineProps<{
     index: number;
@@ -136,10 +136,14 @@ const addToCart = () => {
         quantity: 1,
         source: 'card',
     });
+    eventBus.emit('cart-item-added', {
+        productName: props.product.name,
+        productId: props.product.id,
+    });
     eventBus.emit('notify', {
         message: t('notify.addedToCart', { product: props.product.name }),
-        duration: 2000,
         variant: 'success',
+        duration: 2000,
     });
     showControls.value = true;
     resetTimeout();

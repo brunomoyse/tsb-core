@@ -92,7 +92,8 @@
     "description": "Description",
     "discountable": "Discountable",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "pickupDiscountBadge": "10% off on pickup"
   },
   "forgotPassword": {
     "title": "Forgot Password",
