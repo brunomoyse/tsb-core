@@ -1,9 +1,9 @@
 <template>
     <div :class="{ 'pointer-events-none opacity-50': !product.isAvailable }">
         <div v-if="product" :key="product.id"
-             class="min-w-[140px] max-w-[185px] w-full h-[260px]  bg-white border-2 rounded-xl shadow-md flex flex-col p-2 overflow-hidden">
-            <!-- Product Image -->
-            <div class="flex justify-center items-center h-1/2 p-4 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
+             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2">
+            <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
+            <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
                 <picture class="w-full h-full flex justify-center items-center">
                     <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.avif`"
                             type="image/avif"/>
@@ -17,51 +17,38 @@
                          :src="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.png`" class="object-contain max-h-full transition-opacity duration-500"/>
                 </picture>
             </div>
-            <!-- Product Details -->
-            <div class="flex-1 flex flex-col p-2" :class="{ 'justify-between': product.isAvailable }">
-                <div class="flex flex-col items-center mb-2">
-                    <!-- Category Name -->
-                    <span class="text-gray-500 font-medium text-xs mb-1 truncate">
+
+            <!-- Product Details (fixed size: does not grow) -->
+            <div class="shrink-0 px-2 pb-1">
+                <!-- Text block: fixed height so price always aligns across cards -->
+                <div class="h-[76px] flex flex-col items-center overflow-hidden">
+                    <span class="text-gray-500 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
-
-                    <!-- Product Name -->
                     <span
-                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-1"
+                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5"
                         :title="product.name"
                     >
                       {{ product.name }}
                     </span>
-
-                    <!-- Pieces -->
-                    <span class="text-gray-500 text-xs mb-1">
+                    <span class="text-gray-500 text-xs">
                       {{ product?.pieceCount }}
                         {{ product?.pieceCount ? product?.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') : "" }}
                     </span>
                 </div>
 
                 <!-- Price and Cart Controls -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center mx-2">
-                    <!-- If NOT showing expanded controls -->
+                <div v-if="product.isAvailable" class="flex justify-between items-center mt-1">
                     <template v-if="!showControls">
-                        <!-- Price -->
+                        <span class="text-black font-semibold text-sm">
+                          {{ formatPrice(product.price) }}
+                        </span>
                         <div>
-                            <span class="text-black font-semibold text-sm">
-                              {{ formatPrice(product.price) }}
-                            </span>
-                        </div>
-
-                        <!-- Cart Controls -->
-                        <div>
-                            <!-- Add to Cart Button -->
                             <button v-if="!isInCart" aria-label="Add to Cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     @click="addToCart">
                                 <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
-
-                            <!-- Quantity Display -->
-                            <!-- Make it clickable so that when user clicks, the expanded controls show -->
                             <div v-else
                                  class="flex items-center justify-center w-10 h-10 text-gray-800 font-semibold border-2 border-red-500 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                  @click="showExpandedControls">
@@ -69,26 +56,19 @@
                             </div>
                         </div>
                     </template>
-
-                    <!-- Expanded Controls -->
                     <div v-else class="w-full flex justify-between items-center">
                         <button class="flex items-center justify-center w-10 h-10 text-gray-700 border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50" type="button"
                                 @click="decrement">
                             -
                         </button>
-
-                        <span class="text-sm font-semibold text-gray-700">
-                {{ cardQuantity }}
-              </span>
-
+                        <span class="text-sm font-semibold text-gray-700">{{ cardQuantity }}</span>
                         <button class="flex items-center justify-center w-10 h-10 text-gray-700 border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50" type="button"
                                 @click="increment">
                             +
                         </button>
                     </div>
                 </div>
-
-                <div v-else class="flex self-center text-sm text-gray-500">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="flex justify-center text-sm text-gray-500 mt-1">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>
