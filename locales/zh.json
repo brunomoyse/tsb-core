@@ -104,6 +104,25 @@
     "yes": "是",
     "no": "否"
   },
+  "forgotPassword": {
+    "title": "忘记密码",
+    "description": "输入您的电子邮件地址，我们将向您发送重置密码的链接。",
+    "submit": "发送重置链接",
+    "successTitle": "邮件已发送",
+    "successMessage": "如果此电子邮件存在关联账户，您将很快收到密码重置链接。请检查您的收件箱。",
+    "backToLogin": "返回登录"
+  },
+  "resetPassword": {
+    "title": "重置密码",
+    "newPassword": "新密码",
+    "newPasswordPlaceholder": "输入您的新密码",
+    "submit": "重置密码",
+    "successTitle": "密码已重置",
+    "successMessage": "您的密码已成功重置。您将很快被重定向到登录页面。",
+    "invalidToken": "此重置链接无效或已过期。",
+    "requestNewLink": "请求新链接",
+    "passwordsMismatch": "两次输入的密码不一致。"
+  },
   "login": {
     "title": "登录",
     "email": "电子邮件",
@@ -291,7 +310,8 @@
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
       "invalidCredentials": "电子邮件或密码无效。请重试。",
-      "orderingUnavailable": "目前无法下单。请稍后再试。"
+      "orderingUnavailable": "目前无法下单。请稍后再试。",
+      "tooManyRequests": "尝试次数过多。请等待几分钟后再试。"
     }
   },
   "schema": {
@@ -323,6 +343,14 @@
     "register": {
       "title": "注册 - Tokyo Sushi Bar",
       "description": "创建您的 Tokyo Sushi Bar 账户"
+    },
+    "forgotPassword": {
+      "title": "忘记密码 - Tokyo Sushi Bar",
+      "description": "重置您的 Tokyo Sushi Bar 账户密码"
+    },
+    "resetPassword": {
+      "title": "重置密码 - Tokyo Sushi Bar",
+      "description": "为您的 Tokyo Sushi Bar 账户设置新密码"
     },
     "checkout": {
       "title": "结账 - Tokyo Sushi Bar"

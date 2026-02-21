@@ -36,6 +36,11 @@
                     />
                 </div>
 
+                <!-- Inline Error -->
+                <p v-if="errorMessage" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                    {{ errorMessage }}
+                </p>
+
                 <!-- Submit Button -->
                 <button data-testid="login-submit" class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
                     {{ $t('login.submit') }}
@@ -70,6 +75,13 @@
           <span class="text-black font-medium hover:underline cursor-pointer">
             {{ $t('login.register') }}
           </span>
+                </NuxtLinkLocale>
+            </p>
+
+            <!-- Forgot Password Link -->
+            <p class="text-sm text-gray-500 text-center mt-2">
+                <NuxtLinkLocale to="/forgot-password" class="text-gray-500 hover:text-black hover:underline">
+                    {{ $t('login.forgot') }}
                 </NuxtLinkLocale>
             </p>
         </div>
@@ -116,6 +128,7 @@ useSeoMeta({
 
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
 
 const ME = gql`
     query {
@@ -139,6 +152,7 @@ const ME = gql`
 
 // Regular email/password login
 const login = async () => {
+    errorMessage.value = ''
     try {
         await $api<LoginResponse>('/login', {
             method: 'POST',
@@ -147,15 +161,15 @@ const login = async () => {
                 password: password.value
             },
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Login error:', error)
-        trackEvent('login_error', { error_type: 'invalid_credentials' })
-        eventBus.emit('notify', {
-            message: t('notify.errors.invalidCredentials'),
-            persistent: false,
-            duration: 5000,
-            variant: 'warning',
-        })
+        if (error?.response?.status === 429) {
+            trackEvent('login_error', { error_type: 'rate_limited' })
+            errorMessage.value = t('notify.errors.tooManyRequests')
+        } else {
+            trackEvent('login_error', { error_type: 'invalid_credentials' })
+            errorMessage.value = t('notify.errors.invalidCredentials')
+        }
         return
     }
     trackEvent('user_logged_in', { method: 'email' })
@@ -179,8 +193,8 @@ const loginSuccess = async () => {
         if (cartStore.products.length > 0) {
             navigateTo(localePath('checkout'))
         } else {
-            // If the cart is empty, navigate to user profile
-            navigateTo(localePath('me'))
+            // If the cart is empty, navigate to menu
+            navigateTo(localePath('menu'))
         }
     }
 }
@@ -188,7 +202,7 @@ const loginSuccess = async () => {
 onMounted(async () => {
     // Check if the user is already logged in on page load
     if (authStore.accessValid) {
-        navigateTo(localePath('me'))
+        navigateTo(localePath('menu'))
     }
 
     const params = new URLSearchParams(window.location.search)
