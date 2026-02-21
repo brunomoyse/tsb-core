@@ -99,7 +99,7 @@ module.exports = {
                 },
                 "cart-flash": {
                     "0%": {backgroundColor: "#fef3c7"},
-                    "100%": {backgroundColor: "transparent"},
+                    "100%": {backgroundColor: "#ffffff"},
                 },
                 "cart-pulse": {
                     "0%, 100%": {transform: "scale(1)"},

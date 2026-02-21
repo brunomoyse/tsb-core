@@ -55,31 +55,49 @@
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
                     </label>
                 </div>
-                <!-- Soy Sauce Options Card -->
+                <!-- Soy Sauce Options Card - Pill Toggles -->
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <p class="font-medium text-gray-700 mb-3">
                         {{ $t('checkout.soySauce', 'Soy Sauce (choose up to 2):') }}
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="flex-1">
-                            <label for="sauce1" class="block text-sm text-gray-600 mb-1">
-                                Sauce 1
-                            </label>
-                            <select id="sauce1" v-model="sauce1" class="block w-full border border-gray-300 rounded p-2">
-                                <option value="none">{{ $t('checkout.none', 'None') }}</option>
-                                <option value="sweet">{{ $t('checkout.sweet', 'Sweet') }}</option>
-                                <option value="salty">{{ $t('checkout.salty', 'Salty') }}</option>
-                            </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <p class="block text-sm text-gray-600 mb-2">Sauce 1</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    v-for="option in sauceOptions"
+                                    :key="option.value"
+                                    type="button"
+                                    @click="sauce1 = option.value"
+                                    :class="[
+                                        'px-3 py-1.5 text-sm border rounded-full transition-colors',
+                                        sauce1 === option.value
+                                            ? 'border-red-500 bg-red-50 text-red-700 font-medium'
+                                            : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                                    ]"
+                                >
+                                    {{ option.label }}
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex-1">
-                            <label for="sauce2" class="block text-sm text-gray-600 mb-1">
-                                Sauce 2
-                            </label>
-                            <select id="sauce2" v-model="sauce2" class="block w-full border border-gray-300 rounded p-2">
-                                <option value="none">{{ $t('checkout.none', 'None') }}</option>
-                                <option value="sweet">{{ $t('checkout.sweet', 'Sweet') }}</option>
-                                <option value="salty">{{ $t('checkout.salty', 'Salty') }}</option>
-                            </select>
+                        <div>
+                            <p class="block text-sm text-gray-600 mb-2">Sauce 2</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    v-for="option in sauceOptions"
+                                    :key="option.value"
+                                    type="button"
+                                    @click="sauce2 = option.value"
+                                    :class="[
+                                        'px-3 py-1.5 text-sm border rounded-full transition-colors',
+                                        sauce2 === option.value
+                                            ? 'border-red-500 bg-red-50 text-red-700 font-medium'
+                                            : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                                    ]"
+                                >
+                                    {{ option.label }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,9 +124,9 @@
             : $t('cart.minimumPickup', { amount: 20}) }}
         </div>
 
-        <!-- Checkout Button -->
+        <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
-            'w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
+            'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
             props.isMinimumReached && !props.loading && props.isOrderingAvailable
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -135,6 +153,7 @@ import { computed } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
 import { useTracking } from '~/composables/useTracking'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
     isMinimumReached: {
@@ -153,8 +172,15 @@ const props = defineProps({
 
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
+const { t } = useI18n()
 
 const emit = defineEmits(['checkout'])
+
+const sauceOptions = computed(() => [
+    { value: 'none', label: t('checkout.none') },
+    { value: 'sweet', label: t('checkout.sweet') },
+    { value: 'salty', label: t('checkout.salty') },
+])
 
 const setOnlinePayment = (value: boolean) => {
     trackEvent('payment_method_selected', { method: value ? 'ONLINE' : 'CASH' })

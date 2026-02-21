@@ -235,7 +235,7 @@
     "deliveryFeeInfo": "Frais de livraison selon la distance :\n• Moins de 4 km : Gratuit\n• 4-5 km : 1€\n• 5-6 km : 2€\n• 6-7 km : 3€\n• 7-8 km : 4€\n• 8-9 km : 5€",
     "discount": "Remise (à emporter)",
     "total": "Total :",
-    "collection": "Retrait",
+    "collection": "Livraison / Retrait",
     "deliveryAddress": "Adresse de livraison",
     "editAddress": "Modifier l'adresse",
     "noAddress": "Aucune adresse sélectionnée",
@@ -261,7 +261,12 @@
     "placeOrder": "Passer la commande",
     "processing": "Traitement en cours...",
     "restaurantClosed": "Le restaurant est actuellement fermé. Veuillez vérifier les horaires d'ouverture.",
-    "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard."
+    "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard.",
+    "free": "Gratuit",
+    "stepMenu": "Menu",
+    "stepCheckout": "Commande",
+    "stepPayment": "Paiement",
+    "itemCount": "{count} article | {count} articles"
   },
   "orderCompleted": {
     "title": "Commande reçue",

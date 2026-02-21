@@ -236,7 +236,7 @@
     "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 4 km: Free\n• 4-5 km: €1\n• 5-6 km: €2\n• 6-7 km: €3\n• 7-8 km: €4\n• 8-9 km: €5",
     "discount": "Pick-up discount",
     "total": "Total:",
-    "collection": "Collection",
+    "collection": "Delivery / Pickup",
     "deliveryAddress": "Delivery Address",
     "editAddress": "Edit Address",
     "noAddress": "No address selected",
@@ -262,7 +262,12 @@
     "placeOrder": "Place Order",
     "processing": "Processing...",
     "restaurantClosed": "Restaurant is currently closed. Please check the opening hours.",
-    "orderDisabled": "Ordering is disabled at the moment. Please try again later."
+    "orderDisabled": "Ordering is disabled at the moment. Please try again later.",
+    "free": "Free",
+    "stepMenu": "Menu",
+    "stepCheckout": "Checkout",
+    "stepPayment": "Payment",
+    "itemCount": "{count} item | {count} items"
   },
   "orderCompleted": {
     "title": "Order Completed",

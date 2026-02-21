@@ -262,7 +262,12 @@
     "processing": "处理中...",
     "discount": "折扣",
     "restaurantClosed": "餐厅已关闭",
-    "orderDisabled": "订单已禁用"
+    "orderDisabled": "订单已禁用",
+    "free": "免费",
+    "stepMenu": "菜单",
+    "stepCheckout": "结账",
+    "stepPayment": "付款",
+    "itemCount": "{count} 件商品"
   },
   "orderCompleted": {
     "title": "订单完成",

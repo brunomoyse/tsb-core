@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-7xl mx-auto p-4">
+    <div class="max-w-7xl mx-auto p-4 pb-20 lg:pb-4">
         <!-- Restaurant Closed Banner -->
         <div v-if="!isOrderingAvailable" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -13,16 +13,69 @@
             {{ $t('checkout.title', 'Checkout') }}
         </h1>
 
+        <!-- Step Indicator -->
+        <nav class="flex items-center justify-center gap-2 text-sm mb-6">
+            <NuxtLinkLocale to="/menu" class="text-red-600 hover:text-red-700 font-medium">
+                {{ $t('checkout.stepMenu') }}
+            </NuxtLinkLocale>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="font-bold text-gray-900">{{ $t('checkout.stepCheckout') }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
+        </nav>
+
         <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
-            <CheckoutCollectionOptions @open-address-modal="openAddressModal" />
+            <CheckoutCollectionOptions
+                @open-address-modal="openAddressModal"
+                :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
+                :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
+                :is-currently-open="restaurantConfig?.restaurantConfig?.isCurrentlyOpen"
+            />
             <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" />
         </div>
 
         <!-- Extras Suggestion -->
         <div class="mt-8">
             <CheckoutExtrasSuggestion />
+        </div>
+
+        <!-- Sticky Checkout Button (mobile only) -->
+        <div class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4">
+            <div class="flex items-center justify-between max-w-7xl mx-auto">
+                <div class="font-semibold text-lg">
+                    {{ formatPrice(cartTotal) }}
+                </div>
+                <button
+                    @click="handleCheckout"
+                    :class="[
+                        'px-6 pt-2 pb-3 rounded-lg font-medium transition-colors',
+                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable
+                          ? 'bg-red-500 text-white hover:bg-red-600'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ]"
+                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable"
+                >
+                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        {{ $t('checkout.processing') }}
+                    </span>
+                    <span v-else>
+                        {{ cartStore.paymentOption === 'ONLINE'
+                            ? $t('checkout.goToPayment')
+                            : $t('checkout.placeOrder')
+                        }}
+                    </span>
+                </button>
+            </div>
         </div>
 
         <!-- Address Modal -->
@@ -86,6 +139,7 @@ import { useI18n } from "vue-i18n"
 import {timeToRFC3339} from "~/utils/utils";
 import {useTracking} from "~/composables/useTracking";
 import {useRestaurantConfig} from "~/composables/useRestaurantConfig";
+import { formatPrice } from '~/lib/price'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
