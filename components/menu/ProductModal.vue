@@ -1,5 +1,6 @@
 <template>
-    <div class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+         @click.self="emit('close')">
         <div ref="modalRef" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
                 @click="emit('close')"
@@ -32,52 +33,32 @@
                         <h2 class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
                     </div>
 
-                    <!-- Price & Attributes -->
-                    <div class="space-y-4">
-                        <div class="flex items-baseline gap-4">
-                            <div class="flex gap-2">
-                                <span v-if="p.isHalal" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                                    {{ $t('menu.halal') }}
-                                </span>
-                                <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                                    {{ $t('menu.vegan') }}
-                                </span>
-                            </div>
-                        </div>
+                    <!-- Price & Badges -->
+                    <div class="flex items-baseline gap-3 flex-wrap">
+                        <span class="text-2xl font-bold text-gray-900">{{ formatPrice(displayPrice) }}</span>
+                        <span v-if="p.pieceCount" class="text-sm text-gray-500">
+                            {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
+                        </span>
+                    </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.price') }}
-                                </p>
-                                <p class="font-medium text-gray-900">{{ formatPrice(displayPrice) }}</p>
-                            </div>
-                            <div v-if="p.pieceCount && p.pieceCount === 1" class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.pc').charAt(0).toUpperCase() + $t('menu.pc').slice(1) }}
-                                </p>
-                                <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
-                            </div>
-                            <div v-else-if="p.pieceCount && p.pieceCount > 1" class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.pcs').charAt(0).toUpperCase() + $t('menu.pcs').slice(1) }}
-                                </p>
-                                <p class="font-medium text-gray-900">{{ p.pieceCount }}</p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg" v-if="p.code">
-                                <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.code') }}
-                                </p>
-                                <p class="font-medium text-gray-900">{{ p.code || 'N/A' }}</p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-500 mb-1">
-                                    {{ $t('menu.discountable') }}
-                                </p>
-                                <p v-if="p.isDiscountable" class="font-medium text-gray-900">{{ $t('menu.yes') }}</p>
-                                <p v-else class="font-medium text-gray-900">{{ $t('menu.no') }}</p>
-                            </div>
-                        </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <span v-if="p.isHalal" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                            {{ $t('menu.halal') }}
+                        </span>
+                        <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                            {{ $t('menu.vegan') }}
+                        </span>
+                        <span v-if="p.isDiscountable" class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200">
+                            {{ $t('menu.pickupDiscountBadge') }}
+                        </span>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="prose prose-sm" v-if="p.description">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                            {{ $t('menu.description') }}
+                        </h3>
+                        <p class="text-gray-600 text-sm">{{ p.description }}</p>
                     </div>
 
                     <!-- Choice Selection -->
@@ -135,14 +116,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Description -->
-                    <div class="prose prose-sm border-t pt-4" v-if="p.description">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                            {{ $t('menu.description') }}
-                        </h3>
-                        <p class="text-gray-600 text-sm">{{ p.description }}</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -157,10 +130,13 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import {formatPrice} from "~/lib/price";
 import {useCartStore} from "~/stores/cart";
+import {eventBus} from "~/eventBus";
 import type { Product, ProductChoice } from "@/types"
+import { useI18n } from 'vue-i18n'
 
 
 const cartStore = useCartStore();
+const { t } = useI18n()
 const config = useRuntimeConfig()
 const { trackEvent } = useTracking()
 const props = defineProps<{
@@ -274,6 +250,16 @@ const addToCart = () => {
         quantity: quantity.value,
         choice_id: selectedChoice.value?.id,
         source: 'modal',
+    })
+    eventBus.emit('cart-item-added', {
+        productName: p.name,
+        productId: p.id,
+        choiceId: selectedChoice.value?.id,
+    })
+    eventBus.emit('notify', {
+        message: t('notify.addedToCart', { product: p.name }),
+        variant: 'success',
+        duration: 2000,
     })
 
     emit('close')

@@ -92,7 +92,8 @@
     "description": "描述",
     "discountable": "可折扣",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "pickupDiscountBadge": "自取享9折"
   },
   "forgotPassword": {
     "title": "忘记密码",
