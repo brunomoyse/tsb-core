@@ -8,6 +8,10 @@ on:
 env:
   DOCKER_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.actor }}/tsb-core:latest
+  BASE_URL: https://tokyo.brunomoyse.be
+  API_BASE_URL: https://tokyo.brunomoyse.be/api/v1
+  S3_BUCKET_URL: https://d1sq9yypil8nox.cloudfront.net
+  GRAPHQL_WS_URL: wss://tokyo.brunomoyse.be/api/v1/graphql
 
 jobs:
   build_amd64:
@@ -29,9 +33,10 @@ jobs:
           docker buildx build . \
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-amd64 \
-            --build-arg API_URL=${{ secrets.API_URL }} \
-            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
-            --build-arg DB_PASS=${{ secrets.DB_PASS }} \
+            --build-arg BASE_URL=${{ env.BASE_URL }} \
+            --build-arg API_BASE_URL=${{ env.API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ env.S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ env.GRAPHQL_WS_URL }} \
             --push
 
   build_arm64:
@@ -53,9 +58,10 @@ jobs:
           docker buildx build . \
             --platform linux/arm64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-arm64 \
-            --build-arg API_URL=${{ secrets.API_URL }} \
-            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
-            --build-arg DB_PASS=${{ secrets.DB_PASS }} \
+            --build-arg BASE_URL=${{ env.BASE_URL }} \
+            --build-arg API_BASE_URL=${{ env.API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ env.S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ env.GRAPHQL_WS_URL }} \
             --push
 
   create_manifest:
@@ -74,48 +80,14 @@ jobs:
             ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-amd64 \
             ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-arm64
 
-  # deploy:
-  #   needs: build_and_publish
-  #   name: Deploy Docker Image to AWS
-  #   runs-on: ubuntu-latest
+  deploy:
+    needs: create_manifest
+    name: Deploy to Home Server
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Create SSH Directory and Install Key
-  #       run: |
-  #         mkdir -p ~/.ssh
-  #         echo "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/aws_key.pem
-  #         chmod 600 ~/.ssh/aws_key.pem
-
-  #     - name: Add AWS Host to Known Hosts
-  #       run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-  #     - name: Deploy to AWS Server
-  #       run: |
-  #         ssh -i ~/.ssh/aws_key.pem ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-  #           set -e  # Stop on first error
-  #           echo "*** Logging into Docker Registry ***"
-  #           echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
-  #
-  #           echo "*** Pulling the latest Docker image ***"
-  #           docker pull ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
-  #
-  #           echo "*** Checking if the target directory exists ***"
-  #           if [ ! -d "${{ secrets.WORK_DIR }}" ]; then
-  #             echo "Error: Directory ${{ secrets.WORK_DIR }} does not exist. Deployment aborted." >&2
-  #             exit 1
-  #           fi
-  #
-  #           echo "*** Changing to target directory ***"
-  #           cd ${{ secrets.WORK_DIR }}
-  #
-  #           echo "*** Running Docker Compose ***"
-  #           docker compose pull && docker compose up -d
-  #
-  #           echo "*** Removing unused Docker images ***"
-  #           docker image prune -af
-  #
-  #           echo "*** Deployment complete ***"
-  #         EOF
-
-  #     - name: Clean Up SSH Key
-  #       run: rm -f ~/.ssh/aws_key.pem
+    steps:
+      - name: Trigger deploy webhook
+        run: |
+          curl -X POST https://tokyo.brunomoyse.be/_deploy/hooks/deploy-tokyosushi \
+            -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
+            --fail --max-time 300
