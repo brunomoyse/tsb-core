@@ -62,12 +62,17 @@
                 </section>
 
                 <!-- Allergen Notice -->
-                <div class="mx-4 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-2 text-amber-800 text-xs">
+                <div v-if="showAllergenNotice" class="mx-4 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-2 text-amber-800 text-xs">
                     <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
-                    <p>
+                    <p class="flex-1">
                         {{ $t('menu.allergenNotice') }}
                         <a href="tel:042229888" class="underline font-medium">{{ $t('menu.allergenNoticeLink') }}</a>
                     </p>
+                    <button @click="showAllergenNotice = false" class="ml-1 p-0.5 hover:bg-amber-100 rounded" :aria-label="$t('common.close')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
             </section>
 
@@ -172,6 +177,7 @@ import ProductModal from "~/components/menu/ProductModal.vue";
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
+const showAllergenNotice = ref(true)
 
 const openModal = (id: string) => {
     // Add productId to URL query
