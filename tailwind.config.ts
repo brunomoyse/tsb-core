@@ -97,10 +97,20 @@ module.exports = {
                     from: {height: "var(--radix-accordion-content-height)"},
                     to: {height: '0'},
                 },
+                "cart-flash": {
+                    "0%": {backgroundColor: "#fef3c7"},
+                    "100%": {backgroundColor: "transparent"},
+                },
+                "cart-pulse": {
+                    "0%, 100%": {transform: "scale(1)"},
+                    "50%": {transform: "scale(1.02)"},
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
+                "cart-flash": "cart-flash 1.5s ease-out forwards",
+                "cart-pulse": "cart-pulse 0.3s ease-in-out",
             },
         },
     },

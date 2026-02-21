@@ -41,7 +41,8 @@
             </p>
             <div v-else class="space-y-4">
                 <div v-for="item in cartStore.products" :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
-                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg">
+                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
+                     :class="{ 'animate-cart-flash': highlightedKey === `${item.product.id}-${item.selectedChoice?.id ?? 'none'}` }">
                     <!-- Product Image -->
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                         <picture>
@@ -153,9 +154,10 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, useRuntimeConfig} from '#imports';
+import {computed, ref, onMounted, onUnmounted, useRuntimeConfig} from '#imports';
 import {useCartStore} from '@/stores/cart';
 import {formatPrice} from '~/lib/price';
+import {eventBus} from '~/eventBus';
 import type {CartItem} from '@/types';
 import {useI18n} from 'vue-i18n';
 import {useTracking} from '~/composables/useTracking';
@@ -164,6 +166,28 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const {t} = useI18n()
 const { trackEvent } = useTracking()
+
+// Flash-highlight for newly added items
+const highlightedKey = ref<string | null>(null)
+let highlightTimeout: NodeJS.Timeout | null = null
+
+const onCartItemAdded = (payload: { productId: string; choiceId?: string }) => {
+    const key = `${payload.productId}-${payload.choiceId ?? 'none'}`
+    highlightedKey.value = key
+    if (highlightTimeout) clearTimeout(highlightTimeout)
+    highlightTimeout = setTimeout(() => {
+        highlightedKey.value = null
+    }, 1500)
+}
+
+onMounted(() => {
+    eventBus.on('cart-item-added', onCartItemAdded)
+})
+
+onUnmounted(() => {
+    eventBus.off('cart-item-added', onCartItemAdded)
+    if (highlightTimeout) clearTimeout(highlightTimeout)
+})
 
 // Delivery options setup
 const collectionOptions = [
