@@ -8,11 +8,45 @@
         ? 'lg:w-[calc(100vw-142px)]'
         : 'lg:w-[calc(67vw-71px)]'"
         >
+            <!-- Restaurant Closed Banner -->
+            <div v-if="!isOrderingAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <p class="text-amber-800 text-sm font-medium">{{ $t('menu.restaurantClosed') }}</p>
+            </div>
+
             <!-- Sticky Categories Header -->
             <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one">
                 <!-- Search Section -->
                 <section class="mb-4 px-4">
                     <SearchBar v-model="searchValue" />
+                </section>
+
+                <!-- Filter Pills -->
+                <section class="flex gap-2 px-4 mb-4">
+                    <button
+                        @click="toggleFilter('halal')"
+                        :class="[
+                            'px-3 py-1 rounded-full text-sm font-medium border transition-colors',
+                            activeFilters.has('halal')
+                                ? 'bg-green-600 text-white border-green-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                        ]"
+                    >
+                        {{ $t('menu.halal') }}
+                    </button>
+                    <button
+                        @click="toggleFilter('vegan')"
+                        :class="[
+                            'px-3 py-1 rounded-full text-sm font-medium border transition-colors',
+                            activeFilters.has('vegan')
+                                ? 'bg-green-600 text-white border-green-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                        ]"
+                    >
+                        {{ $t('menu.vegan') }}
+                    </button>
                 </section>
 
                 <!-- Categories Scroll -->
@@ -113,6 +147,7 @@
                         <ProductCard
                             :index="idx"
                             :product="prod"
+                            :ordering-disabled="!isOrderingAvailable"
                             class="min-width-[200px]"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
@@ -129,6 +164,11 @@
                 <!-- Search No Results -->
                 <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
+                </div>
+
+                <!-- Filter No Results -->
+                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                    <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
             </section>
         </div>
@@ -166,6 +206,7 @@ import { useDebounce } from '@vueuse/core'
 import { useGqlQuery, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
 import { useTracking } from '~/composables/useTracking'
+import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 
@@ -182,6 +223,10 @@ const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
 const showAllergenNotice = ref(true)
+
+// Restaurant config
+const { config: restaurantConfig } = await useRestaurantConfig()
+const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
 
 const openModal = (id: string) => {
     // Add productId to URL query
@@ -212,6 +257,7 @@ const PRODUCT_CATEGORIES = gql`
         isVisible
         isAvailable
         isHalal
+        isVegan
         isDiscountable
         category { id name }
         choices { id }
@@ -240,6 +286,18 @@ const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+// Filter state
+const activeFilters = ref<Set<string>>(new Set())
+const toggleFilter = (filter: string) => {
+    const next = new Set(activeFilters.value)
+    if (next.has(filter)) {
+        next.delete(filter)
+    } else {
+        next.add(filter)
+    }
+    activeFilters.value = next
+}
 
 /**
  * Computed: Categories & Products
@@ -275,12 +333,23 @@ const filteredProducts = computed(() => {
     })
 })
 
+// Apply dietary filters (AND logic: product must match ALL active filters)
+const dietaryFiltered = computed(() => {
+    const filters = activeFilters.value
+    if (filters.size === 0) return filteredProducts.value
+    return filteredProducts.value.filter(p => {
+        if (filters.has('halal') && !p.isHalal) return false
+        if (filters.has('vegan') && !p.isVegan) return false
+        return true
+    })
+})
+
 // Categories displayed, grouping filtered products
 const displayedCategories = computed<ProductCategory[]>(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q) return baseCategories.value
+    if (!q && activeFilters.value.size === 0) return baseCategories.value
     const map = new Map<string, ProductCategory & { products: Product[] }>()
-    filteredProducts.value.forEach(prod => {
+    dietaryFiltered.value.forEach(prod => {
         const cat = prod.category
         if (!map.has(cat.id)) map.set(cat.id, { ...cat, products: [] })
         map.get(cat.id)!.products.push(prod)

@@ -148,6 +148,10 @@
                 <span>{{ $t('checkout.discount') }}</span>
                 <span>-{{ formatPrice(totalDiscount) }}</span>
             </div>
+            <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
+                <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
+                <span>-{{ formatPrice(cartStore.couponDiscount) }}</span>
+            </div>
             <div class="flex justify-between font-semibold text-lg mt-4">
                 <span>{{ $t('checkout.total', 'Total:') }}</span>
                 <span>{{ formatPrice(finalTotal) }}</span>
@@ -199,7 +203,7 @@ const totalDiscount = computed(() => {
 });
 
 const finalTotal: ComputedRef<number> = computed(() => {
-    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0) - totalDiscount.value
+    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0) - totalDiscount.value - cartStore.couponDiscount
 })
 
 // Quantity control handlers

@@ -5,7 +5,10 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-            <p class="text-amber-800 font-medium">{{ $t('checkout.restaurantClosed') }}</p>
+            <p class="text-amber-800 font-medium">
+                {{ $t('checkout.restaurantClosed') }}
+                <span v-if="nextOpeningTime" class="block text-sm mt-1 font-normal">{{ $t('checkout.opensAt', { time: nextOpeningTime }) }}</span>
+            </p>
         </div>
 
         <!-- Page Title -->
@@ -140,6 +143,7 @@ import {timeToRFC3339} from "~/utils/utils";
 import {useTracking} from "~/composables/useTracking";
 import {useRestaurantConfig} from "~/composables/useRestaurantConfig";
 import { formatPrice } from '~/lib/price'
+import { getNextOpeningTime } from '~/utils/openingHours'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -150,6 +154,21 @@ const { trackEvent } = useTracking()
 // Check restaurant ordering status
 const { config: restaurantConfig } = await useRestaurantConfig()
 const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
+
+const nextOpeningTime = computed(() => {
+    const hours = restaurantConfig.value?.restaurantConfig?.openingHours
+    if (!hours) return null
+    const dayLabels: Record<string, string> = {
+        monday: t('days.monday'),
+        tuesday: t('days.tuesday'),
+        wednesday: t('days.wednesday'),
+        thursday: t('days.thursday'),
+        friday: t('days.friday'),
+        saturday: t('days.saturday'),
+        sunday: t('days.sunday'),
+    }
+    return getNextOpeningTime(hours, dayLabels)
+})
 
 useSeoMeta({
     title: t('schema.checkout.title'),
@@ -335,6 +354,7 @@ const handleCheckout = async () => {
                 ? (cartStore.address?.id ?? null)
                 : null,
             addressExtra: cartStore.addressExtra,
+            couponCode: cartStore.couponCode,
             orderNote: cartStore.orderNote,
             orderExtra: cartStore.orderExtra,
             items: cartStore.products.map((item) => ({
@@ -378,7 +398,7 @@ const handleCheckout = async () => {
     }
 }
 const cartTotal = computed(() => {
-    let total = subtotal.value - totalDiscount.value;
+    let total = subtotal.value - totalDiscount.value - cartStore.couponDiscount;
     return Math.max(total, 0);
 });
 

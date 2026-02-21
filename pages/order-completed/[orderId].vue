@@ -84,12 +84,13 @@
                 >
                     {{ $t('orderCompleted.viewOrders', 'View My Orders') }}
                 </NuxtLinkLocale>
-                <NuxtLinkLocale
-                    to="/menu"
+                <button
+                    v-if="order"
                     class="flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    @click="reorder(order)"
                 >
-                    {{ $t('orderCompleted.orderAgain', 'Order Again') }}
-                </NuxtLinkLocale>
+                    {{ $t('reorder.button') }}
+                </button>
                 <NuxtLinkLocale
                     to="/"
                     class="flex items-center justify-center px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
@@ -116,6 +117,7 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTracking } from '~/composables/useTracking'
+import { useReorder } from '~/composables/useReorder'
 
 definePageMeta({ public: false })
 
@@ -124,6 +126,7 @@ const cartStore = useCartStore()
 const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
+const { reorder } = useReorder()
 
 // 1) Fetch the order once (SSR)
 const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
@@ -162,13 +165,11 @@ const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
                     quantity
                     totalPrice
                     product {
-                        id
-                        name
-                        category {
-                            id
-                            name
-                        }
+                        id name code slug price pieceCount isAvailable isDiscountable isHalal isVegan isVisible
+                        category { id name order }
+                        choices { id productId priceModifier sortOrder name }
                     }
+                    choice { id productId priceModifier sortOrder name }
                 }
             }
         }

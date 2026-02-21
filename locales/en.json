@@ -96,7 +96,17 @@
     "discountable": "Discountable",
     "yes": "Yes",
     "no": "No",
-    "pickupDiscountBadge": "10% off on pickup"
+    "pickupDiscountBadge": "10% off on pickup",
+    "restaurantClosed": "The restaurant is currently closed. You can browse the menu, but ordering is unavailable."
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
   },
   "forgotPassword": {
     "title": "Forgot Password",
@@ -267,7 +277,8 @@
     "stepMenu": "Menu",
     "stepCheckout": "Checkout",
     "stepPayment": "Payment",
-    "itemCount": "{count} item | {count} items"
+    "itemCount": "{count} item | {count} items",
+    "opensAt": "Opens at {time}"
   },
   "orderCompleted": {
     "title": "Order Completed",
@@ -369,6 +380,28 @@
       "login": "Login",
       "register": "Register"
     }
+  },
+  "coupon": {
+    "title": "Promo Code",
+    "placeholder": "Enter promo code",
+    "apply": "Apply",
+    "remove": "Remove",
+    "applied": "Coupon applied: -{discount} off",
+    "invalid": "Invalid promo code",
+    "discount": "Coupon discount"
+  },
+  "reorder": {
+    "button": "Re-order",
+    "success": "{count} items added to cart",
+    "partial": "{added} items added, {skipped} unavailable items skipped",
+    "empty": "No available items to re-order"
+  },
+  "verify": {
+    "banner": "Please verify your email address to complete your account setup.",
+    "resend": "Resend verification email",
+    "sent": "Verification email sent!",
+    "error": "Failed to send verification email. Please try again.",
+    "dismiss": "Dismiss"
   },
   "cookies": {
     "message": "This site uses essential cookies for authentication. We also use analytics cookies to understand how you use our site. You can accept or decline analytics cookies.",

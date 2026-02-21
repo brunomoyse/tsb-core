@@ -49,6 +49,7 @@
                         <div>
                             <button v-if="!isInCart" aria-label="Add to Cart" data-testid="product-add-to-cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
+                                    :disabled="props.orderingDisabled"
                                     @click="addToCart">
                                 <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
@@ -95,6 +96,7 @@ const { trackEvent } = useTracking();
 const props = defineProps<{
     index: number;
     product: Product;
+    orderingDisabled?: boolean;
 }>();
 
 const emit = defineEmits(['openProductModal']);

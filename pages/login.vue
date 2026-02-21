@@ -135,6 +135,7 @@ const ME = gql`
         me {
             id
             email
+            emailVerifiedAt
             firstName
             lastName
             phoneNumber
