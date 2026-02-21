@@ -142,7 +142,7 @@
         </aside>
 
         <!-- Mobile Cart -->
-        <CartMobile class="lg:hidden" />
+        <CartMobile />
 
         <!-- Floating Cart Bar (mobile only) -->
         <FloatingCartBar />

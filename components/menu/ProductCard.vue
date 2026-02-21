@@ -140,11 +140,7 @@ const addToCart = () => {
         productName: props.product.name,
         productId: props.product.id,
     });
-    eventBus.emit('notify', {
-        message: t('notify.addedToCart', { product: props.product.name }),
-        variant: 'success',
-        duration: 2000,
-    });
+
     showControls.value = true;
     resetTimeout();
 };

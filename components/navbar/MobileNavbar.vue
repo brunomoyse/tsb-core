@@ -55,11 +55,6 @@
                                 <!-- Divider -->
                                 <li class="w-full border-t border-gray-200 my-2"></li>
 
-                                <!-- Opening Hours -->
-                                <li class="text-center text-xs text-gray-500">
-                                    {{ $t('footer.hours') }}
-                                </li>
-
                                 <!-- Phone (tap-to-call) -->
                                 <li>
                                     <a href="tel:042229888"

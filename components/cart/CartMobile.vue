@@ -1,19 +1,20 @@
 <template>
-    <!-- Backdrop -->
-    <Transition name="fade">
-        <div
-            v-if="cartStore.isCartVisible"
-            class="fixed inset-0 bg-black/30 z-30 lg:hidden"
-            @click="cartStore.toggleCartVisibility"
-        />
-    </Transition>
+    <div class="lg:hidden">
+        <!-- Backdrop -->
+        <Transition name="fade">
+            <div
+                v-if="cartStore.isCartVisible"
+                class="fixed inset-0 bg-black/30 z-30"
+                @click="cartStore.toggleCartVisibility"
+            />
+        </Transition>
 
-    <!-- Cart Panel -->
-    <Transition class="lg:hidden" name="slide-up">
-        <aside
-            v-if="cartStore.isCartVisible"
-            class="fixed bottom-0 inset-x-0 bg-tsb-one z-40 flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
-        >
+        <!-- Cart Panel -->
+        <Transition name="slide-up">
+            <aside
+                v-if="cartStore.isCartVisible"
+                class="fixed bottom-0 inset-x-0 bg-tsb-one z-40 flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
+            >
             <!-- Drag Handle -->
             <div class="flex justify-center pt-3 pb-1">
                 <div class="w-10 h-1 rounded-full bg-gray-300" />
@@ -131,8 +132,9 @@
                     {{ $t('cart.checkout') }}
                 </NuxtLinkLocale>
             </footer>
-        </aside>
-    </Transition>
+            </aside>
+        </Transition>
+    </div>
 </template>
 
 <script lang="ts" setup>
