@@ -257,15 +257,18 @@ const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =
     )
 )
 
-// Filtered list based on search query
+// Filtered list based on search query (all words must match)
 const filteredProducts = computed(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
     if (!q) return allProducts.value
-    return allProducts.value.filter(p =>
-        p.code?.toLowerCase().includes(q) ||
-        p.name.toLowerCase().includes(q) ||
-        p.category.name.toLowerCase().includes(q)
-    )
+    const words = q.split(/\s+/)
+    return allProducts.value.filter(p => {
+        const haystack = [p.name, p.code, p.category.name]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+        return words.every(w => haystack.includes(w))
+    })
 })
 
 // Categories displayed, grouping filtered products
