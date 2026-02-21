@@ -9,6 +9,7 @@
             <div
                 v-for="option in collectionOptions"
                 :key="option.value"
+                :data-testid="option.value === 'DELIVERY' ? 'checkout-option-delivery' : 'checkout-option-pickup'"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
           'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
@@ -77,6 +78,7 @@
                 <!-- Open & ordering enabled: show ASAP + timeslots -->
                 <select
                     v-model="preferredReadyTime"
+                    data-testid="checkout-preferred-time"
                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                 >
                     <option value="ASAP">{{ asapLabel }}</option>

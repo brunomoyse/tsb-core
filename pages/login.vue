@@ -37,7 +37,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
+                <button data-testid="login-submit" class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
                     {{ $t('login.submit') }}
                 </button>
             </form>

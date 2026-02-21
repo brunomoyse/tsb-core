@@ -1,5 +1,6 @@
 <template>
     <aside
+        data-testid="side-cart"
         class="
             bg-tsb-two
             rounded-l-xl
@@ -18,7 +19,9 @@
                 {{ $t('cart.title') }}
             </h2>
             <div class="flex gap-1 rounded-full bg-gray-100 p-1">
-                <button v-for="option in collectionOptions" :key="option.value" :class="[
+                <button v-for="option in collectionOptions" :key="option.value"
+                        :data-testid="option.value === 'DELIVERY' ? 'cart-option-delivery' : 'cart-option-pickup'"
+                        :class="[
           'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
           cartStore.collectionOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
@@ -119,12 +122,12 @@
                 </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span>{{ formatPrice(cartTotal) }}</span>
+                    <span data-testid="cart-total">{{ formatPrice(cartTotal) }}</span>
                 </div>
             </div>
 
             <!-- Minimum Order Warning -->
-            <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center">
                 {{ cartStore.collectionOption === 'DELIVERY'
                     ? $t('cart.minimumDelivery', { amount: 25})
                     : $t('cart.minimumPickup', { amount: 20}) }}
@@ -133,6 +136,7 @@
             <!-- Checkout Button -->
             <NuxtLinkLocale
                 to="checkout"
+                data-testid="cart-checkout-link"
                 :class="[
                     'w-full py-3 rounded-lg font-medium transition-colors text-center block',
                     isMinimumReached

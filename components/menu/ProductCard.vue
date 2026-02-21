@@ -1,6 +1,8 @@
 <template>
     <div :class="{ 'pointer-events-none opacity-50': !product.isAvailable }">
         <div v-if="product" :key="product.id"
+             data-testid="product-card"
+             :data-has-choices="hasChoices"
              class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
@@ -26,6 +28,7 @@
                       {{ product.category?.name }}
                     </span>
                     <span
+                        data-testid="product-name"
                         class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5"
                         :title="product.name"
                     >
@@ -44,7 +47,7 @@
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>
-                            <button v-if="!isInCart" aria-label="Add to Cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
+                            <button v-if="!isInCart" aria-label="Add to Cart" data-testid="product-add-to-cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     @click="addToCart">
                                 <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
