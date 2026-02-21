@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ 'pointer-events-none opacity-50': !product.isAvailable }">
+    <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }">
         <div v-if="product" :key="product.id"
              data-testid="product-card"
              :data-has-choices="hasChoices"
@@ -24,7 +24,7 @@
             <div class="shrink-0 px-2 pb-1">
                 <!-- Text block: fixed height so price always aligns across cards -->
                 <div class="h-[76px] flex flex-col items-center overflow-hidden">
-                    <span class="text-gray-500 font-medium text-xs mb-0.5 truncate">
+                    <span class="text-gray-600 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
                     <span
@@ -34,7 +34,7 @@
                     >
                       {{ product.name }}
                     </span>
-                    <span class="text-gray-500 text-xs">
+                    <span class="text-gray-600 text-xs">
                       {{ product?.pieceCount }}
                         {{ product?.pieceCount ? product?.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') : "" }}
                     </span>
@@ -71,7 +71,7 @@
                         </button>
                     </div>
                 </div>
-                <div v-else class="flex justify-center text-sm text-gray-500 mt-1">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="flex justify-center text-sm text-gray-600 mt-1">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>
@@ -194,16 +194,3 @@ onMounted(() => {
     }
 });
 </script>
-<style>
-.transition-opacity {
-    transition: opacity 0.8s ease;
-}
-
-.opacity-0 {
-    opacity: 0;
-}
-
-.opacity-100 {
-    opacity: 1;
-}
-</style>

@@ -5,7 +5,7 @@
     >
         <!-- Top Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mt-6">
-            <Logo :tooltipText="$t('nav.home')" alt="Tokyo Sushi Bar logo" icon="/images/tsb-logo-b.png" to="/"/>
+            <li><Logo :tooltipText="$t('nav.home')" alt="Tokyo Sushi Bar logo" icon="/images/tsb-logo-b.png" to="/"/></li>
             <NavItem :tooltipText="$t('nav.menu')" alt="Menu Icon" icon="/icons/menu-icon.svg" to="menu"/>
             <NavItem :tooltipText="$t('nav.contact')" alt="Contact Icon" icon="/icons/contact-icon.svg" to="contact"/>
         </ul>

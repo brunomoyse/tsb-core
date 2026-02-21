@@ -32,8 +32,8 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-logo-b.png" to="/"
-                                      @click="closeMenu"/>
+                                <li><Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-logo-b.png" to="/"
+                                      @click="closeMenu"/></li>
                                 <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
                                                to="/menu"
                                                @click="closeMenu"/>

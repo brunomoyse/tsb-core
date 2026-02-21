@@ -28,9 +28,9 @@
                 <slot/>
             </main>
 
-            <footer class="p-4 sm:ml-[142px] text-xs text-gray-400">
+            <footer class="p-4 sm:ml-[142px] text-xs text-gray-600">
                 <div class="flex items-center justify-center gap-3 border-t border-gray-200 pt-4">
-                    <NuxtLinkLocale class="hover:text-gray-600 transition-colors" to="/terms">
+                    <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/terms">
                         {{ $t('footer.terms') }}
                     </NuxtLinkLocale>
                     <span class="text-gray-300">|</span>

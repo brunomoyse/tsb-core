@@ -5,7 +5,7 @@
         <label class="sr-only" for="searchInput">Search</label>
 
         <!-- The actual input field -->
-        <input id="searchInput" :placeholder="$t('nav.search')" :value="modelValue" class="w-full px-10 py-2 rounded-2xl bg-tsb-two"
+        <input id="searchInput" :placeholder="$t('nav.search')" :value="modelValue" class="w-full px-10 py-3 rounded-2xl bg-tsb-two"
                type="search"
                @input="onInput"/>
         <!-- Magnifying glass icon (inline SVG) -->

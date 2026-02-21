@@ -1,9 +1,9 @@
 <template>
-    <li>
+    <div>
         <NuxtLinkLocale :to="to">
             <!-- Container with overflow-visible -->
             <div class="relative group w-[50px] h-[50px] flex items-center justify-center overflow-visible">
-                <img :alt="alt" :src="icon" class="fit"/>
+                <img :alt="alt" :src="icon" width="50" height="50" class="fit"/>
 
                 <!-- Tooltip positioned below -->
                 <span v-if="tooltipText"
@@ -12,7 +12,7 @@
                 </span>
             </div>
         </NuxtLinkLocale>
-    </li>
+    </div>
 </template>
 
 <script lang="ts" setup>
