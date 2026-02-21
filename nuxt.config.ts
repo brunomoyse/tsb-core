@@ -67,6 +67,7 @@ export default defineNuxtConfig({
     ],
 
     i18n: {
+        baseUrl: process.env.BASE_URL,
         bundle: {
             // @ts-expect-error i18n v10 option not yet in published types
             optimizeTranslationDirective: false,

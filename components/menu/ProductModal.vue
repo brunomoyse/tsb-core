@@ -256,11 +256,7 @@ const addToCart = () => {
         productId: p.id,
         choiceId: selectedChoice.value?.id,
     })
-    eventBus.emit('notify', {
-        message: t('notify.addedToCart', { product: p.name }),
-        variant: 'success',
-        duration: 2000,
-    })
+
 
     emit('close')
 }
