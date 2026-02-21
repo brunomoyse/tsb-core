@@ -1,5 +1,11 @@
 // types/index.ts
 
+export interface CouponValidation {
+    valid: boolean;
+    discountAmount: string;
+    errorMessage: string | null;
+}
+
 export interface ProductChoice {
     id: string;
     productId: string;
@@ -45,6 +51,8 @@ export interface CartState {
     address: Address | null;
     addressExtra: string | null;
     collectionOption: OrderType;
+    couponCode: string | null;
+    couponDiscount: number;
     isCartVisible: boolean;
     orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;
@@ -60,6 +68,7 @@ export interface LoginResponse {
 export interface User {
     deletionRequestedAt: string | null;
     email: string;
+    emailVerifiedAt: string | null;
     firstName: string;
     id: string;
     lastName: string;
@@ -93,6 +102,7 @@ export type OrderType = 'DELIVERY' | 'PICKUP';
 export interface Order {
     addressExtra: string | null;
     addressId: string | null;
+    couponCode: string | null;
     createdAt: string;
     deliveryFee: string | null;
     discountAmount: string;
@@ -135,6 +145,7 @@ export interface MolliePayment {
 export interface CreateOrderRequest {
     addressExtra: string | null;
     addressId: string | null;
+    couponCode?: string | null;
     isOnlinePayment: boolean;
     items: { productId: string; quantity: number; choiceId?: string; }[]
     orderExtra: { name: string; options?: string[] }[] | null;

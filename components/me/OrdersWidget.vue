@@ -130,6 +130,15 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Re-order Button -->
+                        <button
+                            v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
+                            class="mt-4 w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            @click="reorder(order)"
+                        >
+                            {{ $t('reorder.button') }}
+                        </button>
                     </div>
                 </transition>
             </div>
@@ -175,12 +184,14 @@ import { useGqlQuery, useGqlSubscription } from "#imports"
 import { ref, computed, watch, onUnmounted, onMounted } from "vue"
 import { useI18n } from "vue-i18n"
 import { formatAddress } from "~/utils/utils"
+import { useReorder } from "~/composables/useReorder"
 import OrderStatusTimeline from "~/components/order/OrderStatusTimeline.vue"
 import gql from 'graphql-tag'
 import { print } from "graphql/index"
 import type { Order } from "~/types"
 
 const { t } = useI18n()
+const { reorder } = useReorder()
 
 // GraphQL query for initial orders
 const MY_ORDERS = gql`
@@ -217,10 +228,11 @@ const MY_ORDERS = gql`
         quantity
         totalPrice
         product {
-          id
-          name
-          category { id name }
+          id name code slug price pieceCount isAvailable isDiscountable isHalal isVegan isVisible
+          category { id name order }
+          choices { id productId priceModifier sortOrder name }
         }
+        choice { id productId priceModifier sortOrder name }
       }
     }
   }

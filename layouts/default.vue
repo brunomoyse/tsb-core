@@ -21,6 +21,10 @@
                 <SideNavbar/>
             </header>
 
+            <ClientOnly>
+                <EmailVerificationBanner />
+            </ClientOnly>
+
             <main
                 class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]"
             >

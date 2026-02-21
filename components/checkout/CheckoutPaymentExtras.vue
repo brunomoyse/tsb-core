@@ -4,6 +4,9 @@
             {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
         </h2>
 
+        <!-- Coupon Code -->
+        <CheckoutCouponInput />
+
         <!-- Payment Method with Icons -->
         <div class="mb-6">
             <h3 class="font-medium mb-2">
@@ -154,6 +157,7 @@ import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
 import { useTracking } from '~/composables/useTracking'
 import { useI18n } from 'vue-i18n'
+import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 
 const props = defineProps({
     isMinimumReached: {

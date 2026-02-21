@@ -96,7 +96,17 @@
     "discountable": "Remise possible",
     "yes": "Oui",
     "no": "Non",
-    "pickupDiscountBadge": "10% de remise à emporter"
+    "pickupDiscountBadge": "10% de remise à emporter",
+    "restaurantClosed": "Le restaurant est actuellement fermé. Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
+  },
+  "days": {
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
   },
   "forgotPassword": {
     "title": "Mot de passe oublié",
@@ -266,7 +276,8 @@
     "stepMenu": "Menu",
     "stepCheckout": "Commande",
     "stepPayment": "Paiement",
-    "itemCount": "{count} article | {count} articles"
+    "itemCount": "{count} article | {count} articles",
+    "opensAt": "Ouverture à {time}"
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -368,6 +379,28 @@
       "login": "Connexion",
       "register": "Inscription"
     }
+  },
+  "coupon": {
+    "title": "Code promo",
+    "placeholder": "Entrez le code promo",
+    "apply": "Appliquer",
+    "remove": "Retirer",
+    "applied": "Code promo appliqué : -{discount} de réduction",
+    "invalid": "Code promo invalide",
+    "discount": "Réduction code promo"
+  },
+  "reorder": {
+    "button": "Recommander",
+    "success": "{count} articles ajoutés au panier",
+    "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
+    "empty": "Aucun article disponible à recommander"
+  },
+  "verify": {
+    "banner": "Veuillez vérifier votre adresse e-mail pour finaliser la création de votre compte.",
+    "resend": "Renvoyer l'e-mail de vérification",
+    "sent": "E-mail de vérification envoyé !",
+    "error": "Échec de l'envoi de l'e-mail de vérification. Veuillez réessayer.",
+    "dismiss": "Fermer"
   },
   "cookies": {
     "message": "Ce site utilise des cookies essentiels pour l'authentification. Nous utilisons également des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez accepter ou refuser les cookies analytiques.",

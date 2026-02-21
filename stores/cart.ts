@@ -12,6 +12,8 @@ export const useCartStore = defineStore("cart", {
         products: [] as CartItem[],
         isCartVisible: false,
         collectionOption: 'DELIVERY',
+        couponCode: null,
+        couponDiscount: 0,
         paymentOption: 'ONLINE',
         address: null,
         addressExtra: null,
@@ -100,6 +102,8 @@ export const useCartStore = defineStore("cart", {
             this.products = [];
             this.isCartVisible = false;
             this.collectionOption = 'DELIVERY';
+            this.couponCode = null;
+            this.couponDiscount = 0;
             this.paymentOption = 'ONLINE';
             this.address = null;
             this.addressExtra = null;
