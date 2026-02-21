@@ -12,6 +12,7 @@
             <div class="flex gap-4">
                 <!-- Online Payment Card -->
                 <div
+                    data-testid="payment-online"
                     @click="setOnlinePayment(true)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
@@ -23,6 +24,7 @@
                 </div>
                 <!-- Cash Payment Card -->
                 <div
+                    data-testid="payment-cash"
                     @click="setOnlinePayment(false)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
@@ -105,7 +107,7 @@
         </div>
 
         <!-- Checkout Button -->
-        <button @click="debouncedCheckout" :class="[
+        <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
             props.isMinimumReached && !props.loading && props.isOrderingAvailable
               ? 'bg-red-500 text-white hover:bg-red-600'

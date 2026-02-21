@@ -2,7 +2,7 @@
     <div class="flex items-center justify-center bg-gray-50 p-4">
         <!-- Main Card -->
         <div class="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6">
-            <h1 class="text-2xl font-bold text-gray-900">
+            <h1 data-testid="order-completed-title" class="text-2xl font-bold text-gray-900">
                 {{ $t('orderCompleted.title', 'Order Completed') }}
             </h1>
             <p class="mt-3 text-gray-600 text-sm">
@@ -28,7 +28,7 @@
             <div v-if="order" class="mt-6">
                 <div class="space-y-5">
                     <!-- Items List -->
-                    <div class="space-y-4">
+                    <div data-testid="order-completed-items" class="space-y-4">
                         <h3 class="text-sm font-semibold text-gray-900">
                             {{ $t('orderCompleted.items', 'Dishes:') }}
                         </h3>
