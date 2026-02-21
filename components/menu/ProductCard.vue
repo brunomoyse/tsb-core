@@ -188,7 +188,7 @@ const resetTimeout = () => {
     }
     timeoutId.value = setTimeout(() => {
         showControls.value = false;
-    }, 2000);
+    }, 4000);
 };
 
 // Define the ref with the correct type (HTMLImageElement)

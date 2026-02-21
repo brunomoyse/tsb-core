@@ -39,7 +39,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const visible = ref(false)
 const progress = ref(100)
-let progressInterval: number | undefined
+let progressInterval: ReturnType<typeof setInterval> | undefined
 
 // Compute CSS classes based on the variant prop
 const variantClasses = computed(() => {

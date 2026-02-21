@@ -68,7 +68,9 @@ function formatRFC3339Local(date: Date): string {
  * @returns RFC3339 timestamp string
  */
 export function timeToRFC3339(timeStr: string): string {
-    const [h, m] = timeStr.split(':').map(Number);
+    const parts = timeStr.split(':').map(Number);
+    const h = parts[0] ?? 0;
+    const m = parts[1] ?? 0;
     const now = new Date();
     now.setHours(h, m, 0, 0);
     return formatRFC3339Local(now);

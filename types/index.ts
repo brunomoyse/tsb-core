@@ -108,6 +108,7 @@ export interface Order {
     userId: string;
 
     address: Address | null;
+    customer: User | null;
     items: OrderProduct[];
     payment: MolliePayment | null;
 }
@@ -124,7 +125,7 @@ export interface OrderProduct {
 export interface MolliePayment {
     createdAt: string;
     id: string;
-    links: object;
+    links: { checkout: { href: string } } | null;
     orderId: string;
     paidAt: string | null;
     status: string;

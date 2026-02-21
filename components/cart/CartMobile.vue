@@ -59,13 +59,16 @@
                           {{ item.product.pieceCount }}
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                         </span>
+                        <span class="text-gray-800 font-medium text-xs mt-1">
+                            {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                        </span>
                     </div>
 
                     <!-- QTY CONTROLS -->
                     <div class="col-span-2 grid grid-cols-3 items-center">
                         <button
                             aria-label="Decrement Quantity"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-8 w-8"
+                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
                             @click="handleDecrementQuantity(item)"
                         >
                             <img
@@ -77,7 +80,7 @@
                         <span class="text-center text-gray-700">{{ item.quantity }}</span>
                         <button
                             aria-label="Increment Quantity"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-8 w-8"
+                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
                             @click="handleIncrementQuantity(item)"
                         >
                             <img
@@ -127,6 +130,11 @@ import {useTracking} from "~/composables/useTracking";
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const { trackEvent } = useTracking();
+
+const getItemUnitPrice = (item: CartItem): number => {
+    return Number(item.product.price) +
+        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0);
+};
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);

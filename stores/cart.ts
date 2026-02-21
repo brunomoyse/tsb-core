@@ -30,7 +30,11 @@ export const useCartStore = defineStore("cart", {
 
         totalPrice(state): number {
             return state.products.reduce(
-                (total, item) => total + item.product.price * item.quantity,
+                (total, item) => {
+                    const unitPrice = Number(item.product.price) +
+                        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0);
+                    return total + unitPrice * item.quantity;
+                },
                 0
             );
         },

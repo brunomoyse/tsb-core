@@ -139,7 +139,9 @@ const hoursMap: Record<number, [string, string][]> = {
 
 // Helpers
 const toMins = (hm: string) => {
-    const [h, m] = hm.split(':').map(Number)
+    const parts = hm.split(':').map(Number)
+    const h = parts[0] ?? 0
+    const m = parts[1] ?? 0
     return h * 60 + m
 }
 

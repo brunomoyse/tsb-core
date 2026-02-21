@@ -78,7 +78,7 @@ import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.v
 import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation, computed} from '#imports'
-import type {Address, CreateOrderRequest, Order} from '~/types'
+import type {Address, CartItem, CreateOrderRequest, Order} from '~/types'
 import { navigateTo } from '#imports'
 import gql from "graphql-tag";
 import {eventBus} from "~/eventBus";
@@ -328,16 +328,21 @@ const cartTotal = computed(() => {
     return Math.max(total, 0);
 });
 
+const getItemUnitPrice = (item: CartItem) => {
+    return Number(item.product.price) +
+        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+}
+
 const subtotal = computed(() =>
     cartStore.products.reduce((acc, item) =>
-        acc + (item.product.price * item.quantity), 0)
+        acc + (getItemUnitPrice(item) * item.quantity), 0)
 );
 
 const totalDiscount = computed(() =>
     cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
-            item.product.discountable
-                ? acc + (item.product.price * item.quantity * 0.1)
+            item.product.isDiscountable
+                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
                 : acc, 0)
         : 0
 );

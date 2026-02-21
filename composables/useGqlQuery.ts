@@ -30,12 +30,12 @@ export async function useGqlQuery<T>(
     if (typeof variables === 'function') {
         watch(
             () => variables(),
-            () => asyncData.refresh({ dedupe: false }),
+            () => asyncData.refresh({ dedupe: 'cancel' }),
             { deep: true },
         )
     }
 
-    return Object.assign(asyncData, { refetch: asyncData.refresh })
+    return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & { refetch: () => Promise<void> }
 }
 
 function printIfAst(q: string | import('graphql').DocumentNode): string {

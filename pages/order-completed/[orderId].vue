@@ -195,9 +195,9 @@ watch(order, (orderData) => {
             '@type': 'Order',
             '@id': `${config.public.baseUrl}/order-completed/${orderId}`,
             orderNumber: orderData.id,
-            orderStatus: orderData.status === 'COMPLETED' ? 'https://schema.org/OrderDelivered'
+            orderStatus: orderData.status === 'DELIVERED' || orderData.status === 'PICKED_UP' ? 'https://schema.org/OrderDelivered'
                 : orderData.status === 'FAILED' || orderData.status === 'CANCELLED' ? 'https://schema.org/OrderCancelled'
-                : orderData.status === 'PROCESSING' ? 'https://schema.org/OrderProcessing'
+                : orderData.status === 'PREPARING' || orderData.status === 'CONFIRMED' ? 'https://schema.org/OrderProcessing'
                 : 'https://schema.org/OrderProblem',
             orderDate: orderData.createdAt,
             acceptedOffer: orderData.items.map(item => ({

@@ -211,7 +211,7 @@ const sauces = computed<[string,string]>({
         if (idx === -1) {
             cartStore.orderExtra.push(payload)
         } else {
-            cartStore.orderExtra[idx].options = payload.options
+            cartStore.orderExtra![idx]!.options = payload.options
         }
     }
 })

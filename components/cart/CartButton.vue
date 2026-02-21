@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue';
+import {computed, nextTick, ref, watch} from 'vue';
 import {useCartStore} from '@/stores/cart';
 import {useTracking} from '~/composables/useTracking';
 
@@ -44,8 +44,12 @@ const cartCount = computed(() => cartStore.totalItems);
 
 // Badge bounce animation
 const animating = ref(false);
-watch(cartCount, () => {
-    animating.value = true;
-    setTimeout(() => { animating.value = false; }, 300);
+watch(cartCount, (newVal) => {
+    if (newVal > 0) {
+        nextTick(() => {
+            animating.value = true;
+            setTimeout(() => { animating.value = false; }, 600);
+        });
+    }
 });
 </script>

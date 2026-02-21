@@ -123,7 +123,7 @@ const accompagnements = computed<Product[]>(() => {
 
 // Add product to cart
 const addToCart = (product: Product) => {
-    cartStore.addToCart(product)
+    cartStore.addProduct(product, 1)
     trackEvent('extras_suggestion_added', { product_id: product.id, product_name: product.name })
 
     eventBus.emit('notify', {

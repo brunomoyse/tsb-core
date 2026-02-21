@@ -2,7 +2,7 @@
     <Transition name="slide-up">
         <div
             v-if="showBanner"
-            class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 shadow-lg p-4 sm:p-6"
+            class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-gray-200 shadow-lg p-4 sm:p-6"
         >
             <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
                 <p class="text-sm text-gray-600 flex-1 text-center sm:text-left">

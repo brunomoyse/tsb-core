@@ -1,9 +1,13 @@
+import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
+import { useSchemaOrg, defineOrganization, defineLocalBusiness } from '#imports'
+
 export default defineNuxtPlugin(() => {
+    const baseUrl = useRuntimeConfig().public.baseUrl as string
     useSchemaOrg([
         defineOrganization({
             name: 'Tokyo Sushi Bar',
             logo: '/logo.png',
-            url: useRuntimeConfig().public.baseUrl,
+            url: baseUrl,
             sameAs: [
                 'https://www.instagram.com/tokyo_sushi_bar_liege/',
                 'https://www.facebook.com/sushiliege'
@@ -11,7 +15,7 @@ export default defineNuxtPlugin(() => {
         }),
         {
             '@type': 'Offer',
-            '@id': useRuntimeConfig().public.baseUrl + '#pickup-discount',
+            '@id': baseUrl + '#pickup-discount',
             name: '10% Pickup Discount',
             description: 'Get 10% off on all discountable items when you choose pickup',
             discount: '10%',
@@ -31,6 +35,7 @@ export default defineNuxtPlugin(() => {
             }
         },
         defineLocalBusiness({
+            // @ts-expect-error Restaurant is a valid LocalBusiness subtype
             '@type': 'Restaurant',
             name: 'Tokyo Sushi Bar',
             image: '/logo.png',
@@ -55,13 +60,13 @@ export default defineNuxtPlugin(() => {
                 latitude: 50.642394,
                 longitude: 5.574711
             },
-            url: useRuntimeConfig().public.baseUrl,
+            url: baseUrl,
             servesCuisine: 'Japanese',
             priceRange: '$$',
             acceptsReservations: true,
             hasMenu: {
                 '@type': 'Menu',
-                '@id': useRuntimeConfig().public.baseUrl + '/menu',
+                '@id': baseUrl + '/menu',
                 name: 'Tokyo Sushi Bar Menu',
                 description: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
                 inLanguage: ['fr-BE', 'en', 'zh-CN']
