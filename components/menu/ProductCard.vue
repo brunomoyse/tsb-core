@@ -5,7 +5,12 @@
              :data-has-choices="hasChoices"
              class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
-            <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
+            <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
+                <!-- Shimmer placeholder -->
+                <div v-if="!loaded"
+                     class="absolute inset-0 animate-shimmer rounded-lg"
+                     style="background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;"
+                />
                 <picture class="w-full h-full flex justify-center items-center">
                     <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.avif`"
                             type="image/avif"/>
@@ -56,6 +61,7 @@
                             </button>
                             <button v-else
                                  class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-red-700 font-semibold border border-red-200 hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 cursor-pointer"
+                                 :class="{ 'animate-number-bounce': isQuantityBouncing }"
                                  @click="showExpandedControls">
                                 {{ cardQuantity }}
                             </button>
@@ -66,7 +72,7 @@
                                 @click="decrement">
                             -
                         </button>
-                        <span class="text-sm font-semibold text-red-700">{{ cardQuantity }}</span>
+                        <span class="text-sm font-semibold text-red-700" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
                         <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300" type="button"
                                 @click="increment">
                             +
@@ -82,7 +88,7 @@
 <script lang="ts" setup>
 import {useCartStore} from "@/stores/cart";
 import {formatPrice} from "~/lib/price";
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import type {Product} from "@/types";
 import {useRuntimeConfig} from "#imports";
 import {useTracking} from "~/composables/useTracking";
@@ -90,7 +96,7 @@ import {eventBus} from "~/eventBus";
 import { useI18n } from 'vue-i18n'
 
 const cartStore = useCartStore();
-const { t } = useI18n()
+useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
 
@@ -125,6 +131,14 @@ const cardQuantity = computed(() => {
         .filter((cartItem) => cartItem.product.id === props.product.id)
         .reduce((sum, item) => sum + item.quantity, 0);
 });
+
+const isQuantityBouncing = ref(false)
+watch(cardQuantity, () => {
+    if (cardQuantity.value > 0) {
+        isQuantityBouncing.value = true
+        setTimeout(() => { isQuantityBouncing.value = false }, 200)
+    }
+})
 
 const addToCart = () => {
     if (hasChoices.value) {

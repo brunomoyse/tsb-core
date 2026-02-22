@@ -127,7 +127,7 @@
                 </div>
                 <NuxtLinkLocale
                     to="checkout"
-                    class="block text-center bg-gray-800 text-white uppercase py-3 rounded-lg hover:bg-gray-900 transition"
+                    class="block text-center bg-gray-800 text-white uppercase py-3 rounded-lg hover:bg-gray-900 transition-all active:scale-[0.97]"
                 >
                     {{ $t('cart.checkout') }}
                 </NuxtLinkLocale>

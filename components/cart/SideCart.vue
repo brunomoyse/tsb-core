@@ -139,7 +139,7 @@
                 to="checkout"
                 data-testid="cart-checkout-link"
                 :class="[
-                    'w-full py-3 rounded-lg font-medium transition-colors text-center block',
+                    'w-full py-3 rounded-lg font-medium transition-all active:scale-[0.97] text-center block',
                     isMinimumReached
                       ? 'bg-red-500 text-white hover:bg-red-600'
                       : 'bg-gray-300 text-gray-500 pointer-events-none'

@@ -1,7 +1,5 @@
 <template>
-    <div class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
-         @click.self="emit('close')">
-        <div ref="modalRef" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div ref="modalRef" @click.stop class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
                 @click="emit('close')"
                 class="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors"
@@ -93,7 +91,7 @@
                                 <div class="flex items-center gap-2 border rounded-lg p-1">
                                     <button
                                         @click="quantity > 1 ? quantity-- : null"
-                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600"
+                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
                                         :disabled="quantity === 1"
                                     >−</button>
                                     <span
@@ -101,14 +99,14 @@
                                     >{{quantity}}</span>
                                     <button
                                         @click="quantity++"
-                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600"
+                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
                                     >+</button>
                                 </div>
                             </div>
 
                             <button
                                 @click="addToCart"
-                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-sm md:font-medium transition-colors"
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-sm md:font-medium transition-all active:scale-[0.97]"
                                 :class="{ 'opacity-50 cursor-not-allowed': !canAddToCart }"
                                 :disabled="!canAddToCart"
                             >
@@ -119,7 +117,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <script setup lang="ts">
@@ -136,7 +133,7 @@ import { useI18n } from 'vue-i18n'
 
 
 const cartStore = useCartStore();
-const { t } = useI18n()
+useI18n()
 const config = useRuntimeConfig()
 const { trackEvent } = useTracking()
 const props = defineProps<{
@@ -230,13 +227,6 @@ onMounted(() => {
         })
     }
 
-    // Prevent background from scrolling
-    document.body.style.overflow = 'hidden'
-})
-
-onUnmounted(() => {
-    // Restore scrolling
-    document.body.style.overflow = ''
 })
 
 const addToCart = () => {

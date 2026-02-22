@@ -1,7 +1,7 @@
 <template>
     <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4" v-if="visible">
         <transition name="slide-up">
-            <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses]" v-if="visible">
+            <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" v-if="visible">
                 <div class="flex items-start justify-between gap-4">
                     <span class="flex-1 text-base break-words">
                       {{ message }}
@@ -56,9 +56,9 @@ const variantClasses = computed(() => {
 const progressBarClass = computed(() => {
     switch (props.variant) {
         case 'success':
-            return 'bg-green-600'
+            return 'bg-gradient-to-r from-green-500 via-green-400 to-green-600'
         case 'error':
-            return 'bg-red-600'
+            return 'bg-gradient-to-r from-red-500 via-red-400 to-red-600'
         default:
             return 'bg-gray-600'
     }

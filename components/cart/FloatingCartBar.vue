@@ -3,7 +3,7 @@
         <button
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
             type="button"
-            class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-gray-800 text-white px-4 py-3 flex items-center justify-between shadow-lg"
+            class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-gray-800 text-white px-4 py-3 flex items-center justify-between shadow-lg transition-all active:scale-[0.98]"
             :class="{ 'animate-cart-pulse': isPulsing }"
             @click="cartStore.toggleCartVisibility"
         >

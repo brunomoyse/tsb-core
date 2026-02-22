@@ -57,7 +57,7 @@
                 <button
                     @click="handleCheckout"
                     :class="[
-                        'px-6 pt-2 pb-3 rounded-lg font-medium transition-colors',
+                        'px-6 pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
                         isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
                           ? 'bg-red-500 text-white hover:bg-red-600'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -106,7 +106,7 @@
                     <button
                         type="button"
                         @click="closeAddressModal"
-                        class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm"
+                        class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97]"
                     >
                         {{ $t('common.cancel', 'Cancel') }}
                     </button>
@@ -114,7 +114,7 @@
                         type="button"
                         @click="confirmAddress"
                         :disabled="!tempAddress"
-                        class="px-4 py-2 rounded  text-white text-sm"
+                        class="px-4 py-2 rounded text-white text-sm transition-all active:scale-[0.97]"
                         :class="!tempAddress ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'"
                     >
                         {{ $t('common.save', 'Save') }}

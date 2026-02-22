@@ -73,7 +73,7 @@
                                     type="button"
                                     @click="sauce1 = option.value"
                                     :class="[
-                                        'px-3 py-1.5 text-sm border rounded-full transition-colors',
+                                        'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
                                         sauce1 === option.value
                                             ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
                                             : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -92,7 +92,7 @@
                                     type="button"
                                     @click="sauce2 = option.value"
                                     :class="[
-                                        'px-3 py-1.5 text-sm border rounded-full transition-colors',
+                                        'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
                                         sauce2 === option.value
                                             ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
                                             : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -129,7 +129,7 @@
 
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
-            'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
+            'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
             props.isMinimumReached && !props.loading && props.isOrderingAvailable && !props.isAddressTooFar
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'

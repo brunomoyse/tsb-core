@@ -10,9 +10,14 @@
                 <img :alt="alt" :class="['h-6 w-6 select-none', isActive ? '' : '']" :src="icon"
                      draggable="false"/>
 
+                <!-- Bottom indicator bar -->
+                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-red-500 rounded-full transition-transform duration-200 ease-out origin-center"
+                      :class="isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"
+                />
+
                 <!-- Tooltip positioned below -->
                 <span v-if="tooltipText"
-                      class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max bg-black text-white">
+                      class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition-all duration-150 ease-out translate-y-1 group-hover:translate-y-0 whitespace-nowrap z-50 min-w-max bg-black text-white">
                     {{ tooltipText }}
                 </span>
             </div>

@@ -30,7 +30,7 @@
                     </p>
 
                     <!-- Submit Button -->
-                    <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors duration-300" type="submit">
+                    <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 active:scale-[0.97]" type="submit">
                         {{ $t('forgotPassword.submit') }}
                     </button>
                 </form>
