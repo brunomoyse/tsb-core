@@ -1,80 +1,64 @@
 <template>
-    <div class="mt-4 mx-auto max-w-3xl">
-        <div class="space-y-4">
+    <div :class="compact ? 'py-0' : 'py-2'">
+        <div class="flex items-center gap-1">
             <div
-                v-for="(status, index) in (order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)"
+                v-for="(status, index) in statuses"
                 :key="status"
-                class="flex items-center p-3 rounded-lg transition-colors"
-                :class="[
-                        index < currentIndex
-                            ? 'border border-green-100 bg-green-50 dark:bg-gray-700'
-                            : index === currentIndex && !isOrderCompleted(order.status)
-                                ? 'border border-yellow-300 bg-yellow-50 dark:bg-gray-900'
-                                : isOrderCompleted(order.status)
-                                    ? 'border border-green-100 bg-green-50 dark:bg-gray-700'
-                                    :'border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800',
-                    ]"
+                class="flex-1 relative"
             >
-                <!-- Icon -->
-                <div class="relative flex-shrink-0 mr-3">
-                        <span
-                            :class="isOrderCompleted(order.status) ? 'bg-green-300' : iconBackgroundClass(index)"
-                            class="flex h-8 w-8 items-center justify-center rounded-lg"
-                        >
-                            <span
-                                v-if="index === currentIndex && !isOrderCompleted(order.status)"
-                                class="absolute inset-0 rounded-lg bg-yellow-300 opacity-75 animate-ping"
-                            ></span>
-                            <img
-                                :src="(index < currentIndex) || isOrderCompleted(order.status) ? '/icons/status/mdi-check.svg' : `/icons/status/${iconMapping[status]}.svg`"
-                                alt=""
-                                class="h-4 w-4"
-                            />
-                        </span>
-                </div>
+                <!-- Progress bar segment -->
+                <div
+                    class="rounded-full transition-colors duration-500"
+                    :class="[
+                        compact ? 'h-1' : 'h-1.5',
+                        index < currentIndex
+                            ? 'bg-green-400'
+                            : index === currentIndex && !completed
+                                ? 'bg-yellow-400 animate-pulse'
+                                : completed
+                                    ? 'bg-green-400'
+                                    : 'bg-gray-200'
+                    ]"
+                />
+            </div>
+        </div>
 
-                <!-- Content -->
-                <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                        {{ getStatusTitle(status) }}
-                    </h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {{ getStatusDescription(status) }}
-                    </p>
-                </div>
+        <!-- Current status label (hidden in compact mode) -->
+        <div v-if="!compact" class="mt-2.5 flex items-center gap-2">
+            <div
+                class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                :class="completed ? 'bg-green-100' : 'bg-yellow-100'"
+            >
+                <img
+                    :src="completed ? '/icons/status/mdi-check.svg' : `/icons/status/${iconMapping[order.status]}.svg`"
+                    alt=""
+                    class="w-3.5 h-3.5"
+                />
+            </div>
+            <div class="min-w-0">
+                <span class="text-sm font-medium text-gray-800">{{ getStatusTitle(order.status) }}</span>
+                <span v-if="nextStatus && !completed" class="text-xs text-gray-400 ml-1.5">
+                    &middot; {{ $t('me.orders.nextStep') }}: {{ getStatusTitle(nextStatus) }}
+                </span>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue'
-import {useI18n} from 'vue-i18n'
-import type {Order} from '@/types'
-import {toCamelCase} from "~/utils/utils";
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import type { Order } from '@/types'
+import { toCamelCase } from "~/utils/utils"
 
-const props = defineProps<{ order: Order }>()
-const {t} = useI18n()
+const props = defineProps<{ order: Order; compact?: boolean }>()
+const { t } = useI18n()
 
-// Define the statuses in the order they should appear.
-const deliveryStatuses = [
-    'PENDING',
-    'CONFIRMED',
-    'PREPARING',
-    'AWAITING_PICK_UP',
-    'OUT_FOR_DELIVERY',
-    'DELIVERED'
-]
+const deliveryStatuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'OUT_FOR_DELIVERY', 'DELIVERED']
+const pickUpStatuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'PICKED_UP']
 
-const pickUpStatuses = [
-    'PENDING',
-    'CONFIRMED',
-    'PREPARING',
-    'AWAITING_PICK_UP',
-    'PICKED_UP'
-]
+const statuses = computed(() => props.order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)
 
-// Mapping from order status to the corresponding Material Design Icon file name.
 const iconMapping: Record<string, string> = {
     PENDING: 'mdi-clock-outline',
     CONFIRMED: 'mdi-check-circle-outline',
@@ -87,71 +71,26 @@ const iconMapping: Record<string, string> = {
     CANCELLED: 'mdi-cancel'
 }
 
-// Compute the index of the current order status.
-const currentIndex = computed(() => {
-    const statuses = props.order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses
-    return statuses.indexOf(props.order.status)
+const currentIndex = computed(() => statuses.value.indexOf(props.order.status))
+const completed = computed(() => props.order.status === 'DELIVERED' || props.order.status === 'PICKED_UP')
+
+const nextStatus = computed(() => {
+    const idx = currentIndex.value
+    if (idx < 0 || idx >= statuses.value.length - 1) return null
+    return statuses.value[idx + 1]
 })
 
-/**
- * Returns a background class for the icon container:
- * - Completed steps: a strong green background.
- * - Current step: a lighter yellow/green background.
- * - Future steps: a neutral gray background.
- */
-function iconBackgroundClass(index: number): string {
-    if (index < currentIndex.value) {
-        return 'bg-green-300'
-    } else if (index === currentIndex.value) {
-        return 'bg-yellow-300'
-    } else {
-        return 'bg-gray-100 dark:bg-gray-700'
-    }
+const statusDetails: Record<string, string> = {
+    PENDING: t('me.orders.status.details.title.pending'),
+    CONFIRMED: t('me.orders.status.details.title.confirmed'),
+    PREPARING: t('me.orders.status.details.title.preparing'),
+    AWAITING_PICK_UP: t('me.orders.status.details.title.awaitingPickUp'),
+    OUT_FOR_DELIVERY: t('me.orders.status.details.title.outForDelivery'),
+    DELIVERED: t('me.orders.status.details.title.delivered'),
+    PICKED_UP: t('me.orders.status.details.title.pickedUp'),
 }
 
-// Mapping for status details (title and description).
-// Adjust these values or integrate your order's data as needed.
-const statusDetails: Record<string, { title: string; description?: string }> = {
-    PENDING: {
-        title: t('me.orders.status.details.title.pending'),
-        //description: '19 Nov 2023, 10:45'
-    },
-    CONFIRMED: {
-        title: t('me.orders.status.details.title.confirmed'),
-        //description: '19 Nov 2023, 10:47'
-    },
-    PREPARING: {
-        title: t('me.orders.status.details.title.preparing'),
-        //description: '22 Nov 2023, 12:27'
-    },
-    AWAITING_PICK_UP: {
-        title: t('me.orders.status.details.title.awaitingPickUp'),
-        //description: '23 Nov 2023, 15:15'
-    },
-    OUT_FOR_DELIVERY: {
-        title: t('me.orders.status.details.title.outForDelivery'),
-        //description: 'Products being delivered'
-    },
-    DELIVERED: {
-        title: t('me.orders.status.details.title.delivered'),
-        //description: 'Products delivered'
-    },
-    PICKED_UP: {
-        title: t('me.orders.status.details.title.pickedUp'),
-        //description: 'Products picked up'
-    },
+function getStatusTitle(status: string): string {
+    return statusDetails[status] || t(`me.orders.status.${toCamelCase(status)}`)
 }
-
-const isOrderCompleted = (status: string) => {
-    return status === "DELIVERED" || status === "PICKED_UP"
-}
-
-const getStatusTitle = (status: string): string => {
-    return statusDetails[status]?.title || t(`me.orders.status.${toCamelCase(status)}`)
-}
-
-const getStatusDescription = (status: string): string => {
-    return statusDetails[status]?.description || ''
-}
-
 </script>
