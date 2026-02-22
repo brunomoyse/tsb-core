@@ -36,7 +36,7 @@
                 />
                 <button
                     type="button"
-                    class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 transition-all active:scale-[0.97] disabled:bg-gray-300 disabled:cursor-not-allowed"
                     :disabled="!couponInput.trim() || isValidating"
                     @click="applyCoupon"
                 >

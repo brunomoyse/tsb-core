@@ -208,7 +208,8 @@
                             :index="idx"
                             :product="prod"
                             :ordering-disabled="!isOrderingAvailable"
-                            class="min-width-[200px]"
+                            class="min-width-[200px] animate-fade-in-up"
+                            :style="{ animationDelay: `${idx * 50}ms` }"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
                             :key="prod.id"
@@ -248,11 +249,19 @@
         <FloatingCartBar />
 
         <ClientOnly>
-            <ProductModal
-                v-if="route.query.product"
-                :product="route.query.product as string"
-                @close="closeModal"
-            />
+            <Transition name="modal-backdrop">
+                <div v-if="route.query.product"
+                     class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+                     @click.self="closeModal">
+                    <Transition name="modal-panel" appear>
+                        <ProductModal
+                            :key="route.query.product"
+                            :product="route.query.product as string"
+                            @close="closeModal"
+                        />
+                    </Transition>
+                </div>
+            </Transition>
         </ClientOnly>
     </div>
 </template>
@@ -261,7 +270,7 @@
 /**
  * Imports
  */
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useGqlQuery, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
@@ -296,6 +305,14 @@ const closeModal = () => {
     // Remove query parameter
     router.push({ query: {} })
 }
+
+// Lock body scroll when modal is open
+watch(() => route.query.product, (val) => {
+    document.body.style.overflow = val ? 'hidden' : ''
+})
+onBeforeUnmount(() => {
+    document.body.style.overflow = ''
+})
 
 /**
  * GraphQL Query
@@ -462,18 +479,6 @@ const onDrag = (e: MouseEvent) => {
 const stopDrag = () => {
     isDragging.value = false
     updateScrollButtons()
-}
-
-/**
- * Arrow Click Handlers
- */
-const scrollPrev = () => {
-    scrollContainer.value!.scrollBy({ left: -150, behavior: 'smooth' })
-    setTimeout(updateScrollButtons, 300)
-}
-const scrollNext = () => {
-    scrollContainer.value!.scrollBy({ left: 150, behavior: 'smooth' })
-    setTimeout(updateScrollButtons, 300)
 }
 
 /**
@@ -662,5 +667,25 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-backdrop-enter-active,
+.modal-backdrop-leave-active {
+    transition: opacity 0.2s ease-out;
+}
+.modal-backdrop-enter-from,
+.modal-backdrop-leave-to {
+    opacity: 0;
+}
+.modal-panel-enter-active {
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+.modal-panel-leave-active {
+    transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+}
+.modal-panel-enter-from,
+.modal-panel-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
 }
 </style>

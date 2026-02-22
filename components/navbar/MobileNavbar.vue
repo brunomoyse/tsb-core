@@ -209,4 +209,26 @@ const closeMenu = () => {
 #menu-toggle:not(:checked) ~ #mobile-menu {
     animation: fadeOut 0.4s forwards;
 }
+
+#mobile-menu li {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+#menu-toggle:checked ~ #mobile-menu li {
+    opacity: 1;
+    transform: translateX(0);
+}
+#menu-toggle:checked ~ #mobile-menu li:nth-child(1) { transition-delay: 0.05s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(2) { transition-delay: 0.1s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(3) { transition-delay: 0.15s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(4) { transition-delay: 0.2s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(5) { transition-delay: 0.25s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(6) { transition-delay: 0.3s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(7) { transition-delay: 0.35s; }
+#menu-toggle:checked ~ #mobile-menu li:nth-child(8) { transition-delay: 0.4s; }
+
+#menu-toggle:not(:checked) ~ #mobile-menu li {
+    transition-delay: 0s;
+}
 </style>

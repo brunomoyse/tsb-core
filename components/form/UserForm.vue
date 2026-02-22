@@ -1,5 +1,5 @@
 <template>
-    <form class="space-y-4" @submit.prevent="handleSubmit">
+    <form class="space-y-4" :class="{ 'animate-shake': isShaking }" @submit.prevent="handleSubmit">
         <!-- Personal Information Fields -->
         <div>
             <label class="block text-sm text-gray-700 mb-1" for="firstName">
@@ -158,17 +158,17 @@
         <!-- Buttons Section -->
         <div v-if="mode === 'edit'" class="flex gap-2">
             <button type="button" @click="emit('close')"
-                    class="w-1/2 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 transition text-sm">
+                    class="w-1/2 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 transition-all text-sm active:scale-[0.97]">
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
-                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors duration-300 text-sm">
+                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 text-sm active:scale-[0.97]">
                 {{ submitButtonText }}
             </button>
         </div>
         <div v-else>
             <button type="submit"
-                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors duration-300">
+                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 active:scale-[0.97]">
                 {{ submitButtonText }}
             </button>
         </div>
@@ -214,6 +214,12 @@ const address = ref<Address | null>(props.initialValues.address || null)
 const addressConfirmed = ref<boolean>(props.initialValues.addressConfirmed || false)
 
 const phoneError = ref('')
+
+const isShaking = ref(false)
+const triggerShake = () => {
+    isShaking.value = true
+    setTimeout(() => { isShaking.value = false }, 400)
+}
 
 // Country list
 const countries = [
@@ -330,10 +336,10 @@ const submitButtonText = computed(() => {
 // Handle form submission
 const handleSubmit = () => {
     // Example validations (expand as needed)
-    if (phoneLocal.value && !validatePhone()) return
-    if (props.mode === 'register' && password.value !== confirmPassword.value) return
-    if (!firstName.value || !lastName.value || !email.value || (props.mode === 'register' && !password.value)) return
-    if (address.value?.id && !addressConfirmed.value) return
+    if (phoneLocal.value && !validatePhone()) { triggerShake(); return }
+    if (props.mode === 'register' && password.value !== confirmPassword.value) { triggerShake(); return }
+    if (!firstName.value || !lastName.value || !email.value || (props.mode === 'register' && !password.value)) { triggerShake(); return }
+    if (address.value?.id && !addressConfirmed.value) { triggerShake(); return }
 
     let form: CreateUserRequest | UpdateUserRequest;
 
@@ -395,9 +401,13 @@ li {
 li:hover {
     background-color: #f3f4f6;
 }
-input:focus {
+input, select, textarea {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    transform: scale(1.01);
 }
 </style>

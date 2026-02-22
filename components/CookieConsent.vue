@@ -13,13 +13,13 @@
                 </p>
                 <div class="flex gap-3 shrink-0">
                     <button
-                        class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-all active:scale-[0.97]"
                         @click="decline"
                     >
                         {{ $t('cookies.decline') }}
                     </button>
                     <button
-                        class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all active:scale-[0.97]"
                         @click="accept"
                     >
                         {{ $t('cookies.accept') }}
