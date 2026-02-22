@@ -83,11 +83,28 @@
             <label class="block text-sm text-gray-700 mb-1" for="confirmPassword">
                 {{ $t('register.confirmPassword') }}
             </label>
-            <input id="confirmPassword" v-model="confirmPassword"
-                   :placeholder="$t('register.confirmPasswordPlaceholder')"
-                   autocomplete="new-password"
-                   class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                   required type="password"/>
+            <div class="relative">
+                <input id="confirmPassword" v-model="confirmPassword"
+                       :placeholder="$t('register.confirmPasswordPlaceholder')"
+                       autocomplete="new-password"
+                       class="w-full p-2 pr-10 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                       required type="password"/>
+                <svg
+                    v-if="passwordsMatch"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Delivery Information Section (register only) -->
+        <div v-if="mode === 'register'" class="border-t border-gray-200 pt-4 mt-2">
+            <p class="text-sm font-medium text-gray-500">{{ $t('register.deliveryInfoTitle') }}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ $t('register.deliveryInfoDescription') }}</p>
         </div>
 
         <!-- Phone Input -->
@@ -145,13 +162,13 @@
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
-                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition text-sm">
+                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors duration-300 text-sm">
                 {{ submitButtonText }}
             </button>
         </div>
         <div v-else>
             <button type="submit"
-                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition">
+                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors duration-300">
                 {{ submitButtonText }}
             </button>
         </div>
@@ -212,6 +229,11 @@ const formattedPhone = computed(() => {
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
     return parsed?.format('E.164') ?? phoneLocal.value
 })
+
+// Password match check
+const passwordsMatch = computed(() =>
+    password.value.length > 0 && confirmPassword.value.length > 0 && password.value === confirmPassword.value
+)
 
 // Password strength validation
 const passwordRequirements = computed(() => ({
