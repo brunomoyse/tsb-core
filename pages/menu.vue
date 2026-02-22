@@ -18,35 +18,107 @@
 
             <!-- Sticky Categories Header -->
             <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one">
-                <!-- Search Section -->
+                <!-- Unified Search + Filter Bar -->
                 <section class="mb-4 px-4">
-                    <SearchBar v-model="searchValue" />
-                </section>
+                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px]">
+                        <!-- Search icon -->
+                        <img
+                            alt="Search"
+                            class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 z-10 pointer-events-none"
+                            src="/icons/search-icon.svg"
+                        />
 
-                <!-- Filter Pills -->
-                <section class="flex gap-2 px-4 mb-4">
-                    <button
-                        @click="toggleFilter('halal')"
-                        :class="[
-                            'px-3 py-1 rounded-full text-sm font-medium border transition-colors',
-                            activeFilters.has('halal')
-                                ? 'bg-green-600 text-white border-green-600'
-                                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                        ]"
-                    >
-                        {{ $t('menu.halal') }}
-                    </button>
-                    <button
-                        @click="toggleFilter('vegan')"
-                        :class="[
-                            'px-3 py-1 rounded-full text-sm font-medium border transition-colors',
-                            activeFilters.has('vegan')
-                                ? 'bg-green-600 text-white border-green-600'
-                                : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                        ]"
-                    >
-                        {{ $t('menu.vegan') }}
-                    </button>
+                        <!-- Real search input (overlays when expanded) -->
+                        <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
+                        <input
+                            id="menuSearch"
+                            ref="searchInputRef"
+                            v-model="searchValue"
+                            type="search"
+                            :placeholder="$t('nav.search')"
+                            @focus="isSearchExpanded = true"
+                            @blur="onSearchBlur"
+                            class="absolute inset-0 bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm transition-opacity duration-300"
+                            :class="isSearchExpanded ? 'opacity-100 z-20' : 'opacity-0 pointer-events-none'"
+                        />
+
+                        <!-- Collapsed view: placeholder text + filter icon buttons -->
+                        <div
+                            class="flex items-center flex-1 h-full pl-11 pr-2 cursor-text transition-all duration-300"
+                            :class="isSearchExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'"
+                            @click="expandSearch"
+                        >
+                            <span class="flex-1 text-gray-400 text-sm select-none">{{ $t('nav.search') }}</span>
+
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <!-- Halal toggle -->
+                                <button
+                                    @click.stop="toggleFilter('halal')"
+                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    :class="activeFilters.has('halal')
+                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
+                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
+                                >
+                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                    <span
+                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
+                                        :class="activeFilters.has('halal') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
+                                    >{{ $t('menu.halal') }}</span>
+                                </button>
+
+                                <!-- Vegan toggle -->
+                                <button
+                                    @click.stop="toggleFilter('vegan')"
+                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    :class="activeFilters.has('vegan')
+                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
+                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
+                                >
+                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
+                                        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                                    </svg>
+                                    <span
+                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
+                                        :class="activeFilters.has('vegan') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
+                                    >{{ $t('menu.vegan') }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Close button (visible when search expanded) -->
+                        <button
+                            v-show="isSearchExpanded"
+                            @click.stop="collapseSearch"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 z-30 text-gray-400 hover:text-gray-700 transition-colors"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Active filter pills shown below bar when searching -->
+                    <div v-if="isSearchExpanded && activeFilters.size > 0" class="flex gap-1.5 mt-2 ml-1 animate-[slideDown_0.2s_ease-out]">
+                        <button
+                            v-if="activeFilters.has('halal')"
+                            @click="toggleFilter('halal')"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                        >
+                            {{ $t('menu.halal') }}
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
+                        </button>
+                        <button
+                            v-if="activeFilters.has('vegan')"
+                            @click="toggleFilter('vegan')"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                        >
+                            {{ $t('menu.vegan') }}
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
                 </section>
 
                 <!-- Categories Scroll -->
@@ -210,7 +282,6 @@ import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 
-import SearchBar from '~/components/menu/SearchBar.vue'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import SideCart from '~/components/cart/SideCart.vue'
@@ -286,6 +357,26 @@ const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+// Search expansion state
+const searchInputRef = ref<HTMLInputElement | null>(null)
+const isSearchExpanded = ref(false)
+
+const expandSearch = () => {
+    isSearchExpanded.value = true
+    nextTick(() => searchInputRef.value?.focus())
+}
+
+const onSearchBlur = () => {
+    if (!searchValue.value.trim()) {
+        isSearchExpanded.value = false
+    }
+}
+
+const collapseSearch = () => {
+    searchValue.value = ''
+    isSearchExpanded.value = false
+}
 
 // Filter state
 const activeFilters = ref<Set<string>>(new Set())
@@ -578,4 +669,10 @@ onUnmounted(() => {
 <style scoped>
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
