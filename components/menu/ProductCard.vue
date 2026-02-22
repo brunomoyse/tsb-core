@@ -3,7 +3,7 @@
         <div v-if="product" :key="product.id"
              data-testid="product-card"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border-2 rounded-xl shadow-md flex flex-col p-2 transition-shadow duration-200 hover:shadow-lg">
+             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer" @contextmenu.prevent @click="emit('openProductModal')">
                 <picture class="w-full h-full flex justify-center items-center">
@@ -47,26 +47,27 @@
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>
-                            <button v-if="!isInCart" aria-label="Add to Cart" data-testid="product-add-to-cart" class="flex items-center justify-center w-10 h-10 text-black border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
+                            <button v-if="!isInCart" aria-label="Add to Cart" data-testid="product-add-to-cart"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="props.orderingDisabled"
                                     @click="addToCart">
                                 <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
-                            <div v-else
-                                 class="flex items-center justify-center w-10 h-10 text-gray-800 font-semibold border-2 border-red-500 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50"
+                            <button v-else
+                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-red-700 font-semibold border border-red-200 hover:bg-red-100 focus:outline-none transition-all duration-300 cursor-pointer"
                                  @click="showExpandedControls">
                                 {{ cardQuantity }}
-                            </div>
+                            </button>
                         </div>
                     </template>
                     <div v-else class="w-full flex justify-between items-center">
-                        <button class="flex items-center justify-center w-10 h-10 text-gray-700 border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50" type="button"
+                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none transition-all duration-300" type="button"
                                 @click="decrement">
                             -
                         </button>
-                        <span class="text-sm font-semibold text-gray-700">{{ cardQuantity }}</span>
-                        <button class="flex items-center justify-center w-10 h-10 text-gray-700 border border-gray-300 rounded-xl bg-tsb-two focus:outline-none focus:ring-2 focus:ring-offset-2 transition disabled:cursor-not-allowed disabled:opacity-50" type="button"
+                        <span class="text-sm font-semibold text-red-700">{{ cardQuantity }}</span>
+                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none transition-all duration-300" type="button"
                                 @click="increment">
                             +
                         </button>

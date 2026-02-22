@@ -1,15 +1,19 @@
 <template>
     <button
         :aria-pressed="active"
-        :class="chipClasses"
-        role="button"
+        class="relative overflow-hidden shrink-0 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
+        :class="active
+            ? 'bg-tsb-four text-red-900/80 font-semibold'
+            : 'text-gray-400 font-medium hover:bg-tsb-four/40 hover:text-gray-500'"
         @click="handleClick"
         :data-id="category.id"
     >
-    <span class="truncate text-sm font-medium px-2">
-      {{ displayName }}
-    </span>
-        <slot name="icon" v-if="showIcon" />
+        {{ displayName }}
+        <!-- Red accent bar clipped by rounded corners -->
+        <span
+            class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-red-400 transition-all duration-300 ease-out origin-center"
+            :class="active ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'"
+        />
     </button>
 </template>
 
@@ -20,7 +24,6 @@ import type { ProductCategory } from '@/types';
 const props = defineProps<{
     category: ProductCategory;
     active: boolean;
-    showIcon?: boolean;
 }>();
 const emit = defineEmits<{
     (e: 'select', id: string): void;
@@ -35,11 +38,4 @@ const displayName = computed(() => {
         ? 'Bento'
         : props.category.name;
 });
-
-const chipClasses = computed(() => [
-    'rounded-full px-3 py-2.5 text-sm font-semibold transition-colors',
-    props.active
-        ? 'bg-black text-white shadow-sm'
-        : 'bg-white text-gray-700 border border-gray-200',
-].join(' '));
 </script>

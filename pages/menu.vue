@@ -122,20 +122,14 @@
                 </section>
 
                 <!-- Categories Scroll -->
-                <section v-if="!searchValue.trim().length" class="relative m-4">
-                    <!-- Left Arrow -->
-                    <button
-                        v-show="canScrollLeft"
-                        @click="scrollPrev"
-                        :aria-label="$t('menu.previousCategory')"
-                        class="absolute left-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full shadow-sm"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
+                    <!-- Left gradient fade -->
+                    <div
+                        class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300"
+                        :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
+                    />
 
-                    <!-- Scrollable Category Cards -->
+                    <!-- Scrollable Category Tabs -->
                     <div
                         ref="scrollContainer"
                         @mousedown="startDrag"
@@ -143,7 +137,7 @@
                         @mouseup="stopDrag"
                         @mouseleave="stopDrag"
                         :class="[
-                          'flex overflow-x-auto gap-2 pb-4 no-scrollbar',
+                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth',
                           isDragging ? 'cursor-grabbing' : 'cursor-grab'
                         ]"
                     >
@@ -158,17 +152,11 @@
                         />
                     </div>
 
-                    <!-- Right Arrow -->
-                    <button
-                        v-show="canScrollRight"
-                        @click="scrollNext"
-                        :aria-label="$t('menu.nextCategory')"
-                        class="absolute right-0 top-[18px] transform -translate-y-1/2 z-20 px-2 py-[6px] bg-white rounded-full shadow-sm"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                    <!-- Right gradient fade -->
+                    <div
+                        class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300"
+                        :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
+                    />
                 </section>
 
                 <!-- Allergen Notice -->
