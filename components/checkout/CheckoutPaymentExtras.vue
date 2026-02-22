@@ -19,7 +19,7 @@
                     @click="setOnlinePayment(true)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
-            isOnlinePayment ? 'border-red-500' : 'border-gray-300 bg-gray-50'
+            isOnlinePayment ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
           ]"
                 >
                     <img src="/icons/online-payment-icon.svg" alt="Online Payment" class="w-10 h-10 mb-2" />
@@ -31,7 +31,7 @@
                     @click="setOnlinePayment(false)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
-            !isOnlinePayment ? 'border-red-500' : 'border-gray-300 bg-gray-50'
+            !isOnlinePayment ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
           ]"
                 >
                     <img src="/icons/cash-payment-icon.svg" alt="Cash" class="w-10 h-10 mb-2" />
@@ -75,7 +75,7 @@
                                     :class="[
                                         'px-3 py-1.5 text-sm border rounded-full transition-colors',
                                         sauce1 === option.value
-                                            ? 'border-red-500 bg-red-50 text-red-700 font-medium'
+                                            ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
                                             : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
                                     ]"
                                 >
@@ -94,7 +94,7 @@
                                     :class="[
                                         'px-3 py-1.5 text-sm border rounded-full transition-colors',
                                         sauce2 === option.value
-                                            ? 'border-red-500 bg-red-50 text-red-700 font-medium'
+                                            ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
                                             : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
                                     ]"
                                 >

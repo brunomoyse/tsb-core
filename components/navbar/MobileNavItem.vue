@@ -3,7 +3,7 @@
     <li class="w-full">
         <NuxtLinkLocale
             :to="to"
-            active-class="bg-tsb-one"
+            active-class="bg-tsb-four"
             class="flex items-center justify-center space-x-2 p-3 rounded-xl hover:bg-tsb-one transition-colors"
         >
             <img :alt="label" :src="icon" class="w-6 h-6"/>

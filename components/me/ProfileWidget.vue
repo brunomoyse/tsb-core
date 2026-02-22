@@ -61,7 +61,7 @@
         <!-- Actions -->
         <div class="mt-6 space-y-2">
             <button
-                class="w-full rounded-lg bg-black px-4 py-2.5 text-white hover:bg-gray-800 transition-colors font-medium"
+                class="w-full rounded-lg bg-red-500 px-4 py-2.5 text-white hover:bg-red-600 transition-colors font-medium"
                 type="button"
                 @click="openModal"
             >
