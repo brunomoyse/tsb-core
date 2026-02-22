@@ -137,6 +137,7 @@ export default defineNuxtConfig({
             '/**/register',
             '/**/checkout',
             '/**/me',
+            '/**/me/**',
             '/**/logout',
             '/**/order-completed/**',
         ],

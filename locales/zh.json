@@ -175,8 +175,18 @@
     "deliveryInfoDescription": "仅在您需要配送时填写。"
   },
   "me": {
+    "greeting": "你好",
+    "subtitle": "管理您的个人资料并查看订单。",
     "orders": {
       "title": "我的订单",
+      "recentTitle": "最近订单",
+      "viewAll": "查看全部",
+      "viewAllCount": "查看全部 {count} 个订单",
+      "nextStep": "下一步",
+      "backToAccount": "我的账户",
+      "allOrdersTitle": "所有订单",
+      "loadMore": "加载 {count} 条更多",
+      "loadMoreLast": "加载最后 {count} 条",
       "loading": "加载订单中...",
       "empty": "没有找到订单",
       "order": "订单",
@@ -371,6 +381,9 @@
     },
     "myAccount": {
       "title": "我的账户 - Tokyo Sushi Bar"
+    },
+    "myOrders": {
+      "title": "我的订单 - Tokyo Sushi Bar"
     },
     "orderConfirmation": {
       "title": "订单确认 - Tokyo Sushi Bar",

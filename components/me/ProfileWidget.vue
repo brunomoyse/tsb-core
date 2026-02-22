@@ -1,11 +1,14 @@
 <template>
-    <article class="bg-tsb-two rounded-2xl p-6 shadow-sm">
+    <article class="bg-tsb-two rounded-2xl p-6 sm:p-7 h-full">
         <!-- Header -->
-        <div class="border-b border-gray-100 pb-4">
-            <h2 class="text-lg font-semibold text-gray-900">
-                {{ $t('me.profile.title') }}
-            </h2>
-        </div>
+        <h2 class="font-semibold text-gray-900 text-[15px] mb-4 flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                </svg>
+            </div>
+            {{ $t('me.profile.title') }}
+        </h2>
 
         <!-- Profile Information Cards -->
         <div class="mt-4 space-y-3">

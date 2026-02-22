@@ -175,8 +175,18 @@
     "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison."
   },
   "me": {
+    "greeting": "Bonjour",
+    "subtitle": "Gérez votre profil et consultez vos commandes.",
     "orders": {
       "title": "Mes commandes",
+      "recentTitle": "Commandes récentes",
+      "viewAll": "Tout voir",
+      "viewAllCount": "Voir les {count} commandes",
+      "nextStep": "Prochaine étape",
+      "backToAccount": "Mon compte",
+      "allOrdersTitle": "Toutes mes commandes",
+      "loadMore": "Afficher {count} de plus",
+      "loadMoreLast": "Afficher les {count} dernières",
       "loading": "Chargement des commandes...",
       "empty": "Aucune commande trouvée",
       "order": "Commande",
@@ -370,6 +380,9 @@
     },
     "myAccount": {
       "title": "Mon compte - Tokyo Sushi Bar"
+    },
+    "myOrders": {
+      "title": "Mes commandes - Tokyo Sushi Bar"
     },
     "orderConfirmation": {
       "title": "Confirmation de commande - Tokyo Sushi Bar",
