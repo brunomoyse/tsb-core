@@ -50,7 +50,7 @@
                         <button
                             v-else
                             @click.stop="openTimeline(order)"
-                            class="inline-block px-3 py-1 rounded-full text-sm font-medium text-black bg-gray-100 hover:bg-red-200 focus:outline-none"
+                            class="inline-block px-3 py-1 rounded-full text-sm font-medium text-black bg-gray-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
                             {{ $t('me.orders.follow') }}
                         </button>
@@ -153,7 +153,7 @@
         <transition name="fade">
             <div
                 v-if="activeOrder"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             >
                 <div class="bg-white rounded-lg p-6 relative dark:bg-gray-800">
                     <button

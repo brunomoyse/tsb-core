@@ -108,7 +108,7 @@
 
                             <button
                                 @click="addToCart"
-                                class="flex-1 bg-red-500 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-small md:font-medium transition-colors"
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-sm md:font-medium transition-colors"
                                 :class="{ 'opacity-50 cursor-not-allowed': !canAddToCart }"
                                 :disabled="!canAddToCart"
                             >

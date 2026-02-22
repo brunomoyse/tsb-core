@@ -1,5 +1,5 @@
 <template>
-    <nav class="mobile-only bg-white text-tsb-gray fixed z-50 h-20 w-full">
+    <nav class="mobile-only bg-white text-gray-700 fixed z-50 h-20 w-full">
         <div class="px-4 flex justify-between items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center">
@@ -18,7 +18,7 @@
                 <!-- Hamburger Menu -->
                 <div class="flex flex-col items-center ml-6">
                     <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
-                    <label :aria-label="$t('nav.toggleMenu')" class="hamburger cursor-pointer focus:outline-none"
+                    <label :aria-label="$t('nav.toggleMenu')" class="hamburger cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                            for="menu-toggle" tabindex="0">
                         <span></span>
                         <span></span>
@@ -27,7 +27,7 @@
 
                     <!-- Mobile Sidebar Menu -->
                     <div id="mobile-menu"
-                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] bg-tsb-two p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
+                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
 
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
