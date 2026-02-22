@@ -141,7 +141,9 @@
                         </div>
                     </button>
                 </div>
-                <span v-if="deliveryFee === 0" class="text-green-600 font-medium">{{ $t('checkout.free') }}</span>
+                <span v-if="!cartStore.address" class="text-gray-400">&ndash;</span>
+                <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-sm">{{ $t('checkout.tooFar') }}</span>
+                <span v-else-if="deliveryFee === 0" class="text-green-600 font-medium">{{ $t('checkout.free') }}</span>
                 <span v-else>{{ formatPrice(deliveryFee) }}</span>
             </div>
             <div v-if="cartStore.collectionOption === 'PICKUP'" class="flex justify-between text-gray-700">
@@ -186,9 +188,10 @@ const cartTotal = computed(() =>
 const deliveryFee = computed(() => {
     if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
 
-    // Assume cartStore.user.address contains a "distance" property.
     const { distance } = cartStore.address
-    const thresholds = [4000, 5000, 6000, 7000, 8000, 9000, 10001]
+    if (distance >= 9000) return -1
+
+    const thresholds = [4000, 5000, 6000, 7000, 8000, 9000]
     const fee = thresholds.findIndex((threshold) => distance < threshold)
     return fee === -1 ? 0 : fee
 })
@@ -203,7 +206,8 @@ const totalDiscount = computed(() => {
 });
 
 const finalTotal: ComputedRef<number> = computed(() => {
-    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? deliveryFee.value : 0) - totalDiscount.value - cartStore.couponDiscount
+    const fee = deliveryFee.value === -1 ? 0 : deliveryFee.value
+    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? fee : 0) - totalDiscount.value - cartStore.couponDiscount
 })
 
 // Quantity control handlers

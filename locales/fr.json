@@ -170,7 +170,9 @@
     "passwordUpperCase": "Une lettre majuscule",
     "passwordLowerCase": "Une lettre minuscule",
     "passwordNumber": "Un chiffre",
-    "passwordSpecialChar": "Un caractère spécial"
+    "passwordSpecialChar": "Un caractère spécial",
+    "deliveryInfoTitle": "Informations de livraison (facultatif)",
+    "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison."
   },
   "me": {
     "orders": {
@@ -277,7 +279,8 @@
     "stepCheckout": "Commande",
     "stepPayment": "Paiement",
     "itemCount": "{count} article | {count} articles",
-    "opensAt": "Ouverture à {time}"
+    "opensAt": "Ouverture à {time}",
+    "tooFar": "Trop loin pour la livraison (max 9 km)"
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -289,7 +292,8 @@
     "viewOrders": "Voir mes commandes",
     "orderAgain": "Commander à nouveau",
     "status": "Status",
-    "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations."
+    "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
+    "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer."
   },
   "404": {
     "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",

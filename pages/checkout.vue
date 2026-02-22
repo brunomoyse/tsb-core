@@ -40,7 +40,7 @@
                 :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
                 :is-currently-open="restaurantConfig?.restaurantConfig?.isCurrentlyOpen"
             />
-            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" />
+            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
         </div>
 
         <!-- Extras Suggestion -->
@@ -58,11 +58,11 @@
                     @click="handleCheckout"
                     :class="[
                         'px-6 pt-2 pb-3 rounded-lg font-medium transition-colors',
-                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable
+                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
                           ? 'bg-red-500 text-white hover:bg-red-600'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     ]"
-                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable"
+                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
                 >
                     <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
                         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -420,6 +420,10 @@ const totalDiscount = computed(() =>
                 : acc, 0)
         : 0
 );
+
+const isAddressTooFar = computed(() =>
+    cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= 9000
+)
 
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {
