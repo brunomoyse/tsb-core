@@ -4,10 +4,10 @@
             <!-- Container with dynamic colors based on active route -->
             <div :class="[
                 'relative group w-[50px] h-[50px] flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible',
-                isActive ? 'bg-black' : 'bg-white',
+                isActive ? 'bg-tsb-four text-red-700' : 'bg-white',
             ]">
                 <!-- Icon with dynamic color -->
-                <img :alt="alt" :class="['h-6 w-6 select-none', isActive ? 'invert' : '']" :src="icon"
+                <img :alt="alt" :class="['h-6 w-6 select-none', isActive ? '' : '']" :src="icon"
                      draggable="false"/>
 
                 <!-- Tooltip positioned below -->

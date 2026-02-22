@@ -145,13 +145,13 @@
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
-                    class="w-1/2 bg-black text-white py-2 rounded-md hover:bg-gray-800 transition text-sm">
+                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition text-sm">
                 {{ submitButtonText }}
             </button>
         </div>
         <div v-else>
             <button type="submit"
-                    class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
+                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition">
                 {{ submitButtonText }}
             </button>
         </div>

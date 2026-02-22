@@ -25,7 +25,7 @@
           'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
           cartStore.collectionOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-500 hover:bg-gray-50'
+            : 'text-gray-500 hover:bg-tsb-four/40'
         ]"
                         @click="handleOrderType(option.value)">
                     <img :alt="option.label" :src="option.icon" class="w-5 h-5"/>

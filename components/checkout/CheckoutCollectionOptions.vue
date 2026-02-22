@@ -13,7 +13,7 @@
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
           'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
-          cartStore.collectionOption === option.value ? 'border-red-500' : 'border-gray-300 bg-gray-50'
+          cartStore.collectionOption === option.value ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
         ]"
             >
                 <img :src="option.icon" alt="Option Icon" class="w-10 h-10 mb-2" />

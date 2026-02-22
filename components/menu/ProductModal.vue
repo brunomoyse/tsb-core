@@ -69,7 +69,7 @@
                                 v-for="choice in sortedChoices"
                                 :key="choice.id"
                                 class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                                :class="selectedChoiceId === choice.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'"
+                                :class="selectedChoiceId === choice.id ? 'border-red-300 bg-tsb-four' : 'border-gray-200 hover:border-gray-300'"
                             >
                                 <input
                                     type="radio"

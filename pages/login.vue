@@ -42,7 +42,7 @@
                 </p>
 
                 <!-- Submit Button -->
-                <button data-testid="login-submit" class="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition" type="submit">
+                <button data-testid="login-submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition" type="submit">
                     {{ $t('login.submit') }}
                 </button>
             </form>

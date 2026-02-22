@@ -19,7 +19,7 @@
                         {{ $t('cookies.decline') }}
                     </button>
                     <button
-                        class="px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                        class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                         @click="accept"
                     >
                         {{ $t('cookies.accept') }}
