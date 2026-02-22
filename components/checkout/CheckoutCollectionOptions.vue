@@ -34,6 +34,9 @@
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
+                <p v-if="cartStore.address.distance >= 9000" class="mt-2 text-sm text-red-600 font-medium">
+                    {{ $t('checkout.tooFar') }}
+                </p>
             </div>
             <!-- Prominent "Add address" placeholder card -->
             <button

@@ -130,10 +130,10 @@
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-colors',
-            props.isMinimumReached && !props.loading && props.isOrderingAvailable
+            props.isMinimumReached && !props.loading && props.isOrderingAvailable && !props.isAddressTooFar
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!props.isMinimumReached || props.loading || !props.isOrderingAvailable">
+          ]" :disabled="!props.isMinimumReached || props.loading || !props.isOrderingAvailable || props.isAddressTooFar">
             <span v-if="props.loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -171,6 +171,10 @@ const props = defineProps({
     isOrderingAvailable: {
         type: Boolean,
         default: true
+    },
+    isAddressTooFar: {
+        type: Boolean,
+        default: false
     }
 })
 

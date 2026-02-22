@@ -170,7 +170,9 @@
     "passwordUpperCase": "一个大写字母",
     "passwordLowerCase": "一个小写字母",
     "passwordNumber": "一个数字",
-    "passwordSpecialChar": "一个特殊字符"
+    "passwordSpecialChar": "一个特殊字符",
+    "deliveryInfoTitle": "配送信息（可选）",
+    "deliveryInfoDescription": "仅在您需要配送时填写。"
   },
   "me": {
     "orders": {
@@ -278,7 +280,8 @@
     "stepCheckout": "结账",
     "stepPayment": "付款",
     "itemCount": "{count} 件商品",
-    "opensAt": "营业时间：{time}"
+    "opensAt": "营业时间：{time}",
+    "tooFar": "超出配送范围（最远9公里）"
   },
   "orderCompleted": {
     "title": "订单完成",
@@ -290,7 +293,8 @@
     "viewOrders": "查看我的订单",
     "orderAgain": "再次订购",
     "status": "状态",
-    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。"
+    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
+    "loadError": "加载订单详情失败，请重试。"
   },
   "404": {
     "message": "抱歉，我们找不到您正在寻找的页面。",

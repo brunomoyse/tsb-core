@@ -69,6 +69,13 @@
                 </div>
             </div>
 
+            <!-- Error State -->
+            <div v-else-if="orderError" class="mt-6 p-4 rounded-lg bg-red-50">
+                <p class="text-sm text-red-600">
+                    {{ $t('orderCompleted.loadError', 'Failed to load order details. Please try again.') }}
+                </p>
+            </div>
+
             <!-- Loading State -->
             <div v-else class="mt-6 p-4 rounded-lg bg-gray-50">
                 <p class="text-sm text-gray-500">
@@ -106,9 +113,10 @@
 import {
     definePageMeta,
     useCartStore,
-    useGqlQuery,
     useGqlSubscription,
     useRoute,
+    useAsyncData,
+    useNuxtApp,
     ref
 } from '#imports'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
@@ -127,54 +135,57 @@ const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
 const { reorder } = useReorder()
+const { $gqlFetch } = useNuxtApp()
 
-// 1) Fetch the order once (SSR)
-const { data: dataOrder } = await useGqlQuery<{ myOrder: Order }>(
-    print(gql`
-        query ($orderId: ID!) {
-            myOrder(id: $orderId) {
+const ORDER_QUERY = print(gql`
+    query ($orderId: ID!) {
+        myOrder(id: $orderId) {
+            id
+            createdAt
+            updatedAt
+            status
+            type
+            isOnlinePayment
+            discountAmount
+            deliveryFee
+            totalPrice
+            estimatedReadyTime
+            addressExtra
+            orderNote
+            orderExtra
+
+            address {
+                streetName
+                municipalityName
+                postcode
+            }
+            customer {
                 id
-                createdAt
-                updatedAt
+                firstName
+                lastName
+            }
+            payment {
                 status
-                type
-                isOnlinePayment
-                discountAmount
-                deliveryFee
+            }
+            items {
+                unitPrice
+                quantity
                 totalPrice
-                estimatedReadyTime
-                addressExtra
-                orderNote
-                orderExtra
-
-                address {
-                    streetName
-                    municipalityName
-                    postcode
+                product {
+                    id name code slug price pieceCount isAvailable isDiscountable isHalal isVegan isVisible
+                    category { id name order }
+                    choices { id productId priceModifier sortOrder name }
                 }
-                customer {
-                    id
-                    firstName
-                    lastName
-                }
-                payment {
-                    status
-                }
-                items {
-                    unitPrice
-                    quantity
-                    totalPrice
-                    product {
-                        id name code slug price pieceCount isAvailable isDiscountable isHalal isVegan isVisible
-                        category { id name order }
-                        choices { id productId priceModifier sortOrder name }
-                    }
-                    choice { id productId priceModifier sortOrder name }
-                }
+                choice { id productId priceModifier sortOrder name }
             }
         }
-  `),
-    { orderId }
+    }
+`)
+
+// 1) Fetch the order once (SSR) — keyed by orderId to avoid stale data
+const { data: dataOrder, error: orderError } = await useAsyncData<{ myOrder: Order }>(
+    `order-${orderId}`,
+    () => $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } }),
 )
 
 const order = computed(() => dataOrder.value?.myOrder ?? null)
