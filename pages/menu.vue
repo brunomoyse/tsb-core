@@ -272,7 +272,7 @@
  */
 import { ref, computed, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useDebounce } from '@vueuse/core'
-import { useGqlQuery, useRoute, useRouter } from '#imports'
+import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import { useCartStore } from '@/stores/cart'
 import { useTracking } from '~/composables/useTracking'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
@@ -351,6 +351,43 @@ const { data: dataCategories } = await useGqlQuery<{
 }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
 
 /**
+ * Live product updates via WebSocket subscription
+ */
+const SUB_PRODUCT_UPDATED = gql`
+    subscription {
+        productUpdated {
+            id
+            isAvailable
+            isVisible
+            price
+            code
+            pieceCount
+            isHalal
+            isVegan
+            isDiscountable
+        }
+    }
+`
+const liveProductData = ref<Record<string, Partial<Product>>>({})
+
+onMounted(() => {
+    const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
+        print(SUB_PRODUCT_UPDATED)
+    )
+
+    watch(liveProduct, (val) => {
+        if (!val?.productUpdated?.id) return
+        liveProductData.value = {
+            ...liveProductData.value,
+            [val.productUpdated.id]: {
+                ...liveProductData.value[val.productUpdated.id],
+                ...val.productUpdated,
+            },
+        }
+    })
+})
+
+/**
  * Refs & Reactive State
  */
 const searchValue = ref('')
@@ -398,12 +435,17 @@ const toggleFilter = (filter: string) => {
 /**
  * Computed: Categories & Products
  */
-// Base categories with only visible products, sorted
+// Base categories with live updates merged and only visible products, sorted
 const baseCategories = computed(() =>
     (dataCategories.value?.productCategories ?? [])
         .map(cat => ({
             ...cat,
-            products: cat.products.filter(p => p.isVisible)
+            products: cat.products
+                .map(p => {
+                    const live = liveProductData.value[p.id]
+                    return live ? { ...p, ...live } as Product : p
+                })
+                .filter(p => p.isVisible)
         }))
         .filter(cat => cat.products.length)
         .sort((a, b) => a.order - b.order)
