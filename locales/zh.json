@@ -334,6 +334,7 @@
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
       "invalidCredentials": "电子邮件或密码无效。请重试。",
+      "emailNotVerified": "请在登录前验证您的电子邮件地址。请检查您的收件箱。",
       "orderingUnavailable": "目前无法下单。请稍后再试。",
       "tooManyRequests": "尝试次数过多。请等待几分钟后再试。"
     }
