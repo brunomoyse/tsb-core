@@ -333,6 +333,7 @@
         "addressRequired": "Une adresse est requise pour une livraison.",
         "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
         "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
+        "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception.",
         "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
         "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer."
     }

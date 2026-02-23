@@ -334,6 +334,7 @@
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
       "invalidCredentials": "Invalid email or password. Please try again.",
+      "emailNotVerified": "Please verify your email address before logging in. Check your inbox.",
       "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
       "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again."
     }

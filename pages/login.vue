@@ -168,6 +168,9 @@ const login = async () => {
         if (error?.response?.status === 429) {
             trackEvent('login_error', { error_type: 'rate_limited' })
             errorMessage.value = t('notify.errors.tooManyRequests')
+        } else if (error?.response?.status === 403) {
+            trackEvent('login_error', { error_type: 'email_not_verified' })
+            errorMessage.value = t('notify.errors.emailNotVerified')
         } else {
             trackEvent('login_error', { error_type: 'invalid_credentials' })
             errorMessage.value = t('notify.errors.invalidCredentials')
