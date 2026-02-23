@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useGqlQuery, useGqlSubscription } from "#imports"
-import { ref, computed, watch, onUnmounted } from "vue"
+import { ref, computed, watch, onUnmounted, onMounted } from "vue"
 import { useI18n } from "vue-i18n"
 import { formatAddress } from "~/utils/utils"
 import { useReorder } from "~/composables/useReorder"
@@ -78,50 +78,66 @@ function loadMore() {
 }
 
 const expandedOrders = ref(new Set<string>())
-const activeOrder = ref<Order | null>(null)
 
 // Live updates map
 const liveOrderData = ref<Record<string, Partial<Order>>>({})
 
-let unsubscribe = () => {}
+// Subscription management — subscribe to all active (non-terminated) orders
+const subscriptionStops = new Map<string, () => void>()
 
-watch(activeOrder, (order) => {
-    if (typeof unsubscribe === 'function') {
-        unsubscribe()
-        unsubscribe = () => {}
+const SUB_ORDER_UPDATES = gql`
+    subscription ($orderId: ID!) {
+        myOrderUpdated(orderId: $orderId) {
+            id
+            status
+            updatedAt
+            estimatedReadyTime
+            payment { status }
+        }
     }
+`
 
-    if (order) {
-        const SUB_ORDER_UPDATES = gql`
-            subscription ($orderId: ID!) {
-                myOrderUpdated(orderId: $orderId) {
-                    id
-                    status
-                    updatedAt
-                    estimatedReadyTime
-                    payment { status }
-                }
+function subscribeToOrder(orderId: string) {
+    if (subscriptionStops.has(orderId)) return
+
+    const { data: liveUpdate, stop } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
+        print(SUB_ORDER_UPDATES), { orderId }
+    )
+
+    subscriptionStops.set(orderId, stop)
+
+    watch(liveUpdate, (val) => {
+        if (val?.myOrderUpdated) {
+            liveOrderData.value[orderId] = {
+                ...liveOrderData.value[orderId],
+                ...val.myOrderUpdated
             }
-        `
-        const { data: liveUpdate, close } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
-            print(SUB_ORDER_UPDATES), { orderId: order.id }
-        )
-
-        unsubscribe = close
-
-        watch(liveUpdate, (val) => {
-            if (val?.myOrderUpdated) {
-                liveOrderData.value[order.id] = {
-                    ...liveOrderData.value[order.id],
-                    ...val.myOrderUpdated
-                }
+            // Auto-unsubscribe when order reaches a terminal status
+            if (isOrderCompleted(val.myOrderUpdated.status ?? '')) {
+                unsubscribeFromOrder(orderId)
             }
-        })
+        }
+    })
+}
+
+function unsubscribeFromOrder(orderId: string) {
+    const stopFn = subscriptionStops.get(orderId)
+    if (stopFn) {
+        stopFn()
+        subscriptionStops.delete(orderId)
     }
-}, { immediate: true })
+}
+
+onMounted(() => {
+    // Subscribe to all active (non-terminated) orders for live updates
+    orders.value
+        .filter(o => !isOrderCompleted(o.status))
+        .forEach(o => subscribeToOrder(o.id))
+})
 
 onUnmounted(() => {
-    if (typeof unsubscribe === 'function') unsubscribe()
+    subscriptionStops.forEach((stopFn) => stopFn())
+    subscriptionStops.clear()
 })
 
 function getTrackedOrder(order: Order): Order {
@@ -132,11 +148,8 @@ function getTrackedOrder(order: Order): Order {
 function toggleOrder(orderId: string) {
     if (expandedOrders.value.has(orderId)) {
         expandedOrders.value.delete(orderId)
-        activeOrder.value = null
     } else {
         expandedOrders.value.add(orderId)
-        const order = orders.value.find(o => o.id === orderId) ?? null
-        activeOrder.value = order
     }
 }
 
