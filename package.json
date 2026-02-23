@@ -24,14 +24,14 @@
     "libphonenumber-js": "^1.12.37",
     "nuxt": "^4.3.0",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "posthog-js": "^1.352.0"
+    "posthog-js": "^1.352.1"
   },
   "devDependencies": {
     "@nuxtjs/i18n": "^10.2.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@playwright/test": "^1.50.1",
     "@types/node": "^25.2.2",
-    "eslint": "^10.0.0",
+    "eslint": "^10.0.1",
     "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.3.0",
     "nuxt-schema-org": "^5.0.10",
@@ -43,16 +43,16 @@
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.27.0",
     "@esbuild/linux-x64": "^0.27.2",
-    "@oxc-minify/binding-linux-arm64-gnu": "^0.114.0",
-    "@oxc-minify/binding-linux-x64-gnu": "^0.114.0",
-    "@oxc-parser/binding-linux-arm64-gnu": "^0.114.0",
-    "@oxc-parser/binding-linux-x64-gnu": "^0.114.0",
-    "@oxc-transform/binding-linux-arm64-gnu": "^0.114.0",
-    "@oxc-transform/binding-linux-x64-gnu": "^0.114.0",
+    "@oxc-minify/binding-linux-arm64-gnu": "^0.115.0",
+    "@oxc-minify/binding-linux-x64-gnu": "^0.115.0",
+    "@oxc-parser/binding-linux-arm64-gnu": "^0.115.0",
+    "@oxc-parser/binding-linux-x64-gnu": "^0.115.0",
+    "@oxc-transform/binding-linux-arm64-gnu": "^0.115.0",
+    "@oxc-transform/binding-linux-x64-gnu": "^0.115.0",
     "@rollup/rollup-linux-arm64-gnu": "^4.58.0",
     "@rollup/rollup-linux-x64-gnu": "^4.58.0",
-    "@tailwindcss/oxide-linux-arm64-gnu": "^4.1.18",
-    "@tailwindcss/oxide-linux-x64-gnu": "^4.1.18",
+    "@tailwindcss/oxide-linux-arm64-gnu": "^4.2.1",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.2.1",
     "lightningcss-linux-arm64-gnu": "^1.31.1",
     "lightningcss-linux-x64-gnu": "^1.31.1"
   }
