@@ -109,8 +109,13 @@ export default defineNuxtPlugin(() => {
             })
             return true
         } catch {
-            // refresh failed → revoke & redirect to login
-            await $fetch(`${apiURL}/tokens/revoke`, { credentials: 'include' })
+            // refresh failed → logout & redirect to login
+            try {
+                await $fetch(`${apiURL}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+            } catch { /* ignore logout errors */ }
             navigateTo(localePath('login'))
             return false
         }
