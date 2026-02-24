@@ -1,110 +1,162 @@
 <template>
-    <div class="flex items-center justify-center bg-gray-50 p-4">
-        <!-- Main Card -->
-        <div class="max-w-2xl w-full bg-white rounded-xl shadow-sm p-6">
-            <h1 data-testid="order-completed-title" class="text-2xl font-bold text-gray-900">
-                {{ $t('orderCompleted.title', 'Order Completed') }}
-            </h1>
-            <p class="mt-3 text-gray-600 text-sm">
-                {{ $t('orderCompleted.thankYou', 'Thank you for your purchase! Your order was placed successfully.') }}
-            </p>
+    <div class="min-h-calc flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16">
 
-            <!-- Estimated arrival time / estimated ready time -->
-            <div v-if="order && order.estimatedReadyTime" class="mt-4">
-                <p class="text-sm text-gray-500">
-                    <span v-if="order.type === 'DELIVERY'">
-                        {{ $t('orderCompleted.estimatedDeliveredTime', 'Estimated delivered time:') }}
-                    </span>
-                    <span v-else>
-                        {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
-                    </span>
-                    <strong class="text-gray-900">
-                        {{ new Date(order.estimatedReadyTime).toLocaleString() }}
-                    </strong>
-                </p>
+        <!-- Hero: Bag + Title -->
+        <div class="relative flex flex-col items-center w-full max-w-md">
+
+            <!-- Falling cherry blossom petals (decorative) -->
+            <div class="absolute inset-0 -inset-x-16 pointer-events-none overflow-hidden" aria-hidden="true">
+                <span class="oc-petal oc-petal-1" />
+                <span class="oc-petal oc-petal-2" />
+                <span class="oc-petal oc-petal-3" />
+                <span class="oc-petal oc-petal-4" />
+                <span class="oc-petal oc-petal-5" />
+                <span class="oc-petal oc-petal-6" />
+                <span class="oc-petal oc-petal-7" />
+                <span class="oc-petal oc-petal-8" />
+                <span class="oc-petal oc-petal-9" />
+                <span class="oc-petal oc-petal-10" />
+                <span class="oc-petal oc-petal-11" />
+                <span class="oc-petal oc-petal-12" />
             </div>
 
-            <!-- Order Details -->
-            <div v-if="order" class="mt-6">
-                <div class="space-y-5">
-                    <!-- Items List -->
-                    <div data-testid="order-completed-items" class="space-y-4">
-                        <h3 class="text-sm font-semibold text-gray-900">
-                            {{ $t('orderCompleted.items', 'Dishes:') }}
-                        </h3>
-                        <div class="space-y-2">
-                            <div
-                                v-for="(item, index) in order.items"
-                                :key="index"
-                                class="flex items-center justify-between p-3 rounded-lg border border-gray-100  bg-white transition-colors"
-                            >
-                                <div class="flex-1 min-w-0 pr-2">
-                                    <p class="text-sm font-medium text-gray-900 truncate">
-                                        <span v-if="item.product.code" class="text-gray-500">
-                                            {{ item.product.code }} -
-                                        </span>
-                                        {{ item.product.category.name }} {{ item.product.name }}
-                                    </p>
-                                </div>
-                                <span class="text-sm font-medium text-gray-700 shrink-0">
-                                    x{{ item.quantity }}
-                                </span>
+            <!-- Takeaway bag with float animation -->
+            <div class="oc-bag-wrapper">
+                <picture>
+                    <source srcset="/images/tsb-takeaway-bag.avif" type="image/avif" />
+                    <source srcset="/images/tsb-takeaway-bag.webp" type="image/webp" />
+                    <img
+                        src="/images/tsb-takeaway-bag.png"
+                        alt=""
+                        class="oc-bag-image"
+                        width="180"
+                        height="216"
+                    />
+                </picture>
+                <div class="oc-bag-shadow" />
+            </div>
+
+            <!-- Title -->
+            <h1
+                data-testid="order-completed-title"
+                class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center oc-stagger-1"
+            >
+                {{ $t('orderCompleted.title') }}
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="mt-2 text-gray-500 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
+                {{ $t('orderCompleted.thankYou') }}
+            </p>
+
+            <!-- Estimated time badge -->
+            <div
+                v-if="order && order.estimatedReadyTime"
+                class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-tsb-four text-sm font-medium text-red-700 oc-stagger-3"
+            >
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>
+                    <template v-if="order.type === 'DELIVERY'">
+                        {{ $t('orderCompleted.estimatedDeliveredTime', 'Estimated delivered time:') }}
+                    </template>
+                    <template v-else>
+                        {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
+                    </template>
+                    <strong>{{ new Date(order.estimatedReadyTime).toLocaleString() }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Order details card -->
+        <div v-if="order" class="mt-8 w-full max-w-lg oc-stagger-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+                <!-- Items list -->
+                <div data-testid="order-completed-items" class="p-5">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                        {{ $t('orderCompleted.items') }}
+                    </h3>
+                    <div class="space-y-1">
+                        <div
+                            v-for="(item, index) in order.items"
+                            :key="index"
+                            class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-colors hover:bg-tsb-one"
+                        >
+                            <div class="flex-1 min-w-0 pr-3">
+                                <p class="text-sm font-medium text-gray-900 truncate">
+                                    <span v-if="item.product.code" class="text-gray-400 font-normal">
+                                        {{ item.product.code }}
+                                    </span>
+                                    {{ item.product.category.name }} {{ item.product.name }}
+                                </p>
                             </div>
+                            <span class="text-xs font-semibold text-gray-500 bg-gray-100 rounded-full px-2.5 py-0.5 shrink-0">
+                                x{{ item.quantity }}
+                            </span>
                         </div>
                     </div>
                 </div>
-                <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'">
-                    <h3 class="text-sm font-semibold text-gray-900 mt-6">
-                        {{ $t('orderCompleted.status', 'Status') }}
+
+                <!-- Status timeline -->
+                <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" class="border-t border-gray-100 p-5">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                        {{ $t('orderCompleted.status') }}
                     </h3>
-                    <OrderStatusTimeline
-                        :order="order"
-                        class="mt-6"
-                    />
+                    <OrderStatusTimeline :order="order" />
+
+                    <!-- Live tracking hint -->
+                    <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
+                        <span class="relative flex h-2 w-2 shrink-0">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                        </span>
+                        {{ $t('orderCompleted.liveTracking') }}
+                    </div>
                 </div>
-                <div class="py-4 font-bold" v-else>
-                    <p class="text-sm text-red-500">
+
+                <!-- Failed / Cancelled -->
+                <div v-else class="border-t border-gray-100 p-5">
+                    <p class="text-sm text-red-500 font-medium">
                         {{ $t('orderCompleted.orderCanceled') }}
                     </p>
                 </div>
             </div>
+        </div>
 
-            <!-- Error State -->
-            <div v-else-if="orderError" class="mt-6 p-4 rounded-lg bg-red-50">
-                <p class="text-sm text-red-600">
-                    {{ $t('orderCompleted.loadError', 'Failed to load order details. Please try again.') }}
-                </p>
-            </div>
+        <!-- Error State -->
+        <div v-else-if="orderError" class="mt-8 w-full max-w-lg p-5 rounded-2xl bg-red-50 border border-red-100 oc-stagger-4">
+            <p class="text-sm text-red-600">
+                {{ $t('orderCompleted.loadError') }}
+            </p>
+        </div>
 
-            <!-- Loading State -->
-            <div v-else class="mt-6 p-4 rounded-lg bg-gray-50">
-                <p class="text-sm text-gray-500">
-                    {{ $t('orderCompleted.loading', 'Loading order details...') }}
-                </p>
+        <!-- Loading State -->
+        <div v-else class="mt-8 w-full max-w-lg oc-stagger-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
+                    <p class="text-sm text-gray-500">{{ $t('orderCompleted.loading') }}</p>
+                </div>
             </div>
+        </div>
 
-            <!-- Navigation Actions -->
-            <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                <NuxtLinkLocale
-                    to="/me"
-                    class="flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
-                >
-                    {{ $t('orderCompleted.viewOrders', 'View My Orders') }}
-                </NuxtLinkLocale>
-                <button
-                    v-if="order"
-                    class="flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
-                    @click="reorder(order)"
-                >
-                    {{ $t('reorder.button') }}
-                </button>
-                <NuxtLinkLocale
-                    to="/"
-                    class="flex items-center justify-center px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                    {{ $t('orderCompleted.returnHome', 'Return to Home') }}
-                </NuxtLinkLocale>
-            </div>
+        <!-- Actions -->
+        <div class="mt-6 w-full max-w-lg flex flex-col sm:flex-row gap-3 oc-stagger-5">
+            <NuxtLinkLocale
+                to="/me"
+                class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+            >
+                {{ $t('orderCompleted.viewOrders') }}
+            </NuxtLinkLocale>
+            <NuxtLinkLocale
+                to="/"
+                class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+            >
+                {{ $t('orderCompleted.returnHome') }}
+            </NuxtLinkLocale>
         </div>
     </div>
 </template>
@@ -125,7 +177,6 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTracking } from '~/composables/useTracking'
-import { useReorder } from '~/composables/useReorder'
 
 definePageMeta({ public: false })
 
@@ -134,7 +185,6 @@ const cartStore = useCartStore()
 const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
-const { reorder } = useReorder()
 const { $gqlFetch } = useNuxtApp()
 
 const ORDER_QUERY = print(gql`
@@ -314,3 +364,144 @@ onUnmounted(() => {
     }
 })
 </script>
+
+<style scoped>
+/* ── Bag entrance + perpetual float ── */
+.oc-bag-wrapper {
+    position: relative;
+    animation: oc-bag-entrance 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.oc-bag-image {
+    width: 160px;
+    height: auto;
+    animation: oc-bag-float 3.5s ease-in-out 1s infinite;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
+}
+
+@media (min-width: 640px) {
+    .oc-bag-image {
+        width: 200px;
+    }
+}
+
+/* Shadow under the bag that breathes with the float */
+.oc-bag-shadow {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 14px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: oc-shadow-pulse 3.5s ease-in-out 1s infinite;
+}
+
+@media (min-width: 640px) {
+    .oc-bag-shadow {
+        width: 130px;
+    }
+}
+
+/* ── Staggered fade-slide reveals ── */
+.oc-stagger-1 { animation: oc-fade-up 0.5s ease-out 0.3s both; }
+.oc-stagger-2 { animation: oc-fade-up 0.5s ease-out 0.45s both; }
+.oc-stagger-3 { animation: oc-fade-up 0.5s ease-out 0.55s both; }
+.oc-stagger-4 { animation: oc-fade-up 0.5s ease-out 0.65s both; }
+.oc-stagger-5 { animation: oc-fade-up 0.5s ease-out 0.8s both; }
+
+/* ── Falling cherry blossom petals ── */
+.oc-petal {
+    position: absolute;
+    border-radius: 80% 0 55% 50% / 55% 0 80% 50%;
+    opacity: 0;
+}
+
+/* Left-drifting petals */
+.oc-petal-1  { width: 12px; height: 12px; background: #F3D0D7; top: -5%;  left: 10%;  animation: oc-petal-fall-left 5s ease-in-out 0s infinite; }
+.oc-petal-2  { width: 9px;  height: 9px;  background: #FFEFEF; top: -8%;  left: 55%;  animation: oc-petal-fall-right 4.5s ease-in-out 0.8s infinite; }
+.oc-petal-3  { width: 14px; height: 14px; background: #F3D0D7; top: -3%;  left: 80%;  animation: oc-petal-fall-left 5.5s ease-in-out 1.6s infinite; }
+.oc-petal-4  { width: 8px;  height: 8px;  background: #fecdd3; top: -6%;  left: 30%;  animation: oc-petal-fall-right 4.8s ease-in-out 2.4s infinite; }
+.oc-petal-5  { width: 10px; height: 10px; background: #FFEFEF; top: -4%;  left: 70%;  animation: oc-petal-fall-left 5.2s ease-in-out 3.2s infinite; }
+.oc-petal-6  { width: 7px;  height: 7px;  background: #F3D0D7; top: -7%;  left: 45%;  animation: oc-petal-fall-right 4.6s ease-in-out 4s infinite; }
+.oc-petal-7  { width: 11px; height: 11px; background: #fecdd3; top: -5%;  left: 20%;  animation: oc-petal-fall-right 5.3s ease-in-out 0.5s infinite; }
+.oc-petal-8  { width: 8px;  height: 8px;  background: #F3D0D7; top: -9%;  left: 90%;  animation: oc-petal-fall-left 4.4s ease-in-out 1.2s infinite; }
+.oc-petal-9  { width: 13px; height: 13px; background: #FFEFEF; top: -6%;  left: 5%;   animation: oc-petal-fall-right 5.8s ease-in-out 2s infinite; }
+.oc-petal-10 { width: 6px;  height: 6px;  background: #fecdd3; top: -4%;  left: 62%;  animation: oc-petal-fall-left 4.2s ease-in-out 3.5s infinite; }
+.oc-petal-11 { width: 10px; height: 10px; background: #F3D0D7; top: -8%;  left: 38%;  animation: oc-petal-fall-left 5s ease-in-out 1s infinite; }
+.oc-petal-12 { width: 9px;  height: 9px;  background: #FFEFEF; top: -3%;  left: 85%;  animation: oc-petal-fall-right 4.7s ease-in-out 2.8s infinite; }
+
+/* ── Keyframes ── */
+@keyframes oc-bag-entrance {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.92);
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes oc-bag-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+
+@keyframes oc-shadow-pulse {
+    0%, 100% { transform: translateX(-50%) scaleX(1);    opacity: 1; }
+    50%      { transform: translateX(-50%) scaleX(0.82); opacity: 0.5; }
+}
+
+@keyframes oc-fade-up {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes oc-petal-fall-left {
+    0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    10% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateY(140px) translateX(-30px) rotate(200deg);
+    }
+    80% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(300px) translateX(-50px) rotate(400deg);
+    }
+}
+
+@keyframes oc-petal-fall-right {
+    0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    10% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateY(130px) translateX(35px) rotate(-190deg);
+    }
+    80% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(300px) translateX(55px) rotate(-380deg);
+    }
+}
+</style>

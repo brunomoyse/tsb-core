@@ -305,6 +305,7 @@
     "viewOrders": "Voir mes commandes",
     "orderAgain": "Commander à nouveau",
     "status": "Status",
+    "liveTracking": "Suivi en direct — le statut se met à jour automatiquement",
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
     "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer."
   },

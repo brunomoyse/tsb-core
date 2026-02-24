@@ -306,6 +306,7 @@
     "viewOrders": "View My Orders",
     "orderAgain": "Order Again",
     "status": "Status",
+    "liveTracking": "Live tracking — status updates automatically",
     "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88.",
     "loadError": "Failed to load order details. Please try again."
   },
