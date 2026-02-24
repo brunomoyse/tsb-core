@@ -22,6 +22,7 @@ export interface Product {
     isAvailable: boolean;
     isDiscountable: boolean;
     isHalal: boolean;
+    isSpicy: boolean;
     isVegan: boolean;
     isVisible: boolean
     pieceCount: number | null;

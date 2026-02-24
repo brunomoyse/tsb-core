@@ -85,6 +85,24 @@
                                         :class="activeFilters.has('vegan') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
                                     >{{ $t('menu.vegan') }}</span>
                                 </button>
+
+                                <!-- Spicy toggle -->
+                                <button
+                                    @click.stop="toggleFilter('spicy')"
+                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    :class="activeFilters.has('spicy')
+                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
+                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
+                                >
+                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M13.73 2.18a1 1 0 0 0-1.46 0C10.6 3.87 9 6.81 9 10a6 6 0 0 0 12 0c0-3.19-1.6-6.13-3.27-7.82z"/>
+                                        <path d="M13.73 6.18a1 1 0 0 0-1.46 0C11.27 7.27 10 9.13 10 11a4 4 0 0 0 8 0c0-1.87-1.27-3.73-2.27-4.82z"/>
+                                    </svg>
+                                    <span
+                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
+                                        :class="activeFilters.has('spicy') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
+                                    >{{ $t('menu.spicy') }}</span>
+                                </button>
                             </div>
                         </div>
 
@@ -116,6 +134,14 @@
                             class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
                         >
                             {{ $t('menu.vegan') }}
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
+                        </button>
+                        <button
+                            v-if="activeFilters.has('spicy')"
+                            @click="toggleFilter('spicy')"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                        >
+                            {{ $t('menu.spicy') }}
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
                         </button>
                     </div>
@@ -333,6 +359,7 @@ const PRODUCT_CATEGORIES = gql`
         isVisible
         isAvailable
         isHalal
+        isSpicy
         isVegan
         isDiscountable
         category { id name }
@@ -363,6 +390,7 @@ const SUB_PRODUCT_UPDATED = gql`
             code
             pieceCount
             isHalal
+            isSpicy
             isVegan
             isDiscountable
         }
@@ -478,6 +506,7 @@ const dietaryFiltered = computed(() => {
     return filteredProducts.value.filter(p => {
         if (filters.has('halal') && !p.isHalal) return false
         if (filters.has('vegan') && !p.isVegan) return false
+        if (filters.has('spicy') && !p.isSpicy) return false
         return true
     })
 })
