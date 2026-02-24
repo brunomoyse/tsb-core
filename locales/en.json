@@ -317,7 +317,11 @@
     "notFound": "Oops! This page seems to have disappeared...",
     "forbidden": "Access forbidden. You don't have permission to view this page.",
     "serverError": "A server error occurred. Please try again later.",
-    "generic": "Something went wrong. Please try again."
+    "generic": "Something went wrong. Please try again.",
+    "title404": "Nothing on the plate",
+    "title403": "Off limits",
+    "title500": "Kitchen trouble",
+    "titleGeneric": "Chopstick slip"
   },
   "footer": {
     "terms": "Terms & Conditions",

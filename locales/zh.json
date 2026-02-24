@@ -317,7 +317,11 @@
     "notFound": "哎呀！这个页面似乎已经消失了...",
     "forbidden": "禁止访问。您没有权限查看此页面。",
     "serverError": "服务器错误。请稍后再试。",
-    "generic": "出了点问题。请重试。"
+    "generic": "出了点问题。请重试.",
+    "title404": "盘中无物",
+    "title403": "此处禁入",
+    "title500": "厨房小状况",
+    "titleGeneric": "筷子打滑了"
   },
   "footer": {
     "terms": "条款",

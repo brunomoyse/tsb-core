@@ -316,7 +316,11 @@
     "notFound": "Oups ! Cette page semble avoir disparu...",
     "forbidden": "Accès interdit. Vous n'avez pas la permission de voir cette page.",
     "serverError": "Une erreur est survenue. Veuillez réessayer plus tard.",
-    "generic": "Quelque chose s'est mal passé. Veuillez réessayer."
+    "generic": "Quelque chose s'est mal passé. Veuillez réessayer.",
+    "title404": "Rien dans l'assiette",
+    "title403": "Accès interdit",
+    "title500": "Souci en cuisine",
+    "titleGeneric": "Faux mouvement"
   },
   "footer": {
     "terms": "CGV",
