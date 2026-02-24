@@ -306,6 +306,7 @@
     "viewOrders": "查看我的订单",
     "orderAgain": "再次订购",
     "status": "状态",
+    "liveTracking": "实时追踪 — 状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
     "loadError": "加载订单详情失败，请重试。"
   },
