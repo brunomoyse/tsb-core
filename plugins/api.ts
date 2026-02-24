@@ -50,7 +50,12 @@ export default defineNuxtPlugin(() => {
                         return $fetch(request, options)
                     }
                 } catch (error) {
-                    await $fetch(`${apiUrl}/tokens/revoke`, { credentials: 'include' })
+                    try {
+                        await $fetch(`${apiUrl}/logout`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        })
+                    } catch { /* ignore logout errors */ }
                     navigateTo(localePath('login'))
                 }
             }
