@@ -298,7 +298,8 @@
   },
   "orderCompleted": {
     "title": "订单完成",
-    "thankYou": "感谢您的购买！您的订单已成功下达。",
+    "thankYou": "感谢您的购买！",
+    "orderSuccess": "您的订单已成功下达。",
     "placedAt": "下单时间：",
     "items": "商品",
     "loading": "正在加载订单详情...",
@@ -306,6 +307,7 @@
     "viewOrders": "查看我的订单",
     "orderAgain": "再次订购",
     "status": "状态",
+    "pageTitle": "订单确认 - Tokyo Sushi Bar",
     "liveTracking": "实时追踪 — 状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
     "loadError": "加载订单详情失败，请重试。"

@@ -18,7 +18,7 @@ useSchemaOrg([
         '@type': 'Restaurant',
         name: t('schema.restaurantName'),
         url: config.public.baseUrl,
-        logo: `${config.public.baseUrl}/images/tsb-logo-b.png`,
+        logo: `${config.public.baseUrl}/images/tsb-black-font-400.png`,
         image: `${config.public.baseUrl}/images/about-hero.png`,
         telephone: '+32 4 222 98 88',
         email: 'tokyosushibar888@gmail.com',

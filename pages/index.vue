@@ -29,7 +29,7 @@ useSeoMeta({
     ogTitle: t('schema.home.title'),
     description: t('schema.home.description'),
     ogDescription: t('schema.home.description'),
-    ogImage: config.public.baseUrl + '/images/restaurant.jpg',
+    ogImage: config.public.baseUrl + '/images/restaurant-illustrated.png',
     twitterCard: 'summary_large_image',
 })
 </script>
@@ -39,11 +39,17 @@ useSeoMeta({
 
         <!-- Hero -->
         <div class="relative h-72 sm:h-96 overflow-hidden rounded-2xl">
-            <img
-                alt="Tokyo Sushi Bar Restaurant"
-                class="absolute inset-0 w-full h-full object-cover"
-                src="/images/restaurant.jpg"
-            />
+            <picture>
+                <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
+                <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
+                <img
+                    alt="Tokyo Sushi Bar Restaurant"
+                    class="absolute inset-0 w-full h-full object-cover"
+                    src="/images/restaurant-illustrated.png"
+                    width="1200"
+                    height="805"
+                />
+            </picture>
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
             <div class="absolute inset-0 flex flex-col items-center justify-end pb-8 sm:pb-10 text-center text-white px-6">
                 <h1 class="font-channel text-4xl sm:text-6xl tracking-wide drop-shadow-lg">Tokyo</h1>
