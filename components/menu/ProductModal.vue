@@ -46,6 +46,9 @@
                         <span v-if="p.isVegan" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                             {{ $t('menu.vegan') }}
                         </span>
+                        <span v-if="p.isSpicy" class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                            {{ $t('menu.spicy') }}
+                        </span>
                         <span v-if="p.isDiscountable" class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200">
                             {{ $t('menu.pickupDiscountBadge') }}
                         </span>
@@ -160,6 +163,7 @@ const PRODUCT_QUERY = gql`
       slug
       isAvailable
       isHalal
+      isSpicy
       isVegan
       isDiscountable
       pieceCount
