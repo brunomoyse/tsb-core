@@ -2,6 +2,8 @@
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
+const yearsSince = new Date().getFullYear() - 2016
+
 useSchemaOrg([
     defineWebSite({
         name: t('schema.siteName'),
@@ -82,11 +84,64 @@ useSeoMeta({
         </div>
 
         <!-- Our Story -->
-        <div class="bg-tsb-two rounded-2xl p-8 sm:p-10">
-            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6">{{ $t('about.ourStoryTitle') }}</h2>
-            <div class="max-w-2xl mx-auto space-y-4 text-gray-600 leading-relaxed text-[15px] text-center">
-                <p>{{ $t('about.ourStoryText1') }}</p>
-                <p>{{ $t('about.ourStoryText2') }}</p>
+        <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
+            <!-- Decorative blurred background accents -->
+            <div class="absolute -top-24 -right-24 w-80 h-80 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
+
+            <div class="relative px-8 sm:px-12 py-10 sm:py-14">
+                <!-- Title -->
+                <h2 class="text-2xl sm:text-3xl font-bold text-center">
+                    {{ $t('about.ourStoryTitle') }}
+                </h2>
+                <div class="flex justify-center mt-3 mb-10 sm:mb-14">
+                    <div class="w-12 h-px bg-red-400/50" />
+                </div>
+
+                <div class="max-w-2xl mx-auto">
+                    <!-- Chapter 1: 2016 -->
+                    <div class="mb-8 sm:mb-10">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2016</span>
+                            <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-[15px] text-center">
+                            {{ $t('about.ourStoryText1') }}
+                        </p>
+                    </div>
+
+                    <!-- Chapter 2: 2024 -->
+                    <div class="mb-8 sm:mb-10">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2024</span>
+                            <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-[15px] text-center">
+                            {{ $t('about.ourStoryText2') }}
+                        </p>
+                    </div>
+
+                    <!-- Chapter 3: 2026 - Anniversary -->
+                    <div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2026</span>
+                            <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-[15px] text-center mb-5">
+                            {{ $t('about.ourStoryText3') }}
+                        </p>
+                        <!-- Years counter -->
+                        <div class="flex justify-center">
+                            <div class="bg-white/60 backdrop-blur-sm rounded-xl px-8 py-5 text-center shadow-sm">
+                                <span class="font-channel text-5xl sm:text-6xl text-red-500/70 block leading-none">{{ yearsSince }}</span>
+                                <span class="text-gray-500 text-xs tracking-widest uppercase mt-2 block">{{ $t('about.yearsOfPassion') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
