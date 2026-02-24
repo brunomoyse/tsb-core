@@ -127,7 +127,7 @@ export default defineNuxtConfig({
             type: 'Restaurant',
             name: 'Tokyo Sushi Bar',
             url: process.env.BASE_URL,
-            logo: process.env.BASE_URL + '/images/tsb-logo-b.png',
+            logo: process.env.BASE_URL + '/images/tsb-black-font-400.png',
         }
     },
 

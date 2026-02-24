@@ -24,7 +24,7 @@ module.exports = {
                         DEFAULT: '#F0EBE3'
                     },
                     'three': {
-                        DEFAULT: '#F3D0D7'
+                        DEFAULT: '#F2A9BD'
                     },
                     'four': {
                         DEFAULT: '#FFEFEF'
@@ -40,7 +40,7 @@ module.exports = {
                         DEFAULT: '#F0EBE3'
                     },
                     'three': {
-                        DEFAULT: '#F3D0D7'
+                        DEFAULT: '#F2A9BD'
                     },
                     'four': {
                         DEFAULT: '#FFEFEF'

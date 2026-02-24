@@ -298,7 +298,8 @@
   },
   "orderCompleted": {
     "title": "Order Completed",
-    "thankYou": "Thank you for your purchase! Your order was placed successfully.",
+    "thankYou": "Thank you for your purchase!",
+    "orderSuccess": "Your order was placed successfully.",
     "placedAt": "Order placed at:",
     "items": "Items",
     "loading": "Loading order details...",
@@ -306,6 +307,7 @@
     "viewOrders": "View My Orders",
     "orderAgain": "Order Again",
     "status": "Status",
+    "pageTitle": "Order Confirmation - Tokyo Sushi Bar",
     "liveTracking": "Live tracking — status updates automatically",
     "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88.",
     "loadError": "Failed to load order details. Please try again."

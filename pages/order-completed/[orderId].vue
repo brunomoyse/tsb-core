@@ -47,6 +47,8 @@
             <!-- Subtitle -->
             <p class="mt-2 text-gray-500 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
                 {{ $t('orderCompleted.thankYou') }}
+                <br />
+                {{ $t('orderCompleted.orderSuccess') }}
             </p>
 
             <!-- Estimated time badge -->
@@ -299,7 +301,7 @@ watch(order, (orderData) => {
 
     // SEO meta
     useSeoMeta({
-        title: `Order #${orderData.id} - Tokyo Sushi Bar`,
+        title: t('orderCompleted.pageTitle'),
         robots: 'noindex,nofollow' // Order pages should not be indexed
     })
 }, { immediate: true })
@@ -419,17 +421,17 @@ onUnmounted(() => {
 }
 
 /* Left-drifting petals */
-.oc-petal-1  { width: 12px; height: 12px; background: #F3D0D7; top: -5%;  left: 10%;  animation: oc-petal-fall-left 5s ease-in-out 0s infinite; }
+.oc-petal-1  { width: 12px; height: 12px; background: #F2A9BD; top: -5%;  left: 10%;  animation: oc-petal-fall-left 5s ease-in-out 0s infinite; }
 .oc-petal-2  { width: 9px;  height: 9px;  background: #FFEFEF; top: -8%;  left: 55%;  animation: oc-petal-fall-right 4.5s ease-in-out 0.8s infinite; }
-.oc-petal-3  { width: 14px; height: 14px; background: #F3D0D7; top: -3%;  left: 80%;  animation: oc-petal-fall-left 5.5s ease-in-out 1.6s infinite; }
+.oc-petal-3  { width: 14px; height: 14px; background: #F2A9BD; top: -3%;  left: 80%;  animation: oc-petal-fall-left 5.5s ease-in-out 1.6s infinite; }
 .oc-petal-4  { width: 8px;  height: 8px;  background: #fecdd3; top: -6%;  left: 30%;  animation: oc-petal-fall-right 4.8s ease-in-out 2.4s infinite; }
 .oc-petal-5  { width: 10px; height: 10px; background: #FFEFEF; top: -4%;  left: 70%;  animation: oc-petal-fall-left 5.2s ease-in-out 3.2s infinite; }
-.oc-petal-6  { width: 7px;  height: 7px;  background: #F3D0D7; top: -7%;  left: 45%;  animation: oc-petal-fall-right 4.6s ease-in-out 4s infinite; }
+.oc-petal-6  { width: 7px;  height: 7px;  background: #F2A9BD; top: -7%;  left: 45%;  animation: oc-petal-fall-right 4.6s ease-in-out 4s infinite; }
 .oc-petal-7  { width: 11px; height: 11px; background: #fecdd3; top: -5%;  left: 20%;  animation: oc-petal-fall-right 5.3s ease-in-out 0.5s infinite; }
-.oc-petal-8  { width: 8px;  height: 8px;  background: #F3D0D7; top: -9%;  left: 90%;  animation: oc-petal-fall-left 4.4s ease-in-out 1.2s infinite; }
+.oc-petal-8  { width: 8px;  height: 8px;  background: #F2A9BD; top: -9%;  left: 90%;  animation: oc-petal-fall-left 4.4s ease-in-out 1.2s infinite; }
 .oc-petal-9  { width: 13px; height: 13px; background: #FFEFEF; top: -6%;  left: 5%;   animation: oc-petal-fall-right 5.8s ease-in-out 2s infinite; }
 .oc-petal-10 { width: 6px;  height: 6px;  background: #fecdd3; top: -4%;  left: 62%;  animation: oc-petal-fall-left 4.2s ease-in-out 3.5s infinite; }
-.oc-petal-11 { width: 10px; height: 10px; background: #F3D0D7; top: -8%;  left: 38%;  animation: oc-petal-fall-left 5s ease-in-out 1s infinite; }
+.oc-petal-11 { width: 10px; height: 10px; background: #F2A9BD; top: -8%;  left: 38%;  animation: oc-petal-fall-left 5s ease-in-out 1s infinite; }
 .oc-petal-12 { width: 9px;  height: 9px;  background: #FFEFEF; top: -3%;  left: 85%;  animation: oc-petal-fall-right 4.7s ease-in-out 2.8s infinite; }
 
 /* ── Keyframes ── */

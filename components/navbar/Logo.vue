@@ -3,7 +3,11 @@
         <NuxtLinkLocale :to="to">
             <!-- Container with overflow-visible -->
             <div class="relative group w-[50px] h-[50px] flex items-center justify-center overflow-visible">
-                <img :alt="alt" :src="icon" width="50" height="50" class="fit"/>
+                <picture>
+                    <source :srcset="icon.replace('.png', '.avif')" type="image/avif" />
+                    <source :srcset="icon.replace('.png', '.webp')" type="image/webp" />
+                    <img :alt="alt" :src="icon" width="50" height="50" class="fit" />
+                </picture>
 
                 <!-- Tooltip positioned below -->
                 <span v-if="tooltipText"
