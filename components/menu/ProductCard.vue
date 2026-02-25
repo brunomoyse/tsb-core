@@ -8,7 +8,7 @@
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
                 <div v-if="product.isHalal || product.isVegan || product.isSpicy" class="absolute top-1 right-1 z-10 flex flex-col gap-0.5">
-                    <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
+                    <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                         </svg>
@@ -19,10 +19,9 @@
                             <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
                         </svg>
                     </div>
-                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
-                        <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M13.73 2.18a1 1 0 0 0-1.46 0C10.6 3.87 9 6.81 9 10a6 6 0 0 0 12 0c0-3.19-1.6-6.13-3.27-7.82z"/>
-                            <path d="M13.73 6.18a1 1 0 0 0-1.46 0C11.27 7.27 10 9.13 10 11a4 4 0 0 0 8 0c0-1.87-1.27-3.73-2.27-4.82z"/>
+                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
+                        <svg aria-hidden="true" class="w-3 h-3" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
+                            <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
                         </svg>
                     </div>
                 </div>

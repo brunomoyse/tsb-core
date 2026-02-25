@@ -60,7 +60,7 @@
                                     @click.stop="toggleFilter('halal')"
                                     class="flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('halal')
-                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
+                                        ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -95,12 +95,11 @@
                                     @click.stop="toggleFilter('spicy')"
                                     class="flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('spicy')
-                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
+                                        ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13.73 2.18a1 1 0 0 0-1.46 0C10.6 3.87 9 6.81 9 10a6 6 0 0 0 12 0c0-3.19-1.6-6.13-3.27-7.82z"/>
-                                        <path d="M13.73 6.18a1 1 0 0 0-1.46 0C11.27 7.27 10 9.13 10 11a4 4 0 0 0 8 0c0-1.87-1.27-3.73-2.27-4.82z"/>
+                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
+                                        <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
                                     </svg>
                                     <span
                                         class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
@@ -127,7 +126,7 @@
                         <button
                             v-if="activeFilters.has('halal')"
                             @click="toggleFilter('halal')"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
                         >
                             {{ $t('menu.halal') }}
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
@@ -143,7 +142,7 @@
                         <button
                             v-if="activeFilters.has('spicy')"
                             @click="toggleFilter('spicy')"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-medium hover:bg-red-100 transition-colors"
                         >
                             {{ $t('menu.spicy') }}
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
