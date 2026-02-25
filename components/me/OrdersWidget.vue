@@ -371,7 +371,7 @@ function accordionBeforeLeave(el: Element) {
 function accordionLeave(el: Element, done: () => void) {
     const htmlEl = el as HTMLElement
     // Force reflow so the browser registers the starting height
-    htmlEl.offsetHeight
+    void htmlEl.offsetHeight
     htmlEl.style.transition = 'height 250ms ease-in, opacity 200ms ease-in'
     htmlEl.style.height = '0'
     htmlEl.style.opacity = '0'
