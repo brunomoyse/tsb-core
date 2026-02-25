@@ -199,6 +199,7 @@
       "items": "Plats",
       "total": "Total",
       "follow": "Suivre",
+      "toggleOrder": "Détails de la commande",
       "status": {
         "details": {
           "title": {
@@ -252,7 +253,10 @@
     "checkout": "Valider la commande",
     "removeItem": "Retirer",
     "decreaseQty": "Diminuer la quantité",
-    "increaseQty": "Augmenter la quantité"
+    "increaseQty": "Augmenter la quantité",
+    "closeCart": "Fermer le panier",
+    "notifications": "Notifications du panier",
+    "addToCart": "Ajouter au panier"
   },
   "checkout": {
     "title": "Commande",
@@ -296,7 +300,9 @@
     "stepPayment": "Paiement",
     "itemCount": "{count} article | {count} articles",
     "opensAt": "Ouverture à {time}",
-    "tooFar": "Trop loin pour la livraison (max 9 km)"
+    "tooFar": "Trop loin pour la livraison (max 9 km)",
+    "sauce1": "Sauce 1",
+    "sauce2": "Sauce 2"
   },
   "orderCompleted": {
     "title": "Commande reçue",

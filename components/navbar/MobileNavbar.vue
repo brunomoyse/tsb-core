@@ -17,17 +17,24 @@
 
                 <!-- Hamburger Menu -->
                 <div class="flex flex-col items-center ml-6">
-                    <input id="menu-toggle" ref="menuToggle" class="hidden" type="checkbox"/>
-                    <label :aria-label="$t('nav.toggleMenu')" class="hamburger cursor-pointer p-2 rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                           for="menu-toggle" tabindex="0">
+                    <button
+                        type="button"
+                        :aria-label="$t('nav.toggleMenu')"
+                        :aria-expanded="isMenuOpen"
+                        aria-controls="mobile-menu"
+                        class="hamburger cursor-pointer p-2 rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                        :class="{ 'hamburger-active': isMenuOpen }"
+                        @click="toggleMenu"
+                    >
                         <span></span>
                         <span></span>
                         <span></span>
-                    </label>
+                    </button>
 
                     <!-- Mobile Sidebar Menu -->
                     <div id="mobile-menu"
-                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 opacity-0 transform -translate-x-full transition-all duration-400 ease-out pointer-events-none overflow-y-auto">
+                         :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
+                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto">
 
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
@@ -78,50 +85,41 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from '#imports';
-import {useAuthStore} from '@/stores/auth'
-import CartButton from "~/components/cart/CartButton.vue";
-import MobileNavItem from './MobileNavItem.vue';
-import Logo from './Logo.vue';
-import LanguagePicker from './LanguagePicker.vue';
-import {useRoute} from 'vue-router'
+import { ref, watch } from '#imports'
+import CartButton from '~/components/cart/CartButton.vue'
+import LanguagePicker from './LanguagePicker.vue'
+import Logo from './Logo.vue'
+import MobileNavItem from './MobileNavItem.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
 
 const currentRoute = useRoute();
 const authStore = useAuthStore()
 
-// Reference to the menu toggle checkbox
-const menuToggle = ref<HTMLInputElement | null>(null);
+const isMenuOpen = ref(false)
 
-// Watch the checkbox state to toggle body overflow
-watch(
-    () => menuToggle.value?.checked,
-    (checked) => {
-        if (checked) {
-            document.body.classList.add('overflow-hidden');
-        } else {
-            document.body.classList.remove('overflow-hidden');
-        }
-    }
-);
-
-const closeMenu = () => {
-    if (menuToggle.value) {
-        menuToggle.value.checked = false
-    }
+const toggleMenu = () => {
+    isMenuOpen.value = !isMenuOpen.value
 }
 
+const closeMenu = () => {
+    isMenuOpen.value = false
+}
+
+// Toggle body overflow based on menu state
+watch(isMenuOpen, (open) => {
+    if (open) {
+        document.body.classList.add('overflow-hidden')
+    } else {
+        document.body.classList.remove('overflow-hidden')
+    }
+})
 </script>
 
 <style>
 :root {
     --transition-duration: 0.4s;
     --transition-easing: ease;
-}
-
-/* Custom styles for the hamburger animation */
-/* Hide the default checkbox */
-#menu-toggle {
-    display: none;
 }
 
 /* Hamburger lines */
@@ -134,101 +132,62 @@ const closeMenu = () => {
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Transform the hamburger into an X when checked */
-#menu-toggle:checked + .hamburger span:nth-child(1) {
+/* Transform the hamburger into an X when active */
+.hamburger-active span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
 
-#menu-toggle:checked + .hamburger span:nth-child(2) {
+.hamburger-active span:nth-child(2) {
     opacity: 0;
 }
 
-#menu-toggle:checked + .hamburger span:nth-child(3) {
+.hamburger-active span:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Mobile Menu Styles */
 #mobile-menu {
-    position: fixed;
-    top: 5rem;
-    /* Adjust based on navbar height (h-20 = 5rem) */
-    left: 0;
-    right: 0;
-    bottom: 0;
     background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    z-index: 40;
+}
+
+.menu-closed {
     opacity: 0;
     transform: translateY(-20px);
     pointer-events: none;
     transition: opacity 0.4s ease, transform 0.4s ease;
-    z-index: 40;
-    /* Ensure it's below the navbar (z-50) */
 }
 
-/* When menu is checked, show the mobile menu */
-#menu-toggle:checked ~ #mobile-menu {
+.menu-open {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Optional: Fade-in and fade-out effect */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-}
-
-/* Apply animations */
-#menu-toggle:checked ~ #mobile-menu {
-    animation: fadeIn 0.4s forwards;
-}
-
-#menu-toggle:not(:checked) ~ #mobile-menu {
-    animation: fadeOut 0.4s forwards;
-}
-
-#mobile-menu li {
+.menu-closed li {
     opacity: 0;
     transform: translateX(-10px);
     transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-}
-#menu-toggle:checked ~ #mobile-menu li {
-    opacity: 1;
-    transform: translateX(0);
-}
-#menu-toggle:checked ~ #mobile-menu li:nth-child(1) { transition-delay: 0.05s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(2) { transition-delay: 0.1s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(3) { transition-delay: 0.15s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(4) { transition-delay: 0.2s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(5) { transition-delay: 0.25s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(6) { transition-delay: 0.3s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(7) { transition-delay: 0.35s; }
-#menu-toggle:checked ~ #mobile-menu li:nth-child(8) { transition-delay: 0.4s; }
-
-#menu-toggle:not(:checked) ~ #mobile-menu li {
     transition-delay: 0s;
 }
+
+.menu-open li {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+.menu-open li:nth-child(1) { transition-delay: 0.05s; }
+.menu-open li:nth-child(2) { transition-delay: 0.1s; }
+.menu-open li:nth-child(3) { transition-delay: 0.15s; }
+.menu-open li:nth-child(4) { transition-delay: 0.2s; }
+.menu-open li:nth-child(5) { transition-delay: 0.25s; }
+.menu-open li:nth-child(6) { transition-delay: 0.3s; }
+.menu-open li:nth-child(7) { transition-delay: 0.35s; }
+.menu-open li:nth-child(8) { transition-delay: 0.4s; }
 </style>

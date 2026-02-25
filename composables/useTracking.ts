@@ -1,5 +1,7 @@
-import { useNuxtApp } from '#imports'
 import type { User } from '~/types'
+import { useNuxtApp } from '#imports'
+
+
 
 export function useTracking() {
     const getPosthog = () => {

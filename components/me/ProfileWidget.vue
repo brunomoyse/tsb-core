@@ -110,15 +110,15 @@
 </template>
 
 <script setup lang="ts">
+import type { Address, UpdateUserRequest, User } from '~/types'
+import UserForm from '~/components/form/UserForm.vue'
+import { eventBus } from '~/eventBus'
+import { formatAddress } from '~/utils/utils'
+import gql from 'graphql-tag'
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useGqlMutation } from '#imports'
-import UserForm from '~/components/form/UserForm.vue'
-import gql from 'graphql-tag'
-import { formatAddress } from "~/utils/utils";
-import { eventBus } from '~/eventBus'
-import { useI18n } from "vue-i18n"
-import type {Address, UpdateUserRequest, User} from '~/types'
+import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
@@ -216,7 +216,7 @@ const openModal = () => {
     }
 
     userInitialValues.value.address = authStore.user?.address || null
-    userInitialValues.value.addressConfirmed = !!authStore.user?.address
+    userInitialValues.value.addressConfirmed = Boolean(authStore.user?.address)
 
     showModal.value = true
 }

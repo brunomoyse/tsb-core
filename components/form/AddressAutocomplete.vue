@@ -132,13 +132,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, nextTick } from 'vue'
-import { useNuxtApp } from '#imports'
+import type { Address, Street } from '~/types'
+import { computed, nextTick, ref, watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import type { Address, Street } from '~/types'
+import { useNuxtApp } from '#imports'
 
-const emit = defineEmits<{ (e: 'update:address', address: Address | null): void }>();
+const emit = defineEmits<{
+    'update:address': [address: Address | null]
+}>()
 const { $gqlFetch } = useNuxtApp()
 
 const SEARCH_STREETS = gql`query ($query: String!) {
@@ -198,19 +200,19 @@ let debounceHouseTimer: ReturnType<typeof setTimeout> | null = null
 let debounceBoxTimer: ReturnType<typeof setTimeout> | null = null
 
 // Input blur events
-function onStreetBlur() {
+const onStreetBlur = () => {
     setTimeout(() => {
         isStreetFocused.value = false
     }, 100)
 }
 
-function onHouseBlur() {
+const onHouseBlur = () => {
     setTimeout(() => {
         isHouseFocused.value = false
     }, 100)
 }
 
-function onBoxBlur() {
+const onBoxBlur = () => {
     setTimeout(() => {
         isBoxFocused.value = false
     }, 100)
@@ -260,7 +262,7 @@ watch(address, (newVal) => {
 })
 
 // Address Search Handlers
-const handleStreetSearch = async () => {
+const handleStreetSearch = () => {
     if (debounceStreetTimer) clearTimeout(debounceStreetTimer)
     debounceStreetTimer = setTimeout(async () => {
         if (streetQuery.value.trim().length < 3) return
@@ -293,7 +295,7 @@ const handleStreetSelection = () => {
     if (selectedStreet.value) loadHouseNumbers()
 }
 
-const loadHouseNumbers = async () => {
+const loadHouseNumbers = () => {
     if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
     debounceHouseTimer = setTimeout(async () => {
 
@@ -329,7 +331,7 @@ const handleHouseNumberSelection = () => {
     }
 }
 
-const loadBoxNumbers = async () => {
+const loadBoxNumbers = () => {
     if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
     debounceBoxTimer = setTimeout(async () => {
         const data: { boxNumbers: (string | null)[]} = await $gqlFetch(
@@ -393,9 +395,9 @@ const loadAddress = async () => {
         );
         address.value = data.addressByLocation;
     } catch (err) {
-        // you’ll now see the real error shape in the console
-        console.error("loadAddress failed:", err);
-        address.value = null;
+        // You will now see the real error shape in the console
+        if (import.meta.dev) console.error("loadAddress failed:", err)
+        address.value = null
     }
 };
 
@@ -426,7 +428,7 @@ const selectFirstStreet = () => {
     }
 }
 
-const selectHouse = async (hn: string) => {
+const selectHouse = (hn: string) => {
     selectedHouseNumber.value = hn
     houseQuery.value = hn
     houseConfirmed.value = true
@@ -439,7 +441,7 @@ const selectFirstHouse = () => {
     }
 }
 
-function handleHouseEnter(event: KeyboardEvent) {
+const handleHouseEnter = (event: KeyboardEvent) => {
     // If the user hasn't typed anything, don't auto-select.
     if (houseQuery.value.trim() === '') {
         event.preventDefault();

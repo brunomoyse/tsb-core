@@ -1,4 +1,4 @@
-import {defineNuxtConfig} from "nuxt/config";
+import { defineNuxtConfig } from 'nuxt/config'
 
 // Derive origins for CSP from environment variables (dev defaults)
 const apiOrigin = process.env.BASE_URL || 'http://localhost:8080'
@@ -7,16 +7,16 @@ const s3Url = process.env.S3_BUCKET_URL
 const osm = 'https://www.openstreetmap.org'
 const posthogHost = process.env.POSTHOG_HOST || 'https://eu.i.posthog.com'
 
-const csp = [
+const csp = `${[
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://eu-assets.i.posthog.com",
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data:${s3Url ? ' ' + s3Url : ''}`,
+    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
     "font-src 'self' https://fonts.gstatic.com",
     `connect-src 'self' ${apiOrigin} ${wsOrigin} ${osm} ${posthogHost} https://eu-assets.i.posthog.com`,
     `frame-src ${osm}`,
     "worker-src 'self' blob:",
-].join('; ') + ';'
+].join('; ')};`
 
 export default defineNuxtConfig({
     ssr: true,
@@ -95,7 +95,7 @@ export default defineNuxtConfig({
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
-            redirectOn: 'all' // v10: stricter redirection with prefix strategy
+            redirectOn: 'all' // V10: stricter redirection with prefix strategy
         },
         strategy: 'prefix',
         vueI18n: "../i18n.config.ts",
@@ -106,7 +106,7 @@ export default defineNuxtConfig({
             baseUrl: process.env.BASE_URL,
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
-            graphqlHttp: process.env.API_BASE_URL + '/graphql',
+            graphqlHttp: `${process.env.API_BASE_URL}/graphql`,
             graphqlWs: process.env.GRAPHQL_WS_URL,
             posthogApiKey: process.env.POSTHOG_API_KEY || '',
             posthogHost: process.env.POSTHOG_HOST || 'https://eu.i.posthog.com',
@@ -132,7 +132,7 @@ export default defineNuxtConfig({
             type: 'Restaurant',
             name: 'Tokyo Sushi Bar',
             url: process.env.BASE_URL,
-            logo: process.env.BASE_URL + '/images/tsb-black-font-400.png',
+            logo: `${process.env.BASE_URL}/images/tsb-black-font-400.png`,
         }
     },
 

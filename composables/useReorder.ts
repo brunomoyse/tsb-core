@@ -1,14 +1,14 @@
-import { useCartStore, useLocalePath, navigateTo } from '#imports'
-import { useI18n } from 'vue-i18n'
-import { eventBus } from '~/eventBus'
+import { navigateTo, useCartStore, useLocalePath } from '#imports'
 import type { Order } from '~/types'
+import { eventBus } from '~/eventBus'
+import { useI18n } from 'vue-i18n'
 
 export function useReorder() {
     const cartStore = useCartStore()
     const localePath = useLocalePath()
     const { t } = useI18n()
 
-    function reorder(order: Order) {
+    const reorder = (order: Order) => {
         cartStore.resetState()
 
         let added = 0

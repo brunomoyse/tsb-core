@@ -23,20 +23,22 @@
 </template>
 
 <script lang="ts" setup>
-defineProps<{
+const { modelValue } = defineProps<{
     modelValue: string
 }>()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+    'update:modelValue': [value: string]
+}>()
 
 // Local helper function for input events
-function onInput(event: Event) {
+const onInput = (event: Event) => {
     const target = event.target as HTMLInputElement
     emit('update:modelValue', target.value)
 }
 
 // Clear the input value
-function onClear() {
+const onClear = () => {
     emit('update:modelValue', '')
 }
 </script>

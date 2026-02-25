@@ -117,7 +117,7 @@ useSeoMeta({
     ogTitle: t('faq.schemaTitle'),
     description: t('faq.schemaDescription'),
     ogDescription: t('faq.schemaDescription'),
-    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
 })
 </script>

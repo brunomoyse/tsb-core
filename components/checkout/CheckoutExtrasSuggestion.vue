@@ -62,16 +62,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import type { Product, ProductCategory } from '@/types'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
-import { useCartStore } from '@/stores/cart'
+import { computed } from 'vue'
+import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
-import type { ProductCategory, Product } from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import { eventBus } from '~/eventBus'
+import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
+
+
+
+
 
 const { t } = useI18n()
 const config = useRuntimeConfig()

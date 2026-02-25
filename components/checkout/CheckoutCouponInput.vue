@@ -29,6 +29,7 @@
                 <input
                     v-model="couponInput"
                     type="text"
+                    :aria-label="$t('coupon.title')"
                     class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 text-sm"
                     :placeholder="$t('coupon.placeholder')"
                     :disabled="isValidating"
@@ -49,7 +50,7 @@
                     <span v-else>{{ $t('coupon.apply') }}</span>
                 </button>
             </div>
-            <p v-if="errorMessage" class="text-sm text-red-600 mt-1">
+            <p v-if="errorMessage" role="alert" class="text-sm text-red-600 mt-1">
                 {{ errorMessage }}
             </p>
         </div>
@@ -57,13 +58,15 @@
 </template>
 
 <script lang="ts" setup>
+import type { CouponValidation } from '~/types'
+import { formatPrice } from '~/lib/price'
+import gql from 'graphql-tag'
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useGqlMutation } from '#imports'
 import { useI18n } from 'vue-i18n'
-import { formatPrice } from '~/lib/price'
-import gql from 'graphql-tag'
-import type { CouponValidation } from '~/types'
+
+
 
 const cartStore = useCartStore()
 const { t } = useI18n()

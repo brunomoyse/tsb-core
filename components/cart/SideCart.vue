@@ -55,6 +55,8 @@
                             <img :alt="item.product.name"
                                  :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.png`"
                                  class="max-w-full max-h-full"
+                                 width="48"
+                                 height="48"
                                  draggable="false"/>
                         </picture>
                     </div>
@@ -154,13 +156,14 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, onMounted, onUnmounted, useRuntimeConfig} from '#imports';
-import {useCartStore} from '@/stores/cart';
-import {formatPrice} from '~/lib/price';
-import {eventBus} from '~/eventBus';
-import type {CartItem} from '@/types';
-import {useI18n} from 'vue-i18n';
-import {useTracking} from '~/composables/useTracking';
+import { computed, onMounted, onUnmounted, ref, useRuntimeConfig } from '#imports'
+import type { CartItem } from '@/types'
+import { eventBus } from '~/eventBus'
+import { formatPrice } from '~/lib/price'
+import { useCartStore } from '@/stores/cart'
+import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
+
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
@@ -213,17 +216,17 @@ const subtotal = computed(() =>
         acc + (getItemUnitPrice(item) * item.quantity), 0)
 );
 
-const totalDiscount = computed(() => {
-    return cartStore.collectionOption === 'PICKUP'
+const totalDiscount = computed(() => (
+    cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
                 ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
                 : acc, 0)
         : 0
-});
+));
 
 const cartTotal = computed(() => {
-    let total = subtotal.value - totalDiscount.value;
+    const total = subtotal.value - totalDiscount.value;
     return Math.max(total, 0);
 });
 

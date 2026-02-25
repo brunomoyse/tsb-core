@@ -107,13 +107,13 @@ class Sakura {
         petal.style.position = 'absolute';  // Ensure the petal is positioned absolutely
         petal.style.zIndex = '9999';  // Ensure the petal is on top of other elements
 
-        this.PrefixedEvent(petal, 'AnimationEnd', () => {
+        this.prefixedEvent(petal, 'AnimationEnd', () => {
             if (!this.elementInViewport(petal)) {
                 petal.remove();
             }
         });
 
-        this.PrefixedEvent(petal, 'AnimationIteration', () => {
+        this.prefixedEvent(petal, 'AnimationIteration', () => {
             if (!this.elementInViewport(petal)) {
                 petal.remove();
             }
@@ -125,14 +125,13 @@ class Sakura {
     start() {
         const animId = this.el.dataset.sakuraAnimId;
 
-        if (!animId) {
-            this.el.setAttribute('data-sakura-anim-id', window.requestAnimationFrame(this.createPetal).toString());
-        } else {
+        if (animId) {
             throw new Error('Sakura is already running.');
         }
+        this.el.setAttribute('data-sakura-anim-id', window.requestAnimationFrame(this.createPetal).toString());
     }
 
-    stop(graceful: boolean = false) {
+    stop(graceful = false) {
         const animId = this.el.dataset.sakuraAnimId;
 
         if (animId) {
@@ -162,7 +161,7 @@ class Sakura {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    private PrefixedEvent(element: HTMLElement, type: string, callback: EventListener) {
+    private prefixedEvent(element: HTMLElement, type: string, callback: EventListener) {
         const prefixes = ['webkit', 'moz', 'MS', 'o', ''];
 
         prefixes.forEach(prefix => {

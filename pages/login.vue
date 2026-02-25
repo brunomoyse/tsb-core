@@ -2,7 +2,7 @@
     <div class="flex justify-center pt-8">
         <div class="w-[500px]">
             <!-- Title -->
-            <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('login.title') }}</h2>
+            <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('login.title') }}</h1>
 
             <!-- Login Form -->
             <form class="space-y-4" @submit.prevent="login">
@@ -37,7 +37,7 @@
                 </div>
 
                 <!-- Inline Error -->
-                <p v-if="errorMessage" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                <p v-if="errorMessage" role="alert" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
                     {{ errorMessage }}
                 </p>
 
@@ -89,15 +89,15 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, useNuxtApp, useRuntimeConfig, navigateTo, useLocalePath, definePageMeta} from '#imports';
-import type {LoginResponse, User} from '@/types';
-import {useAuthStore} from '@/stores/auth'
-import {eventBus} from "~/eventBus";
+import type { LoginResponse, User } from '@/types'
+import { definePageMeta, navigateTo, onMounted, ref, useLocalePath, useNuxtApp, useRuntimeConfig } from '#imports'
+import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import { useI18n } from "vue-i18n"
-import {useCartStore} from "@/stores/cart";
-import {useTracking} from "~/composables/useTracking";
+import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
+import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({
     public: true
@@ -216,7 +216,7 @@ onMounted(async () => {
     const emailVerified = params.get('email_verified')
     const fromCheckout = params.get('from_checkout')
 
-    // if success, then fetch /me to fill the auth store with user credentials
+    // If success, then fetch /me to fill the auth store with user credentials
     if (success) {
         try {
             trackEvent('user_logged_in', { method: 'google_oauth' })

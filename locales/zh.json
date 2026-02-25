@@ -199,6 +199,7 @@
       "items": "商品",
       "total": "总计",
       "follow": "跟踪",
+      "toggleOrder": "展开订单详情",
       "status": {
         "details": {
           "title": {
@@ -253,7 +254,10 @@
     "checkout": "结账",
     "removeItem": "移除商品",
     "decreaseQty": "减少数量",
-    "increaseQty": "增加数量"
+    "increaseQty": "增加数量",
+    "closeCart": "关闭购物车",
+    "notifications": "购物车通知",
+    "addToCart": "加入购物车"
   },
   "checkout": {
     "title": "结账",
@@ -297,7 +301,9 @@
     "stepPayment": "付款",
     "itemCount": "{count} 件商品",
     "opensAt": "营业时间：{time}",
-    "tooFar": "超出配送范围（最远9公里）"
+    "tooFar": "超出配送范围（最远9公里）",
+    "sauce1": "酱料 1",
+    "sauce2": "酱料 2"
   },
   "orderCompleted": {
     "title": "订单完成",

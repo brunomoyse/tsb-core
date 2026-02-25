@@ -46,18 +46,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import type { Order } from '@/types'
-import { toCamelCase } from "~/utils/utils"
+import { computed } from 'vue'
+import { toCamelCase } from '~/utils/utils'
+import { useI18n } from 'vue-i18n'
 
-const props = defineProps<{ order: Order; compact?: boolean }>()
+const { order, compact } = defineProps<{ order: Order; compact?: boolean }>()
 const { t } = useI18n()
 
 const deliveryStatuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'OUT_FOR_DELIVERY', 'DELIVERED']
 const pickUpStatuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'PICKED_UP']
 
-const statuses = computed(() => props.order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)
+const statuses = computed(() => order.type === 'DELIVERY' ? deliveryStatuses : pickUpStatuses)
 
 const iconMapping: Record<string, string> = {
     PENDING: 'mdi-clock-outline',
@@ -71,8 +71,8 @@ const iconMapping: Record<string, string> = {
     CANCELLED: 'mdi-cancel'
 }
 
-const currentIndex = computed(() => statuses.value.indexOf(props.order.status))
-const completed = computed(() => props.order.status === 'DELIVERED' || props.order.status === 'PICKED_UP')
+const currentIndex = computed(() => statuses.value.indexOf(order.status))
+const completed = computed(() => order.status === 'DELIVERED' || order.status === 'PICKED_UP')
 
 const nextStatus = computed(() => {
     const idx = currentIndex.value
@@ -90,7 +90,6 @@ const statusDetails: Record<string, string> = {
     PICKED_UP: t('me.orders.status.details.title.pickedUp'),
 }
 
-function getStatusTitle(status: string): string {
-    return statusDetails[status] || t(`me.orders.status.${toCamelCase(status)}`)
-}
+const getStatusTitle = (status: string): string =>
+    statusDetails[status] || t(`me.orders.status.${toCamelCase(status)}`)
 </script>

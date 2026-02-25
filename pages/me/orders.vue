@@ -1,18 +1,22 @@
 <script lang="ts" setup>
+import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useGqlQuery, useGqlSubscription } from "#imports"
-import { ref, computed, watch, onUnmounted, onMounted } from "vue"
-import { useI18n } from "vue-i18n"
+import type { Order } from "~/types"
 import { formatAddress } from "~/utils/utils"
-import { useReorder } from "~/composables/useReorder"
-import OrderStatusTimeline from "~/components/order/OrderStatusTimeline.vue"
 import gql from 'graphql-tag'
 import { print } from "graphql/index"
-import type { Order } from "~/types"
+import { useI18n } from "vue-i18n"
+import { useReorder } from "~/composables/useReorder"
+
+
 
 definePageMeta({ public: false })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { reorder } = useReorder()
+
+const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN' }
+const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
 
 useSeoMeta({
     title: t('schema.myOrders.title'),
@@ -73,7 +77,7 @@ const remainingCount = computed(() => orders.value.length - visibleCount.value)
 const hasMore = computed(() => remainingCount.value > 0)
 const nextBatchCount = computed(() => Math.min(LOAD_STEP, remainingCount.value))
 
-function loadMore() {
+const loadMore = () => {
     visibleCount.value += LOAD_STEP
 }
 
@@ -97,7 +101,7 @@ const SUB_ORDER_UPDATES = gql`
     }
 `
 
-function subscribeToOrder(orderId: string) {
+const subscribeToOrder = (orderId: string) => {
     if (subscriptionStops.has(orderId)) return
 
     const { data: liveUpdate, stop } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
@@ -120,7 +124,7 @@ function subscribeToOrder(orderId: string) {
     })
 }
 
-function unsubscribeFromOrder(orderId: string) {
+const unsubscribeFromOrder = (orderId: string) => {
     const stopFn = subscriptionStops.get(orderId)
     if (stopFn) {
         stopFn()
@@ -140,12 +144,12 @@ onUnmounted(() => {
     subscriptionStops.clear()
 })
 
-function getTrackedOrder(order: Order): Order {
+const getTrackedOrder = (order: Order): Order => {
     const live = liveOrderData.value[order.id]
     return live ? { ...order, ...live } as Order : order
 }
 
-function toggleOrder(orderId: string) {
+const toggleOrder = (orderId: string) => {
     if (expandedOrders.value.has(orderId)) {
         expandedOrders.value.delete(orderId)
     } else {
@@ -156,7 +160,7 @@ function toggleOrder(orderId: string) {
 const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
 const isOrderCompleted = (status: string) => ['DELIVERED','PICKED_UP','CANCELLED','FAILED'].includes(status)
 
-function getStatus(status: string) {
+const getStatus = (status: string) => {
     const map: Record<string, string> = {
         PENDING: t('me.orders.status.pending'),
         CONFIRMED: t('me.orders.status.confirmed'),
@@ -172,22 +176,22 @@ function getStatus(status: string) {
 }
 
 // Accordion transition hooks (JS-driven for smooth height animation)
-function accordionBeforeEnter(el: Element) {
+const accordionBeforeEnter = (el: Element) => {
     const htmlEl = el as HTMLElement
     htmlEl.style.height = '0'
     htmlEl.style.overflow = 'hidden'
     htmlEl.style.opacity = '0'
 }
 
-function accordionEnter(el: Element, done: () => void) {
+const accordionEnter = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
     htmlEl.style.transition = 'height 300ms ease-out, opacity 300ms ease-out'
-    htmlEl.style.height = htmlEl.scrollHeight + 'px'
+    htmlEl.style.height = `${htmlEl.scrollHeight}px`
     htmlEl.style.opacity = '1'
     htmlEl.addEventListener('transitionend', done, { once: true })
 }
 
-function accordionAfterEnter(el: Element) {
+const accordionAfterEnter = (el: Element) => {
     const htmlEl = el as HTMLElement
     htmlEl.style.height = ''
     htmlEl.style.overflow = ''
@@ -195,13 +199,13 @@ function accordionAfterEnter(el: Element) {
     htmlEl.style.opacity = ''
 }
 
-function accordionBeforeLeave(el: Element) {
+const accordionBeforeLeave = (el: Element) => {
     const htmlEl = el as HTMLElement
-    htmlEl.style.height = htmlEl.scrollHeight + 'px'
+    htmlEl.style.height = `${htmlEl.scrollHeight}px`
     htmlEl.style.overflow = 'hidden'
 }
 
-function accordionLeave(el: Element, done: () => void) {
+const accordionLeave = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
     // Force reflow so the browser registers the starting height
     void htmlEl.offsetHeight
@@ -211,7 +215,7 @@ function accordionLeave(el: Element, done: () => void) {
     htmlEl.addEventListener('transitionend', done, { once: true })
 }
 
-function accordionAfterLeave(el: Element) {
+const accordionAfterLeave = (el: Element) => {
     const htmlEl = el as HTMLElement
     htmlEl.style.height = ''
     htmlEl.style.overflow = ''
@@ -219,7 +223,7 @@ function accordionAfterLeave(el: Element) {
     htmlEl.style.opacity = ''
 }
 
-function getStatusColorClass(status: string) {
+const getStatusColorClass = (status: string) => {
     const map: Record<string,string> = {
         DELIVERED: 'bg-green-50 text-green-700',
         PICKED_UP:  'bg-green-50 text-green-700',
@@ -265,8 +269,11 @@ function getStatusColorClass(status: string) {
                 :style="{ '--delay': idx + 1 }"
             >
                 <!-- Order Header -->
-                <div
-                    class="p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between"
+                <button
+                    type="button"
+                    :aria-expanded="isExpanded(order.id)"
+                    :aria-label="$t('me.orders.toggleOrder')"
+                    class="w-full text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between"
                     @click="toggleOrder(order.id)"
                 >
                     <div class="flex-1 min-w-0">
@@ -284,7 +291,7 @@ function getStatusColorClass(status: string) {
                         </div>
                         <p class="mt-0.5 text-xs text-gray-400 tabular-nums">
                             {{
-                                new Date(order.createdAt).toLocaleString("fr-BE", {
+                                new Date(order.createdAt).toLocaleString(dateLocale.value, {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
@@ -318,7 +325,7 @@ function getStatusColorClass(status: string) {
                             </svg>
                         </span>
                     </div>
-                </div>
+                </button>
 
                 <!-- Accordion Content -->
                 <transition

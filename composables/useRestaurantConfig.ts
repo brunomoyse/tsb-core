@@ -1,8 +1,8 @@
-import { watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
+import { watch } from 'vue'
 
 const RESTAURANT_CONFIG_QUERY = gql`
     query RestaurantConfig {

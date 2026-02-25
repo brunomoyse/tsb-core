@@ -164,20 +164,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import {
     definePageMeta,
+    ref,
+    useAsyncData,
     useCartStore,
     useGqlSubscription,
-    useRoute,
-    useAsyncData,
     useNuxtApp,
-    ref
+    useRoute,
 } from '#imports'
-import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import type { Order } from '@/types'
+import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
@@ -310,7 +310,7 @@ watch(order, (orderData) => {
 let closeWs: () => void = () => {}
 
 onMounted(() => {
-    // now destructure the `close` out of your updated composable
+    // Now destructure the `close` out of your updated composable
     const { data: liveUpdate, close } = useGqlSubscription<{
         myOrderUpdated: Partial<Order>
     }>(
@@ -322,7 +322,7 @@ onMounted(() => {
         { orderId }
     )
 
-    // store it
+    // Store it
     closeWs = close
 
     watch(liveUpdate, (val) => {
@@ -360,7 +360,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    // only call if it's a real function
+    // Only call if it's a real function
     if (typeof closeWs === 'function') {
         closeWs()
     }

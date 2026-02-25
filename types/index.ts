@@ -1,4 +1,4 @@
-// types/index.ts
+// Types/index.ts
 
 export interface CouponValidation {
     valid: boolean;

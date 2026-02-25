@@ -297,25 +297,21 @@
 </template>
 
 <script setup lang="ts">
-/**
- * Imports
- */
-import { ref, computed, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
-import { useDebounce } from '@vueuse/core'
+import type { Product, ProductCategory } from '@/types'
+import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
-import { useCartStore } from '@/stores/cart'
-import { useTracking } from '~/composables/useTracking'
-import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
+import CartMobile from '~/components/cart/CartMobile.vue'
+import CategoryCard from '~/components/menu/CategoryCard.vue'
+import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
+import ProductCard from '~/components/menu/ProductCard.vue'
+import ProductModal from '~/components/menu/ProductModal.vue'
+import SideCart from '~/components/cart/SideCart.vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-
-import CategoryCard from '~/components/menu/CategoryCard.vue'
-import ProductCard from '~/components/menu/ProductCard.vue'
-import SideCart from '~/components/cart/SideCart.vue'
-import CartMobile from '~/components/cart/CartMobile.vue'
-import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
-import type { ProductCategory, Product } from '@/types'
-import ProductModal from "~/components/menu/ProductModal.vue";
+import { useCartStore } from '@/stores/cart'
+import { useDebounce } from '@vueuse/core'
+import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
+import { useTracking } from '~/composables/useTracking'
 
 const route = useRoute()
 const router = useRouter()
@@ -480,7 +476,7 @@ const baseCategories = computed(() =>
                 .filter(p => p.isVisible)
         }))
         .filter(cat => cat.products.length)
-        .sort((a, b) => a.order - b.order)
+        .toSorted((a, b) => a.order - b.order)
 )
 
 // All products flattened for search
@@ -519,13 +515,11 @@ const dietaryFiltered = computed(() => {
 const displayedCategories = computed<ProductCategory[]>(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
     if (!q && activeFilters.value.size === 0) return baseCategories.value
-    const map = new Map<string, ProductCategory & { products: Product[] }>()
-    dietaryFiltered.value.forEach(prod => {
-        const cat = prod.category
-        if (!map.has(cat.id)) map.set(cat.id, { ...cat, products: [] })
-        map.get(cat.id)!.products.push(prod)
-    })
-    return Array.from(map.values()).sort((a, b) => a.order - b.order)
+    const grouped = Map.groupBy(dietaryFiltered.value, prod => prod.category.id)
+    return Array.from(grouped.entries()).map(([, products]) => ({
+        ...products[0]!.category,
+        products,
+    })).toSorted((a, b) => a.order - b.order)
 })
 
 /**
@@ -565,7 +559,7 @@ const scrollToCategory = (categoryId: string) => {
     if (!element || !header) return
 
     const headerHeight = header.offsetHeight
-    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // h-20 on mobile only
+    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile only
     const gap = 16
     const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
     window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
@@ -609,8 +603,8 @@ const config = useRuntimeConfig()
 const { t } = useI18n()
 
 // Generate MenuItem schemas for all products
-const menuItemSchemas = computed(() => {
-    return allProducts.value.map(product => ({
+const menuItemSchemas = computed(() => (
+    allProducts.value.map(product => ({
         '@type': 'MenuItem',
         '@id': `${config.public.baseUrl}/menu#${product.id}`,
         name: product.name,
@@ -633,7 +627,7 @@ const menuItemSchemas = computed(() => {
         } : undefined,
         suitableForDiet: product.isHalal ? ['https://schema.org/HalalDiet'] : undefined
     }))
-})
+))
 
 // Generate ItemList schema for the menu
 const itemListSchema = computed(() => ({
@@ -690,7 +684,7 @@ useSeoMeta({
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
-    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
 })
 

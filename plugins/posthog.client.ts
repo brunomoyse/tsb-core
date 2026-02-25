@@ -1,5 +1,5 @@
+import { defineNuxtPlugin, useRouter, useRuntimeConfig } from '#imports'
 import posthog, { type PostHog } from 'posthog-js'
-import { defineNuxtPlugin, useRuntimeConfig, useRouter } from '#imports'
 import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => {

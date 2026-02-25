@@ -27,5 +27,5 @@ interface NavItemProps {
     tooltipText?: string
 }
 
-defineProps<NavItemProps>()
+const { to, icon, alt, tooltipText } = defineProps<NavItemProps>()
 </script>

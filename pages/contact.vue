@@ -92,7 +92,7 @@ useSeoMeta({
     ogTitle: t('schema.contact.title'),
     description: t('schema.contact.description'),
     ogDescription: t('schema.contact.description'),
-    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
 })
 </script>
@@ -123,7 +123,7 @@ useSeoMeta({
                     <a
                         :href="googleMapsLink"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm"
                     >
                         {{ $t('contact.viewLargerMap') }}
@@ -172,7 +172,7 @@ useSeoMeta({
                     <a
                         :href="googleMapsLink"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-gray-900 hover:text-red-600 transition group/link"
                     >
                         {{ $t('contact.viewLargerMap') }}
@@ -219,7 +219,7 @@ useSeoMeta({
                         <a
                             href="https://www.instagram.com/tokyo_sushi_bar_liege/"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300"
                         >
                             <img src="/icons/instagram-icon.svg" alt="Instagram" class="w-5 h-5"/>
@@ -227,7 +227,7 @@ useSeoMeta({
                         <a
                             href="https://www.facebook.com/sushiliege"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300"
                         >
                             <img src="/icons/facebook-icon.svg" alt="Facebook" class="w-5 h-5"/>

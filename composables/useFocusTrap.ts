@@ -1,4 +1,4 @@
-import { watch, onUnmounted, type Ref } from 'vue'
+import { type Ref, onUnmounted, watch } from 'vue'
 
 const FOCUSABLE_SELECTOR = [
     'a[href]',
@@ -31,11 +31,9 @@ export function useFocusTrap(containerRef: Ref<HTMLElement | null>) {
                 e.preventDefault()
                 last.focus()
             }
-        } else {
-            if (document.activeElement === last) {
-                e.preventDefault()
-                first.focus()
-            }
+        } else if (document.activeElement === last) {
+            e.preventDefault()
+            first.focus()
         }
     }
 

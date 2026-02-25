@@ -1,5 +1,5 @@
-// plugins/api.ts
-import { defineNuxtPlugin, useRequestEvent, navigateTo, useCookie, useRuntimeConfig, useLocalePath } from '#imports'
+// Plugins/api.ts
+import { defineNuxtPlugin, navigateTo, useCookie, useLocalePath, useRequestEvent, useRuntimeConfig } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig();
@@ -17,7 +17,7 @@ export default defineNuxtPlugin(() => {
             'Accept': 'application/json',
             'Accept-Language': userLocale
         },
-        async onRequest({ options }) {
+        onRequest({ options }) {
             // Server-side cookie forwarding
             if (import.meta.server) {
                 const event = useRequestEvent()
@@ -27,7 +27,7 @@ export default defineNuxtPlugin(() => {
                 if (cookies) {
                     options.headers = {
                         ...options.headers,
-                        // @ts-ignore
+                        // @ts-expect-error cookie is not in the HeadersInit type but needed for SSR forwarding
                         cookie: cookies,
                         'Accept-Language': serverLocale
                     }
@@ -46,7 +46,7 @@ export default defineNuxtPlugin(() => {
                             method: 'POST',
                             credentials: 'include'
                         })
-                        // @ts-ignore
+                        // @ts-expect-error $fetch accepts the original request/options but types don't align
                         return $fetch(request, options)
                     }
                 } catch {
@@ -55,7 +55,7 @@ export default defineNuxtPlugin(() => {
                             method: 'POST',
                             credentials: 'include'
                         })
-                    } catch { /* ignore logout errors */ }
+                    } catch { /* Ignore logout errors */ }
                     navigateTo(localePath('login'))
                 }
             }

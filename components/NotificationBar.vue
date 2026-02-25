@@ -27,24 +27,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-const props = defineProps({
-    message: { type: String, required: true },
-    persistent: { type: Boolean, default: false },
-    duration: { type: Number, default: 10000 },
-    cookieConsent: { type: Boolean, default: false },
-    variant: { type: String, default: 'neutral' } // "neutral", "success", or "error"
-})
+const { message, persistent = false, duration = 10000, cookieConsent = false, variant = 'neutral' } = defineProps<{
+    message: string
+    persistent?: boolean
+    duration?: number
+    cookieConsent?: boolean
+    variant?: string
+}>()
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{
+    close: []
+}>()
 const visible = ref(false)
 const progress = ref(100)
 let progressInterval: ReturnType<typeof setInterval> | undefined
 
 // Compute CSS classes based on the variant prop
 const variantClasses = computed(() => {
-    switch (props.variant) {
+    switch (variant) {
         case 'success':
             return 'bg-green-100 border border-green-400 text-green-800'
         case 'error':
@@ -55,7 +57,7 @@ const variantClasses = computed(() => {
 })
 
 const progressBarClass = computed(() => {
-    switch (props.variant) {
+    switch (variant) {
         case 'success':
             return 'bg-gradient-to-r from-green-500 via-green-400 to-green-600'
         case 'error':
@@ -65,9 +67,9 @@ const progressBarClass = computed(() => {
     }
 })
 
-function close() {
+const close = () => {
     visible.value = false
-    if (props.cookieConsent) {
+    if (cookieConsent) {
         localStorage.setItem('cookiesAccepted', 'true')
     }
     emit('close')
@@ -76,19 +78,19 @@ function close() {
 
 onMounted(() => {
     // For cookie consent, only show if not already accepted.
-    if (props.cookieConsent && !localStorage.getItem('cookiesAccepted')) {
+    if (cookieConsent && !localStorage.getItem('cookiesAccepted')) {
         visible.value = true
     }
-    if (!props.cookieConsent) {
+    if (!cookieConsent) {
         visible.value = true
-        if (!props.persistent) {
+        if (!persistent) {
             // Start the progress bar countdown.
             const startTime = Date.now()
             progress.value = 100
             progressInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime
-                progress.value = Math.max(100 * (1 - elapsed / props.duration), 0)
-                if (elapsed >= props.duration) {
+                progress.value = Math.max(100 * (1 - elapsed / duration), 0)
+                if (elapsed >= duration) {
                     clearInterval(progressInterval)
                     close()
                 }

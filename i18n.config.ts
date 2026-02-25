@@ -1,8 +1,7 @@
+import { defineI18nConfig } from '#imports'
 import en from './locales/en.json'
 import fr from './locales/fr.json'
 import zh from './locales/zh.json'
-
-import { defineI18nConfig } from '#imports'
 
 export default defineI18nConfig(() => ({
     legacy: false,

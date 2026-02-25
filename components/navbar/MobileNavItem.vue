@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
-    to: String,
-    icon: String,
-    label: String
-});
+const { to, icon, label } = defineProps<{
+    to?: string
+    icon?: string
+    label?: string
+}>()
 </script>

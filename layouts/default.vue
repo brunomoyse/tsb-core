@@ -71,16 +71,16 @@
 </template>
 
 <script lang="ts" setup>
-import {useRoute} from 'vue-router'
-import {computed, ref, onUnmounted, } from 'vue'
-import {useI18n} from 'vue-i18n'
-import {useLocaleHead} from '#i18n'
+import { computed, onUnmounted, ref } from 'vue'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
+import NotificationBar from '~/components/NotificationBar.vue'
+import ScrollToTopButton from '~/components/ScrollToTopButton.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
-import NotificationBar from "~/components/NotificationBar.vue";
-import {eventBus} from "~/eventBus";
-import ScrollToTopButton from "~/components/ScrollToTopButton.vue";
+import { eventBus } from '~/eventBus'
 import { useHead } from '#imports'
+import { useI18n } from 'vue-i18n'
+import { useLocaleHead } from '#i18n'
+import { useRoute } from 'vue-router'
 
 useHead({
     link: [

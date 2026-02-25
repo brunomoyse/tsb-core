@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import type { Address, UpdateUserRequest, User } from '@/types'
+import { computed, ref } from 'vue'
 import { definePageMeta, useGqlMutation } from '#imports'
-import { useAuthStore } from '~/stores/auth'
-import UserForm from '~/components/form/UserForm.vue'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
-import gql from 'graphql-tag'
-import { formatAddress } from '~/utils/utils'
+import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
+import { formatAddress } from '~/utils/utils'
+import gql from 'graphql-tag'
+import { useAuthStore } from '@/stores/auth'
+import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useTracking } from '~/composables/useTracking'
-import type { Address, UpdateUserRequest, User } from '~/types'
 
 definePageMeta({ public: false })
 
@@ -79,6 +80,8 @@ const { mutate: mutationRequestDeletion } = useGqlMutation<{ requestDeletion: Us
 const { mutate: mutationCancelDeletionRequest } = useGqlMutation<{ cancelDeletionRequest: User }>(CANCEL_DELETION_REQUEST)
 
 const showModal = ref(false)
+const modalRef = ref<HTMLElement | null>(null)
+useFocusTrap(modalRef)
 
 const userInitialValues = ref({
     firstName: '',
@@ -121,7 +124,7 @@ const openModal = () => {
     }
 
     userInitialValues.value.address = authStore.user?.address || null
-    userInitialValues.value.addressConfirmed = !!authStore.user?.address
+    userInitialValues.value.addressConfirmed = Boolean(authStore.user?.address)
     showModal.value = true
 }
 
@@ -292,11 +295,9 @@ const handleCancelDeletionRequest = async () => {
                 v-if="showModal"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
                 @click.self="closeModal"
-                @keydown.esc="closeModal"
-                tabindex="0"
             >
-                <div class="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full mx-4" @click.stop>
-                    <h3 class="text-2xl font-semibold text-gray-900 text-center mb-6">
+                <div ref="modalRef" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title" class="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full mx-4" @click.stop @keydown.esc="closeModal">
+                    <h3 id="edit-profile-title" class="text-2xl font-semibold text-gray-900 text-center mb-6">
                         {{ t('me.profile.update') }}
                     </h3>
                     <UserForm mode="edit" :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />

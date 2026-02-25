@@ -1,11 +1,10 @@
-// stores/cart.ts
+// Stores: cart.ts
 
-import {defineStore} from "pinia";
-import type {CartItem, CartState, Product, ProductChoice} from "@/types";
+import type { CartItem, CartState, Product, ProductChoice } from '@/types'
+import { defineStore } from 'pinia'
 
-function matchesCartItem(item: CartItem, productId: string, choiceId: string | null): boolean {
-    return item.product.id === productId && (item.selectedChoice?.id ?? null) === choiceId;
-}
+const matchesCartItem = (item: CartItem, productId: string, choiceId: string | null): boolean =>
+    item.product.id === productId && (item.selectedChoice?.id ?? null) === choiceId
 
 export const useCartStore = defineStore("cart", {
     state: (): CartState => ({

@@ -12,9 +12,12 @@
             <h3 class="font-medium mb-2">
                 {{ $t('checkout.paymentMethod', 'Payment Method') }}
             </h3>
-            <div class="flex gap-4">
+            <div class="flex gap-4" role="radiogroup" :aria-label="$t('checkout.paymentMethod')">
                 <!-- Online Payment Card -->
-                <div
+                <button
+                    type="button"
+                    role="radio"
+                    :aria-checked="isOnlinePayment"
                     data-testid="payment-online"
                     @click="setOnlinePayment(true)"
                     :class="[
@@ -24,9 +27,12 @@
                 >
                     <img src="/icons/online-payment-icon.svg" alt="Online Payment" class="w-10 h-10 mb-2" />
                     <span class="font-semibold">{{ $t('checkout.online', 'Online Payment') }}</span>
-                </div>
+                </button>
                 <!-- Cash Payment Card -->
-                <div
+                <button
+                    type="button"
+                    role="radio"
+                    :aria-checked="!isOnlinePayment"
                     data-testid="payment-cash"
                     @click="setOnlinePayment(false)"
                     :class="[
@@ -36,7 +42,7 @@
                 >
                     <img src="/icons/cash-payment-icon.svg" alt="Cash" class="w-10 h-10 mb-2" />
                     <span class="font-semibold">{{ $t('checkout.cash', 'Cash') }}</span>
-                </div>
+                </button>
             </div>
         </div>
 
@@ -65,12 +71,13 @@
                     </p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <p class="block text-sm text-gray-600 mb-2">Sauce 1</p>
+                            <p class="block text-sm text-gray-600 mb-2">{{ $t('checkout.sauce1') }}</p>
                             <div class="flex flex-wrap gap-2">
                                 <button
                                     v-for="option in sauceOptions"
                                     :key="option.value"
                                     type="button"
+                                    :aria-pressed="sauce1 === option.value"
                                     @click="sauce1 = option.value"
                                     :class="[
                                         'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
@@ -84,12 +91,13 @@
                             </div>
                         </div>
                         <div>
-                            <p class="block text-sm text-gray-600 mb-2">Sauce 2</p>
+                            <p class="block text-sm text-gray-600 mb-2">{{ $t('checkout.sauce2') }}</p>
                             <div class="flex flex-wrap gap-2">
                                 <button
                                     v-for="option in sauceOptions"
                                     :key="option.value"
                                     type="button"
+                                    :aria-pressed="sauce2 === option.value"
                                     @click="sauce2 = option.value"
                                     :class="[
                                         'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
@@ -109,11 +117,12 @@
 
         <!-- General Order Comment -->
         <div class="mb-6">
-            <h3 class="font-medium text-lg mb-2">
+            <h3 id="order-comment-label" class="font-medium text-lg mb-2">
                 {{ $t('checkout.orderComment', 'Order Comment') }}
             </h3>
             <textarea
                 v-model="orderComment"
+                aria-labelledby="order-comment-label"
                 rows="3"
                 class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                 :placeholder="$t('checkout.orderCommentPlaceholder', 'e.g. Allergies or special instructions')"
@@ -121,7 +130,7 @@
         </div>
 
         <!-- Minimum Order Warning -->
-        <div v-if="!props.isMinimumReached" class="text-sm text-red-600 text-center">
+        <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
             {{ cartStore.collectionOption === 'DELIVERY'
             ? $t('cart.minimumDelivery', { amount: 25})
             : $t('cart.minimumPickup', { amount: 20}) }}
@@ -130,11 +139,11 @@
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-            props.isMinimumReached && !props.loading && props.isOrderingAvailable && !props.isAddressTooFar
+            isMinimumReached && !loading && isOrderingAvailable && !isAddressTooFar
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!props.isMinimumReached || props.loading || !props.isOrderingAvailable || props.isAddressTooFar">
-            <span v-if="props.loading" class="inline-flex items-center gap-2">
+          ]" :disabled="!isMinimumReached || loading || !isOrderingAvailable || isAddressTooFar">
+            <span v-if="loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
@@ -152,37 +161,27 @@
 </template>
 
 <script lang="ts" setup>
+import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { computed } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
-import { useTracking } from '~/composables/useTracking'
 import { useI18n } from 'vue-i18n'
-import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
+import { useTracking } from '~/composables/useTracking'
 
-const props = defineProps({
-    isMinimumReached: {
-        type: Boolean,
-        default: false
-    },
-    loading: {
-        type: Boolean,
-        default: false
-    },
-    isOrderingAvailable: {
-        type: Boolean,
-        default: true
-    },
-    isAddressTooFar: {
-        type: Boolean,
-        default: false
-    }
-})
+const { isMinimumReached = false, loading = false, isOrderingAvailable = true, isAddressTooFar = false } = defineProps<{
+    isMinimumReached?: boolean
+    loading?: boolean
+    isOrderingAvailable?: boolean
+    isAddressTooFar?: boolean
+}>()
 
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 
-const emit = defineEmits(['checkout'])
+const emit = defineEmits<{
+    checkout: []
+}>()
 
 const sauceOptions = computed(() => [
     { value: 'none', label: t('checkout.none') },
@@ -214,10 +213,8 @@ const addChopsticks = computed({
             if (idx === -1) {
                 cartStore.orderExtra.push({ name: 'chopsticks' })
             }
-        } else {
-            if (idx !== -1) {
-                cartStore.orderExtra.splice(idx, 1)
-            }
+        } else if (idx !== -1) {
+            cartStore.orderExtra.splice(idx, 1)
         }
     }
 })
@@ -227,11 +224,11 @@ const sauces = computed<[string,string]>({
     get() {
         const item = cartStore.orderExtra?.find(o => o.name === 'sauces')
         const opts = item?.options ?? []
-        // always return a 2-element tuple
+        // Always return a 2-element tuple
         return [ opts[0] || 'none', opts[1] || 'none' ]
     },
     set([s1, s2]) {
-        // if both are none, remove the entry
+        // If both are none, remove the entry
         const allNone = s1 === 'none' && s2 === 'none'
         if (!cartStore.orderExtra) cartStore.orderExtra = []
 

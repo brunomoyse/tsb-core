@@ -1,4 +1,4 @@
-// types.d.ts (or similar file)
+// Types.d.ts (or similar file)
 import type { PostHog } from 'posthog-js'
 
 declare module '#app' {
