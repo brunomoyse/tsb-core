@@ -289,7 +289,7 @@ const getStatusColorClass = (status: string) => {
                                 {{ getStatus(order.status) }}
                             </span>
                         </div>
-                        <p class="mt-0.5 text-xs text-gray-400 tabular-nums">
+                        <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
                             {{
                                 new Date(order.createdAt).toLocaleString(dateLocale.value, {
                                     year: "numeric",
