@@ -1,7 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 // Derive origins for CSP from environment variables (dev defaults)
-const apiOrigin = process.env.BASE_URL || 'http://localhost:8080'
+const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/, 'ws')
 const s3Url = process.env.S3_BUCKET_URL
 const osm = 'https://www.openstreetmap.org'

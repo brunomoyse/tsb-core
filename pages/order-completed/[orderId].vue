@@ -311,7 +311,7 @@ let closeWs: () => void = () => {}
 
 onMounted(() => {
     // Now destructure the `close` out of your updated composable
-    const { data: liveUpdate, close } = useGqlSubscription<{
+    const { data: liveUpdate, closeAll: close } = useGqlSubscription<{
         myOrderUpdated: Partial<Order>
     }>(
         print(gql`
