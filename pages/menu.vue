@@ -44,9 +44,13 @@
 
                         <!-- Collapsed view: placeholder text + filter icon buttons -->
                         <div
+                            role="button"
+                            tabindex="0"
                             class="flex items-center flex-1 h-full pl-11 pr-2 cursor-text transition-all duration-300"
                             :class="isSearchExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'"
                             @click="expandSearch"
+                            @keydown.enter="expandSearch"
+                            @keydown.space.prevent="expandSearch"
                         >
                             <span class="flex-1 text-gray-400 text-sm select-none">{{ $t('nav.search') }}</span>
 

@@ -14,7 +14,7 @@
                         v-model="email"
                         :placeholder="$t('login.emailPlaceholder')"
                         autocomplete="email"
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                        class="w-full p-2 border border-gray-300 rounded-md focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
                         name="email"
                         required
                         type="email"
@@ -29,7 +29,7 @@
                         v-model="password"
                         :placeholder="$t('login.passwordPlaceholder')"
                         autocomplete="current-password"
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                        class="w-full p-2 border border-gray-300 rounded-md focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
                         name="password"
                         required
                         type="password"
@@ -53,7 +53,7 @@
                     <div class="w-full border-t border-gray-300"></div>
                 </div>
                 <div class="relative text-center">
-          <span class="bg-tsb-one px-3 text-sm text-gray-500 uppercase">
+          <span class="bg-tsb-one px-3 text-sm text-gray-600 uppercase">
             {{ $t('login.dividerOr') }}
           </span>
                 </div>
@@ -61,7 +61,7 @@
 
             <!-- Google SSO Button -->
             <button
-                class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition-all active:scale-[0.97]"
+                class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition-all active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
                 @click="loginWithGoogle"
             >
                 <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
@@ -69,7 +69,7 @@
             </button>
 
             <!-- Signup Link -->
-            <p class="text-sm text-gray-500 text-center mt-4">
+            <p class="text-sm text-gray-600 text-center mt-4">
                 {{ $t('login.noAccount') }}
                 <NuxtLinkLocale to="/register">
           <span class="text-black font-medium hover:underline cursor-pointer">
@@ -79,8 +79,8 @@
             </p>
 
             <!-- Forgot Password Link -->
-            <p class="text-sm text-gray-500 text-center mt-2">
-                <NuxtLinkLocale to="/forgot-password" class="text-gray-500 hover:text-black hover:underline">
+            <p class="text-sm text-gray-600 text-center mt-2">
+                <NuxtLinkLocale to="/forgot-password" class="text-gray-600 hover:text-black hover:underline">
                     {{ $t('login.forgot') }}
                 </NuxtLinkLocale>
             </p>

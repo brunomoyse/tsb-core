@@ -13,6 +13,9 @@
         </Head>
 
         <Body class="bg-tsb-one">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+            {{ $t('common.skipToContent') }}
+        </a>
         <!-- Wrapper div for sticky footer -->
         <div class="min-h-screen flex flex-col">
             <header>
@@ -22,6 +25,7 @@
             </header>
 
             <main
+                id="main-content"
                 class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]"
             >
                 <!-- Spacer for mobile navbar -->
@@ -41,7 +45,7 @@
                         <svg class="w-4 h-4 hover:text-gray-600 transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385h-3.047v-3.47h3.047v-2.642c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385c5.738-.9 10.126-5.864 10.126-11.854z"/></svg>
                     </a>
                 </div>
-                <div class="text-center mt-3 text-[10px] text-gray-400">
+                <div class="text-center mt-3 text-[10px] text-gray-500">
                     <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-gray-500 transition-colors">nuagemagique.dev</a>
                 </div>
             </footer>

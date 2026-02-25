@@ -2,7 +2,7 @@
     <form autocomplete="off">
         <!-- STREET FIELD -->
         <div class="relative">
-            <label class="block text-sm text-gray-700 mb-1">
+            <label class="block text-sm text-gray-700 mb-1" for="street">
                 {{ $t('register.address') }}
             </label>
             <div class="relative">
@@ -28,12 +28,14 @@
             </div>
             <ul
                 v-show="isStreetFocused && !selectedStreet && streets.length > 0"
+                role="listbox"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
             >
                 <li
                     v-for="street in streets"
                     :key="street.id"
+                    role="option"
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                     @mousedown="selectStreet(street)"
                 >
@@ -44,6 +46,7 @@
 
         <!-- HOUSE FIELD -->
         <div class="relative mt-3">
+            <label class="block text-sm text-gray-700 mb-1" for="houseNumber">{{ $t('register.houseNumber') }}</label>
             <div class="relative">
                 <input
                     id="houseNumber"
@@ -67,12 +70,14 @@
             </div>
             <ul
                 v-show="isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
+                role="listbox"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
             >
                 <li
                     v-for="house in filteredHouseNumbers"
                     :key="house"
+                    role="option"
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                     @mousedown="selectHouse(house)"
                 >
@@ -83,6 +88,7 @@
 
         <!-- BOX FIELD -->
         <div class="relative mt-3" v-if="boxNumbers.length > 1">
+            <label class="block text-sm text-gray-700 mb-1" for="boxNumber">{{ $t('register.boxNumber') }}</label>
             <div class="relative">
                 <input
                     :disabled="!(selectedHouseNumber)"
@@ -107,12 +113,14 @@
             </div>
             <ul
                 v-show="isBoxFocused"
+                role="listbox"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
             >
                 <li
                     v-for="box in filteredBoxNumbers"
                     :key="box === null || box === '' ? 'none' : box"
+                    role="option"
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                     @mousedown="selectBox(box)"
                 >

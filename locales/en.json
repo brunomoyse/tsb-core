@@ -7,7 +7,8 @@
     "save": "Save",
     "toTop": "Back to top",
     "remove": "Remove",
-    "close": "Close"
+    "close": "Close",
+    "skipToContent": "Skip to main content"
   },
   "nav": {
     "home": "Home",
@@ -162,6 +163,8 @@
     "streetPlaceholder": "Enter your street",
     "houseNumberPlaceholder": "Enter your house number",
     "boxNumberPlaceholder": "Enter your box number",
+    "houseNumber": "House number",
+    "boxNumber": "Box number",
     "submit": "Submit",
     "confirmAddress": "Confirm that this is your address",
     "passwordVeryWeak": "Very Weak",

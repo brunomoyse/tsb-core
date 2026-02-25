@@ -1,7 +1,8 @@
 <template>
-        <div ref="modalRef" @click.stop class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div ref="modalRef" @click.stop role="dialog" aria-modal="true" aria-labelledby="product-modal-title" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
                 @click="emit('close')"
+                :aria-label="$t('common.close')"
                 class="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,14 +28,14 @@
                 <!-- Details Section -->
                 <div class="space-y-6">
                     <div class="flex items-center flex-col">
-                        <p class="text-lg text-gray-500 mb-2">{{ p.category.name }}</p>
-                        <h2 class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
+                        <p class="text-lg text-gray-600 mb-2">{{ p.category.name }}</p>
+                        <h2 id="product-modal-title" class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
                     </div>
 
                     <!-- Price & Badges -->
                     <div class="flex items-baseline gap-3 flex-wrap">
                         <span class="text-2xl font-bold text-gray-900">{{ formatPrice(displayPrice) }}</span>
-                        <span v-if="p.pieceCount" class="text-sm text-gray-500">
+                        <span v-if="p.pieceCount" class="text-sm text-gray-600">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
                     </div>
@@ -80,7 +81,7 @@
                                     class="w-4 h-4 text-red-500 focus:ring-red-500"
                                 />
                                 <span class="flex-1 text-sm text-gray-900">{{ choice.name }}</span>
-                                <span v-if="Number(choice.priceModifier) !== 0" class="text-sm text-gray-500">
+                                <span v-if="Number(choice.priceModifier) !== 0" class="text-sm text-gray-600">
                                     {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
                                 </span>
                             </label>
@@ -94,6 +95,7 @@
                                 <div class="flex items-center gap-2 border rounded-lg p-1">
                                     <button
                                         @click="quantity > 1 ? quantity-- : null"
+                                        :aria-label="$t('cart.decreaseQty')"
                                         class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
                                         :disabled="quantity === 1"
                                     >−</button>
@@ -102,6 +104,7 @@
                                     >{{quantity}}</span>
                                     <button
                                         @click="quantity++"
+                                        :aria-label="$t('cart.increaseQty')"
                                         class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
                                     >+</button>
                                 </div>
