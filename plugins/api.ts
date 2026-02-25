@@ -22,14 +22,14 @@ export default defineNuxtPlugin(() => {
             if (import.meta.server) {
                 const event = useRequestEvent()
                 const cookies = event?.node.req.headers.cookie
-                const userLocale = useCookie('i18n_redirected').value ?? 'fr'
+                const serverLocale = useCookie('i18n_redirected').value ?? 'fr'
 
                 if (cookies) {
                     options.headers = {
                         ...options.headers,
                         // @ts-ignore
                         cookie: cookies,
-                        'Accept-Language': userLocale
+                        'Accept-Language': serverLocale
                     }
                 }
             }
@@ -49,7 +49,7 @@ export default defineNuxtPlugin(() => {
                         // @ts-ignore
                         return $fetch(request, options)
                     }
-                } catch (error) {
+                } catch {
                     try {
                         await $fetch(`${apiUrl}/logout`, {
                             method: 'POST',
