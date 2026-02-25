@@ -1,6 +1,6 @@
-import mitt from 'mitt';
+import mitt from 'mitt'
 
-export type Events = {
+export interface Events {
     notify: {
         message: string;
         persistent?: boolean;
@@ -12,6 +12,6 @@ export type Events = {
         productId: string;
         choiceId?: string;
     }
-};
+}
 
 export const eventBus = mitt<Events>();

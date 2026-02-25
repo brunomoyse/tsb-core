@@ -1,13 +1,13 @@
-// plugins/gqlFetch.ts
+// Plugins: gqlFetch.ts
+import { type DocumentNode, print } from 'graphql'
 import {
     defineNuxtPlugin,
-    useRuntimeConfig,
-    useCookie,
-    useRequestEvent,
     navigateTo,
+    useCookie,
     useLocalePath,
+    useRequestEvent,
+    useRuntimeConfig,
 } from '#imports'
-import { print } from 'graphql'
 
 interface GqlOptions {
     variables?: Record<string, unknown>
@@ -23,16 +23,16 @@ export default defineNuxtPlugin(() => {
     const localePath = useLocalePath()
 
     /** Typed helper: POST /graphql with cookies + headers */
-    async function gqlFetch<T = unknown>(
-        query: string | import('graphql').DocumentNode,
+    const gqlFetch = async <T = unknown>(
+        query: string | DocumentNode,
         { variables = {}, signal }: GqlOptions = {},
-    ): Promise<T> {
+    ): Promise<T> => {
         const body = {
             query: typeof query === 'string' ? query : print(query),
             variables,
         }
 
-        let res: { data?: unknown; errors?: Array<{ extensions?: { code?: string }; message?: string }> }
+        let res: { data?: unknown; errors?: { extensions?: { code?: string }; message?: string }[] }
 
         // 1) Try the HTTP-level fetch (and 401→refresh→retry)
         try {
@@ -52,12 +52,12 @@ export default defineNuxtPlugin(() => {
 
         // 2) Handle GraphQL-level errors
         if (res.errors?.length) {
-            // look for your UNAUTHENTICATED extension code
+            // Look for your UNAUTHENTICATED extension code
             const unauth = res.errors.find(
                 (e) => e.extensions?.code === 'UNAUTHENTICATED'
             )
             if (unauth) {
-                // refresh the token and retry once
+                // Refresh the token and retry once
                 const ok = await attemptRefreshOnce()
                 if (ok) {
                     res = await doFetch(body, signal)
@@ -67,15 +67,15 @@ export default defineNuxtPlugin(() => {
                     return res.data as T
                 }
             }
-            // otherwise bubble up all GraphQL errors
+            // Otherwise bubble up all GraphQL errors
             throw res.errors
         }
 
         return res.data as T
     }
 
-    /** low‑level POST that returns the raw { data, errors } */
-    async function doFetch(body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<{ data?: unknown; errors?: Array<{ extensions?: { code?: string }; message?: string }> }> {
+    /** Low-level POST that returns the raw { data, errors } */
+    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<{ data?: unknown; errors?: { extensions?: { code?: string }; message?: string }[] }> => {
         const userLocale = useCookie('i18n_redirected').value ?? 'fr'
         return await $fetch(httpURL, {
             method: 'POST',
@@ -86,8 +86,8 @@ export default defineNuxtPlugin(() => {
         })
     }
 
-    /** build the JSON headers + forward cookies SSR */
-    function buildHeaders(locale: string) {
+    /** Build the JSON headers + forward cookies SSR */
+    const buildHeaders = (locale: string) => {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             'Accept-Language': locale,
@@ -100,8 +100,8 @@ export default defineNuxtPlugin(() => {
         return headers
     }
 
-    /** attempt a refresh via your REST endpoint */
-    async function attemptRefresh(): Promise<boolean> {
+    /** Attempt a refresh via your REST endpoint */
+    const attemptRefresh = async (): Promise<boolean> => {
         try {
             await $fetch(`${apiURL}/tokens/refresh`, {
                 method: 'POST',
@@ -109,25 +109,23 @@ export default defineNuxtPlugin(() => {
             })
             return true
         } catch {
-            // refresh failed → logout & redirect to login
+            // Refresh failed → logout & redirect to login
             try {
                 await $fetch(`${apiURL}/logout`, {
                     method: 'POST',
                     credentials: 'include'
                 })
-            } catch { /* ignore logout errors */ }
+            } catch { /* Ignore logout errors */ }
             navigateTo(localePath('login'))
             return false
         }
     }
 
     /** Coalesce concurrent refresh calls into a single request */
-    function attemptRefreshOnce(): Promise<boolean> {
-        if (!refreshPromise) {
-            refreshPromise = attemptRefresh().finally(() => {
-                refreshPromise = null
-            })
-        }
+    const attemptRefreshOnce = (): Promise<boolean> => {
+        refreshPromise ??= attemptRefresh().finally(() => {
+            refreshPromise = null
+        })
         return refreshPromise
     }
 

@@ -127,24 +127,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onUnmounted } from 'vue'
-import { useFocusTrap } from '~/composables/useFocusTrap'
-import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
-import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
-import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
-import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
+import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
+import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
+import { onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import {useAuthStore, useCartStore, useLocalePath, onMounted, useGqlMutation, computed} from '#imports'
-import type {Address, CartItem, CreateOrderRequest, Order} from '~/types'
-import { navigateTo } from '#imports'
-import gql from "graphql-tag";
-import {eventBus} from "~/eventBus";
-import { useI18n } from "vue-i18n"
-import {timeToRFC3339} from "~/utils/utils";
-import {useTracking} from "~/composables/useTracking";
-import {useRestaurantConfig} from "~/composables/useRestaurantConfig";
+import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
+import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
+import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
+import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
+import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { getNextOpeningTime } from '~/utils/openingHours'
+import gql from 'graphql-tag'
+import { timeToRFC3339 } from '~/utils/utils'
+import { useFocusTrap } from '~/composables/useFocusTrap'
+import { useI18n } from 'vue-i18n'
+import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
+import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -278,7 +277,7 @@ onMounted(() => {
         total_items: cartStore.totalItems,
         total_price: cartTotal.value,
         collection_option: cartStore.collectionOption,
-        has_address: !!cartStore.address,
+        has_address: Boolean(cartStore.address),
         is_authenticated: authStore.accessValid,
     })
 })
@@ -389,7 +388,6 @@ const handleCheckout = async () => {
             }
         } catch (err) {
             console.error('Error creating order:', err)
-            return
         }
 
     } catch (err) {
@@ -399,14 +397,13 @@ const handleCheckout = async () => {
     }
 }
 const cartTotal = computed(() => {
-    let total = subtotal.value - totalDiscount.value - cartStore.couponDiscount;
+    const total = subtotal.value - totalDiscount.value - cartStore.couponDiscount;
     return Math.max(total, 0);
 });
 
-const getItemUnitPrice = (item: CartItem) => {
-    return Number(item.product.price) +
-        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
-}
+const getItemUnitPrice = (item: CartItem) =>
+    Number(item.product.price) +
+    (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
 
 const subtotal = computed(() =>
     cartStore.products.reduce((acc, item) =>

@@ -1,6 +1,6 @@
 <template>
     <div class="prose mx-auto p-4">
-        <h2 id="conditions-g-n-rales-de-vente-cgv-">CONDITIONS GÉNÉRALES DE VENTE (CGV)</h2>
+        <h1 id="conditions-g-n-rales-de-vente-cgv-">CONDITIONS GÉNÉRALES DE VENTE (CGV)</h1>
         <p><strong>TOKYO SUSHI BAR – Société à responsabilité limitée (SRL)</strong><br><strong>Adresse du siège social
             :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique<br><strong>Numéro d’entreprise :</strong>
             BE0772.499.585<br><strong>Téléphone :</strong> +32 4 222 98 88<br><strong>Administrateurs :</strong> CHENG
@@ -255,7 +255,7 @@ useSeoMeta({
     ogTitle: t('schema.terms.title'),
     description: t('schema.terms.description'),
     ogDescription: t('schema.terms.description'),
-    ogImage: config.public.baseUrl + '/images/about-hero.png',
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
 })
 </script>

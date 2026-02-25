@@ -1,28 +1,30 @@
-// composables/useGqlSubscription.ts
-import { ref, onScopeDispose } from 'vue'
-import { print } from 'graphql'
-import { useRuntimeConfig } from '#imports'
+// Composables: useGqlSubscription.ts
+import { type DocumentNode, print } from 'graphql'
+import { onScopeDispose, ref } from 'vue'
 import type { Client } from 'graphql-ws'
+import { useRuntimeConfig } from '#imports'
+
+
 
 let wsClient: Client | null = null
 
 export function useGqlSubscription<T = unknown>(
-    rawSub: string | import('graphql').DocumentNode,
+    rawSub: string | DocumentNode,
     variables: Record<string, unknown> = {}
 ) {
     const cfg   = useRuntimeConfig()
     const data  = ref<T>()
     const error = ref<unknown>(null)
 
-    // placeholder for the unsubscribe function
+    // Placeholder for the unsubscribe function
     let stop: () => void = () => {}
-    // placeholder for the full-close function
+    // Placeholder for the full-close function
     let close: () => void = () => {}
 
-    // always register cleanup _in_ the setup scope
+    // Always register cleanup _in_ the setup scope
     onScopeDispose(() => {
-        stop()               // unsubscribe
-        wsClient?.dispose()  // tear down the socket
+        stop()               // Unsubscribe
+        wsClient?.dispose()  // Tear down the socket
         wsClient = null
     })
 
@@ -37,7 +39,7 @@ export function useGqlSubscription<T = unknown>(
                     })
                 }
 
-                // start subscription & capture the unsubscribe handle
+                // Start subscription & capture the unsubscribe handle
                 stop = wsClient.subscribe(
                     {
                         query: typeof rawSub === 'string' ? rawSub : print(rawSub),
@@ -50,7 +52,7 @@ export function useGqlSubscription<T = unknown>(
                     }
                 )
 
-                // expose a full-close that calls both stop() and dispose()
+                // Expose a full-close that calls both stop() and dispose()
                 close = () => {
                     stop()
                     wsClient?.dispose()

@@ -26,10 +26,10 @@
 </template>
 
 <script lang="ts" setup>
-import NavItem from './NavItem.vue';
-import Logo from './Logo.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
-import {useAuthStore} from '@/stores/auth'
+import Logo from './Logo.vue'
+import NavItem from './NavItem.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore();
 </script>

@@ -176,42 +176,49 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import type { Address, CreateUserRequest, UpdateUserRequest } from '~/types'
+import { computed, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import Checkbox from '~/components/Checkbox.vue'
 import { formatAddress } from '~/utils/utils'
-import type {Address, CreateUserRequest, UpdateUserRequest} from '~/types'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { useI18n } from 'vue-i18n'
 
 // Define props to allow passing initial values and mode
-const props = defineProps({
-    mode: {
-        type: String,
-        default: 'register'
-    },
-    initialValues: {
-        type: Object,
-        default: () => ({})
-    }
-})
+interface InitialValues {
+    firstName?: string
+    lastName?: string
+    email?: string
+    phoneLocal?: string
+    selectedCountry?: string
+    address?: Address | null
+    addressConfirmed?: boolean
+}
+
+const { mode = 'register', initialValues = {} as InitialValues } = defineProps<{
+    mode?: string
+    initialValues?: InitialValues
+}>()
 
 // Define an emit event for form submission
-const emit = defineEmits(['submit', 'close'])
+const emit = defineEmits<{
+    submit: [form: CreateUserRequest | UpdateUserRequest]
+    close: []
+}>()
 
 const { t } = useI18n()
 
 // Reactive state with defaults and initial values
-const firstName = ref(props.initialValues.firstName || '')
-const lastName = ref(props.initialValues.lastName || '')
-const email = ref(props.initialValues.email || '')
+const firstName = ref(initialValues.firstName || '')
+const lastName = ref(initialValues.lastName || '')
+const email = ref(initialValues.email || '')
 const password = ref('')
 const confirmPassword = ref('')
-const phoneLocal = ref(props.initialValues.phoneLocal || '')
-const selectedCountry = ref(props.initialValues.selectedCountry || 'BE')
+const phoneLocal = ref(initialValues.phoneLocal || '')
+const selectedCountry = ref(initialValues.selectedCountry || 'BE')
 
-const address = ref<Address | null>(props.initialValues.address || null)
-const addressConfirmed = ref<boolean>(props.initialValues.addressConfirmed || false)
+const address = ref<Address | null>(initialValues.address || null)
+const addressConfirmed = ref<boolean>(initialValues.addressConfirmed || false)
 
 const phoneError = ref('')
 
@@ -288,20 +295,19 @@ const passwordStrength = computed(() => {
             bgColor: 'bg-yellow-500',
             width: '80%',
         }
-    } else {
-        return {
-            text: t('register.passwordStrong'),
-            color: 'text-green-600',
-            bgColor: 'bg-green-500',
-            width: '100%',
-        }
+    }
+    return {
+        text: t('register.passwordStrong'),
+        color: 'text-green-600',
+        bgColor: 'bg-green-500',
+        width: '100%',
     }
 })
 
 // Reset address confirmation when address changes
 watch(address, () => {
     // In edit mode, auto-confirm the address
-    if (props.mode === 'edit') {
+    if (mode === 'edit') {
         addressConfirmed.value = address.value !== null
     } else {
         addressConfirmed.value = false
@@ -310,7 +316,7 @@ watch(address, () => {
 
 // When checked box becomes unchecked in register mode, reset address
 watch(addressConfirmed, (newValue) => {
-    if (props.mode === 'register' && newValue === false) {
+    if (mode === 'register' && newValue === false) {
         address.value = null
     }
 })
@@ -329,21 +335,21 @@ const validatePhone = () => {
 }
 
 // Submit button text based on mode
-const submitButtonText = computed(() => {
-    return props.mode === 'edit' ? t('me.profile.update') : t('register.submit')
-})
+const submitButtonText = computed(() =>
+    mode === 'edit' ? t('me.profile.update') : t('register.submit')
+)
 
 // Handle form submission
 const handleSubmit = () => {
     // Example validations (expand as needed)
     if (phoneLocal.value && !validatePhone()) { triggerShake(); return }
-    if (props.mode === 'register' && password.value !== confirmPassword.value) { triggerShake(); return }
-    if (!firstName.value || !lastName.value || !email.value || (props.mode === 'register' && !password.value)) { triggerShake(); return }
+    if (mode === 'register' && password.value !== confirmPassword.value) { triggerShake(); return }
+    if (!firstName.value || !lastName.value || !email.value || (mode === 'register' && !password.value)) { triggerShake(); return }
     if (address.value?.id && !addressConfirmed.value) { triggerShake(); return }
 
     let form: CreateUserRequest | UpdateUserRequest;
 
-    if (props.mode === 'register') {
+    if (mode === 'register') {
         form = {
             firstName: firstName.value,
             lastName: lastName.value,
@@ -355,11 +361,11 @@ const handleSubmit = () => {
     } else {
         // For edit mode, we need to explicitly handle address and phone removal
         // If there was an initial address but now there's none, send empty string to trigger deletion
-        const hasInitialAddress = props.initialValues.address !== null && props.initialValues.address !== undefined
+        const hasInitialAddress = initialValues.address !== null && initialValues.address !== undefined
         const hasCurrentAddress = address.value !== null
 
         // Handle phone number deletion: if there was a phone initially but now it's empty, send empty string
-        const hasInitialPhone = props.initialValues.phoneLocal && props.initialValues.phoneLocal.trim() !== ''
+        const hasInitialPhone = initialValues.phoneLocal && initialValues.phoneLocal.trim() !== ''
         const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
 
         let phoneValue = null

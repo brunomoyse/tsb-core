@@ -126,28 +126,33 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed, watch, useRuntimeConfig, useGqlQuery } from '#imports'
-import { useFocusTrap } from '~/composables/useFocusTrap'
-import { useTracking } from '~/composables/useTracking'
+import type { Product, ProductChoice } from '@/types'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useGqlQuery, useRuntimeConfig } from '#imports'
+import { eventBus } from '~/eventBus'
+import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import {formatPrice} from "~/lib/price";
-import {useCartStore} from "~/stores/cart";
-import {eventBus} from "~/eventBus";
-import type { Product, ProductChoice } from "@/types"
+import { useCartStore } from '~/stores/cart'
+import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
 
 
-const cartStore = useCartStore();
-useI18n()
-const config = useRuntimeConfig()
+
 const { trackEvent } = useTracking()
-const props = defineProps<{
+useI18n()
+const cartStore = useCartStore()
+const config = useRuntimeConfig()
+
+const {
+    product
+} = defineProps<{
     product: string
 }>()
 
 const emit = defineEmits<{
-    (e: 'close'): void
+    close: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -187,7 +192,7 @@ const PRODUCT_QUERY = gql`
 
 const { data: dataProduct } = await useGqlQuery<{
     product: Product
-}>(print(PRODUCT_QUERY), { id: props.product }, { immediate: true, cache: true })
+}>(print(PRODUCT_QUERY), { id: product }, { immediate: true, cache: true })
 
 const p = dataProduct.value?.product
 
@@ -195,7 +200,7 @@ const hasChoices = computed(() => p?.choices && p.choices.length > 0)
 
 const sortedChoices = computed(() => {
     if (!p?.choices) return []
-    return [...p.choices].sort((a, b) => a.sortOrder - b.sortOrder)
+    return p.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)
 })
 
 const selectedChoice = computed((): ProductChoice | null => {

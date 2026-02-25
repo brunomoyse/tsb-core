@@ -49,16 +49,16 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-const props = defineProps<{
+const { error } = defineProps<{
     error: NuxtError
 }>()
 
 const { t } = useI18n()
 
-const statusCode = computed(() => props.error?.statusCode || 500)
+const statusCode = computed(() => error?.statusCode || 500)
 
 const errorTitle = computed(() => {
-    switch (props.error?.statusCode) {
+    switch (error?.statusCode) {
         case 404: return t('error.title404')
         case 403: return t('error.title403')
         case 500: return t('error.title500')
@@ -67,7 +67,7 @@ const errorTitle = computed(() => {
 })
 
 const errorMessage = computed(() => {
-    switch (props.error?.statusCode) {
+    switch (error?.statusCode) {
         case 404: return t('error.notFound')
         case 403: return t('error.forbidden')
         case 500: return t('error.serverError')
@@ -76,7 +76,7 @@ const errorMessage = computed(() => {
 })
 
 const bgKanji = computed(() => {
-    switch (props.error?.statusCode) {
+    switch (error?.statusCode) {
         case 404: return '空'
         case 403: return '禁'
         case 500: return '乱'

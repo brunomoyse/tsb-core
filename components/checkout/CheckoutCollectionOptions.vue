@@ -5,20 +5,23 @@
         </h2>
 
         <!-- Delivery/Pickup Options -->
-        <div class="flex gap-4 mb-6">
-            <div
+        <div class="flex gap-4 mb-6" role="radiogroup" :aria-label="$t('checkout.collection')">
+            <button
                 v-for="option in collectionOptions"
                 :key="option.value"
+                type="button"
+                role="radio"
+                :aria-checked="cartStore.collectionOption === option.value"
                 :data-testid="option.value === 'DELIVERY' ? 'checkout-option-delivery' : 'checkout-option-pickup'"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
-          'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
+          'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md text-left',
           cartStore.collectionOption === option.value ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
         ]"
             >
-                <img :src="option.icon" alt="Option Icon" class="w-10 h-10 mb-2" />
+                <img :src="option.icon" :alt="option.label" class="w-10 h-10 mb-2" />
                 <span class="font-semibold">{{ option.label }}</span>
-            </div>
+            </button>
         </div>
 
         <!-- Address Section (if DELIVERY) -->
@@ -102,9 +105,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useCartStore } from '@/stores/cart'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { formatAddress } from '~/utils/utils'
+import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
@@ -115,19 +118,25 @@ interface OpeningHourEntry {
     dinnerClose?: string
 }
 
-const props = defineProps<{
+const {
+    openingHours,
+    orderingEnabled,
+    isCurrentlyOpen
+} = defineProps<{
     openingHours?: Record<string, OpeningHourEntry | null>
     orderingEnabled?: boolean
     isCurrentlyOpen?: boolean
 }>()
 
-const emit = defineEmits(['open-address-modal'])
+const emit = defineEmits<{
+    'open-address-modal': []
+}>()
 const { t } = useI18n()
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
 
 // Use backend ordering status when available
-const isOrderingDisabled = computed(() => !(props.orderingEnabled ?? true))
+const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
 // Delivery/Pickup options
 const collectionOptions = [
@@ -155,9 +164,9 @@ const dayNameToNumber: Record<string, number> = {
 
 // Convert backend opening hours to hoursMap format
 const hoursMap = computed<Record<number, [string, string][]>>(() => {
-    if (props.openingHours) {
+    if (openingHours) {
         const result: Record<number, [string, string][]> = {}
-        for (const [dayName, entry] of Object.entries(props.openingHours)) {
+        for (const [dayName, entry] of Object.entries(openingHours)) {
             const dayNum = dayNameToNumber[dayName.toLowerCase()]
             if (dayNum === undefined || !entry) continue
             const ranges: [string, string][] = [[entry.open, entry.close]]
@@ -198,7 +207,8 @@ const minAllowedTime = computed(() => {
 // Generate 15-minute slots between start/end
 const generateTimeSlots = (start: string, end: string) => {
     const slots: string[] = []
-    let cur = toMins(start), endM = toMins(end)
+    const endM = toMins(end)
+    let cur = toMins(start)
     while (cur <= endM) {
         const h = Math.floor(cur / 60).toString().padStart(2,'0')
         const m = (cur % 60).toString().padStart(2,'0')
@@ -248,14 +258,14 @@ watch(
 
 // Is restaurant open? Use backend value when available, fallback to local hours check
 const isOpen = computed(() => {
-    if (props.isCurrentlyOpen !== undefined) {
-        return props.isCurrentlyOpen
+    if (isCurrentlyOpen !== undefined) {
+        return isCurrentlyOpen
     }
     const day = now.value.getDay()
     const ranges = hoursMap.value[day] || []
     const cur = now.value.getHours() * 60 + now.value.getMinutes()
     return ranges.some(([s,e]) => {
-        const start = toMins(s), end = toMins(e)
+        const end = toMins(e), start = toMins(s)
         return cur >= start && cur <= end
     })
 })

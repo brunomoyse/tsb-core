@@ -72,10 +72,10 @@
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>
-                            <button v-if="!isInCart" aria-label="Add to Cart" data-testid="product-add-to-cart"
+                            <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
                                     class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
-                                    :disabled="props.orderingDisabled"
+                                    :disabled="orderingDisabled"
                                     @click="addToCart">
                                 <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
@@ -90,11 +90,13 @@
                     <div v-else class="w-full flex justify-between items-center">
                         <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300" type="button"
                                 @click="decrement">
+                            <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                             -
                         </button>
                         <span class="text-sm font-semibold text-red-700" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
                         <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300" type="button"
                                 @click="increment">
+                            <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                             +
                         </button>
                     </div>
@@ -106,27 +108,33 @@
 </template>
 
 <script lang="ts" setup>
-import {useCartStore} from "@/stores/cart";
-import {formatPrice} from "~/lib/price";
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
-import type {Product} from "@/types";
-import {useRuntimeConfig} from "#imports";
-import {useTracking} from "~/composables/useTracking";
-import {eventBus} from "~/eventBus";
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { Product } from '@/types'
+import { eventBus } from '~/eventBus'
+import { formatPrice } from '~/lib/price'
+import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
+import { useRuntimeConfig } from '#imports'
+import { useTracking } from '~/composables/useTracking'
 
 const cartStore = useCartStore();
 useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
 
-const props = defineProps<{
+const {
+    index,
+    product,
+    orderingDisabled
+} = defineProps<{
     index: number;
     product: Product;
     orderingDisabled?: boolean;
 }>();
 
-const emit = defineEmits(['openProductModal']);
+const emit = defineEmits<{
+    openProductModal: []
+}>()
 
 const showControls = ref(false);
 const timeoutId = ref<NodeJS.Timeout | null>(null);
@@ -138,19 +146,19 @@ onUnmounted(() => {
     }
 });
 
-const hasChoices = computed(() => props.product.choices?.length > 0);
+const hasChoices = computed(() => product.choices?.length > 0);
 
-const isInCart = computed(() => {
-    return cartStore.products.some(
-        (cartItem) => cartItem.product.id === props.product.id
-    );
-});
+const isInCart = computed(() =>
+    cartStore.products.some(
+        (cartItem) => cartItem.product.id === product.id
+    )
+);
 
-const cardQuantity = computed(() => {
-    return cartStore.products
-        .filter((cartItem) => cartItem.product.id === props.product.id)
-        .reduce((sum, item) => sum + item.quantity, 0);
-});
+const cardQuantity = computed(() =>
+    cartStore.products
+        .filter((cartItem) => cartItem.product.id === product.id)
+        .reduce((sum, item) => sum + item.quantity, 0)
+);
 
 const isQuantityBouncing = ref(false)
 watch(cardQuantity, () => {
@@ -165,17 +173,17 @@ const addToCart = () => {
         emit('openProductModal');
         return;
     }
-    cartStore.incrementQuantity(props.product);
+    cartStore.incrementQuantity(product);
     trackEvent('product_added_to_cart', {
-        product_id: props.product.id,
-        product_name: props.product.name,
-        price: props.product.price,
+        product_id: product.id,
+        product_name: product.name,
+        price: product.price,
         quantity: 1,
         source: 'card',
     });
     eventBus.emit('cart-item-added', {
-        productName: props.product.name,
-        productId: props.product.id,
+        productName: product.name,
+        productId: product.id,
     });
 
     showControls.value = true;
@@ -193,12 +201,12 @@ const showExpandedControls = () => {
 };
 
 const decrement = () => {
-    cartStore.decrementQuantity(props.product);
+    cartStore.decrementQuantity(product);
     resetTimeout();
 };
 
 const increment = () => {
-    cartStore.incrementQuantity(props.product);
+    cartStore.incrementQuantity(product);
     resetTimeout();
 };
 

@@ -12,7 +12,7 @@ const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'frida
 /**
  * Parses an "HH:MM" string into total minutes since midnight.
  */
-function parseTime(time: string): number {
+const parseTime = (time: string): number => {
     const [h, m] = time.split(':').map(Number)
     return (h ?? 0) * 60 + (m ?? 0)
 }
@@ -20,7 +20,7 @@ function parseTime(time: string): number {
 /**
  * Formats total minutes since midnight as "HH:MM".
  */
-function formatMinutes(minutes: number): string {
+const formatMinutes = (minutes: number): string => {
     const h = Math.floor(minutes / 60)
     const m = minutes % 60
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`

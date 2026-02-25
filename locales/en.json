@@ -199,6 +199,7 @@
       "items": "Items",
       "total": "Total",
       "follow": "Follow",
+      "toggleOrder": "Toggle order details",
       "status": {
         "details": {
           "title": {
@@ -253,7 +254,10 @@
     "checkout": "Checkout",
     "removeItem": "Remove",
     "decreaseQty": "Decrease quantity",
-    "increaseQty": "Increase quantity"
+    "increaseQty": "Increase quantity",
+    "closeCart": "Close cart",
+    "notifications": "Cart notifications",
+    "addToCart": "Add to cart"
   },
   "checkout": {
     "title": "Checkout",
@@ -297,7 +301,9 @@
     "stepPayment": "Payment",
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",
-    "tooFar": "Too far for delivery (max 9 km)"
+    "tooFar": "Too far for delivery (max 9 km)",
+    "sauce1": "Sauce 1",
+    "sauce2": "Sauce 2"
   },
   "orderCompleted": {
     "title": "Order Completed",

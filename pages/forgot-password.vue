@@ -2,7 +2,7 @@
     <div class="flex justify-center pt-8">
         <div class="w-[500px]">
             <!-- Title -->
-            <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('forgotPassword.title') }}</h2>
+            <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('forgotPassword.title') }}</h1>
 
             <!-- Form State -->
             <template v-if="!submitted">
@@ -51,8 +51,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, definePageMeta, useNuxtApp } from '#imports';
+import { definePageMeta, useNuxtApp } from '#imports'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+
 
 definePageMeta({
     public: true

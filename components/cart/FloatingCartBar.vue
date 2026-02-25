@@ -26,10 +26,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from '#imports'
-import { useCartStore } from '@/stores/cart'
-import { formatPrice } from '~/lib/price'
+import { onMounted, onUnmounted, ref } from '#imports'
+
 import { eventBus } from '~/eventBus'
+import { formatPrice } from '~/lib/price'
+import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
 

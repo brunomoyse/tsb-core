@@ -16,22 +16,25 @@
     </label>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue'
+
 // Define the modelValue prop (the value bound with v-model)
-const props = defineProps({
-    modelValue: {
-        type: Boolean,
-        default: false
-    }
-})
+const {
+    modelValue
+} = defineProps<{
+    modelValue?: boolean
+}>()
 
 // Set up the emit function for updating the modelValue
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+    'update:modelValue': [boolean]
+}>()
 
 // Create a computed property that proxies the modelValue prop and emits changes
 const checked = computed({
     get() {
-        return props.modelValue
+        return modelValue ?? false
     },
     set(value) {
         emit('update:modelValue', value)

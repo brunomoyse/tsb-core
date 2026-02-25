@@ -1,6 +1,6 @@
-import {defineStore} from "pinia";
-import {useRuntimeConfig} from "#imports";
-import type {User} from "@/types";
+import type { User } from '@/types'
+import { defineStore } from 'pinia'
+import { useRuntimeConfig } from '#imports'
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore("auth", {
                     credentials: 'include',
                 })
             } catch (error) {
-                console.error('Logout error:', error)
+                if (import.meta.dev) console.error('Logout error:', error)
             } finally {
                 this.user = null
                 this.accessValid = false

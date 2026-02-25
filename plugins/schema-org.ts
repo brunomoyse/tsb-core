@@ -1,5 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
-import { useSchemaOrg, defineOrganization, defineLocalBusiness } from '#imports'
+import { defineLocalBusiness, defineNuxtPlugin, defineOrganization, useRuntimeConfig, useSchemaOrg } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const baseUrl = useRuntimeConfig().public.baseUrl as string
@@ -15,7 +14,7 @@ export default defineNuxtPlugin(() => {
         }),
         {
             '@type': 'Offer',
-            '@id': baseUrl + '#pickup-discount',
+            '@id': `${baseUrl}#pickup-discount`,
             name: '10% Pickup Discount',
             description: 'Get 10% off on all discountable items when you choose pickup',
             discount: '10%',
@@ -66,7 +65,7 @@ export default defineNuxtPlugin(() => {
             acceptsReservations: true,
             hasMenu: {
                 '@type': 'Menu',
-                '@id': baseUrl + '/menu',
+                '@id': `${baseUrl}/menu`,
                 name: 'Tokyo Sushi Bar Menu',
                 description: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
                 inLanguage: ['fr-BE', 'en', 'zh-CN']

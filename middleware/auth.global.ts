@@ -1,7 +1,8 @@
-// middleware/auth.global.ts
-import { defineNuxtRouteMiddleware, useRequestEvent, navigateTo, useRuntimeConfig, useCookie} from 'nuxt/app'
+// Middleware: auth.global.ts
+import { defineNuxtRouteMiddleware, navigateTo, useCookie, useRequestEvent, useRuntimeConfig } from 'nuxt/app'
+
 import { useAuthStore } from '@/stores/auth'
-import { useLocalePath } from "#imports";
+import { useLocalePath } from '#imports'
 
 export default defineNuxtRouteMiddleware(async (to) => {
     if (to.meta.public !== false) return
@@ -75,8 +76,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 })
 
-// utils/jwt.ts
-function checkTokenExpiration(token: string): boolean {
+// Utils: jwt.ts
+const checkTokenExpiration = (token: string): boolean => {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]!))
         return payload.exp * 1000 > Date.now()
@@ -87,14 +88,18 @@ function checkTokenExpiration(token: string): boolean {
 
 
 // Simplified cookie helper functions
-function parseCookies(cookieHeader: string): Record<string, string> {
+const parseCookies = (cookieHeader: string): Record<string, string> => {
     if (!cookieHeader) return {}
-    return cookieHeader.split(';').reduce((cookies, item) => {
-        const idx = item.indexOf('=')
-        if (idx === -1) return cookies
-        const name = item.substring(0, idx).trim()
-        const value = item.substring(idx + 1).trim()
-        try { cookies[name] = decodeURIComponent(value) } catch { cookies[name] = value }
-        return cookies
-    }, {} as Record<string, string>)
+    return Object.fromEntries(
+        cookieHeader.split(';')
+            .map(item => {
+                const idx = item.indexOf('=')
+                if (idx === -1) return null
+                const name = item.substring(0, idx).trim()
+                const raw = item.substring(idx + 1).trim()
+                try { return [name, decodeURIComponent(raw)] as const }
+                catch { return [name, raw] as const }
+            })
+            .filter((entry): entry is [string, string] => entry !== null)
+    )
 }

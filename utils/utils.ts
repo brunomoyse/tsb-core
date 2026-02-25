@@ -32,9 +32,8 @@ export function toCamelCase(str: string): string {
 /**
  * Pads a number to 2 digits.
  */
-function pad2(n: number): string {
-    return n.toString().padStart(2, '0');
-}
+const pad2 = (n: number): string =>
+    n.toString().padStart(2, '0')
 
 /**
  * Formats a Date as an RFC3339 string with local timezone offset.
@@ -42,7 +41,7 @@ function pad2(n: number): string {
  * @param date - the Date to format
  * @returns yyyy-MM-ddTHH:mm:ss±HH:MM
  */
-function formatRFC3339Local(date: Date): string {
+const formatRFC3339Local = (date: Date): string => {
     const year   = date.getFullYear();
     const month  = pad2(date.getMonth() + 1);
     const day    = pad2(date.getDate());
@@ -50,7 +49,7 @@ function formatRFC3339Local(date: Date): string {
     const minute = pad2(date.getMinutes());
     const second = pad2(date.getSeconds());
 
-    // timezone offset in minutes: positive if behind UTC
+    // Timezone offset in minutes: positive if behind UTC
     const tzOffsetMin = -date.getTimezoneOffset();
     const sign = tzOffsetMin >= 0 ? '+' : '-';
     const absOffset = Math.abs(tzOffsetMin);

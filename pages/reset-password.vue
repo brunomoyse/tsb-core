@@ -2,7 +2,7 @@
     <div class="flex justify-center pt-8">
         <div class="w-[500px]">
             <!-- Title -->
-            <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('resetPassword.title') }}</h2>
+            <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('resetPassword.title') }}</h1>
 
             <!-- Missing Token State -->
             <template v-if="!token">
@@ -104,7 +104,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, definePageMeta, useNuxtApp, useRoute, navigateTo, useLocalePath } from '#imports';
+import { computed, definePageMeta, navigateTo, ref, useLocalePath, useNuxtApp, useRoute } from '#imports'
 import { useI18n } from 'vue-i18n'
 
 definePageMeta({
@@ -156,15 +156,17 @@ const passwordStrength = computed(() => {
 
     if (score === 0) {
         return { text: t('register.passwordVeryWeak'), color: 'text-red-600', bgColor: 'bg-red-500', width: '20%' }
-    } else if (score <= 2) {
-        return { text: t('register.passwordWeak'), color: 'text-red-600', bgColor: 'bg-red-500', width: '40%' }
-    } else if (score === 3) {
-        return { text: t('register.passwordFair'), color: 'text-orange-600', bgColor: 'bg-orange-500', width: '60%' }
-    } else if (score === 4) {
-        return { text: t('register.passwordGood'), color: 'text-yellow-600', bgColor: 'bg-yellow-500', width: '80%' }
-    } else {
-        return { text: t('register.passwordStrong'), color: 'text-green-600', bgColor: 'bg-green-500', width: '100%' }
     }
+    if (score <= 2) {
+        return { text: t('register.passwordWeak'), color: 'text-red-600', bgColor: 'bg-red-500', width: '40%' }
+    }
+    if (score === 3) {
+        return { text: t('register.passwordFair'), color: 'text-orange-600', bgColor: 'bg-orange-500', width: '60%' }
+    }
+    if (score === 4) {
+        return { text: t('register.passwordGood'), color: 'text-yellow-600', bgColor: 'bg-yellow-500', width: '80%' }
+    }
+    return { text: t('register.passwordStrong'), color: 'text-green-600', bgColor: 'bg-green-500', width: '100%' }
 })
 
 const submit = async () => {

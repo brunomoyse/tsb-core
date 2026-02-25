@@ -26,7 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, useRoute} from '#imports';
+import { computed } from 'vue'
+
+import { useRoute } from '#imports'
 
 interface NavItemProps {
     to: string;
@@ -35,17 +37,22 @@ interface NavItemProps {
     tooltipText?: string;
 }
 
-const props = defineProps<NavItemProps>();
+const {
+    to,
+    icon,
+    alt,
+    tooltipText
+} = defineProps<NavItemProps>()
 
 // Get the current route
-const route = useRoute();
+const route = useRoute()
 
 // Updated active state check using path
 const isActive = computed(() => {
-    // Normalize props.to to always start with "/"
-    const normalizedTo = props.to.startsWith('/') ? props.to : `/${props.to}`;
+    // Normalize to to always start with "/"
+    const normalizedTo = to.startsWith('/') ? to : `/${to}`;
     // Remove the first segment (locale) from route.path, e.g. "/fr/me" becomes "/me"
     const normalizedPath = route.path.replace(/^\/[^/]+/, '');
     return normalizedPath === normalizedTo || normalizedPath.startsWith(`${normalizedTo}/`);
-});
+})
 </script>

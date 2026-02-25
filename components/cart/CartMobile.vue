@@ -13,6 +13,7 @@
         <Transition name="slide-up">
             <aside
                 v-if="cartStore.isCartVisible"
+                aria-labelledby="cart-heading"
                 class="fixed bottom-0 inset-x-0 bg-tsb-one z-40 flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
             >
             <!-- Drag Handle -->
@@ -26,7 +27,7 @@
                     {{ $t('cart.title') }}
                 </h2>
                 <button
-                    aria-label="Close Cart"
+                    :aria-label="$t('cart.closeCart')"
                     class="p-2 rounded-full hover:bg-gray-100"
                     @click="cartStore.toggleCartVisibility"
                 >
@@ -57,6 +58,8 @@
                             :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
                             :alt="item.product.name"
                             class="object-cover w-full h-full"
+                            width="64"
+                            height="64"
                             draggable="false"
                         />
                     </picture>
@@ -83,7 +86,7 @@
                     <!-- QTY CONTROLS -->
                     <div class="col-span-2 grid grid-cols-3 items-center">
                         <button
-                            aria-label="Decrement Quantity"
+                            :aria-label="$t('cart.decreaseQty')"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
                             @click="handleDecrementQuantity(item)"
                         >
@@ -95,7 +98,7 @@
                         </button>
                         <span class="text-center text-gray-700">{{ item.quantity }}</span>
                         <button
-                            aria-label="Increment Quantity"
+                            :aria-label="$t('cart.increaseQty')"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
                             @click="handleIncrementQuantity(item)"
                         >
@@ -138,20 +141,19 @@
 </template>
 
 <script lang="ts" setup>
-import {useRuntimeConfig} from "#imports";
-import {useCartStore} from "@/stores/cart";
-import {formatPrice} from "~/lib/price";
-import type {CartItem} from "@/types";
-import {useTracking} from "~/composables/useTracking";
+import type { CartItem } from '@/types'
+import { formatPrice } from '~/lib/price'
+import { useCartStore } from '@/stores/cart'
+import { useRuntimeConfig } from '#imports'
+import { useTracking } from '~/composables/useTracking'
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const { trackEvent } = useTracking();
 
-const getItemUnitPrice = (item: CartItem): number => {
-    return Number(item.product.price) +
-        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0);
-};
+const getItemUnitPrice = (item: CartItem): number =>
+    Number(item.product.price) +
+    (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);

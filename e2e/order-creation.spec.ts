@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
@@ -17,7 +17,7 @@ test('Order creation happy path: login, add to cart, pickup, cash, place order',
   await test.step('Login', async () => {
     await page.goto('/fr/login')
     // Wait for Nuxt/Vue hydration so @submit.prevent handler is attached
-    await page.waitForFunction(() => !!document.querySelector('#__nuxt')?.__vue_app__)
+    await page.waitForFunction(() => Boolean(document.querySelector('#__nuxt')?.__vue_app__))
     await page.locator('#email').fill(email)
     await page.locator('#password').fill(password)
     await page.locator('[data-testid="login-submit"]').click()

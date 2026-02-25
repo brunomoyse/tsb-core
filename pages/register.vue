@@ -1,20 +1,20 @@
 <template>
     <div class="flex justify-center">
         <div class="w-full max-w-[500px] px-4">
-            <h2 class="text-2xl font-semibold text-gray-900 text-center mb-4">
+            <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">
                 {{ $t('register.title') }}
-            </h2>
+            </h1>
             <UserForm mode="register" @submit="registerUser" />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { definePageMeta, navigateTo, useAsyncData, useLocalePath, useNuxtApp } from '#imports'
 import UserForm from '~/components/form/UserForm.vue'
-import { useNuxtApp, useAsyncData, navigateTo, useLocalePath, definePageMeta } from '#imports'
 import { eventBus } from '~/eventBus'
-import { useI18n } from "vue-i18n"
-import { useTracking } from "~/composables/useTracking"
+import { useI18n } from 'vue-i18n'
+import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({
     public: true

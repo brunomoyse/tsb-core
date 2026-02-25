@@ -17,9 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+
 import { useCartStore } from '@/stores/cart'
+import { useI18n } from 'vue-i18n'
 
 const cartStore = useCartStore()
 
@@ -29,11 +30,11 @@ const hasCartItems = computed(() => cartStore.totalItems > 0)
 const { t } = useI18n()
 const showButton = ref(false)
 
-function onScroll() {
+const onScroll = () => {
     showButton.value = window.scrollY > 300
 }
 
-function scrollToTop() {
+const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 

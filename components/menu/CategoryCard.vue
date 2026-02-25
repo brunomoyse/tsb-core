@@ -18,24 +18,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { ProductCategory } from '@/types';
+import type { ProductCategory } from '@/types'
+import { computed } from 'vue'
 
-const props = defineProps<{
+const {
+    category,
+    active
+} = defineProps<{
     category: ProductCategory;
     active: boolean;
-}>();
+}>()
 const emit = defineEmits<{
-    (e: 'select', id: string): void;
-}>();
+    select: [id: string]
+}>()
 
 const handleClick = () => {
-    emit('select', props.category.id);
+    emit('select', category.id);
 };
 
-const displayName = computed(() => {
-    return props.category.name.toLowerCase().includes('bento')
+const displayName = computed(() =>
+    category.name.toLowerCase().includes('bento')
         ? 'Bento'
-        : props.category.name;
-});
+        : category.name
+);
 </script>

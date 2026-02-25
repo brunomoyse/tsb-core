@@ -53,8 +53,10 @@
                                     />
                                     <img
                                         :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
-                                        alt="Product Image"
+                                        :alt="item.product.name"
                                         class="w-full h-full object-cover"
+                                        width="48"
+                                        height="48"
                                     />
                                 </picture>
                             </div>
@@ -163,12 +165,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { type ComputedRef, computed, ref } from 'vue'
+import type { CartItem } from '~/types'
+import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
 import { useRuntimeConfig } from '#imports'
-import { formatPrice } from '~/lib/price'
-import type { ComputedRef } from 'vue'
-import type { CartItem } from '~/types'
+
+
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
@@ -196,14 +199,14 @@ const deliveryFee = computed(() => {
     return fee === -1 ? 0 : fee
 })
 
-const totalDiscount = computed(() => {
-    return cartStore.collectionOption === 'PICKUP'
+const totalDiscount = computed(() => (
+    cartStore.collectionOption === 'PICKUP'
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
                 ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
                 : acc, 0)
         : 0
-});
+));
 
 const finalTotal: ComputedRef<number> = computed(() => {
     const fee = deliveryFee.value === -1 ? 0 : deliveryFee.value
