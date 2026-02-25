@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", {
             this.accessValid = valid
             if (import.meta.client) {
                 if (valid) {
-                    localStorage.setItem('token_expires', (Date.now() + 14*60*1000).toString());
+                    localStorage.setItem('token_expires', (Date.now() + 59*60*1000).toString());
                 } else {
                     localStorage.removeItem('token_expires');
                 }

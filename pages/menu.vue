@@ -58,6 +58,7 @@
                                 <!-- Halal toggle -->
                                 <button
                                     @click.stop="toggleFilter('halal')"
+                                    :title="$t('menu.halal')"
                                     class="flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('halal')
                                         ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
@@ -75,6 +76,7 @@
                                 <!-- Vegan toggle -->
                                 <button
                                     @click.stop="toggleFilter('vegan')"
+                                    :title="$t('menu.vegan')"
                                     class="flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('vegan')
                                         ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
@@ -93,6 +95,7 @@
                                 <!-- Spicy toggle -->
                                 <button
                                     @click.stop="toggleFilter('spicy')"
+                                    :title="$t('menu.spicy')"
                                     class="flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('spicy')
                                         ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
