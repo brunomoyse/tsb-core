@@ -31,17 +31,19 @@ interface RestaurantConfig {
 }
 
 export async function useRestaurantConfig() {
+    // Register subscription BEFORE any await to preserve the active effect scope
+    const sub = import.meta.client
+        ? useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(print(SUB_RESTAURANT_CONFIG))
+        : null
+
     const { data, refresh } = await useGqlQuery<{ restaurantConfig: RestaurantConfig }>(
         RESTAURANT_CONFIG_QUERY,
         {},
         { immediate: true, cache: false }
     )
 
-    if (import.meta.client) {
-        const { data: liveConfig } = useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(
-            print(SUB_RESTAURANT_CONFIG)
-        )
-        watch(liveConfig, (val) => {
+    if (sub) {
+        watch(sub.data, (val) => {
             if (val?.restaurantConfigUpdated && data.value) {
                 data.value = {
                     ...data.value,

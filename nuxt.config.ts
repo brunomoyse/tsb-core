@@ -115,13 +115,13 @@ export default defineNuxtConfig({
                     name: 'access_token',
                     httpOnly: true,
                     sameSite: 'lax',
-                    maxAge: 900, // 15 minutes
+                    maxAge: 3600, // 1 hour
                 },
                 refreshToken: {
                     name: 'refresh_token',
                     httpOnly: true,
                     sameSite: 'lax',
-                    maxAge: 604800, // 7 days
+                    maxAge: 2592000, // 30 days
                 },
             }
         },

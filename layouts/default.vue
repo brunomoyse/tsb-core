@@ -16,7 +16,6 @@
         <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500">
             {{ $t('common.skipToContent') }}
         </a>
-        <!-- Wrapper div for sticky footer -->
         <div class="min-h-screen flex flex-col">
             <header>
                 <MobileNavbar/>
@@ -50,19 +49,24 @@
                 </div>
             </footer>
         </div>
-        <!-- Notification tooltip always visible across pages -->
-        <NotificationBar
-            v-if="showNotification && notification"
-            :message="notification.message"
-            :persistent="notification.persistent"
-            :duration="notification.duration"
-            :variant="notification.variant"
-            @close="showNotification = false"
-        />
+        <ClientOnly>
+            <NotificationBar
+                v-if="showNotification && notification"
+                :message="notification.message"
+                :persistent="notification.persistent"
+                :duration="notification.duration"
+                :variant="notification.variant"
+                @close="showNotification = false"
+            />
+        </ClientOnly>
 
-        <ScrollToTopButton class="sm:hidden"/>
+        <ClientOnly>
+            <ScrollToTopButton class="sm:hidden"/>
+        </ClientOnly>
 
-        <CookieConsent />
+        <ClientOnly>
+            <CookieConsent />
+        </ClientOnly>
 
         </Body>
 
