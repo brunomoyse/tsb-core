@@ -7,7 +7,8 @@
     "save": "保存",
     "toTop": "返回顶部",
     "remove": "删除",
-    "close": "关闭"
+    "close": "关闭",
+    "skipToContent": "跳转到主要内容"
   },
   "nav": {
     "home": "首页",
@@ -162,6 +163,8 @@
     "streetPlaceholder": "请输入街道名称",
     "houseNumberPlaceholder": "请输入门牌号",
     "boxNumberPlaceholder": "请输入门牌附加号",
+    "houseNumber": "门牌号",
+    "boxNumber": "信箱号",
     "submit": "提交",
     "confirmAddress": "确认这是您的地址",
     "passwordVeryWeak": "非常弱",

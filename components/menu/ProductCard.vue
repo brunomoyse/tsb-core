@@ -8,19 +8,19 @@
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
                 <div v-if="product.isHalal || product.isVegan || product.isSpicy" class="absolute top-1 right-1 z-10 flex flex-col gap-0.5">
-                    <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" :title="$t('menu.halal')">
-                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
+                        <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                         </svg>
                     </div>
-                    <div v-if="product.isVegan" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" :title="$t('menu.vegan')">
-                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <div v-if="product.isVegan" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.vegan')" :title="$t('menu.vegan')">
+                        <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
                             <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
                         </svg>
                     </div>
-                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" :title="$t('menu.spicy')">
-                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
+                        <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M13.73 2.18a1 1 0 0 0-1.46 0C10.6 3.87 9 6.81 9 10a6 6 0 0 0 12 0c0-3.19-1.6-6.13-3.27-7.82z"/>
                             <path d="M13.73 6.18a1 1 0 0 0-1.46 0C11.27 7.27 10 9.13 10 11a4 4 0 0 0 8 0c0-1.87-1.27-3.73-2.27-4.82z"/>
                         </svg>

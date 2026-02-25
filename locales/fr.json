@@ -7,7 +7,8 @@
     "save": "Enregistrer",
     "toTop": "Haut de page",
     "remove": "Supprimer",
-    "close": "Fermer"
+    "close": "Fermer",
+    "skipToContent": "Aller au contenu principal"
   },
   "nav": {
     "home": "Accueil",
@@ -162,6 +163,8 @@
     "streetPlaceholder": "Entrez le nom de votre rue",
     "houseNumberPlaceholder": "Entrez votre numéro de maison",
     "boxNumberPlaceholder": "Entrez votre numéro de boîte",
+    "houseNumber": "Numéro",
+    "boxNumber": "Boîte",
     "submit": "Soumettre",
     "confirmAddress": "Confirmez que ceci est bien votre adresse",
     "passwordVeryWeak": "Très faible",

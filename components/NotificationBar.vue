@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4" v-if="visible">
+    <div role="status" aria-live="polite" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4" v-if="visible">
         <transition name="slide-up">
             <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" v-if="visible">
                 <div class="flex items-start justify-between gap-4">
@@ -11,6 +11,7 @@
                         <button
                             class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
                             @click="close"
+                            :aria-label="cookieConsent ? 'Accept cookies' : $t('common.close')"
                         >
                             {{ cookieConsent ? 'Accept' : 'Close' }}
                         </button>

@@ -71,21 +71,21 @@ useSeoMeta({
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h17.25M3.375 14.25L6 3.75h12l2.625 10.5"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freeDelivery') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
+                <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
+                <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freshDaily') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ $t('about.infoCards.freshDailyDesc') }}</p>
+                <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freshDailyDesc') }}</p>
             </div>
         </div>
 
@@ -143,7 +143,7 @@ useSeoMeta({
                         <div class="flex justify-center">
                             <div class="bg-white/60 backdrop-blur-sm rounded-xl px-8 py-5 text-center shadow-sm">
                                 <span class="font-channel text-5xl sm:text-6xl text-red-500/70 block leading-none">{{ yearsSince }}</span>
-                                <span class="text-gray-500 text-xs tracking-widest uppercase mt-2 block">{{ $t('about.yearsOfPassion') }}</span>
+                                <span class="text-gray-600 text-xs tracking-widest uppercase mt-2 block">{{ $t('about.yearsOfPassion') }}</span>
                             </div>
                         </div>
                     </div>
