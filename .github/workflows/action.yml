@@ -8,10 +8,6 @@ on:
 env:
   DOCKER_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.actor }}/tsb-core:latest
-  BASE_URL: https://tokyo.brunomoyse.be
-  API_BASE_URL: https://tokyo.brunomoyse.be/api/v1
-  S3_BUCKET_URL: https://d1sq9yypil8nox.cloudfront.net
-  GRAPHQL_WS_URL: wss://tokyo.brunomoyse.be/api/v1/graphql
 
 jobs:
   build_amd64:
@@ -33,10 +29,10 @@ jobs:
           docker buildx build . \
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-amd64 \
-            --build-arg BASE_URL=${{ env.BASE_URL }} \
-            --build-arg API_BASE_URL=${{ env.API_BASE_URL }} \
-            --build-arg S3_BUCKET_URL=${{ env.S3_BUCKET_URL }} \
-            --build-arg GRAPHQL_WS_URL=${{ env.GRAPHQL_WS_URL }} \
+            --build-arg BASE_URL=${{ vars.BASE_URL }} \
+            --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ vars.GRAPHQL_WS_URL }} \
             --push
 
   build_arm64:
@@ -58,10 +54,10 @@ jobs:
           docker buildx build . \
             --platform linux/arm64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-arm64 \
-            --build-arg BASE_URL=${{ env.BASE_URL }} \
-            --build-arg API_BASE_URL=${{ env.API_BASE_URL }} \
-            --build-arg S3_BUCKET_URL=${{ env.S3_BUCKET_URL }} \
-            --build-arg GRAPHQL_WS_URL=${{ env.GRAPHQL_WS_URL }} \
+            --build-arg BASE_URL=${{ vars.BASE_URL }} \
+            --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ vars.GRAPHQL_WS_URL }} \
             --push
 
   create_manifest:
@@ -88,6 +84,6 @@ jobs:
     steps:
       - name: Trigger deploy webhook
         run: |
-          curl -X POST https://tokyo.brunomoyse.be/_deploy/hooks/deploy-tokyosushi \
+          curl -X POST ${{ vars.DEPLOY_WEBHOOK_URL }} \
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
             --fail --max-time 300
