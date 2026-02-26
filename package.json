@@ -22,7 +22,7 @@
     "graphql": "^16.13.0",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^6.0.7",
-    "libphonenumber-js": "^1.12.37",
+    "libphonenumber-js": "^1.12.38",
     "nuxt": "^4.3.0",
     "pinia-plugin-persistedstate": "^4.7.1",
     "posthog-js": "^1.353.1"
