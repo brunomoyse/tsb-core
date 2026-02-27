@@ -4,8 +4,8 @@
 
 ## Features
 
-- **Product Menu**: Browse products by category with search functionality
-- **Shopping Cart**: Add products, adjust quantities, choose delivery or pickup
+- **Product Menu**: Browse products by category with search, dietary filters (halal, vegan, spicy), and product choices
+- **Shopping Cart**: Add products, adjust quantities, choose delivery or pickup, apply coupons
 - **Online Payments**: Secure checkout via Mollie payment integration
 - **Order Tracking**: Real-time order status updates via GraphQL subscriptions
 - **User Accounts**: Registration, login, profile management, and Google OAuth
@@ -55,10 +55,19 @@ npm run build
 ## Linting
 
 ```bash
-npx eslint .
+npm run lint
 ```
 
-Uses flat ESLint config with `typescript-eslint` and `eslint-plugin-vue`.
+Uses oxlint with typescript and vue plugins.
+
+## E2E Testing
+
+```bash
+npm run test:e2e           # Headless
+npm run test:e2e:headed    # With visible browser
+```
+
+Uses Playwright with Desktop Chrome. Requires `E2E_USER_EMAIL` and `E2E_USER_PASSWORD` env vars.
 
 ## Docker
 
@@ -68,3 +77,18 @@ docker run --name tsb-core --env-file .env -p 3000:3000 tsb-core
 ```
 
 Multi-stage Dockerfile with health check. Supports multi-arch builds (AMD64/ARM64).
+
+## Deployment
+
+### Release
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+Triggers a GitHub Actions workflow that builds a `:production` + `:v1.0.0` AMD64 image with production URLs baked in, and deploys to the production server via SSH.
+
+### Rollback
+Go to the Actions tab → "Run workflow" → enter the version to rollback to (e.g. `v1.0.0`).
+
+### Test
+Push to `main` automatically builds a `:latest` multi-arch image and deploys to the home server.
