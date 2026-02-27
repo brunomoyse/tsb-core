@@ -134,6 +134,7 @@
                 >
                     {{ $t('cart.checkout') }}
                 </NuxtLinkLocale>
+                <div class="safe-area-spacer-bottom" />
             </footer>
             </aside>
         </Transition>

@@ -1,27 +1,32 @@
 <template>
     <Transition name="slide-up">
-        <button
+        <div
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
-            type="button"
-            class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-gray-800 text-white px-4 py-3 flex items-center justify-between shadow-lg transition-all active:scale-[0.98]"
+            class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-gray-800 shadow-lg"
             :class="{ 'animate-cart-pulse': isPulsing }"
-            @click="cartStore.toggleCartVisibility"
         >
-            <div class="flex items-center gap-2">
-                <span class="bg-white text-gray-800 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm">
-                    {{ cartStore.totalItems }}
-                </span>
-                <div class="flex flex-col items-start">
-                    <span class="text-sm font-medium">{{ $t('cart.title') }}</span>
-                    <Transition name="fade">
-                        <span v-if="addedProductName" class="text-xs text-gray-300 truncate max-w-[180px]">
-                            + {{ addedProductName }}
-                        </span>
-                    </Transition>
+            <button
+                type="button"
+                class="w-full text-white px-4 py-3 flex items-center justify-between transition-all active:scale-[0.98]"
+                @click="cartStore.toggleCartVisibility"
+            >
+                <div class="flex items-center gap-2">
+                    <span class="bg-white text-gray-800 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm">
+                        {{ cartStore.totalItems }}
+                    </span>
+                    <div class="flex flex-col items-start">
+                        <span class="text-sm font-medium">{{ $t('cart.title') }}</span>
+                        <Transition name="fade">
+                            <span v-if="addedProductName" class="text-xs text-gray-300 truncate max-w-[180px]">
+                                + {{ addedProductName }}
+                            </span>
+                        </Transition>
+                    </div>
                 </div>
-            </div>
-            <span class="font-semibold">{{ formatPrice(cartStore.totalPrice) }}</span>
-        </button>
+                <span class="font-semibold">{{ formatPrice(cartStore.totalPrice) }}</span>
+            </button>
+            <div class="safe-area-spacer-bottom bg-gray-800" />
+        </div>
     </Transition>
 </template>
 

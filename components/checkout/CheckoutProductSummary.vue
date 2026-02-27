@@ -74,15 +74,15 @@
                                 <!-- Quantity controls -->
                                 <div class="flex items-center gap-2 mt-1">
                                     <button
-                                        class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                        class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
                                         @click="handleDecrementQuantity(item)"
                                     >
                                         <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                         -
                                     </button>
-                                    <span class="text-sm w-6 text-center">{{ item.quantity }}</span>
+                                    <span class="text-sm w-8 text-center">{{ item.quantity }}</span>
                                     <button
-                                        class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                        class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
                                         @click="handleIncrementQuantity(item)"
                                     >
                                         <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
@@ -176,7 +176,7 @@ import { useRuntimeConfig } from '#imports'
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const showTooltip = ref(false)
-const isCollapsed = ref(true)
+const isCollapsed = ref(false)
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)

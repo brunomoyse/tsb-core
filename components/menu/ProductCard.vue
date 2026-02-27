@@ -3,7 +3,7 @@
         <div v-if="product" :key="product.id"
              data-testid="product-card"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="min-w-[140px] max-w-[185px] w-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
@@ -47,7 +47,7 @@
             <!-- Product Details (fixed size: does not grow) -->
             <div class="shrink-0 px-2 pb-1">
                 <!-- Text block: fixed height so price always aligns across cards -->
-                <div class="h-[76px] flex flex-col items-center overflow-hidden">
+                <div class="min-h-[76px] flex flex-col items-center">
                     <span class="text-gray-600 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
