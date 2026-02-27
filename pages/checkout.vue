@@ -11,23 +11,22 @@
             </p>
         </div>
 
-        <!-- Page Title -->
-        <h1 class="text-2xl font-bold mb-4">
-            {{ $t('checkout.title', 'Checkout') }}
-        </h1>
+        <!-- Page Title with Japanese accent -->
+        <div class="flex items-center gap-3 mb-4">
+            <h1 class="text-2xl font-bold">
+                {{ $t('checkout.title', 'Checkout') }}
+            </h1>
+            <span class="text-red-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
+        </div>
 
-        <!-- Step Indicator -->
-        <nav class="flex items-center justify-center gap-2 text-sm mb-6">
+        <!-- Step Indicator with Japanese-style separators -->
+        <nav class="flex items-center justify-center gap-3 text-sm mb-6">
             <NuxtLinkLocale to="/menu" class="text-red-600 hover:text-red-700 font-medium">
                 {{ $t('checkout.stepMenu') }}
             </NuxtLinkLocale>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <span class="text-red-300 text-lg leading-none" aria-hidden="true">〉</span>
             <span class="font-bold text-gray-900">{{ $t('checkout.stepCheckout') }}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <span class="text-gray-300 text-lg leading-none" aria-hidden="true">〉</span>
             <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
         </nav>
 

@@ -4,6 +4,17 @@
         <div class="text-center space-y-2">
             <h1 class="text-4xl font-bold">{{ $t('faq.title') }}</h1>
             <p class="text-lg text-gray-600">{{ $t('faq.subtitle') }}</p>
+            <!-- Decorative fan motif -->
+            <div class="flex justify-center pt-1" aria-hidden="true">
+                <svg class="w-8 h-5 text-red-300/40" viewBox="0 0 40 24" fill="none">
+                    <path d="M20 22 L5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L12 3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L20 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L28 3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L35 6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M5 6 Q12 0 20 1 Q28 0 35 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
         </div>
 
         <!-- FAQ Items -->

@@ -32,7 +32,18 @@
             </main>
 
             <footer class="p-4 sm:ml-[142px] text-xs text-gray-600">
-                <div class="flex items-center justify-center gap-3 border-t border-gray-200 pt-4">
+                <!-- Decorative seigaiha wave divider -->
+                <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
+                    <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-gray-200" />
+                    <svg class="w-6 h-6 text-red-300/60" viewBox="0 0 100 50" fill="none">
+                        <path d="M0 50 C25 50 25 20 50 20 C75 20 75 50 100 50" stroke="currentColor" stroke-width="3" fill="none"/>
+                        <path d="M-25 50 C0 50 0 30 25 30 C50 30 50 50 75 50" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                        <path d="M25 50 C50 50 50 30 75 30 C100 30 100 50 125 50" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    </svg>
+                    <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-gray-200" />
+                </div>
+
+                <div class="flex items-center justify-center gap-3">
                     <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/terms">
                         {{ $t('footer.terms') }}
                     </NuxtLinkLocale>
@@ -44,7 +55,9 @@
                         <svg class="w-4 h-4 hover:text-gray-600 transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385h-3.047v-3.47h3.047v-2.642c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385c5.738-.9 10.126-5.864 10.126-11.854z"/></svg>
                     </a>
                 </div>
-                <div class="text-center mt-3 text-[10px] text-gray-500">
+                <!-- Restaurant name -->
+                <p class="text-center mt-2 text-[11px] text-gray-400/70 tracking-[0.3em] font-light" aria-hidden="true">Tokyo Sushi Bar</p>
+                <div class="text-center mt-2 text-[10px] text-gray-500">
                     <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-gray-500 transition-colors">nuagemagique.dev</a>
                 </div>
             </footer>

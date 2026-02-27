@@ -178,7 +178,8 @@
     "passwordNumber": "Un chiffre",
     "passwordSpecialChar": "Un caractère spécial",
     "deliveryInfoTitle": "Informations de livraison (facultatif)",
-    "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison."
+    "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison.",
+    "hasAccount": "Vous avez déjà un compte ?"
   },
   "me": {
     "greeting": "Bonjour",

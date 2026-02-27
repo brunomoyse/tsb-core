@@ -77,10 +77,10 @@
                             <!-- Info -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-800">
+                                    <span class="text-sm font-medium text-gray-800 whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-600">
+                                    <span class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-600 whitespace-nowrap shrink-0">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-400 status-pulse" />
                                         {{ getStatus(getTrackedOrder(order).status) }}
                                     </span>
@@ -211,11 +211,11 @@
                             <!-- Info -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-700">
+                                    <span class="text-sm font-medium text-gray-700 whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
                                     <span
-                                        class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium"
+                                        class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
                                         :class="statusBadgeClass(order.status)"
                                     >
                                         {{ getStatus(order.status) }}

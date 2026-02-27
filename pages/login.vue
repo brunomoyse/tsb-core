@@ -1,89 +1,132 @@
 <template>
-    <div class="flex justify-center pt-8">
-        <div class="w-[500px]">
-            <!-- Title -->
-            <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">{{ $t('login.title') }}</h1>
+    <div class="flex justify-center px-4 pt-6 sm:pt-10 pb-12">
+        <div class="w-full max-w-md">
 
-            <!-- Login Form -->
-            <form class="space-y-4" @submit.prevent="login">
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm text-gray-700 mb-1" for="email">{{ $t('login.email') }}</label>
-                    <input
-                        id="email"
-                        v-model="email"
-                        :placeholder="$t('login.emailPlaceholder')"
-                        autocomplete="email"
-                        class="w-full p-2 border border-gray-300 rounded-md focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
-                        name="email"
-                        required
-                        type="email"
-                    />
-                </div>
+            <!-- Card container -->
+            <div class="bg-tsb-two rounded-2xl relative">
+                <!-- Decorative blurred accents -->
+                <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
+                <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
 
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm text-gray-700 mb-1" for="password">{{ $t('login.password') }}</label>
-                    <input
-                        id="password"
-                        v-model="password"
-                        :placeholder="$t('login.passwordPlaceholder')"
-                        autocomplete="current-password"
-                        class="w-full p-2 border border-gray-300 rounded-md focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
-                        name="password"
-                        required
-                        type="password"
-                    />
-                </div>
+                <!-- Kanji watermark: 歓迎 (welcome) -->
+                <span
+                    class="absolute top-4 right-5 font-channel text-[80px] sm:text-[100px] text-red-200/[0.07] leading-none select-none pointer-events-none"
+                    aria-hidden="true"
+                >歓迎</span>
 
-                <!-- Inline Error -->
-                <p v-if="errorMessage" role="alert" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-                    {{ errorMessage }}
-                </p>
+                <div class="relative px-7 sm:px-10 py-8 sm:py-10">
+                    <!-- Decorative torii gate -->
+                    <div class="flex justify-center mb-2" aria-hidden="true">
+                        <svg class="w-9 h-9 text-red-400/30" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <line x1="12" y1="55" x2="12" y2="15"/>
+                            <line x1="48" y1="55" x2="48" y2="15"/>
+                            <line x1="8" y1="18" x2="52" y2="18"/>
+                            <path d="M5 12 Q30 4 55 12" stroke-width="3"/>
+                            <line x1="20" y1="18" x2="20" y2="28"/>
+                            <line x1="40" y1="18" x2="40" y2="28"/>
+                            <line x1="15" y1="28" x2="45" y2="28"/>
+                        </svg>
+                    </div>
 
-                <!-- Submit Button -->
-                <button data-testid="login-submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 active:scale-[0.97]" type="submit">
-                    {{ $t('login.submit') }}
-                </button>
-            </form>
+                    <!-- Title -->
+                    <h1 class="text-2xl font-semibold text-gray-900 text-center">
+                        {{ $t('login.title') }}
+                    </h1>
 
-            <!-- OR Divider -->
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative text-center">
-          <span class="bg-tsb-one px-3 text-sm text-gray-600 uppercase">
-            {{ $t('login.dividerOr') }}
-          </span>
+                    <!-- Chopstick divider -->
+                    <div class="flex justify-center items-center mt-2 mb-6" aria-hidden="true">
+                        <svg class="w-14 h-4 text-red-400/40" viewBox="0 0 80 20" fill="none">
+                            <line x1="5" y1="18" x2="38" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="42" y1="2" x2="75" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="40" cy="2" r="1.5" fill="currentColor" opacity="0.6"/>
+                        </svg>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form class="space-y-4" @submit.prevent="login">
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">{{ $t('login.email') }}</label>
+                            <input
+                                id="email"
+                                v-model="email"
+                                :placeholder="$t('login.emailPlaceholder')"
+                                autocomplete="email"
+                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                name="email"
+                                required
+                                type="email"
+                            />
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="password">{{ $t('login.password') }}</label>
+                            <input
+                                id="password"
+                                v-model="password"
+                                :placeholder="$t('login.passwordPlaceholder')"
+                                autocomplete="current-password"
+                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                name="password"
+                                required
+                                type="password"
+                            />
+                        </div>
+
+                        <!-- Inline Error -->
+                        <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                            {{ errorMessage }}
+                        </p>
+
+                        <!-- Submit Button -->
+                        <button
+                            data-testid="login-submit"
+                            class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md"
+                            type="submit"
+                        >
+                            {{ $t('login.submit') }}
+                        </button>
+                    </form>
+
+                    <!-- OR Divider -->
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300/50"></div>
+                        </div>
+                        <div class="relative text-center">
+                            <span class="bg-tsb-two px-3 text-sm text-gray-500 uppercase">
+                                {{ $t('login.dividerOr') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Google SSO Button -->
+                    <button
+                        class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none"
+                        @click="loginWithGoogle"
+                    >
+                        <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
+                        <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
+                    </button>
+
+                    <!-- Links -->
+                    <div class="mt-6 space-y-2 text-center">
+                        <p class="text-sm text-gray-600">
+                            {{ $t('login.noAccount') }}
+                            <NuxtLinkLocale to="/register" class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                                {{ $t('login.register') }}
+                            </NuxtLinkLocale>
+                        </p>
+                        <p>
+                            <NuxtLinkLocale to="/forgot-password" class="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                                {{ $t('login.forgot') }}
+                            </NuxtLinkLocale>
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Google SSO Button -->
-            <button
-                class="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition-all active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
-                @click="loginWithGoogle"
-            >
-                <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
-                <span class="text-gray-700">{{ $t('login.ssoGoogle') }}</span>
-            </button>
-
-            <!-- Signup Link -->
-            <p class="text-sm text-gray-600 text-center mt-4">
-                {{ $t('login.noAccount') }}
-                <NuxtLinkLocale to="/register">
-          <span class="text-black font-medium hover:underline cursor-pointer">
-            {{ $t('login.register') }}
-          </span>
-                </NuxtLinkLocale>
-            </p>
-
-            <!-- Forgot Password Link -->
-            <p class="text-sm text-gray-600 text-center mt-2">
-                <NuxtLinkLocale to="/forgot-password" class="text-gray-600 hover:text-black hover:underline">
-                    {{ $t('login.forgot') }}
-                </NuxtLinkLocale>
-            </p>
         </div>
     </div>
 </template>
@@ -248,21 +291,3 @@ onMounted(async () => {
 })
 
 </script>
-
-<style>
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.animate-fadeIn {
-    animation: fadeIn 0.2s ease-out;
-}
-</style>

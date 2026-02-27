@@ -51,9 +51,8 @@ export function useTracking() {
     }
 
     const hasOptedIn = (): boolean => {
-        const ph = getPosthog()
-        if (!ph) return false
-        return ph.has_opted_in_capturing()
+        if (typeof localStorage === 'undefined') return false
+        return localStorage.getItem('cookie_consent') === 'accepted'
     }
 
     const hasConsentChoice = (): boolean => {

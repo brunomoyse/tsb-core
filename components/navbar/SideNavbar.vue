@@ -12,6 +12,12 @@
 
         <!-- Bottom Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mb-6">
+            <!-- Decorative wave accent -->
+            <li aria-hidden="true" class="pb-1">
+                <svg class="w-8 h-4 text-red-300/30" viewBox="0 0 40 16" fill="none">
+                    <path d="M0 12 C10 12 10 4 20 4 C30 4 30 12 40 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+            </li>
             <NavItem v-if="!authStore.accessValid" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
                      to="login"/>
             <NavItem v-if="authStore.accessValid" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"

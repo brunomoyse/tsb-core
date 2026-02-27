@@ -203,6 +203,8 @@ const handleCancelDeletionRequest = async () => {
                 {{ authStore.user?.firstName ? `${t('me.greeting')}, ${authStore.user.firstName}` : t('schema.myAccount.title') }}
             </h1>
             <p class="mt-2 text-sm sm:text-base text-gray-500 font-light">{{ t('me.subtitle') }}</p>
+            <!-- Japanese greeting: ようこそ (welcome) -->
+            <p class="mt-1 text-xs text-red-300/40 tracking-[0.25em]" aria-hidden="true">ようこそ</p>
         </div>
 
         <!-- Bento Grid -->
