@@ -224,12 +224,14 @@
                     :id="`category-${cat.id}`"
                     class="space-y-4"
                 >
-                    <!-- Category Title -->
-                    <h2
-                        class="font-channel inline-block mx-auto text-xl font-semibold text-gray-800 border-b-2 border-black pb-2 ml-4 tracking-wide text-center"
-                    >
-                        {{ cat.name }}
-                    </h2>
+                    <!-- Category Title with Japanese bracket decoration -->
+                    <div class="flex items-center gap-3 ml-4">
+                        <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
+                        <h2 class="font-channel inline-block text-xl font-semibold text-gray-800 tracking-wide">
+                            {{ cat.name }}
+                        </h2>
+                        <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
+                    </div>
 
                     <!-- Product Cards -->
                     <div

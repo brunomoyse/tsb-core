@@ -2,47 +2,47 @@
     <form class="space-y-4" :class="{ 'animate-shake': isShaking }" @submit.prevent="handleSubmit">
         <!-- Personal Information Fields -->
         <div>
-            <label class="block text-sm text-gray-700 mb-1" for="firstName">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="firstName">
                 {{ $t('register.firstName') }}
             </label>
             <input id="firstName" v-model="firstName"
                    :placeholder="$t('register.firstNamePlaceholder')"
                    autocomplete="given-name"
-                   class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
         </div>
 
         <div>
-            <label class="block text-sm text-gray-700 mb-1" for="lastName">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="lastName">
                 {{ $t('register.lastName') }}
             </label>
             <input id="lastName" v-model="lastName"
                    :placeholder="$t('register.lastNamePlaceholder')"
                    autocomplete="name"
-                   class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
         </div>
 
         <div>
-            <label class="block text-sm text-gray-700 mb-1" for="email">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">
                 {{ $t('register.email') }}
             </label>
             <input id="email" v-model="email"
                    :placeholder="$t('register.emailPlaceholder')"
                    autocomplete="email"
-                   class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="email"/>
         </div>
 
         <!-- Password Fields (only show for registration) -->
         <div v-if="mode === 'register'">
-            <label class="block text-sm text-gray-700 mb-1" for="password">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="password">
                 {{ $t('register.password') }}
             </label>
             <input id="password" v-model="password"
                    :placeholder="$t('register.passwordPlaceholder')"
                    autocomplete="new-password"
-                   class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="password"/>
 
             <!-- Password Strength Indicator -->
@@ -52,7 +52,7 @@
                         {{ passwordStrength.text }}
                     </span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div class="w-full bg-gray-200/60 rounded-full h-1.5">
                     <div
                         class="h-1.5 rounded-full transition-all duration-300"
                         :class="passwordStrength.bgColor"
@@ -80,14 +80,14 @@
         </div>
 
         <div v-if="mode === 'register'">
-            <label class="block text-sm text-gray-700 mb-1" for="confirmPassword">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="confirmPassword">
                 {{ $t('register.confirmPassword') }}
             </label>
             <div class="relative">
                 <input id="confirmPassword" v-model="confirmPassword"
                        :placeholder="$t('register.confirmPasswordPlaceholder')"
                        autocomplete="new-password"
-                       class="w-full p-2 pr-10 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                       class="w-full px-3.5 py-2.5 pr-10 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                        required type="password"/>
                 <svg
                     v-if="passwordsMatch"
@@ -102,26 +102,26 @@
         </div>
 
         <!-- Delivery Information Section (register only) -->
-        <div v-if="mode === 'register'" class="border-t border-gray-200 pt-4 mt-2">
+        <div v-if="mode === 'register'" class="border-t border-gray-300/50 pt-4 mt-2">
             <p class="text-sm font-medium text-gray-500">{{ $t('register.deliveryInfoTitle') }}</p>
             <p class="text-xs text-gray-400 mt-0.5">{{ $t('register.deliveryInfoDescription') }}</p>
         </div>
 
         <!-- Phone Input -->
         <div>
-            <label class="block text-sm text-gray-700 mb-1" for="phone">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="phone">
                 {{ $t('register.phone') }}
             </label>
             <div class="flex space-x-2">
                 <select id="country" v-model="selectedCountry"
-                        class="p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200">
+                        class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300">
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                         {{ country.flag }} {{ country.prefix }}
                     </option>
                 </select>
                 <input id="phone" v-model="phoneLocal"
                        :placeholder="$t('register.phonePlaceholder')"
-                       class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                       class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                        type="tel"/>
             </div>
             <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
@@ -138,7 +138,7 @@
                   {{ formatAddress(address) }}
                 </span>
             </Checkbox>
-            <div v-else class="p-3 border border-gray-300 rounded-md bg-gray-50">
+            <div v-else class="p-3 border border-gray-200/80 rounded-xl bg-white/40 backdrop-blur-sm">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <strong class="text-sm text-gray-700">{{ $t('register.address') }}</strong>
@@ -158,17 +158,17 @@
         <!-- Buttons Section -->
         <div v-if="mode === 'edit'" class="flex gap-2">
             <button type="button" @click="emit('close')"
-                    class="w-1/2 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 transition-all text-sm active:scale-[0.97]">
+                    class="w-1/2 bg-white/60 backdrop-blur-sm text-gray-700 py-2.5 rounded-xl border border-gray-200/80 hover:bg-white transition-all duration-300 text-sm active:scale-[0.97]">
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
-                    class="w-1/2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 text-sm active:scale-[0.97]">
+                    class="w-1/2 bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 text-sm active:scale-[0.97] shadow-sm hover:shadow-md">
                 {{ submitButtonText }}
             </button>
         </div>
         <div v-else>
             <button type="submit"
-                    class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-300 active:scale-[0.97]">
+                    class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md">
                 {{ submitButtonText }}
             </button>
         </div>
@@ -408,12 +408,11 @@ li:hover {
     background-color: #f3f4f6;
 }
 input, select, textarea {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-    transform: scale(1.01);
+    border-color: #fca5a5;
+    box-shadow: 0 0 0 3px rgba(252, 165, 165, 0.25);
 }
 </style>

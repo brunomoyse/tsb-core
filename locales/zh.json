@@ -178,7 +178,8 @@
     "passwordNumber": "一个数字",
     "passwordSpecialChar": "一个特殊字符",
     "deliveryInfoTitle": "配送信息（可选）",
-    "deliveryInfoDescription": "仅在您需要配送时填写。"
+    "deliveryInfoDescription": "仅在您需要配送时填写。",
+    "hasAccount": "已有账户？"
   },
   "me": {
     "greeting": "你好",

@@ -277,13 +277,13 @@ const getStatusColorClass = (status: string) => {
                     @click="toggleOrder(order.id)"
                 >
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <h3 class="font-semibold text-gray-700 text-sm">
+                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <h3 class="font-semibold text-gray-700 text-sm whitespace-nowrap">
                                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
                             </h3>
                             <span
                                 v-if="isOrderCompleted(order.status)"
-                                class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium"
+                                class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
                                 :class="getStatusColorClass(order.status)"
                             >
                                 {{ getStatus(order.status) }}
@@ -305,14 +305,14 @@ const getStatusColorClass = (status: string) => {
                             <OrderStatusTimeline :order="getTrackedOrder(order)" compact />
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 ml-3">
-                        <span class="text-sm font-semibold text-gray-700 tabular-nums">
+                    <div class="flex items-center gap-2 ml-3 shrink-0">
+                        <span class="text-sm font-semibold text-gray-700 tabular-nums whitespace-nowrap">
                             {{ new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(parseFloat(order.totalPrice)) }}
                         </span>
                         <!-- Current status badge (in-progress orders) -->
                         <span
                             v-if="!isOrderCompleted(order.status)"
-                            class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium text-red-600 bg-tsb-four"
+                            class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[11px] font-medium text-red-600 bg-tsb-four whitespace-nowrap"
                         >
                             {{ getStatus(getTrackedOrder(order).status) }}
                         </span>
@@ -419,6 +419,13 @@ const getStatusColorClass = (status: string) => {
                     </svg>
                 </div>
                 <p class="text-sm text-gray-500">{{ $t('me.orders.empty') }}</p>
+                <!-- Subtle chopsticks decoration -->
+                <div class="flex justify-center mt-3" aria-hidden="true">
+                    <svg class="w-8 h-6 text-gray-300/50" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                        <line x1="12" y1="2" x2="16" y2="22"/>
+                        <line x1="28" y1="2" x2="24" y2="22"/>
+                    </svg>
+                </div>
             </div>
         </div>
 

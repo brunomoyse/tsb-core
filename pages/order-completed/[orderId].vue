@@ -51,6 +51,9 @@
                 {{ $t('orderCompleted.orderSuccess') }}
             </p>
 
+            <!-- Japanese thank you -->
+            <p class="mt-2 text-red-300/50 text-xs tracking-[0.25em] oc-stagger-2" aria-hidden="true">ありがとうございます</p>
+
             <!-- Estimated time badge -->
             <div
                 v-if="order && order.estimatedReadyTime"

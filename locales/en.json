@@ -178,7 +178,8 @@
     "passwordNumber": "One number",
     "passwordSpecialChar": "One special character",
     "deliveryInfoTitle": "Delivery Information (optional)",
-    "deliveryInfoDescription": "Required only if you want to order for delivery."
+    "deliveryInfoDescription": "Required only if you want to order for delivery.",
+    "hasAccount": "Already have an account?"
   },
   "me": {
     "greeting": "Hello",
