@@ -38,7 +38,7 @@ export default defineNuxtConfig({
             title: "Tokyo Sushi Bar",
             meta: [
                 {charset: "utf-8"},
-                {name: "viewport", content: "width=device-width, initial-scale=1"},
+                {name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover"},
                 {name: "description", content: "Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter."},
             ],
             link: [

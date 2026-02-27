@@ -4,7 +4,6 @@
             <!-- Mobile Logo -->
             <div class="flex items-center">
                 <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/images/tsb-black-font-100.png" to="/"/>
-                <span class="font-semibold text-lg ml-2"></span>
             </div>
 
             <!-- Right part -->

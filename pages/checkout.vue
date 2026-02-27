@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-7xl mx-auto p-4 pb-20 lg:pb-4">
+    <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
         <!-- Restaurant Closed Banner -->
         <div v-if="!isOrderingAvailable" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,16 +78,17 @@
                     </span>
                 </button>
             </div>
+            <div class="safe-area-spacer-bottom" />
         </div>
 
         <!-- Address Modal -->
         <div
             v-if="showAddressModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
             tabindex="0"
             @click.self="closeAddressModal"
         >
-            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative" @click.stop>
+            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
                 <button
                     type="button"
                     @click="closeAddressModal"
@@ -120,6 +121,7 @@
                         {{ $t('common.save', 'Save') }}
                     </button>
                 </div>
+                <div class="safe-area-spacer-bottom sm:hidden" />
             </div>
         </div>
     </div>
