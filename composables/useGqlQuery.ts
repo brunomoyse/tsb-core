@@ -20,12 +20,12 @@ export async function useGqlQuery<T>(
     const getVars = () => (typeof variables === 'function' ? variables() : variables)
     const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
 
-    // Choose overload: with key (cache) or without key (no cache)
-    const asyncData = opts.cache
-        ? await useAsyncData<T, T>(`gql:${hash(printIfAst(rawQuery))}`, handler, {
-            immediate: opts.immediate,
-        })
-        : await useAsyncData<T>(handler, { immediate: opts.immediate })
+    const key = `gql:${hash(printIfAst(rawQuery))}`
+
+    const asyncData = await useAsyncData<T>(key, handler, {
+        immediate: opts.immediate,
+        ...(opts.cache ? {} : { getCachedData: () => undefined as unknown as T }),
+    })
 
     if (typeof variables === 'function') {
         watch(
