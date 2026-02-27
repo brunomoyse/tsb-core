@@ -185,7 +185,7 @@
             </section>
 
             <!-- 9 -->
-            <section>
+            <section id="cookies" class="scroll-mt-24">
                 <h2 class="terms-heading">9. Cookies</h2>
 
                 <h3 class="terms-subheading">Cookies essentiels</h3>
@@ -273,11 +273,25 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onMounted } from 'vue'
+
+const route = useRoute()
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
 definePageMeta({
     public: true
+})
+
+onMounted(() => {
+    if (route.hash) {
+        nextTick(() => {
+            const el = document.querySelector(route.hash)
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        })
+    }
 })
 
 useSchemaOrg([
