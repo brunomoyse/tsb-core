@@ -1,219 +1,288 @@
 <template>
-    <div class="prose mx-auto p-4">
-        <h1 id="conditions-g-n-rales-de-vente-cgv-">CONDITIONS GÉNÉRALES DE VENTE (CGV)</h1>
-        <p><strong>TOKYO SUSHI BAR – Société à responsabilité limitée (SRL)</strong><br><strong>Adresse du siège social
-            :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique<br><strong>Numéro d’entreprise :</strong>
-            BE0772.499.585<br><strong>Téléphone :</strong> +32 4 222 98 88<br><strong>Administrateurs :</strong> CHENG
-            Yanjie, XU Sa, ZHU Mengmeng </p>
-        <p><strong>Dernière mise à jour : 01/04/2025</strong></p>
-        <hr>
-        <h3 id="1-objet-et-champ-d-application">1. Objet et champ d’application</h3>
-        <p>Les présentes Conditions Générales de Vente (ci-après « CGV ») ont pour objet de définir les droits et
-            obligations de la SRL TOKYO SUSHI BAR (ci-après « le Restaurant ») et de ses clients (ci-après « le Client
-            ») dans le cadre de la vente de plats japonais pour livraison et à emporter.<br>Elles s’appliquent à toutes
-            les commandes passées auprès du Restaurant, que ce soit en personne, par téléphone ou via le site internet
-            (ci-après « le Site »).</p>
-        <p>En passant commande, le Client déclare avoir pris connaissance et accepté sans réserve les présentes CGV.</p>
-        <hr>
-        <h3 id="2-informations-l-gales">2. Informations légales</h3>
-        <ul>
-            <li><strong>Dénomination sociale :</strong> TOKYO SUSHI BAR</li>
-            <li><strong>Forme juridique :</strong> Société à responsabilité limitée (SRL)</li>
-            <li><strong>Siège social :</strong> Rue de la Cathédrale 59, 4000 Liège, Belgique</li>
-            <li><strong>Numéro d’entreprise :</strong> BE0772.499.585</li>
-            <li><strong>Téléphone :</strong> +32 4 222 98 88</li>
-        </ul>
-        <p>Le Restaurant est représenté par ses administrateurs : CHENG Yanjie, XU Sa et ZHU Mengmeng.</p>
-        <hr>
-        <h3 id="3-horaires-et-prises-de-commande">3. Horaires et prises de commande</h3>
-        <p>Les commandes sont acceptées uniquement pendant les <strong>heures d’ouverture du Restaurant</strong>. Les
-            horaires d’ouverture sont indiqués sur le Site et peuvent être sujets à des modifications ponctuelles.</p>
-        <p>Les Clients peuvent passer commande de l’une des manières suivantes : </p>
-        <ul>
-            <li><strong>En personne</strong> : Les commandes sur place sont prioritaires.</li>
-            <li><strong>Par téléphone</strong> : Les commandes téléphoniques sont traitées après les commandes en
-                personne.
-            </li>
-            <li><strong>Via le Site</strong> : Les commandes en ligne sont traitées en dernier, dans l’ordre d’arrivée.
-            </li>
-        </ul>
-        <p>Le Restaurant se réserve le droit de refuser ou d’annuler toute commande en cas de rupture de stock, de force
-            majeure ou pour tout autre motif légitime.</p>
-        <hr>
-        <h3 id="4-zone-de-livraison-et-d-lais">4. Zone de livraison et délais</h3>
-        <h4 id="4-1-zone-de-livraison">4.1 Zone de livraison</h4>
-        <p>Le Restaurant assure la livraison <strong>dans un rayon maximal de 10 km</strong> autour de la Rue de la
-            Cathédrale 59, 4000 Liège, selon les conditions suivantes : </p>
-        <ul>
-            <li><strong>De 0 à 4 km</strong> : Livraison gratuite.</li>
-            <li><strong>De 4 à 8 km</strong> : 3 € de frais de livraison.</li>
-            <li><strong>De 8 à 10 km</strong> : 5 € de frais de livraison.</li>
-            <li><strong>Au-delà de 10 km</strong> : Aucune livraison n’est possible.</li>
-        </ul>
-        <h4 id="4-2-d-lais-de-livraison">4.2 Délais de livraison</h4>
-        <p>Le délai moyen de livraison est <strong>d’environ 45 minutes</strong> à compter de l’acceptation de la
-            commande. Ce délai est fourni à titre indicatif et peut varier en fonction : </p>
-        <ul>
-            <li>Du volume de commandes en cours,</li>
-            <li>Des conditions de circulation,</li>
-            <li>Des aléas (conditions météorologiques, incidents techniques, etc.).</li>
-        </ul>
-        <p>Le Restaurant s’engage à faire ses meilleurs efforts pour respecter les délais annoncés, sans toutefois
-            pouvoir garantir un délai exact.</p>
-        <h4 id="4-3-absence-du-client-lors-de-la-livraison">4.3 Absence du Client lors de la livraison</h4>
-        <p>En cas d’absence du Client à l’adresse de livraison : </p>
-        <ul>
-            <li>La commande retournera au Restaurant,</li>
-            <li>Le Client devra se déplacer pour récupérer sa commande le jour même.<br>Si la commande n’est pas
-                récupérée le jour même, elle sera considérée comme définitivement perdue et <strong>aucun
-                    remboursement</strong> ne pourra être exigé par le Client.
-            </li>
-        </ul>
-        <hr>
-        <h3 id="5-commandes-emporter">5. Commandes à emporter</h3>
-        <p>Le Client peut choisir l’option « à emporter » pour sa commande. Dans ce cas : </p>
-        <ul>
-            <li>Le Client se rend au Restaurant (Rue de la Cathédrale 59, 4000 Liège) aux heures d’ouverture,</li>
-            <li>Le Client doit se présenter avec le numéro de commande ou tout autre justificatif permettant de
-                l’identifier,
-            </li>
-            <li>Si la commande est acceptée, il n’est plus possible de l’annuler ou de la modifier,</li>
-            <li>Toute commande non récupérée le jour même est considérée comme perdue ; aucun remboursement ne sera
-                effectué.
-            </li>
-        </ul>
-        <hr>
-        <h3 id="6-tarifs-et-modalit-s-de-paiement">6. Tarifs et modalités de paiement</h3>
-        <h4 id="6-1-tarifs">6.1 Tarifs</h4>
-        <p>Les prix affichés sur le Site et au Restaurant sont exprimés en euros (€) et incluent la TVA. Le Restaurant
-            se réserve le droit de modifier ses prix à tout moment, mais les produits sont facturés sur la base des
-            tarifs en vigueur au moment de la validation de la commande.</p>
-        <h4 id="6-2-modalit-s-de-paiement">6.2 Modalités de paiement</h4>
-        <ul>
-            <li>
-                <p><strong>En ligne</strong> (pour les commandes passées via le Site) : </p>
-                <ul>
-                    <li>Carte de crédit</li>
-                    <li>Bancontact</li>
-                </ul>
-            </li>
-            <li>
-                <p><strong>Au Restaurant</strong> (pour les commandes passées en personne ou pour le paiement à
-                    l’emporter/livraison) : </p>
-                <ul>
-                    <li>Carte de crédit</li>
-                    <li>Bancontact</li>
-                    <li>Espèces</li>
-                </ul>
-            </li>
-        </ul>
-        <p>Dans tous les cas, la commande doit être réglée avant la remise des plats au Client.</p>
-        <hr>
-        <h3 id="7-absence-de-droit-de-r-tractation-et-annulation">7. Absence de droit de rétractation et annulation</h3>
-        <h4 id="7-1-produits-alimentaires-p-rissables">7.1 Produits alimentaires périssables</h4>
-        <p>Conformément à la législation applicable aux produits alimentaires périssables, <strong>aucun droit de
-            rétractation ne peut être exercé</strong> une fois la commande acceptée, conformément à l’Article VI.53,
-            4° du Code de droit économique belge (ou toute autre disposition en vigueur).</p>
-        <h4 id="7-2-annulation-de-commande">7.2 Annulation de commande</h4>
-        <p>Une fois qu’une commande a été acceptée par le Restaurant, <strong>il est impossible de l’annuler</strong> ou
-            de la modifier. En cas de force majeure ou de situation exceptionnelle, le Client peut contacter le
-            Restaurant qui examinera sa demande au cas par cas, sans garantie de remboursement.</p>
-        <hr>
-        <h3 id="8-responsabilit-">8. Responsabilité</h3>
-        <h4 id="8-1-qualit-des-produits">8.1 Qualité des produits</h4>
-        <p>Le Restaurant garantit la fraîcheur et la qualité de ses produits. Toutefois, il appartient au Client de
-            vérifier l’état des plats lors de la livraison ou du retrait. Toute réclamation doit être signalée
-            immédiatement au livreur ou au personnel du Restaurant.</p>
-        <h4 id="8-2-limitation-de-responsabilit-">8.2 Limitation de responsabilité</h4>
-        <p>Le Restaurant ne peut être tenu pour responsable : </p>
-        <ul>
-            <li>Des dommages résultant de la mauvaise utilisation des produits par le Client,</li>
-            <li>Des retards ou impossibilités de livraison dus à un cas de force majeure (grève, intempéries, pannes
-                techniques, etc.),
-            </li>
-            <li>Des informations erronées transmises par le Client (adresse de livraison incorrecte, numéro de téléphone
-                non valide, etc.).
-            </li>
-        </ul>
-        <p>En tout état de cause, si la responsabilité du Restaurant devait être engagée, elle serait strictement
-            limitée au montant de la commande en cause.</p>
-        <hr>
-        <h3 id="9-protection-des-donn-es-personnelles-rgpd-">9. Protection des données personnelles (RGPD)</h3>
-        <h4 id="9-1-donn-es-collect-es">9.1 Données collectées</h4>
-        <p>Dans le cadre de la passation de commandes, le Restaurant collecte les données suivantes : </p>
-        <ul>
-            <li><strong>Nom</strong></li>
-            <li><strong>Adresse e-mail</strong></li>
-            <li><strong>Adresse de livraison</strong></li>
-            <li><strong>Coordonnées de facturation</strong> (si différentes)</li>
-        </ul>
-        <h4 id="9-2-finalit-s">9.2 Finalités</h4>
-        <p>Les données personnelles sont traitées pour : </p>
-        <ul>
-            <li>L’exécution et le suivi de la commande (confirmation, facturation, notification de statut, etc.),</li>
-            <li>La récupération de mot de passe sur le Site,</li>
-            <li>Des fins statistiques internes (analyse des zones de livraison).</li>
-        </ul>
-        <h4 id="9-3-base-l-gale-et-dur-e-de-conservation">9.3 Base légale et durée de conservation</h4>
-        <p>La base légale du traitement est l’<strong>exécution du contrat</strong> (traitement nécessaire pour la vente
-            et la livraison des plats) ainsi que l’<strong>intérêt légitime</strong> du Restaurant (analyse
-            statistique).<br>Les données sont conservées aussi longtemps que nécessaire pour réaliser les finalités
-            décrites ci-dessus ou pour se conformer aux obligations légales.</p>
-        <h4 id="9-4-droits-du-client">9.4 Droits du Client</h4>
-        <p>Conformément au Règlement (UE) 2016/679 (RGPD) et à la législation belge applicable, le Client bénéficie d’un
-            droit d’accès, de rectification, d’effacement, de limitation, de portabilité et d’opposition au traitement
-            de ses données. </p>
-        <p>Pour exercer ces droits, le Client peut contacter le Restaurant aux coordonnées suivantes : </p>
-        <ul>
-            <li><strong>Par courrier :</strong> TOKYO SUSHI BAR, Rue de la Cathédrale 59, 4000 Liège</li>
-        </ul>
-        <p>Le Client dispose également du droit d’introduire une réclamation auprès de l’Autorité de protection des
-            données (APD) en Belgique.</p>
-        <hr>
-        <h3 id="9bis-politique-cookies">9bis. Politique en matière de cookies</h3>
-        <h4 id="9bis-1-cookies-essentiels">9bis.1 Cookies essentiels</h4>
-        <p>Le Site utilise des cookies strictement nécessaires au fonctionnement du service. Ces cookies ne peuvent pas être désactivés :</p>
-        <ul>
-            <li><strong>Jetons d'authentification</strong> : cookies httpOnly utilisés pour maintenir la session de l'utilisateur (jeton d'accès : 15 minutes, jeton de rafraîchissement : 7 jours).</li>
-            <li><strong>Préférence linguistique</strong> : cookie permettant de mémoriser la langue choisie par l'utilisateur.</li>
-        </ul>
-        <h4 id="9bis-2-cookies-analytiques">9bis.2 Cookies analytiques (optionnels)</h4>
-        <p>Le Site utilise <strong>PostHog</strong>, un outil d'analyse, pour comprendre comment les visiteurs utilisent le Site (pages consultées, parcours de navigation, etc.). Ces cookies sont <strong>optionnels</strong> et ne sont activés que si le Client les accepte via la bannière de consentement affichée lors de la première visite.</p>
-        <p>Les données collectées par PostHog sont utilisées uniquement à des fins d'amélioration du Site et ne sont pas partagées avec des tiers à des fins commerciales.</p>
-        <h4 id="9bis-3-gestion-des-preferences">9bis.3 Gestion des préférences</h4>
-        <p>Le Client peut gérer ses préférences en matière de cookies de la manière suivante :</p>
-        <ul>
-            <li><strong>Bannière de consentement</strong> : lors de la première visite, une bannière permet d'accepter ou de refuser les cookies analytiques.</li>
-            <li><strong>Paramètres du navigateur</strong> : le Client peut également configurer son navigateur pour bloquer ou supprimer les cookies. Veuillez noter que la suppression des cookies essentiels peut affecter le fonctionnement du Site.</li>
-        </ul>
-        <hr>
-        <h3 id="10-h-bergement-du-site">10. Hébergement du Site</h3>
-        <p>Le Site est hébergé par :<br><strong>Amazon Web Services (AWS) – Centre de données à Francfort
-            (Allemagne)</strong></p>
-        <hr>
-        <h3 id="11-force-majeure">11. Force majeure</h3>
-        <p>Aucune des parties ne pourra être tenue pour responsable d’un manquement à ses obligations contractuelles si
-            ce manquement résulte d’un cas de force majeure. Outre ceux habituellement retenus par la jurisprudence
-            belge, sont considérés comme des cas de force majeure : les grèves, les intempéries, les pannes de transport
-            ou d’énergie, les accidents, les épidémies, les incendies, les blocages des réseaux de télécommunication,
-            etc.</p>
-        <hr>
-        <h3 id="12-modification-des-cgv">12. Modification des CGV</h3>
-        <p>Le Restaurant se réserve le droit de modifier à tout moment les présentes CGV. Les nouvelles versions des CGV
-            seront publiées sur le Site et, si nécessaire, communiquées par tout moyen approprié. Les commandes déjà
-            passées resteront soumises à la version des CGV en vigueur au moment de leur validation.</p>
-        <hr>
-        <h3 id="13-litiges-et-droit-applicable">13. Litiges et droit applicable</h3>
-        <p>Les présentes CGV sont régies par le droit belge. En cas de litige, les tribunaux compétents seront ceux du
-            ressort de Liège, sauf disposition légale impérative contraire.</p>
-        <hr>
-        <h3 id="14-acceptation-des-cgv">14. Acceptation des CGV</h3>
-        <p>Le fait de passer commande auprès du Restaurant, que ce soit en personne, par téléphone ou via le Site, vaut
-            acceptation pleine et entière des présentes CGV sans réserve.</p>
-        <hr>
-        <p><strong>TOKYO SUSHI BAR</strong><br>Rue de la Cathédrale 59<br>4000 Liège, Belgique </p>
-        <p><strong>Fin des Conditions Générales de Vente</strong></p>
+    <div class="mx-auto max-w-3xl px-6 py-10">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                Conditions Générales de Vente
+            </h1>
+            <p class="mt-3 text-sm text-gray-500">Dernière mise à jour : 01/04/2025</p>
+        </header>
 
+        <!-- Company info -->
+        <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
+            <p class="font-semibold text-gray-900">Tokyo Sushi Bar &mdash; SRL</p>
+            <p>Rue de la Cathédrale 59, 4000 Liège, Belgique</p>
+            <p>N° d&rsquo;entreprise : BE0772.499.585 &middot; Tél : +32 4 222 98 88</p>
+            <p>Administrateurs : Cheng Yanjie, Xu Sa, Zhu Mengmeng</p>
+        </section>
+
+        <!-- Body -->
+        <div class="space-y-10 text-[15px] leading-relaxed text-gray-700">
+
+            <!-- 1 -->
+            <section>
+                <h2 class="terms-heading">1. Objet</h2>
+                <p>
+                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre la SRL Tokyo Sushi
+                    Bar (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
+                    pour la vente de plats japonais en livraison et à emporter. Elles s&rsquo;appliquent à toute
+                    commande passée en personne, par téléphone ou via le site internet (le
+                    &laquo;&nbsp;Site&nbsp;&raquo;).
+                </p>
+                <p class="mt-2">
+                    En passant commande, le Client reconnaît avoir pris connaissance des présentes CGV et les accepte
+                    sans réserve.
+                </p>
+            </section>
+
+            <!-- 2 -->
+            <section>
+                <h2 class="terms-heading">2. Commandes</h2>
+                <p>
+                    Les commandes sont acceptées pendant les heures d&rsquo;ouverture indiquées sur le Site. Elles
+                    sont traitées dans l&rsquo;ordre de priorité suivant&nbsp;:
+                </p>
+                <ol class="terms-list">
+                    <li>En personne (prioritaire)</li>
+                    <li>Par téléphone</li>
+                    <li>Via le Site (par ordre d&rsquo;arrivée)</li>
+                </ol>
+                <p class="mt-2">
+                    Le Restaurant se réserve le droit de refuser ou d&rsquo;annuler une commande en cas de rupture de
+                    stock, de force majeure ou pour tout motif légitime.
+                </p>
+            </section>
+
+            <!-- 3 -->
+            <section>
+                <h2 class="terms-heading">3. Livraison</h2>
+
+                <h3 class="terms-subheading">Zone et frais</h3>
+                <p>
+                    La livraison est assurée dans un rayon limité autour du Restaurant. Les zones desservies et les
+                    frais de livraison applicables sont indiqués sur le Site lors de la commande.
+                </p>
+
+                <h3 class="terms-subheading">Délais</h3>
+                <p>
+                    Le délai indicatif est d&rsquo;environ 45&nbsp;minutes après acceptation de la commande. Ce délai
+                    peut varier selon le volume de commandes, les conditions de circulation ou d&rsquo;autres aléas.
+                </p>
+
+                <h3 class="terms-subheading">Absence à la livraison</h3>
+                <p>
+                    En cas d&rsquo;absence, la commande est retournée au Restaurant. Le Client peut la récupérer le
+                    jour même. Passé ce délai, la commande est considérée comme perdue et aucun remboursement ne sera
+                    accordé.
+                </p>
+            </section>
+
+            <!-- 4 -->
+            <section>
+                <h2 class="terms-heading">4. À emporter</h2>
+                <p>
+                    Le Client se présente au Restaurant avec son numéro de commande. Une fois la commande acceptée,
+                    elle ne peut plus être annulée ni modifiée. Toute commande non récupérée le jour même est
+                    considérée comme perdue sans remboursement.
+                </p>
+            </section>
+
+            <!-- 5 -->
+            <section>
+                <h2 class="terms-heading">5. Prix et paiement</h2>
+                <p>
+                    Les prix sont exprimés en euros, TVA comprise. Le Restaurant peut les modifier à tout moment&nbsp;;
+                    les commandes sont facturées au tarif en vigueur au moment de leur validation.
+                </p>
+
+                <h3 class="terms-subheading">Moyens de paiement</h3>
+                <div class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">En ligne</p>
+                        <p>Carte de crédit, Bancontact</p>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Au restaurant</p>
+                        <p>Carte de crédit, Bancontact, espèces</p>
+                    </div>
+                </div>
+                <p class="mt-3 text-sm text-gray-500">
+                    Le paiement doit être effectué avant la remise de la commande.
+                </p>
+            </section>
+
+            <!-- 6 -->
+            <section>
+                <h2 class="terms-heading">6. Rétractation et annulation</h2>
+                <p>
+                    Conformément à l&rsquo;article VI.53, 4° du Code de droit économique belge, aucun droit de
+                    rétractation ne s&rsquo;applique aux produits alimentaires périssables. Une commande acceptée ne
+                    peut être annulée ni modifiée.
+                </p>
+                <p class="mt-2">
+                    En cas de force majeure, le Client peut contacter le Restaurant qui examinera la demande au cas par
+                    cas, sans garantie de remboursement.
+                </p>
+            </section>
+
+            <!-- 7 -->
+            <section>
+                <h2 class="terms-heading">7. Responsabilité</h2>
+                <p>
+                    Le Restaurant garantit la fraîcheur de ses produits. Le Client doit vérifier l&rsquo;état des plats
+                    à la livraison ou au retrait et signaler toute anomalie immédiatement.
+                </p>
+                <p class="mt-2">Le Restaurant ne saurait être tenu responsable&nbsp;:</p>
+                <ul class="terms-list">
+                    <li>d&rsquo;une mauvaise utilisation des produits par le Client,</li>
+                    <li>de retards ou impossibilités de livraison liés à un cas de force majeure,</li>
+                    <li>d&rsquo;informations erronées fournies par le Client (adresse, téléphone, etc.).</li>
+                </ul>
+                <p class="mt-2">
+                    La responsabilité du Restaurant est en tout état de cause limitée au montant de la commande
+                    concernée.
+                </p>
+            </section>
+
+            <!-- 8 -->
+            <section>
+                <h2 class="terms-heading">8. Données personnelles (RGPD)</h2>
+
+                <h3 class="terms-subheading">Données collectées et finalités</h3>
+                <p>
+                    Le Restaurant collecte le nom, l&rsquo;adresse e-mail, l&rsquo;adresse de livraison et, le cas
+                    échéant, les coordonnées de facturation du Client. Ces données sont traitées pour
+                    l&rsquo;exécution des commandes (confirmation, facturation, notification de statut), la
+                    récupération de mot de passe et des analyses statistiques internes.
+                </p>
+
+                <h3 class="terms-subheading">Base légale et conservation</h3>
+                <p>
+                    Le traitement repose sur l&rsquo;exécution du contrat et l&rsquo;intérêt légitime du Restaurant.
+                    Les données de compte sont conservées tant que le compte est actif ou jusqu&rsquo;à demande de
+                    suppression. Les données de facturation sont conservées 7&nbsp;ans conformément aux obligations
+                    comptables belges.
+                </p>
+
+                <h3 class="terms-subheading">Destinataires des données</h3>
+                <p>Les données peuvent être transmises aux prestataires suivants, tous hébergés dans l&rsquo;Union européenne&nbsp;:</p>
+                <ul class="terms-list">
+                    <li><strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne,</li>
+                    <li><strong>PostHog</strong> (UE) &mdash; analyse de fréquentation (uniquement avec consentement),</li>
+                    <li><strong>OVH</strong> (France) &mdash; hébergement du Site,</li>
+                    <li><strong>Google</strong> (UE) &mdash; authentification OAuth (uniquement si le Client choisit cette option).</li>
+                </ul>
+                <p class="mt-2">
+                    Aucune donnée n&rsquo;est vendue ni partagée à des fins commerciales avec des tiers.
+                </p>
+
+                <h3 class="terms-subheading">Droits du Client</h3>
+                <p>
+                    Conformément au RGPD (Règlement UE 2016/679), le Client dispose d&rsquo;un droit d&rsquo;accès, de
+                    rectification, d&rsquo;effacement, de limitation, de portabilité et d&rsquo;opposition. Lorsque le
+                    traitement repose sur le consentement (cookies analytiques), le Client peut retirer son
+                    consentement à tout moment sans affecter la licéité du traitement effectué avant ce retrait.
+                </p>
+                <p class="mt-2">
+                    Toute demande peut être adressée par e-mail à
+                    <a href="mailto:tokyosushibar888@gmail.com" class="text-red-600 underline">tokyosushibar888@gmail.com</a>
+                    ou par courrier à&nbsp;: Tokyo Sushi Bar, Rue de la Cathédrale 59, 4000 Liège. Le
+                    Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
+                    données (APD).
+                </p>
+
+                <h3 class="terms-subheading">Décision automatisée</h3>
+                <p>
+                    Le Restaurant n&rsquo;utilise aucun processus de décision automatisée ni de profilage au sens de
+                    l&rsquo;article 22 du RGPD.
+                </p>
+            </section>
+
+            <!-- 9 -->
+            <section>
+                <h2 class="terms-heading">9. Cookies</h2>
+
+                <h3 class="terms-subheading">Cookies essentiels</h3>
+                <p>
+                    Le Site utilise des cookies strictement nécessaires au fonctionnement du service et qui ne peuvent
+                    pas être désactivés&nbsp;:
+                </p>
+                <ul class="terms-list">
+                    <li>
+                        <strong>Jetons d&rsquo;authentification</strong> &mdash; cookies httpOnly pour maintenir la
+                        session utilisateur (accès&nbsp;: 1&nbsp;heure, rafraîchissement&nbsp;: 30&nbsp;jours).
+                    </li>
+                    <li>
+                        <strong>Préférence linguistique</strong> &mdash; cookie mémorisant la langue choisie.
+                    </li>
+                </ul>
+
+                <h3 class="terms-subheading">Cookies analytiques (optionnels)</h3>
+                <p>
+                    Le Site utilise PostHog pour analyser la fréquentation et le parcours de navigation. Ces cookies ne
+                    sont activés qu&rsquo;avec le consentement du Client via la bannière affichée lors de la première
+                    visite. Le Client peut retirer son consentement à tout moment en modifiant ses préférences.
+                    Les données collectées ne sont pas partagées avec des tiers à des fins commerciales.
+                </p>
+
+                <h3 class="terms-subheading">Gestion des préférences</h3>
+                <p>
+                    Le Client peut accepter ou refuser les cookies analytiques via la bannière de consentement ou les
+                    paramètres de son navigateur. La suppression des cookies essentiels peut affecter le fonctionnement
+                    du Site.
+                </p>
+            </section>
+
+            <!-- 10 -->
+            <section>
+                <h2 class="terms-heading">10. Hébergement</h2>
+                <p>
+                    Le Site est hébergé par OVH (OVHcloud), centre de données en France.
+                </p>
+            </section>
+
+            <!-- 11 -->
+            <section>
+                <h2 class="terms-heading">11. Force majeure</h2>
+                <p>
+                    Aucune partie ne peut être tenue responsable d&rsquo;un manquement à ses obligations si celui-ci
+                    résulte d&rsquo;un cas de force majeure&nbsp;: grèves, intempéries, pannes de transport ou
+                    d&rsquo;énergie, épidémies, incendies, blocages des télécommunications, etc.
+                </p>
+            </section>
+
+            <!-- 12 -->
+            <section>
+                <h2 class="terms-heading">12. Modification des CGV</h2>
+                <p>
+                    Le Restaurant peut modifier les présentes CGV à tout moment. La version applicable est celle en
+                    vigueur au moment de la validation de la commande.
+                </p>
+            </section>
+
+            <!-- 13 -->
+            <section>
+                <h2 class="terms-heading">13. Litiges et droit applicable</h2>
+                <p>
+                    Les présentes CGV sont régies par le droit belge. En cas de litige, les tribunaux de Liège sont
+                    compétents, sauf disposition légale impérative contraire.
+                </p>
+            </section>
+
+            <!-- 14 -->
+            <section>
+                <h2 class="terms-heading">14. Acceptation</h2>
+                <p>
+                    Toute commande passée auprès du Restaurant, quel que soit le canal, vaut acceptation pleine et
+                    entière des présentes CGV.
+                </p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
+            <p>Tokyo Sushi Bar &middot; Rue de la Cathédrale 59 &middot; 4000 Liège, Belgique</p>
+        </footer>
     </div>
 </template>
 
@@ -261,8 +330,15 @@ useSeoMeta({
 </script>
 
 <style scoped>
-/* Optional: further style links inside the rendered content */
-.prose :global(a) {
-    color: #3b82f6;
+.terms-heading {
+    @apply mb-3 text-lg font-semibold text-gray-900;
+}
+
+.terms-subheading {
+    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500;
+}
+
+.terms-list {
+    @apply mt-2 list-disc space-y-1 pl-5;
 }
 </style>
