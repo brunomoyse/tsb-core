@@ -237,6 +237,12 @@
       "requestDeletionSuccess": "Votre demande de suppression a bien été envoyée.",
       "cancelDeletionRequest": "Annuler la demande de suppression",
       "cancelDeletionSuccess": "Votre demande de suppression a été annulée."
+    },
+    "analytics": {
+      "title": "Cookies analytiques",
+      "enabled": "Activés",
+      "disabled": "Désactivés",
+      "description": "Aide à améliorer le site en analysant la fréquentation."
     }
   },
   "cart": {
