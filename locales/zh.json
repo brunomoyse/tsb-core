@@ -238,6 +238,12 @@
       "cancelDeletionRequest": "取消删除请求",
       "cancelDeletionSuccess": "您的删除请求已取消。"
     },
+    "analytics": {
+      "title": "分析 Cookie",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "description": "通过分析流量帮助改善网站。"
+    },
     "logout": "您已成功登出"
   },
   "cart": {

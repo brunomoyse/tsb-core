@@ -95,20 +95,6 @@
                     les commandes sont facturées au tarif en vigueur au moment de leur validation.
                 </p>
 
-                <h3 class="terms-subheading">Moyens de paiement</h3>
-                <div class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">En ligne</p>
-                        <p>Carte de crédit, Bancontact</p>
-                    </div>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Au restaurant</p>
-                        <p>Carte de crédit, Bancontact, espèces</p>
-                    </div>
-                </div>
-                <p class="mt-3 text-sm text-gray-500">
-                    Le paiement doit être effectué avant la remise de la commande.
-                </p>
             </section>
 
             <!-- 6 -->

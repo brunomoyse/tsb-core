@@ -238,6 +238,12 @@
       "cancelDeletionRequest": "Cancel Deletion Request",
       "cancelDeletionSuccess": "Your deletion request has been cancelled."
     },
+    "analytics": {
+      "title": "Analytics cookies",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "description": "Helps improve the site by analysing traffic."
+    },
     "logout": "Logout"
   },
   "cart": {
