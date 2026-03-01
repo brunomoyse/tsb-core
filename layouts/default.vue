@@ -19,7 +19,7 @@
         <div class="min-h-screen flex flex-col">
             <header>
                 <MobileNavbar/>
-                <div class="mobile-only h-20"/>
+                <div class="mobile-only" :class="isCapacitor ? 'capacitor-nav-spacer' : 'h-20'"/>
                 <SideNavbar/>
             </header>
 
@@ -78,7 +78,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <CookieConsent />
+            <CookieConsent v-if="!isCapacitor" />
         </ClientOnly>
 
         </Body>
@@ -97,6 +97,7 @@ import { eventBus } from '~/eventBus'
 import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
+import { usePlatform } from '~/composables/usePlatform'
 import { useRoute } from 'vue-router'
 
 useHead({
@@ -113,6 +114,7 @@ useHead({
 
 const route = useRoute()
 const {t} = useI18n()
+const { isCapacitor } = usePlatform()
 const head = useLocaleHead()
 const showNotification = ref(false)
 const notification = ref({

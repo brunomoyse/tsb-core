@@ -143,6 +143,7 @@ import gql from 'graphql-tag'
 import { timeToRFC3339 } from '~/utils/utils'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
+import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 
@@ -150,6 +151,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
+const { isCapacitor } = usePlatform()
 const { trackEvent } = useTracking()
 
 // Check restaurant ordering status
@@ -383,7 +385,14 @@ const handleCheckout = async () => {
 
             if (order?.payment?.links) {
                 trackEvent('payment_redirect', { order_id: order.id })
-                navigateTo(order.payment.links.checkout.href, { external: true })
+                if (isCapacitor) {
+                    const { Browser } = await import('@capacitor/browser')
+                    await Browser.open({ url: order.payment.links.checkout.href })
+                    // After payment, user returns to the app via Mollie redirect
+                    navigateTo(localePath(`/order-completed/${order.id}`))
+                } else {
+                    navigateTo(order.payment.links.checkout.href, { external: true })
+                }
             } else if (order?.id) {
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }

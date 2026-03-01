@@ -1,7 +1,11 @@
 import { defineLocalBusiness, defineNuxtPlugin, defineOrganization, useRuntimeConfig, useSchemaOrg } from '#imports'
 
 export default defineNuxtPlugin(() => {
-    const baseUrl = useRuntimeConfig().public.baseUrl as string
+    const config = useRuntimeConfig()
+    // Schema.org markup is unnecessary for mobile app builds
+    if (config.public.appBuild === 'capacitor') return
+
+    const baseUrl = config.public.baseUrl as string
     useSchemaOrg([
         defineOrganization({
             name: 'Tokyo Sushi Bar',

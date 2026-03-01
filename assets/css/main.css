@@ -293,3 +293,23 @@ input[type="number"] {
         display: none;
     }
 }
+
+/* Capacitor safe-area support */
+:root {
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body.capacitor-app nav.mobile-only {
+    padding-top: var(--safe-area-top);
+    height: calc(5rem + var(--safe-area-top));
+}
+
+body.capacitor-app .capacitor-nav-spacer {
+    height: calc(5rem + var(--safe-area-top));
+}
+
+body.capacitor-app #mobile-menu {
+    top: calc(5rem + var(--safe-area-top));
+    height: calc(100vh - 5rem - var(--safe-area-top));
+}

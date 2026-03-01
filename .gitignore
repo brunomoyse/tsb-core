@@ -29,4 +29,8 @@ test-results/
 playwright-report/
 blob-report/
 
+# Capacitor native projects
+ios/
+android/
+
 CLAUDE.md

@@ -3,14 +3,16 @@ import { defineNuxtRouteMiddleware, navigateTo, useCookie, useRequestEvent, useR
 
 import { useAuthStore } from '@/stores/auth'
 import { useLocalePath } from '#imports'
+import { useTokenStore } from '~/composables/useTokenStore'
 
 export default defineNuxtRouteMiddleware(async (to) => {
     if (to.meta.public !== false) return
     const config = useRuntimeConfig()
     const localePath = useLocalePath()
     const apiUrl: string = config.public.api as string
+    const isCapacitor = config.public.appBuild === 'capacitor'
 
-    // Server-side handling
+    // Server-side handling (never runs in Capacitor SPA)
     if (import.meta.server) {
         const event = useRequestEvent()
 
@@ -48,30 +50,67 @@ export default defineNuxtRouteMiddleware(async (to) => {
     else {
         const authStore = useAuthStore()
 
-        // 1. Check memory store first
-        if (authStore.accessValid) return
+        if (isCapacitor) {
+            // Capacitor: check token store instead of cookies
+            const tokenStore = useTokenStore()
 
-        // 2. Check localStorage for expiration timestamp
-        const expiresAt = localStorage.getItem('token_expires')
-        if (expiresAt && Date.now() < Number(expiresAt)) return
+            // 1. Check memory store first
+            if (authStore.accessValid) return
 
-        const refreshToken = useCookie('refresh_token')
-        if (!refreshToken.value) {
-            return navigateTo(localePath('login'));
-        }
+            // 2. Check stored access token validity
+            const accessToken = await tokenStore.getAccessToken()
+            if (accessToken && checkTokenExpiration(accessToken)) {
+                authStore.setAccessValid(true)
+                return
+            }
 
-        try {
-            // 3. Silent refresh attempt
-            await $fetch(`${apiUrl}/tokens/refresh`, {
-                method: 'POST',
-                credentials: 'include'
-            })
+            // 3. Check for refresh token
+            const refreshToken = await tokenStore.getRefreshToken()
+            if (!refreshToken) {
+                return navigateTo(localePath('login'));
+            }
 
-            // Update client-side validation state
-            authStore.setAccessValid(true)
-        } catch {
-            await authStore.logout()
-            return navigateTo(localePath('login'));
+            try {
+                // 4. Silent refresh attempt
+                const res = await $fetch<{ accessToken: string; refreshToken: string }>(`${apiUrl}/tokens/refresh`, {
+                    method: 'POST',
+                    credentials: 'omit',
+                    body: { refreshToken },
+                })
+                await tokenStore.setTokens(res.accessToken, res.refreshToken)
+                authStore.setAccessValid(true)
+            } catch {
+                await tokenStore.clearTokens()
+                authStore.clearUser()
+                return navigateTo(localePath('login'));
+            }
+        } else {
+            // Web: existing cookie-based flow
+            // 1. Check memory store first
+            if (authStore.accessValid) return
+
+            // 2. Check localStorage for expiration timestamp
+            const expiresAt = localStorage.getItem('token_expires')
+            if (expiresAt && Date.now() < Number(expiresAt)) return
+
+            const refreshToken = useCookie('refresh_token')
+            if (!refreshToken.value) {
+                return navigateTo(localePath('login'));
+            }
+
+            try {
+                // 3. Silent refresh attempt
+                await $fetch(`${apiUrl}/tokens/refresh`, {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+
+                // Update client-side validation state
+                authStore.setAccessValid(true)
+            } catch {
+                await authStore.logout()
+                return navigateTo(localePath('login'));
+            }
         }
     }
 })
