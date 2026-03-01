@@ -195,7 +195,7 @@ const handleCancelDeletionRequest = async () => {
 </script>
 
 <template>
-    <section class="max-w-5xl mx-auto pt-6 sm:pt-8 pb-8 px-4 sm:px-6">
+    <section class="max-w-5xl mx-auto pt-6 sm:pt-8 pb-8 sm:px-2">
 
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8 bento-cell" style="--delay: 0">
