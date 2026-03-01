@@ -1,5 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
+const isCapacitor = process.env.APP_BUILD === 'capacitor'
+
 // Derive origins for CSP from environment variables (dev defaults)
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/, 'ws')
@@ -19,7 +21,7 @@ const csp = `${[
 ].join('; ')};`
 
 export default defineNuxtConfig({
-    ssr: true,
+    ssr: !isCapacitor,
 
     css: ["~/assets/css/main.css", "~/assets/css/sakura.css"],
 
@@ -63,7 +65,7 @@ export default defineNuxtConfig({
         "@pinia/nuxt",
         'pinia-plugin-persistedstate/nuxt',
         'nuxt-schema-org',
-        '@nuxtjs/sitemap'
+        ...isCapacitor ? [] : ['@nuxtjs/sitemap'],
     ],
 
     plugins: [
@@ -95,7 +97,7 @@ export default defineNuxtConfig({
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
-            redirectOn: 'all' // V10: stricter redirection with prefix strategy
+            redirectOn: isCapacitor ? 'root' : 'all', // Capacitor: avoid aggressive WebView redirects
         },
         strategy: 'prefix',
         vueI18n: "../i18n.config.ts",
@@ -103,6 +105,7 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
+            appBuild: process.env.APP_BUILD || 'web',
             baseUrl: process.env.BASE_URL,
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
@@ -153,7 +156,7 @@ export default defineNuxtConfig({
         },
     },
 
-    routeRules: {
+    routeRules: isCapacitor ? {} : {
         '/**': {
             headers: {
                 'X-Frame-Options': 'DENY',

@@ -10,6 +10,8 @@ export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => 
         return { provide: { posthog: null } }
     }
 
+    const isCapacitor = config.public.appBuild === 'capacitor'
+
     const posthogInstance = posthog.init(apiKey, {
         api_host: config.public.posthogHost as string,
         autocapture: false,
@@ -22,6 +24,10 @@ export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => 
         },
         disable_session_recording: true,
         loaded: (ph) => {
+            // Set platform super property for analytics segmentation
+            if (isCapacitor) {
+                ph.register({ platform: 'mobile' })
+            }
             // Re-identify persisted user on load
             const authStore = useAuthStore()
             if (authStore.user) {

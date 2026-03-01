@@ -8,6 +8,7 @@ import {
     useRequestEvent,
     useRuntimeConfig,
 } from '#imports'
+import { useTokenStore } from '~/composables/useTokenStore'
 
 interface GqlOptions {
     variables?: Record<string, unknown>
@@ -21,6 +22,8 @@ export default defineNuxtPlugin(() => {
     const httpURL = cfg.public.graphqlHttp as string
     const apiURL  = cfg.public.api as string
     const localePath = useLocalePath()
+    const isCapacitor = cfg.public.appBuild === 'capacitor'
+    const tokenStore = useTokenStore()
 
     /** Typed helper: POST /graphql with cookies + headers */
     const gqlFetch = async <T = unknown>(
@@ -80,19 +83,24 @@ export default defineNuxtPlugin(() => {
         return await $fetch(httpURL, {
             method: 'POST',
             body,
-            credentials: 'include',
+            credentials: isCapacitor ? 'omit' : 'include',
             signal,
-            headers: buildHeaders(userLocale),
+            headers: await buildHeaders(userLocale),
         })
     }
 
-    /** Build the JSON headers + forward cookies SSR */
-    const buildHeaders = (locale: string) => {
+    /** Build the JSON headers + forward cookies SSR or attach Bearer token for Capacitor */
+    const buildHeaders = async (locale: string) => {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             'Accept-Language': locale,
         }
-        if (import.meta.server) {
+        if (isCapacitor) {
+            const accessToken = await tokenStore.getAccessToken()
+            if (accessToken) {
+                headers.Authorization = `Bearer ${accessToken}`
+            }
+        } else if (import.meta.server) {
             const ev = useRequestEvent()
             const cook = ev?.node.req.headers.cookie
             if (cook) headers.cookie = cook
@@ -103,18 +111,43 @@ export default defineNuxtPlugin(() => {
     /** Attempt a refresh via your REST endpoint */
     const attemptRefresh = async (): Promise<boolean> => {
         try {
-            await $fetch(`${apiURL}/tokens/refresh`, {
-                method: 'POST',
-                credentials: 'include',
-            })
+            if (isCapacitor) {
+                // Capacitor: send refresh token in body
+                const refreshToken = await tokenStore.getRefreshToken()
+                if (!refreshToken) return false
+                const res = await $fetch<{ accessToken: string; refreshToken: string }>(`${apiURL}/tokens/refresh`, {
+                    method: 'POST',
+                    credentials: 'omit',
+                    body: { refreshToken },
+                })
+                await tokenStore.setTokens(res.accessToken, res.refreshToken)
+            } else {
+                // Web: cookie-based refresh
+                await $fetch(`${apiURL}/tokens/refresh`, {
+                    method: 'POST',
+                    credentials: 'include',
+                })
+            }
             return true
         } catch {
             // Refresh failed → logout & redirect to login
             try {
-                await $fetch(`${apiURL}/logout`, {
-                    method: 'POST',
-                    credentials: 'include'
-                })
+                if (isCapacitor) {
+                    const refreshToken = await tokenStore.getRefreshToken()
+                    if (refreshToken) {
+                        await $fetch(`${apiURL}/logout`, {
+                            method: 'POST',
+                            credentials: 'omit',
+                            body: { refreshToken },
+                        })
+                    }
+                    await tokenStore.clearTokens()
+                } else {
+                    await $fetch(`${apiURL}/logout`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    })
+                }
             } catch { /* Ignore logout errors */ }
             navigateTo(localePath('login'))
             return false

@@ -140,6 +140,7 @@ import { print } from 'graphql'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
+import { usePlatform } from '~/composables/usePlatform'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({
@@ -199,13 +200,18 @@ const ME = gql`
 const login = async () => {
     errorMessage.value = ''
     try {
-        await $api<LoginResponse>('/login', {
+        const res = await $api<LoginResponse>('/login', {
             method: 'POST',
             body: {
                 email: email.value,
                 password: password.value
             },
         });
+        // Capacitor: tokens are extracted by the api plugin's onResponse hook automatically
+        // For Capacitor, also set auth store from the response
+        if (isCapacitor && res?.user) {
+            authStore.setAccessValid(true)
+        }
     } catch (error: any) {
         console.error('Login error:', error)
         if (error?.response?.status === 429) {
@@ -224,9 +230,17 @@ const login = async () => {
     await loginSuccess()
 }
 
-const loginWithGoogle = () => {
+const { isCapacitor } = usePlatform()
+
+const loginWithGoogle = async () => {
     trackEvent('oauth_click', { provider: 'google' })
-    window.location.href = `${apiUrl}/oauth/google`;
+    if (isCapacitor) {
+        // Open in-app browser for Capacitor — deep link callback handled by capacitor.client.ts
+        const { Browser } = await import('@capacitor/browser')
+        await Browser.open({ url: `${apiUrl}/oauth/google?platform=mobile` })
+    } else {
+        window.location.href = `${apiUrl}/oauth/google`;
+    }
 };
 
 const loginSuccess = async () => {
