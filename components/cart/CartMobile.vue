@@ -84,7 +84,7 @@
                     </div>
 
                     <!-- QTY CONTROLS -->
-                    <div class="col-span-2 grid grid-cols-3 items-center">
+                    <div class="col-span-2 grid grid-cols-3 items-center justify-items-center">
                         <button
                             :aria-label="$t('cart.decreaseQty')"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
