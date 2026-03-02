@@ -1,9 +1,9 @@
 <template>
-    <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }">
+    <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
              data-testid="product-card"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="min-w-[140px] max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
