@@ -86,7 +86,7 @@
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
             tabindex="0"
-            @click.self="closeAddressModal"
+            @click.self
         >
             <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
                 <button
@@ -128,9 +128,11 @@
 </template>
 
 <script lang="ts" setup>
+definePageMeta({ public: false })
+
 import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
 import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
-import { onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
@@ -247,20 +249,6 @@ const closeAddressModal = () => {
     showAddressModal.value = false
 }
 
-// Close address modal on Escape key
-const handleEscapeKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') closeAddressModal()
-}
-watch(showAddressModal, (open) => {
-    if (open) {
-        document.addEventListener('keydown', handleEscapeKey)
-    } else {
-        document.removeEventListener('keydown', handleEscapeKey)
-    }
-})
-onUnmounted(() => {
-    document.removeEventListener('keydown', handleEscapeKey)
-})
 const handleAddressUpdate = (updatedAddress: Address | null) => {
     tempAddress.value = updatedAddress
 }
@@ -397,11 +385,23 @@ const handleCheckout = async () => {
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }
         } catch (err) {
-            console.error('Error creating order:', err)
+            if (import.meta.dev) console.error('Error creating order:', err)
+            eventBus.emit('notify', {
+                message: t('notify.errors.orderCreationFailed'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
         }
 
     } catch (err) {
-        console.error('Order processing failed:', err)
+        if (import.meta.dev) console.error('Order processing failed:', err)
+        eventBus.emit('notify', {
+            message: t('notify.errors.orderCreationFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
     } finally {
         isCheckoutProcessing.value = false
     }
