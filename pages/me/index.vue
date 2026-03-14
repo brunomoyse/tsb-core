@@ -156,7 +156,13 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
             variant: 'success',
         })
     } catch (error) {
-        console.error('Error during profile update:', error)
+        if (import.meta.dev) console.error('Error during profile update:', error)
+        eventBus.emit('notify', {
+            message: t('notify.errors.profileUpdateFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
         return
     }
     closeModal()
@@ -174,7 +180,13 @@ const handleRequestDeletion = async () => {
             variant: 'success',
         })
     } catch (error) {
-        console.error('Error requesting deletion:', error)
+        if (import.meta.dev) console.error('Error requesting deletion:', error)
+        eventBus.emit('notify', {
+            message: t('notify.errors.requestFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
     }
 }
 
@@ -189,7 +201,13 @@ const handleCancelDeletionRequest = async () => {
             variant: 'success',
         })
     } catch (error) {
-        console.error('Error canceling deletion request:', error)
+        if (import.meta.dev) console.error('Error canceling deletion request:', error)
+        eventBus.emit('notify', {
+            message: t('notify.errors.requestFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
     }
 }
 </script>

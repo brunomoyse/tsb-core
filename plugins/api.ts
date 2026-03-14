@@ -52,8 +52,6 @@ export default defineNuxtPlugin(() => {
     const api = $fetch.create({
         baseURL: apiUrl,
         credentials: isCapacitor ? 'omit' : 'include',
-        retry: 1,
-        retryStatusCodes: [401],
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -106,7 +104,7 @@ export default defineNuxtPlugin(() => {
                     }
                 } catch {
                     try { await logoutAndClear() } catch { /* Ignore logout errors */ }
-                    navigateTo(localePath('login'))
+                    navigateTo(`${localePath('login')}?session=expired`)
                 }
             }
         }

@@ -7,6 +7,7 @@ import gql from 'graphql-tag'
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useReorder } from "~/composables/useReorder"
+import { eventBus } from '~/eventBus'
 
 
 
@@ -70,8 +71,17 @@ const MY_ORDERS = gql`
 const LOAD_STEP = 5
 const visibleCount = ref(10)
 
-const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
+const { data: dataOrders, error: ordersError } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
+
+if (ordersError.value) {
+    eventBus.emit('notify', {
+        message: t('notify.errors.ordersLoadFailed'),
+        persistent: false,
+        duration: 5000,
+        variant: 'error',
+    })
+}
 const visibleOrders = computed(() => orders.value.slice(0, visibleCount.value))
 const remainingCount = computed(() => orders.value.length - visibleCount.value)
 const hasMore = computed(() => remainingCount.value > 0)

@@ -179,7 +179,13 @@
     "passwordSpecialChar": "One special character",
     "deliveryInfoTitle": "Delivery Information (optional)",
     "deliveryInfoDescription": "Required only if you want to order for delivery.",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "errors": {
+      "email_already_exists": "An account with this email address already exists.",
+      "invalid_email_format": "The email address format is invalid.",
+      "weak_password": "The password does not meet the security requirements.",
+      "registration_failed": "Registration failed. Please try again."
+    }
   },
   "me": {
     "greeting": "Hello",
@@ -309,6 +315,7 @@
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",
     "tooFar": "Too far for delivery (max 9 km)",
+    "tbd": "To be determined",
     "sauce1": "Sauce 1",
     "sauce2": "Sauce 2"
   },
@@ -362,7 +369,14 @@
       "invalidCredentials": "Invalid email or password. Please try again.",
       "emailNotVerified": "Please verify your email address before logging in. Check your inbox.",
       "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
-      "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again."
+      "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again.",
+      "orderCreationFailed": "Order creation failed. Please try again.",
+      "profileUpdateFailed": "Profile update failed.",
+      "requestFailed": "Request failed. Please try again.",
+      "addressLookupFailed": "Address lookup failed. Please try again.",
+      "ordersLoadFailed": "Failed to load your orders.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "oauthFailed": "Login failed. Please try again."
     }
   },
   "schema": {

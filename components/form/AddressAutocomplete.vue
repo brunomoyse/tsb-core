@@ -136,12 +136,15 @@ import type { Address, Street } from '~/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { useI18n } from 'vue-i18n'
 import { useNuxtApp } from '#imports'
+import { eventBus } from '~/eventBus'
 
 const emit = defineEmits<{
     'update:address': [address: Address | null]
 }>()
 const { $gqlFetch } = useNuxtApp()
+const { t } = useI18n()
 
 const SEARCH_STREETS = gql`query ($query: String!) {
     streets(query: $query) {
@@ -267,23 +270,32 @@ const handleStreetSearch = () => {
     debounceStreetTimer = setTimeout(async () => {
         if (streetQuery.value.trim().length < 3) return
 
-        const data: {streets: Street[]}  = await $gqlFetch(
-            print(SEARCH_STREETS),
-            {
-                variables: {
-                    query: streetQuery.value,
+        try {
+            const data: {streets: Street[]}  = await $gqlFetch(
+                print(SEARCH_STREETS),
+                {
+                    variables: {
+                        query: streetQuery.value,
+                    }
+                }
+            );
+
+            if (data.streets) {
+                streets.value = data.streets;
+                const exactMatches = data.streets.filter(s =>
+                    s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
+                );
+                if (exactMatches.length === 1) {
+                    await selectStreet(exactMatches[0]!);
                 }
             }
-        );
-
-        if (data.streets) {
-            streets.value = data.streets;
-            const exactMatches = data.streets.filter(s =>
-                s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
-            );
-            if (exactMatches.length === 1) {
-                await selectStreet(exactMatches[0]!);
-            }
+        } catch {
+            eventBus.emit('notify', {
+                message: t('notify.errors.addressLookupFailed'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
         }
     }, 500)
 }
@@ -298,18 +310,26 @@ const handleStreetSelection = () => {
 const loadHouseNumbers = () => {
     if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
     debounceHouseTimer = setTimeout(async () => {
-
-        const data: { houseNumbers: string[]} = await $gqlFetch(
-            print(SEARCH_HOUSE_NUMBERS),
-            {
-                variables: {
-                    streetId: selectedStreet.value!.id
+        try {
+            const data: { houseNumbers: string[]} = await $gqlFetch(
+                print(SEARCH_HOUSE_NUMBERS),
+                {
+                    variables: {
+                        streetId: selectedStreet.value!.id
+                    }
                 }
+            );
+            if (data.houseNumbers) {
+                houseNumbers.value = data.houseNumbers;
+                houseQuery.value = ''; // Reset query
             }
-        );
-        if (data.houseNumbers) {
-            houseNumbers.value = data.houseNumbers;
-            houseQuery.value = ''; // Reset query
+        } catch {
+            eventBus.emit('notify', {
+                message: t('notify.errors.addressLookupFailed'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
         }
     }, 500)
 }
@@ -334,34 +354,43 @@ const handleHouseNumberSelection = () => {
 const loadBoxNumbers = () => {
     if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
     debounceBoxTimer = setTimeout(async () => {
-        const data: { boxNumbers: (string | null)[]} = await $gqlFetch(
-            print(SEARCH_BOX_NUMBERS),
-            {
-                variables: {
-                    streetId: selectedStreet.value!.id,
-                    houseNumber: selectedHouseNumber.value
+        try {
+            const data: { boxNumbers: (string | null)[]} = await $gqlFetch(
+                print(SEARCH_BOX_NUMBERS),
+                {
+                    variables: {
+                        streetId: selectedStreet.value!.id,
+                        houseNumber: selectedHouseNumber.value
+                    }
                 }
-            }
-        );
+            );
 
-        if (data.boxNumbers) {
-            boxNumbers.value = data.boxNumbers;
-            boxQuery.value = '';
-            // Auto-select and confirm only if there's exactly one box option
-            if (data.boxNumbers.length === 1) {
-                selectedBoxNumber.value = data.boxNumbers[0]!;
-                boxConfirmed.value = true;
-            }
-            // If there are multiple boxes, give user time to choose
-            // Focus on the box input field
-            if (data.boxNumbers.length > 1) {
-                await nextTick();
-                const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
-                if (boxEl) {
-                    boxEl.focus();
-                    isBoxFocused.value = true;
+            if (data.boxNumbers) {
+                boxNumbers.value = data.boxNumbers;
+                boxQuery.value = '';
+                // Auto-select and confirm only if there's exactly one box option
+                if (data.boxNumbers.length === 1) {
+                    selectedBoxNumber.value = data.boxNumbers[0]!;
+                    boxConfirmed.value = true;
+                }
+                // If there are multiple boxes, give user time to choose
+                // Focus on the box input field
+                if (data.boxNumbers.length > 1) {
+                    await nextTick();
+                    const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
+                    if (boxEl) {
+                        boxEl.focus();
+                        isBoxFocused.value = true;
+                    }
                 }
             }
+        } catch {
+            eventBus.emit('notify', {
+                message: t('notify.errors.addressLookupFailed'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
         }
     }, 500)
 }
