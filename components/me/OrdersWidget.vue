@@ -285,6 +285,18 @@
                                     {{ $t('reorder.button') }}
                                 </button>
 
+                                <!-- Download Invoice button -->
+                                <button
+                                    v-if="isOrderSuccess(order.status)"
+                                    class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                    @click.stop="downloadInvoice(order.id)"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    {{ $t('me.orders.downloadInvoice') }}
+                                </button>
+
                                 <!-- Arigatou micro-text -->
                                 <span v-if="isOrderSuccess(order.status)" class="block text-right mt-2 text-[10px] text-gray-300 italic select-none pointer-events-none"
                                       style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif"
@@ -349,9 +361,11 @@ import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql/index'
 import { useI18n } from 'vue-i18n'
+import { useInvoiceDownload } from '~/composables/useInvoiceDownload'
 import { useReorder } from '~/composables/useReorder'
 
 const { t, locale } = useI18n()
+const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
 const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN' }
