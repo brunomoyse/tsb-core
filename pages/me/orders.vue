@@ -6,6 +6,7 @@ import { formatAddress } from "~/utils/utils"
 import gql from 'graphql-tag'
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
+import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
 import { useReorder } from "~/composables/useReorder"
 import { eventBus } from '~/eventBus'
 
@@ -14,6 +15,7 @@ import { eventBus } from '~/eventBus'
 definePageMeta({ public: false })
 
 const { t, locale } = useI18n()
+const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
 const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN' }
@@ -89,33 +91,6 @@ const nextBatchCount = computed(() => Math.min(LOAD_STEP, remainingCount.value))
 
 const loadMore = () => {
     visibleCount.value += LOAD_STEP
-}
-
-const downloadInvoice = async (orderId: string) => {
-    const config = useRuntimeConfig()
-    try {
-        const response = await fetch(`${config.public.api}/orders/${orderId}/invoice`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-        if (!response.ok) throw new Error('Download failed')
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `invoice-${orderId}.pdf`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        window.URL.revokeObjectURL(url)
-    } catch {
-        eventBus.emit('notify', {
-            message: t('notify.errors.invoiceDownloadFailed'),
-            persistent: false,
-            duration: 5000,
-            variant: 'error',
-        })
-    }
 }
 
 const expandedOrders = ref(new Set<string>())
