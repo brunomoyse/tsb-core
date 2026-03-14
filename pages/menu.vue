@@ -59,11 +59,14 @@
                                 <button
                                     @click.stop="toggleFilter('halal')"
                                     :title="$t('menu.halal')"
-                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    class="group/halal relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('halal')
                                         ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
+                                    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
+                                        {{ $t('menu.halal') }}
+                                    </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                                     </svg>
@@ -77,11 +80,14 @@
                                 <button
                                     @click.stop="toggleFilter('vegan')"
                                     :title="$t('menu.vegan')"
-                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    class="group/vegan relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('vegan')
                                         ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
+                                    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
+                                        {{ $t('menu.vegan') }}
+                                    </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
                                         <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
@@ -96,11 +102,14 @@
                                 <button
                                     @click.stop="toggleFilter('spicy')"
                                     :title="$t('menu.spicy')"
-                                    class="flex items-center rounded-xl transition-all duration-300 ease-out"
+                                    class="group/spicy relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('spicy')
                                         ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
+                                    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
+                                        {{ $t('menu.spicy') }}
+                                    </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
                                         <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
                                     </svg>

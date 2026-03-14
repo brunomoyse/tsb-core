@@ -143,7 +143,7 @@
                         </div>
                     </button>
                 </div>
-                <span v-if="!cartStore.address" class="text-gray-400">&ndash;</span>
+                <span v-if="!cartStore.address?.distance" class="text-gray-400 text-sm italic">{{ $t('checkout.tbd') }}</span>
                 <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-sm">{{ $t('checkout.tooFar') }}</span>
                 <span v-else-if="deliveryFee === 0" class="text-green-600 font-medium">{{ $t('checkout.free') }}</span>
                 <span v-else>{{ formatPrice(deliveryFee) }}</span>
