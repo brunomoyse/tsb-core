@@ -3,7 +3,7 @@
         <div class="w-full max-w-md">
 
             <!-- Card container -->
-            <div class="bg-tsb-two rounded-2xl relative">
+            <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
                 <!-- Decorative blurred accents -->
                 <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
                 <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
