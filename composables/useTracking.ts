@@ -15,13 +15,13 @@ export function useTracking() {
 
     const trackEvent = (name: string, props?: Record<string, unknown>) => {
         const ph = getPosthog()
-        if (!ph) return
+        if (!ph || !ph.has_opted_in_capturing()) return
         ph.capture(name, props)
     }
 
     const identifyUser = (user: User) => {
         const ph = getPosthog()
-        if (!ph) return
+        if (!ph || !ph.has_opted_in_capturing()) return
         ph.identify(user.id, {
             email: user.email,
             name: `${user.firstName} ${user.lastName}`,

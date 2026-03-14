@@ -93,7 +93,8 @@
                             -
                         </button>
                         <span class="text-sm font-semibold text-red-700" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
-                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300" type="button"
+                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed" type="button"
+                                :disabled="cardQuantity >= MAX_ITEM_QUANTITY"
                                 @click="increment">
                             <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                             +
@@ -108,10 +109,10 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import type { Product } from '@/types'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
-import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'

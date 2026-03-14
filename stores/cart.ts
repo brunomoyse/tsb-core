@@ -3,6 +3,8 @@
 import type { CartItem, CartState, Product, ProductChoice } from '@/types'
 import { defineStore } from 'pinia'
 
+export const MAX_ITEM_QUANTITY = 99
+
 const matchesCartItem = (item: CartItem, productId: string, choiceId: string | null): boolean =>
     item.product.id === productId && (item.selectedChoice?.id ?? null) === choiceId
 
@@ -49,7 +51,7 @@ export const useCartStore = defineStore("cart", {
                 (item) => matchesCartItem(item, product.id, choiceId)
             );
             if (cartItem) {
-                cartItem.quantity += quantity;
+                cartItem.quantity = Math.min(cartItem.quantity + quantity, MAX_ITEM_QUANTITY);
             } else {
                 this.products.push({
                     product,
@@ -64,7 +66,9 @@ export const useCartStore = defineStore("cart", {
                 (item) => matchesCartItem(item, product.id, choiceId)
             );
             if (cartItem) {
-                cartItem.quantity += 1;
+                if (cartItem.quantity < MAX_ITEM_QUANTITY) {
+                    cartItem.quantity += 1;
+                }
             } else {
                 this.products.push({
                     product,
