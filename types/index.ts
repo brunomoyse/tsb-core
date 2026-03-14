@@ -155,6 +155,11 @@ export interface CreateOrderRequest {
     orderNote: string | null;
     orderType: OrderType;
     preferredReadyTime: string | null;
+    // Manual address fields
+    streetId?: string;
+    houseNumber?: string;
+    boxNumber?: string | null;
+    isManualAddress?: boolean;
 }
 export interface Street {
     id: string;
@@ -171,4 +176,6 @@ export interface Address {
     municipalityName: string;
     postcode: string;
     streetName: string;
+    streetId?: string;
+    isManualAddress?: boolean;
 }
