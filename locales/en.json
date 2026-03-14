@@ -211,6 +211,7 @@
       "total": "Total",
       "follow": "Follow",
       "toggleOrder": "Toggle order details",
+      "downloadInvoice": "Download invoice",
       "status": {
         "details": {
           "title": {
@@ -379,6 +380,7 @@
       "requestFailed": "Request failed. Please try again.",
       "addressLookupFailed": "Address lookup failed. Please try again.",
       "ordersLoadFailed": "Failed to load your orders.",
+      "invoiceDownloadFailed": "Invoice download failed.",
       "sessionExpired": "Your session has expired. Please log in again.",
       "oauthFailed": "Login failed. Please try again."
     }
@@ -442,6 +444,35 @@
       "login": "Login",
       "register": "Register"
     }
+  },
+  "feedback": {
+    "title": "Share Your Feedback",
+    "subtitle": "Help us improve your experience",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "Your email address",
+    "serviceType": "Service Type",
+    "serviceTypes": {
+      "takeaway": "Takeaway",
+      "dine-in": "Dine-in",
+      "delivery": "Delivery"
+    },
+    "feedbackType": "Feedback Type",
+    "feedbackTypes": {
+      "improvement": "Suggestion",
+      "complaint": "Complaint",
+      "compliment": "Compliment"
+    },
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your experience (min. 10 characters)",
+    "submit": "Send Feedback",
+    "sending": "Sending...",
+    "success": "Thank you for your feedback! We appreciate you taking the time to share your thoughts.",
+    "sendAnother": "Send another",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorTooManyRequests": "Too many submissions. Please wait a few minutes before trying again.",
+    "errorInvalidInput": "Please check the form fields and try again."
   },
   "coupon": {
     "title": "Promo Code",

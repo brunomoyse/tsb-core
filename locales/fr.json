@@ -211,6 +211,7 @@
       "total": "Total",
       "follow": "Suivre",
       "toggleOrder": "Détails de la commande",
+      "downloadInvoice": "Télécharger la facture",
       "status": {
         "details": {
           "title": {
@@ -378,6 +379,7 @@
         "requestFailed": "La requête a échoué. Veuillez réessayer.",
         "addressLookupFailed": "La recherche d'adresse a échoué. Veuillez réessayer.",
         "ordersLoadFailed": "Impossible de charger vos commandes.",
+        "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
         "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
         "oauthFailed": "La connexion a échoué. Veuillez réessayer."
     }
@@ -441,6 +443,35 @@
       "login": "Connexion",
       "register": "Inscription"
     }
+  },
+  "feedback": {
+    "title": "Partagez votre avis",
+    "subtitle": "Aidez-nous à améliorer votre expérience",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom",
+    "email": "E-mail",
+    "emailPlaceholder": "Votre adresse e-mail",
+    "serviceType": "Type de service",
+    "serviceTypes": {
+      "takeaway": "À emporter",
+      "dine-in": "Sur place",
+      "delivery": "Livraison"
+    },
+    "feedbackType": "Type de retour",
+    "feedbackTypes": {
+      "improvement": "Suggestion",
+      "complaint": "Réclamation",
+      "compliment": "Compliment"
+    },
+    "message": "Message",
+    "messagePlaceholder": "Parlez-nous de votre expérience (min. 10 caractères)",
+    "submit": "Envoyer",
+    "sending": "Envoi en cours...",
+    "success": "Merci pour votre retour ! Nous apprécions le temps que vous avez pris pour partager votre avis.",
+    "sendAnother": "Envoyer un autre avis",
+    "errorGeneric": "Un problème est survenu. Veuillez réessayer.",
+    "errorTooManyRequests": "Trop de soumissions. Veuillez patienter quelques minutes avant de réessayer.",
+    "errorInvalidInput": "Veuillez vérifier les champs du formulaire et réessayer."
   },
   "coupon": {
     "title": "Code promo",

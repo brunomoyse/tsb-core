@@ -246,6 +246,11 @@ useSeoMeta({
                 </div>
             </div>
 
+            <!-- Feedback Form -->
+            <div class="bento-feedback bento-cell" style="--delay: 7">
+                <ContactFeedbackForm />
+            </div>
+
         </div>
     </section>
 </template>
@@ -266,6 +271,7 @@ useSeoMeta({
 .bento-phone { grid-area: phone; }
 .bento-email { grid-area: email; }
 .bento-social { grid-area: social; }
+.bento-feedback { grid-area: feedback; }
 
 .bento-grid {
     grid-template-areas:
@@ -274,18 +280,20 @@ useSeoMeta({
         "address"
         "phone"
         "email"
-        "social";
+        "social"
+        "feedback";
 }
 
 /* Tablet: 2 columns */
 @media (min-width: 640px) {
     .bento-grid {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: auto auto auto auto;
         grid-template-areas:
-            "map     hours"
-            "address phone"
-            "email   social";
+            "map      hours"
+            "address  phone"
+            "email    social"
+            "feedback feedback";
     }
 
     .bento-map iframe {
@@ -297,11 +305,12 @@ useSeoMeta({
 @media (min-width: 1024px) {
     .bento-grid {
         grid-template-columns: 1.2fr 0.8fr 1fr;
-        grid-template-rows: auto auto;
+        grid-template-rows: auto auto auto auto;
         grid-template-areas:
-            "map     map     hours"
-            "address phone   email"
-            "social  social  social";
+            "map      map      hours"
+            "address  phone    email"
+            "social   social   social"
+            "feedback feedback feedback";
     }
 
     .bento-map iframe {
