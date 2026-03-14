@@ -54,9 +54,9 @@
                     v-model="houseQuery"
                     :placeholder="$t('register.houseNumberPlaceholder')"
                     class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                    @focus="isHouseFocused = true"
-                    @blur="onHouseBlur"
-                    @keydown.enter.prevent="handleHouseEnter"
+                    @focus="!isManualMode && (isHouseFocused = true)"
+                    @blur="!isManualMode && onHouseBlur()"
+                    @keydown.enter.prevent="isManualMode ? confirmManualAddress() : handleHouseEnter($event)"
                     :disabled="houseConfirmed || !selectedStreet"
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
@@ -68,8 +68,9 @@
                     </svg>
                 </div>
             </div>
+            <!-- House number dropdown (DB mode only) -->
             <ul
-                v-show="isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
+                v-show="!isManualMode && isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
                 role="listbox"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
@@ -84,23 +85,40 @@
                     {{ house }}
                 </li>
             </ul>
+            <!-- "Can't find my number" link (DB mode only) -->
+            <button
+                v-if="!isManualMode && selectedStreet && !houseConfirmed"
+                type="button"
+                class="mt-1.5 text-xs text-red-500 hover:text-red-600 transition-colors"
+                @click="enableManualMode"
+            >
+                {{ $t('register.cantFindNumber') }}
+            </button>
+            <!-- "Back to list" link (manual mode only) -->
+            <button
+                v-if="isManualMode && !houseConfirmed"
+                type="button"
+                class="mt-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                @click="disableManualMode"
+            >
+                {{ $t('register.backToList') }}
+            </button>
         </div>
 
-        <!-- BOX FIELD -->
-        <div class="relative mt-3" v-if="boxNumbers.length > 1">
+        <!-- BOX FIELD (DB mode: shown if 2+ boxes; Manual mode: always shown as free-text) -->
+        <div class="relative mt-3" v-if="isManualMode ? (houseConfirmed || houseQuery.trim() !== '') : boxNumbers.length > 1">
             <label class="block text-sm text-gray-700 mb-1" for="boxNumber">{{ $t('register.boxNumber') }}</label>
             <div class="relative">
                 <input
-                    :disabled="!(selectedHouseNumber)"
+                    :disabled="isManualMode ? houseConfirmed : !(selectedHouseNumber)"
                     id="boxNumber"
                     ref="boxInput"
                     v-model="boxQuery"
                     :placeholder="$t('register.boxNumberPlaceholder')"
                     class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                    @focus="isBoxFocused = true"
-                    @blur="onBoxBlur"
-                    @keydown.enter.prevent="selectFirstBox"
-
+                    @focus="!isManualMode && (isBoxFocused = true)"
+                    @blur="!isManualMode && onBoxBlur()"
+                    @keydown.enter.prevent="isManualMode ? confirmManualAddress() : selectFirstBox()"
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
                     <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
@@ -111,8 +129,9 @@
                     </svg>
                 </div>
             </div>
+            <!-- Box dropdown (DB mode only) -->
             <ul
-                v-show="isBoxFocused"
+                v-show="!isManualMode && isBoxFocused"
                 role="listbox"
                 class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
                 @mousedown.prevent
@@ -127,6 +146,21 @@
                     {{ box === null ? '\u00A0' : box }}
                 </li>
             </ul>
+        </div>
+
+        <!-- Manual mode: confirm button + warning -->
+        <div v-if="isManualMode && !houseConfirmed" class="mt-3 space-y-2">
+            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                {{ $t('register.manualAddressWarning') }}
+            </p>
+            <button
+                type="button"
+                class="w-full h-10 bg-red-500 text-white rounded-md font-medium hover:bg-red-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="!houseQuery.trim()"
+                @click="confirmManualAddress"
+            >
+                {{ $t('register.confirmManualAddress') }}
+            </button>
         </div>
     </form>
 </template>
@@ -175,6 +209,10 @@ const ADDRESS_BY_ID = gql`query ($streetId: String!, $houseNumber: String!, $box
     }
 }`
 
+const STREET_AVG_DISTANCE = gql`query ($streetId: String!) {
+    streetAverageDistance(streetId: $streetId)
+}`
+
 // Reactive State
 const streetQuery = ref('')
 const streets = ref<Street[]>([])
@@ -191,6 +229,9 @@ const selectedBoxNumber = ref<(string | null)>(null)
 const boxConfirmed = ref(false)
 
 const address = ref<Address | null>(null)
+
+// Manual mode state
+const isManualMode = ref(false)
 
 // Focus states
 const isStreetFocused = ref(false)
@@ -304,6 +345,7 @@ const handleStreetSelection = () => {
     houseNumbers.value = []
     selectedHouseNumber.value = ''
     houseQuery.value = ''
+    isManualMode.value = false
     if (selectedStreet.value) loadHouseNumbers()
 }
 
@@ -345,7 +387,9 @@ const handleHouseNumberSelection = () => {
     // Set houseConfirmed only if the selected house number is nonempty
     if (selectedHouseNumber.value && selectedHouseNumber.value.trim() !== '') {
         houseConfirmed.value = true
-        loadBoxNumbers()
+        if (!isManualMode.value) {
+            loadBoxNumbers()
+        }
     } else {
         houseConfirmed.value = false
     }
@@ -399,9 +443,9 @@ watch(boxConfirmed,
     (newVal) => {
         // If the box is confirmed, load the final address.
         // If the box is not confirmed, set address to null.
-        if (newVal === true) {
+        if (newVal === true && !isManualMode.value) {
             loadAddress()
-        } else {
+        } else if (!newVal) {
             address.value = null
         }
     },
@@ -424,11 +468,81 @@ const loadAddress = async () => {
         );
         address.value = data.addressByLocation;
     } catch (err) {
-        // You will now see the real error shape in the console
         if (import.meta.dev) console.error("loadAddress failed:", err)
         address.value = null
     }
 };
+
+// Manual mode handlers
+const enableManualMode = () => {
+    isManualMode.value = true
+    isHouseFocused.value = false
+    houseQuery.value = ''
+    houseConfirmed.value = false
+    address.value = null
+
+    nextTick(() => {
+        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
+        if (houseEl) houseEl.focus()
+    })
+}
+
+const disableManualMode = () => {
+    isManualMode.value = false
+    houseQuery.value = ''
+    houseConfirmed.value = false
+    boxQuery.value = ''
+    boxConfirmed.value = false
+    address.value = null
+
+    nextTick(() => {
+        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
+        if (houseEl) houseEl.focus()
+        isHouseFocused.value = true
+    })
+}
+
+const confirmManualAddress = async () => {
+    if (!selectedStreet.value || !houseQuery.value.trim()) return
+
+    try {
+        const data: { streetAverageDistance: number } = await $gqlFetch(
+            print(STREET_AVG_DISTANCE),
+            {
+                variables: {
+                    streetId: selectedStreet.value.id
+                }
+            }
+        )
+
+        const avgDistance = data.streetAverageDistance
+
+        // Construct the address from street data + typed values
+        address.value = {
+            id: '',
+            streetId: selectedStreet.value.id,
+            streetName: selectedStreet.value.streetName,
+            houseNumber: houseQuery.value.trim(),
+            boxNumber: (boxQuery.value && boxQuery.value.trim()) || null,
+            municipalityName: selectedStreet.value.municipalityName,
+            postcode: selectedStreet.value.postcode,
+            distance: avgDistance,
+            isManualAddress: true,
+        }
+
+        // Lock the fields
+        selectedHouseNumber.value = houseQuery.value.trim()
+        houseConfirmed.value = true
+        boxConfirmed.value = true
+    } catch {
+        eventBus.emit('notify', {
+            message: t('notify.errors.addressLookupFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+    }
+}
 
 // Selection Handlers
 const selectStreet = async (street: Street) => {
@@ -441,6 +555,7 @@ const selectStreet = async (street: Street) => {
     boxNumbers.value = []
     selectedBoxNumber.value = null
     boxQuery.value = ''
+    isManualMode.value = false
 
     // Load house numbers and wait for next tick.
     await loadHouseNumbers()
@@ -507,6 +622,7 @@ const clearStreet = () => {
     selectedBoxNumber.value = null
     boxQuery.value = ''
     isStreetFocused.value = true
+    isManualMode.value = false
 
     // Use nextTick to ensure the state update is applied before refocusing.
     nextTick(() => {
@@ -519,7 +635,14 @@ const clearHouse = () => {
     houseQuery.value = ''
     selectedHouseNumber.value = ''
     houseConfirmed.value = false
-    isHouseFocused.value = true
+    address.value = null
+
+    if (isManualMode.value) {
+        boxQuery.value = ''
+        boxConfirmed.value = false
+    } else {
+        isHouseFocused.value = true
+    }
 
     // Use nextTick to ensure the state update is applied before refocusing.
     nextTick(() => {
