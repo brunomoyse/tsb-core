@@ -108,7 +108,17 @@ const registerUser = async (formData: any) => {
     )
 
     if (error.value) {
-        trackEvent('registration_error', { error_type: 'server_error' })
+        const errorCode = (error.value as any)?.data?.error || 'registration_failed'
+        trackEvent('registration_error', { error_type: errorCode })
+
+        const messageKey = `register.errors.${errorCode}`
+        eventBus.emit('notify', {
+            message: t(messageKey, t('register.errors.registration_failed')),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+        return
     }
 
     if (!error.value) {
