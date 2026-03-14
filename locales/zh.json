@@ -211,6 +211,7 @@
       "total": "总计",
       "follow": "跟踪",
       "toggleOrder": "展开订单详情",
+      "downloadInvoice": "下载发票",
       "status": {
         "details": {
           "title": {
@@ -379,6 +380,7 @@
       "requestFailed": "请求失败，请重试。",
       "addressLookupFailed": "地址查询失败，请重试。",
       "ordersLoadFailed": "无法加载您的订单。",
+      "invoiceDownloadFailed": "发票下载失败。",
       "sessionExpired": "您的会话已过期，请重新登录。",
       "oauthFailed": "登录失败，请重试。"
     }
@@ -442,6 +444,35 @@
       "login": "登录",
       "register": "注册"
     }
+  },
+  "feedback": {
+    "title": "分享您的反馈",
+    "subtitle": "帮助我们改善您的体验",
+    "name": "姓名",
+    "namePlaceholder": "您的姓名",
+    "email": "电子邮件",
+    "emailPlaceholder": "您的电子邮件地址",
+    "serviceType": "服务类型",
+    "serviceTypes": {
+      "takeaway": "外带",
+      "dine-in": "堂食",
+      "delivery": "配送"
+    },
+    "feedbackType": "反馈类型",
+    "feedbackTypes": {
+      "improvement": "建议",
+      "complaint": "投诉",
+      "compliment": "表扬"
+    },
+    "message": "留言",
+    "messagePlaceholder": "告诉我们您的体验（至少10个字符）",
+    "submit": "提交反馈",
+    "sending": "发送中...",
+    "success": "感谢您的反馈！我们非常感谢您花时间分享您的想法。",
+    "sendAnother": "再次提交",
+    "errorGeneric": "出了点问题，请重试。",
+    "errorTooManyRequests": "提交次数过多，请等待几分钟后再试。",
+    "errorInvalidInput": "请检查表单字段并重试。"
   },
   "coupon": {
     "title": "优惠码",

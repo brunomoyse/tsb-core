@@ -91,6 +91,33 @@ const loadMore = () => {
     visibleCount.value += LOAD_STEP
 }
 
+const downloadInvoice = async (orderId: string) => {
+    const config = useRuntimeConfig()
+    try {
+        const response = await fetch(`${config.public.api}/orders/${orderId}/invoice`, {
+            method: 'GET',
+            credentials: 'include',
+        })
+        if (!response.ok) throw new Error('Download failed')
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `invoice-${orderId}.pdf`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+    } catch {
+        eventBus.emit('notify', {
+            message: t('notify.errors.invoiceDownloadFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+    }
+}
+
 const expandedOrders = ref(new Set<string>())
 
 // Live updates map
@@ -394,6 +421,15 @@ const getStatusColorClass = (status: string) => {
                             @click="reorder(order)"
                         >
                             {{ $t('reorder.button') }}
+                        </button>
+
+                        <!-- Download Invoice Button -->
+                        <button
+                            v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
+                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            @click.stop="downloadInvoice(order.id)"
+                        >
+                            {{ $t('me.orders.downloadInvoice') }}
                         </button>
                     </div>
                 </transition>
