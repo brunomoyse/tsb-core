@@ -255,6 +255,38 @@
       "enabled": "Activés",
       "disabled": "Désactivés",
       "description": "Aide à améliorer le site en analysant la fréquentation."
+    },
+    "changePassword": {
+      "title": "Mot de passe",
+      "button": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Ré-entrez votre nouveau mot de passe",
+      "submit": "Changer le mot de passe",
+      "success": "Votre mot de passe a été modifié. Veuillez vous reconnecter.",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+      "wrongPassword": "Le mot de passe actuel est incorrect.",
+      "googleOnly": "Votre compte utilise la connexion Google. Veuillez utiliser Google pour vous connecter.",
+      "weakPassword": "Le mot de passe ne respecte pas les critères de sécurité."
+    },
+    "verify": {
+      "verified": "Vérifié",
+      "notVerified": "Non vérifié",
+      "resendButton": "Renvoyer l'e-mail de vérification",
+      "resendSuccess": "E-mail de vérification envoyé !",
+      "resendError": "Échec de l'envoi. Veuillez réessayer.",
+      "cooldown": "Veuillez patienter avant de renvoyer."
+    },
+    "notifications": {
+      "title": "E-mails marketing",
+      "enabled": "Activés",
+      "disabled": "Désactivés",
+      "description": "Recevez des offres promotionnelles et des nouvelles du restaurant.",
+      "updateSuccess": "Préférences de notification mises à jour.",
+      "updateError": "Échec de la mise à jour des préférences."
     }
   },
   "cart": {

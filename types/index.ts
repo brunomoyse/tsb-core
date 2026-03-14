@@ -75,6 +75,7 @@ export interface User {
     firstName: string;
     id: string;
     lastName: string;
+    notifyMarketing: boolean;
     phoneNumber: string | null;
 
     address: Address | null;
