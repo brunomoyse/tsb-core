@@ -19,6 +19,7 @@ export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => 
         capture_pageleave: true,
         respect_dnt: true,
         persistence: 'localStorage+cookie',
+        opt_out_capturing_by_default: true,
         session_recording: {
             maskAllInputs: true,
         },
@@ -28,13 +29,15 @@ export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => 
             if (isCapacitor) {
                 ph.register({ platform: 'mobile' })
             }
-            // Re-identify persisted user on load
-            const authStore = useAuthStore()
-            if (authStore.user) {
-                ph.identify(authStore.user.id, {
-                    email: authStore.user.email,
-                    name: `${authStore.user.firstName} ${authStore.user.lastName}`,
-                })
+            // Re-identify persisted user on load (only if user has consented)
+            if (ph.has_opted_in_capturing()) {
+                const authStore = useAuthStore()
+                if (authStore.user) {
+                    ph.identify(authStore.user.id, {
+                        email: authStore.user.email,
+                        name: `${authStore.user.firstName} ${authStore.user.lastName}`,
+                    })
+                }
             }
         },
     })!
@@ -42,6 +45,8 @@ export default defineNuxtPlugin((): { provide: { posthog: PostHog | null } } => 
     // Router hook for manual pageview tracking
     const router = useRouter()
     router.afterEach((to) => {
+        if (!posthogInstance.has_opted_in_capturing()) return
+
         // Strip i18n locale suffix (e.g. "menu___fr" -> "menu")
         const rawName = typeof to.name === 'string' ? to.name : ''
         const pageName = rawName.replace(/___[a-z]{2}$/, '')
