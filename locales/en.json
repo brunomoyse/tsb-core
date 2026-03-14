@@ -256,6 +256,38 @@
       "disabled": "Disabled",
       "description": "Helps improve the site by analysing traffic."
     },
+    "changePassword": {
+      "title": "Password",
+      "button": "Change password",
+      "currentPassword": "Current password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPassword": "Confirm new password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "submit": "Change password",
+      "success": "Your password has been changed. Please log in again.",
+      "passwordsMismatch": "Passwords do not match.",
+      "wrongPassword": "Current password is incorrect.",
+      "googleOnly": "Your account uses Google sign-in. Please use Google to log in.",
+      "weakPassword": "The password does not meet the security requirements."
+    },
+    "verify": {
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "resendButton": "Resend verification email",
+      "resendSuccess": "Verification email sent!",
+      "resendError": "Failed to send. Please try again.",
+      "cooldown": "Please wait before resending."
+    },
+    "notifications": {
+      "title": "Marketing emails",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "description": "Receive promotional offers and restaurant news.",
+      "updateSuccess": "Notification preferences updated.",
+      "updateError": "Failed to update preferences."
+    },
     "logout": "Logout"
   },
   "cart": {

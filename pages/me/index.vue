@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest, User } from '@/types'
 import { computed, onMounted, ref } from 'vue'
-import { definePageMeta, useGqlMutation } from '#imports'
+import { definePageMeta, useGqlMutation, useNuxtApp } from '#imports'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
@@ -14,7 +14,9 @@ import { useTracking } from '~/composables/useTracking'
 definePageMeta({ public: false })
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const authStore = useAuthStore()
+const { $api } = useNuxtApp()
 const { trackEvent, optIn, optOut, hasOptedIn } = useTracking()
 
 const analyticsEnabled = ref(false)
@@ -50,7 +52,7 @@ const fullName = computed(() => {
     return `${first} ${last}`.trim() || '–'
 })
 
-// ── Profile edit logic (absorbed from ProfileWidget) ──
+// ── Profile edit logic ──
 
 const UPDATE_ME = gql`
     mutation ($input: UpdateUserInput!) {
@@ -60,6 +62,7 @@ const UPDATE_ME = gql`
             lastName
             email
             phoneNumber
+            notifyMarketing
             address {
                 id
                 postcode
@@ -88,10 +91,16 @@ const CANCEL_DELETION_REQUEST = gql`
         }
     }
 `
+const RESEND_VERIFICATION = gql`
+    mutation {
+        resendVerificationEmail
+    }
+`
 
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
 const { mutate: mutationRequestDeletion } = useGqlMutation<{ requestDeletion: User }>(REQUEST_DELETION)
 const { mutate: mutationCancelDeletionRequest } = useGqlMutation<{ cancelDeletionRequest: User }>(CANCEL_DELETION_REQUEST)
+const { mutate: mutationResendVerification } = useGqlMutation<{ resendVerificationEmail: boolean }>(RESEND_VERIFICATION)
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -210,6 +219,158 @@ const handleCancelDeletionRequest = async () => {
         })
     }
 }
+
+// ── Feature 1: Change Password ──
+
+const showPasswordModal = ref(false)
+const passwordModalRef = ref<HTMLElement | null>(null)
+useFocusTrap(passwordModalRef)
+
+const currentPassword = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
+const passwordError = ref('')
+const passwordLoading = ref(false)
+
+const passwordRequirements = computed(() => [
+    { met: newPassword.value.length >= 8, label: t('register.passwordMinLength') },
+    { met: /[A-Z]/.test(newPassword.value), label: t('register.passwordUpperCase') },
+    { met: /[a-z]/.test(newPassword.value), label: t('register.passwordLowerCase') },
+    { met: /[0-9]/.test(newPassword.value), label: t('register.passwordNumber') },
+    { met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword.value), label: t('register.passwordSpecialChar') },
+])
+
+const passwordStrength = computed(() => {
+    const metCount = passwordRequirements.value.filter(r => r.met).length
+    const levels = [
+        { text: '', color: '', bgColor: '', width: '0%' },
+        { text: t('register.passwordVeryWeak'), color: 'text-red-500', bgColor: 'bg-red-500', width: '20%' },
+        { text: t('register.passwordWeak'), color: 'text-orange-500', bgColor: 'bg-orange-500', width: '40%' },
+        { text: t('register.passwordFair'), color: 'text-yellow-500', bgColor: 'bg-yellow-500', width: '60%' },
+        { text: t('register.passwordGood'), color: 'text-green-500', bgColor: 'bg-green-500', width: '80%' },
+        { text: t('register.passwordStrong'), color: 'text-green-600', bgColor: 'bg-green-600', width: '100%' },
+    ]
+    return levels[metCount]
+})
+
+const canSubmitPassword = computed(() =>
+    newPassword.value.length >= 8 &&
+    newPassword.value === confirmPassword.value &&
+    currentPassword.value.length > 0 &&
+    passwordRequirements.value.every(r => r.met)
+)
+
+const openPasswordModal = () => {
+    currentPassword.value = ''
+    newPassword.value = ''
+    confirmPassword.value = ''
+    passwordError.value = ''
+    showPasswordModal.value = true
+}
+
+const closePasswordModal = () => { showPasswordModal.value = false }
+
+const submitChangePassword = async () => {
+    passwordError.value = ''
+
+    if (newPassword.value !== confirmPassword.value) {
+        passwordError.value = t('me.changePassword.passwordsMismatch')
+        return
+    }
+
+    passwordLoading.value = true
+    try {
+        await $api('/change-password', {
+            method: 'POST',
+            body: { currentPassword: currentPassword.value, newPassword: newPassword.value },
+        })
+        closePasswordModal()
+        eventBus.emit('notify', {
+            message: t('me.changePassword.success'),
+            persistent: false,
+            duration: 5000,
+            variant: 'success',
+        })
+        await authStore.logout()
+        navigateTo(localePath('login'))
+    } catch (err: unknown) {
+        const error = err as { data?: { error?: string } }
+        const code = error?.data?.error
+        if (code === 'wrong_password') {
+            passwordError.value = t('me.changePassword.wrongPassword')
+        } else if (code === 'google_only_account') {
+            passwordError.value = t('me.changePassword.googleOnly')
+        } else if (code === 'weak_password') {
+            passwordError.value = t('me.changePassword.weakPassword')
+        } else {
+            passwordError.value = t('notify.errors.requestFailed')
+        }
+    } finally {
+        passwordLoading.value = false
+    }
+}
+
+// ── Feature 2: Email Verification Resend ──
+
+const resendCooldown = ref(0)
+const resendLoading = ref(false)
+let cooldownInterval: ReturnType<typeof setInterval> | null = null
+
+const handleResendVerification = async () => {
+    if (resendCooldown.value > 0 || resendLoading.value) return
+    resendLoading.value = true
+    try {
+        await mutationResendVerification()
+        eventBus.emit('notify', {
+            message: t('me.verify.resendSuccess'),
+            persistent: false,
+            duration: 3000,
+            variant: 'success',
+        })
+        resendCooldown.value = 60
+        cooldownInterval = setInterval(() => {
+            resendCooldown.value--
+            if (resendCooldown.value <= 0 && cooldownInterval) {
+                clearInterval(cooldownInterval)
+                cooldownInterval = null
+            }
+        }, 1000)
+    } catch {
+        eventBus.emit('notify', {
+            message: t('me.verify.resendError'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+    } finally {
+        resendLoading.value = false
+    }
+}
+
+// ── Feature 3: Notification Preferences ──
+
+const notifyMarketing = computed(() => authStore.user?.notifyMarketing ?? true)
+
+const toggleNotifyMarketing = async () => {
+    const newVal = !notifyMarketing.value
+    try {
+        const res = await mutationUpdateMe({ input: { notifyMarketing: newVal } })
+        authStore.updateUser(res.updateMe)
+        eventBus.emit('notify', {
+            message: t('me.notifications.updateSuccess'),
+            persistent: false,
+            duration: 3000,
+            variant: 'success',
+        })
+    } catch {
+        eventBus.emit('notify', {
+            message: t('me.notifications.updateError'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+    }
+}
 </script>
 
 <template>
@@ -258,6 +419,35 @@ const handleCancelDeletionRequest = async () => {
                     </div>
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.profile.email') }}</span>
                     <span class="text-sm text-gray-900 mt-1 break-all">{{ authStore.user?.email || '–' }}</span>
+
+                    <!-- Email verification status -->
+                    <div class="mt-2">
+                        <span
+                            v-if="authStore.user?.emailVerifiedAt"
+                            class="inline-flex items-center gap-1 text-xs text-green-600"
+                        >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ t('me.verify.verified') }}
+                        </span>
+                        <template v-else>
+                            <span class="inline-flex items-center gap-1 text-xs text-amber-600">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+                                </svg>
+                                {{ t('me.verify.notVerified') }}
+                            </span>
+                            <button
+                                type="button"
+                                class="mt-1 block text-xs text-red-500 hover:text-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                :disabled="resendCooldown > 0 || resendLoading"
+                                @click="handleResendVerification"
+                            >
+                                {{ resendCooldown > 0 ? `${t('me.verify.resendButton')} (${resendCooldown}s)` : t('me.verify.resendButton') }}
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
@@ -296,8 +486,58 @@ const handleCancelDeletionRequest = async () => {
                 </div>
             </div>
 
+            <!-- Password cell -->
+            <div class="bento-password bento-cell" style="--delay: 5">
+                <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
+                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.changePassword.title') }}</span>
+                    <button
+                        type="button"
+                        class="mt-2 text-sm text-red-500 hover:text-red-600 transition text-left"
+                        @click="openPasswordModal"
+                    >
+                        {{ t('me.changePassword.button') }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notifications toggle cell -->
+            <div class="bento-notifications bento-cell" style="--delay: 6">
+                <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
+                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.093L2.25 6.75"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.notifications.title') }}</span>
+                    <div class="flex items-center gap-3 mt-2">
+                        <button
+                            type="button"
+                            role="switch"
+                            :aria-checked="notifyMarketing"
+                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                            :class="notifyMarketing ? 'bg-red-400' : 'bg-gray-200'"
+                            @click="toggleNotifyMarketing"
+                        >
+                            <span
+                                class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                :class="notifyMarketing ? 'translate-x-5' : 'translate-x-0'"
+                            />
+                        </button>
+                        <span class="text-sm text-gray-700">
+                            {{ notifyMarketing ? t('me.notifications.enabled') : t('me.notifications.disabled') }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">{{ t('me.notifications.description') }}</p>
+                </div>
+            </div>
+
             <!-- Analytics toggle cell -->
-            <div class="bento-analytics bento-cell" style="--delay: 5">
+            <div class="bento-analytics bento-cell" style="--delay: 7">
                 <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
                         <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -328,14 +568,14 @@ const handleCancelDeletionRequest = async () => {
             </div>
 
             <!-- Orders — hero cell -->
-            <div class="bento-orders bento-cell" style="--delay: 6">
+            <div class="bento-orders bento-cell" style="--delay: 8">
                 <OrdersWidget />
             </div>
 
         </div>
 
         <!-- Account deletion — subtle, outside the grid -->
-        <div class="mt-8 text-center bento-cell" style="--delay: 7">
+        <div class="mt-8 text-center bento-cell" style="--delay: 9">
             <button
                 v-if="!authStore.user?.deletionRequestedAt"
                 type="button"
@@ -370,6 +610,117 @@ const handleCancelDeletionRequest = async () => {
             </div>
         </transition>
 
+        <!-- Change Password Modal -->
+        <transition name="fade">
+            <div
+                v-if="showPasswordModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                @click.self="closePasswordModal"
+            >
+                <div ref="passwordModalRef" role="dialog" aria-modal="true" aria-labelledby="change-password-title" class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4" @click.stop @keydown.esc="closePasswordModal">
+                    <h3 id="change-password-title" class="text-2xl font-semibold text-gray-900 text-center mb-6">
+                        {{ t('me.changePassword.button') }}
+                    </h3>
+
+                    <form class="space-y-4" @submit.prevent="submitChangePassword">
+                        <!-- Current password -->
+                        <div>
+                            <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ t('me.changePassword.currentPassword') }}
+                            </label>
+                            <input
+                                id="current-password"
+                                v-model="currentPassword"
+                                type="password"
+                                autocomplete="current-password"
+                                :placeholder="t('me.changePassword.currentPasswordPlaceholder')"
+                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
+                            />
+                        </div>
+
+                        <!-- New password -->
+                        <div>
+                            <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ t('me.changePassword.newPassword') }}
+                            </label>
+                            <input
+                                id="new-password"
+                                v-model="newPassword"
+                                type="password"
+                                autocomplete="new-password"
+                                :placeholder="t('me.changePassword.newPasswordPlaceholder')"
+                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
+                            />
+
+                            <!-- Strength indicator -->
+                            <div v-if="newPassword.length > 0" class="mt-2 space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 bg-gray-200/60 rounded-full overflow-hidden">
+                                        <div
+                                            class="h-full rounded-full transition-all duration-300"
+                                            :class="passwordStrength.bgColor"
+                                            :style="{ width: passwordStrength.width }"
+                                        />
+                                    </div>
+                                    <span class="text-xs" :class="passwordStrength.color">{{ passwordStrength.text }}</span>
+                                </div>
+                                <ul class="space-y-1">
+                                    <li
+                                        v-for="req in passwordRequirements"
+                                        :key="req.label"
+                                        class="text-xs flex items-center gap-1.5"
+                                        :class="req.met ? 'text-green-600' : 'text-gray-400'"
+                                    >
+                                        <span v-html="req.met ? '&#10003;' : '&#10007;'" />
+                                        {{ req.label }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Confirm password -->
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ t('me.changePassword.confirmPassword') }}
+                            </label>
+                            <input
+                                id="confirm-password"
+                                v-model="confirmPassword"
+                                type="password"
+                                autocomplete="new-password"
+                                :placeholder="t('me.changePassword.confirmPasswordPlaceholder')"
+                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
+                            />
+                            <p v-if="confirmPassword.length > 0 && newPassword !== confirmPassword" class="mt-1 text-xs text-red-500">
+                                {{ t('me.changePassword.passwordsMismatch') }}
+                            </p>
+                        </div>
+
+                        <!-- Error message -->
+                        <p v-if="passwordError" class="text-sm text-red-500">{{ passwordError }}</p>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3 pt-2">
+                            <button
+                                type="button"
+                                class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
+                                @click="closePasswordModal"
+                            >
+                                {{ t('common.cancel') }}
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="!canSubmitPassword || passwordLoading"
+                                class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {{ t('me.changePassword.submit') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </transition>
+
     </section>
 </template>
 
@@ -384,6 +735,8 @@ const handleCancelDeletionRequest = async () => {
         "email"
         "phone"
         "address"
+        "password"
+        "notifications"
         "analytics"
         "orders";
 }
@@ -392,6 +745,8 @@ const handleCancelDeletionRequest = async () => {
 .bento-email { grid-area: email; }
 .bento-phone { grid-area: phone; }
 .bento-address { grid-area: address; }
+.bento-password { grid-area: password; }
+.bento-notifications { grid-area: notifications; }
 .bento-analytics { grid-area: analytics; }
 .bento-orders { grid-area: orders; }
 
@@ -400,10 +755,11 @@ const handleCancelDeletionRequest = async () => {
     .bento-grid {
         grid-template-columns: 1fr 1fr;
         grid-template-areas:
-            "profile   profile"
-            "email     phone"
-            "address   analytics"
-            "orders    orders";
+            "profile       profile"
+            "email         phone"
+            "address       password"
+            "notifications analytics"
+            "orders        orders";
     }
 }
 
@@ -412,9 +768,10 @@ const handleCancelDeletionRequest = async () => {
     .bento-grid {
         grid-template-columns: 1fr 1fr 1fr;
         grid-template-areas:
-            "profile email     phone"
-            "profile address   analytics"
-            "orders  orders    orders";
+            "profile       email          phone"
+            "profile       address        password"
+            "notifications analytics      ."
+            "orders        orders         orders";
     }
 }
 

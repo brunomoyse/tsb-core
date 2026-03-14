@@ -256,6 +256,38 @@
       "disabled": "已禁用",
       "description": "通过分析流量帮助改善网站。"
     },
+    "changePassword": {
+      "title": "密码",
+      "button": "更改密码",
+      "currentPassword": "当前密码",
+      "currentPasswordPlaceholder": "输入当前密码",
+      "newPassword": "新密码",
+      "newPasswordPlaceholder": "输入新密码",
+      "confirmPassword": "确认新密码",
+      "confirmPasswordPlaceholder": "再次输入新密码",
+      "submit": "更改密码",
+      "success": "密码已更改，请重新登录。",
+      "passwordsMismatch": "两次输入的密码不一致。",
+      "wrongPassword": "当前密码不正确。",
+      "googleOnly": "您的账户使用 Google 登录，请使用 Google 登录。",
+      "weakPassword": "密码不符合安全要求。"
+    },
+    "verify": {
+      "verified": "已验证",
+      "notVerified": "未验证",
+      "resendButton": "重新发送验证邮件",
+      "resendSuccess": "验证邮件已发送！",
+      "resendError": "发送失败，请重试。",
+      "cooldown": "请稍等再重新发送。"
+    },
+    "notifications": {
+      "title": "营销邮件",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "description": "接收促销优惠和餐厅新闻。",
+      "updateSuccess": "通知偏好已更新。",
+      "updateError": "更新偏好失败。"
+    },
     "logout": "您已成功登出"
   },
   "cart": {
