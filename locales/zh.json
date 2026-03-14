@@ -179,7 +179,13 @@
     "passwordSpecialChar": "一个特殊字符",
     "deliveryInfoTitle": "配送信息（可选）",
     "deliveryInfoDescription": "仅在您需要配送时填写。",
-    "hasAccount": "已有账户？"
+    "hasAccount": "已有账户？",
+    "errors": {
+      "email_already_exists": "该邮箱地址已注册。",
+      "invalid_email_format": "邮箱地址格式无效。",
+      "weak_password": "密码不符合安全要求。",
+      "registration_failed": "注册失败，请重试。"
+    }
   },
   "me": {
     "greeting": "你好",
@@ -309,6 +315,7 @@
     "itemCount": "{count} 件商品",
     "opensAt": "营业时间：{time}",
     "tooFar": "超出配送范围（最远9公里）",
+    "tbd": "待定",
     "sauce1": "酱料 1",
     "sauce2": "酱料 2"
   },
@@ -362,7 +369,14 @@
       "invalidCredentials": "电子邮件或密码无效。请重试。",
       "emailNotVerified": "请在登录前验证您的电子邮件地址。请检查您的收件箱。",
       "orderingUnavailable": "目前无法下单。请稍后再试。",
-      "tooManyRequests": "尝试次数过多。请等待几分钟后再试。"
+      "tooManyRequests": "尝试次数过多。请等待几分钟后再试。",
+      "orderCreationFailed": "订单创建失败，请重试。",
+      "profileUpdateFailed": "个人资料更新失败。",
+      "requestFailed": "请求失败，请重试。",
+      "addressLookupFailed": "地址查询失败，请重试。",
+      "ordersLoadFailed": "无法加载您的订单。",
+      "sessionExpired": "您的会话已过期，请重新登录。",
+      "oauthFailed": "登录失败，请重试。"
     }
   },
   "schema": {

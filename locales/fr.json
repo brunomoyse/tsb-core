@@ -179,7 +179,13 @@
     "passwordSpecialChar": "Un caractère spécial",
     "deliveryInfoTitle": "Informations de livraison (facultatif)",
     "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison.",
-    "hasAccount": "Vous avez déjà un compte ?"
+    "hasAccount": "Vous avez déjà un compte ?",
+    "errors": {
+      "email_already_exists": "Un compte avec cette adresse e-mail existe déjà.",
+      "invalid_email_format": "Le format de l'adresse e-mail est invalide.",
+      "weak_password": "Le mot de passe ne respecte pas les critères de sécurité.",
+      "registration_failed": "L'inscription a échoué. Veuillez réessayer."
+    }
   },
   "me": {
     "greeting": "Bonjour",
@@ -308,6 +314,7 @@
     "itemCount": "{count} article | {count} articles",
     "opensAt": "Ouverture à {time}",
     "tooFar": "Trop loin pour la livraison (max 9 km)",
+    "tbd": "À déterminer",
     "sauce1": "Sauce 1",
     "sauce2": "Sauce 2"
   },
@@ -361,7 +368,14 @@
         "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
         "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception.",
         "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
-        "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer."
+        "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+        "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
+        "profileUpdateFailed": "La mise à jour du profil a échoué.",
+        "requestFailed": "La requête a échoué. Veuillez réessayer.",
+        "addressLookupFailed": "La recherche d'adresse a échoué. Veuillez réessayer.",
+        "ordersLoadFailed": "Impossible de charger vos commandes.",
+        "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+        "oauthFailed": "La connexion a échoué. Veuillez réessayer."
     }
   },
   "schema": {

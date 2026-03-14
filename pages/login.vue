@@ -213,7 +213,7 @@ const login = async () => {
             authStore.setAccessValid(true)
         }
     } catch (error: any) {
-        console.error('Login error:', error)
+        if (import.meta.dev) console.error('Login error:', error)
         if (error?.response?.status === 429) {
             trackEvent('login_error', { error_type: 'rate_limited' })
             errorMessage.value = t('notify.errors.tooManyRequests')
@@ -272,6 +272,7 @@ onMounted(async () => {
     const success = params.get('success')
     const emailVerified = params.get('email_verified')
     const fromCheckout = params.get('from_checkout')
+    const sessionExpired = params.get('session')
 
     // If success, then fetch /me to fill the auth store with user credentials
     if (success) {
@@ -279,8 +280,18 @@ onMounted(async () => {
             trackEvent('user_logged_in', { method: 'google_oauth' })
             await loginSuccess()
         } catch (error) {
-            console.error('Login error:', error)
+            if (import.meta.dev) console.error('Login error:', error)
+            errorMessage.value = t('notify.errors.oauthFailed')
         }
+    }
+
+    if (sessionExpired === 'expired') {
+        eventBus.emit('notify', {
+            message: t('notify.errors.sessionExpired'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
     }
 
     if (emailVerified) {

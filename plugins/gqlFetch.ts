@@ -149,7 +149,7 @@ export default defineNuxtPlugin(() => {
                     })
                 }
             } catch { /* Ignore logout errors */ }
-            navigateTo(localePath('login'))
+            navigateTo(`${localePath('login')}?session=expired`)
             return false
         }
     }

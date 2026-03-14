@@ -82,7 +82,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
             } catch {
                 await tokenStore.clearTokens()
                 authStore.clearUser()
-                return navigateTo(localePath('login'));
+                return navigateTo(`${localePath('login')}?session=expired`);
             }
         } else {
             // Web: existing cookie-based flow
@@ -109,7 +109,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
                 authStore.setAccessValid(true)
             } catch {
                 await authStore.logout()
-                return navigateTo(localePath('login'));
+                return navigateTo(`${localePath('login')}?session=expired`);
             }
         }
     }
