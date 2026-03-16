@@ -37,7 +37,7 @@
     "libphonenumber-js": "^1.12.40",
     "nuxt": "^4.4.2",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "posthog-js": "^1.360.1"
+    "posthog-js": "^1.360.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.2.0",
