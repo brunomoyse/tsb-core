@@ -22,11 +22,9 @@
                 <section class="mb-4 px-4">
                     <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px]">
                         <!-- Search icon -->
-                        <img
-                            alt="Search"
-                            class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 z-10 pointer-events-none"
-                            src="/icons/search-icon.svg"
-                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 z-10 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+                            <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
+                        </svg>
 
                         <!-- Real search input (overlays when expanded) -->
                         <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
