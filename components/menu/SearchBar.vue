@@ -9,8 +9,9 @@
                type="search"
                @input="onInput"/>
         <!-- Magnifying glass icon (inline SVG) -->
-        <img alt="Search" class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2"
-             src="/icons/search-icon.svg"/>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute left-3 top-1/2 transform -translate-y-1/2" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
+        </svg>
         <!-- Clear button (only shown if there's text) -->
         <button v-if="modelValue" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500
              hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300" type="button" @click="onClear">
