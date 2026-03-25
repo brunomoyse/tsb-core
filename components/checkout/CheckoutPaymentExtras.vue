@@ -64,6 +64,30 @@
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
                     </label>
                 </div>
+                <!-- Wasabi Card -->
+                <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <input
+                        type="checkbox"
+                        id="wasabi"
+                        v-model="addWasabi"
+                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded"
+                    />
+                    <label for="wasabi" class="text-gray-700 font-medium">
+                        {{ $t('checkout.addWasabi') }}
+                    </label>
+                </div>
+                <!-- Ginger Card -->
+                <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <input
+                        type="checkbox"
+                        id="ginger"
+                        v-model="addGinger"
+                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded"
+                    />
+                    <label for="ginger" class="text-gray-700 font-medium">
+                        {{ $t('checkout.addGinger') }}
+                    </label>
+                </div>
                 <!-- Soy Sauce Options Card - Pill Toggles -->
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <p class="font-medium text-gray-700 mb-3">
@@ -212,6 +236,38 @@ const addChopsticks = computed({
         if (value) {
             if (idx === -1) {
                 cartStore.orderExtra.push({ name: 'chopsticks' })
+            }
+        } else if (idx !== -1) {
+            cartStore.orderExtra.splice(idx, 1)
+        }
+    }
+})
+
+// Computed binding for wasabi
+const addWasabi = computed({
+    get: () => cartStore.orderExtra?.some(o => o.name === 'wasabi') || false,
+    set: (value: boolean) => {
+        if (!cartStore.orderExtra) cartStore.orderExtra = []
+        const idx = cartStore.orderExtra.findIndex(o => o.name === 'wasabi')
+        if (value) {
+            if (idx === -1) {
+                cartStore.orderExtra.push({ name: 'wasabi' })
+            }
+        } else if (idx !== -1) {
+            cartStore.orderExtra.splice(idx, 1)
+        }
+    }
+})
+
+// Computed binding for ginger
+const addGinger = computed({
+    get: () => cartStore.orderExtra?.some(o => o.name === 'ginger') || false,
+    set: (value: boolean) => {
+        if (!cartStore.orderExtra) cartStore.orderExtra = []
+        const idx = cartStore.orderExtra.findIndex(o => o.name === 'ginger')
+        if (value) {
+            if (idx === -1) {
+                cartStore.orderExtra.push({ name: 'ginger' })
             }
         } else if (idx !== -1) {
             cartStore.orderExtra.splice(idx, 1)
