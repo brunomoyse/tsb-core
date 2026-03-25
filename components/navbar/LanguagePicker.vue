@@ -8,7 +8,7 @@
              @keydown.escape="hideDropdown()">
             <img :alt="alt" :src="icon" class="h-6 w-6"/>
             <span
-                class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max">
+                class="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max">
                 {{ tooltipText }}
             </span>
         </button>

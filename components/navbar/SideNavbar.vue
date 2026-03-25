@@ -1,7 +1,7 @@
 <template>
     <nav
         aria-label="Sidebar Navigation"
-        class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100vh-4rem)] fixed left-8 top-8"
+        class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100vh-4rem)] fixed left-8 top-8 z-40"
     >
         <!-- Top Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mt-6">
