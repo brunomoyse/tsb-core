@@ -20,6 +20,8 @@ export const useCartStore = defineStore("cart", {
         addressExtra: null,
         orderExtra: [
             {name: "chopsticks"},
+            {name: "wasabi"},
+            {name: "ginger"},
             {name: "sauces", options: ["sweet", "salty"]},
         ],
         orderNote: null,
@@ -112,6 +114,8 @@ export const useCartStore = defineStore("cart", {
             this.addressExtra = null;
             this.orderExtra = [
                 {name: "chopsticks"},
+                {name: "wasabi"},
+                {name: "ginger"},
                 {name: "sauces", options: ["sweet", "salty"]},
             ];
             this.orderNote = null;

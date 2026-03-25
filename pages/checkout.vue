@@ -260,6 +260,14 @@ const confirmAddress = () => {
 }
 
 onMounted(() => {
+    // Always pre-check wasabi and ginger
+    if (!cartStore.orderExtra) cartStore.orderExtra = []
+    for (const name of ['wasabi', 'ginger']) {
+        if (!cartStore.orderExtra.some(o => o.name === name)) {
+            cartStore.orderExtra.push({ name })
+        }
+    }
+
     // If the user is logged in and has an address, pre-fill the cart address
     if (authStore.user?.address && !cartStore.address) {
         cartStore.address = authStore.user.address
