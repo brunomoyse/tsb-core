@@ -1,29 +1,28 @@
 import { eventBus } from '~/eventBus'
 import { useI18n } from 'vue-i18n'
-import { usePlatform } from '~/composables/usePlatform'
 import { useRuntimeConfig } from '#imports'
-import { useTokenStore } from '~/composables/useTokenStore'
 
 export function useInvoiceDownload() {
     const config = useRuntimeConfig()
     const { t } = useI18n()
-    const { isCapacitor } = usePlatform()
-    const tokenStore = useTokenStore()
 
     const downloadInvoice = async (orderId: string) => {
         try {
             const headers: Record<string, string> = {}
 
-            if (isCapacitor) {
-                const accessToken = await tokenStore.getAccessToken()
-                if (accessToken) {
-                    headers['Authorization'] = `Bearer ${accessToken}`
+            // Attach OIDC Bearer token
+            if (import.meta.client) {
+                const { useOidc } = await import('~/composables/useOidc')
+                const { getAccessToken } = useOidc()
+                const token = await getAccessToken()
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`
                 }
             }
 
             const response = await fetch(`${config.public.api}/orders/${orderId}/invoice`, {
                 method: 'GET',
-                credentials: isCapacitor ? 'omit' : 'include',
+                credentials: 'omit',
                 headers,
             })
             if (!response.ok) throw new Error('Download failed')

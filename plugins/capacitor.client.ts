@@ -1,13 +1,9 @@
 // Plugins: capacitor.client.ts — only runs on Capacitor builds
-import { defineNuxtPlugin, navigateTo, useLocalePath, useNuxtApp, useRuntimeConfig } from '#imports'
-import { useAuthStore } from '@/stores/auth'
-import { useTokenStore } from '~/composables/useTokenStore'
+import { defineNuxtPlugin, navigateTo, useNuxtApp, useRuntimeConfig } from '#imports'
 
 export default defineNuxtPlugin(async () => {
     const config = useRuntimeConfig()
     if (config.public.appBuild !== 'capacitor') return
-
-    const localePath = useLocalePath()
 
     // Add capacitor-app class to body for safe-area CSS scoping
     document.body.classList.add('capacitor-app')
@@ -38,29 +34,20 @@ export default defineNuxtPlugin(async () => {
             }
         })
 
-        // OAuth deep link handling: tokyosushi://oauth/callback?accessToken=...&refreshToken=...
+        // OIDC deep link handling: tokyosushi://auth/callback?code=...&state=...
         App.addListener('appUrlOpen', async ({ url }) => {
-            if (!url.startsWith('tokyosushi://oauth/callback')) return
+            if (!url.startsWith('tokyosushi://auth/callback')) return
 
-            const params = new URL(url).searchParams
-            const accessToken = params.get('accessToken')
-            const refreshToken = params.get('refreshToken')
+            // Close the in-app browser if still open
+            try {
+                const { Browser } = await import('@capacitor/browser')
+                await Browser.close()
+            } catch { /* Ignore browser close error */ }
 
-            if (accessToken && refreshToken) {
-                const tokenStore = useTokenStore()
-                const authStore = useAuthStore()
-
-                await tokenStore.setTokens(accessToken, refreshToken)
-                authStore.setAccessValid(true)
-
-                // Close the in-app browser if still open
-                try {
-                    const { Browser } = await import('@capacitor/browser')
-                    await Browser.close()
-                } catch { /* Ignore browser close error */ }
-
-                navigateTo(localePath('menu'))
-            }
+            // The OIDC callback will be handled by oidc-client-ts
+            // Navigate to the callback route which exchanges the code for tokens
+            const callbackUrl = url.replace('tokyosushi://', '/')
+            navigateTo(callbackUrl)
         })
     } catch { /* App plugin not available */ }
 })

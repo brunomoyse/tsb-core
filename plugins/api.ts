@@ -1,78 +1,45 @@
-// Plugins/api.ts
+// Plugins/api.ts — OIDC Bearer token authentication via Zitadel
 import { defineNuxtPlugin, navigateTo, useCookie, useLocalePath, useRequestEvent, useRuntimeConfig } from '#imports'
-import { useTokenStore } from '~/composables/useTokenStore'
 
 export default defineNuxtPlugin(() => {
-    const config = useRuntimeConfig();
-    const apiUrl: string = config.public.api as string;
-    const userLocale = useCookie('i18n_redirected').value ?? 'fr';
-    const localePath = useLocalePath();
-    const isCapacitor = config.public.appBuild === 'capacitor'
-    const tokenStore = useTokenStore()
+    const config = useRuntimeConfig()
+    const apiUrl: string = config.public.api as string
+    const userLocale = useCookie('i18n_redirected').value ?? 'fr'
+    const localePath = useLocalePath()
 
-    /** Attempt to refresh auth tokens (Capacitor or web) */
-    const refreshAuth = async () => {
-        if (isCapacitor) {
-            const refreshToken = await tokenStore.getRefreshToken()
-            if (!refreshToken) throw new Error('No refresh token')
-            const res = await $fetch<{ accessToken: string; refreshToken: string }>(`${apiUrl}/tokens/refresh`, {
-                method: 'POST',
-                credentials: 'omit',
-                body: { refreshToken },
-            })
-            await tokenStore.setTokens(res.accessToken, res.refreshToken)
-        } else {
-            await $fetch(`${apiUrl}/tokens/refresh`, {
-                method: 'POST',
-                credentials: 'include'
-            })
-        }
+    /** Get access token from OIDC client (client-side only) */
+    const getOidcToken = async (): Promise<string | null> => {
+        if (import.meta.server) return null
+        const { useOidc } = await import('~/composables/useOidc')
+        const { getAccessToken } = useOidc()
+        return getAccessToken()
     }
 
-    /** Logout and clear tokens (Capacitor or web) */
-    const logoutAndClear = async () => {
-        if (isCapacitor) {
-            const refreshToken = await tokenStore.getRefreshToken()
-            if (refreshToken) {
-                await $fetch(`${apiUrl}/logout`, {
-                    method: 'POST',
-                    credentials: 'omit',
-                    body: { refreshToken },
-                })
-            }
-            await tokenStore.clearTokens()
-        } else {
-            await $fetch(`${apiUrl}/logout`, {
-                method: 'POST',
-                credentials: 'include'
-            })
-        }
+    /** Attempt silent OIDC token renewal */
+    const refreshAuth = async () => {
+        const { useOidc } = await import('~/composables/useOidc')
+        const { silentRenew } = useOidc()
+        const user = await silentRenew()
+        if (!user) throw new Error('Silent renew failed')
     }
 
     const api = $fetch.create({
         baseURL: apiUrl,
-        credentials: isCapacitor ? 'omit' : 'include',
+        credentials: 'omit', // No cookies — we use Bearer tokens
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Accept-Language': userLocale
         },
         async onRequest({ options }) {
-            if (isCapacitor) {
-                // Capacitor: attach Bearer token from token store
-                const accessToken = await tokenStore.getAccessToken()
-                if (accessToken) {
-                    options.headers = {
-                        ...options.headers,
-                        Authorization: `Bearer ${accessToken}`,
-                    }
-                }
-            } else if (import.meta.server) {
-                // Web SSR: forward cookies
+            if (import.meta.server) {
+                // SSR: forward cookies for Accept-Language if available
                 const event = useRequestEvent()
-                const cookies = event?.node.req.headers.cookie
                 const serverLocale = useCookie('i18n_redirected').value ?? 'fr'
+                const cookies = event?.node.req.headers.cookie
 
+                // Try to extract access_token from cookies for SSR API calls
+                // (during OIDC transition, cookies may still be present)
                 if (cookies) {
                     options.headers = {
                         ...options.headers,
@@ -81,30 +48,26 @@ export default defineNuxtPlugin(() => {
                         'Accept-Language': serverLocale
                     }
                 }
-            }
-        },
-        async onResponse({ response }) {
-            // Capacitor: extract tokens from response body and store them
-            if (isCapacitor && response._data) {
-                const { accessToken, refreshToken } = response._data as { accessToken?: string; refreshToken?: string }
-                if (accessToken && refreshToken) {
-                    await tokenStore.setTokens(accessToken, refreshToken)
+            } else {
+                // Client-side: attach Bearer token from OIDC
+                const token = await getOidcToken()
+                if (token) {
+                    options.headers = {
+                        ...options.headers,
+                        Authorization: `Bearer ${token}`,
+                    }
                 }
             }
         },
         async onResponseError({ response, request, options }) {
-            if (response.status === 401 &&
-                !request.toString().includes('/tokens/refresh') &&
-                !request.toString().includes('login')) {
+            if (response.status === 401 && !import.meta.server) {
                 try {
-                    if (!import.meta.server) {
-                        await refreshAuth()
-                        // @ts-expect-error $fetch accepts the original request/options but types don't align
-                        return $fetch(request, options)
-                    }
+                    await refreshAuth()
+                    // Retry with new token
+                    // @ts-expect-error $fetch accepts the original request/options but types don't align
+                    return $fetch(request, options)
                 } catch {
-                    try { await logoutAndClear() } catch { /* Ignore logout errors */ }
-                    navigateTo(`${localePath('login')}?session=expired`)
+                    navigateTo(`${localePath('auth-login')}?session=expired`)
                 }
             }
         }

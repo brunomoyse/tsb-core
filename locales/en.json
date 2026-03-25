@@ -142,7 +142,12 @@
     "noAccount": "Don't have an account?",
     "register": "Create an account",
     "submit": "Login",
-    "ssoGoogle": "Login with Google"
+    "ssoGoogle": "Login with Google",
+    "ssoFacebook": "Login with Facebook",
+    "ssoApple": "Login with Apple",
+    "authenticating": "Authenticating...",
+    "callbackError": "Authentication failed. Please try again.",
+    "tryAgain": "Try again"
   },
   "register": {
     "title": "Register",

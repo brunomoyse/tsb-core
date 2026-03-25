@@ -3,7 +3,7 @@
         <div class="w-full max-w-md">
 
             <!-- Card container -->
-            <div class="bg-tsb-two rounded-2xl relative">
+            <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
                 <!-- Decorative blurred accents -->
                 <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
                 <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
@@ -29,13 +29,13 @@
                         </svg>
                     </div>
 
-                    <!-- Missing Token State -->
-                    <template v-if="!token">
+                    <!-- Missing Params State -->
+                    <template v-if="!userId || !code">
                         <div class="text-center space-y-4">
                             <p class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5">
                                 {{ $t('resetPassword.invalidToken') }}
                             </p>
-                            <NuxtLinkLocale to="/forgot-password" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/forgot-password" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
                                 {{ $t('resetPassword.requestNewLink') }}
                             </NuxtLinkLocale>
                         </div>
@@ -112,10 +112,11 @@
 
                             <!-- Submit Button -->
                             <button
-                                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md"
+                                :disabled="loading"
+                                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
                                 type="submit"
                             >
-                                {{ $t('resetPassword.submit') }}
+                                {{ loading ? $t('resetPassword.submitting') : $t('resetPassword.submit') }}
                             </button>
                         </form>
                     </template>
@@ -131,6 +132,9 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900">{{ $t('resetPassword.successTitle') }}</h3>
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $t('resetPassword.successMessage') }}</p>
+                            <NuxtLinkLocale to="/auth/login" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                                {{ $t('login.title') }}
+                            </NuxtLinkLocale>
                         </div>
                     </template>
                 </div>
@@ -141,25 +145,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, definePageMeta, navigateTo, ref, useLocalePath, useNuxtApp, useRoute } from '#imports'
+import { computed, definePageMeta, navigateTo, ref, useLocalePath, useRoute } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { useZitadelApi } from '~/composables/useZitadelApi'
 
 definePageMeta({
     public: true
 })
 
 const { t } = useI18n()
-const { $api } = useNuxtApp()
+const { setNewPassword } = useZitadelApi()
 const route = useRoute()
 const localePath = useLocalePath()
-
-useSchemaOrg([
-    defineWebPage({
-        '@type': 'WebPage',
-        name: t('schema.resetPassword.title'),
-        description: t('schema.resetPassword.description')
-    })
-])
 
 useSeoMeta({
     title: t('schema.resetPassword.title'),
@@ -167,11 +164,13 @@ useSeoMeta({
     robots: 'noindex,nofollow',
 })
 
-const token = computed(() => route.query.token as string || '')
+const userId = computed(() => route.query.userId as string || '')
+const code = computed(() => route.query.code as string || '')
 const password = ref('')
 const confirmPassword = ref('')
 const submitted = ref(false)
 const errorMessage = ref('')
+const loading = ref(false)
 
 const passwordRequirements = computed(() => ({
     minLength: password.value.length >= 8,
@@ -219,27 +218,26 @@ const submit = async () => {
         return
     }
 
+    loading.value = true
     try {
-        await $api('/reset-password', {
-            method: 'POST',
-            body: {
-                token: token.value,
-                password: password.value,
-            },
-        })
+        await setNewPassword(userId.value, code.value, password.value)
         submitted.value = true
 
         if (import.meta.client) {
             setTimeout(() => {
-                navigateTo(localePath('login'))
+                navigateTo(localePath('/auth/login'))
             }, 3000)
         }
     } catch (error: any) {
-        if (error?.response?.status === 429) {
+        if (import.meta.dev) console.error('Reset password error:', error)
+        const status = error?.response?.status || error?.statusCode
+        if (status === 429) {
             errorMessage.value = t('notify.errors.tooManyRequests')
         } else {
             errorMessage.value = t('resetPassword.invalidToken')
         }
+    } finally {
+        loading.value = false
     }
 }
 </script>

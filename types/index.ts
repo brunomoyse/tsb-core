@@ -71,7 +71,6 @@ export interface LoginResponse {
 export interface User {
     deletionRequestedAt: string | null;
     email: string;
-    emailVerifiedAt: string | null;
     firstName: string;
     id: string;
     lastName: string;

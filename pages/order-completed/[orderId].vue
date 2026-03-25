@@ -348,6 +348,41 @@ onMounted(() => {
         }
     })
 
+    // Polling fallback: if WebSocket subscription fails silently (CORS, auth, Safari timeout),
+    // poll for order updates every 15 seconds until order is in a terminal state.
+    const POLL_INTERVAL = 15_000
+    let pollTimer: ReturnType<typeof setInterval> | null = null
+    const terminalStatuses = ['DELIVERED', 'PICKED_UP', 'FAILED', 'CANCELLED']
+
+    const startPolling = () => {
+        if (pollTimer) return
+        pollTimer = setInterval(async () => {
+            try {
+                const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
+                if (fresh?.myOrder && dataOrder.value?.myOrder) {
+                    if (fresh.myOrder.status !== dataOrder.value.myOrder.status) {
+                        dataOrder.value.myOrder = { ...dataOrder.value.myOrder, ...fresh.myOrder }
+                    }
+                    if (terminalStatuses.includes(fresh.myOrder.status) && pollTimer) {
+                        clearInterval(pollTimer)
+                        pollTimer = null
+                    }
+                }
+            } catch { /* Polling errors are non-critical */ }
+        }, POLL_INTERVAL)
+    }
+
+    // Start polling after a delay — gives WebSocket a chance to connect first
+    const pollDelay = setTimeout(startPolling, POLL_INTERVAL)
+
+    // Clean up polling on unmount (closeWs handles WebSocket)
+    const origCloseWs = closeWs
+    closeWs = () => {
+        origCloseWs()
+        clearTimeout(pollDelay)
+        if (pollTimer) clearInterval(pollTimer)
+    }
+
     cartStore.setCartVisibility(false)
     cartStore.resetState()
 

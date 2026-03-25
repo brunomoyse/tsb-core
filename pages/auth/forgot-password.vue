@@ -3,7 +3,7 @@
         <div class="w-full max-w-md">
 
             <!-- Card container -->
-            <div class="bg-tsb-two rounded-2xl relative">
+            <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
                 <!-- Decorative blurred accents -->
                 <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
                 <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
@@ -63,16 +63,17 @@
 
                             <!-- Submit Button -->
                             <button
-                                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md"
+                                :disabled="loading"
+                                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
                                 type="submit"
                             >
-                                {{ $t('forgotPassword.submit') }}
+                                {{ loading ? $t('forgotPassword.submitting') : $t('forgotPassword.submit') }}
                             </button>
                         </form>
 
                         <!-- Back to login -->
                         <p class="text-sm text-center mt-6">
-                            <NuxtLinkLocale to="/login" class="text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/login" class="text-gray-500 hover:text-gray-700 transition-colors duration-300">
                                 {{ $t('forgotPassword.backToLogin') }}
                             </NuxtLinkLocale>
                         </p>
@@ -89,7 +90,7 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900">{{ $t('forgotPassword.successTitle') }}</h3>
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $t('forgotPassword.successMessage') }}</p>
-                            <NuxtLinkLocale to="/login" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/login" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
                                 {{ $t('forgotPassword.backToLogin') }}
                             </NuxtLinkLocale>
                         </div>
@@ -102,24 +103,16 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, useNuxtApp } from '#imports'
-import { ref } from 'vue'
+import { definePageMeta, ref } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { useZitadelApi } from '~/composables/useZitadelApi'
 
 definePageMeta({
     public: true
 })
 
 const { t } = useI18n()
-const { $api } = useNuxtApp()
-
-useSchemaOrg([
-    defineWebPage({
-        '@type': 'WebPage',
-        name: t('schema.forgotPassword.title'),
-        description: t('schema.forgotPassword.description')
-    })
-])
+const { requestPasswordReset } = useZitadelApi()
 
 useSeoMeta({
     title: t('schema.forgotPassword.title'),
@@ -130,20 +123,24 @@ useSeoMeta({
 const email = ref('')
 const submitted = ref(false)
 const errorMessage = ref('')
+const loading = ref(false)
 
 const submit = async () => {
     errorMessage.value = ''
+    loading.value = true
     try {
-        await $api('/forgot-password', {
-            method: 'POST',
-            body: { email: email.value },
-        })
+        await requestPasswordReset(email.value)
     } catch (error: any) {
-        if (error?.response?.status === 429) {
+        if (import.meta.dev) console.error('Forgot password error:', error)
+        const status = error?.response?.status || error?.statusCode
+        if (status === 429) {
             errorMessage.value = t('notify.errors.tooManyRequests')
+            loading.value = false
             return
         }
+        // Silently succeed even on error to prevent email enumeration
     }
+    loading.value = false
     submitted.value = true
 }
 </script>
