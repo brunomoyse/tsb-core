@@ -53,8 +53,8 @@
     "vue-tsc": "^3.2.6"
   },
   "optionalDependencies": {
-    "@esbuild/linux-arm64": "^0.27.0",
-    "@esbuild/linux-x64": "^0.27.2",
+    "@esbuild/linux-arm64": "^0.27.4",
+    "@esbuild/linux-x64": "^0.27.4",
     "@oxc-minify/binding-linux-arm64-gnu": "^0.121.0",
     "@oxc-minify/binding-linux-x64-gnu": "^0.121.0",
     "@oxc-parser/binding-linux-arm64-gnu": "^0.121.0",
