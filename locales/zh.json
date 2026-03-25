@@ -142,7 +142,12 @@
     "noAccount": "没有账户？",
     "register": "创建账户",
     "submit": "登录",
-    "ssoGoogle": "使用 Google 登录"
+    "ssoGoogle": "使用 Google 登录",
+    "ssoFacebook": "使用 Facebook 登录",
+    "ssoApple": "使用 Apple 登录",
+    "authenticating": "正在验证...",
+    "callbackError": "验证失败，请重试。",
+    "tryAgain": "重试"
   },
   "register": {
     "title": "注册",

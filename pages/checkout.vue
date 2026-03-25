@@ -278,7 +278,7 @@ onMounted(() => {
         total_price: cartTotal.value,
         collection_option: cartStore.collectionOption,
         has_address: Boolean(cartStore.address),
-        is_authenticated: authStore.accessValid,
+        is_authenticated: Boolean(authStore.user),
     })
 })
 
@@ -289,9 +289,9 @@ const handleCheckout = async () => {
     isCheckoutProcessing.value = true
 
     // Check if user is authenticated
-    if (!authStore.accessValid) {
+    if (!authStore.user) {
         // Redirect to login
-        navigateTo(localePath('/login?from_checkout=true'))
+        navigateTo(localePath('/auth/login?from_checkout=true'))
         return
     }
 

@@ -1,4 +1,4 @@
-// Plugins: gqlFetch.ts
+// Plugins: gqlFetch.ts — OIDC Bearer token authentication via Zitadel
 import { type DocumentNode, print } from 'graphql'
 import {
     defineNuxtPlugin,
@@ -8,7 +8,6 @@ import {
     useRequestEvent,
     useRuntimeConfig,
 } from '#imports'
-import { useTokenStore } from '~/composables/useTokenStore'
 
 interface GqlOptions {
     variables?: Record<string, unknown>
@@ -20,12 +19,17 @@ let refreshPromise: Promise<boolean> | null = null
 export default defineNuxtPlugin(() => {
     const cfg     = useRuntimeConfig()
     const httpURL = cfg.public.graphqlHttp as string
-    const apiURL  = cfg.public.api as string
     const localePath = useLocalePath()
-    const isCapacitor = cfg.public.appBuild === 'capacitor'
-    const tokenStore = useTokenStore()
 
-    /** Typed helper: POST /graphql with cookies + headers */
+    /** Get access token from OIDC client (client-side only) */
+    const getOidcToken = async (): Promise<string | null> => {
+        if (import.meta.server) return null
+        const { useOidc } = await import('~/composables/useOidc')
+        const { getAccessToken } = useOidc()
+        return getAccessToken()
+    }
+
+    /** Typed helper: POST /graphql with Bearer token */
     const gqlFetch = async <T = unknown>(
         query: string | DocumentNode,
         { variables = {}, signal }: GqlOptions = {},
@@ -55,12 +59,10 @@ export default defineNuxtPlugin(() => {
 
         // 2) Handle GraphQL-level errors
         if (res.errors?.length) {
-            // Look for your UNAUTHENTICATED extension code
             const unauth = res.errors.find(
                 (e) => e.extensions?.code === 'UNAUTHENTICATED'
             )
             if (unauth) {
-                // Refresh the token and retry once
                 const ok = await attemptRefreshOnce()
                 if (ok) {
                     res = await doFetch(body, signal)
@@ -70,7 +72,6 @@ export default defineNuxtPlugin(() => {
                     return res.data as T
                 }
             }
-            // Otherwise bubble up all GraphQL errors
             throw res.errors
         }
 
@@ -83,73 +84,43 @@ export default defineNuxtPlugin(() => {
         return await $fetch(httpURL, {
             method: 'POST',
             body,
-            credentials: isCapacitor ? 'omit' : 'include',
+            credentials: 'omit',
             signal,
             headers: await buildHeaders(userLocale),
         })
     }
 
-    /** Build the JSON headers + forward cookies SSR or attach Bearer token for Capacitor */
+    /** Build the JSON headers + attach Bearer token or forward cookies for SSR */
     const buildHeaders = async (locale: string) => {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             'Accept-Language': locale,
         }
-        if (isCapacitor) {
-            const accessToken = await tokenStore.getAccessToken()
-            if (accessToken) {
-                headers.Authorization = `Bearer ${accessToken}`
-            }
-        } else if (import.meta.server) {
+        if (import.meta.server) {
+            // SSR: forward cookies if available (for Accept-Language, session context)
             const ev = useRequestEvent()
             const cook = ev?.node.req.headers.cookie
             if (cook) headers.cookie = cook
+        } else {
+            // Client-side: attach OIDC Bearer token
+            const token = await getOidcToken()
+            if (token) {
+                headers.Authorization = `Bearer ${token}`
+            }
         }
         return headers
     }
 
-    /** Attempt a refresh via your REST endpoint */
+    /** Attempt OIDC silent renewal */
     const attemptRefresh = async (): Promise<boolean> => {
         try {
-            if (isCapacitor) {
-                // Capacitor: send refresh token in body
-                const refreshToken = await tokenStore.getRefreshToken()
-                if (!refreshToken) return false
-                const res = await $fetch<{ accessToken: string; refreshToken: string }>(`${apiURL}/tokens/refresh`, {
-                    method: 'POST',
-                    credentials: 'omit',
-                    body: { refreshToken },
-                })
-                await tokenStore.setTokens(res.accessToken, res.refreshToken)
-            } else {
-                // Web: cookie-based refresh
-                await $fetch(`${apiURL}/tokens/refresh`, {
-                    method: 'POST',
-                    credentials: 'include',
-                })
-            }
-            return true
+            if (import.meta.server) return false
+            const { useOidc } = await import('~/composables/useOidc')
+            const { silentRenew } = useOidc()
+            const user = await silentRenew()
+            return !!user
         } catch {
-            // Refresh failed → logout & redirect to login
-            try {
-                if (isCapacitor) {
-                    const refreshToken = await tokenStore.getRefreshToken()
-                    if (refreshToken) {
-                        await $fetch(`${apiURL}/logout`, {
-                            method: 'POST',
-                            credentials: 'omit',
-                            body: { refreshToken },
-                        })
-                    }
-                    await tokenStore.clearTokens()
-                } else {
-                    await $fetch(`${apiURL}/logout`, {
-                        method: 'POST',
-                        credentials: 'include'
-                    })
-                }
-            } catch { /* Ignore logout errors */ }
-            navigateTo(`${localePath('login')}?session=expired`)
+            navigateTo(`${localePath('auth-login')}?session=expired`)
             return false
         }
     }

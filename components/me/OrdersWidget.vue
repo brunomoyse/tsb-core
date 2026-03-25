@@ -353,7 +353,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useGqlQuery, useGqlSubscription } from '#imports'
+import { useGqlQuery, useGqlSubscription, useNuxtApp } from '#imports'
 import type { Order } from '~/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '~/utils/utils'
@@ -364,6 +364,7 @@ import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '~/composables/useInvoiceDownload'
 import { useReorder } from '~/composables/useReorder'
 
+const { $gqlFetch } = useNuxtApp()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
@@ -571,6 +572,10 @@ const unsubscribeFromOrder = (orderId: string) => {
 onUnmounted(() => {
     subscriptionStops.forEach((stopFn) => stopFn())
     subscriptionStops.clear()
+    if (pollTimer) {
+        clearInterval(pollTimer)
+        pollTimer = null
+    }
 })
 
 const getTrackedOrder = (order: Order): Order => {
@@ -623,17 +628,43 @@ const accordionAfterLeave = (el: Element) => {
 
 // ── Mount ──
 
+// Polling fallback for when WebSocket subscriptions fail
+let pollTimer: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
     const allOrders = orders.value ?? []
 
     // Subscribe to all active orders
-    allOrders
-        .filter(o => !isOrderCompleted(o.status))
-        .forEach(o => {
-            subscribeToOrder(o.id)
-            // Auto-expand active orders
-            expandedOrders.value.add(o.id)
-        })
+    const activeOrders = allOrders.filter(o => !isOrderCompleted(o.status))
+    activeOrders.forEach(o => {
+        subscribeToOrder(o.id)
+        // Auto-expand active orders
+        expandedOrders.value.add(o.id)
+    })
+
+    // Polling fallback for active orders
+    if (activeOrders.length > 0) {
+        pollTimer = setInterval(async () => {
+            try {
+                const fresh = await $gqlFetch<{ myOrders: Order[] }>(print(MY_ORDERS))
+                if (fresh?.myOrders) {
+                    for (const freshOrder of fresh.myOrders) {
+                        const current = allOrders.find(o => o.id === freshOrder.id)
+                        if (current && current.status !== freshOrder.status) {
+                            liveOrderData.value[freshOrder.id] = {
+                                ...liveOrderData.value[freshOrder.id],
+                                ...freshOrder,
+                            }
+                        }
+                    }
+                    if (!fresh.myOrders.some(o => !isOrderCompleted(o.status)) && pollTimer) {
+                        clearInterval(pollTimer)
+                        pollTimer = null
+                    }
+                }
+            } catch { /* Polling errors are non-critical */ }
+        }, 30_000)
+    }
 
     // Auto-expand from URL param
     const params = new URLSearchParams(window.location.search)

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
-import { useGqlQuery, useGqlSubscription } from "#imports"
+import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
 import type { Order } from "~/types"
 import { formatAddress } from "~/utils/utils"
 import gql from 'graphql-tag'
@@ -14,6 +14,7 @@ import { eventBus } from '~/eventBus'
 
 definePageMeta({ public: false })
 
+const { $gqlFetch } = useNuxtApp()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
@@ -144,16 +145,47 @@ const unsubscribeFromOrder = (orderId: string) => {
     }
 }
 
+// Polling fallback for when WebSocket subscriptions fail (mobile Safari, CORS, etc.)
+let pollTimer: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
     // Subscribe to all active (non-terminated) orders for live updates
-    orders.value
-        .filter(o => !isOrderCompleted(o.status))
-        .forEach(o => subscribeToOrder(o.id))
+    const activeOrders = orders.value.filter(o => !isOrderCompleted(o.status))
+    activeOrders.forEach(o => subscribeToOrder(o.id))
+
+    // Start polling fallback if there are active orders
+    if (activeOrders.length > 0) {
+        pollTimer = setInterval(async () => {
+            try {
+                const fresh = await $gqlFetch<{ myOrders: Order[] }>(print(MY_ORDERS))
+                if (fresh?.myOrders && dataOrders.value) {
+                    for (const freshOrder of fresh.myOrders) {
+                        const current = orders.value.find(o => o.id === freshOrder.id)
+                        if (current && current.status !== freshOrder.status) {
+                            liveOrderData.value[freshOrder.id] = {
+                                ...liveOrderData.value[freshOrder.id],
+                                ...freshOrder,
+                            }
+                        }
+                    }
+                    // Stop polling if no more active orders
+                    if (!fresh.myOrders.some(o => !isOrderCompleted(o.status)) && pollTimer) {
+                        clearInterval(pollTimer)
+                        pollTimer = null
+                    }
+                }
+            } catch { /* Polling errors are non-critical */ }
+        }, 30_000)
+    }
 })
 
 onUnmounted(() => {
     subscriptionStops.forEach((stopFn) => stopFn())
     subscriptionStops.clear()
+    if (pollTimer) {
+        clearInterval(pollTimer)
+        pollTimer = null
+    }
 })
 
 const getTrackedOrder = (order: Order): Order => {

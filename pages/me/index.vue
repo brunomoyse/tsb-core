@@ -91,16 +91,9 @@ const CANCEL_DELETION_REQUEST = gql`
         }
     }
 `
-const RESEND_VERIFICATION = gql`
-    mutation {
-        resendVerificationEmail
-    }
-`
-
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
 const { mutate: mutationRequestDeletion } = useGqlMutation<{ requestDeletion: User }>(REQUEST_DELETION)
 const { mutate: mutationCancelDeletionRequest } = useGqlMutation<{ cancelDeletionRequest: User }>(CANCEL_DELETION_REQUEST)
-const { mutate: mutationResendVerification } = useGqlMutation<{ resendVerificationEmail: boolean }>(RESEND_VERIFICATION)
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -310,44 +303,7 @@ const submitChangePassword = async () => {
     }
 }
 
-// ── Feature 2: Email Verification Resend ──
-
-const resendCooldown = ref(0)
-const resendLoading = ref(false)
-let cooldownInterval: ReturnType<typeof setInterval> | null = null
-
-const handleResendVerification = async () => {
-    if (resendCooldown.value > 0 || resendLoading.value) return
-    resendLoading.value = true
-    try {
-        await mutationResendVerification()
-        eventBus.emit('notify', {
-            message: t('me.verify.resendSuccess'),
-            persistent: false,
-            duration: 3000,
-            variant: 'success',
-        })
-        resendCooldown.value = 60
-        cooldownInterval = setInterval(() => {
-            resendCooldown.value--
-            if (resendCooldown.value <= 0 && cooldownInterval) {
-                clearInterval(cooldownInterval)
-                cooldownInterval = null
-            }
-        }, 1000)
-    } catch {
-        eventBus.emit('notify', {
-            message: t('me.verify.resendError'),
-            persistent: false,
-            duration: 5000,
-            variant: 'error',
-        })
-    } finally {
-        resendLoading.value = false
-    }
-}
-
-// ── Feature 3: Notification Preferences ──
+// ── Feature 2: Notification Preferences ──
 
 const notifyMarketing = computed(() => authStore.user?.notifyMarketing ?? true)
 
@@ -420,33 +376,14 @@ const toggleNotifyMarketing = async () => {
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.profile.email') }}</span>
                     <span class="text-sm text-gray-900 mt-1 break-all">{{ authStore.user?.email || '–' }}</span>
 
-                    <!-- Email verification status -->
+                    <!-- Email verification status (verified if logged in via Zitadel) -->
                     <div class="mt-2">
-                        <span
-                            v-if="authStore.user?.emailVerifiedAt"
-                            class="inline-flex items-center gap-1 text-xs text-green-600"
-                        >
+                        <span class="inline-flex items-center gap-1 text-xs text-green-600">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             {{ t('me.verify.verified') }}
                         </span>
-                        <template v-else>
-                            <span class="inline-flex items-center gap-1 text-xs text-amber-600">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
-                                </svg>
-                                {{ t('me.verify.notVerified') }}
-                            </span>
-                            <button
-                                type="button"
-                                class="mt-1 block text-xs text-red-500 hover:text-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                :disabled="resendCooldown > 0 || resendLoading"
-                                @click="handleResendVerification"
-                            >
-                                {{ resendCooldown > 0 ? `${t('me.verify.resendButton')} (${resendCooldown}s)` : t('me.verify.resendButton') }}
-                            </button>
-                        </template>
                     </div>
                 </div>
             </div>

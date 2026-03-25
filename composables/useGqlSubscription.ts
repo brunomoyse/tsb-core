@@ -1,9 +1,8 @@
 // Composables/useGqlSubscription.ts
 import { type DocumentNode, print } from 'graphql'
 import { onScopeDispose, ref } from 'vue'
-import { useCookie, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
 import type { Client } from 'graphql-ws'
-import { useTokenStore } from '~/composables/useTokenStore'
 
 let wsClient: Client | null = null
 let wsClientPromise: Promise<Client> | null = null
@@ -11,20 +10,17 @@ let wsClientPromise: Promise<Client> | null = null
 const getWsClient = (): Promise<Client> => {
     if (wsClient) return Promise.resolve(wsClient)
     if (!wsClientPromise) {
-        wsClientPromise = import('graphql-ws').then(({ createClient }) => {
+        wsClientPromise = Promise.all([
+            import('graphql-ws'),
+            import('~/composables/useOidc'),
+        ]).then(([{ createClient }, { useOidc }]) => {
             const cfg = useRuntimeConfig()
-            const isCapacitor = cfg.public.appBuild === 'capacitor'
-            const tokenStore = useTokenStore()
+            const { getAccessToken } = useOidc()
 
             const client = createClient({
                 url: cfg.public.graphqlWs as string,
                 connectionParams: async () => {
-                    if (isCapacitor) {
-                        const token = await tokenStore.getAccessToken()
-                        return token ? { Authorization: `Bearer ${token}` } : {}
-                    }
-                    // Cookie header is sent automatically with the WebSocket upgrade request
-                    const token = useCookie('access_token').value
+                    const token = await getAccessToken()
                     return token ? { Authorization: `Bearer ${token}` } : {}
                 },
                 retryAttempts: Infinity,

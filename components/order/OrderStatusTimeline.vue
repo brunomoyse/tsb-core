@@ -146,19 +146,19 @@ const pathClasses = (index: number) => {
         return `${baseWidth} border-solid border-emerald-400`
     }
 
-    // Past → Past
+    // Past → Past (fully completed)
     if (index < currentIndex.value - 1) {
         return `${baseWidth} border-solid border-emerald-400`
     }
 
-    // Past → Current (transition)
+    // Past → Current (transition: green fading to gray — we're approaching this step)
     if (index === currentIndex.value - 1) {
-        return `${baseWidth} border-solid border-emerald-400`
+        return `${baseWidth} zen-path-transition`
     }
 
-    // Current → Next (gradient dashed)
+    // Current → Next (future dashed)
     if (index === currentIndex.value) {
-        return `${baseWidth} zen-path-transition`
+        return `${baseWidth} zen-path-future`
     }
 
     // Future → Future (raked sand)

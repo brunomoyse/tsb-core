@@ -142,7 +142,12 @@
     "noAccount": "Vous n'avez pas de compte?",
     "register": "Créer un compte",
     "submit": "Connexion",
-    "ssoGoogle": "Connexion avec Google"
+    "ssoGoogle": "Connexion avec Google",
+    "ssoFacebook": "Connexion avec Facebook",
+    "ssoApple": "Connexion avec Apple",
+    "authenticating": "Authentification en cours...",
+    "callbackError": "L'authentification a échoué. Veuillez réessayer.",
+    "tryAgain": "Réessayer"
   },
   "register": {
     "title": "Inscription",
