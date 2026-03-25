@@ -423,7 +423,8 @@
         "ordersLoadFailed": "Impossible de charger vos commandes.",
         "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
         "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
-        "oauthFailed": "La connexion a échoué. Veuillez réessayer."
+        "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
+        "noPassword": "Ce compte utilise une connexion sociale (Google, Facebook ou Apple). Veuillez utiliser le bouton correspondant ci-dessous."
     }
   },
   "schema": {
