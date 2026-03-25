@@ -215,6 +215,16 @@ const handleCancelDeletionRequest = async () => {
 
 // ── Feature 1: Change Password ──
 
+const hasPassword = ref(false)
+onMounted(async () => {
+    try {
+        const res = await $api<{ hasPassword: boolean }>('/auth/has-password')
+        hasPassword.value = res.hasPassword
+    } catch {
+        hasPassword.value = false
+    }
+})
+
 const showPasswordModal = ref(false)
 const passwordModalRef = ref<HTMLElement | null>(null)
 useFocusTrap(passwordModalRef)
@@ -273,7 +283,7 @@ const submitChangePassword = async () => {
 
     passwordLoading.value = true
     try {
-        await $api('/change-password', {
+        await $api('/auth/change-password', {
             method: 'POST',
             body: { currentPassword: currentPassword.value, newPassword: newPassword.value },
         })
@@ -423,8 +433,8 @@ const toggleNotifyMarketing = async () => {
                 </div>
             </div>
 
-            <!-- Password cell -->
-            <div class="bento-password bento-cell" style="--delay: 5">
+            <!-- Password cell (hidden for OAuth-only users) -->
+            <div v-if="hasPassword" class="bento-password bento-cell" style="--delay: 5">
                 <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
                         <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
