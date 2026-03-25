@@ -38,7 +38,7 @@
     "nuxt": "^4.4.2",
     "oidc-client-ts": "^3.5.0",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "posthog-js": "^1.360.1"
+    "posthog-js": "^1.363.5"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.2.0",
