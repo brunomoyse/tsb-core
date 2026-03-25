@@ -74,28 +74,31 @@
                 {{ $t('checkout.orderDisabled', 'Ordering is temporarily disabled.') }}
             </p>
 
-            <!-- Restaurant closed by hours -->
-            <p v-else-if="!isOpen" class="text-red-600 font-semibold">
-                {{ $t('checkout.restaurantClosed', 'Sorry, we are closed right now.') }}
+            <!-- Restaurant closed and no same-day slots -->
+            <p v-else-if="!isOpen && availableFixedSlots.length === 0" class="text-red-600 font-semibold">
+                {{ $t('checkout.noRemainingSlotsToday', 'No remaining time slots for today.') }}
             </p>
             <div v-else>
+                <p v-if="!isOpen" class="text-amber-700 text-sm mb-2">
+                    {{ $t('checkout.asapUnavailableWhileClosed', 'ASAP is unavailable while closed. Please select a fixed time for today.') }}
+                </p>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     {{ $t('checkout.preferredTime', 'Preferred Time') }}
                 </label>
 
-                <!-- Open & ordering enabled: show ASAP + timeslots -->
+                <!-- Open: ASAP + slots; Closed: fixed slots only -->
                 <select
                     v-model="preferredReadyTime"
                     data-testid="checkout-preferred-time"
                     class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                 >
-                    <option value="ASAP">{{ asapLabel }}</option>
+                    <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
                     <option
-                        v-for="slot in availableTimeSlots"
-                        :key="slot"
-                        :value="slot"
+                        v-for="slot in availableFixedSlots"
+                        :key="slot.value"
+                        :value="slot.value"
                     >
-                        {{ slot }}
+                        {{ slot.label }}
                     </option>
                 </select>
             </div>
@@ -106,10 +109,11 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { formatAddress } from '~/utils/utils'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
+import { getAvailableFixedSlotsToday } from '~/utils/openingHours'
+import { formatAddress } from '~/utils/utils'
 
 interface OpeningHourEntry {
     open: string
@@ -156,37 +160,17 @@ onMounted(() => {
 })
 onUnmounted(() => { clearInterval(timerId) })
 
-// Day name mapping for backend opening hours
-const dayNameToNumber: Record<string, number> = {
-    sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
-    thursday: 4, friday: 5, saturday: 6,
+const fallbackOpeningHours: Record<string, OpeningHourEntry | null> = {
+    monday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
+    tuesday: null,
+    wednesday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
+    thursday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
+    friday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
+    saturday: { open: '11:45', close: '14:30', dinnerOpen: '17:45', dinnerClose: '22:15' },
+    sunday: { open: '11:45', close: '14:30', dinnerOpen: '17:45', dinnerClose: '22:15' },
 }
 
-// Convert backend opening hours to hoursMap format
-const hoursMap = computed<Record<number, [string, string][]>>(() => {
-    if (openingHours) {
-        const result: Record<number, [string, string][]> = {}
-        for (const [dayName, entry] of Object.entries(openingHours)) {
-            const dayNum = dayNameToNumber[dayName.toLowerCase()]
-            if (dayNum === undefined || !entry) continue
-            const ranges: [string, string][] = [[entry.open, entry.close]]
-            if (entry.dinnerOpen && entry.dinnerClose) {
-                ranges.push([entry.dinnerOpen, entry.dinnerClose])
-            }
-            result[dayNum] = ranges
-        }
-        return result
-    }
-    // Fallback: hardcoded hours
-    return {
-        1: [['11:45','14:00'], ['17:45','22:00']], // Mon
-        3: [['11:45','14:00'], ['17:45','22:00']], // Wed
-        4: [['11:45','14:00'], ['17:45','22:00']], // Thu
-        5: [['11:45','14:00'], ['17:45','22:00']], // Fri
-        6: [['11:45','14:30'], ['17:45','22:15']], // Sat
-        0: [['11:45','14:30'], ['17:45','22:15']], // Sun
-    }
-})
+const openingHoursSource = computed<Record<string, OpeningHourEntry | null>>(() => openingHours ?? fallbackOpeningHours)
 
 // Helpers
 const toMins = (hm: string) => {
@@ -196,41 +180,11 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-// Compute min allowed time = now + 1h
-const minAllowedTime = computed(() => {
-    const future = new Date(now.value.getTime() + 60 * 60 * 1000)
-    const hh = future.getHours().toString().padStart(2, '0')
-    const mm = future.getMinutes().toString().padStart(2, '0')
-    return `${hh}:${mm}`
-})
+const availableFixedSlots = computed(() =>
+    getAvailableFixedSlotsToday(openingHoursSource.value, now.value)
+)
 
-// Generate 15-minute slots between start/end
-const generateTimeSlots = (start: string, end: string) => {
-    const slots: string[] = []
-    const endM = toMins(end)
-    let cur = toMins(start)
-    while (cur <= endM) {
-        const h = Math.floor(cur / 60).toString().padStart(2,'0')
-        const m = (cur % 60).toString().padStart(2,'0')
-        slots.push(`${h}:${m}`)
-        cur += 15
-    }
-    return slots
-}
-
-// Filtered slots >= minAllowedTime
-const availableTimeSlots = computed(() => {
-    const day = now.value.getDay()
-    const ranges = hoursMap.value[day] || []
-    const raw: string[] = []
-    for (const [s,e] of ranges) {
-        raw.push(...generateTimeSlots(s,e))
-    }
-    const minM = toMins(minAllowedTime.value)
-    return raw.filter(slot => toMins(slot) >= minM)
-})
-
-// Auto-reset if selected slot falls below minAllowedTime
+// Selected preferred time binding
 const preferredReadyTime = computed<string>({
     get: () => cartStore.preferredReadyTime ?? 'ASAP',
     set: v => {
@@ -243,32 +197,47 @@ const preferredReadyTime = computed<string>({
     }
 })
 
-watch(
-    [availableTimeSlots, minAllowedTime],
-    () => {
-        if (
-            preferredReadyTime.value !== 'ASAP' &&
-            !availableTimeSlots.value.includes(preferredReadyTime.value)
-        ) {
-            preferredReadyTime.value = 'ASAP'
-        }
-    },
-    { immediate: true }
-)
-
 // Is restaurant open? Use backend value when available, fallback to local hours check
 const isOpen = computed(() => {
     if (isCurrentlyOpen !== undefined) {
         return isCurrentlyOpen
     }
-    const day = now.value.getDay()
-    const ranges = hoursMap.value[day] || []
+    const dayKey = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.value.getDay()]!
+    const schedule = openingHoursSource.value[dayKey]
+    if (!schedule) return false
+
+    const ranges: [string, string][] = [[schedule.open, schedule.close]]
+    if (schedule.dinnerOpen && schedule.dinnerClose) {
+        ranges.push([schedule.dinnerOpen, schedule.dinnerClose])
+    }
     const cur = now.value.getHours() * 60 + now.value.getMinutes()
     return ranges.some(([s,e]) => {
         const end = toMins(e), start = toMins(s)
-        return cur >= start && cur <= end
+        return cur >= start && cur < end
     })
 })
+
+watch(
+    [availableFixedSlots, isOpen],
+    () => {
+        const isSelectedFixedSlot = preferredReadyTime.value !== 'ASAP'
+        const hasSelectedSlot = availableFixedSlots.value.some((slot) => slot.value === preferredReadyTime.value)
+
+        if (!isOpen.value && availableFixedSlots.value.length > 0 && (!isSelectedFixedSlot || !hasSelectedSlot)) {
+            preferredReadyTime.value = availableFixedSlots.value[0]!.value
+            return
+        }
+
+        if (isSelectedFixedSlot && !hasSelectedSlot) {
+            preferredReadyTime.value = 'ASAP'
+        }
+
+        if (!isOpen.value && preferredReadyTime.value === 'ASAP') {
+            cartStore.preferredReadyTime = null
+        }
+    },
+    { immediate: true }
+)
 
 // Address extra binding
 const addressExtra = computed({

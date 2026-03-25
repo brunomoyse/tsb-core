@@ -140,9 +140,8 @@ import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.v
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
-import { getNextOpeningTime } from '~/utils/openingHours'
+import { getNextOpeningTime, hasAvailableFixedSlotsToday } from '~/utils/openingHours'
 import gql from 'graphql-tag'
-import { timeToRFC3339 } from '~/utils/utils'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
@@ -158,7 +157,14 @@ const { trackEvent } = useTracking()
 
 // Check restaurant ordering status
 const { config: restaurantConfig } = await useRestaurantConfig()
-const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
+const openingHours = computed(() => restaurantConfig.value?.restaurantConfig?.openingHours)
+const isCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
+const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
+const hasFixedSlotsToday = computed(() => {
+    if (!openingHours.value) return false
+    return hasAvailableFixedSlotsToday(openingHours.value)
+})
+const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isCurrentlyOpen.value || hasFixedSlotsToday.value))
 
 const nextOpeningTime = computed(() => {
     const hours = restaurantConfig.value?.restaurantConfig?.openingHours
@@ -296,9 +302,19 @@ const handleCheckout = async () => {
     }
 
     try {
-        if (!isOrderingAvailable.value) {
+        if (!isOrderingEnabled.value) {
             eventBus.emit('notify', {
                 message: t('notify.errors.orderingUnavailable'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
+            return
+        }
+
+        if (!isCurrentlyOpen.value && !cartStore.preferredReadyTime) {
+            eventBus.emit('notify', {
+                message: t('notify.errors.fixedTimeRequiredWhileClosed'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
@@ -340,10 +356,11 @@ const handleCheckout = async () => {
             return
         }
 
-        // Send asap as null
+        // Send ASAP as null. Fixed slots are already RFC3339 values.
+        const { preferredReadyTime: selectedPreferredReadyTime } = cartStore
         let preferredReadyTime = null
-        if (cartStore.preferredReadyTime !== 'ASAP' && cartStore.preferredReadyTime) {
-            preferredReadyTime = timeToRFC3339(cartStore.preferredReadyTime)
+        if (selectedPreferredReadyTime) {
+            preferredReadyTime = selectedPreferredReadyTime
         }
 
         // Extras could be managed globally or via events; this is a placeholder.
