@@ -17,7 +17,7 @@ const csp = `${[
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
     "font-src 'self' https://fonts.gstatic.com",
     `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${posthogHost} https://eu-assets.i.posthog.com`,
-    `frame-src ${osm}`,
+    `frame-src ${osm} ${zitadelOrigin}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
 
