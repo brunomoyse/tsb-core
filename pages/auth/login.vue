@@ -237,9 +237,13 @@ const login = async () => {
         loading.value = false
         if (import.meta.dev) console.error('Login error:', error)
         const status = error?.response?.status || error?.statusCode
+        const errorCode = error?.data?.error
         if (status === 429) {
             trackEvent('login_error', { error_type: 'rate_limited' })
             errorMessage.value = t('notify.errors.tooManyRequests')
+        } else if (errorCode === 'no_password') {
+            trackEvent('login_error', { error_type: 'no_password' })
+            errorMessage.value = t('notify.errors.noPassword')
         } else {
             trackEvent('login_error', { error_type: 'invalid_credentials' })
             errorMessage.value = t('notify.errors.invalidCredentials')
