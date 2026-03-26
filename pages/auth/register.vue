@@ -53,9 +53,24 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900">{{ $t('register.successTitle') }}</h3>
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $t('register.successCheckEmail') }}</p>
-                            <NuxtLinkLocale to="/auth/login" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
-                                {{ $t('login.title') }}
-                            </NuxtLinkLocale>
+
+                            <!-- Resend verification email -->
+                            <p v-if="resendSent" class="text-sm text-green-600 font-medium">{{ $t('verify.sent') }}</p>
+                            <button
+                                v-else
+                                :disabled="resendCooldown > 0"
+                                class="inline-block bg-red-500 text-white py-2.5 px-6 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="resendEmail"
+                            >
+                                {{ resendCooldown > 0 ? `${$t('verify.resend')} (${resendCooldown}s)` : $t('verify.resend') }}
+                            </button>
+
+                            <!-- Login link -->
+                            <p class="text-sm text-gray-500">
+                                <NuxtLinkLocale to="/auth/login" class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                                    {{ $t('login.title') }}
+                                </NuxtLinkLocale>
+                            </p>
                         </div>
                     </template>
 
@@ -95,7 +110,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { createUser } = useZitadelApi()
+const { createUser, resendVerification } = useZitadelApi()
 const { trackEvent } = useTracking()
 
 useSeoMeta({
@@ -106,6 +121,33 @@ useSeoMeta({
 
 const registered = ref(false)
 const errorMessage = ref('')
+const registeredEmail = ref('')
+const resendCooldown = ref(20)
+const resendSent = ref(false)
+let cooldownTimer: ReturnType<typeof setInterval> | null = null
+
+const startCooldown = () => {
+    resendCooldown.value = 20
+    cooldownTimer = setInterval(() => {
+        resendCooldown.value--
+        if (resendCooldown.value <= 0 && cooldownTimer) {
+            clearInterval(cooldownTimer)
+            cooldownTimer = null
+        }
+    }, 1000)
+}
+
+const resendEmail = async () => {
+    if (!registeredEmail.value) return
+    try {
+        await resendVerification(registeredEmail.value)
+        resendSent.value = true
+        setTimeout(() => { resendSent.value = false }, 5000)
+        startCooldown()
+    } catch {
+        // Silent — rate limiter will handle abuse
+    }
+}
 
 // Handle the submitted data from UserForm
 const registerUser = async (formData: any) => {
@@ -122,7 +164,9 @@ const registerUser = async (formData: any) => {
         })
 
         trackEvent('user_registered')
+        registeredEmail.value = email
         registered.value = true
+        startCooldown()
     } catch (error: any) {
         const status = error?.response?.status || error?.statusCode
         if (import.meta.dev) console.error('Registration error:', error)

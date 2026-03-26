@@ -80,9 +80,18 @@
                         </div>
 
                         <!-- Inline Error -->
-                        <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
-                            {{ errorMessage }}
-                        </p>
+                        <div v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                            <p>{{ errorMessage }}</p>
+                            <!-- Resend verification email button -->
+                            <button
+                                v-if="showResendVerification"
+                                :disabled="resendCooldown > 0"
+                                class="mt-2 text-red-500 font-medium underline hover:text-red-600 transition-colors duration-300 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                                @click="resendEmail"
+                            >
+                                {{ resendSent ? $t('verify.sent') : resendCooldown > 0 ? `${$t('verify.resend')} (${resendCooldown}s)` : $t('verify.resend') }}
+                            </button>
+                        </div>
 
                         <!-- Submit Button -->
                         <button
@@ -176,6 +185,31 @@ const password = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
 const sessionExpired = ref(false)
+const showResendVerification = ref(false)
+const resendCooldown = ref(0)
+const resendSent = ref(false)
+let cooldownTimer: ReturnType<typeof setInterval> | null = null
+
+const resendEmail = async () => {
+    if (!email.value) return
+    try {
+        const { useZitadelApi } = await import('~/composables/useZitadelApi')
+        const { resendVerification } = useZitadelApi()
+        await resendVerification(email.value)
+        resendSent.value = true
+        resendCooldown.value = 20
+        cooldownTimer = setInterval(() => {
+            resendCooldown.value--
+            if (resendCooldown.value <= 0 && cooldownTimer) {
+                clearInterval(cooldownTimer)
+                cooldownTimer = null
+            }
+        }, 1000)
+        setTimeout(() => { resendSent.value = false }, 5000)
+    } catch {
+        // Silent
+    }
+}
 
 const authRequestId = computed(() => (route.query.authRequestID as string) || (route.query.authRequest as string) || '')
 
@@ -216,6 +250,7 @@ onMounted(async () => {
 const login = async () => {
     if (import.meta.server) return
     errorMessage.value = ''
+    showResendVerification.value = false
     loading.value = true
 
     try {
@@ -242,6 +277,10 @@ const login = async () => {
         if (status === 429) {
             trackEvent('login_error', { error_type: 'rate_limited' })
             errorMessage.value = t('notify.errors.tooManyRequests')
+        } else if (errorCode === 'email_not_verified') {
+            trackEvent('login_error', { error_type: 'email_not_verified' })
+            errorMessage.value = t('notify.errors.emailNotVerified')
+            showResendVerification.value = true
         } else if (errorCode === 'no_password') {
             trackEvent('login_error', { error_type: 'no_password' })
             errorMessage.value = t('notify.errors.noPassword')
