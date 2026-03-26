@@ -425,7 +425,7 @@
       "invoiceDownloadFailed": "发票下载失败。",
       "sessionExpired": "您的会话已过期，请重新登录。",
       "oauthFailed": "登录失败，请重试。",
-      "noPassword": "此账户使用社交登录（Google、Facebook 或 Apple）。请使用下方对应的按钮登录。"
+      "noPassword": "此账户没有密码。请使用下方的 Google、Facebook 或 Apple 登录，或使用「忘记密码」创建密码。"
     }
   },
   "schema": {
