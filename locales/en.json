@@ -425,7 +425,7 @@
       "invoiceDownloadFailed": "Invoice download failed.",
       "sessionExpired": "Your session has expired. Please log in again.",
       "oauthFailed": "Login failed. Please try again.",
-      "noPassword": "This account uses social login (Google, Facebook, or Apple). Please use the corresponding button below."
+      "noPassword": "This account doesn't have a password. Sign in with Google, Facebook, or Apple below, or use \"Forgot password\" to create one."
     }
   },
   "schema": {
