@@ -189,6 +189,8 @@
     "deliveryInfoTitle": "配送信息（可选）",
     "deliveryInfoDescription": "仅在您需要配送时填写。",
     "hasAccount": "已有账户？",
+    "successTitle": "账户已创建！",
+    "successCheckEmail": "我们已发送验证邮件到您的邮箱，请点击链接激活您的账户。",
     "errors": {
       "email_already_exists": "该邮箱地址已注册。",
       "invalid_email_format": "邮箱地址格式无效。",

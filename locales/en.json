@@ -189,6 +189,8 @@
     "deliveryInfoTitle": "Delivery Information (optional)",
     "deliveryInfoDescription": "Required only if you want to order for delivery.",
     "hasAccount": "Already have an account?",
+    "successTitle": "Account Created!",
+    "successCheckEmail": "We've sent a verification email to your inbox. Please click the link to activate your account.",
     "errors": {
       "email_already_exists": "An account with this email address already exists.",
       "invalid_email_format": "The email address format is invalid.",
