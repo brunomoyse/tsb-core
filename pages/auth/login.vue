@@ -274,7 +274,12 @@ const startIdpFlow = async (provider: string) => {
     } catch (error: any) {
         loading.value = false
         if (import.meta.dev) console.error('IdP start error:', error)
-        errorMessage.value = t('notify.errors.oauthFailed')
+        const status = error?.response?.status || error?.statusCode
+        if (status === 429) {
+            errorMessage.value = t('notify.errors.tooManyRequests')
+        } else {
+            errorMessage.value = t('notify.errors.oauthFailed')
+        }
     }
 }
 
