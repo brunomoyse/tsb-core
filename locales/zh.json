@@ -539,6 +539,15 @@
     "error": "发送验证邮件失败，请重试。",
     "dismiss": "关闭"
   },
+  "verifyEmail": {
+    "title": "邮箱验证",
+    "verifying": "正在验证您的邮箱地址...",
+    "successTitle": "邮箱已验证！",
+    "successMessage": "您的邮箱已成功验证。您现在可以登录您的账户。",
+    "errorTitle": "验证失败",
+    "invalidLink": "此验证链接无效。请检查您邮件中的链接。",
+    "expiredOrInvalid": "此验证链接已过期或无效。请重新申请验证邮件。"
+  },
   "cookies": {
     "message": "本网站使用必要的 Cookie 进行身份验证。我们还使用分析 Cookie 来了解您如何使用我们的网站。您可以接受或拒绝分析 Cookie。",
     "learnMore": "阅读我们的Cookie政策",

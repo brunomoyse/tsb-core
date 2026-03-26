@@ -539,6 +539,15 @@
     "error": "Failed to send verification email. Please try again.",
     "dismiss": "Dismiss"
   },
+  "verifyEmail": {
+    "title": "Email Verification",
+    "verifying": "Verifying your email address...",
+    "successTitle": "Email Verified!",
+    "successMessage": "Your email has been verified successfully. You can now log in to your account.",
+    "errorTitle": "Verification Failed",
+    "invalidLink": "This verification link is invalid. Please check the link in your email.",
+    "expiredOrInvalid": "This verification link has expired or is invalid. Please request a new verification email."
+  },
   "cookies": {
     "message": "This site uses essential cookies for authentication. We also use analytics cookies to understand how you use our site. You can accept or decline analytics cookies.",
     "learnMore": "Read our cookie policy",
