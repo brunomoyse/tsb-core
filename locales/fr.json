@@ -538,6 +538,15 @@
     "error": "Échec de l'envoi de l'e-mail de vérification. Veuillez réessayer.",
     "dismiss": "Fermer"
   },
+  "verifyEmail": {
+    "title": "Vérification de l'e-mail",
+    "verifying": "Vérification de votre adresse e-mail...",
+    "successTitle": "E-mail vérifié !",
+    "successMessage": "Votre e-mail a été vérifié avec succès. Vous pouvez maintenant vous connecter à votre compte.",
+    "errorTitle": "Échec de la vérification",
+    "invalidLink": "Ce lien de vérification est invalide. Veuillez vérifier le lien dans votre e-mail.",
+    "expiredOrInvalid": "Ce lien de vérification a expiré ou est invalide. Veuillez demander un nouvel e-mail de vérification."
+  },
   "cookies": {
     "message": "Ce site utilise des cookies essentiels pour l'authentification. Nous utilisons également des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez accepter ou refuser les cookies analytiques.",
     "learnMore": "Lire notre politique de cookies",

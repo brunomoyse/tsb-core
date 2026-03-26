@@ -1,3 +1,4 @@
+import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 
 interface SessionResponse {
@@ -13,12 +14,21 @@ interface IdpStartResponse {
     authUrl: string
 }
 
+interface CreateUserParams {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    phone?: string
+}
+
 /**
  * Calls tsb-service auth proxy endpoints which forward to Zitadel's Session API.
  * The proxy adds the service account PAT — the frontend never touches Zitadel directly.
  */
 export function useZitadelApi() {
     const config = useRuntimeConfig()
+    const { locale } = useI18n()
     const apiUrl = config.public.api as string
 
     /** Create a session with email + password (login via proxy). */
@@ -53,10 +63,46 @@ export function useZitadelApi() {
         })
     }
 
+    /** Register a new user (creates Zitadel user, sends verification email via Scaleway). */
+    function createUser(params: CreateUserParams): Promise<void> {
+        return $fetch(`${apiUrl}/auth/register`, {
+            method: 'POST',
+            body: { ...params, lang: locale.value },
+        })
+    }
+
+    /** Request a password reset email for the given address. */
+    function requestPasswordReset(email: string): Promise<void> {
+        return $fetch(`${apiUrl}/auth/password/request-reset`, {
+            method: 'POST',
+            body: { email, lang: locale.value },
+        })
+    }
+
+    /** Complete a password reset using the verification code from the email. */
+    function setNewPassword(userId: string, code: string, password: string): Promise<void> {
+        return $fetch(`${apiUrl}/auth/password/reset`, {
+            method: 'POST',
+            body: { userId, code, password },
+        })
+    }
+
+    /** Verify a user's email address using the code from the verification email. */
+    function verifyEmail(userId: string, code: string): Promise<void> {
+        return $fetch(`${apiUrl}/auth/verify-email`, {
+            method: 'POST',
+            body: { userId, code },
+        })
+    }
+
     return {
         createSession,
         finalizeOidcAuth,
         startIdpLogin,
         createIdpSession,
+        createUser,
+        requestPasswordReset,
+        setNewPassword,
+        verifyEmail,
     }
 }
