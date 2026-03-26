@@ -548,7 +548,7 @@
     "expiredOrInvalid": "Ce lien de vérification a expiré ou est invalide. Veuillez demander un nouvel e-mail de vérification."
   },
   "cookies": {
-    "message": "Ce site utilise des cookies essentiels pour l'authentification. Nous utilisons également des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez accepter ou refuser les cookies analytiques.",
+    "message": "Ce site utilise des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez les accepter ou les refuser.",
     "learnMore": "Lire notre politique de cookies",
     "accept": "Accepter",
     "decline": "Refuser"
