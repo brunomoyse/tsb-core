@@ -1,7 +1,13 @@
 <template>
     <div class="flex justify-center items-center min-h-[50vh]">
         <div class="text-center">
-            <div v-if="error" class="text-red-600">
+            <div v-if="rateLimited" class="text-amber-700">
+                <p class="text-lg font-medium">{{ $t('notify.errors.tooManyRequests') }}</p>
+                <NuxtLinkLocale to="/auth/login" class="text-red-500 underline mt-2 inline-block">
+                    {{ $t('login.tryAgain') }}
+                </NuxtLinkLocale>
+            </div>
+            <div v-else-if="error" class="text-red-600">
                 <p class="text-lg font-medium">{{ $t('login.callbackError') }}</p>
                 <NuxtLinkLocale to="/auth/login" class="text-red-500 underline mt-2 inline-block">
                     {{ $t('login.tryAgain') }}
@@ -21,6 +27,7 @@ definePageMeta({ public: true })
 
 const route = useRoute()
 const error = ref(false)
+const rateLimited = ref(false)
 
 onMounted(async () => {
     // Check for IdP failure
@@ -56,9 +63,14 @@ onMounted(async () => {
 
         // Redirect to the OIDC callback URL (oidc-client-ts exchanges code for tokens)
         window.location.href = result.callbackUrl
-    } catch (e) {
+    } catch (e: any) {
         if (import.meta.dev) console.error('IdP callback error:', e)
-        error.value = true
+        const status = e?.response?.status || e?.statusCode
+        if (status === 429) {
+            rateLimited.value = true
+        } else {
+            error.value = true
+        }
     }
 })
 </script>
