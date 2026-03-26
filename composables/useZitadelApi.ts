@@ -1,4 +1,3 @@
-import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 
 interface SessionResponse {
@@ -28,8 +27,15 @@ interface CreateUserParams {
  */
 export function useZitadelApi() {
     const config = useRuntimeConfig()
-    const { locale } = useI18n()
     const apiUrl = config.public.api as string
+
+    /** Detect current locale from URL path (safe outside Vue setup context). */
+    function getLang(): string {
+        if (typeof window !== 'undefined') {
+            return window.location.pathname.split('/')[1] || 'fr'
+        }
+        return 'fr'
+    }
 
     /** Create a session with email + password (login via proxy). */
     function createSession(loginName: string, password: string): Promise<SessionResponse> {
@@ -67,7 +73,7 @@ export function useZitadelApi() {
     function createUser(params: CreateUserParams): Promise<void> {
         return $fetch(`${apiUrl}/auth/register`, {
             method: 'POST',
-            body: { ...params, lang: locale.value },
+            body: { ...params, lang: getLang() },
         })
     }
 
@@ -75,7 +81,7 @@ export function useZitadelApi() {
     function requestPasswordReset(email: string): Promise<void> {
         return $fetch(`${apiUrl}/auth/password/request-reset`, {
             method: 'POST',
-            body: { email, lang: locale.value },
+            body: { email, lang: getLang() },
         })
     }
 
