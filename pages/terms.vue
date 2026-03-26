@@ -5,7 +5,7 @@
             <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                 Conditions Générales de Vente
             </h1>
-            <p class="mt-3 text-sm text-gray-500">Dernière mise à jour : 01/04/2025</p>
+            <p class="mt-3 text-sm text-gray-500">Dernière mise à jour : 26/03/2026</p>
         </header>
 
         <!-- Company info -->
@@ -154,6 +154,8 @@
                 <p>Les données peuvent être transmises aux prestataires suivants, tous hébergés dans l&rsquo;Union européenne&nbsp;:</p>
                 <ul class="terms-list">
                     <li><strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne,</li>
+                    <li><strong>Zitadel</strong> (auto-hébergé, Gravelines, France) &mdash; fournisseur d&rsquo;identité et d&rsquo;authentification (protocole OIDC),</li>
+                    <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels (confirmation de commande, vérification de compte),</li>
                     <li><strong>PostHog</strong> (UE) &mdash; analyse de fréquentation (uniquement avec consentement),</li>
                     <li><strong>OVH</strong> (France) &mdash; hébergement du Site,</li>
                     <li><strong>Google</strong> (UE) &mdash; authentification OAuth (uniquement si le Client choisit cette option).</li>
@@ -188,18 +190,22 @@
             <section id="cookies" class="scroll-mt-24">
                 <h2 class="terms-heading">9. Cookies</h2>
 
+                <h3 class="terms-subheading">Authentification</h3>
+                <p>
+                    Le Site utilise le protocole OpenID Connect (OIDC) pour l&rsquo;authentification. Les jetons
+                    d&rsquo;accès sont stockés dans le <code>sessionStorage</code> du navigateur (mémoire de session)
+                    et ne sont pas transmis sous forme de cookies. Ils sont automatiquement supprimés à la fermeture
+                    du navigateur.
+                </p>
+
                 <h3 class="terms-subheading">Cookies essentiels</h3>
                 <p>
-                    Le Site utilise des cookies strictement nécessaires au fonctionnement du service et qui ne peuvent
-                    pas être désactivés&nbsp;:
+                    Le Site utilise un seul cookie strictement nécessaire au fonctionnement du service&nbsp;:
                 </p>
                 <ul class="terms-list">
                     <li>
-                        <strong>Jetons d&rsquo;authentification</strong> &mdash; cookies httpOnly pour maintenir la
-                        session utilisateur (accès&nbsp;: 1&nbsp;heure, rafraîchissement&nbsp;: 30&nbsp;jours).
-                    </li>
-                    <li>
-                        <strong>Préférence linguistique</strong> &mdash; cookie mémorisant la langue choisie.
+                        <strong>Préférence linguistique</strong> (<code>i18n_redirected</code>) &mdash; cookie
+                        mémorisant la langue choisie par le Client.
                     </li>
                 </ul>
 
@@ -223,7 +229,7 @@
             <section>
                 <h2 class="terms-heading">10. Hébergement</h2>
                 <p>
-                    Le Site est hébergé par OVH (OVHcloud), centre de données en France.
+                    Le Site est hébergé par OVH (OVHcloud), centre de données de Gravelines, France.
                 </p>
             </section>
 
