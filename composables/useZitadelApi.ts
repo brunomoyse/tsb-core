@@ -93,6 +93,14 @@ export function useZitadelApi() {
         })
     }
 
+    /** Resend the verification email for an unverified account. */
+    function resendVerification(email: string): Promise<void> {
+        return $fetch(`${apiUrl}/auth/resend-verification`, {
+            method: 'POST',
+            body: { email, lang: getLang() },
+        })
+    }
+
     /** Verify a user's email address using the code from the verification email. */
     function verifyEmail(userId: string, code: string): Promise<void> {
         return $fetch(`${apiUrl}/auth/verify-email`, {
@@ -110,5 +118,6 @@ export function useZitadelApi() {
         requestPasswordReset,
         setNewPassword,
         verifyEmail,
+        resendVerification,
     }
 }

@@ -426,7 +426,8 @@
         "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
         "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
         "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
-        "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google, Facebook ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un."
+        "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google, Facebook ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un.",
+        "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification."
     }
   },
   "schema": {
