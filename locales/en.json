@@ -549,7 +549,7 @@
     "expiredOrInvalid": "This verification link has expired or is invalid. Please request a new verification email."
   },
   "cookies": {
-    "message": "This site uses essential cookies for authentication. We also use analytics cookies to understand how you use our site. You can accept or decline analytics cookies.",
+    "message": "This site uses analytics cookies to understand how you use our site. You can accept or decline them.",
     "learnMore": "Read our cookie policy",
     "accept": "Accept",
     "decline": "Decline"
