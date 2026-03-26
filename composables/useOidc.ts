@@ -25,7 +25,7 @@ export function useOidc() {
             authority: config.public.zitadelAuthority as string,
             client_id: config.public.zitadelClientId as string,
             redirect_uri: `${baseUrl}/${locale}/auth/callback`,
-            post_logout_redirect_uri: `${baseUrl}/${locale}`,
+            post_logout_redirect_uri: baseUrl,
             response_type: 'code',
             scope: 'openid profile email urn:zitadel:iam:org:project:roles',
             automaticSilentRenew: true,
