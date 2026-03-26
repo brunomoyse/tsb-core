@@ -5,11 +5,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // Public pages skip auth check
     if (to.meta.public !== false) return
 
-    // Server-side: redirect to login page (public). The login page initiates OIDC on client.
-    if (import.meta.server) {
-        const locale = to.path.split('/')[1] || 'fr'
-        return navigateTo(`/${locale}/auth/login`)
-    }
+    // SSR: skip auth check — OIDC tokens live in sessionStorage (client-only).
+    // Client-side middleware handles authentication after hydration.
+    if (import.meta.server) return
 
     // Client-side: check OIDC session
     const { useOidc } = await import('~/composables/useOidc')
