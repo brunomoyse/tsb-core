@@ -1,6 +1,7 @@
 import { defineI18nConfig } from '#imports'
 import en from './locales/en.json'
 import fr from './locales/fr.json'
+import nl from './locales/nl.json'
 import zh from './locales/zh.json'
 
 export default defineI18nConfig(() => ({
@@ -24,10 +25,17 @@ export default defineI18nConfig(() => ({
             file: "zh-CN.js",
             name: "中文",
         },
+        {
+            code: "nl",
+            iso: "nl-BE",
+            file: "nl-BE.js",
+            name: "Nederlands",
+        },
     ],
     messages: {
         en,
         fr,
+        nl,
         zh
     }
 }));

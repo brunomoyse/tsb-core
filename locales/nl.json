@@ -1,0 +1,606 @@
+{
+  "head": {
+    "title": "Tokyo Sushi Bar"
+  },
+  "common": {
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "toTop": "Naar boven",
+    "remove": "Verwijderen",
+    "close": "Sluiten",
+    "skipToContent": "Ga naar de hoofdinhoud"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "Over ons",
+    "menu": "Menu",
+    "book": "Reservering",
+    "contact": "Contact",
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "myAccount": "Mijn account",
+    "search": "Zoeken...",
+    "cart": "Winkelwagen",
+    "language": "Taal selecteren",
+    "toggleMenu": "Menu openen/sluiten"
+  },
+  "home": {
+    "about": "Over ons",
+    "menu": "Menu",
+    "book": "Reservering",
+    "contact": "Contact"
+  },
+  "contact": {
+    "title": "Contacteer ons",
+    "subtitle": "Bezoek ons, bel ons of reserveer vandaag nog een tafel!",
+    "viewLargerMap": "Bekijk de kaart groter",
+    "addressTitle": "Adres",
+    "address": "Rue de la Cathédrale 59, Liège, Belgique",
+    "phoneTitle": "Telefoon",
+    "emailTitle": "E-mail",
+    "reservationsTitle": "Reserveringen",
+    "reservationsLink": "Reserveer een tafel",
+    "openingHoursTitle": "Openingsuren",
+    "followUs": "Volg ons",
+    "day": "Dag",
+    "hours": "Uren",
+    "weekdays": "Maandag - Vrijdag",
+    "weekends": "Zaterdag - Zondag",
+    "closedTuesday": "Gesloten op dinsdag"
+  },
+  "about": {
+    "heroTitle": "Welkom bij Tokyo Sushi Bar",
+    "heroSubtitle": "Ontdek de beste smaken van Japan in Luik",
+    "ourStoryTitle": "Ons Verhaal",
+    "ourStoryText1": "In 2016 opende een jong koppel met een passie voor de Japanse keuken een klein restaurant in de Rue de la Régence in Luik, met de steun van hun ouders. Elke ochtend wordt de verse vis zorgvuldig geselecteerd en met de hand bereid om een onberispelijke kwaliteit te garanderen. De mond-tot-mondreclame deed snel zijn werk: tussen de klanten ter plaatse en de leveringsbestellingen was de kleine zaal al snel te klein.",
+    "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft Tokyo Sushi Bar een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
+    "ourStoryText3": "In 2026 viert Tokyo Sushi Bar zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde — dit avontuur is ook het uwe.",
+    "yearsOfPassion": "jaar passie",
+    "meetTheTeamTitle": "Ontmoet het Team",
+    "chefName": "Zhu Mengmeng",
+    "chefRole": "Chef",
+    "waitressName": "Xu Sa",
+    "waitressRole": "Verantwoordelijke",
+    "heroButton": "Bekijk het Menu",
+    "visitUsTitle": "Bezoek Ons",
+    "openingHoursLabel": "Openingsuren",
+    "contactLink": "Contacteer ons",
+    "infoCards": {
+      "freeDelivery": "Gratis levering",
+      "freeDeliveryDesc": "Gratis vanaf 25 €, met leveringskosten op basis van afstand daarboven.",
+      "takeawayDiscount": "Afhalen -10%",
+      "takeawayDiscountDesc": "10% korting op kortingsbare artikelen vanaf 20 € voor elke afhaalbestelling.",
+      "freshDaily": "Dagelijks vers",
+      "freshDailyDesc": "Onze vis wordt elke ochtend vers gesneden door onze chef voor een onberispelijke kwaliteit."
+    }
+  },
+  "menu": {
+    "showMore": "Meer tonen",
+    "showLess": "Minder tonen",
+    "pickCategory": "Kies een categorie",
+    "pickFilters": "Kies filters",
+    "choices": "keuzes",
+    "noProduct": "Geen producten beschikbaar",
+    "allergenNotice": "Onze producten kunnen vis, schaaldieren en lactose bevatten. Gelieve ons te informeren over eventuele allergieën.",
+    "allergenNoticeLink": "04 222 98 88",
+    "unavailable": "Niet beschikbaar",
+    "noResults": "Geen resultaten voor \"{query}\"",
+    "previousCategory": "Vorige categorie",
+    "nextCategory": "Volgende categorie",
+    "halal": "Halal",
+    "spicy": "Pikant",
+    "vegan": "Vegan",
+    "pc": "stuk",
+    "pcs": "stuks",
+    "addToCart": "Toevoegen",
+    "selectChoice": "Kies een optie",
+    "price": "Prijs",
+    "code": "Code",
+    "description": "Beschrijving",
+    "discountable": "Korting mogelijk",
+    "yes": "Ja",
+    "no": "Nee",
+    "pickupDiscountBadge": "10% korting bij afhalen",
+    "restaurantClosed": "Het restaurant is momenteel gesloten. U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
+  },
+  "days": {
+    "monday": "Maandag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag",
+    "thursday": "Donderdag",
+    "friday": "Vrijdag",
+    "saturday": "Zaterdag",
+    "sunday": "Zondag"
+  },
+  "forgotPassword": {
+    "title": "Wachtwoord vergeten",
+    "description": "Voer uw e-mailadres in en wij sturen u een link om uw wachtwoord opnieuw in te stellen.",
+    "submit": "Link versturen",
+    "successTitle": "E-mail verstuurd",
+    "successMessage": "Als er een account bestaat met dit e-mailadres, ontvangt u binnenkort een link om uw wachtwoord opnieuw in te stellen. Controleer uw inbox.",
+    "backToLogin": "Terug naar inloggen"
+  },
+  "resetPassword": {
+    "title": "Wachtwoord opnieuw instellen",
+    "newPassword": "Nieuw wachtwoord",
+    "newPasswordPlaceholder": "Voer uw nieuw wachtwoord in",
+    "submit": "Wachtwoord opnieuw instellen",
+    "successTitle": "Wachtwoord opnieuw ingesteld",
+    "successMessage": "Uw wachtwoord is succesvol opnieuw ingesteld. U wordt doorgestuurd naar de inlogpagina.",
+    "invalidToken": "Deze link is ongeldig of verlopen.",
+    "requestNewLink": "Nieuwe link aanvragen",
+    "passwordsMismatch": "De wachtwoorden komen niet overeen."
+  },
+  "login": {
+    "title": "Inloggen",
+    "email": "E-mail",
+    "emailPlaceholder": "Voer uw e-mail in",
+    "password": "Wachtwoord",
+    "passwordPlaceholder": "Voer uw wachtwoord in",
+    "dividerOr": "of",
+    "forgot": "Wachtwoord vergeten?",
+    "noAccount": "Heeft u geen account?",
+    "register": "Account aanmaken",
+    "submit": "Inloggen",
+    "ssoGoogle": "Inloggen met Google",
+    "ssoFacebook": "Inloggen met Facebook",
+    "ssoApple": "Inloggen met Apple",
+    "authenticating": "Bezig met aanmelden...",
+    "callbackError": "De aanmelding is mislukt. Probeer het opnieuw.",
+    "tryAgain": "Opnieuw proberen"
+  },
+  "register": {
+    "title": "Registratie",
+    "firstName": "Voornaam",
+    "firstNamePlaceholder": "Voer uw voornaam in",
+    "lastName": "Achternaam",
+    "lastNamePlaceholder": "Voer uw achternaam in",
+    "email": "E-mail",
+    "emailPlaceholder": "Voer uw e-mailadres in",
+    "password": "Wachtwoord",
+    "passwordPlaceholder": "Voer uw wachtwoord in",
+    "confirmPassword": "Bevestig wachtwoord",
+    "confirmPasswordPlaceholder": "Voer uw wachtwoord opnieuw in",
+    "phone": "Telefoon",
+    "phonePlaceholder": "Voer uw telefoonnummer in",
+    "invalidPhone": "Ongeldig telefoonnummer",
+    "address": "Adres",
+    "streetPlaceholder": "Voer uw straatnaam in",
+    "houseNumberPlaceholder": "Voer uw huisnummer in",
+    "boxNumberPlaceholder": "Voer uw busnummer in",
+    "houseNumber": "Nummer",
+    "boxNumber": "Bus",
+    "submit": "Verzenden",
+    "confirmAddress": "Bevestig dat dit uw adres is",
+    "cantFindNumber": "Ik vind mijn nummer niet",
+    "backToList": "Terug naar de lijst",
+    "confirmManualAddress": "Adres bevestigen",
+    "manualAddressWarning": "Levering is beschikbaar binnen een straal van 9 km. Als uw adres verder ligt, wordt de bestelling geannuleerd.",
+    "passwordVeryWeak": "Zeer zwak",
+    "passwordWeak": "Zwak",
+    "passwordFair": "Gemiddeld",
+    "passwordGood": "Goed",
+    "passwordStrong": "Sterk",
+    "passwordMinLength": "Minstens 8 tekens",
+    "passwordUpperCase": "Een hoofdletter",
+    "passwordLowerCase": "Een kleine letter",
+    "passwordNumber": "Een cijfer",
+    "passwordSpecialChar": "Een speciaal teken",
+    "deliveryInfoTitle": "Leveringsinformatie (optioneel)",
+    "deliveryInfoDescription": "Alleen vereist als u een levering wenst te bestellen.",
+    "hasAccount": "Heeft u al een account?",
+    "successTitle": "Account aangemaakt!",
+    "successCheckEmail": "Wij hebben een verificatie-e-mail naar uw adres gestuurd. Klik op de link om uw account te activeren.",
+    "errors": {
+      "email_already_exists": "Er bestaat al een account met dit e-mailadres.",
+      "invalid_email_format": "Het formaat van het e-mailadres is ongeldig.",
+      "weak_password": "Het wachtwoord voldoet niet aan de beveiligingsvereisten.",
+      "registration_failed": "De registratie is mislukt. Probeer het opnieuw."
+    }
+  },
+  "me": {
+    "greeting": "Goedendag",
+    "subtitle": "Beheer uw profiel en bekijk uw bestellingen.",
+    "orders": {
+      "title": "Mijn bestellingen",
+      "recentTitle": "Recente bestellingen",
+      "viewAll": "Alles bekijken",
+      "viewAllCount": "Bekijk de {count} bestellingen",
+      "nextStep": "Volgende stap",
+      "backToAccount": "Mijn account",
+      "allOrdersTitle": "Al mijn bestellingen",
+      "loadMore": "Toon {count} meer",
+      "loadMoreLast": "Toon de laatste {count}",
+      "loading": "Bestellingen laden...",
+      "empty": "Geen bestellingen gevonden",
+      "order": "Bestelling",
+      "items": "Gerechten",
+      "total": "Totaal",
+      "follow": "Volgen",
+      "toggleOrder": "Bestelgegevens",
+      "downloadInvoice": "Factuur downloaden",
+      "status": {
+        "details": {
+          "title": {
+            "pending": "Bestelling ontvangen",
+            "confirmed": "Bevestigd door het restaurant",
+            "preparing": "In bereiding",
+            "awaitingPickUp": "Klaar om af te halen",
+            "outForDelivery": "Onderweg",
+            "delivered": "Geleverd",
+            "pickedUp": "Afgehaald"
+          }
+        },
+        "pending": "In afwachting",
+        "confirmed": "Bevestigd",
+        "preparing": "In bereiding",
+        "awaitingPickup": "Klaar om af te halen",
+        "pickedUp": "Afgehaald",
+        "outForDelivery": "Onderweg",
+        "delivered": "Geleverd",
+        "cancelled": "Geannuleerd",
+        "failed": "Mislukt"
+      }
+    },
+    "profile": {
+      "title": "Mijn profiel",
+      "name": "Naam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "address": "Adres",
+      "phoneNumber": "Telefoonnummer",
+      "update": "Profiel bijwerken",
+      "updateSuccess": "Het profiel is succesvol bijgewerkt.",
+      "requestDeletion": "Accountverwijdering aanvragen",
+      "requestDeletionConfirm": "Weet u zeker dat u de verwijdering van uw account wilt aanvragen? Het restaurantteam wordt op de hoogte gebracht.",
+      "requestDeletionSuccess": "Uw verwijderingsaanvraag is succesvol verzonden.",
+      "cancelDeletionRequest": "Verwijderingsaanvraag annuleren",
+      "cancelDeletionSuccess": "Uw verwijderingsaanvraag is geannuleerd."
+    },
+    "analytics": {
+      "title": "Analytische cookies",
+      "enabled": "Ingeschakeld",
+      "disabled": "Uitgeschakeld",
+      "description": "Helpt de website te verbeteren door het bezoekersgedrag te analyseren."
+    },
+    "changePassword": {
+      "title": "Wachtwoord",
+      "button": "Wachtwoord wijzigen",
+      "currentPassword": "Huidig wachtwoord",
+      "currentPasswordPlaceholder": "Voer uw huidig wachtwoord in",
+      "newPassword": "Nieuw wachtwoord",
+      "newPasswordPlaceholder": "Voer uw nieuw wachtwoord in",
+      "confirmPassword": "Bevestig nieuw wachtwoord",
+      "confirmPasswordPlaceholder": "Voer uw nieuw wachtwoord opnieuw in",
+      "submit": "Wachtwoord wijzigen",
+      "success": "Uw wachtwoord is gewijzigd. Gelieve opnieuw in te loggen.",
+      "passwordsMismatch": "De wachtwoorden komen niet overeen.",
+      "wrongPassword": "Het huidige wachtwoord is onjuist.",
+      "googleOnly": "Uw account gebruikt Google-aanmelding. Gebruik Google om in te loggen.",
+      "weakPassword": "Het wachtwoord voldoet niet aan de beveiligingsvereisten."
+    },
+    "verify": {
+      "verified": "Geverifieerd",
+      "notVerified": "Niet geverifieerd",
+      "resendButton": "Verificatie-e-mail opnieuw versturen",
+      "resendSuccess": "Verificatie-e-mail verstuurd!",
+      "resendError": "Versturen mislukt. Probeer het opnieuw.",
+      "cooldown": "Even geduld alvorens opnieuw te versturen."
+    },
+    "notifications": {
+      "title": "Marketinge-mails",
+      "enabled": "Ingeschakeld",
+      "disabled": "Uitgeschakeld",
+      "description": "Ontvang promotionele aanbiedingen en nieuws van het restaurant.",
+      "updateSuccess": "Notificatievoorkeuren bijgewerkt.",
+      "updateError": "Bijwerken van voorkeuren mislukt."
+    }
+  },
+  "cart": {
+    "title": "Winkelwagen",
+    "empty": "Uw winkelwagen is leeg",
+    "delivery": "Levering",
+    "pickup": "Afhalen",
+    "subtotal": "Subtotaal",
+    "deliveryFee": "Leveringskosten",
+    "pickupDiscount": "Afhaalkorting",
+    "total": "Totaal",
+    "minimumDelivery": "Minimum levering van {amount} €",
+    "minimumPickup": "Minimum afhalen van {amount} €",
+    "checkout": "Bestelling plaatsen",
+    "removeItem": "Verwijderen",
+    "decreaseQty": "Aantal verminderen",
+    "increaseQty": "Aantal verhogen",
+    "closeCart": "Winkelwagen sluiten",
+    "notifications": "Meldingen winkelwagen",
+    "addToCart": "Toevoegen aan winkelwagen"
+  },
+  "checkout": {
+    "title": "Bestelling",
+    "orderSummary": "Uw bestelling",
+    "emptyCart": "Uw winkelwagen is leeg.",
+    "subtotal": "Subtotaal:",
+    "deliveryFee": "Leveringskosten:",
+    "deliveryFeeInfo": "Leveringskosten op basis van afstand:\n• Minder dan 4 km: Gratis\n• 4-5 km: 1€\n• 5-6 km: 2€\n• 6-7 km: 3€\n• 7-8 km: 4€\n• 8-9 km: 5€",
+    "discount": "Korting (afhalen)",
+    "total": "Totaal:",
+    "collection": "Levering / Afhalen",
+    "deliveryAddress": "Leveringsadres",
+    "editAddress": "Adres wijzigen",
+    "noAddress": "Geen adres geselecteerd",
+    "addAddress": "Adres toevoegen",
+    "addressComment": "Aanvullende informatie voor het adres",
+    "addressCommentPlaceholder": "bv. Twee keer bellen",
+    "preferredTime": "Gewenst tijdstip",
+    "asapDelivery": "Zo snel mogelijk (± 40 min)",
+    "asapPickup": "Zo snel mogelijk (± 30 min)",
+    "asapUnavailableWhileClosed": "De optie \"zo snel mogelijk\" is niet beschikbaar buiten de openingsuren. Kies een vast tijdstip voor vandaag.",
+    "noRemainingSlotsToday": "Er zijn geen beschikbare tijdsloten meer voor vandaag.",
+    "extrasAndPayment": "Extra's & Betaling",
+    "paymentMethod": "Betaalmethode",
+    "online": "Online",
+    "cash": "Contant",
+    "extras": "Extra's",
+    "addChopsticks": "Eetstokjes toevoegen",
+    "addWasabi": "Wasabi toevoegen",
+    "addGinger": "Gember toevoegen",
+    "soySauce": "Sojasaus (kies er maximaal 2):",
+    "none": "Geen",
+    "sweet": "Zoet",
+    "salty": "Zout",
+    "orderComment": "Opmerking bij de bestelling",
+    "orderCommentPlaceholder": "bv. Allergieën of speciale instructies",
+    "goToPayment": "Naar betaling",
+    "placeOrder": "Bestelling plaatsen",
+    "processing": "Verwerking bezig...",
+    "restaurantClosed": "Het restaurant is momenteel gesloten. Controleer de openingsuren.",
+    "orderDisabled": "Bestellingen zijn momenteel uitgeschakeld. Probeer het later opnieuw.",
+    "free": "Gratis",
+    "stepMenu": "Menu",
+    "stepCheckout": "Bestelling",
+    "stepPayment": "Betaling",
+    "itemCount": "{count} artikel | {count} artikelen",
+    "opensAt": "Opent om {time}",
+    "tooFar": "Te ver voor levering (max 9 km)",
+    "tbd": "Nader te bepalen",
+    "sauce1": "Saus 1",
+    "sauce2": "Saus 2"
+  },
+  "orderCompleted": {
+    "title": "Bestelling ontvangen",
+    "thankYou": "Bedankt voor uw aankoop!",
+    "orderSuccess": "Uw bestelling is succesvol geplaatst.",
+    "placedAt": "Bestelling geplaatst op:",
+    "items": "Gerechten",
+    "loading": "Bestelgegevens laden...",
+    "returnHome": "Terug naar home",
+    "viewOrders": "Mijn bestellingen bekijken",
+    "orderAgain": "Opnieuw bestellen",
+    "status": "Status",
+    "pageTitle": "Bestelbevestiging - Tokyo Sushi Bar",
+    "liveTracking": "Live tracking — de status wordt automatisch bijgewerkt",
+    "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 222 98 88 voor meer informatie.",
+    "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw."
+  },
+  "404": {
+    "message": "Sorry, wij konden de pagina die u zoekt niet vinden.",
+    "homeButton": "Home",
+    "menuButton": "Bekijk het Menu"
+  },
+  "error": {
+    "homeButton": "Terug naar home",
+    "menuButton": "Bekijk het menu",
+    "notFound": "Oeps! Deze pagina lijkt verdwenen te zijn...",
+    "forbidden": "Toegang geweigerd. U heeft geen toestemming om deze pagina te bekijken.",
+    "serverError": "Er is een fout opgetreden. Probeer het later opnieuw.",
+    "generic": "Er is iets misgegaan. Probeer het opnieuw.",
+    "title404": "Niets op het bord",
+    "title403": "Toegang geweigerd",
+    "title500": "Probleem in de keuken",
+    "titleGeneric": "Verkeerde beweging"
+  },
+  "footer": {
+    "terms": "AV",
+    "hours": "Ma-Vr 12u-14u30, 18u-22u30 | Za-Zo 12u-15u, 18u-23u | Gesloten op dinsdag"
+  },
+  "notify": {
+    "addedToCart": "{product} toegevoegd aan winkelwagen",
+    "verificationEmailSent": "Er is een verificatie-e-mail naar u verstuurd. Controleer uw inbox.",
+    "emailVerified": "Uw e-mailadres is geverifieerd. U kunt nu inloggen.",
+    "loginToValidateCart": "Gelieve in te loggen om uw winkelwagen te bevestigen.",
+    "errors": {
+        "cartEmpty": "Uw winkelwagen is leeg.",
+        "notAuthenticated": "Gelieve in te loggen om te bestellen.",
+        "addressRequired": "Een adres is vereist voor levering.",
+        "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
+        "invalidCredentials": "Ongeldige e-mail of wachtwoord. Probeer het opnieuw.",
+        "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox.",
+        "orderingUnavailable": "Bestellingen zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
+        "fixedTimeRequiredWhileClosed": "Kies een vast tijdstip voor vandaag buiten de openingsuren.",
+        "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
+        "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
+        "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
+        "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",
+        "addressLookupFailed": "Het opzoeken van het adres is mislukt. Probeer het opnieuw.",
+        "ordersLoadFailed": "Kan uw bestellingen niet laden.",
+        "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
+        "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
+        "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
+        "noPassword": "Dit account heeft geen wachtwoord. Log in via Google, Facebook of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken.",
+        "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink."
+    }
+  },
+  "schema": {
+    "siteName": "Tokyo Sushi Bar",
+    "siteDescription": "Ontdek de beste smaken van Japan in Luik",
+    "restaurantName": "Tokyo Sushi Bar",
+    "cuisine": "Japanse",
+    "home": {
+      "title": "Tokyo Sushi Bar - Japans Restaurant in Luik",
+      "description": "Ontdek de beste smaken van Japan in Luik. Verse sushi, sashimi en authentieke Japanse keuken."
+    },
+    "menu": {
+      "title": "Menu - Tokyo Sushi Bar",
+      "description": "Ontdek ons menu met verse sushi, sashimi en authentieke Japanse keuken",
+      "name": "Menu Tokyo Sushi Bar"
+    },
+    "contact": {
+      "title": "Contacteer ons - Tokyo Sushi Bar",
+      "description": "Bezoek ons, bel ons of reserveer vandaag nog een tafel! Rue de la Cathédrale 59, Liège, Belgique"
+    },
+    "terms": {
+      "title": "Algemene Voorwaarden - Tokyo Sushi Bar",
+      "description": "Algemene voorwaarden van Tokyo Sushi Bar. Juridische informatie, levering, betaling en retourbeleid."
+    },
+    "login": {
+      "title": "Inloggen - Tokyo Sushi Bar",
+      "description": "Log in op uw Tokyo Sushi Bar-account"
+    },
+    "register": {
+      "title": "Registratie - Tokyo Sushi Bar",
+      "description": "Maak uw Tokyo Sushi Bar-account aan"
+    },
+    "forgotPassword": {
+      "title": "Wachtwoord vergeten - Tokyo Sushi Bar",
+      "description": "Stel het wachtwoord van uw Tokyo Sushi Bar-account opnieuw in"
+    },
+    "resetPassword": {
+      "title": "Wachtwoord opnieuw instellen - Tokyo Sushi Bar",
+      "description": "Stel een nieuw wachtwoord in voor uw Tokyo Sushi Bar-account"
+    },
+    "checkout": {
+      "title": "Bestelling - Tokyo Sushi Bar"
+    },
+    "myAccount": {
+      "title": "Mijn account - Tokyo Sushi Bar"
+    },
+    "myOrders": {
+      "title": "Mijn bestellingen - Tokyo Sushi Bar"
+    },
+    "orderConfirmation": {
+      "title": "Bestelbevestiging - Tokyo Sushi Bar",
+      "description": "Uw bestelling is bevestigd"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "menu": "Menu",
+      "contact": "Contact",
+      "terms": "AV",
+      "login": "Inloggen",
+      "register": "Registratie"
+    }
+  },
+  "feedback": {
+    "title": "Deel uw mening",
+    "subtitle": "Help ons uw ervaring te verbeteren",
+    "name": "Naam",
+    "namePlaceholder": "Uw naam",
+    "email": "E-mail",
+    "emailPlaceholder": "Uw e-mailadres",
+    "serviceType": "Type dienst",
+    "serviceTypes": {
+      "takeaway": "Afhalen",
+      "dine-in": "Ter plaatse",
+      "delivery": "Levering"
+    },
+    "feedbackType": "Type feedback",
+    "feedbackTypes": {
+      "improvement": "Suggestie",
+      "complaint": "Klacht",
+      "compliment": "Compliment"
+    },
+    "message": "Bericht",
+    "messagePlaceholder": "Vertel ons over uw ervaring (min. 10 tekens)",
+    "submit": "Verzenden",
+    "sending": "Bezig met verzenden...",
+    "success": "Bedankt voor uw feedback! Wij waarderen de tijd die u heeft genomen om uw mening te delen.",
+    "sendAnother": "Nog een bericht versturen",
+    "errorGeneric": "Er is een probleem opgetreden. Probeer het opnieuw.",
+    "errorTooManyRequests": "Te veel inzendingen. Wacht enkele minuten en probeer het opnieuw.",
+    "errorInvalidInput": "Controleer de formuliervelden en probeer het opnieuw."
+  },
+  "coupon": {
+    "title": "Promocode",
+    "placeholder": "Voer de promocode in",
+    "apply": "Toepassen",
+    "remove": "Verwijderen",
+    "applied": "Promocode toegepast: -{discount} korting",
+    "invalid": "Ongeldige promocode",
+    "discount": "Korting promocode"
+  },
+  "reorder": {
+    "button": "Opnieuw bestellen",
+    "success": "{count} artikelen toegevoegd aan winkelwagen",
+    "partial": "{added} artikelen toegevoegd, {skipped} niet-beschikbare artikelen overgeslagen",
+    "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
+  },
+  "verify": {
+    "banner": "Gelieve uw e-mailadres te verifiëren om de aanmaak van uw account te voltooien.",
+    "resend": "Verificatie-e-mail opnieuw versturen",
+    "sent": "Verificatie-e-mail verstuurd!",
+    "error": "Het versturen van de verificatie-e-mail is mislukt. Probeer het opnieuw.",
+    "dismiss": "Sluiten"
+  },
+  "verifyEmail": {
+    "title": "E-mailverificatie",
+    "verifying": "Uw e-mailadres wordt geverifieerd...",
+    "successTitle": "E-mail geverifieerd!",
+    "successMessage": "Uw e-mail is succesvol geverifieerd. U kunt nu inloggen op uw account.",
+    "errorTitle": "Verificatie mislukt",
+    "invalidLink": "Deze verificatielink is ongeldig. Controleer de link in uw e-mail.",
+    "expiredOrInvalid": "Deze verificatielink is verlopen of ongeldig. Vraag een nieuwe verificatie-e-mail aan."
+  },
+  "cookies": {
+    "message": "Deze website gebruikt analytische cookies om te begrijpen hoe u onze site gebruikt. U kunt ze accepteren of weigeren.",
+    "learnMore": "Lees ons cookiebeleid",
+    "accept": "Accepteren",
+    "decline": "Weigeren"
+  },
+  "faq": {
+    "title": "Veelgestelde Vragen",
+    "subtitle": "Vind antwoorden op uw vragen over Tokyo Sushi Bar",
+    "stillHaveQuestions": "Heeft u nog vragen?",
+    "contactUs": "Contacteer ons",
+    "schemaTitle": "FAQ - Tokyo Sushi Bar",
+    "schemaDescription": "Veelgestelde vragen over Tokyo Sushi Bar - levering, openingsuren, halal-opties en meer",
+    "breadcrumb": "FAQ",
+    "questions": {
+      "delivery": {
+        "question": "Leveren jullie? Wat is het leveringsgebied?",
+        "answer": "Ja, wij leveren vanuit ons restaurant aan de Rue de la Cathédrale 59, Luik. De leveringskosten variëren op basis van de afstand:<br><br>• Minder dan 4 km: <strong>Gratis</strong> (minimum 25 €)<br>• 4-5 km: 1 €<br>• 5-6 km: 2 €<br>• 6-7 km: 3 €<br>• 7-8 km: 4 €<br>• 8-9 km: 5 €<br><br>Boven 9 km is levering niet beschikbaar, tenzij voor bestellingen van 130 € of meer. U kunt uw adres controleren bij het plaatsen van uw bestelling."
+      },
+      "hours": {
+        "question": "Wat zijn de openingsuren?",
+        "answer": "Wij zijn geopend van maandag tot vrijdag van 12u tot 14u30 en van 18u tot 22u30. Zaterdag en zondag van 12u tot 15u en van 18u tot 23u. Wij zijn gesloten op dinsdag."
+      },
+      "halal": {
+        "question": "Bieden jullie halal-opties aan?",
+        "answer": "Ja! Wij bieden een selectie halal-gerechten aan, duidelijk aangeduid op ons menu met het Halal-pictogram. Al onze halal-producten worden bereid volgens de islamitische normen."
+      },
+      "discount": {
+        "question": "Is er korting voor afhaalbestellingen?",
+        "answer": "Ja! Geniet van 10% korting op alle kortingsbare artikelen wanneer u kiest voor afhalen. De korting wordt automatisch toegepast bij de betaling."
+      },
+      "payment": {
+        "question": "Welke betaalmethoden accepteren jullie?",
+        "answer": "Wij accepteren online betaling (bankkaart) en contante betaling bij levering of afhaling. Voor online bestellingen is de betaling beveiligd."
+      },
+      "allergens": {
+        "question": "Hebben jullie informatie over allergenen?",
+        "answer": "Onze producten bevatten doorgaans <strong>vis</strong>, <strong>schaaldieren</strong> en <strong>lactose</strong>. Gelieve ons te informeren over eventuele allergieën of dieetbeperkingen in de opmerkingen bij uw bestelling. Neem rechtstreeks contact met ons op via 04 222 98 88 voor gedetailleerde informatie over allergenen in onze gerechten."
+      },
+      "invoice": {
+        "question": "Hoe vraag ik een factuur aan?",
+        "answer": "Elke aanvraag voor een factuur moet op dezelfde dag als uw bestelling worden gedaan. Neem contact met ons op via <strong>04 222 98 88</strong> om een factuur aan te vragen."
+      },
+      "freshness": {
+        "question": "Is de vis vers?",
+        "answer": "Absoluut! Elke ochtend wordt verse vis rechtstreeks aan ons restaurant geleverd en zorgvuldig bereid door onze chef. Wij garanderen een uitzonderlijke versheid en kwaliteit."
+      },
+      "parking": {
+        "question": "Is er parkeergelegenheid in de buurt?",
+        "answer": "Ons restaurant is gelegen in het centrum van Luik. Er zijn meerdere openbare parkings in de buurt: Parking Cathédrale, Parking Opéra, en straatparkeerplaatsen (betalend)."
+      }
+    }
+  }
+}

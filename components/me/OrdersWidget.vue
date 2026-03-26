@@ -369,7 +369,7 @@ const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN' }
+const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
 const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
 
 const formatDate = (iso: string) =>
