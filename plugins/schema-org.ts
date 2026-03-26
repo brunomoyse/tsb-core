@@ -72,7 +72,7 @@ export default defineNuxtPlugin(() => {
                 '@id': `${baseUrl}/menu`,
                 name: 'Tokyo Sushi Bar Menu',
                 description: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
-                inLanguage: ['fr-BE', 'en', 'zh-CN']
+                inLanguage: ['fr-BE', 'en', 'zh-CN', 'nl-BE']
             },
             aggregateRating: {
                 '@type': 'AggregateRating',
