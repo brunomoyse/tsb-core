@@ -153,10 +153,8 @@ jobs:
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/tokyosushi
-            docker compose pull tsb-core
-            docker compose up -d tsb-core
-            docker image prune -f
+            sudo kubectl rollout restart deployment/tsb-core -n tokyosushi
+            sudo kubectl rollout status deployment/tsb-core -n tokyosushi --timeout=5m
 
 # ── Rollback (manual trigger) ────────────────────────────────────────────────
 
@@ -174,8 +172,5 @@ jobs:
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/tokyosushi
-            docker pull ghcr.io/brunomoyse/tsb-core:${{ inputs.version }}
-            docker tag ghcr.io/brunomoyse/tsb-core:${{ inputs.version }} ghcr.io/brunomoyse/tsb-core:production
-            docker compose up -d tsb-core
-            docker image prune -f
+            sudo kubectl set image deployment/tsb-core tsb-core=ghcr.io/brunomoyse/tsb-core:${{ inputs.version }} -n tokyosushi
+            sudo kubectl rollout status deployment/tsb-core -n tokyosushi --timeout=5m
