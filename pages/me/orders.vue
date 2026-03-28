@@ -2,13 +2,13 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
 import type { Order } from "~/types"
+import { eventBus } from '~/eventBus'
 import { formatAddress } from "~/utils/utils"
 import gql from 'graphql-tag'
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
 import { useReorder } from "~/composables/useReorder"
-import { eventBus } from '~/eventBus'
 
 
 

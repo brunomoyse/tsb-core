@@ -109,11 +109,11 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { formatAddress } from '~/utils/utils'
+import { getAvailableFixedSlotsToday } from '~/utils/openingHours'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
-import { getAvailableFixedSlotsToday } from '~/utils/openingHours'
-import { formatAddress } from '~/utils/utils'
 
 interface OpeningHourEntry {
     open: string

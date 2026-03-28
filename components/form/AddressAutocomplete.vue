@@ -168,11 +168,11 @@
 <script lang="ts" setup>
 import type { Address, Street } from '~/types'
 import { computed, nextTick, ref, watch } from 'vue'
+import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useI18n } from 'vue-i18n'
 import { useNuxtApp } from '#imports'
-import { eventBus } from '~/eventBus'
 
 const emit = defineEmits<{
     'update:address': [address: Address | null]

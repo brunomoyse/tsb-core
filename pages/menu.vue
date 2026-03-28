@@ -17,7 +17,7 @@
             </div>
 
             <!-- Sticky Categories Header -->
-            <section class="sticky top-[80px] sm:top-0 z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one">
+            <section :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']">
                 <!-- Unified Search + Filter Bar -->
                 <section class="mb-4 px-4">
                     <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px] overflow-visible">
@@ -283,11 +283,6 @@
             <SideCart />
         </aside>
 
-        <!-- Mobile Cart -->
-        <CartMobile />
-
-        <!-- Floating Cart Bar (mobile only) -->
-        <FloatingCartBar />
 
         <ClientOnly>
             <Transition name="modal-backdrop">
@@ -315,10 +310,9 @@ definePageMeta({
 import type { Product, ProductCategory } from '@/types'
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
-import CartMobile from '~/components/cart/CartMobile.vue'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
-import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
+import { usePlatform } from '~/composables/usePlatform'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
 import gql from 'graphql-tag'
@@ -328,6 +322,7 @@ import { useDebounce } from '@vueuse/core'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 
+const { isCapacitor } = usePlatform()
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()

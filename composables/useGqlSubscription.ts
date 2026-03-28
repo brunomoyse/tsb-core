@@ -1,8 +1,8 @@
 // Composables/useGqlSubscription.ts
 import { type DocumentNode, print } from 'graphql'
 import { onScopeDispose, ref } from 'vue'
-import { useRuntimeConfig } from '#imports'
 import type { Client } from 'graphql-ws'
+import { useRuntimeConfig } from '#imports'
 
 let wsClient: Client | null = null
 let wsClientPromise: Promise<Client> | null = null

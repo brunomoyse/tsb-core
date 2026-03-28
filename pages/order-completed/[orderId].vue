@@ -349,7 +349,7 @@ onMounted(() => {
     })
 
     // Polling fallback: if WebSocket subscription fails silently (CORS, auth, Safari timeout),
-    // poll for order updates every 15 seconds until order is in a terminal state.
+    // Poll for order updates every 15 seconds until order is in a terminal state.
     const POLL_INTERVAL = 15_000
     let pollTimer: ReturnType<typeof setInterval> | null = null
     const terminalStatuses = ['DELIVERED', 'PICKED_UP', 'FAILED', 'CANCELLED']

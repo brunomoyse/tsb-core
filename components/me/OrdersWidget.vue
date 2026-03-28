@@ -635,8 +635,8 @@ onMounted(() => {
     const allOrders = orders.value ?? []
 
     // Subscribe to all active orders
-    const activeOrders = allOrders.filter(o => !isOrderCompleted(o.status))
-    activeOrders.forEach(o => {
+    const pendingOrders = allOrders.filter(o => !isOrderCompleted(o.status))
+    pendingOrders.forEach(o => {
         subscribeToOrder(o.id)
         // Auto-expand active orders
         expandedOrders.value.add(o.id)

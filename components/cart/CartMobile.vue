@@ -4,7 +4,7 @@
         <Transition name="fade">
             <div
                 v-if="cartStore.isCartVisible"
-                class="fixed inset-0 bg-black/30 z-30"
+                class="fixed inset-0 bg-black/30 z-[55]"
                 @click="cartStore.toggleCartVisibility"
             />
         </Transition>
@@ -14,7 +14,7 @@
             <aside
                 v-if="cartStore.isCartVisible"
                 aria-labelledby="cart-heading"
-                class="fixed bottom-0 inset-x-0 bg-tsb-one z-40 flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
+                class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
             >
             <!-- Drag Handle -->
             <div class="flex justify-center pt-3 pb-1">

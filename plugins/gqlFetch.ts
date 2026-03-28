@@ -118,7 +118,7 @@ export default defineNuxtPlugin(() => {
             const { useOidc } = await import('~/composables/useOidc')
             const { silentRenew } = useOidc()
             const user = await silentRenew()
-            return !!user
+            return Boolean(user)
         } catch {
             navigateTo(`${localePath('auth-login')}?session=expired`)
             return false

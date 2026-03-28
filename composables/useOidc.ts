@@ -17,9 +17,9 @@ export function useOidc() {
 
         const baseUrl = config.public.baseUrl as string
         // Detect current locale from URL path (e.g., /fr/auth/callback)
-        const locale = typeof window !== 'undefined'
-            ? window.location.pathname.split('/')[1] || 'fr'
-            : 'fr'
+        const locale = typeof window === 'undefined'
+            ? 'fr'
+            : window.location.pathname.split('/')[1] || 'fr'
 
         userManager = new UserManager({
             authority: config.public.zitadelAuthority as string,

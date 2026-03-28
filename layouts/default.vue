@@ -18,20 +18,20 @@
         </a>
         <div class="min-h-screen flex flex-col">
             <header>
-                <MobileNavbar/>
-                <div class="mobile-only" :class="isCapacitor ? 'capacitor-nav-spacer' : 'h-20'"/>
+                <MobileNavbar v-if="!isCapacitor"/>
+                <div v-if="!isCapacitor" class="mobile-only h-20"/>
                 <SideNavbar/>
             </header>
 
             <main
                 id="main-content"
-                class="flex-1 bg-tsb-one pb-4 px-4 sm:ml-[142px]"
+                class="flex-1 bg-tsb-one px-4 sm:ml-[142px]"
+                :class="isCapacitor ? 'capacitor-main-content' : 'pb-4'"
             >
-                <!-- Spacer for mobile navbar -->
                 <slot/>
             </main>
 
-            <footer class="p-4 sm:ml-[142px] text-xs text-gray-600">
+            <footer v-if="!isCapacitor" class="p-4 sm:ml-[142px] text-xs text-gray-600">
                 <!-- Decorative seigaiha wave divider -->
                 <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
                     <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-gray-200" />
@@ -63,6 +63,13 @@
             </footer>
         </div>
         <ClientOnly>
+            <CapacitorTabBar />
+        </ClientOnly>
+        <ClientOnly>
+            <CartMobile />
+            <FloatingCartBar v-if="!isCapacitor" />
+        </ClientOnly>
+        <ClientOnly>
             <NotificationBar
                 v-if="showNotification && notification"
                 :message="notification.message"
@@ -89,6 +96,9 @@
 
 <script lang="ts" setup>
 import { computed, onUnmounted, ref } from 'vue'
+import CapacitorTabBar from '~/components/navbar/CapacitorTabBar.vue'
+import CartMobile from '~/components/cart/CartMobile.vue'
+import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import NotificationBar from '~/components/NotificationBar.vue'
 import ScrollToTopButton from '~/components/ScrollToTopButton.vue'
