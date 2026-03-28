@@ -18,7 +18,7 @@ useSchemaOrg([
         name: t('schema.contact.title'),
         description: t('schema.contact.description')
     }),
-    {
+    defineFoodEstablishment({
         '@type': 'Restaurant',
         name: t('schema.restaurantName'),
         url: config.public.baseUrl,
@@ -71,24 +71,13 @@ useSchemaOrg([
             'https://www.instagram.com/tokyo_sushi_bar_liege/',
             'https://www.facebook.com/sushiliege'
         ]
-    },
-    {
-        '@type': 'BreadcrumbList',
+    }),
+    defineBreadcrumb({
         itemListElement: [
-            {
-                '@type': 'ListItem',
-                position: 1,
-                name: t('schema.breadcrumb.home'),
-                item: config.public.baseUrl
-            },
-            {
-                '@type': 'ListItem',
-                position: 2,
-                name: t('schema.breadcrumb.contact'),
-                item: `${config.public.baseUrl}/contact`
-            }
+            { name: t('schema.breadcrumb.home'), item: '/' },
+            { name: t('schema.breadcrumb.contact'), item: '/contact' }
         ]
-    }
+    })
 ])
 
 useSeoMeta({
