@@ -24,7 +24,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const locale = to.path.split('/')[1] || 'fr'
     try {
         await signIn({ ui_locales: locale })
-        // signIn triggers window.location redirect — return abortNavigation equivalent
+        // SignIn triggers window.location redirect — return abortNavigation equivalent
         return navigateTo(`/${locale}/auth/login`)
     } catch {
         return navigateTo(`/${locale}/auth/login`)

@@ -313,3 +313,42 @@ body.capacitor-app #mobile-menu {
     top: calc(5rem + var(--safe-area-top));
     height: calc(100vh - 5rem - var(--safe-area-top));
 }
+
+/* Bottom tab bar: main content padding so nothing is hidden behind it */
+body.capacitor-app .capacitor-main-content {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Horizontal page transitions for Capacitor (native slide feel) */
+body.capacitor-app .page-enter-from {
+    opacity: 0;
+    transform: translateX(16px);
+}
+body.capacitor-app .page-leave-to {
+    opacity: 0;
+    transform: translateX(-16px);
+}
+
+/* Capacitor: top safe area padding (status bar / Dynamic Island / Android edge-to-edge) */
+body.capacitor-app .capacitor-main-content {
+    padding-top: var(--safe-area-top);
+}
+
+/* iOS: prevent body rubber-band bounce revealing app background */
+body.capacitor-app.ios {
+    overscroll-behavior: none;
+}
+
+/* iOS: slide tab bar below viewport when keyboard opens */
+body.capacitor-app.ios .capacitor-tab-bar {
+    transition: transform 0.25s ease-out;
+    transform: translateY(0);
+}
+body.capacitor-app.ios.keyboard-visible .capacitor-tab-bar {
+    transform: translateY(110%); /* 110% clears the safe-area-spacer-bottom div */
+}
+
+/* Android: Material touch ripple on tab items */
+body.capacitor-app.android .tab-item:active {
+    background-color: rgba(0, 0, 0, 0.06);
+}
