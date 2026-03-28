@@ -1,4 +1,4 @@
-import { defineLocalBusiness, defineNuxtPlugin, defineOrganization, useRuntimeConfig, useSchemaOrg } from '#imports'
+import { defineFoodEstablishment, defineNuxtPlugin, defineOrganization, useRuntimeConfig, useSchemaOrg } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
@@ -37,8 +37,7 @@ export default defineNuxtPlugin(() => {
                 }
             }
         },
-        defineLocalBusiness({
-            // @ts-expect-error Restaurant is a valid LocalBusiness subtype
+        defineFoodEstablishment({
             '@type': 'Restaurant',
             name: 'Tokyo Sushi Bar',
             image: '/logo.png',

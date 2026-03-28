@@ -307,23 +307,12 @@ useSchemaOrg([
         name: t('schema.terms.title'),
         description: t('schema.terms.description')
     }),
-    {
-        '@type': 'BreadcrumbList',
+    defineBreadcrumb({
         itemListElement: [
-            {
-                '@type': 'ListItem',
-                position: 1,
-                name: t('schema.breadcrumb.home'),
-                item: config.public.baseUrl
-            },
-            {
-                '@type': 'ListItem',
-                position: 2,
-                name: t('schema.breadcrumb.terms'),
-                item: `${config.public.baseUrl}/terms`
-            }
+            { name: t('schema.breadcrumb.home'), item: '/' },
+            { name: t('schema.breadcrumb.terms'), item: '/terms' }
         ]
-    }
+    })
 ])
 
 useSeoMeta({
