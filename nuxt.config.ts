@@ -134,7 +134,13 @@ export default defineNuxtConfig({
     },
 
     sitemap: {
+        autoLastmod: true,
+        defaults: {
+            changefreq: 'weekly',
+            priority: 0.8,
+        },
         exclude: [
+            '/auth/**',
             '/**/login',
             '/**/register',
             '/**/checkout',

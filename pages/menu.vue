@@ -308,6 +308,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+    sitemap: { priority: 0.9, changefreq: 'weekly' },
+})
+
 import type { Product, ProductCategory } from '@/types'
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
