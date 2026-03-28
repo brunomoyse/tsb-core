@@ -286,7 +286,8 @@ const config = useRuntimeConfig()
 const { t } = useI18n()
 
 definePageMeta({
-    public: true
+    public: true,
+    sitemap: { priority: 0.5, changefreq: 'yearly' },
 })
 
 onMounted(() => {

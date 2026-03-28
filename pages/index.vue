@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+    sitemap: { priority: 1, changefreq: 'daily' },
+})
+
 const config = useRuntimeConfig()
 const { t } = useI18n()
 

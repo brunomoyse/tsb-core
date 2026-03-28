@@ -1,4 +1,8 @@
 <script setup>
+definePageMeta({
+    sitemap: { priority: 0.7, changefreq: 'monthly' },
+})
+
 const latitude = 50.642394;
 const longitude = 5.574711;
 const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`;

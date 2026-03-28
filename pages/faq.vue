@@ -46,6 +46,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+    sitemap: { priority: 0.6, changefreq: 'monthly' },
+})
+
 const { t } = useI18n()
 const config = useRuntimeConfig()
 
