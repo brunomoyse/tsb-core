@@ -15,67 +15,25 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, navigateTo, onMounted, ref, useLocalePath, useNuxtApp } from '#imports'
-import type { User } from '@/types'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
-import { useAuthStore } from '@/stores/auth'
-import { useCartStore } from '@/stores/cart'
+import { definePageMeta, onMounted, ref } from '#imports'
+import { useAuthCallback } from '~/composables/useAuthCallback'
 import { useOidc } from '~/composables/useOidc'
-import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: true })
 
 const { handleCallback } = useOidc()
-const authStore = useAuthStore()
-const cartStore = useCartStore()
-const localePath = useLocalePath()
-const { $gqlFetch } = useNuxtApp()
-const { trackEvent, identifyUser } = useTracking()
+const { processCallback } = useAuthCallback()
 const error = ref(false)
-
-const ME = gql`
-    query {
-        me {
-            id
-            email
-            firstName
-            lastName
-            phoneNumber
-            deletionRequestedAt
-            address {
-                id
-                streetName
-                houseNumber
-                municipalityName
-                postcode
-                distance
-            }
-        }
-    }
-`
 
 onMounted(async () => {
     try {
+        console.log('Callback URL:', window.location.href)
         await handleCallback()
-
-        // Fetch user profile from our API
-        const data = await $gqlFetch<{ me: User }>(print(ME))
-        if (data) {
-            authStore.setUser(data.me)
-            identifyUser(data.me)
-        }
-
-        trackEvent('user_logged_in', { method: 'oidc' })
-
-        // Redirect to checkout if cart has items, otherwise menu
-        if (cartStore.products.length > 0) {
-            navigateTo(localePath('checkout'))
-        } else {
-            navigateTo(localePath('menu'))
-        }
+        console.log('Token exchange succeeded')
+        await processCallback()
+        console.log('User profile loaded, navigating...')
     } catch (e) {
-        if (import.meta.dev) console.error('OIDC callback error:', e)
+        console.error('OIDC callback error:', e)
         error.value = true
     }
 })

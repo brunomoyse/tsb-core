@@ -1,5 +1,5 @@
 // Middleware: auth.global.ts — OIDC session management via Zitadel
-import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from 'nuxt/app'
 
 export default defineNuxtRouteMiddleware(async (to) => {
     // Public pages skip auth check
@@ -20,11 +20,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const renewed = await silentRenew()
     if (renewed) return
 
-    // 3. No session — start OIDC flow (redirects to Zitadel Login V2 UI)
     const locale = to.path.split('/')[1] || 'fr'
+
+    // 3. Capacitor: navigate to login page without OIDC redirect (avoids opening system browser)
+    const config = useRuntimeConfig()
+    if (config.public.appBuild === 'capacitor') {
+        return navigateTo(`/${locale}/auth/login`)
+    }
+
+    // 4. Web: start OIDC flow (redirects to Zitadel Login V2 UI)
     try {
         await signIn({ ui_locales: locale })
-        // SignIn triggers window.location redirect — return abortNavigation equivalent
         return navigateTo(`/${locale}/auth/login`)
     } catch {
         return navigateTo(`/${locale}/auth/login`)

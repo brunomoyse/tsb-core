@@ -1,5 +1,5 @@
 <template>
-    <div class="err-page">
+    <div v-if="!recovering" class="err-page">
         <!-- Background kanji watermark -->
         <span class="err-kanji" aria-hidden="true">{{ bgKanji }}</span>
 
@@ -54,6 +54,13 @@ const { error } = defineProps<{
 }>()
 
 const { t } = useI18n()
+const config = useRuntimeConfig()
+
+// Capacitor: auto-recover from initialization errors by going home (no flash)
+const recovering = import.meta.client && config.public.appBuild === 'capacitor' && error?.statusCode === 500
+if (recovering) {
+    clearError({ redirect: '/' })
+}
 
 const statusCode = computed(() => error?.statusCode || 500)
 

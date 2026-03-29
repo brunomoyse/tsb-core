@@ -36,6 +36,7 @@ export default defineNuxtConfig({
     },
 
     app: {
+        ...(isCapacitor ? { crossOriginLoading: false } : {}),
         pageTransition: {name: "page", mode: "out-in"},
         head: {
             title: "Tokyo Sushi Bar",
@@ -121,6 +122,7 @@ export default defineNuxtConfig({
             // Zitadel OIDC
             zitadelAuthority: process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be',
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
+            zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
         },
     },
 
