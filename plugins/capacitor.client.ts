@@ -59,11 +59,20 @@ export default defineNuxtPlugin(async () => {
             }
         })
 
-        // Deep link handler (for future use: push notification taps, etc.)
-        App.addListener('appUrlOpen', ({ url }) => {
-            // Custom scheme deep links (e.g., be.tokyosushibarliege.app:/...)
+        // Deep link handler (IdP OAuth callbacks, push notification taps, etc.)
+        App.addListener('appUrlOpen', async ({ url }) => {
             if (url.startsWith('be.tokyosushibarliege.app:')) {
-                const path = url.replace('be.tokyosushibarliege.app:', '')
+                // Strip scheme to get a clean path (e.g. /fr/auth/idp/callback?id=...)
+                const path = url.replace(/^be\.tokyosushibarliege\.app:\/\//, '/')
+
+                // Close SFSafariViewController on OAuth callbacks and payment redirects
+                if (path.includes('/auth/idp/callback') || path.includes('/order-completed/')) {
+                    try {
+                        const { Browser } = await import('@capacitor/browser')
+                        await Browser.close()
+                    } catch { /* Browser not open */ }
+                }
+
                 navigateTo(path)
             }
         })

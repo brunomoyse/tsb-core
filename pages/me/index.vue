@@ -7,6 +7,7 @@ import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
 import { formatAddress } from '~/utils/utils'
 import gql from 'graphql-tag'
+import { print } from 'graphql'
 import { useAuthStore } from '@/stores/auth'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useTracking } from '~/composables/useTracking'
@@ -16,8 +17,40 @@ definePageMeta({ public: false })
 const { t } = useI18n()
 const localePath = useLocalePath()
 const authStore = useAuthStore()
-const { $api } = useNuxtApp()
+const { $api, $gqlFetch } = useNuxtApp()
 const { trackEvent, optIn, optOut, hasOptedIn } = useTracking()
+
+// Fetch user profile if not in store (e.g., page refresh with cleared persistence)
+const ME = print(gql`
+    query {
+        me {
+            id
+            email
+            firstName
+            lastName
+            phoneNumber
+            notifyMarketing
+            deletionRequestedAt
+            address {
+                id
+                streetName
+                houseNumber
+                municipalityName
+                postcode
+                distance
+            }
+        }
+    }
+`)
+
+onMounted(async () => {
+    if (!authStore.user) {
+        const data = await $gqlFetch<{ me: User }>(ME)
+        if (data) {
+            authStore.setUser(data.me)
+        }
+    }
+})
 
 const analyticsEnabled = ref(false)
 onMounted(() => {
@@ -315,6 +348,11 @@ const submitChangePassword = async () => {
 
 // ── Feature 2: Notification Preferences ──
 
+const handleLogout = async () => {
+    await authStore.logout()
+    navigateTo(localePath('/'))
+}
+
 const notifyMarketing = computed(() => authStore.user?.notifyMarketing ?? true)
 
 const toggleNotifyMarketing = async () => {
@@ -514,15 +552,31 @@ const toggleNotifyMarketing = async () => {
                 </div>
             </div>
 
+            <!-- Logout cell -->
+            <div class="bento-logout bento-cell" style="--delay: 8">
+                <button
+                    type="button"
+                    class="bg-tsb-two rounded-2xl p-6 h-full w-full flex flex-col text-left hover:bg-red-50 transition-colors"
+                    @click="handleLogout"
+                >
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
+                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-red-500">{{ t('nav.logout') }}</span>
+                </button>
+            </div>
+
             <!-- Orders — hero cell -->
-            <div class="bento-orders bento-cell" style="--delay: 8">
+            <div class="bento-orders bento-cell" style="--delay: 9">
                 <OrdersWidget />
             </div>
 
         </div>
 
         <!-- Account deletion — subtle, outside the grid -->
-        <div class="mt-8 text-center bento-cell" style="--delay: 9">
+        <div class="mt-8 text-center bento-cell" style="--delay: 10">
             <button
                 v-if="!authStore.user?.deletionRequestedAt"
                 type="button"
@@ -685,6 +739,7 @@ const toggleNotifyMarketing = async () => {
         "password"
         "notifications"
         "analytics"
+        "logout"
         "orders";
 }
 
@@ -695,6 +750,7 @@ const toggleNotifyMarketing = async () => {
 .bento-password { grid-area: password; }
 .bento-notifications { grid-area: notifications; }
 .bento-analytics { grid-area: analytics; }
+.bento-logout { grid-area: logout; }
 .bento-orders { grid-area: orders; }
 
 /* Tablet: 2 cols */
@@ -706,6 +762,7 @@ const toggleNotifyMarketing = async () => {
             "email         phone"
             "address       password"
             "notifications analytics"
+            "logout        ."
             "orders        orders";
     }
 }
@@ -717,7 +774,7 @@ const toggleNotifyMarketing = async () => {
         grid-template-areas:
             "profile       email          phone"
             "profile       address        password"
-            "notifications analytics      ."
+            "notifications analytics      logout"
             "orders        orders         orders";
     }
 }

@@ -315,8 +315,12 @@ body.capacitor-app #mobile-menu {
 }
 
 /* Bottom tab bar: main content padding so nothing is hidden behind it */
-body.capacitor-app .capacitor-main-content {
+body.capacitor-app.android .capacitor-main-content {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
+/* iOS: floating glass bar (54px bar + 10px bottom offset + 10px breathing room) */
+body.capacitor-app.ios .capacitor-main-content {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Horizontal page transitions for Capacitor (native slide feel) */
@@ -334,6 +338,14 @@ body.capacitor-app .capacitor-main-content {
     padding-top: var(--safe-area-top);
 }
 
+/* Tab bar clearance for fixed-positioned overlays and bottom elements */
+body.capacitor-app.ios {
+    --cap-tab-clearance: 74px; /* 54px bar + 10px offset + 10px breathing */
+}
+body.capacitor-app.android {
+    --cap-tab-clearance: 56px; /* flush bar height */
+}
+
 /* iOS: prevent body rubber-band bounce revealing app background */
 body.capacitor-app.ios {
     overscroll-behavior: none;
@@ -341,14 +353,22 @@ body.capacitor-app.ios {
 
 /* iOS: slide tab bar below viewport when keyboard opens */
 body.capacitor-app.ios .capacitor-tab-bar {
-    transition: transform 0.25s ease-out;
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
     transform: translateY(0);
 }
 body.capacitor-app.ios.keyboard-visible .capacitor-tab-bar {
-    transform: translateY(110%); /* 110% clears the safe-area-spacer-bottom div */
+    transform: translateY(calc(100% + 24px));
 }
 
 /* Android: Material touch ripple on tab items */
 body.capacitor-app.android .tab-item:active {
     background-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Capacitor: lift notification bar and scroll-to-top above tab bar */
+body.capacitor-app .notification-bar {
+    bottom: calc(var(--cap-tab-clearance, 56px) + 0.5rem);
+}
+body.capacitor-app .scroll-top-btn {
+    bottom: calc(var(--cap-tab-clearance, 56px) + 0.5rem) !important;
 }

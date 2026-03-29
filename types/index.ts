@@ -160,6 +160,8 @@ export interface CreateOrderRequest {
     houseNumber?: string;
     boxNumber?: string | null;
     isManualAddress?: boolean;
+    // Custom Mollie redirect URL (native apps use custom URL scheme)
+    paymentRedirectUrl?: string;
 }
 export interface Street {
     id: string;

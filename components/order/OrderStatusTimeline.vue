@@ -38,8 +38,8 @@
             </div>
             <div class="min-w-0">
                 <span class="text-sm font-medium text-gray-800">{{ getStatusTitle(order.status) }}</span>
-                <span v-if="nextStatus && !completed" class="text-xs text-gray-400 ml-1.5">
-                    &middot; {{ $t('me.orders.nextStep') }}: {{ getStatusTitle(nextStatus) }}
+                <span v-if="nextStatus && !completed" class="block text-xs text-gray-400 mt-0.5">
+                    {{ $t('me.orders.nextStep') }}: {{ getStatusTitle(nextStatus) }}
                 </span>
             </div>
         </div>

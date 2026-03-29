@@ -3,7 +3,7 @@
         <!-- Main Content -->
         <div
             ref="contentContainer"
-            class="sm:w-[calc(100vw-142px)]"
+            class="w-full sm:w-[calc(100vw-142px)]"
             :class="cartStore.products.length === 0
         ? 'lg:w-[calc(100vw-142px)]'
         : 'lg:w-[calc(67vw-71px)]'"
@@ -17,7 +17,7 @@
             </div>
 
             <!-- Sticky Categories Header -->
-            <section :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']">
+            <section ref="stickyHeader" :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']" :style="isCapacitor ? { paddingTop: 'calc(var(--safe-area-top, 0px) + 1rem)' } : undefined">
                 <!-- Unified Search + Filter Bar -->
                 <section class="mb-4 px-4">
                     <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px] overflow-visible">
@@ -288,6 +288,7 @@
             <Transition name="modal-backdrop">
                 <div v-if="route.query.product"
                      class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+                     :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 16px)' } : undefined"
                      @click.self="closeModal">
                     <Transition name="modal-panel" appear>
                         <ProductModal
@@ -437,6 +438,7 @@ const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+const stickyHeader = ref<HTMLElement | null>(null)
 
 // Search expansion state
 const searchInputRef = ref<HTMLInputElement | null>(null)
@@ -564,12 +566,11 @@ const stopDrag = () => {
  * Scroll-to-Category Method
  */
 const scrollToCategory = (categoryId: string) => {
-    const header = document.querySelector('.sticky.top-\\[80px\\]') as HTMLElement
     const element = document.getElementById(`category-${categoryId}`)
-    if (!element || !header) return
+    if (!element || !stickyHeader.value) return
 
-    const headerHeight = header.offsetHeight
-    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile only
+    const headerHeight = stickyHeader.value.offsetHeight
+    const navbarHeight = !isCapacitor.value && window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
     const gap = 16
     const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
     window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })

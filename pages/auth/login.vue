@@ -356,13 +356,17 @@ const startIdpFlow = async (provider: string) => {
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { startIdpLogin } = useZitadelApi()
 
-    const baseUrl = isCapacitor ? window.location.origin : config.public.baseUrl as string
     const locale = route.path.split('/')[1] || 'fr'
 
     // Save authRequestId for the IdP callback page to finalize the OIDC flow
     const effectiveAuthId = authRequestId.value || capacitorAuthRequestId.value
     sessionStorage.setItem('oidcAuthRequestId', effectiveAuthId)
 
+    // Capacitor: use custom URL scheme so SFSafariViewController can redirect back to the app
+    // (https://localhost is invalid in external Safari)
+    const baseUrl = isCapacitor
+        ? 'be.tokyosushibarliege.app:/'
+        : config.public.baseUrl as string
     const successUrl = `${baseUrl}/${locale}/auth/idp/callback`
     const failureUrl = `${baseUrl}/${locale}/auth/idp/callback?error=true`
 
