@@ -6,7 +6,7 @@
             type="button"
             @click="scrollToTop"
             :aria-label="t('common.toTop', 'Back to top')"
-            class="fixed right-4 z-30 w-10 h-10 bg-gray-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
+            class="scroll-top-btn fixed right-4 z-30 w-10 h-10 bg-gray-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
             :class="hasCartItems ? 'bottom-16' : 'bottom-4'"
         >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

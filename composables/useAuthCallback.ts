@@ -13,6 +13,7 @@ const ME = print(gql`
             firstName
             lastName
             phoneNumber
+            notifyMarketing
             deletionRequestedAt
             address {
                 id

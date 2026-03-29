@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
+    <div :class="['max-w-7xl mx-auto p-4 lg:pb-4', isCapacitor ? '' : 'pb-24']">
         <!-- Restaurant Closed Banner -->
         <div v-if="!isOrderingAvailable" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,6 +30,40 @@
             <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
         </nav>
 
+        <!-- Sticky Top CTA (Capacitor app only) -->
+        <div
+            v-if="isCapacitor"
+            class="sticky top-0 z-10 bg-tsb-one/95 backdrop-blur-md border-b border-gray-200/60 -mx-4 px-4 py-3 mb-4"
+        >
+            <button
+                @click="handleCheckout"
+                :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
+                :class="[
+                    'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-transform',
+                    isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ]"
+            >
+                <div class="flex items-center gap-2">
+                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        {{ $t('checkout.processing') }}
+                    </span>
+                    <span v-else class="font-semibold text-sm uppercase tracking-wide">
+                        {{ cartStore.paymentOption === 'ONLINE'
+                            ? $t('checkout.goToPayment')
+                            : $t('checkout.placeOrder')
+                        }}
+                    </span>
+                </div>
+                <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
+            </button>
+        </div>
+
         <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
@@ -47,8 +81,12 @@
             <CheckoutExtrasSuggestion />
         </div>
 
-        <!-- Sticky Checkout Button (mobile only) -->
-        <div class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4">
+        <!-- Sticky Checkout Button (mobile web only) -->
+        <div
+            v-if="!isCapacitor"
+            class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4"
+            style="bottom: 0"
+        >
             <div class="flex items-center justify-between max-w-7xl mx-auto">
                 <div class="font-semibold text-lg">
                     {{ formatPrice(cartTotal) }}
@@ -85,6 +123,7 @@
         <div
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
+            :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 0px)' } : undefined"
             tabindex="0"
             @click.self
         >
@@ -388,6 +427,10 @@ const handleCheckout = async () => {
                 boxNumber: cartStore.address.boxNumber,
                 isManualAddress: true,
             } : {}),
+            // Capacitor: use custom URL scheme so Mollie redirects back to the app
+            ...(isCapacitor ? {
+                paymentRedirectUrl: 'be.tokyosushibarliege.app://order-completed',
+            } : {}),
         }
 
         try {
@@ -408,10 +451,11 @@ const handleCheckout = async () => {
             if (order?.payment?.links) {
                 trackEvent('payment_redirect', { order_id: order.id })
                 if (isCapacitor) {
+                    // Open Mollie checkout in SFSafariViewController.
+                    // Mollie redirects to be.tokyosushibarliege.app://order-completed/{id}
+                    // Deep link handler in capacitor.client.ts closes browser and navigates
                     const { Browser } = await import('@capacitor/browser')
                     await Browser.open({ url: order.payment.links.checkout.href })
-                    // After payment, user returns to the app via Mollie redirect
-                    navigateTo(localePath(`/order-completed/${order.id}`))
                 } else {
                     navigateTo(order.payment.links.checkout.href, { external: true })
                 }
