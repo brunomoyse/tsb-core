@@ -48,6 +48,7 @@
                     </p>
 
                     <!-- Login Form -->
+                    <!-- Login Form -->
                     <form class="space-y-4" @submit.prevent="login">
                         <!-- Email -->
                         <div>
@@ -146,7 +147,6 @@
                         </button>
                         -->
                     </div>
-
                     <!-- Links -->
                     <div class="mt-6 space-y-2 text-center">
                         <p class="text-sm text-gray-600">
@@ -169,14 +169,16 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, onMounted, ref, useRoute, useRuntimeConfig } from '#imports'
+import { definePageMeta, navigateTo, onMounted, ref, useRoute, useRuntimeConfig } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { usePlatform } from '~/composables/usePlatform'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: true })
 
 const { t } = useI18n()
 const { trackEvent } = useTracking()
+const { isCapacitor } = usePlatform()
 const route = useRoute()
 const config = useRuntimeConfig()
 
@@ -189,6 +191,19 @@ const showResendVerification = ref(false)
 const resendCooldown = ref(0)
 const resendSent = ref(false)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null
+
+const capacitorAuthRequestId = ref('')
+
+const initCapacitorAuth = async () => {
+    // Get the authRequestID from Zitadel via fetch (no redirect)
+    try {
+        const { useOidc } = await import('~/composables/useOidc')
+        const { getAuthRequestId } = useOidc()
+        capacitorAuthRequestId.value = await getAuthRequestId()
+    } catch (e: any) {
+        console.error('Capacitor OIDC init error:', e)
+    }
+}
 
 const resendEmail = async () => {
     if (!email.value) return
@@ -225,15 +240,21 @@ onMounted(async () => {
         return
     }
 
-    // If we arrived without an authRequest, auto-start the OIDC flow.
-    // Zitadel will redirect back to this page WITH the authRequest param.
+    // If we arrived without an authRequest, start the OIDC flow
     if (!authRequestId.value && import.meta.client) {
         const { useOidc } = await import('~/composables/useOidc')
-        const { isAuthenticated, signIn } = useOidc()
-        // Don't redirect if already authenticated
+        const { isAuthenticated } = useOidc()
         if (await isAuthenticated()) return
-        const locale = route.path.split('/')[1] || 'fr'
-        await signIn({ ui_locales: locale })
+
+        if (isCapacitor) {
+            // Capacitor: fetch authRequestID via API (no redirect) so the form can submit
+            await initCapacitorAuth()
+        } else {
+            // Web: redirect to Zitadel (will come back with authRequestID)
+            const { signIn } = useOidc()
+            const locale = route.path.split('/')[1] || 'fr'
+            await signIn({ ui_locales: locale })
+        }
         return
     }
 
@@ -254,24 +275,57 @@ const login = async () => {
     loading.value = true
 
     try {
-        if (authRequestId.value) {
+        // Determine the authRequestId — from URL query (web) or fetched on Capacitor
+        const effectiveAuthRequestId = authRequestId.value || capacitorAuthRequestId.value
+
+        if (effectiveAuthRequestId) {
             // We have an OIDC authRequestID — create session + finalize via backend proxy
             const { useZitadelApi } = await import('~/composables/useZitadelApi')
             const { createSession, finalizeOidcAuth } = useZitadelApi()
 
             const session = await createSession(email.value, password.value)
-            const result = await finalizeOidcAuth(authRequestId.value, session.sessionId, session.sessionToken)
+            const result = await finalizeOidcAuth(effectiveAuthRequestId, session.sessionId, session.sessionToken)
             trackEvent('user_logged_in', { method: 'email' })
-            window.location.href = result.callbackUrl
+
+            if (isCapacitor) {
+                // Capacitor: exchange code for tokens directly using the token endpoint.
+                // We can't use signinRedirectCallback() because the state parameter from
+                // Zitadel's callback doesn't match the PKCE state from createSigninRequest().
+                const callbackUrl = new URL(result.callbackUrl)
+                const code = callbackUrl.searchParams.get('code')
+                if (!code) throw new Error('No authorization code in callback URL')
+
+                const { useOidc } = await import('~/composables/useOidc')
+                const { exchangeCodeForTokens } = useOidc()
+                await exchangeCodeForTokens(code)
+
+                const { useAuthCallback } = await import('~/composables/useAuthCallback')
+                const { processCallback } = useAuthCallback()
+                await processCallback()
+            } else {
+                window.location.href = result.callbackUrl
+            }
+        } else if (isCapacitor) {
+            // Capacitor: retry fetching authRequestId — never call signIn() (opens Safari)
+            await initCapacitorAuth()
+            if (capacitorAuthRequestId.value) {
+                loading.value = false
+                return login()
+            }
+            throw new Error('Could not initialize OIDC flow')
         } else {
-            // No authRequestID — start OIDC flow (will come back with authRequestID)
+            // Web: start OIDC flow (will come back with authRequestID)
             const { useOidc } = await import('~/composables/useOidc')
             const { signIn } = useOidc()
             await signIn({ login_hint: email.value })
         }
     } catch (error: any) {
         loading.value = false
-        if (import.meta.dev) console.error('Login error:', error)
+        console.error('Login error:', error)
+        // Refresh authRequestId on failure so retries work
+        if (isCapacitor) {
+            await initCapacitorAuth()
+        }
         const status = error?.response?.status || error?.statusCode
         const errorCode = error?.data?.error
         if (status === 429) {
@@ -284,6 +338,10 @@ const login = async () => {
         } else if (errorCode === 'no_password') {
             trackEvent('login_error', { error_type: 'no_password' })
             errorMessage.value = t('notify.errors.noPassword')
+        } else if (isCapacitor) {
+            // Show actual error on Capacitor for debugging
+            const msg = error?.message || JSON.stringify(error)
+            errorMessage.value = msg
         } else {
             trackEvent('login_error', { error_type: 'invalid_credentials' })
             errorMessage.value = t('notify.errors.invalidCredentials')
@@ -298,18 +356,24 @@ const startIdpFlow = async (provider: string) => {
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { startIdpLogin } = useZitadelApi()
 
-    const baseUrl = config.public.baseUrl as string
+    const baseUrl = isCapacitor ? window.location.origin : config.public.baseUrl as string
     const locale = route.path.split('/')[1] || 'fr'
 
     // Save authRequestId for the IdP callback page to finalize the OIDC flow
-    sessionStorage.setItem('oidcAuthRequestId', authRequestId.value)
+    const effectiveAuthId = authRequestId.value || capacitorAuthRequestId.value
+    sessionStorage.setItem('oidcAuthRequestId', effectiveAuthId)
 
     const successUrl = `${baseUrl}/${locale}/auth/idp/callback`
     const failureUrl = `${baseUrl}/${locale}/auth/idp/callback?error=true`
 
     try {
         const { authUrl } = await startIdpLogin(provider, successUrl, failureUrl)
-        window.location.href = authUrl
+        if (isCapacitor) {
+            const { Browser } = await import('@capacitor/browser')
+            await Browser.open({ url: authUrl, presentationStyle: 'popover' })
+        } else {
+            window.location.href = authUrl
+        }
     } catch (error: any) {
         loading.value = false
         if (import.meta.dev) console.error('IdP start error:', error)
@@ -326,11 +390,19 @@ const loginWithProvider = async (provider: string) => {
     if (import.meta.server) return
     trackEvent('oauth_click', { provider })
 
-    if (authRequestId.value) {
-        // We already have an authRequestId — start the IdP flow directly
+    if (authRequestId.value || capacitorAuthRequestId.value) {
+        // We have an authRequestId — start the IdP flow directly
         await startIdpFlow(provider)
+    } else if (isCapacitor) {
+        // Capacitor: fetch authRequestId first, then start IdP flow — never call signIn()
+        await initCapacitorAuth()
+        if (capacitorAuthRequestId.value) {
+            await startIdpFlow(provider)
+        } else {
+            errorMessage.value = t('notify.errors.oauthFailed')
+        }
     } else {
-        // No authRequestId yet — save provider choice, start OIDC flow first.
+        // Web: save provider choice, start OIDC flow first.
         // When Zitadel redirects back with authRequestId, onMounted will pick it up.
         sessionStorage.setItem('pendingIdpProvider', provider)
         const { useOidc } = await import('~/composables/useOidc')

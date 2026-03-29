@@ -56,13 +56,13 @@
                                 <!-- Halal toggle -->
                                 <button
                                     @click.stop="toggleFilter('halal')"
-                                    :title="$t('menu.halal')"
+                                    :title="isCapacitor ? undefined : $t('menu.halal')"
                                     class="group/halal relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('halal')
                                         ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.halal') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,13 +77,13 @@
                                 <!-- Vegan toggle -->
                                 <button
                                     @click.stop="toggleFilter('vegan')"
-                                    :title="$t('menu.vegan')"
+                                    :title="isCapacitor ? undefined : $t('menu.vegan')"
                                     class="group/vegan relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('vegan')
                                         ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.vegan') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,13 +99,13 @@
                                 <!-- Spicy toggle -->
                                 <button
                                     @click.stop="toggleFilter('spicy')"
-                                    :title="$t('menu.spicy')"
+                                    :title="isCapacitor ? undefined : $t('menu.spicy')"
                                     class="group/spicy relative flex items-center rounded-xl transition-all duration-300 ease-out"
                                     :class="activeFilters.has('spicy')
                                         ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.spicy') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">

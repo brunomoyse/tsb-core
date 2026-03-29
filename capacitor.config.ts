@@ -13,9 +13,13 @@ const config: CapacitorConfig = {
       resize: 'none',          // Matches KeyboardResize.None set at runtime; applies before JS runs
       resizeOnFullScreen: true,
     },
+    CapacitorHttp: {
+      enabled: false,           // Use WKWebView networking instead of native HTTP (CORS is configured server-side)
+    },
   },
   server: {
     androidScheme: 'https',
+    iosScheme: 'https',
   },
   android: {
     backgroundColor: '#F6F5F2', // Matches tsb-one — prevents white flash before WebView loads

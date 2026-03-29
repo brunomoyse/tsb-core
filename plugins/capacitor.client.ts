@@ -46,7 +46,7 @@ export default defineNuxtPlugin(async () => {
         } catch { /* Keyboard plugin not available */ }
     }
 
-    // Android back button handling
+    // Android back button handling + OIDC deep link handling
     try {
         const { App } = await import('@capacitor/app')
         const router = useNuxtApp().$router
@@ -59,20 +59,13 @@ export default defineNuxtPlugin(async () => {
             }
         })
 
-        // OIDC deep link handling: tokyosushi://auth/callback?code=...&state=...
-        App.addListener('appUrlOpen', async ({ url }) => {
-            if (!url.startsWith('tokyosushi://auth/callback')) return
-
-            // Close the in-app browser if still open
-            try {
-                const { Browser } = await import('@capacitor/browser')
-                await Browser.close()
-            } catch { /* Ignore browser close error */ }
-
-            // The OIDC callback will be handled by oidc-client-ts
-            // Navigate to the callback route which exchanges the code for tokens
-            const callbackUrl = url.replace('tokyosushi://', '/')
-            navigateTo(callbackUrl)
+        // Deep link handler (for future use: push notification taps, etc.)
+        App.addListener('appUrlOpen', ({ url }) => {
+            // Custom scheme deep links (e.g., be.tokyosushibarliege.app:/...)
+            if (url.startsWith('be.tokyosushibarliege.app:')) {
+                const path = url.replace('be.tokyosushibarliege.app:', '')
+                navigateTo(path)
+            }
         })
     } catch { /* App plugin not available */ }
 })

@@ -66,7 +66,7 @@
             <CapacitorTabBar />
         </ClientOnly>
         <ClientOnly>
-            <CartMobile />
+            <CartMobile v-if="!isCapacitor" />
             <FloatingCartBar v-if="!isCapacitor" />
         </ClientOnly>
         <ClientOnly>

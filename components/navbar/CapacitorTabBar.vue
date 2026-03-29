@@ -56,11 +56,11 @@
             </NuxtLinkLocale>
 
             <!-- Cart -->
-            <button
-                type="button"
+            <NuxtLinkLocale
+                to="/cart"
                 class="tab-item flex-1 flex flex-col items-center justify-center relative"
                 :class="isCartActive ? 'text-red-700' : 'text-gray-400'"
-                @click="handleCartToggle"
+                @click="hapticTick"
             >
                 <span
                     v-if="isCartActive && !isAndroid"
@@ -76,13 +76,13 @@
                     <img src="/icons/shopping-bag-icon.svg" alt="" class="w-5 h-5 select-none" draggable="false"/>
                     <div
                         v-if="cartCount > 0"
-                        :class="['absolute inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1', badgeAnimating ? 'animate-bounce' : '']"
+                        :class="['absolute inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[11px] font-bold text-white bg-red-500 rounded-full -top-1.5 -right-1.5', badgeAnimating ? 'animate-bounce' : '']"
                     >
                         {{ cartCount }}
                     </div>
                 </div>
                 <span class="text-[10px] leading-none mt-0.5">{{ $t('nav.cart') }}</span>
-            </button>
+            </NuxtLinkLocale>
 
             <!-- Account -->
             <NuxtLinkLocale
@@ -136,7 +136,7 @@ const normalizedPath = computed(() => route.path.replace(/^\/[^/]+/, ''))
 
 const isHomeActive = computed(() => normalizedPath.value === '/' || normalizedPath.value === '')
 const isMenuActive = computed(() => normalizedPath.value === '/menu' || normalizedPath.value.startsWith('/menu/'))
-const isCartActive = computed(() => cartStore.isCartVisible)
+const isCartActive = computed(() => normalizedPath.value === '/cart')
 const isAcctActive = computed(() => normalizedPath.value === '/me' || normalizedPath.value.startsWith('/me/'))
 
 const cartCount = computed(() => cartStore.totalItems)
@@ -157,8 +157,4 @@ const hapticTick = () => {
     Haptics.selectionChanged().catch(() => {})
 }
 
-const handleCartToggle = () => {
-    hapticTick()
-    cartStore.toggleCartVisibility()
-}
 </script>

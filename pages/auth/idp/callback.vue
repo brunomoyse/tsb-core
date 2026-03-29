@@ -21,11 +21,13 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, onMounted, ref, useRoute } from '#imports'
+import { definePageMeta, onMounted, ref, useRoute, useRuntimeConfig } from '#imports'
+import { usePlatform } from '~/composables/usePlatform'
 
 definePageMeta({ public: true })
 
 const route = useRoute()
+const { isCapacitor } = usePlatform()
 const error = ref(false)
 const rateLimited = ref(false)
 
@@ -61,8 +63,29 @@ onMounted(async () => {
         // Clean up
         sessionStorage.removeItem('oidcAuthRequestId')
 
-        // Redirect to the OIDC callback URL (oidc-client-ts exchanges code for tokens)
-        window.location.href = result.callbackUrl
+        if (isCapacitor) {
+            // Capacitor: exchange code for tokens in-app (never redirect away)
+            const callbackUrl = new URL(result.callbackUrl)
+            const code = callbackUrl.searchParams.get('code')
+            if (!code) throw new Error('No authorization code in callback URL')
+
+            const { useOidc } = await import('~/composables/useOidc')
+            const { exchangeCodeForTokens } = useOidc()
+            await exchangeCodeForTokens(code)
+
+            // Close the in-app browser (SFSafariViewController) if still open
+            try {
+                const { Browser } = await import('@capacitor/browser')
+                await Browser.close()
+            } catch { /* Browser may already be closed */ }
+
+            const { useAuthCallback } = await import('~/composables/useAuthCallback')
+            const { processCallback } = useAuthCallback()
+            await processCallback()
+        } else {
+            // Web: redirect to OIDC callback URL (oidc-client-ts exchanges code for tokens)
+            window.location.href = result.callbackUrl
+        }
     } catch (e: any) {
         if (import.meta.dev) console.error('IdP callback error:', e)
         const status = e?.response?.status || e?.statusCode
