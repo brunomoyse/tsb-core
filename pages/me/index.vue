@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest, User } from '@/types'
 import { computed, onMounted, ref } from 'vue'
-import { definePageMeta, useGqlMutation, useNuxtApp } from '#imports'
+import { definePageMeta, useGqlMutation, useNuxtApp, useSwitchLocalePath } from '#imports'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
@@ -14,8 +14,16 @@ import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const switchLocalePath = useSwitchLocalePath()
+
+const languages = [
+    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+    { code: 'en', label: 'English', flag: '🇬🇧' },
+    { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+    { code: 'zh', label: '中文', flag: '🇨🇳' },
+]
 const authStore = useAuthStore()
 const { $api, $gqlFetch } = useNuxtApp()
 const { trackEvent, optIn, optOut, hasOptedIn } = useTracking()
@@ -552,8 +560,35 @@ const toggleNotifyMarketing = async () => {
                 </div>
             </div>
 
+            <!-- Language cell -->
+            <div class="bento-language bento-cell" style="--delay: 8">
+                <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
+                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('nav.language') }}</span>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <NuxtLink
+                            v-for="lang in languages"
+                            :key="lang.code"
+                            :to="switchLocalePath(lang.code)"
+                            :class="[
+                                'px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97]',
+                                locale === lang.code
+                                    ? 'bg-red-500 text-white font-medium'
+                                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                            ]"
+                        >
+                            {{ lang.flag }} {{ lang.label }}
+                        </NuxtLink>
+                    </div>
+                </div>
+            </div>
+
             <!-- Logout cell -->
-            <div class="bento-logout bento-cell" style="--delay: 8">
+            <div class="bento-logout bento-cell" style="--delay: 9">
                 <button
                     type="button"
                     class="bg-tsb-two rounded-2xl p-6 h-full w-full flex flex-col text-left hover:bg-red-50 transition-colors"
@@ -569,14 +604,14 @@ const toggleNotifyMarketing = async () => {
             </div>
 
             <!-- Orders — hero cell -->
-            <div class="bento-orders bento-cell" style="--delay: 9">
+            <div class="bento-orders bento-cell" style="--delay: 10">
                 <OrdersWidget />
             </div>
 
         </div>
 
         <!-- Account deletion — subtle, outside the grid -->
-        <div class="mt-8 text-center bento-cell" style="--delay: 10">
+        <div class="mt-8 text-center bento-cell" style="--delay: 11">
             <button
                 v-if="!authStore.user?.deletionRequestedAt"
                 type="button"
@@ -739,6 +774,7 @@ const toggleNotifyMarketing = async () => {
         "password"
         "notifications"
         "analytics"
+        "language"
         "logout"
         "orders";
 }
@@ -750,6 +786,7 @@ const toggleNotifyMarketing = async () => {
 .bento-password { grid-area: password; }
 .bento-notifications { grid-area: notifications; }
 .bento-analytics { grid-area: analytics; }
+.bento-language { grid-area: language; }
 .bento-logout { grid-area: logout; }
 .bento-orders { grid-area: orders; }
 
@@ -762,7 +799,7 @@ const toggleNotifyMarketing = async () => {
             "email         phone"
             "address       password"
             "notifications analytics"
-            "logout        ."
+            "language       logout"
             "orders        orders";
     }
 }
@@ -774,7 +811,8 @@ const toggleNotifyMarketing = async () => {
         grid-template-areas:
             "profile       email          phone"
             "profile       address        password"
-            "notifications analytics      logout"
+            "notifications analytics      language"
+            "logout        .              ."
             "orders        orders         orders";
     }
 }

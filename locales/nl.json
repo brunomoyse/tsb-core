@@ -312,7 +312,9 @@
     "increaseQty": "Aantal verhogen",
     "closeCart": "Winkelwagen sluiten",
     "notifications": "Meldingen winkelwagen",
-    "addToCart": "Toevoegen aan winkelwagen"
+    "addToCart": "Toevoegen aan winkelwagen",
+    "item": "artikel",
+    "items": "artikelen"
   },
   "checkout": {
     "title": "Bestelling",

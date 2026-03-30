@@ -152,6 +152,23 @@
                             </NuxtLinkLocale>
                         </p>
                     </div>
+
+                    <!-- Language Selector -->
+                    <div class="mt-6 pt-5 border-t border-gray-200/50 flex justify-center gap-2">
+                        <NuxtLink
+                            v-for="lang in languages"
+                            :key="lang.code"
+                            :to="switchLocalePath(lang.code)"
+                            :class="[
+                                'px-3 py-1.5 text-xs rounded-full transition-all active:scale-[0.97]',
+                                locale === lang.code
+                                    ? 'bg-red-500 text-white font-medium'
+                                    : 'bg-white/60 text-gray-500 hover:bg-white'
+                            ]"
+                        >
+                            {{ lang.flag }} {{ lang.label }}
+                        </NuxtLink>
+                    </div>
                 </div>
             </div>
 
@@ -160,14 +177,22 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, navigateTo, onMounted, ref, useRoute, useRuntimeConfig } from '#imports'
+import { definePageMeta, navigateTo, onMounted, ref, useRoute, useRuntimeConfig, useSwitchLocalePath } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: true })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
+
+const languages = [
+    { code: 'fr', label: 'FR', flag: '🇫🇷' },
+    { code: 'en', label: 'EN', flag: '🇬🇧' },
+    { code: 'nl', label: 'NL', flag: '🇳🇱' },
+    { code: 'zh', label: '中文', flag: '🇨🇳' },
+]
 const { trackEvent } = useTracking()
 const { isCapacitor } = usePlatform()
 const route = useRoute()
@@ -243,8 +268,8 @@ onMounted(async () => {
         } else {
             // Web: redirect to Zitadel (will come back with authRequestID)
             const { signIn } = useOidc()
-            const locale = route.path.split('/')[1] || 'fr'
-            await signIn({ ui_locales: locale })
+            const uiLocale = route.path.split('/')[1] || 'fr'
+            await signIn({ ui_locales: uiLocale })
         }
         return
     }
@@ -347,7 +372,7 @@ const startIdpFlow = async (provider: string) => {
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { startIdpLogin } = useZitadelApi()
 
-    const locale = route.path.split('/')[1] || 'fr'
+    const uiLocale = route.path.split('/')[1] || 'fr'
 
     // Save authRequestId for the IdP callback page to finalize the OIDC flow
     const effectiveAuthId = authRequestId.value || capacitorAuthRequestId.value
@@ -358,8 +383,8 @@ const startIdpFlow = async (provider: string) => {
     const baseUrl = isCapacitor
         ? 'be.tokyosushibarliege.app:/'
         : config.public.baseUrl as string
-    const successUrl = `${baseUrl}/${locale}/auth/idp/callback`
-    const failureUrl = `${baseUrl}/${locale}/auth/idp/callback?error=true`
+    const successUrl = `${baseUrl}/${uiLocale}/auth/idp/callback`
+    const failureUrl = `${baseUrl}/${uiLocale}/auth/idp/callback?error=true`
 
     try {
         const { authUrl } = await startIdpLogin(provider, successUrl, failureUrl)
@@ -402,8 +427,8 @@ const loginWithProvider = async (provider: string) => {
         sessionStorage.setItem('pendingIdpProvider', provider)
         const { useOidc } = await import('~/composables/useOidc')
         const { signIn } = useOidc()
-        const locale = route.path.split('/')[1] || 'fr'
-        await signIn({ ui_locales: locale })
+        const uiLocale = route.path.split('/')[1] || 'fr'
+        await signIn({ ui_locales: uiLocale })
     }
 }
 </script>

@@ -313,7 +313,9 @@
     "increaseQty": "增加数量",
     "closeCart": "关闭购物车",
     "notifications": "购物车通知",
-    "addToCart": "加入购物车"
+    "addToCart": "加入购物车",
+    "item": "件商品",
+    "items": "件商品"
   },
   "checkout": {
     "title": "结账",
