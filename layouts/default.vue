@@ -13,6 +13,7 @@
         </Head>
 
         <Body class="bg-tsb-one overflow-x-hidden">
+        <NuxtLoadingIndicator color="#DC2626" :height="2" />
         <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500">
             {{ $t('common.skipToContent') }}
         </a>
@@ -109,6 +110,7 @@ import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRoute } from 'vue-router'
+import { useSwipeBack } from '~/composables/useSwipeBack'
 
 useHead({
     link: [
@@ -124,7 +126,12 @@ useHead({
 
 const route = useRoute()
 const {t} = useI18n()
-const { isCapacitor } = usePlatform()
+const { isCapacitor, isIos } = usePlatform()
+
+// Swipe-from-left-edge to go back (iOS convention)
+if (import.meta.client && isIos) {
+    useSwipeBack('#main-content')
+}
 const head = useLocaleHead()
 const showNotification = ref(false)
 const notification = ref({

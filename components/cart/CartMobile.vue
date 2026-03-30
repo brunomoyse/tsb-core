@@ -45,7 +45,10 @@
                     class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
                 >
                     <!-- IMAGE -->
-                    <picture class="col-span-1 flex items-center justify-center w-16 h-16 bg-gray-50 rounded-md overflow-hidden">
+                    <picture
+                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-gray-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                        @click="openLightbox(item.product.slug, item.product.name)"
+                    >
                         <source
                             :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
                             type="image/avif"
@@ -138,30 +141,47 @@
             </footer>
             </aside>
         </Transition>
+        <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import type { CartItem } from '@/types'
+import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatPrice } from '~/lib/price'
+import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useHaptics } from '~/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
+const { impact } = useHaptics()
 const { trackEvent } = useTracking();
+
+const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
+const lightboxSrc = ref('')
+const lightboxAlt = ref('')
+
+const openLightbox = (slug: string, name: string) => {
+    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxAlt.value = name
+    lightboxRef.value?.open()
+}
 
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
     (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
+    impact('Light')
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
 const handleDecrementQuantity = (cartItem: CartItem): void => {
+    impact('Light')
     cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

@@ -121,14 +121,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRoute } from 'vue-router'
 
 const { isCapacitor, isAndroid, isIos } = usePlatform()
+const { selection } = useHaptics()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const route = useRoute()
@@ -152,11 +153,7 @@ watch(cartCount, (newVal) => {
     }
 })
 
-// Lightweight selection haptic for tab navigation (safe: component is always inside <ClientOnly>)
-const hapticTick = () => {
-    if (!isCapacitor) return
-    Haptics.selectionChanged().catch(() => {})
-}
+const hapticTick = () => selection()
 
 </script>
 
@@ -181,5 +178,10 @@ const hapticTick = () => {
 /* Invert img icons to white inside the active brand pill */
 .ios-icon-invert img {
     filter: brightness(0) invert(1);
+}
+
+/* Spring timing on tab press */
+.tab-item {
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 </style>

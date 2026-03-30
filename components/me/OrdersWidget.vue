@@ -80,7 +80,7 @@
                                     <span class="text-sm font-medium text-gray-800 whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
-                                    <span class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-600 whitespace-nowrap shrink-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-600 whitespace-nowrap shrink-0">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-400 status-pulse" />
                                         {{ getStatus(getTrackedOrder(order).status) }}
                                     </span>
@@ -88,10 +88,6 @@
                                 <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
                                     {{ formatDate(order.createdAt) }}
                                 </p>
-                                <!-- Compact timeline (collapsed only) -->
-                                <div v-if="!isExpanded(order.id)" class="mt-2">
-                                    <OrderStatusTimeline :order="getTrackedOrder(order)" compact />
-                                </div>
                             </div>
 
                             <!-- Price + chevron -->
@@ -112,8 +108,8 @@
                             @before-leave="accordionBeforeLeave" @leave="accordionLeave" @after-leave="accordionAfterLeave"
                         >
                             <div v-show="isExpanded(order.id)" class="relative z-[1] px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(255,245,238,0.4), transparent 60%)">
-                                <!-- Full timeline -->
-                                <div class="mb-4">
+                                <!-- Vertical timeline -->
+                                <div class="mb-3">
                                     <OrderStatusTimeline :order="getTrackedOrder(order)" />
                                 </div>
 
@@ -215,7 +211,7 @@
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
                                     <span
-                                        class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                                        class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
                                         :class="statusBadgeClass(order.status)"
                                     >
                                         {{ getStatus(order.status) }}
@@ -390,7 +386,7 @@ const visibleCount = ref(LOAD_STEP)
 
 const MY_ORDERS = gql`
   {
-    myOrders(first: 50) {
+    myOrders(first: 5) {
       id
       createdAt
       updatedAt

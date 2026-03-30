@@ -8,6 +8,8 @@
         ? 'lg:w-[calc(100vw-142px)]'
         : 'lg:w-[calc(67vw-71px)]'"
         >
+            <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
+
             <!-- Restaurant Closed Banner -->
             <div v-if="!isOrderingAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +64,7 @@
                                         ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.halal') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,7 +85,7 @@
                                         ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.vegan') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,7 +107,7 @@
                                         ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
                                         : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
                                 >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
+                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
                                         {{ $t('menu.spicy') }}
                                     </span>
                                     <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
@@ -176,7 +178,7 @@
                         @mouseup="stopDrag"
                         @mouseleave="stopDrag"
                         :class="[
-                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth',
+                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth snap-x snap-mandatory',
                           isDragging ? 'cursor-grabbing' : 'cursor-grab'
                         ]"
                     >
@@ -313,6 +315,8 @@ import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'v
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
+import PullToRefresh from '~/components/PullToRefresh.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
@@ -324,6 +328,8 @@ import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 
 const { isCapacitor } = usePlatform()
+const { selection: hapticSelection } = useHaptics()
+const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
@@ -384,9 +390,14 @@ const PRODUCT_CATEGORIES = gql`
  * Stores & Data Fetch
  */
 const cartStore = useCartStore()
-const { data: dataCategories } = await useGqlQuery<{
+const { data: dataCategories, refetch: refetchCategories } = await useGqlQuery<{
     productCategories: ProductCategory[]
 }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
+
+const handlePullRefresh = async () => {
+    await refetchCategories()
+    pullToRefreshRef.value?.finishRefresh()
+}
 
 /**
  * Live product updates via WebSocket subscription
@@ -463,6 +474,7 @@ const collapseSearch = () => {
 // Filter state
 const activeFilters = ref<Set<string>>(new Set())
 const toggleFilter = (filter: string) => {
+    hapticSelection()
     const next = new Set(activeFilters.value)
     if (next.has(filter)) {
         next.delete(filter)
