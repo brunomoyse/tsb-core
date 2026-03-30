@@ -1,5 +1,5 @@
 <template>
-    <div :class="['max-w-7xl mx-auto p-4 lg:pb-4', isCapacitor ? '' : 'pb-24']">
+    <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
         <!-- Restaurant Closed Banner -->
         <div v-if="!isOrderingAvailable" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -8,6 +8,18 @@
             <p class="text-amber-800 font-medium">
                 {{ $t('checkout.restaurantClosed') }}
                 <span v-if="nextOpeningTime" class="block text-sm mt-1 font-normal">{{ $t('checkout.opensAt', { time: nextOpeningTime }) }}</span>
+            </p>
+        </div>
+
+        <!-- Minimum Order Warning Banner -->
+        <div v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <p class="text-red-700 font-medium text-sm">
+                {{ cartStore.collectionOption === 'DELIVERY'
+                    ? $t('cart.minimumDelivery', { amount: 25 })
+                    : $t('cart.minimumPickup', { amount: 20 }) }}
             </p>
         </div>
 
@@ -30,42 +42,21 @@
             <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
         </nav>
 
-        <!-- Sticky Top CTA (Capacitor app only) -->
+        <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
         <div
-            v-if="isCapacitor"
-            class="sticky top-0 z-10 bg-tsb-one/95 backdrop-blur-md border-b border-gray-200/60 -mx-4 px-4 py-3 mb-4"
+            v-if="showStickyBar && cartStore.products.length > 0"
+            class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-gray-200/60 transition-all"
         >
-            <button
-                @click="handleCheckout"
-                :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
-                :class="[
-                    'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-transform',
-                    isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                ]"
-            >
-                <div class="flex items-center gap-2">
-                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                        {{ $t('checkout.processing') }}
-                    </span>
-                    <span v-else class="font-semibold text-sm uppercase tracking-wide">
-                        {{ cartStore.paymentOption === 'ONLINE'
-                            ? $t('checkout.goToPayment')
-                            : $t('checkout.placeOrder')
-                        }}
-                    </span>
-                </div>
-                <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
-            </button>
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">
+                    {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
+                </span>
+                <span class="font-bold text-gray-900">{{ formatPrice(cartTotal) }}</span>
+            </div>
         </div>
 
         <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             <CheckoutProductSummary />
             <CheckoutCollectionOptions
                 @open-address-modal="openAddressModal"
@@ -76,48 +67,53 @@
             <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
         </div>
 
-        <!-- Extras Suggestion -->
-        <div class="mt-8">
-            <CheckoutExtrasSuggestion />
+        <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
+        <div
+            class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+            :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
+        >
+            <button
+                data-testid="checkout-place-order"
+                @click="handleCheckout"
+                :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
+                :class="[
+                    'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
+                    isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ]"
+            >
+                <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    {{ $t('checkout.processing') }}
+                </span>
+                <span v-else class="font-semibold text-sm uppercase tracking-wide">
+                    {{ cartStore.paymentOption === 'ONLINE'
+                        ? $t('checkout.goToPayment')
+                        : $t('checkout.placeOrder')
+                    }}
+                </span>
+                <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
+            </button>
+            <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
         </div>
 
-        <!-- Sticky Checkout Button (mobile web only) -->
-        <div
-            v-if="!isCapacitor"
-            class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4"
-            style="bottom: 0"
-        >
-            <div class="flex items-center justify-between max-w-7xl mx-auto">
-                <div class="font-semibold text-lg">
-                    {{ formatPrice(cartTotal) }}
-                </div>
-                <button
-                    @click="handleCheckout"
-                    :class="[
-                        'px-6 pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
-                          ? 'bg-red-500 text-white hover:bg-red-600'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    ]"
-                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
-                >
-                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                        {{ $t('checkout.processing') }}
-                    </span>
-                    <span v-else>
-                        {{ cartStore.paymentOption === 'ONLINE'
-                            ? $t('checkout.goToPayment')
-                            : $t('checkout.placeOrder')
-                        }}
-                    </span>
-                </button>
+        <!-- Payment Redirect Overlay -->
+        <Teleport to="body">
+            <div
+                v-if="isRedirectingToPayment"
+                class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
+            >
+                <svg class="animate-spin h-8 w-8 text-red-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                <p class="text-gray-700 font-medium">{{ $t('checkout.openingPayment') }}</p>
             </div>
-            <div class="safe-area-spacer-bottom" />
-        </div>
+        </Teleport>
 
         <!-- Address Modal -->
         <div
@@ -171,10 +167,9 @@ definePageMeta({ public: false })
 
 import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
 import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
-import { ref, watch } from 'vue'
+import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
-import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
@@ -226,6 +221,16 @@ useSeoMeta({
     title: t('schema.checkout.title'),
     robots: 'noindex,nofollow',
 })
+
+// Sticky bar: show when grid scrolls past viewport top
+const gridRef = ref<HTMLElement | null>(null)
+const showStickyBar = ref(false)
+const onScroll = () => {
+    if (!gridRef.value) return
+    showStickyBar.value = gridRef.value.getBoundingClientRect().top < 0
+}
+onMountedVue(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 // Manage the address modal state and delivery address
 const showAddressModal = ref(false)
@@ -331,6 +336,7 @@ onMounted(() => {
 
 // Checkout logic (simplified; extras and time selection are handled in CheckoutPaymentExtras component)
 const isCheckoutProcessing = ref(false)
+const isRedirectingToPayment = ref(false)
 const handleCheckout = async () => {
     if (isCheckoutProcessing.value) return
     isCheckoutProcessing.value = true
@@ -453,6 +459,7 @@ const handleCheckout = async () => {
 
             if (order?.payment?.links) {
                 trackEvent('payment_redirect', { order_id: order.id })
+                isRedirectingToPayment.value = true
                 if (isCapacitor) {
                     // Open Mollie checkout in SFSafariViewController.
                     // Mollie redirects to be.tokyosushibarliege.app://order-completed/{id}

@@ -143,7 +143,6 @@
     "register": "Créer un compte",
     "submit": "Connexion",
     "ssoGoogle": "Connexion avec Google",
-    "ssoFacebook": "Connexion avec Facebook",
     "ssoApple": "Connexion avec Apple",
     "authenticating": "Authentification en cours...",
     "callbackError": "L'authentification a échoué. Veuillez réessayer.",
@@ -364,7 +363,12 @@
     "tooFar": "Trop loin pour la livraison (max 9 km)",
     "tbd": "À déterminer",
     "sauce1": "Sauce 1",
-    "sauce2": "Sauce 2"
+    "sauce2": "Sauce 2",
+    "optional": "(facultatif)",
+    "openingPayment": "Ouverture du paiement sécurisé...",
+    "addressDistanceKm": "{distance} km",
+    "addExtras": "Envie d'un accompagnement ?",
+    "extrasDescription": "Complétez votre commande avec des accompagnements"
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -426,7 +430,7 @@
         "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
         "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
         "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
-        "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google, Facebook ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un.",
+        "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un.",
         "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification."
     }
   },
