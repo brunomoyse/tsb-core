@@ -17,6 +17,10 @@ export default defineNuxtPlugin(async () => {
         if (platform === 'ios') {
             // On iOS the status bar uses native blurred material — only text style is configurable
             await StatusBar.setStyle({ style: Style.Light })
+            // Tap status bar to scroll to top (iOS convention)
+            StatusBar.addListener('statusTap', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+            })
         } else if (platform === 'android') {
             await StatusBar.setStyle({ style: Style.Light })
             await StatusBar.setBackgroundColor({ color: '#FFFFFF' })
@@ -39,6 +43,8 @@ export default defineNuxtPlugin(async () => {
             await Keyboard.setResizeMode({ mode: KeyboardResize.None })
             await Keyboard.addListener('keyboardWillShow', () => {
                 document.body.classList.add('keyboard-visible')
+                // Dismiss keyboard on scroll (matches native iOS behavior)
+                window.addEventListener('scroll', () => Keyboard.hide().catch(() => {}), { passive: true, capture: true, once: true })
             })
             await Keyboard.addListener('keyboardWillHide', () => {
                 document.body.classList.remove('keyboard-visible')

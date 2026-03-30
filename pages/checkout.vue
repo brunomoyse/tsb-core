@@ -183,6 +183,7 @@ import { getNextOpeningTime, hasAvailableFixedSlotsToday } from '~/utils/opening
 import gql from 'graphql-tag'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
+import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
@@ -192,6 +193,7 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
 const { isCapacitor } = usePlatform()
+const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
 // Check restaurant ordering status
@@ -439,6 +441,7 @@ const handleCheckout = async () => {
             })
 
             const order = res.createOrder
+            hapticNotification('Success')
 
             trackEvent('order_placed', {
                 order_id: order?.id,
@@ -464,6 +467,7 @@ const handleCheckout = async () => {
             }
         } catch (err) {
             if (import.meta.dev) console.error('Error creating order:', err)
+            hapticNotification('Error')
             eventBus.emit('notify', {
                 message: t('notify.errors.orderCreationFailed'),
                 persistent: false,
@@ -474,6 +478,7 @@ const handleCheckout = async () => {
 
     } catch (err) {
         if (import.meta.dev) console.error('Order processing failed:', err)
+        hapticNotification('Error')
         eventBus.emit('notify', {
             message: t('notify.errors.orderCreationFailed'),
             persistent: false,

@@ -28,6 +28,9 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
+import { useHaptics } from '~/composables/useHaptics'
+
+const { notification: hapticNotification } = useHaptics()
 
 const { message, persistent = false, duration = 10000, cookieConsent = false, variant = 'neutral' } = defineProps<{
     message: string
@@ -83,6 +86,8 @@ onMounted(() => {
     }
     if (!cookieConsent) {
         visible.value = true
+        if (variant === 'error') hapticNotification('Error')
+        else if (variant === 'success') hapticNotification('Success')
         if (!persistent) {
             // Start the progress bar countdown.
             const startTime = Date.now()

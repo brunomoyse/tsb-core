@@ -2,12 +2,14 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
 import type { Order } from "~/types"
+import PullToRefresh from "~/components/PullToRefresh.vue" // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
 import { formatAddress } from "~/utils/utils"
 import gql from 'graphql-tag'
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
+import { usePlatform } from "~/composables/usePlatform"
 import { useReorder } from "~/composables/useReorder"
 
 
@@ -74,8 +76,16 @@ const MY_ORDERS = gql`
 const LOAD_STEP = 5
 const visibleCount = ref(10)
 
-const { data: dataOrders, error: ordersError } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
+const { isCapacitor } = usePlatform()
+const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
+
+const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
+
+const handlePullRefresh = async () => {
+    await refetchOrders()
+    pullToRefreshRef.value?.finishRefresh()
+}
 
 if (ordersError.value) {
     eventBus.emit('notify', {
@@ -280,6 +290,7 @@ const getStatusColorClass = (status: string) => {
 
 <template>
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 pb-8 px-4 sm:px-6">
+        <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
 
         <!-- Back link + Header -->
         <div class="mb-6 sm:mb-8 bento-cell" style="--delay: 0">
@@ -321,16 +332,15 @@ const getStatusColorClass = (status: string) => {
                     @click="toggleOrder(order.id)"
                 >
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                        <div class="flex items-center gap-2">
                             <h3 class="font-semibold text-gray-700 text-sm whitespace-nowrap">
                                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
                             </h3>
                             <span
-                                v-if="isOrderCompleted(order.status)"
                                 class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
-                                :class="getStatusColorClass(order.status)"
+                                :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-red-600 bg-tsb-four'"
                             >
-                                {{ getStatus(order.status) }}
+                                {{ getStatus(getTrackedOrder(order).status) }}
                             </span>
                         </div>
                         <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
@@ -344,21 +354,10 @@ const getStatusColorClass = (status: string) => {
                                 })
                             }}
                         </p>
-                        <!-- Compact progress bar preview for in-progress orders (hidden when expanded) -->
-                        <div v-if="!isOrderCompleted(order.status) && !isExpanded(order.id)" class="mt-2">
-                            <OrderStatusTimeline :order="getTrackedOrder(order)" compact />
-                        </div>
                     </div>
                     <div class="flex items-center gap-2 ml-3 shrink-0">
                         <span class="text-sm font-semibold text-gray-700 tabular-nums whitespace-nowrap">
                             {{ new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(parseFloat(order.totalPrice)) }}
-                        </span>
-                        <!-- Current status badge (in-progress orders) -->
-                        <span
-                            v-if="!isOrderCompleted(order.status)"
-                            class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[11px] font-medium text-red-600 bg-tsb-four whitespace-nowrap"
-                        >
-                            {{ getStatus(getTrackedOrder(order).status) }}
                         </span>
                         <span
                             :class="{ 'rotate-180': isExpanded(order.id) }"

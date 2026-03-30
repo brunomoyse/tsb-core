@@ -44,7 +44,10 @@
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
                      :class="{ 'animate-cart-flash': highlightedKey === `${item.product.id}-${item.selectedChoice?.id ?? 'none'}` }">
                     <!-- Product Image -->
-                    <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <div
+                        class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                        @click="openLightbox(item.product?.slug, item.product.name)"
+                    >
                         <picture>
                             <source
                                 :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product?.slug}.avif`"
@@ -153,22 +156,36 @@
             </NuxtLinkLocale>
         </footer>
     </aside>
+    <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, useRuntimeConfig } from '#imports'
 import type { CartItem } from '@/types'
+import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
+import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
+const { impact } = useHaptics()
 const {t} = useI18n()
 const { trackEvent } = useTracking()
+
+const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
+const lightboxSrc = ref('')
+const lightboxAlt = ref('')
+
+const openLightbox = (slug: string, name: string) => {
+    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxAlt.value = name
+    lightboxRef.value?.open()
+}
 
 // Flash-highlight for newly added items
 const highlightedKey = ref<string | null>(null)
@@ -249,11 +266,13 @@ const calculateItemPrice = (item: CartItem) => {
 
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {
+    impact('Light')
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
 const handleDecrementQuantity = (cartItem: CartItem): void => {
+    impact('Light')
     cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

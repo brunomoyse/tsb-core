@@ -113,8 +113,8 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { Product } from '@/types'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
+import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
-import { usePlatform } from '~/composables/usePlatform'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
 
@@ -122,7 +122,7 @@ const cartStore = useCartStore();
 useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
-const { isCapacitor } = usePlatform();
+const { impact } = useHaptics()
 
 const {
     index,
@@ -170,15 +170,12 @@ watch(cardQuantity, () => {
     }
 })
 
-const addToCart = async () => {
+const addToCart = () => {
     if (hasChoices.value) {
         emit('openProductModal');
         return;
     }
-    if (isCapacitor) {
-        const { Haptics, ImpactStyle } = await import('@capacitor/haptics')
-        await Haptics.impact({ style: ImpactStyle.Light }).catch(() => {})
-    }
+    impact('Light')
     cartStore.incrementQuantity(product);
     trackEvent('product_added_to_cart', {
         product_id: product.id,

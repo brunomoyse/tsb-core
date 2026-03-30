@@ -41,7 +41,10 @@
                     >
                         <div class="flex items-center flex-1 min-w-0">
                             <!-- Product Picture -->
-                            <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center mr-3 shrink-0">
+                            <div
+                                class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center mr-3 shrink-0 cursor-pointer active:scale-95 transition-transform"
+                                @click="openLightbox(item.product.slug, item.product.name)"
+                            >
                                 <picture>
                                     <source
                                         :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
@@ -162,21 +165,31 @@
             </div>
         </div>
     </section>
+    <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
 </template>
 
 <script lang="ts" setup>
 import { type ComputedRef, computed, ref } from 'vue'
 import type { CartItem } from '~/types'
+import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
 import { useRuntimeConfig } from '#imports'
-
-
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const showTooltip = ref(false)
 const isCollapsed = ref(false)
+
+const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
+const lightboxSrc = ref('')
+const lightboxAlt = ref('')
+
+const openLightbox = (slug: string, name: string) => {
+    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxAlt.value = name
+    lightboxRef.value?.open()
+}
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)
