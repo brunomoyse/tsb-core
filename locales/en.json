@@ -313,7 +313,9 @@
     "increaseQty": "Increase quantity",
     "closeCart": "Close cart",
     "notifications": "Cart notifications",
-    "addToCart": "Add to cart"
+    "addToCart": "Add to cart",
+    "item": "item",
+    "items": "items"
   },
   "checkout": {
     "title": "Checkout",

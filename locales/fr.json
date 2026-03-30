@@ -312,7 +312,9 @@
     "increaseQty": "Augmenter la quantité",
     "closeCart": "Fermer le panier",
     "notifications": "Notifications du panier",
-    "addToCart": "Ajouter au panier"
+    "addToCart": "Ajouter au panier",
+    "item": "article",
+    "items": "articles"
   },
   "checkout": {
     "title": "Commande",
