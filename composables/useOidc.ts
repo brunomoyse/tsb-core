@@ -47,7 +47,7 @@ export function useOidc() {
                 stateStore: new WebStorageStateStore({ store: localStorage }),
             })
         } else {
-            const baseUrl = config.public.baseUrl as string
+            const baseUrl = (config.public.baseUrl as string).replace(/\/+$/, '')
             userManager = new UserManager({
                 authority: config.public.zitadelAuthority as string,
                 client_id: config.public.zitadelClientId as string,

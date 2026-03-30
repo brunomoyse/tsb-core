@@ -53,7 +53,7 @@ export function useZitadelApi() {
         })
     }
 
-    /** Start a social IdP login (Google, Facebook, Apple) via Zitadel IdP intent. */
+    /** Start a social IdP login (Google, Apple) via Zitadel IdP intent. */
     function startIdpLogin(provider: string, successUrl: string, failureUrl: string): Promise<IdpStartResponse> {
         return $fetch<IdpStartResponse>(`${apiUrl}/auth/idp/start`, {
             method: 'POST',
