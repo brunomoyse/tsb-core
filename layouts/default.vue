@@ -67,7 +67,7 @@
         </ClientOnly>
         <ClientOnly>
             <CartMobile v-if="!isCapacitor" />
-            <FloatingCartBar v-if="!isCapacitor" />
+            <FloatingCartBar v-if="!isCapacitor && isMenuPage" />
         </ClientOnly>
         <ClientOnly>
             <NotificationBar
@@ -165,4 +165,5 @@ onUnmounted(() => {
 })
 
 const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
+const isMenuPage = computed(() => route.path.endsWith('/menu'))
 </script>

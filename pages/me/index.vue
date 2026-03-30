@@ -783,6 +783,7 @@ const toggleNotifyMarketing = async () => {
 .bento-cell {
     animation: bento-enter 0.5s ease-out both;
     animation-delay: calc(var(--delay, 0) * 80ms);
+    min-width: 0;
 }
 
 @keyframes bento-enter {
