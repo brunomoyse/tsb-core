@@ -27,7 +27,7 @@
         <!-- Address Section (if DELIVERY) -->
         <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex flex-col gap-2">
             <label class="font-medium">
-                {{ $t('checkout.deliveryAddress', 'Delivery Address') }}
+                {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-red-400">*</span>
             </label>
             <div v-if="cartStore.address" class="flex flex-col text-gray-700 bg-gray-50 rounded p-3">
                 <span>{{ formatAddress(cartStore.address) }}</span>
@@ -39,6 +39,9 @@
                 </button>
                 <p v-if="cartStore.address.distance >= 9000" class="mt-2 text-sm text-red-600 font-medium">
                     {{ $t('checkout.tooFar') }}
+                </p>
+                <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-gray-500">
+                    {{ $t('checkout.addressDistanceKm', { distance: (cartStore.address.distance / 1000).toFixed(1) }) }}
                 </p>
             </div>
             <!-- Prominent "Add address" placeholder card -->
@@ -57,6 +60,7 @@
 
             <label for="addressExtra" class="block text-sm text-gray-700 mt-4">
                 {{ $t('checkout.addressComment', 'Additional Info for Address') }}
+                <span class="text-gray-400 font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </label>
             <textarea
                 id="addressExtra"

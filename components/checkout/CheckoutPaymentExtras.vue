@@ -143,6 +143,7 @@
         <div class="mb-6">
             <h3 id="order-comment-label" class="font-medium text-lg mb-2">
                 {{ $t('checkout.orderComment', 'Order Comment') }}
+                <span class="text-gray-400 text-sm font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </h3>
             <textarea
                 v-model="orderComment"

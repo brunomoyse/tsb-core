@@ -1,44 +1,22 @@
 <template>
     <section class="bg-white rounded-lg shadow p-4 w-full mx-auto overflow-visible">
-        <!-- Collapsible header -->
-        <button
-            class="w-full flex items-center justify-between xl:cursor-default"
-            @click="isCollapsed = !isCollapsed"
-        >
-            <h2 class="text-xl font-semibold">
-                {{ $t('checkout.orderSummary', 'Your Order') }}
-                <span class="text-sm font-normal text-gray-500 ml-1">
-                    ({{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }})
-                </span>
-            </h2>
-            <!-- Chevron (mobile/tablet only) -->
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-gray-400 transition-transform duration-200 xl:hidden"
-                :class="{ 'rotate-180': !isCollapsed }"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-        </button>
+        <h2 class="text-xl font-semibold">
+            {{ $t('checkout.orderSummary', 'Your Order') }}
+            <span class="text-sm font-normal text-gray-500 ml-1">
+                ({{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }})
+            </span>
+        </h2>
 
         <div v-if="cartStore.products.length === 0" class="text-gray-500 text-center mt-4">
             {{ $t('checkout.emptyCart', 'Your cart is empty.') }}
         </div>
         <div v-else class="space-y-4 mt-4">
-            <!-- Collapsible item list -->
-            <div
-                class="overflow-hidden transition-all duration-200 xl:max-h-none"
-                :class="isCollapsed ? 'max-h-0 xl:max-h-none' : 'max-h-[2000px]'"
-            >
-                <div class="space-y-4">
-                    <div
-                        v-for="item in cartStore.products"
-                        :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
-                        class="flex items-center justify-between border-b pb-2"
-                    >
+            <div class="space-y-4">
+                <div
+                    v-for="item in cartStore.products"
+                    :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                    class="flex items-center justify-between border-b pb-2"
+                >
                         <div class="flex items-center flex-1 min-w-0">
                             <!-- Product Picture -->
                             <div
@@ -105,7 +83,6 @@
                         </p>
                     </div>
                 </div>
-            </div>
 
             <!-- Price Summary (always visible) -->
             <div class="flex justify-between text-gray-700">
@@ -174,12 +151,13 @@ import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
+import { useHaptics } from '~/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
+const { impact: hapticImpact } = useHaptics()
 const showTooltip = ref(false)
-const isCollapsed = ref(false)
 
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
@@ -229,10 +207,12 @@ const finalTotal: ComputedRef<number> = computed(() => {
 // Quantity control handlers
 const handleIncrementQuantity = (item: CartItem) => {
     cartStore.incrementQuantity(item.product, item.selectedChoice)
+    hapticImpact('Light')
 }
 
 const handleDecrementQuantity = (item: CartItem) => {
     cartStore.decrementQuantity(item.product, item.selectedChoice)
+    hapticImpact('Light')
 }
 
 const handleRemoveFromCart = (item: CartItem) => {

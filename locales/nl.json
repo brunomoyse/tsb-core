@@ -143,7 +143,6 @@
     "register": "Account aanmaken",
     "submit": "Inloggen",
     "ssoGoogle": "Inloggen met Google",
-    "ssoFacebook": "Inloggen met Facebook",
     "ssoApple": "Inloggen met Apple",
     "authenticating": "Bezig met aanmelden...",
     "callbackError": "De aanmelding is mislukt. Probeer het opnieuw.",
@@ -364,7 +363,12 @@
     "tooFar": "Te ver voor levering (max 9 km)",
     "tbd": "Nader te bepalen",
     "sauce1": "Saus 1",
-    "sauce2": "Saus 2"
+    "sauce2": "Saus 2",
+    "optional": "(optioneel)",
+    "openingPayment": "Veilige betaling openen...",
+    "addressDistanceKm": "{distance} km afstand",
+    "addExtras": "Zin in extra's?",
+    "extrasDescription": "Maak uw bestelling compleet met bijgerechten"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
@@ -426,7 +430,7 @@
         "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
         "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
         "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
-        "noPassword": "Dit account heeft geen wachtwoord. Log in via Google, Facebook of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken.",
+        "noPassword": "Dit account heeft geen wachtwoord. Log in via Google of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken.",
         "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink."
     }
   },
