@@ -9,7 +9,9 @@ const RESTAURANT_CONFIG_QUERY = gql`
         restaurantConfig {
             orderingEnabled
             openingHours
+            orderingHours
             isCurrentlyOpen
+            isOrderingCurrentlyOpen
         }
     }
 `
@@ -19,7 +21,9 @@ const SUB_RESTAURANT_CONFIG = gql`
         restaurantConfigUpdated {
             orderingEnabled
             openingHours
+            orderingHours
             isCurrentlyOpen
+            isOrderingCurrentlyOpen
         }
     }
 `
@@ -27,7 +31,9 @@ const SUB_RESTAURANT_CONFIG = gql`
 interface RestaurantConfig {
     orderingEnabled: boolean
     openingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null>
+    orderingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null> | null
     isCurrentlyOpen: boolean
+    isOrderingCurrentlyOpen: boolean
 }
 
 export async function useRestaurantConfig() {

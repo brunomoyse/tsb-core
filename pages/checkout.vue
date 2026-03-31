@@ -61,8 +61,9 @@
             <CheckoutCollectionOptions
                 @open-address-modal="openAddressModal"
                 :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
+                :ordering-hours="restaurantConfig?.restaurantConfig?.orderingHours"
                 :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
-                :is-currently-open="restaurantConfig?.restaurantConfig?.isCurrentlyOpen"
+                :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
             />
             <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
         </div>
@@ -194,13 +195,14 @@ const { trackEvent } = useTracking()
 // Check restaurant ordering status
 const { config: restaurantConfig } = await useRestaurantConfig()
 const openingHours = computed(() => restaurantConfig.value?.restaurantConfig?.openingHours)
-const isCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
+const orderingHours = computed(() => restaurantConfig.value?.restaurantConfig?.orderingHours)
+const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
 const hasFixedSlotsToday = computed(() => {
     if (!openingHours.value) return false
-    return hasAvailableFixedSlotsToday(openingHours.value)
+    return hasAvailableFixedSlotsToday(openingHours.value, new Date(), orderingHours.value)
 })
-const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isCurrentlyOpen.value || hasFixedSlotsToday.value))
+const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isOrderingCurrentlyOpen.value || hasFixedSlotsToday.value))
 
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
 watch(isOrderingAvailable, (available) => {
@@ -396,7 +398,7 @@ const handleCheckout = async () => {
             return
         }
 
-        if (!isCurrentlyOpen.value && !cartStore.preferredReadyTime) {
+        if (!isOrderingCurrentlyOpen.value && !cartStore.preferredReadyTime) {
             eventBus.emit('notify', {
                 message: t('notify.errors.fixedTimeRequiredWhileClosed'),
                 persistent: false,

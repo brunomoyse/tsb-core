@@ -315,7 +315,8 @@
     "notifications": "Cart notifications",
     "addToCart": "Add to cart",
     "item": "item",
-    "items": "items"
+    "items": "items",
+    "orderingUnavailable": "Ordering unavailable"
   },
   "checkout": {
     "title": "Checkout",

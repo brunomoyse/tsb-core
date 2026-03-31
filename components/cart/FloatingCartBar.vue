@@ -2,7 +2,7 @@
     <Transition name="slide-up">
         <div
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
-            class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-gray-800 shadow-lg"
+            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-gray-800 shadow-lg"
             :class="{ 'animate-cart-pulse': isPulsing }"
         >
             <button

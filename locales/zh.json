@@ -315,7 +315,8 @@
     "notifications": "购物车通知",
     "addToCart": "加入购物车",
     "item": "件商品",
-    "items": "件商品"
+    "items": "件商品",
+    "orderingUnavailable": "暂时无法下单"
   },
   "checkout": {
     "title": "结账",

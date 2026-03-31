@@ -67,7 +67,7 @@
             <CapacitorTabBar />
         </ClientOnly>
         <ClientOnly>
-            <CartMobile v-if="!isCapacitor" />
+            <CartMobile v-if="!isCapacitor" :is-ordering-available="isOrderingAvailable" />
             <FloatingCartBar v-if="!isCapacitor && isMenuPage" />
         </ClientOnly>
         <ClientOnly>
@@ -109,6 +109,7 @@ import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { usePlatform } from '~/composables/usePlatform'
+import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRoute } from 'vue-router'
 import { useSwipeBack } from '~/composables/useSwipeBack'
 
@@ -132,6 +133,9 @@ const { isCapacitor, isIos } = usePlatform()
 if (import.meta.client && isIos) {
     useSwipeBack('#main-content')
 }
+const { config: restaurantConfig } = await useRestaurantConfig()
+const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
+
 const head = useLocaleHead()
 const showNotification = ref(false)
 const notification = ref({

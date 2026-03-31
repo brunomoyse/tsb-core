@@ -128,10 +128,12 @@ interface OpeningHourEntry {
 
 const {
     openingHours,
+    orderingHours,
     orderingEnabled,
     isCurrentlyOpen
 } = defineProps<{
     openingHours?: Record<string, OpeningHourEntry | null>
+    orderingHours?: Record<string, OpeningHourEntry | null> | null
     orderingEnabled?: boolean
     isCurrentlyOpen?: boolean
 }>()
@@ -185,7 +187,7 @@ const toMins = (hm: string) => {
 }
 
 const availableFixedSlots = computed(() =>
-    getAvailableFixedSlotsToday(openingHoursSource.value, now.value)
+    getAvailableFixedSlotsToday(openingHoursSource.value, now.value, orderingHours)
 )
 
 // Selected preferred time binding

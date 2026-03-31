@@ -282,7 +282,7 @@
             v-if="cartStore.products.length"
             class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
         >
-            <SideCart />
+            <SideCart :is-ordering-available="isOrderingAvailable" />
         </aside>
 
 
@@ -343,7 +343,7 @@ const dismissAllergenNotice = () => {
 
 // Restaurant config
 const { config: restaurantConfig } = await useRestaurantConfig()
-const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isCurrentlyOpen ?? false)
+const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 
 const openModal = (id: string) => {
     // Add productId to URL query

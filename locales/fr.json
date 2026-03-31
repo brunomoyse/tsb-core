@@ -314,7 +314,8 @@
     "notifications": "Notifications du panier",
     "addToCart": "Ajouter au panier",
     "item": "article",
-    "items": "articles"
+    "items": "articles",
+    "orderingUnavailable": "Commandes indisponibles"
   },
   "checkout": {
     "title": "Commande",

@@ -59,9 +59,10 @@ const toDateAtMinutes = (base: Date, minutes: number): Date => {
 
 const maxDate = (a: Date, b: Date): Date => (a > b ? a : b)
 
-export function getAvailableFixedSlotsToday(openingHours: OpeningHours, now = new Date()): FixedTimeSlot[] {
+export function getAvailableFixedSlotsToday(openingHours: OpeningHours, now = new Date(), orderingHours?: OpeningHours | null): FixedTimeSlot[] {
+    const hours = orderingHours ?? openingHours
     const dayKey = DAY_KEYS[now.getDay()]!
-    const daySchedule = openingHours[dayKey]
+    const daySchedule = hours[dayKey]
     if (!daySchedule) return []
 
     const minAllowed = roundUpToNextQuarter(new Date(now.getTime() + 60 * 60 * 1000))
@@ -100,8 +101,8 @@ export function getAvailableFixedSlotsToday(openingHours: OpeningHours, now = ne
     return slots
 }
 
-export function hasAvailableFixedSlotsToday(openingHours: OpeningHours, now = new Date()): boolean {
-    return getAvailableFixedSlotsToday(openingHours, now).length > 0
+export function hasAvailableFixedSlotsToday(openingHours: OpeningHours, now = new Date(), orderingHours?: OpeningHours | null): boolean {
+    return getAvailableFixedSlotsToday(openingHours, now, orderingHours).length > 0
 }
 
 /**
