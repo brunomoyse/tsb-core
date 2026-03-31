@@ -8,6 +8,16 @@
             <li><Logo :tooltipText="$t('nav.home')" alt="Tokyo Sushi Bar logo" icon="/images/tsb-black-font-100.png" to="/"/></li>
             <NavItem :tooltipText="$t('nav.menu')" alt="Menu Icon" icon="/icons/menu-icon.svg" to="menu"/>
             <NavItem :tooltipText="$t('nav.contact')" alt="Contact Icon" icon="/icons/contact-icon.svg" to="contact"/>
+            <!-- Cart button for tablet (hidden on lg+ where SideCart is visible) -->
+            <NavItemButton
+                v-if="cartStore.totalItems > 0 && isMenuPage"
+                class="lg:hidden"
+                :tooltipText="$t('nav.cart')"
+                alt="Cart Icon"
+                icon="/icons/shopping-bag-icon.svg"
+                :badge="cartStore.totalItems"
+                @click="cartStore.toggleCartVisibility()"
+            />
         </ul>
 
         <!-- Bottom Navigation Items -->
@@ -35,7 +45,14 @@
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import Logo from './Logo.vue'
 import NavItem from './NavItem.vue'
+import NavItemButton from './NavItemButton.vue'
+import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
+import { useRoute } from 'vue-router'
 
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+const route = useRoute()
+const isMenuPage = computed(() => route.path.endsWith('/menu'))
 </script>

@@ -60,7 +60,7 @@
                         <img
                             :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
                             :alt="item.product.name"
-                            class="object-cover w-full h-full"
+                            class="object-contain w-full h-full"
                             width="64"
                             height="64"
                             draggable="false"
@@ -131,9 +131,19 @@
                     <span class="text-sm font-medium text-gray-700">{{ $t('cart.total') }}:</span>
                     <span class="text-lg font-semibold text-gray-900">{{ formatPrice(cartStore.totalPrice) }}</span>
                 </div>
+                <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
+                    {{ $t('cart.orderingUnavailable') }}
+                </div>
                 <NuxtLinkLocale
                     to="checkout"
-                    class="block text-center bg-gray-800 text-white uppercase py-3 rounded-lg hover:bg-gray-900 transition-all active:scale-[0.97]"
+                    :class="[
+                        'block text-center uppercase py-3 rounded-lg transition-all',
+                        isOrderingAvailable
+                            ? 'bg-gray-800 text-white hover:bg-gray-900 active:scale-[0.97]'
+                            : 'bg-gray-300 text-gray-500 pointer-events-none'
+                    ]"
+                    :tabindex="isOrderingAvailable ? 0 : -1"
+                    :aria-disabled="!isOrderingAvailable"
                 >
                     {{ $t('cart.checkout') }}
                 </NuxtLinkLocale>
@@ -154,6 +164,8 @@ import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
+
+const { isOrderingAvailable = true } = defineProps<{ isOrderingAvailable?: boolean }>()
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();

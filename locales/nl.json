@@ -314,7 +314,8 @@
     "notifications": "Meldingen winkelwagen",
     "addToCart": "Toevoegen aan winkelwagen",
     "item": "artikel",
-    "items": "artikelen"
+    "items": "artikelen",
+    "orderingUnavailable": "Bestellen niet beschikbaar"
   },
   "checkout": {
     "title": "Bestelling",

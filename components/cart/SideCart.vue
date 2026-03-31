@@ -139,18 +139,23 @@
                     : $t('cart.minimumPickup', { amount: 20}) }}
             </div>
 
+            <!-- Ordering Unavailable Warning -->
+            <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center">
+                {{ $t('cart.orderingUnavailable') }}
+            </div>
+
             <!-- Checkout Button -->
             <NuxtLinkLocale
                 to="checkout"
                 data-testid="cart-checkout-link"
                 :class="[
                     'w-full py-3 rounded-lg font-medium transition-all active:scale-[0.97] text-center block',
-                    isMinimumReached
+                    isMinimumReached && isOrderingAvailable
                       ? 'bg-red-500 text-white hover:bg-red-600'
                       : 'bg-gray-300 text-gray-500 pointer-events-none'
                 ]"
-                :tabindex="isMinimumReached ? 0 : -1"
-                :aria-disabled="!isMinimumReached"
+                :tabindex="isMinimumReached && isOrderingAvailable ? 0 : -1"
+                :aria-disabled="!isMinimumReached || !isOrderingAvailable"
             >
                 {{ $t('cart.checkout') }}
             </NuxtLinkLocale>
@@ -170,6 +175,8 @@ import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
+
+const { isOrderingAvailable = true } = defineProps<{ isOrderingAvailable?: boolean }>()
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
