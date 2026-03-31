@@ -30,7 +30,7 @@
                 {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-red-400">*</span>
             </label>
             <div v-if="cartStore.address" class="flex flex-col text-gray-700 bg-gray-50 rounded p-3">
-                <span>{{ formatAddress(cartStore.address) }}</span>
+                <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
                     @click="openAddressModal"
                     class="text-blue-600 underline text-sm mt-2 self-start"

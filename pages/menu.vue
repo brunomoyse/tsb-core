@@ -207,7 +207,7 @@
                         {{ $t('menu.allergenNotice') }}
                         <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
                     </p>
-                    <button @click="showAllergenNotice = false; localStorage.setItem('allergenNoticeDismissed', 'true')" class="ml-1 p-0.5 hover:bg-amber-100 rounded" :aria-label="$t('common.close')">
+                    <button @click="dismissAllergenNotice" class="ml-1 p-0.5 hover:bg-amber-100 rounded" :aria-label="$t('common.close')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
@@ -336,6 +336,10 @@ const { trackEvent } = useTracking()
 const showAllergenNotice = ref(
     import.meta.client ? localStorage.getItem('allergenNoticeDismissed') !== 'true' : true
 )
+const dismissAllergenNotice = () => {
+    showAllergenNotice.value = false
+    localStorage.setItem('allergenNoticeDismissed', 'true')
+}
 
 // Restaurant config
 const { config: restaurantConfig } = await useRestaurantConfig()

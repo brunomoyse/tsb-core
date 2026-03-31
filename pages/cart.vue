@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col" :class="cartStore.products.length > 0 ? 'pb-24' : ''">
+    <div class="flex flex-col min-h-[100dvh]">
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
@@ -124,11 +124,14 @@
             <CheckoutExtrasSuggestion />
         </div>
 
-        <!-- ═══ FIXED BOTTOM CHECKOUT BAR ═══ -->
+        <!-- Spacer pushes checkout bar to the bottom -->
+        <div v-if="cartStore.products.length > 0" class="flex-1" />
+
+        <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
             v-if="cartStore.products.length > 0"
-            class="fixed inset-x-0 z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
-            :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
+            class="sticky z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+            :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0px' }"
         >
             <NuxtLinkLocale
                 to="checkout"

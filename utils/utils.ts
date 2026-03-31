@@ -12,7 +12,7 @@ export function formatAddress(address: Address | null): string {
     if (boxNumber) {
         formatted += ` / ${boxNumber}`;
     }
-    formatted += `, ${postcode} – ${municipalityName}`;
+    formatted += `\n${postcode} – ${municipalityName}`;
     return formatted;
 }
 

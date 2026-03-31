@@ -53,7 +53,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <dt class="text-sm font-medium text-gray-500">{{ $t('me.profile.address') }}</dt>
-                        <dd class="mt-1 text-base font-medium text-gray-900">
+                        <dd class="mt-1 text-base font-medium text-gray-900 whitespace-pre-line">
                             {{ authStore?.user?.address ? formatAddress(authStore.user.address) : '–' }}
                         </dd>
                     </div>

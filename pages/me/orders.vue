@@ -390,7 +390,7 @@ const getStatusColorClass = (status: string) => {
                         <!-- Delivery Address -->
                         <div v-if="order.address" class="mb-3 p-3 bg-white/60 rounded-xl">
                             <span class="text-[11px] text-gray-500 uppercase tracking-wider">{{ $t('checkout.deliveryAddress') }}</span>
-                            <p class="mt-0.5 text-sm text-gray-700">{{ formatAddress(order.address) }}</p>
+                            <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                         </div>
 
                         <!-- Order Items -->

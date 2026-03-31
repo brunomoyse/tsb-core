@@ -202,6 +202,19 @@ const hasFixedSlotsToday = computed(() => {
 })
 const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isCurrentlyOpen.value || hasFixedSlotsToday.value))
 
+// Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
+watch(isOrderingAvailable, (available) => {
+    if (!available && import.meta.client) {
+        eventBus.emit('notify', {
+            message: t('notify.errors.orderingUnavailable'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+        navigateTo(localePath('/cart'))
+    }
+})
+
 const nextOpeningTime = computed(() => {
     const hours = restaurantConfig.value?.restaurantConfig?.openingHours
     if (!hours) return null
@@ -291,6 +304,30 @@ const CREATE_ORDER = gql`
     }
 `
 const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(CREATE_ORDER)
+
+/** Extract a human-readable message from a GraphQL error, mapping known backend errors to i18n. */
+const extractGqlErrorMessage = (err: unknown): string | null => {
+    const raw = Array.isArray(err) && err.length > 0 && err[0]?.message
+        ? err[0].message as string
+        : err instanceof Error ? err.message : null
+    if (!raw) return null
+
+    // Map known backend error strings to translated messages
+    if (raw.includes('minimum order amount for pickup'))
+        return t('checkout.minimumPickup', { amount: 20 })
+    if (raw.includes('minimum order amount for delivery'))
+        return t('checkout.minimumDelivery', { amount: 25 })
+    if (raw.includes('ordering is currently unavailable'))
+        return t('notify.errors.orderingUnavailable')
+    if (raw.includes('address too far'))
+        return t('notify.errors.deliveryAddressTooFar', { distance: 9 })
+    if (raw.includes('coupon is no longer valid'))
+        return t('coupon.invalid')
+    if (raw.includes('UNAUTHENTICATED'))
+        return null // Let the auth middleware handle this
+
+    return raw
+}
 
 const openAddressModal = () => {
     trackEvent('delivery_address_modal_opened')
@@ -472,22 +509,22 @@ const handleCheckout = async () => {
             } else if (order?.id) {
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }
-        } catch (err) {
+        } catch (err: unknown) {
             if (import.meta.dev) console.error('Error creating order:', err)
             hapticNotification('Error')
             eventBus.emit('notify', {
-                message: t('notify.errors.orderCreationFailed'),
+                message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
             })
         }
 
-    } catch (err) {
+    } catch (err: unknown) {
         if (import.meta.dev) console.error('Order processing failed:', err)
         hapticNotification('Error')
         eventBus.emit('notify', {
-            message: t('notify.errors.orderCreationFailed'),
+            message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
             persistent: false,
             duration: 5000,
             variant: 'error',
