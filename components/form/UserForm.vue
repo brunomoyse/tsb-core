@@ -135,14 +135,14 @@
             <Checkbox v-if="mode === 'register'" v-model="addressConfirmed">
                 <span>
                   <strong>{{ $t('register.confirmAddress') }}</strong><br />
-                  {{ formatAddress(address) }}
+                  <span class="whitespace-pre-line">{{ formatAddress(address) }}</span>
                 </span>
             </Checkbox>
             <div v-else class="p-3 border border-gray-200/80 rounded-xl bg-white/40 backdrop-blur-sm">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <strong class="text-sm text-gray-700">{{ $t('register.address') }}</strong>
-                        <p class="text-sm text-gray-600 mt-1">{{ formatAddress(address) }}</p>
+                        <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">{{ formatAddress(address) }}</p>
                     </div>
                     <button
                         type="button"

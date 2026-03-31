@@ -128,7 +128,7 @@
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-gray-50/80 rounded-lg border border-gray-100/80">
                                     <span class="text-[10px] text-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
-                                    <p class="mt-0.5 text-sm text-gray-700">{{ formatAddress(order.address) }}</p>
+                                    <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
                                 <!-- Receipt items -->
@@ -243,7 +243,7 @@
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-gray-50/80 rounded-lg border border-gray-100/80">
                                     <span class="text-[10px] text-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
-                                    <p class="mt-0.5 text-sm text-gray-700">{{ formatAddress(order.address) }}</p>
+                                    <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
                                 <!-- Receipt items -->

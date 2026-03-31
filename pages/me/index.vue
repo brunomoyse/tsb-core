@@ -473,7 +473,7 @@ const toggleNotifyMarketing = async () => {
                         </svg>
                     </div>
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.profile.address') }}</span>
-                    <span class="text-sm text-gray-900 mt-1">
+                    <span class="text-sm text-gray-900 mt-1 whitespace-pre-line">
                         {{ authStore.user?.address ? formatAddress(authStore.user.address) : '–' }}
                     </span>
                 </div>

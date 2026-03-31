@@ -13,11 +13,10 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "lint": "oxlint",
-    "cap:generate": "APP_BUILD=capacitor nuxt generate",
+    "cap:build": "APP_BUILD=capacitor nuxt build && node scripts/cap-extract-spa.mjs",
     "cap:sync": "npx cap sync",
-    "cap:build": "npm run cap:generate && npm run cap:sync",
-    "cap:ios": "npx cap open ios",
-    "cap:android": "npx cap open android"
+    "cap:ios": "npm run cap:build && npx cap sync ios && npx cap open ios",
+    "cap:android": "npm run cap:build && npx cap sync android && npx cap open android"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.0",

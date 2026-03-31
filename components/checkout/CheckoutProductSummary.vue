@@ -43,13 +43,11 @@
                             </div>
                             <!-- Product Details -->
                             <div class="min-w-0 flex-1">
+                                <p class="text-xs text-gray-500 truncate">
+                                    {{ (item.product.code ? item.product.code + ' - ' : '') + (item.product.category?.name || '') }}
+                                </p>
                                 <p class="font-medium text-sm truncate">
-                                    {{
-                                        (item.product.code ? item.product.code + ' - ' : '') +
-                                        (item.product.category?.name || '') +
-                                        ' ' +
-                                        item.product.name
-                                    }}
+                                    {{ item.product.name }}
                                 </p>
                                 <p v-if="item.selectedChoice" class="text-xs text-red-600">{{ item.selectedChoice.name }}</p>
                                 <!-- Quantity controls -->

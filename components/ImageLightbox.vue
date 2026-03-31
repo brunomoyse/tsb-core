@@ -25,13 +25,13 @@
                 </p>
 
                 <!-- Image -->
-                <picture class="max-w-[90vw] max-h-[75vh]">
+                <picture class="max-w-[90vw] max-h-[75vh] bg-white rounded-2xl p-3">
                     <source :srcset="`${src}.avif`" type="image/avif" />
                     <source :srcset="`${src}.webp`" type="image/webp" />
                     <img
                         :src="`${src}.png`"
                         :alt="alt"
-                        class="max-w-full max-h-[75vh] object-contain rounded-xl"
+                        class="max-w-full max-h-[75vh] object-contain"
                     />
                 </picture>
             </div>

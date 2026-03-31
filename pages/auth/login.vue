@@ -121,7 +121,8 @@
                     <div class="space-y-3">
                         <!-- Google -->
                         <button
-                            class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none"
+                            :disabled="loading"
+                            class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('google')"
                         >
                             <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
@@ -142,7 +143,7 @@
                     <div class="mt-6 space-y-2 text-center">
                         <p class="text-sm text-gray-600">
                             {{ $t('login.noAccount') }}
-                            <NuxtLinkLocale to="/auth/register" class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/register" class="whitespace-nowrap text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
                                 {{ $t('login.register') }}
                             </NuxtLinkLocale>
                         </p>
@@ -154,19 +155,19 @@
                     </div>
 
                     <!-- Language Selector -->
-                    <div class="mt-6 pt-5 border-t border-gray-200/50 flex justify-center gap-2">
+                    <div class="mt-5 flex justify-center gap-3">
                         <NuxtLink
                             v-for="lang in languages"
                             :key="lang.code"
                             :to="switchLocalePath(lang.code)"
                             :class="[
-                                'px-3 py-1.5 text-xs rounded-full transition-all active:scale-[0.97]',
+                                'text-[11px] transition-colors duration-300',
                                 locale === lang.code
-                                    ? 'bg-red-500 text-white font-medium'
-                                    : 'bg-white/60 text-gray-500 hover:bg-white'
+                                    ? 'text-gray-700 font-medium'
+                                    : 'text-gray-400 hover:text-gray-500'
                             ]"
                         >
-                            {{ lang.flag }} {{ lang.label }}
+                            {{ lang.label }}
                         </NuxtLink>
                     </div>
                 </div>
@@ -407,7 +408,8 @@ const startIdpFlow = async (provider: string) => {
 }
 
 const loginWithProvider = async (provider: string) => {
-    if (import.meta.server) return
+    if (import.meta.server || loading.value) return
+    loading.value = true
     trackEvent('oauth_click', { provider })
 
     if (authRequestId.value || capacitorAuthRequestId.value) {
@@ -419,6 +421,7 @@ const loginWithProvider = async (provider: string) => {
         if (capacitorAuthRequestId.value) {
             await startIdpFlow(provider)
         } else {
+            loading.value = false
             errorMessage.value = t('notify.errors.oauthFailed')
         }
     } else {
