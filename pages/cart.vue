@@ -151,7 +151,7 @@
         </div>
 
         <!-- ═══ EMPTY STATE ═══ -->
-        <div v-else class="flex-1 flex flex-col items-center justify-center px-8">
+        <div v-else data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
             <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-5">
                 <svg class="w-9 h-9 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -175,13 +175,13 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import type { CartItem } from '@/types'
+import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
-import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 
 definePageMeta({ public: true })
 

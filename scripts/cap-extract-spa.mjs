@@ -6,8 +6,8 @@
  * so we start the server briefly, fetch the shell, and save it.
  */
 
-import { spawn } from 'node:child_process'
 import { resolve } from 'node:path'
+import { spawn } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 
 const PORT = 3199
@@ -22,11 +22,11 @@ const server = spawn('node', [serverEntry], {
 })
 
 // Wait for server to be ready
-await new Promise((resolve) => {
+await new Promise((ready) => {
   server.stdout.on('data', (data) => {
-    if (data.toString().includes('Listening')) resolve()
+    if (data.toString().includes('Listening')) ready()
   })
-  setTimeout(resolve, 3000) // fallback timeout
+  setTimeout(ready, 3000) // Fallback timeout
 })
 
 try {

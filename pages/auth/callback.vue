@@ -27,11 +27,11 @@ const error = ref(false)
 
 onMounted(async () => {
     try {
-        console.log('Callback URL:', window.location.href)
+        if (import.meta.dev) console.log('Callback URL:', window.location.href)
         await handleCallback()
-        console.log('Token exchange succeeded')
+        if (import.meta.dev) console.log('Token exchange succeeded')
         await processCallback()
-        console.log('User profile loaded, navigating...')
+        if (import.meta.dev) console.log('User profile loaded, navigating...')
     } catch (e) {
         console.error('OIDC callback error:', e)
         error.value = true
