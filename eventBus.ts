@@ -12,6 +12,9 @@ export interface Events {
         productId: string;
         choiceId?: string;
     }
+    'order-status-push': {
+        orderId: string;
+    }
 }
 
 export const eventBus = mitt<Events>();

@@ -41,6 +41,7 @@
             </p>
             <div v-else class="space-y-4">
                 <div v-for="item in cartStore.products" :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                     data-testid="cart-item"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
                      :class="{ 'animate-cart-flash': highlightedKey === `${item.product.id}-${item.selectedChoice?.id ?? 'none'}` }">
                     <!-- Product Image -->
@@ -91,19 +92,19 @@
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
                             <div class="flex items-center gap-2">
-                                <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                <button data-testid="cart-item-decrement" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                                         @click="handleDecrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                     -
                                 </button>
-                                <span class="text-sm w-6 text-center">{{ item.quantity }}</span>
-                                <button class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                <span data-testid="cart-item-quantity" class="text-sm w-6 text-center">{{ item.quantity }}</span>
+                                <button data-testid="cart-item-increment" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                                         @click="handleIncrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                                     +
                                 </button>
                             </div>
-                            <button class="text-xs text-red-600 hover:text-red-700 transition-colors"
+                            <button data-testid="cart-item-remove" class="text-xs text-red-600 hover:text-red-700 transition-colors"
                                     @click="handleRemoveFromCart(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>

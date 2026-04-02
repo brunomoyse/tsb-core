@@ -1,6 +1,8 @@
 // Plugins/api.ts — OIDC Bearer token authentication via Zitadel
 import { defineNuxtPlugin, navigateTo, useCookie, useLocalePath, useRequestEvent, useRuntimeConfig } from '#imports'
 
+let refreshPromise: Promise<boolean> | null = null
+
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     const apiUrl: string = config.public.api as string
@@ -16,14 +18,22 @@ export default defineNuxtPlugin(() => {
     }
 
     /** Attempt silent OIDC token renewal */
-    const refreshAuth = async () => {
+    const refreshAuth = async (): Promise<boolean> => {
         const { useOidc } = await import('~/composables/useOidc')
         const { silentRenew } = useOidc()
         const user = await silentRenew()
-        if (!user) throw new Error('Silent renew failed')
+        return Boolean(user)
     }
 
-    const api = $fetch.create({
+    /** Coalesce concurrent refresh calls into a single request */
+    const attemptRefreshOnce = (): Promise<boolean> => {
+        refreshPromise ??= refreshAuth().finally(() => {
+            refreshPromise = null
+        })
+        return refreshPromise
+    }
+
+    const baseApi = $fetch.create({
         baseURL: apiUrl,
         credentials: 'omit', // No cookies — we use Bearer tokens
         headers: {
@@ -59,19 +69,25 @@ export default defineNuxtPlugin(() => {
                 }
             }
         },
-        async onResponseError({ response, request, options }) {
-            if (response.status === 401 && !import.meta.server) {
-                try {
-                    await refreshAuth()
-                    // Retry with new token
-                    // @ts-expect-error $fetch accepts the original request/options but types don't align
-                    return $fetch(request, options)
-                } catch {
-                    navigateTo(`${localePath('auth-login')}?session=expired`)
-                }
-            }
-        }
     })
+
+    // Wrapper that handles 401 retry externally (onResponseError return values are ignored by ofetch)
+    const api = async <T>(request: Parameters<typeof baseApi>[0], options?: Parameters<typeof baseApi>[1]): Promise<T> => {
+        try {
+            return await baseApi(request, options) as T
+        } catch (err: unknown) {
+            if (
+                !import.meta.server
+                && err && typeof err === 'object' && 'status' in err
+                && (err as { status: number }).status === 401
+            ) {
+                const ok = await attemptRefreshOnce()
+                if (ok) return await baseApi(request, options) as T
+                navigateTo(`${localePath('auth-login')}?session=expired`)
+            }
+            throw err
+        }
+    }
 
     return { provide: { api } }
 })

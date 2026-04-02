@@ -1,6 +1,7 @@
 <template>
     <button
         :aria-pressed="active"
+        data-testid="category-card"
         class="relative overflow-hidden shrink-0 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
         :class="active
             ? 'bg-tsb-four text-red-900/80 font-semibold'

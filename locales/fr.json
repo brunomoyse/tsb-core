@@ -408,6 +408,7 @@
   },
   "footer": {
     "terms": "CGV",
+    "privacy": "Confidentialit\u00e9",
     "hours": "Lun-Ven 12h-14h30, 18h-22h30 | Sam-Dim 12h-15h, 18h-23h | Fermé mardi"
   },
   "notify": {
@@ -459,6 +460,10 @@
       "title": "Conditions Générales de Vente - Tokyo Sushi Bar",
       "description": "Conditions générales de vente de Tokyo Sushi Bar. Informations légales, livraison, paiement et politique de retour."
     },
+    "privacy": {
+      "title": "Politique de Confidentialité - Tokyo Sushi Bar",
+      "description": "Politique de confidentialité de Tokyo Sushi Bar. Données collectées, finalités, droits RGPD et cookies."
+    },
     "login": {
       "title": "Connexion - Tokyo Sushi Bar",
       "description": "Connectez-vous à votre compte Tokyo Sushi Bar"
@@ -493,6 +498,7 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "CGV",
+      "privacy": "Confidentialit\u00e9",
       "login": "Connexion",
       "register": "Inscription"
     }

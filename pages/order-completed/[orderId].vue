@@ -183,6 +183,7 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useLiveActivity } from '~/composables/useLiveActivity'
 import { useTracking } from '~/composables/useTracking'
+import { eventBus } from '~/eventBus'
 
 definePageMeta({ public: false })
 
@@ -392,6 +393,18 @@ onMounted(() => {
         if (pollTimer) clearInterval(pollTimer)
     }
 
+    // Refetch order when a foreground push notification is received
+    const onPush = async (evt: { orderId: string }) => {
+        if (evt.orderId !== orderId) return
+        try {
+            const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
+            if (fresh?.myOrder && dataOrder.value?.myOrder) {
+                dataOrder.value.myOrder = { ...dataOrder.value.myOrder, ...fresh.myOrder }
+            }
+        } catch { /* Non-critical */ }
+    }
+    eventBus.on('order-status-push', onPush)
+
     cartStore.setCartVisibility(false)
     cartStore.resetState()
 
@@ -410,7 +423,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    // Only call if it's a real function
+    eventBus.off('order-status-push')
     if (typeof closeWs === 'function') {
         closeWs()
     }

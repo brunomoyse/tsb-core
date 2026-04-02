@@ -3,7 +3,7 @@ import type { PostHog } from 'posthog-js'
 
 declare module '#app' {
     interface NuxtApp {
-        $api: ReturnType<typeof $fetch.create>;
+        $api: <T = any>(request: string, options?: Record<string, any>) => Promise<T>;
         $gqlFetch: <T>(query: string, variables?: Record<string, unknown>) => Promise<T>;
         $posthog: PostHog | null;
     }

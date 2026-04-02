@@ -35,25 +35,46 @@ export function usePushNotifications() {
             if (result.receive !== 'granted') return
         }
 
-        // Listen for registration success
-        await PushNotifications.addListener('registration', async (token) => {
-            const previousToken = localStorage.getItem(STORAGE_KEY)
-            if (previousToken === token.value) return
+        // Wait for APNs/FCM to return the device token before resolving,
+        // so callers can safely navigate after register() completes.
+        await new Promise<void>((resolve) => {
+            const timeout = setTimeout(resolve, 5_000) // Don't block forever
 
-            const platform = isIos ? 'ios' : isAndroid ? 'android' : 'ios'
-            try {
-                await $gqlFetch(REGISTER_DEVICE_TOKEN, {
-                    variables: { deviceToken: token.value, platform },
-                })
-                localStorage.setItem(STORAGE_KEY, token.value)
-            } catch {
-                // Token registration failure is non-critical
-            }
+            PushNotifications.addListener('registration', async (token) => {
+                clearTimeout(timeout)
+                const previousToken = localStorage.getItem(STORAGE_KEY)
+                if (previousToken === token.value) {
+                    resolve()
+                    return
+                }
+
+                const platform = isIos ? 'ios' : isAndroid ? 'android' : 'ios'
+                try {
+                    await $gqlFetch(REGISTER_DEVICE_TOKEN, {
+                        variables: { deviceToken: token.value, platform },
+                    })
+                    localStorage.setItem(STORAGE_KEY, token.value)
+                } catch {
+                    // Token registration failure is non-critical
+                }
+                resolve()
+            })
+
+            PushNotifications.addListener('registrationError', () => {
+                clearTimeout(timeout)
+                resolve()
+            })
+
+            PushNotifications.register()
         })
 
-        // Listen for registration errors
-        await PushNotifications.addListener('registrationError', () => {
-            // Non-critical — app still works via WebSocket subscriptions
+        // Handle foreground push: emit event so pages can refetch order status
+        await PushNotifications.addListener('pushNotificationReceived', (notification) => {
+            if (notification.data?.orderId) {
+                import('~/eventBus').then(({ eventBus }) => {
+                    eventBus.emit('order-status-push', { orderId: notification.data.orderId })
+                })
+            }
         })
 
         // Handle notification tap (app was backgrounded/closed)
@@ -65,9 +86,6 @@ export function usePushNotifications() {
                 router.push(localePath(`/order-completed/${data.orderId}`))
             }
         })
-
-        // Register with APNs/FCM
-        await PushNotifications.register()
     }
 
     async function unregister() {

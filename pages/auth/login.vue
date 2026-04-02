@@ -81,7 +81,7 @@
                         </div>
 
                         <!-- Inline Error -->
-                        <div v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                        <div v-if="errorMessage" role="alert" data-testid="login-error" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
                             <p>{{ errorMessage }}</p>
                             <!-- Resend verification email button -->
                             <button

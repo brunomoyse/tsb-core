@@ -13,6 +13,9 @@ const config: CapacitorConfig = {
       resize: 'none',          // Matches KeyboardResize.None set at runtime; applies before JS runs
       resizeOnFullScreen: true,
     },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'], // Show banner even when app is in foreground
+    },
     CapacitorHttp: {
       enabled: false,           // Use WKWebView networking instead of native HTTP (CORS is configured server-side)
     },

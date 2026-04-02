@@ -1,6 +1,6 @@
 import { type Page, expect, test } from '@playwright/test'
+import { dismissCookieConsent, waitForNuxtHydration } from './fixtures/cookie-consent.fixture'
 import { SEL } from './helpers/selectors'
-import { dismissCookieConsent } from './fixtures/cookie-consent.fixture'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
@@ -24,14 +24,15 @@ async function addFirstAvailableProduct(page: Page) {
 test.describe('Cart operations', () => {
   test('Add product to cart shows in SideCart', async ({ page }) => {
     await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 
     const added = await addFirstAvailableProduct(page)
     test.skip(!added, 'No available products with enabled add-to-cart button')
 
-    // SideCart should appear with the product
-    await expect(page.locator(SEL.sideCart)).toBeVisible()
+    // SideCart should appear with the product (wait up to 10s for cart reactivity)
+    await expect(page.locator(SEL.sideCart)).toBeVisible({ timeout: 10_000 })
     await expect(page.locator(SEL.cartItem)).toBeVisible()
 
     // Cart total should not be €0,00
@@ -40,6 +41,7 @@ test.describe('Cart operations', () => {
 
   test('Toggle pickup/delivery changes total', async ({ page }) => {
     await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 
@@ -70,6 +72,7 @@ test.describe('Cart operations', () => {
 
   test('Minimum order warning appears for small orders', async ({ page }) => {
     await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 
@@ -84,6 +87,7 @@ test.describe('Cart operations', () => {
 
   test('Increment and decrement quantity', async ({ page }) => {
     await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 
@@ -106,6 +110,7 @@ test.describe('Cart operations', () => {
 
   test('Remove product from cart', async ({ page }) => {
     await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 

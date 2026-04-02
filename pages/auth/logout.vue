@@ -15,13 +15,22 @@ onMounted(async () => {
     resetUser()
     authStore.clearUser()
 
-    // Capacitor: clear local tokens without browser redirect
-    if (config.public.appBuild === 'capacitor') {
-        const { useOidc } = await import('~/composables/useOidc')
-        const { logoutCapacitor } = useOidc()
-        await logoutCapacitor()
-    }
+    const { useOidc } = await import('~/composables/useOidc')
 
-    navigateTo(localePath('/'))
+    if (config.public.appBuild === 'capacitor') {
+        // Capacitor: clear local tokens without browser redirect
+        const { logoutCapacitor } = useOidc()
+        logoutCapacitor()
+        navigateTo(localePath('/'))
+    } else {
+        // Web: end OIDC session at Zitadel (triggers redirect to post_logout_redirect_uri)
+        const { signOut } = useOidc()
+        try {
+            await signOut()
+        } catch {
+            // If Zitadel unreachable, navigate home anyway
+            navigateTo(localePath('/'))
+        }
+    }
 })
 </script>

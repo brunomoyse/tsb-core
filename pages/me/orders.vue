@@ -158,6 +158,9 @@ const unsubscribeFromOrder = (orderId: string) => {
 // Polling fallback for when WebSocket subscriptions fail (mobile Safari, CORS, etc.)
 let pollTimer: ReturnType<typeof setInterval> | null = null
 
+// Refetch all orders when a foreground push notification is received
+eventBus.on('order-status-push', () => refetchOrders())
+
 onMounted(() => {
     // Subscribe to all active (non-terminated) orders for live updates
     const activeOrders = orders.value.filter(o => !isOrderCompleted(o.status))
@@ -190,6 +193,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    eventBus.off('order-status-push')
     subscriptionStops.forEach((stopFn) => stopFn())
     subscriptionStops.clear()
     if (pollTimer) {

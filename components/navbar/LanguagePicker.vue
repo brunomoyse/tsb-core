@@ -1,7 +1,7 @@
 <template>
     <li ref="rootRef" class="relative">
         <!-- Language Icon Button -->
-        <button type="button" class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer"
+        <button type="button" data-testid="language-picker" class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer"
              :aria-expanded="showDropdown"
              aria-haspopup="listbox"
              @click.stop="toggleDropdown"
@@ -21,7 +21,7 @@
             @keydown.arrow-down.prevent="focusNext"
             @keydown.arrow-up.prevent="focusPrev">
             <li v-for="loc in localesToPick" :key="loc.code" role="option" class="whitespace-nowrap">
-                <NuxtLink :to="switchLocalePath(loc.code)" class="block px-4 py-2 hover:bg-gray-100"
+                <NuxtLink :to="switchLocalePath(loc.code)" :data-testid="'language-option-' + loc.code" class="block px-4 py-2 hover:bg-gray-100"
                           @click="hideDropdown(loc.code)">
                     {{ loc.label }}
                 </NuxtLink>
