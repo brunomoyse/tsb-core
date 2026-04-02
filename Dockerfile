@@ -33,6 +33,9 @@ RUN npm run build
 # Stage 2: Production
 FROM node:24.14-alpine3.23
 
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 # Set working directory
 WORKDIR /usr/src/app
 
@@ -49,6 +52,9 @@ RUN npm install --production --ignore-scripts
 
 # Clean npm cache to reduce image size
 RUN npm cache clean --force
+
+# Switch to non-root user
+USER appuser
 
 # Expose the port that the application will run on
 EXPOSE 3000

@@ -43,8 +43,7 @@ export function useAuthCallback() {
         // Verify token is available before making the query
         const { useOidc } = await import('~/composables/useOidc')
         const { getAccessToken } = useOidc()
-        const token = await getAccessToken()
-        console.log('processCallback: token available:', Boolean(token), token ? `${token.substring(0, 20)}...` : 'null')
+        await getAccessToken()
 
         const data = await $gqlFetch<{ me: User }>(ME)
         if (data) {
