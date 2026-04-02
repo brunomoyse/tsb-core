@@ -34,3 +34,6 @@ ios/
 android/
 
 CLAUDE.md
+
+# Playwright E2E temp files
+e2e/.restaurant-config-backup.json

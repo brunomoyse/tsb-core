@@ -409,6 +409,7 @@
   },
   "footer": {
     "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
     "hours": "Mon-Fri 12-14:30, 18-22:30 | Sat-Sun 12-15, 18-23 | Closed Tue"
   },
   "notify": {
@@ -460,6 +461,10 @@
       "title": "Terms & Conditions - Tokyo Sushi Bar",
       "description": "Terms and conditions of Tokyo Sushi Bar. Legal information, delivery, payment, and return policy."
     },
+    "privacy": {
+      "title": "Privacy Policy - Tokyo Sushi Bar",
+      "description": "Tokyo Sushi Bar privacy policy. Data collection, purposes, GDPR rights, and cookies."
+    },
     "login": {
       "title": "Login - Tokyo Sushi Bar",
       "description": "Log in to your Tokyo Sushi Bar account"
@@ -494,6 +499,7 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "Terms",
+      "privacy": "Privacy",
       "login": "Login",
       "register": "Register"
     }

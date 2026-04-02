@@ -28,16 +28,19 @@ export function useLiveActivity() {
     const { $gqlFetch } = useNuxtApp()
 
     async function startIfEligible(order: Order) {
+        console.log('[LiveActivity] startIfEligible called, isIos:', isIos, 'status:', order.status)
         if (!isIos) return
 
         try {
             const LiveActivity = (await import('~/lib/live-activity')).default
 
             const { enabled } = await LiveActivity.areActivitiesEnabled()
+            console.log('[LiveActivity] areActivitiesEnabled:', enabled)
             if (!enabled) return
 
             if (isTerminal(order.status)) return
 
+            console.log('[LiveActivity] calling startActivity for order:', order.id)
             const { pushToken } = await LiveActivity.startActivity({
                 orderId: order.id,
                 orderType: order.type as 'DELIVERY' | 'PICKUP',
@@ -46,6 +49,7 @@ export function useLiveActivity() {
                 status: order.status,
                 estimatedReadyTime: order.estimatedReadyTime ?? undefined,
             })
+            console.log('[LiveActivity] started, pushToken:', pushToken ? 'received' : 'empty')
 
             // Register push token on backend for remote updates
             if (pushToken) {
@@ -58,8 +62,8 @@ export function useLiveActivity() {
                     await registerToken(data.orderId, data.pushToken)
                 }
             })
-        } catch {
-            // Live Activity errors are non-critical — the order page still works via WebSocket
+        } catch (e) {
+            console.error('[LiveActivity] error:', e)
         }
     }
 

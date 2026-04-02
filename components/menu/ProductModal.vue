@@ -1,5 +1,5 @@
 <template>
-        <div ref="modalRef" @click.stop role="dialog" aria-modal="true" aria-labelledby="product-modal-title" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div ref="modalRef" @click.stop role="dialog" aria-modal="true" aria-labelledby="product-modal-title" data-testid="product-modal" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
                 @click="emit('close')"
                 :aria-label="$t('common.close')"
@@ -70,6 +70,7 @@
                             <label
                                 v-for="choice in sortedChoices"
                                 :key="choice.id"
+                                :data-testid="'product-modal-choice-' + choice.id"
                                 class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
                                 :class="selectedChoiceId === choice.id ? 'border-red-300 bg-tsb-four' : 'border-gray-200 hover:border-gray-300'"
                             >
@@ -112,6 +113,7 @@
 
                             <button
                                 @click="addToCart"
+                                data-testid="product-modal-add-to-cart"
                                 class="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-sm md:font-medium transition-all active:scale-[0.97]"
                                 :class="{ 'opacity-50 cursor-not-allowed': !canAddToCart }"
                                 :disabled="!canAddToCart"

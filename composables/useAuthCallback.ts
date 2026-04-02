@@ -53,6 +53,14 @@ export function useAuthCallback() {
 
         trackEvent('user_logged_in', { method: 'oidc' })
 
+        // Register for push notifications after successful login (Capacitor only)
+        const config = useRuntimeConfig()
+        if (config.public.appBuild === 'capacitor') {
+            const { usePushNotifications } = await import('~/composables/usePushNotifications')
+            const { register } = usePushNotifications()
+            await register()
+        }
+
         if (cartStore.products.length > 0) {
             navigateTo(localePath('checkout'))
         } else {

@@ -24,6 +24,13 @@ const getWsClient = (): Promise<Client> => {
                     return token ? { Authorization: `Bearer ${token}` } : {}
                 },
                 retryAttempts: Infinity,
+                retryWait: async (retries) => {
+                    const delay = Math.min(1000 * 2 ** retries, 30_000)
+                    await new Promise<void>(resolve => { setTimeout(resolve, delay) })
+                    // If no valid token after refresh attempt, stop retrying
+                    const token = await getAccessToken()
+                    if (!token) throw new Error('No valid auth token')
+                },
             })
             wsClient = client
             return client
@@ -81,11 +88,32 @@ export function useGqlSubscription<T = unknown>(
         startSubscription()
     }
 
+    // On iOS (Capacitor), backgrounding kills the WebSocket but doesn't fire
+    // offline/online events. Restart subscription when the app returns to foreground.
+    let hiddenAt = 0
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+            hiddenAt = Date.now()
+            return
+        }
+        // Only reset after ≥3s in background (avoids thrashing on quick tab switches)
+        if (document.visibilityState === 'visible' && Date.now() - hiddenAt > 3_000) {
+            // Dispose the shared WS client — the connection is likely dead
+            wsClient?.dispose()
+            wsClient = null
+            wsClientPromise = null
+            error.value = null
+            stop()
+            startSubscription()
+        }
+    }
+
     if (import.meta.client) {
         startSubscription()
 
         window.addEventListener('offline', handleOffline)
         window.addEventListener('online', handleOnline)
+        document.addEventListener('visibilitychange', handleVisibilityChange)
     }
 
     onScopeDispose(() => {
@@ -93,6 +121,7 @@ export function useGqlSubscription<T = unknown>(
         if (import.meta.client) {
             window.removeEventListener('offline', handleOffline)
             window.removeEventListener('online', handleOnline)
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
         }
     })
 

@@ -18,20 +18,42 @@
 import { definePageMeta, onMounted, ref } from '#imports'
 import { useAuthCallback } from '~/composables/useAuthCallback'
 import { useOidc } from '~/composables/useOidc'
+import { usePlatform } from '~/composables/usePlatform'
 
 definePageMeta({ public: true })
 
-const { handleCallback } = useOidc()
+const { handleCallback, exchangeCodeForTokens } = useOidc()
 const { processCallback } = useAuthCallback()
+const { isCapacitor } = usePlatform()
 const error = ref(false)
 
 onMounted(async () => {
     try {
         if (import.meta.dev) console.log('Callback URL:', window.location.href)
-        await handleCallback()
+
+        if (isCapacitor) {
+            // Capacitor: extract code from URL and exchange via backend proxy
+            const url = new URL(window.location.href)
+            const code = url.searchParams.get('code')
+            if (!code) throw new Error('No authorization code in callback URL')
+            await exchangeCodeForTokens(code)
+        } else {
+            // Web: use oidc-client-ts signinRedirectCallback (direct Zitadel call)
+            await handleCallback()
+        }
+
         if (import.meta.dev) console.log('Token exchange succeeded')
-        await processCallback()
-        if (import.meta.dev) console.log('User profile loaded, navigating...')
+
+        try {
+            await processCallback()
+            if (import.meta.dev) console.log('User profile loaded, navigating...')
+        } catch (e) {
+            // Token exchange succeeded but processCallback failed (e.g. silent renew error).
+            // The OIDC token is valid in sessionStorage — navigate to menu as fallback.
+            if (import.meta.dev) console.warn('processCallback failed, falling back to menu:', e)
+            const localePath = useLocalePath()
+            navigateTo(localePath('menu'))
+        }
     } catch (e) {
         console.error('OIDC callback error:', e)
         error.value = true

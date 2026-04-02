@@ -2,6 +2,13 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 const isCapacitor = process.env.APP_BUILD === 'capacitor'
 
+// Capacitor builds always target the test server
+if (isCapacitor) {
+    process.env.BASE_URL = process.env.BASE_URL || 'https://tsb.brunomoyse.be'
+    process.env.API_BASE_URL = process.env.API_BASE_URL_CAP || 'https://tsb.brunomoyse.be/api/v1'
+    process.env.GRAPHQL_WS_URL = process.env.GRAPHQL_WS_URL_CAP || 'wss://tsb.brunomoyse.be/api/v1/graphql'
+}
+
 // Derive origins for CSP from environment variables (dev defaults)
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/, 'ws')

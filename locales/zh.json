@@ -409,6 +409,7 @@
   },
   "footer": {
     "terms": "条款",
+    "privacy": "隐私政策",
     "hours": "周一至五 12-14:30, 18-22:30 | 周末 12-15, 18-23 | 周二休息"
   },
   "notify": {
@@ -460,6 +461,10 @@
       "title": "销售条款 - Tokyo Sushi Bar",
       "description": "Tokyo Sushi Bar 的销售条款。法律信息、配送、付款和退货政策。"
     },
+    "privacy": {
+      "title": "隐私政策 - Tokyo Sushi Bar",
+      "description": "Tokyo Sushi Bar 隐私政策。数据收集、用途、GDPR 权利和 Cookie。"
+    },
     "login": {
       "title": "登录 - Tokyo Sushi Bar",
       "description": "登录您的 Tokyo Sushi Bar 账户"
@@ -494,6 +499,7 @@
       "menu": "菜单",
       "contact": "联系我们",
       "terms": "条款",
+      "privacy": "隐私政策",
       "login": "登录",
       "register": "注册"
     }
