@@ -52,6 +52,7 @@ export function useOidc() {
                 authority: config.public.zitadelAuthority as string,
                 client_id: config.public.zitadelClientId as string,
                 redirect_uri: `${baseUrl}/${locale}/auth/callback`,
+                silent_redirect_uri: `${baseUrl}/silent-renew.html`,
                 post_logout_redirect_uri: baseUrl,
                 response_type: 'code',
                 scope: 'openid profile email offline_access urn:zitadel:iam:org:project:roles',
@@ -212,8 +213,9 @@ export function useOidc() {
         const mgr = getUserManager()
         const user = await mgr.getUser()
         if (user && !user.expired) return user.access_token
+        if (!user) return null // No session — nothing to renew
 
-        // Token expired or missing — attempt silent renew before returning null
+        // Token expired — attempt silent renew before returning null
         try {
             const renewed = await mgr.signinSilent()
             if (renewed) {
@@ -265,6 +267,8 @@ export function useOidc() {
             }
         }
         const mgr = getUserManager()
+        const existing = await mgr.getUser()
+        if (!existing) return null // No session to renew
         try {
             const user = await mgr.signinSilent()
             oidcUser.value = user

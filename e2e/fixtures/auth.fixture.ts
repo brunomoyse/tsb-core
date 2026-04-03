@@ -1,6 +1,6 @@
 import { type Page, test as base } from '@playwright/test'
-import { SEL } from '../helpers/selectors'
 import { dismissCookieConsent, waitForNuxtHydration } from './cookie-consent.fixture'
+import { SEL } from '../helpers/selectors'
 
 async function login(page: Page): Promise<void> {
   const email = process.env.E2E_USER_EMAIL

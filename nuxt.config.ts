@@ -143,7 +143,7 @@ export default defineNuxtConfig({
     },
 
     // Workaround: @unhead/schema-org@2.x declares auto-imports from its vue subpath
-    // that don't actually exist there. Alias it to the main entry which has all exports.
+    // That don't actually exist there. Alias it to the main entry which has all exports.
     vite: {
         resolve: {
             alias: {
