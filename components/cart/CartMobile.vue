@@ -144,6 +144,7 @@
                     ]"
                     :tabindex="isOrderingAvailable ? 0 : -1"
                     :aria-disabled="!isOrderingAvailable"
+                    @click="cartStore.toggleCartVisibility"
                 >
                     {{ $t('cart.checkout') }}
                 </NuxtLinkLocale>
