@@ -188,7 +188,7 @@
                             :id="`category-card-${cat.id}`"
                             :active="activeCategory === cat.id"
                             :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
-                            class="snap-start"
+                            class="snap-center"
                             @select="scrollToCategory"
                         />
                     </div>
@@ -451,6 +451,7 @@ const debouncedSearchValue = useDebounce(searchValue, 300)
 const activeCategory = ref<string>('')
 const scrollContainer = ref<HTMLElement | null>(null)
 const isDragging = ref(false)
+const isScrollingToCategory = ref(false)
 const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
@@ -587,11 +588,18 @@ const scrollToCategory = (categoryId: string) => {
     const element = document.getElementById(`category-${categoryId}`)
     if (!element || !stickyHeader.value) return
 
+    // Suppress observer during programmatic scroll and set active immediately
+    isScrollingToCategory.value = true
+    activeCategory.value = categoryId
+
     const headerHeight = stickyHeader.value.offsetHeight
     const navbarHeight = !isCapacitor.value && window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
     const gap = 16
     const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
     window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
+
+    // Re-enable observer after smooth scroll completes
+    setTimeout(() => { isScrollingToCategory.value = false }, 600)
 }
 
 /**
@@ -620,7 +628,7 @@ watch(activeCategory, newVal => {
         if (!card) return
 
         const container = scrollContainer.value
-        const scrollPosition = card.offsetLeft - container.offsetLeft - 36
+        const scrollPosition = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.offsetWidth / 2)
         container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
     })
 })
@@ -725,7 +733,7 @@ let observer: IntersectionObserver | null = null
 onMounted(() => {
     observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !isScrollingToCategory.value) {
                 activeCategory.value = entry.target.id.replace('category-', '')
             }
         })
