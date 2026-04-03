@@ -179,10 +179,10 @@ import {
 } from '#imports'
 import type { Order } from '@/types'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
+import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useTracking } from '~/composables/useTracking'
-import { eventBus } from '~/eventBus'
 
 definePageMeta({ public: false })
 

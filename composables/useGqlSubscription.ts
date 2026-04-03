@@ -89,7 +89,7 @@ export function useGqlSubscription<T = unknown>(
     }
 
     // On iOS (Capacitor), backgrounding kills the WebSocket but doesn't fire
-    // offline/online events. Restart subscription when the app returns to foreground.
+    // Offline/online events. Restart subscription when the app returns to foreground.
     let hiddenAt = 0
     const handleVisibilityChange = () => {
         if (document.visibilityState === 'hidden') {

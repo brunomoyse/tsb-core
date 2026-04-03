@@ -35,8 +35,8 @@ export function usePushNotifications() {
             if (result.receive !== 'granted') return
         }
 
-        // Wait for APNs/FCM to return the device token before resolving,
-        // so callers can safely navigate after register() completes.
+        // Wait for APNs/FCM to return the device token before resolving.
+        // So callers can safely navigate after register() completes.
         await new Promise<void>((resolve) => {
             const timeout = setTimeout(resolve, 5_000) // Don't block forever
 

@@ -4,8 +4,8 @@ import { dismissCookieConsent } from './fixtures/cookie-consent.fixture'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
-  // Only clear cookies — do NOT clear localStorage or sessionStorage
-  // oidc-client-ts stores PKCE state in sessionStorage that must survive redirects
+  // Only clear cookies — do NOT clear localStorage or sessionStorage.
+  // Oidc-client-ts stores PKCE state in sessionStorage that must survive redirects.
 })
 
 test.describe('Authentication flows', () => {
