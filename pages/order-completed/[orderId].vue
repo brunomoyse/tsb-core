@@ -181,7 +181,6 @@ import type { Order } from '@/types'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import { useLiveActivity } from '~/composables/useLiveActivity'
 import { useTracking } from '~/composables/useTracking'
 import { eventBus } from '~/eventBus'
 
@@ -193,7 +192,6 @@ const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
 const { $gqlFetch } = useNuxtApp()
-const { startIfEligible, onStatusUpdate } = useLiveActivity()
 
 const ORDER_QUERY = print(gql`
     query ($orderId: ID!) {
@@ -337,13 +335,6 @@ onMounted(() => {
                 order_id: orderId,
                 new_status: val.myOrderUpdated.status,
             })
-
-            // Update iOS Live Activity / Dynamic Island
-            onStatusUpdate(
-                orderId,
-                val.myOrderUpdated.status,
-                val.myOrderUpdated.estimatedReadyTime ?? undefined,
-            )
         }
 
         if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
@@ -416,9 +407,6 @@ onMounted(() => {
             total_price: order.value.totalPrice,
             items_count: order.value.items?.length,
         })
-
-        // Start iOS Live Activity / Dynamic Island
-        startIfEligible(order.value)
     }
 })
 
