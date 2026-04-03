@@ -46,6 +46,8 @@ jobs:
             --build-arg GRAPHQL_WS_URL=${{ vars.GRAPHQL_WS_URL }} \
             --build-arg ZITADEL_AUTHORITY=${{ vars.ZITADEL_AUTHORITY }} \
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
             --push
 
   build_arm64:
@@ -74,6 +76,8 @@ jobs:
             --build-arg GRAPHQL_WS_URL=${{ vars.GRAPHQL_WS_URL }} \
             --build-arg ZITADEL_AUTHORITY=${{ vars.ZITADEL_AUTHORITY }} \
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
             --push
 
   create_manifest:
@@ -136,6 +140,8 @@ jobs:
             --build-arg GRAPHQL_WS_URL=${{ vars.GRAPHQL_WS_URL }} \
             --build-arg ZITADEL_AUTHORITY=${{ vars.ZITADEL_AUTHORITY }} \
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
             --push
 
   deploy_production:
