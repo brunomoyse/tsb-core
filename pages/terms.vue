@@ -156,7 +156,7 @@
                     <li><strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne,</li>
                     <li><strong>Zitadel</strong> (auto-hébergé, Gravelines, France) &mdash; fournisseur d&rsquo;identité et d&rsquo;authentification (protocole OIDC),</li>
                     <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels (confirmation de commande, vérification de compte),</li>
-                    <li><strong>PostHog</strong> (UE) &mdash; analyse de fréquentation (uniquement avec consentement),</li>
+                    <li><strong>Umami</strong> (auto-hébergé, France) &mdash; analyse de fréquentation anonyme (sans cookies),</li>
                     <li><strong>OVH</strong> (France) &mdash; hébergement du Site,</li>
                     <li><strong>Google</strong> (UE) &mdash; authentification OAuth (uniquement si le Client choisit cette option).</li>
                 </ul>
@@ -168,7 +168,7 @@
                 <p>
                     Conformément au RGPD (Règlement UE 2016/679), le Client dispose d&rsquo;un droit d&rsquo;accès, de
                     rectification, d&rsquo;effacement, de limitation, de portabilité et d&rsquo;opposition. Lorsque le
-                    traitement repose sur le consentement (cookies analytiques), le Client peut retirer son
+                    traitement repose sur le consentement (e-mails marketing), le Client peut retirer son
                     consentement à tout moment sans affecter la licéité du traitement effectué avant ce retrait.
                 </p>
                 <p class="mt-2">
@@ -209,19 +209,11 @@
                     </li>
                 </ul>
 
-                <h3 class="terms-subheading">Cookies analytiques (optionnels)</h3>
+                <h3 class="terms-subheading">Analyse de fréquentation</h3>
                 <p>
-                    Le Site utilise PostHog pour analyser la fréquentation et le parcours de navigation. Ces cookies ne
-                    sont activés qu&rsquo;avec le consentement du Client via la bannière affichée lors de la première
-                    visite. Le Client peut retirer son consentement à tout moment en modifiant ses préférences.
-                    Les données collectées ne sont pas partagées avec des tiers à des fins commerciales.
-                </p>
-
-                <h3 class="terms-subheading">Gestion des préférences</h3>
-                <p>
-                    Le Client peut accepter ou refuser les cookies analytiques via la bannière de consentement ou les
-                    paramètres de son navigateur. La suppression des cookies essentiels peut affecter le fonctionnement
-                    du Site.
+                    Le Site utilise Umami, un outil d&rsquo;analyse auto-hébergé respectueux de la vie privée.
+                    Umami ne dépose aucun cookie et ne collecte aucune donnée personnelle identifiable.
+                    Les données collectées ne sont pas partagées avec des tiers.
                 </p>
             </section>
 

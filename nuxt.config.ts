@@ -14,16 +14,16 @@ const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api
 const wsOrigin = apiOrigin.replace(/^http/, 'ws')
 const s3Url = process.env.S3_BUCKET_URL
 const osm = 'https://www.openstreetmap.org'
-const posthogHost = process.env.POSTHOG_HOST || 'https://eu.i.posthog.com'
+const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
 
 const csp = `${[
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://eu-assets.i.posthog.com",
+    `script-src 'self' 'unsafe-inline' ${umamiHost}`,
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${posthogHost} https://eu-assets.i.posthog.com`,
+    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost}`,
     `frame-src 'self' ${osm} ${zitadelOrigin}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
@@ -124,8 +124,8 @@ export default defineNuxtConfig({
             api: process.env.API_BASE_URL,
             graphqlHttp: `${process.env.API_BASE_URL}/graphql`,
             graphqlWs: process.env.GRAPHQL_WS_URL,
-            posthogApiKey: process.env.POSTHOG_API_KEY || '',
-            posthogHost: process.env.POSTHOG_HOST || 'https://eu.i.posthog.com',
+            umamiHost: process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev',
+            umamiWebsiteId: process.env.UMAMI_WEBSITE_ID || '',
             // Zitadel OIDC
             zitadelAuthority: process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be',
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',

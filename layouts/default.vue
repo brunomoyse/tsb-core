@@ -89,9 +89,6 @@
             <ScrollToTopButton class="sm:hidden"/>
         </ClientOnly>
 
-        <ClientOnly>
-            <CookieConsent v-if="!isCapacitor" />
-        </ClientOnly>
 
         </Body>
 
