@@ -78,13 +78,10 @@ export function usePushNotifications() {
         })
 
         // Handle notification tap (app was backgrounded/closed)
-        await PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-            const { data } = notification.notification
-            if (data?.orderId) {
-                const router = useNuxtApp().$router
-                const localePath = useNuxtApp().$localePath as (path: string) => string
-                router.push(localePath(`/order-completed/${data.orderId}`))
-            }
+        await PushNotifications.addListener('pushNotificationActionPerformed', () => {
+            const router = useNuxtApp().$router
+            const localePath = useNuxtApp().$localePath as (path: string) => string
+            router.push(localePath('/me/orders'))
         })
     }
 

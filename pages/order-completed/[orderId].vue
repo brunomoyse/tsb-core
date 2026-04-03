@@ -70,7 +70,7 @@
                     <template v-else>
                         {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
                     </template>
-                    <strong>{{ new Date(order.estimatedReadyTime).toLocaleString() }}</strong>
+                    <strong>{{ formatEstimatedTime(order.estimatedReadyTime) }}</strong>
                 </span>
             </div>
         </div>
@@ -151,7 +151,7 @@
         <!-- Actions -->
         <div class="mt-6 w-full max-w-lg flex flex-col sm:flex-row gap-3 oc-stagger-5">
             <NuxtLinkLocale
-                to="/me"
+                to="/me/orders"
                 class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
             >
                 {{ $t('orderCompleted.viewOrders') }}
@@ -192,6 +192,17 @@ const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
 const { $gqlFetch } = useNuxtApp()
+
+const formatEstimatedTime = (isoString: string): string => {
+    const date = new Date(isoString)
+    const now = new Date()
+    const isToday = date.getFullYear() === now.getFullYear()
+        && date.getMonth() === now.getMonth()
+        && date.getDate() === now.getDate()
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    if (isToday) return time
+    return `${date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' })}, ${time}`
+}
 
 const ORDER_QUERY = print(gql`
     query ($orderId: ID!) {
@@ -342,9 +353,8 @@ onMounted(() => {
         }
 
         if (val?.myOrderUpdated && dataOrder.value?.myOrder) {
-            dataOrder.value.myOrder = {
-                ...dataOrder.value.myOrder,
-                ...val.myOrderUpdated,
+            dataOrder.value = {
+                myOrder: { ...dataOrder.value.myOrder, ...val.myOrderUpdated },
             }
         }
     })
@@ -362,7 +372,7 @@ onMounted(() => {
                 const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
                 if (fresh?.myOrder && dataOrder.value?.myOrder) {
                     if (fresh.myOrder.status !== dataOrder.value.myOrder.status) {
-                        dataOrder.value.myOrder = { ...dataOrder.value.myOrder, ...fresh.myOrder }
+                        dataOrder.value = { myOrder: { ...dataOrder.value.myOrder, ...fresh.myOrder } }
                     }
                     if (terminalStatuses.includes(fresh.myOrder.status) && pollTimer) {
                         clearInterval(pollTimer)
@@ -390,7 +400,7 @@ onMounted(() => {
         try {
             const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
             if (fresh?.myOrder && dataOrder.value?.myOrder) {
-                dataOrder.value.myOrder = { ...dataOrder.value.myOrder, ...fresh.myOrder }
+                dataOrder.value = { myOrder: { ...dataOrder.value.myOrder, ...fresh.myOrder } }
             }
         } catch { /* Non-critical */ }
     }

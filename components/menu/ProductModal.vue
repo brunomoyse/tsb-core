@@ -12,7 +12,7 @@
 
             <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Image Section -->
-                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden">
+                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.slug, p.name)">
                     <picture class="w-full h-full flex justify-center items-center p-4">
                         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.avif`" type="image/avif"/>
                         <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.webp`" type="image/webp"/>
@@ -125,12 +125,15 @@
                 </div>
             </div>
         </div>
+
+        <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
 </template>
 
 <script setup lang="ts">
 import type { Product, ProductChoice } from '@/types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
+import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
@@ -159,6 +162,16 @@ const emit = defineEmits<{
 
 const modalRef = ref<HTMLElement | null>(null)
 useFocusTrap(modalRef)
+
+const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
+const lightboxSrc = ref('')
+const lightboxAlt = ref('')
+
+const openLightbox = (slug: string, name: string) => {
+    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxAlt.value = name
+    lightboxRef.value?.open()
+}
 
 const quantity = ref(1)
 const selectedChoiceId = ref<string | null>(null)
