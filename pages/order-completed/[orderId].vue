@@ -249,10 +249,11 @@ const ORDER_QUERY = print(gql`
     }
 `)
 
-// 1) Fetch the order once (SSR) — keyed by orderId to avoid stale data
+// 1) Fetch the order once (client-only — SSR has no OIDC token)
 const { data: dataOrder, error: orderError } = await useAsyncData<{ myOrder: Order }>(
     `order-${orderId}`,
     () => $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } }),
+    { server: false },
 )
 
 const order = computed(() => dataOrder.value?.myOrder ?? null)
