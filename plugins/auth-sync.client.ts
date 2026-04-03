@@ -24,6 +24,8 @@ export default defineNuxtPlugin(async () => {
     const renewed = await silentRenew()
     if (renewed) return
 
-    // No valid session — clear stale store so UI reflects reality
+    // No valid session — clear stale OIDC session + Pinia store
+    const { removeUser } = useOidc()
+    await removeUser()
     authStore.clearUser()
 })

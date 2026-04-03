@@ -65,18 +65,20 @@ export function useOidc() {
         userManager.events.addUserUnloaded(() => { oidcUser.value = null })
 
         userManager.events.addAccessTokenExpired(async () => {
-            // Token expired — attempt silent renew before clearing UI
+            // Token expired — attempt silent renew before clearing state
             try {
                 await userManager!.signinSilent()
             } catch {
-                // Renew failed — clear Pinia so UI reflects reality
+                // Renew failed — clear stale OIDC session + Pinia store
+                await userManager!.removeUser()
                 const { useAuthStore } = await import('~/stores/auth')
                 useAuthStore().clearUser()
             }
         })
 
         userManager.events.addSilentRenewError(async () => {
-            // Silent renew failed — clear Pinia so UI reflects reality
+            // Silent renew failed — clear stale OIDC session + Pinia store
+            await userManager!.removeUser()
             const { useAuthStore } = await import('~/stores/auth')
             useAuthStore().clearUser()
         })
@@ -308,6 +310,12 @@ export function useOidc() {
         return mgr.getUser()
     }
 
+    /** Clear stale OIDC session from storage (prevents automaticSilentRenew loops). */
+    async function removeUser(): Promise<void> {
+        const mgr = getUserManager()
+        await mgr.removeUser()
+    }
+
     return {
         oidcUser,
         signIn,
@@ -321,5 +329,6 @@ export function useOidc() {
         logoutCapacitor,
         isAuthenticated,
         getUser,
+        removeUser,
     }
 }
