@@ -32,36 +32,36 @@ export function useLiveActivity() {
         if (!isIos) return
 
         try {
-            const LiveActivity = (await import('~/lib/live-activity')).default
+            const { LiveActivity } = await import('capacitor-live-activity')
 
-            const { enabled } = await LiveActivity.areActivitiesEnabled()
-            console.log('[LiveActivity] areActivitiesEnabled:', enabled)
+            const { value: enabled } = await LiveActivity.isAvailable()
+            console.log('[LiveActivity] isAvailable:', enabled)
             if (!enabled) return
 
             if (isTerminal(order.status)) return
 
-            console.log('[LiveActivity] calling startActivity for order:', order.id)
-            const { pushToken } = await LiveActivity.startActivity({
-                orderId: order.id,
-                orderType: order.type as 'DELIVERY' | 'PICKUP',
-                totalPrice: order.totalPrice,
-                itemsSummary: buildItemsSummary(order),
-                status: order.status,
-                estimatedReadyTime: order.estimatedReadyTime ?? undefined,
-            })
-            console.log('[LiveActivity] started, pushToken:', pushToken ? 'received' : 'empty')
-
-            // Register push token on backend for remote updates
-            if (pushToken) {
-                await registerToken(order.id, pushToken)
-            }
-
-            // Listen for token rotations
-            LiveActivity.addListener('pushTokenUpdate', async (data) => {
-                if (data.pushToken) {
-                    await registerToken(data.orderId, data.pushToken)
+            // Listen for push token before starting activity
+            LiveActivity.addListener('liveActivityPushToken', async (event) => {
+                if (event.token) {
+                    await registerToken(order.id, event.token)
                 }
             })
+
+            console.log('[LiveActivity] calling startActivityWithPush for order:', order.id)
+            await LiveActivity.startActivityWithPush({
+                id: order.id,
+                attributes: {
+                    orderId: order.id,
+                    orderType: order.type,
+                    restaurantName: 'Tokyo Sushi Bar',
+                    itemsSummary: buildItemsSummary(order),
+                },
+                contentState: {
+                    status: order.status,
+                    estimatedReadyTime: order.estimatedReadyTime ?? '',
+                },
+            })
+            console.log('[LiveActivity] started with push')
         } catch (e) {
             console.error('[LiveActivity] error:', e)
         }
@@ -71,15 +71,20 @@ export function useLiveActivity() {
         if (!isIos) return
 
         try {
-            const LiveActivity = (await import('~/lib/live-activity')).default
+            const { LiveActivity } = await import('capacitor-live-activity')
 
             if (isTerminal(status)) {
-                await LiveActivity.endActivity({ orderId, finalStatus: status })
+                await LiveActivity.endActivity({
+                    id: orderId,
+                    contentState: { status },
+                })
             } else {
                 await LiveActivity.updateActivity({
-                    orderId,
-                    status,
-                    estimatedReadyTime,
+                    id: orderId,
+                    contentState: {
+                        status,
+                        estimatedReadyTime: estimatedReadyTime ?? '',
+                    },
                 })
             }
         } catch {

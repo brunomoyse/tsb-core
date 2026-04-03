@@ -29,8 +29,15 @@ export const useAuthStore = defineStore("auth", {
             }
             try {
                 const { useOidc } = await import('~/composables/useOidc')
-                const { signOut } = useOidc()
-                await signOut()
+                const { useRuntimeConfig } = await import('#imports')
+                const config = useRuntimeConfig()
+                if (config.public.appBuild === 'capacitor') {
+                    const { logoutCapacitor } = useOidc()
+                    logoutCapacitor()
+                } else {
+                    const { signOut } = useOidc()
+                    await signOut()
+                }
             } catch (error) {
                 if (import.meta.dev) console.error('Logout error:', error)
             }

@@ -33,7 +33,7 @@
             <NavItem v-if="authStore.user" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
                      to="me"/>
             <NavItem v-if="authStore.user" :tooltipText="$t('nav.logout')" alt="Logout Icon" icon="/icons/logout-icon.svg"
-                     to="logout"/>
+                     to="auth-logout"/>
             <!-- Language picker -->
             <LanguagePicker :tooltipText="$t('nav.language')" alt="Choose language Icon"
                             icon="/icons/translate-icon.svg"/>

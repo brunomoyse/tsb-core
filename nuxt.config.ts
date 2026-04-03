@@ -142,6 +142,16 @@ export default defineNuxtConfig({
         }
     },
 
+    // Workaround: @unhead/schema-org@2.x declares auto-imports from its vue subpath
+    // that don't actually exist there. Alias it to the main entry which has all exports.
+    vite: {
+        resolve: {
+            alias: {
+                '@unhead/schema-org/vue': '@unhead/schema-org',
+            },
+        },
+    },
+
     sitemap: {
         autoLastmod: true,
         defaults: {
