@@ -39,7 +39,7 @@
                     <li><strong>Adresse de livraison</strong> &mdash; rue, num&eacute;ro, code postal, commune.</li>
                     <li><strong>Donn&eacute;es de commande</strong> &mdash; produits command&eacute;s, montant, mode de paiement, statut.</li>
                     <li><strong>Jeton de notification push</strong> &mdash; identifiant technique de l&rsquo;appareil (iOS ou Android), utilis&eacute; exclusivement pour l&rsquo;envoi de notifications relatives &agrave; vos commandes.</li>
-                    <li><strong>Donn&eacute;es d&rsquo;analyse</strong> &mdash; pages visit&eacute;es et parcours de navigation, collect&eacute;s uniquement avec votre consentement via PostHog.</li>
+                    <li><strong>Donn&eacute;es d&rsquo;analyse</strong> &mdash; pages visit&eacute;es et &eacute;v&eacute;nements de navigation, collect&eacute;s de mani&egrave;re anonyme via Umami (aucun cookie, aucune donn&eacute;e personnelle).</li>
                 </ul>
                 <p class="mt-2">
                     Nous ne collectons aucun identifiant publicitaire (IDFA/GAID) et n&rsquo;utilisons pas de suivi
@@ -67,7 +67,6 @@
 
                 <h3 class="privacy-subheading">Consentement</h3>
                 <ul class="privacy-list">
-                    <li>Cookies analytiques PostHog (r&eacute;vocable &agrave; tout moment).</li>
                     <li>E-mails marketing (d&eacute;sactivable dans les param&egrave;tres de votre compte).</li>
                 </ul>
             </section>
@@ -80,7 +79,7 @@
                     <li><strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne.</li>
                     <li><strong>Zitadel</strong> (auto-h&eacute;berg&eacute;, France) &mdash; authentification et gestion des identit&eacute;s (OIDC).</li>
                     <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels.</li>
-                    <li><strong>PostHog</strong> (UE) &mdash; analyse de fr&eacute;quentation (uniquement avec consentement).</li>
+                    <li><strong>Umami</strong> (auto-h&eacute;berg&eacute;, France) &mdash; analyse de fr&eacute;quentation anonyme (sans cookies).</li>
                     <li><strong>OVH</strong> (France) &mdash; h&eacute;bergement du Site et de l&rsquo;API.</li>
                     <li><strong>Apple APNs</strong> &mdash; acheminement des notifications push iOS.</li>
                     <li><strong>Google FCM</strong> &mdash; acheminement des notifications push Android.</li>
@@ -140,11 +139,10 @@
                     </li>
                 </ul>
 
-                <h3 class="privacy-subheading">Cookies analytiques (optionnels)</h3>
+                <h3 class="privacy-subheading">Analyse de fr&eacute;quentation</h3>
                 <p>
-                    PostHog est utilis&eacute; pour analyser la fr&eacute;quentation. Ces cookies ne sont activ&eacute;s
-                    qu&rsquo;avec votre consentement via la banni&egrave;re affich&eacute;e lors de la premi&egrave;re
-                    visite. Vous pouvez retirer votre consentement &agrave; tout moment.
+                    Le Site utilise Umami, un outil d&rsquo;analyse auto-h&eacute;berg&eacute; respectueux de la vie priv&eacute;e.
+                    Umami ne d&eacute;pose aucun cookie et ne collecte aucune donn&eacute;e personnelle identifiable.
                 </p>
             </section>
 

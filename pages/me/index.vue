@@ -26,7 +26,7 @@ const languages = [
 ]
 const authStore = useAuthStore()
 const { $api, $gqlFetch } = useNuxtApp()
-const { trackEvent, optIn, optOut, hasOptedIn } = useTracking()
+const { trackEvent } = useTracking()
 
 // Fetch user profile if not in store (e.g., page refresh with cleared persistence)
 const ME = print(gql`
@@ -60,19 +60,6 @@ onMounted(async () => {
     }
 })
 
-const analyticsEnabled = ref(false)
-onMounted(() => {
-    analyticsEnabled.value = hasOptedIn()
-})
-const toggleAnalytics = () => {
-    if (analyticsEnabled.value) {
-        optOut()
-        analyticsEnabled.value = false
-    } else {
-        optIn()
-        analyticsEnabled.value = true
-    }
-}
 
 useSeoMeta({
     title: t('schema.myAccount.title'),
@@ -529,37 +516,6 @@ const toggleNotifyMarketing = async () => {
                 </div>
             </div>
 
-            <!-- Analytics toggle cell -->
-            <div class="bento-analytics bento-cell" style="--delay: 7">
-                <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
-                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
-                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.analytics.title') }}</span>
-                    <div class="flex items-center gap-3 mt-2">
-                        <button
-                            type="button"
-                            role="switch"
-                            :aria-checked="analyticsEnabled"
-                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                            :class="analyticsEnabled ? 'bg-red-400' : 'bg-gray-200'"
-                            @click="toggleAnalytics"
-                        >
-                            <span
-                                class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                :class="analyticsEnabled ? 'translate-x-5' : 'translate-x-0'"
-                            />
-                        </button>
-                        <span class="text-sm text-gray-700">
-                            {{ analyticsEnabled ? t('me.analytics.enabled') : t('me.analytics.disabled') }}
-                        </span>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-2">{{ t('me.analytics.description') }}</p>
-                </div>
-            </div>
-
             <!-- Language cell -->
             <div class="bento-language bento-cell" style="--delay: 8">
                 <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
@@ -773,7 +729,6 @@ const toggleNotifyMarketing = async () => {
         "address"
         "password"
         "notifications"
-        "analytics"
         "language"
         "logout"
         "orders";
@@ -785,7 +740,6 @@ const toggleNotifyMarketing = async () => {
 .bento-address { grid-area: address; }
 .bento-password { grid-area: password; }
 .bento-notifications { grid-area: notifications; }
-.bento-analytics { grid-area: analytics; }
 .bento-language { grid-area: language; }
 .bento-logout { grid-area: logout; }
 .bento-orders { grid-area: orders; }
@@ -798,8 +752,8 @@ const toggleNotifyMarketing = async () => {
             "profile       profile"
             "email         phone"
             "address       password"
-            "notifications analytics"
-            "language       logout"
+            "notifications language"
+            "logout        logout"
             "orders        orders";
     }
 }
@@ -811,7 +765,7 @@ const toggleNotifyMarketing = async () => {
         grid-template-areas:
             "profile       email          phone"
             "profile       address        password"
-            "notifications analytics      language"
+            "notifications language        ."
             "logout        .              ."
             "orders        orders         orders";
     }

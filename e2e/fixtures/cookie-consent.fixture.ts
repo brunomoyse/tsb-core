@@ -8,9 +8,5 @@ export async function waitForNuxtHydration(page: Page) {
   }, { timeout: 15_000 })
 }
 
-export async function dismissCookieConsent(page: Page) {
-  const declineBtn = page.locator('button', { hasText: 'Refuser' })
-  if (await declineBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await declineBtn.click()
-  }
-}
+// No-op: cookie consent banner was removed (Umami analytics doesn't use cookies)
+export async function dismissCookieConsent(_page: Page) {}
