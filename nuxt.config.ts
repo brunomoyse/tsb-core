@@ -16,15 +16,16 @@ const s3Url = process.env.S3_BUCKET_URL
 const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
+const turnstile = 'https://challenges.cloudflare.com'
 
 const csp = `${[
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' ${umamiHost}`,
+    `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost}`,
-    `frame-src 'self' ${osm} ${zitadelOrigin}`,
+    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile}`,
+    `frame-src 'self' ${osm} ${zitadelOrigin} ${turnstile}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
 
@@ -130,6 +131,7 @@ export default defineNuxtConfig({
             zitadelAuthority: process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be',
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
             zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
+            turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
         },
     },
 
