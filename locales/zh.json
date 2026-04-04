@@ -531,7 +531,8 @@
     "sendAnother": "再次提交",
     "errorGeneric": "出了点问题，请重试。",
     "errorTooManyRequests": "提交次数过多，请等待几分钟后再试。",
-    "errorInvalidInput": "请检查表单字段并重试。"
+    "errorInvalidInput": "请检查表单字段并重试。",
+    "errorCaptchaFailed": "机器人验证失败。请重试。"
   },
   "coupon": {
     "title": "优惠码",

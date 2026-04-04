@@ -531,7 +531,8 @@
     "sendAnother": "Send another",
     "errorGeneric": "Something went wrong. Please try again.",
     "errorTooManyRequests": "Too many submissions. Please wait a few minutes before trying again.",
-    "errorInvalidInput": "Please check the form fields and try again."
+    "errorInvalidInput": "Please check the form fields and try again.",
+    "errorCaptchaFailed": "Bot verification failed. Please try again."
   },
   "coupon": {
     "title": "Promo Code",

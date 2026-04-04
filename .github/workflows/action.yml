@@ -48,6 +48,7 @@ jobs:
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
             --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NUXT_PUBLIC_TURNSTILE_SITE_KEY }} \
             --push
 
   build_arm64:
@@ -78,6 +79,7 @@ jobs:
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
             --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NUXT_PUBLIC_TURNSTILE_SITE_KEY }} \
             --push
 
   create_manifest:
@@ -142,6 +144,7 @@ jobs:
             --build-arg ZITADEL_CLIENT_ID=${{ vars.ZITADEL_CLIENT_ID }} \
             --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NUXT_PUBLIC_TURNSTILE_SITE_KEY }} \
             --push
 
   deploy_production:

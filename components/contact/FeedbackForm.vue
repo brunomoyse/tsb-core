@@ -3,6 +3,8 @@ import { eventBus } from '~/eventBus'
 
 const { t } = useI18n()
 const { $api } = useNuxtApp()
+const config = useRuntimeConfig()
+const turnstileSiteKey = config.public.turnstileSiteKey as string
 
 const name = ref('')
 const email = ref('')
@@ -13,6 +15,50 @@ const website = ref('') // Honeypot
 const submitting = ref(false)
 const submitted = ref(false)
 
+// Turnstile
+const turnstileToken = ref('')
+const turnstileWidgetId = ref<string | null>(null)
+const turnstileContainer = ref<HTMLElement | null>(null)
+
+if (turnstileSiteKey) {
+    useHead({
+        script: [{
+            src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoaded',
+            async: true,
+            defer: true,
+        }],
+    })
+}
+
+onMounted(() => {
+    if (!turnstileSiteKey) return
+
+    const renderWidget = () => {
+        if (window.turnstile && turnstileContainer.value) {
+            turnstileWidgetId.value = window.turnstile.render(turnstileContainer.value, {
+                sitekey: turnstileSiteKey,
+                theme: 'light',
+                callback: (token: string) => { turnstileToken.value = token },
+                'expired-callback': () => { turnstileToken.value = '' },
+                'error-callback': () => { turnstileToken.value = '' },
+            })
+        }
+    }
+
+    if (window.turnstile) {
+        renderWidget()
+    } else {
+        window.onTurnstileLoaded = renderWidget
+    }
+})
+
+onUnmounted(() => {
+    if (turnstileWidgetId.value && window.turnstile) {
+        window.turnstile.remove(turnstileWidgetId.value)
+    }
+    window.onTurnstileLoaded = undefined
+})
+
 const serviceTypes = ['takeaway', 'dine-in', 'delivery'] as const
 const feedbackTypes = ['improvement', 'complaint', 'compliment'] as const
 
@@ -22,8 +68,16 @@ const canSubmit = computed(() =>
     serviceType.value !== '' &&
     feedbackType.value !== '' &&
     message.value.trim().length >= 10 &&
+    (turnstileSiteKey === '' || turnstileToken.value !== '') &&
     !submitting.value
 )
+
+function resetTurnstile() {
+    if (window.turnstile && turnstileWidgetId.value) {
+        window.turnstile.reset(turnstileWidgetId.value)
+    }
+    turnstileToken.value = ''
+}
 
 async function handleSubmit() {
     if (!canSubmit.value) return
@@ -39,13 +93,17 @@ async function handleSubmit() {
                 feedbackType: feedbackType.value,
                 message: message.value.trim(),
                 website: website.value,
+                turnstileToken: turnstileToken.value,
             },
         })
         submitted.value = true
     } catch (error: unknown) {
         const status = (error as { response?: { status?: number } })?.response?.status
+        const errorCode = (error as { data?: { error?: string } })?.data?.error
         if (status === 429) {
             eventBus.emit('notify', { message: t('feedback.errorTooManyRequests'), variant: 'error', duration: 5000 })
+        } else if (status === 400 && errorCode === 'captcha_failed') {
+            eventBus.emit('notify', { message: t('feedback.errorCaptchaFailed'), variant: 'error', duration: 5000 })
         } else if (status === 400) {
             eventBus.emit('notify', { message: t('feedback.errorInvalidInput'), variant: 'error', duration: 5000 })
         } else {
@@ -53,6 +111,7 @@ async function handleSubmit() {
         }
     } finally {
         submitting.value = false
+        resetTurnstile()
     }
 }
 
@@ -64,6 +123,7 @@ function resetForm() {
     message.value = ''
     website.value = ''
     submitted.value = false
+    resetTurnstile()
 }
 </script>
 
@@ -188,6 +248,9 @@ function resetForm() {
                 />
                 <p class="text-xs text-gray-400 text-right mt-1">{{ message.length }} / 2000</p>
             </div>
+
+            <!-- Turnstile widget -->
+            <div v-if="turnstileSiteKey" ref="turnstileContainer" />
 
             <!-- Submit button -->
             <button

@@ -524,7 +524,8 @@
     "sendAnother": "Nog een bericht versturen",
     "errorGeneric": "Er is een probleem opgetreden. Probeer het opnieuw.",
     "errorTooManyRequests": "Te veel inzendingen. Wacht enkele minuten en probeer het opnieuw.",
-    "errorInvalidInput": "Controleer de formuliervelden en probeer het opnieuw."
+    "errorInvalidInput": "Controleer de formuliervelden en probeer het opnieuw.",
+    "errorCaptchaFailed": "Botverificatie mislukt. Probeer het opnieuw."
   },
   "coupon": {
     "title": "Promocode",

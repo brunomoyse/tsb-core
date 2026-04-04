@@ -530,7 +530,8 @@
     "sendAnother": "Envoyer un autre avis",
     "errorGeneric": "Un problème est survenu. Veuillez réessayer.",
     "errorTooManyRequests": "Trop de soumissions. Veuillez patienter quelques minutes avant de réessayer.",
-    "errorInvalidInput": "Veuillez vérifier les champs du formulaire et réessayer."
+    "errorInvalidInput": "Veuillez vérifier les champs du formulaire et réessayer.",
+    "errorCaptchaFailed": "La vérification anti-robot a échoué. Veuillez réessayer."
   },
   "coupon": {
     "title": "Code promo",
