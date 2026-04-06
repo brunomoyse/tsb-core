@@ -20,6 +20,12 @@ const turnstileToken = ref('')
 const turnstileWidgetId = ref<string | null>(null)
 const turnstileContainer = ref<HTMLElement | null>(null)
 
+// Set placeholder callback before script injection to avoid race condition
+// (script may load before onMounted runs)
+if (import.meta.client && turnstileSiteKey) {
+    window.onTurnstileLoaded = () => {}
+}
+
 if (turnstileSiteKey) {
     useHead({
         script: [{
