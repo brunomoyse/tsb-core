@@ -29,7 +29,7 @@ const getWsClient = (): Promise<Client> => {
                     await new Promise<void>(resolve => { setTimeout(resolve, delay) })
                     // If no valid token after refresh attempt, stop retrying
                     const token = await getAccessToken()
-                    if (!token) throw new Error('No valid auth token')
+                    if (!token) await new Promise<void>(() => {})
                 },
             })
             wsClient = client

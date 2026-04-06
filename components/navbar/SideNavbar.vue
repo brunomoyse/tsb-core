@@ -28,12 +28,14 @@
                     <path d="M0 12 C10 12 10 4 20 4 C30 4 30 12 40 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
                 </svg>
             </li>
-            <NavItem v-if="!authStore.user" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
-                     to="auth-login"/>
-            <NavItem v-if="authStore.user" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
-                     to="me"/>
-            <NavItem v-if="authStore.user" :tooltipText="$t('nav.logout')" alt="Logout Icon" icon="/icons/logout-icon.svg"
-                     to="auth-logout"/>
+            <ClientOnly>
+                <NavItem v-if="!authStore.user" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
+                         to="auth-login"/>
+                <NavItem v-if="authStore.user" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
+                         to="me"/>
+                <NavItem v-if="authStore.user" :tooltipText="$t('nav.logout')" alt="Logout Icon" icon="/icons/logout-icon.svg"
+                         to="auth-logout"/>
+            </ClientOnly>
             <!-- Language picker -->
             <LanguagePicker :tooltipText="$t('nav.language')" alt="Choose language Icon"
                             icon="/icons/translate-icon.svg"/>

@@ -46,13 +46,15 @@
                                 <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg"
                                                to="/contact"
                                                @click="closeMenu"/>
-                                <MobileNavItem v-if="!authStore.user" :label="$t('nav.login')" icon="/icons/login-icon.svg"
-                                               to="/auth/login"
-                                               @click="closeMenu"/>
-                                <MobileNavItem v-if="authStore.user" :label="$t('nav.myAccount')"
-                                               icon="/icons/account-circle-icon.svg"
-                                               to="/me"
-                                               @click="closeMenu"/>
+                                <ClientOnly>
+                                    <MobileNavItem v-if="!authStore.user" :label="$t('nav.login')" icon="/icons/login-icon.svg"
+                                                   to="/auth/login"
+                                                   @click="closeMenu"/>
+                                    <MobileNavItem v-if="authStore.user" :label="$t('nav.myAccount')"
+                                                   icon="/icons/account-circle-icon.svg"
+                                                   to="/me"
+                                                   @click="closeMenu"/>
+                                </ClientOnly>
 
                                 <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
                                                 class="justify-center" icon="/icons/translate-icon.svg"
