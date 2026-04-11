@@ -357,6 +357,7 @@
     "processing": "Verwerking bezig...",
     "restaurantClosed": "Het restaurant is momenteel gesloten. Controleer de openingsuren.",
     "orderDisabled": "Bestellingen zijn momenteel uitgeschakeld. Probeer het later opnieuw.",
+    "orderDisabledSystem": "Ons online bestelsysteem is tijdelijk niet beschikbaar. Bel ons om uw bestelling te plaatsen.",
     "free": "Gratis",
     "stepMenu": "Menu",
     "stepCheckout": "Bestelling",

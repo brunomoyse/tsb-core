@@ -358,6 +358,7 @@
     "discount": "折扣",
     "restaurantClosed": "餐厅已关闭",
     "orderDisabled": "订单已禁用",
+    "orderDisabledSystem": "在线订购系统暂时不可用。请致电订购。",
     "free": "免费",
     "stepMenu": "菜单",
     "stepCheckout": "结账",

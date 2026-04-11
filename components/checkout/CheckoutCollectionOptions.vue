@@ -73,8 +73,12 @@
 
         <!-- Preferred Time / Status -->
         <div class="mt-4">
-            <!-- Ordering disabled -->
-            <p v-if="isOrderingDisabled" class="text-orange-600 font-semibold">
+            <!-- Ordering disabled by the system (e.g. HubRise circuit breaker) -->
+            <p v-if="isOrderingDisabled && systemDisableReason" class="text-orange-600 font-semibold">
+                {{ $t('checkout.orderDisabledSystem', 'Our online ordering system is temporarily unavailable. Please call us directly to place your order.') }}
+            </p>
+            <!-- Ordering disabled manually by the admin -->
+            <p v-else-if="isOrderingDisabled" class="text-orange-600 font-semibold">
                 {{ $t('checkout.orderDisabled', 'Ordering is temporarily disabled.') }}
             </p>
 
@@ -130,11 +134,17 @@ const {
     openingHours,
     orderingHours,
     orderingEnabled,
+    systemDisableReason,
     isCurrentlyOpen
 } = defineProps<{
     openingHours?: Record<string, OpeningHourEntry | null>
     orderingHours?: Record<string, OpeningHourEntry | null> | null
     orderingEnabled?: boolean
+    // When the HubRise circuit breaker disables ordering, tsb-service
+    // Sets `system_disable_reason` on restaurant_config. If non-null,
+    // We show a targeted "contact us" message rather than the generic
+    // Disabled-for-maintenance text.
+    systemDisableReason?: string | null
     isCurrentlyOpen?: boolean
 }>()
 
