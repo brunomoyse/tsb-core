@@ -72,32 +72,24 @@ useSeoMeta({
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                    <!-- Moped delivery icon -->
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h17.25M3.375 14.25L6 3.75h12l2.625 10.5"/></svg>
+                    <!-- Moped icon (Tabler Icons, same as OrdersWidget) -->
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freeDelivery') }}</h3>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                    <!-- Bento box / takeaway icon -->
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="6" width="18" height="12" rx="2"/>
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="12" y1="6" x2="12" y2="12"/>
-                        <path d="M3 6l1-2h16l1 2"/>
-                    </svg>
+                    <!-- Shopping bag icon (Heroicons, same as OrdersWidget) -->
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount') }}</h3>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                    <!-- Chopsticks icon -->
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                        <line x1="8" y1="3" x2="11" y2="21"/>
-                        <line x1="16" y1="3" x2="13" y2="21"/>
-                    </svg>
+                    <!-- Fish icon (Tabler Icons) -->
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571"/><path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504"/><path d="M18 11v.01"/><path d="M11.5 10.5c-.667 1 -.667 2 0 3"/></svg>
                 </div>
                 <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freshDaily') }}</h3>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freshDailyDesc') }}</p>
