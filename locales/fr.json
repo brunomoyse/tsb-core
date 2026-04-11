@@ -357,6 +357,7 @@
     "processing": "Traitement en cours...",
     "restaurantClosed": "Le restaurant est actuellement fermé. Veuillez vérifier les horaires d'ouverture.",
     "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard.",
+    "orderDisabledSystem": "Notre système de commande en ligne est momentanément indisponible. Merci de nous appeler pour passer votre commande.",
     "free": "Gratuit",
     "stepMenu": "Menu",
     "stepCheckout": "Commande",

@@ -63,6 +63,7 @@
                 :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
                 :ordering-hours="restaurantConfig?.restaurantConfig?.orderingHours"
                 :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
+                :system-disable-reason="restaurantConfig?.restaurantConfig?.systemDisableReason"
                 :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
             />
             <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />

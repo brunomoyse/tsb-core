@@ -358,6 +358,7 @@
     "processing": "Processing...",
     "restaurantClosed": "Restaurant is currently closed. Please check the opening hours.",
     "orderDisabled": "Ordering is disabled at the moment. Please try again later.",
+    "orderDisabledSystem": "Our online ordering system is temporarily unavailable. Please call us to place your order.",
     "free": "Free",
     "stepMenu": "Menu",
     "stepCheckout": "Checkout",
