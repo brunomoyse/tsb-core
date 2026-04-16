@@ -102,10 +102,12 @@ export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
 export type OrderDeliveryStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'FAILED'
 export type OrderPickUpStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'PICKED_UP' | 'CANCELLED' | 'FAILED'
 export type OrderType = 'DELIVERY' | 'PICKUP';
+export type OrderCancellationReason = 'OUT_OF_STOCK' | 'KITCHEN_CLOSED' | 'DELIVERY_AREA' | 'OTHER';
 
 export interface Order {
     addressExtra: string | null;
     addressId: string | null;
+    cancellationReason: OrderCancellationReason | null;
     couponCode: string | null;
     createdAt: string;
     deliveryFee: string | null;

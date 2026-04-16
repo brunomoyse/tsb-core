@@ -127,6 +127,13 @@
                     <p class="text-sm text-red-500 font-medium">
                         {{ $t('orderCompleted.orderCanceled') }}
                     </p>
+                    <p
+                        v-if="order.cancellationReason && order.cancellationReason !== 'OTHER'"
+                        class="mt-2 text-sm text-gray-600"
+                    >
+                        <span class="font-medium text-gray-700">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                        {{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -220,6 +227,7 @@ const ORDER_QUERY = print(gql`
             addressExtra
             orderNote
             orderExtra
+            cancellationReason
 
             address {
                 streetName
@@ -332,7 +340,7 @@ onMounted(() => {
     }>(
         print(gql`
       subscription ($orderId: ID!) {
-        myOrderUpdated(orderId: $orderId) { id status updatedAt estimatedReadyTime }
+        myOrderUpdated(orderId: $orderId) { id status updatedAt estimatedReadyTime cancellationReason }
       }
     `),
         { orderId }

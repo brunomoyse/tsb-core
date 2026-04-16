@@ -390,6 +390,12 @@
     "pageTitle": "Bestelbevestiging - Tokyo Sushi Bar",
     "liveTracking": "Live tracking — de status wordt automatisch bijgewerkt",
     "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 222 98 88 voor meer informatie.",
+    "cancellationReasonLabel": "Reden:",
+    "cancellationReasons": {
+      "OUT_OF_STOCK": "Uitverkocht",
+      "KITCHEN_CLOSED": "Keuken gesloten",
+      "DELIVERY_AREA": "Buiten bezorggebied"
+    },
     "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw."
   },
   "404": {
