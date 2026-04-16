@@ -240,6 +240,15 @@
                             @before-leave="accordionBeforeLeave" @leave="accordionLeave" @after-leave="accordionAfterLeave"
                         >
                             <div v-show="isExpanded(order.id)" class="px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(255,245,238,0.4), transparent 60%)">
+                                <!-- Cancellation reason -->
+                                <div
+                                    v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
+                                    class="mb-3 p-3 bg-red-50/70 rounded-lg border border-red-100/80"
+                                >
+                                    <span class="text-[10px] text-red-500 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                                    <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
+                                </div>
+
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-gray-50/80 rounded-lg border border-gray-100/80">
                                     <span class="text-[10px] text-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
@@ -400,6 +409,7 @@ const MY_ORDERS = gql`
       addressExtra
       orderNote
       orderExtra
+      cancellationReason
       address {
         streetName
         municipalityName
