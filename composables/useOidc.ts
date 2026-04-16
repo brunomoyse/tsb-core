@@ -56,8 +56,11 @@ export function useOidc() {
                 post_logout_redirect_uri: baseUrl,
                 response_type: 'code',
                 scope: 'openid profile email offline_access urn:zitadel:iam:org:project:roles',
-                automaticSilentRenew: true,
-                userStore: new WebStorageStateStore({ store: sessionStorage }),
+                // Off: the background renewal raced with middleware/plugin calls on the same refresh token; Zitadel's rotation logged the loser out mid-session. Renew lazily on navigation and on 401 instead.
+                automaticSilentRenew: false,
+                // Persist tokens across browser close; Zitadel enforces the 7-day idle expiry.
+                userStore: new WebStorageStateStore({ store: localStorage }),
+                stateStore: new WebStorageStateStore({ store: localStorage }),
             })
         }
 
