@@ -287,10 +287,13 @@
       "cooldown": "Please wait before resending."
     },
     "notifications": {
-      "title": "Marketing emails",
+      "title": "Email notifications",
       "enabled": "Enabled",
       "disabled": "Disabled",
-      "description": "Receive promotional offers and restaurant news.",
+      "marketingLabel": "Marketing emails",
+      "marketingDescription": "Receive promotional offers and restaurant news.",
+      "orderUpdatesLabel": "Order updates",
+      "orderUpdatesDescription": "Get emails at every step of your current order.",
       "updateSuccess": "Notification preferences updated.",
       "updateError": "Failed to update preferences."
     },
