@@ -75,6 +75,7 @@ export interface User {
     id: string;
     lastName: string;
     notifyMarketing: boolean;
+    notifyOrderUpdates: boolean;
     phoneNumber: string | null;
 
     address: Address | null;

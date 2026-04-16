@@ -14,6 +14,7 @@ const ME = print(gql`
             lastName
             phoneNumber
             notifyMarketing
+            notifyOrderUpdates
             deletionRequestedAt
             address {
                 id
