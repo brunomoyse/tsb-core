@@ -287,10 +287,13 @@
       "cooldown": "请稍等再重新发送。"
     },
     "notifications": {
-      "title": "营销邮件",
+      "title": "邮件通知",
       "enabled": "已启用",
       "disabled": "已禁用",
-      "description": "接收促销优惠和餐厅新闻。",
+      "marketingLabel": "营销邮件",
+      "marketingDescription": "接收促销优惠和餐厅新闻。",
+      "orderUpdatesLabel": "订单状态更新",
+      "orderUpdatesDescription": "在当前订单的每个阶段接收电子邮件。",
       "updateSuccess": "通知偏好已更新。",
       "updateError": "更新偏好失败。"
     },

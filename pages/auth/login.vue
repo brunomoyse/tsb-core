@@ -189,10 +189,10 @@ const { t, locale } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const languages = [
-    { code: 'fr', label: 'FR', flag: '🇫🇷' },
-    { code: 'en', label: 'EN', flag: '🇬🇧' },
-    { code: 'nl', label: 'NL', flag: '🇳🇱' },
-    { code: 'zh', label: '中文', flag: '🇨🇳' },
+    { code: 'fr', label: 'FR' },
+    { code: 'en', label: 'EN' },
+    { code: 'nl', label: 'NL' },
+    { code: 'zh', label: '中文' },
 ]
 const { trackEvent } = useTracking()
 const { isCapacitor } = usePlatform()

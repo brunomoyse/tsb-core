@@ -19,10 +19,10 @@ const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 
 const languages = [
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-    { code: 'en', label: 'English', flag: '🇬🇧' },
-    { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
-    { code: 'zh', label: '中文', flag: '🇨🇳' },
+    { code: 'fr', label: 'Français' },
+    { code: 'en', label: 'English' },
+    { code: 'nl', label: 'Nederlands' },
+    { code: 'zh', label: '中文' },
 ]
 const authStore = useAuthStore()
 const { $api, $gqlFetch } = useNuxtApp()
@@ -38,6 +38,7 @@ const ME = print(gql`
             lastName
             phoneNumber
             notifyMarketing
+            notifyOrderUpdates
             deletionRequestedAt
             address {
                 id
@@ -91,6 +92,7 @@ const UPDATE_ME = gql`
             email
             phoneNumber
             notifyMarketing
+            notifyOrderUpdates
             address {
                 id
                 postcode
@@ -349,11 +351,17 @@ const handleLogout = async () => {
 }
 
 const notifyMarketing = computed(() => authStore.user?.notifyMarketing ?? true)
+const notifyOrderUpdates = computed(() => authStore.user?.notifyOrderUpdates ?? true)
 
-const toggleNotifyMarketing = async () => {
-    const newVal = !notifyMarketing.value
+const toggleNotifyMarketing = () => updateNotificationPref('notifyMarketing', !notifyMarketing.value)
+const toggleNotifyOrderUpdates = () => updateNotificationPref('notifyOrderUpdates', !notifyOrderUpdates.value)
+
+const updateNotificationPref = async (
+    field: 'notifyMarketing' | 'notifyOrderUpdates',
+    newVal: boolean,
+) => {
     try {
-        const res = await mutationUpdateMe({ input: { notifyMarketing: newVal } })
+        const res = await mutationUpdateMe({ input: { [field]: newVal } })
         authStore.updateUser(res.updateMe)
         eventBus.emit('notify', {
             message: t('me.notifications.updateSuccess'),
@@ -494,25 +502,48 @@ const toggleNotifyMarketing = async () => {
                         </svg>
                     </div>
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.notifications.title') }}</span>
-                    <div class="flex items-center gap-3 mt-2">
-                        <button
-                            type="button"
-                            role="switch"
-                            :aria-checked="notifyMarketing"
-                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                            :class="notifyMarketing ? 'bg-red-400' : 'bg-gray-200'"
-                            @click="toggleNotifyMarketing"
-                        >
-                            <span
-                                class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                :class="notifyMarketing ? 'translate-x-5' : 'translate-x-0'"
-                            />
-                        </button>
-                        <span class="text-sm text-gray-700">
-                            {{ notifyMarketing ? t('me.notifications.enabled') : t('me.notifications.disabled') }}
-                        </span>
+
+                    <!-- Marketing emails -->
+                    <div class="mt-3">
+                        <div class="flex items-center gap-3">
+                            <button
+                                type="button"
+                                role="switch"
+                                :aria-checked="notifyMarketing"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                :class="notifyMarketing ? 'bg-red-400' : 'bg-gray-200'"
+                                @click="toggleNotifyMarketing"
+                            >
+                                <span
+                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                    :class="notifyMarketing ? 'translate-x-5' : 'translate-x-0'"
+                                />
+                            </button>
+                            <span class="text-sm text-gray-700">{{ t('me.notifications.marketingLabel') }}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1.5">{{ t('me.notifications.marketingDescription') }}</p>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2">{{ t('me.notifications.description') }}</p>
+
+                    <!-- Order tracking emails -->
+                    <div class="mt-4 pt-4 border-t border-white/60">
+                        <div class="flex items-center gap-3">
+                            <button
+                                type="button"
+                                role="switch"
+                                :aria-checked="notifyOrderUpdates"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                :class="notifyOrderUpdates ? 'bg-red-400' : 'bg-gray-200'"
+                                @click="toggleNotifyOrderUpdates"
+                            >
+                                <span
+                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                    :class="notifyOrderUpdates ? 'translate-x-5' : 'translate-x-0'"
+                                />
+                            </button>
+                            <span class="text-sm text-gray-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1.5">{{ t('me.notifications.orderUpdatesDescription') }}</p>
+                    </div>
                 </div>
             </div>
 
@@ -537,7 +568,7 @@ const toggleNotifyMarketing = async () => {
                                     : 'bg-white text-gray-600 hover:bg-gray-100'
                             ]"
                         >
-                            {{ lang.flag }} {{ lang.label }}
+                            {{ lang.label }}
                         </NuxtLink>
                     </div>
                 </div>
