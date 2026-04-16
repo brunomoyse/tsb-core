@@ -62,11 +62,25 @@ export function useAuthCallback() {
             await register()
         }
 
-        if (cartStore.products.length > 0) {
+        const returnTo = consumeReturnTo()
+        if (returnTo) {
+            navigateTo(returnTo)
+        } else if (cartStore.products.length > 0) {
             navigateTo(localePath('checkout'))
         } else {
             navigateTo(localePath('menu'))
         }
+    }
+
+    function consumeReturnTo(): string | null {
+        if (typeof sessionStorage === 'undefined') return null
+        const raw = sessionStorage.getItem('oidc_return_to')
+        sessionStorage.removeItem('oidc_return_to')
+        // Only allow same-origin absolute paths; reject protocol-relative (//) or off-site URLs.
+        if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null
+        // Don't bounce back into the auth flow itself.
+        if (/^\/[^/]+\/auth(\/|$)/.test(raw)) return null
+        return raw
     }
 
     return { processCallback }
