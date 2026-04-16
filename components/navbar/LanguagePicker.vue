@@ -43,10 +43,10 @@ const { trackEvent } = useTracking()
 const codeAvailables = computed(() => availableLocales.filter((code) => code !== locale.value))
 
 const languages = [
-    {code: 'fr', label: '🇫🇷 Français'},
-    {code: 'en', label: '🇬🇧 English'},
-    {code: 'nl', label: '🇳🇱 Nederlands'},
-    {code: 'zh', label: '🇨🇳 中文'}
+    {code: 'fr', label: 'Français'},
+    {code: 'en', label: 'English'},
+    {code: 'nl', label: 'Nederlands'},
+    {code: 'zh', label: '中文'}
 ]
 
 const localesToPick = computed(() => languages.filter((lang) => codeAvailables.value.includes(lang.code)))

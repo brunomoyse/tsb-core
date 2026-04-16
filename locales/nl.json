@@ -287,10 +287,13 @@
       "cooldown": "Even geduld alvorens opnieuw te versturen."
     },
     "notifications": {
-      "title": "Marketinge-mails",
+      "title": "E-mailmeldingen",
       "enabled": "Ingeschakeld",
       "disabled": "Uitgeschakeld",
-      "description": "Ontvang promotionele aanbiedingen en nieuws van het restaurant.",
+      "marketingLabel": "Marketinge-mails",
+      "marketingDescription": "Ontvang promotionele aanbiedingen en nieuws van het restaurant.",
+      "orderUpdatesLabel": "Bestelstatus",
+      "orderUpdatesDescription": "Ontvang e-mails bij elke stap van uw lopende bestelling.",
       "updateSuccess": "Notificatievoorkeuren bijgewerkt.",
       "updateError": "Bijwerken van voorkeuren mislukt."
     }

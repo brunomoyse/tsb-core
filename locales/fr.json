@@ -287,10 +287,13 @@
       "cooldown": "Veuillez patienter avant de renvoyer."
     },
     "notifications": {
-      "title": "E-mails marketing",
+      "title": "Notifications par e-mail",
       "enabled": "Activés",
       "disabled": "Désactivés",
-      "description": "Recevez des offres promotionnelles et des nouvelles du restaurant.",
+      "marketingLabel": "E-mails marketing",
+      "marketingDescription": "Recevez des offres promotionnelles et des nouvelles du restaurant.",
+      "orderUpdatesLabel": "Suivi de la commande",
+      "orderUpdatesDescription": "Recevez des e-mails à chaque étape de votre commande en cours.",
       "updateSuccess": "Préférences de notification mises à jour.",
       "updateError": "Échec de la mise à jour des préférences."
     }
