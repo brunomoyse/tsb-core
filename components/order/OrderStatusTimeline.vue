@@ -1,47 +1,41 @@
 <template>
-    <div class="py-1">
-        <div class="relative pl-6">
-            <!-- Vertical line -->
-            <div class="absolute left-[7px] top-1 bottom-1 w-[2px] rounded-full bg-gray-100" />
+    <div class="relative pl-4">
+        <!-- Vertical line -->
+        <div class="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-gray-200" />
 
-            <div v-for="(status, index) in statuses" :key="status" class="relative flex items-start" :class="index > 0 ? 'mt-3' : ''">
-                <!-- Dot on the vertical line -->
-                <div class="absolute -left-6 top-[3px] flex items-center justify-center">
-                    <!-- Current step: ring with pulse -->
-                    <div v-if="isCurrent(index)" class="w-4 h-4 rounded-full bg-white ring-2 ring-red-400 stone-ripple" />
-
-                    <!-- Completed last: green checkmark -->
-                    <div v-else-if="isCompletedLast(index)" class="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
-                        <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 12 12" fill="none">
-                            <path d="M2.5 6.5L5 9L9.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-
-                    <!-- Past step: small green dot -->
-                    <div v-else-if="isPast(index)" class="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-
-                    <!-- Future step: hollow gray dot -->
-                    <div v-else class="w-2.5 h-2.5 rounded-full border-[1.5px] border-gray-300 bg-white" />
-                </div>
-
-                <!-- Status label -->
-                <div class="min-w-0">
-                    <span
-                        class="text-sm leading-tight"
-                        :class="isCurrent(index)
-                            ? 'font-medium text-gray-900'
-                            : isPast(index) || isCompletedLast(index)
-                                ? 'text-gray-500'
-                                : 'text-gray-300'"
-                    >
-                        {{ getStatusTitle(status) }}
-                    </span>
-                    <!-- Next step hint on current -->
-                    <span v-if="isCurrent(index) && nextStatus" class="block text-xs text-gray-400 mt-0.5">
-                        {{ $t('me.orders.nextStep') }}: {{ getStatusTitle(nextStatus) }}
-                    </span>
-                </div>
+        <div
+            v-for="(status, index) in statuses"
+            :key="status"
+            class="relative flex items-center"
+            :class="index > 0 ? 'mt-3.5' : ''"
+        >
+            <!-- Dot -->
+            <div class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                <div
+                    v-if="isCurrent(index)"
+                    class="w-[7px] h-[7px] rounded-full bg-red-500 stone-ripple"
+                />
+                <div
+                    v-else-if="isPast(index) || isCompletedLast(index)"
+                    class="w-[7px] h-[7px] rounded-full bg-emerald-500"
+                />
+                <div
+                    v-else
+                    class="w-[7px] h-[7px] rounded-full border border-gray-300 bg-white"
+                />
             </div>
+
+            <!-- Label -->
+            <span
+                class="text-sm leading-tight"
+                :class="isCurrent(index)
+                    ? 'font-semibold text-gray-900'
+                    : isPast(index) || isCompletedLast(index)
+                        ? 'text-gray-600'
+                        : 'text-gray-300'"
+            >
+                {{ getStatusTitle(status) }}
+            </span>
         </div>
     </div>
 </template>
@@ -62,12 +56,6 @@ const statuses = computed(() => order.type === 'DELIVERY' ? deliveryStatuses : p
 
 const currentIndex = computed(() => statuses.value.indexOf(order.status))
 const completed = computed(() => order.status === 'DELIVERED' || order.status === 'PICKED_UP')
-
-const nextStatus = computed(() => {
-    const idx = currentIndex.value
-    if (idx < 0 || idx >= statuses.value.length - 1) return null
-    return statuses.value[idx + 1]
-})
 
 const statusDetails: Record<string, string> = {
     PENDING: t('me.orders.status.details.title.pending'),
@@ -96,15 +84,15 @@ const isPast = (index: number) => {
 }
 
 @keyframes ripple {
-    0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.35); }
-    70% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+    70% { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .stone-ripple {
         animation: none;
-        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
     }
 }
 </style>
