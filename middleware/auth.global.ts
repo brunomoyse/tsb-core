@@ -22,6 +22,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     const locale = to.path.split('/')[1] || 'fr'
 
+    // Stash the original destination (incl. query) so processCallback can restore it after the OIDC round-trip.
+    if (typeof sessionStorage !== 'undefined' && to.fullPath.startsWith('/')) {
+        sessionStorage.setItem('oidc_return_to', to.fullPath)
+    }
+
     // 3. Capacitor: navigate to login page without OIDC redirect (avoids opening system browser)
     const config = useRuntimeConfig()
     if (config.public.appBuild === 'capacitor') {

@@ -45,6 +45,7 @@ const MY_ORDERS = gql`
       addressExtra
       orderNote
       orderExtra
+      cancellationReason
       address {
         streetName
         municipalityName
@@ -119,6 +120,7 @@ const SUB_ORDER_UPDATES = gql`
             status
             updatedAt
             estimatedReadyTime
+            cancellationReason
             payment { status }
         }
     }
@@ -389,6 +391,15 @@ const getStatusColorClass = (status: string) => {
                         <!-- Inline Timeline (for in-progress orders) -->
                         <div v-if="!isOrderCompleted(order.status)" class="mb-4">
                             <OrderStatusTimeline :order="getTrackedOrder(order)" />
+                        </div>
+
+                        <!-- Cancellation reason -->
+                        <div
+                            v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
+                            class="mb-3 p-3 bg-red-50/70 rounded-xl"
+                        >
+                            <span class="text-[11px] text-red-500 uppercase tracking-wider">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                            <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                         </div>
 
                         <!-- Delivery Address -->

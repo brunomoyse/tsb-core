@@ -164,17 +164,9 @@
     "phonePlaceholder": "Enter your phone number",
     "invalidPhone": "Invalid phone number",
     "address": "Address",
-    "streetPlaceholder": "Enter your street",
-    "houseNumberPlaceholder": "Enter your house number",
-    "boxNumberPlaceholder": "Enter your box number",
-    "houseNumber": "House number",
-    "boxNumber": "Box number",
+    "addressPlaceholder": "Type your address…",
     "submit": "Submit",
     "confirmAddress": "Confirm that this is your address",
-    "cantFindNumber": "I can't find my number",
-    "backToList": "Back to list",
-    "confirmManualAddress": "Confirm address",
-    "manualAddressWarning": "Delivery is available within 9 km. If your address exceeds this distance, the order will be cancelled.",
     "passwordVeryWeak": "Very Weak",
     "passwordWeak": "Weak",
     "passwordFair": "Fair",
@@ -392,6 +384,12 @@
     "pageTitle": "Order Confirmation - Tokyo Sushi Bar",
     "liveTracking": "Live tracking — status updates automatically",
     "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88.",
+    "cancellationReasonLabel": "Reason:",
+    "cancellationReasons": {
+      "OUT_OF_STOCK": "Out of stock",
+      "KITCHEN_CLOSED": "Kitchen closed",
+      "DELIVERY_AREA": "Outside delivery area"
+    },
     "loadError": "Failed to load order details. Please try again."
   },
   "404": {
