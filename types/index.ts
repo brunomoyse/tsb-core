@@ -82,14 +82,14 @@ export interface User {
 }
 
 export interface UpdateUserRequest {
-    addressId: string | null;
+    addressPlaceId: string | null;
     firstName: string | null;
     lastName: string | null;
     phoneNumber: string | null;
 }
 
 export interface CreateUserRequest {
-    addressId: string | null;
+    addressPlaceId: string | null;
     email: string;
     firstName: string;
     lastName: string;
@@ -150,7 +150,7 @@ export interface MolliePayment {
 
 export interface CreateOrderRequest {
     addressExtra: string | null;
-    addressId: string | null;
+    addressPlaceId?: string | null;
     couponCode?: string | null;
     isOnlinePayment: boolean;
     items: { productId: string; quantity: number; choiceId?: string; }[]
@@ -158,29 +158,25 @@ export interface CreateOrderRequest {
     orderNote: string | null;
     orderType: OrderType;
     preferredReadyTime: string | null;
-    // Manual address fields
-    streetId?: string;
-    houseNumber?: string;
-    boxNumber?: string | null;
-    isManualAddress?: boolean;
     // Custom Mollie redirect URL (native apps use custom URL scheme)
     paymentRedirectUrl?: string;
 }
-export interface Street {
-    id: string;
-    municipalityName: string;
-    postcode: string;
-    streetName: string;
+export interface AddressSuggestion {
+    placeId: string;
+    description: string;
+    mainText: string;
+    secondaryText: string;
 }
 
 export interface Address {
-    boxNumber: string | null;
-    distance: number;
-    houseNumber: string;
     id: string;
-    municipalityName: string;
     postcode: string;
+    municipalityName: string;
     streetName: string;
-    streetId?: string;
-    isManualAddress?: boolean;
+    houseNumber: string;
+    boxNumber?: string | null;
+    distance: number;
+    lat?: number | null;
+    lng?: number | null;
+    duration?: number | null;
 }

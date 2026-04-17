@@ -356,7 +356,7 @@ const handleSubmit = () => {
             email: email.value,
             password: password.value,
             phoneNumber: formattedPhone.value || null,
-            addressId: addressConfirmed.value ? (address.value?.id || null) : null,
+            addressPlaceId: addressConfirmed.value ? (address.value?.id || null) : null,
         } as CreateUserRequest;
     } else {
         // For edit mode, we need to explicitly handle address and phone removal
@@ -379,7 +379,7 @@ const handleSubmit = () => {
             firstName: firstName.value,
             lastName: lastName.value,
             phoneNumber: phoneValue,
-            addressId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
+            addressPlaceId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
         } as UpdateUserRequest;
     }
 
