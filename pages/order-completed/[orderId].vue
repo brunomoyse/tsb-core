@@ -70,7 +70,7 @@
                     <template v-else>
                         {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
                     </template>
-                    <strong>{{ formatEstimatedTime(order.estimatedReadyTime) }}</strong>
+                    <strong>&nbsp;{{ formatEstimatedTime(order.estimatedReadyTime) }}</strong>
                 </span>
             </div>
         </div>
@@ -177,10 +177,12 @@
 import { computed, onMounted, onUnmounted, watch } from 'vue'
 import {
     definePageMeta,
+    navigateTo,
     ref,
     useAsyncData,
     useCartStore,
     useGqlSubscription,
+    useLocalePath,
     useNuxtApp,
     useRoute,
 } from '#imports'
@@ -199,6 +201,8 @@ const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
 const { $gqlFetch } = useNuxtApp()
+const localePath = useLocalePath()
+let redirectedAfterCancel = false
 
 const formatEstimatedTime = (isoString: string): string => {
     const date = new Date(isoString)
@@ -272,6 +276,18 @@ const { t } = useI18n()
 
 watch(order, (orderData) => {
     if (!orderData) return
+
+    if (orderData.status === 'CANCELLED' && !redirectedAfterCancel) {
+        redirectedAfterCancel = true
+        eventBus.emit('notify', {
+            message: t('orderCompleted.orderCanceled'),
+            persistent: false,
+            duration: 6000,
+            variant: 'error',
+        })
+        navigateTo(localePath('/'))
+        return
+    }
 
     useSchemaOrg([
         defineWebPage({
