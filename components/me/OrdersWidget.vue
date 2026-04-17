@@ -438,7 +438,7 @@ const MY_ORDERS = gql`
   }
 `
 
-const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
+const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
 
 // ── Active / Past split ──
