@@ -9,6 +9,7 @@ type Vars = Record<string, unknown> | (() => Record<string, unknown>)
 interface Options {
     immediate?: boolean
     cache?: boolean
+    server?: boolean
 }
 
 export async function useGqlQuery<T>(
@@ -24,6 +25,7 @@ export async function useGqlQuery<T>(
 
     const asyncData = await useAsyncData<T>(key, handler, {
         immediate: opts.immediate,
+        ...(opts.server === false ? { server: false } : {}),
         ...(opts.cache ? {} : { getCachedData: () => undefined as unknown as T }),
     })
 

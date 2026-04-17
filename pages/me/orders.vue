@@ -80,7 +80,7 @@ const visibleCount = ref(10)
 const { isCapacitor } = usePlatform()
 const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 
-const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS))
+const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
 
 const handlePullRefresh = async () => {
