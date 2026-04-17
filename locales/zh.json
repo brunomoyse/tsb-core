@@ -164,17 +164,9 @@
     "phonePlaceholder": "请输入您的电话号码",
     "invalidPhone": "电话号码无效",
     "address": "地址",
-    "streetPlaceholder": "请输入街道名称",
-    "houseNumberPlaceholder": "请输入门牌号",
-    "boxNumberPlaceholder": "请输入门牌附加号",
-    "houseNumber": "门牌号",
-    "boxNumber": "信箱号",
+    "addressPlaceholder": "输入您的地址…",
     "submit": "提交",
     "confirmAddress": "确认这是您的地址",
-    "cantFindNumber": "找不到我的号码",
-    "backToList": "返回列表",
-    "confirmManualAddress": "确认地址",
-    "manualAddressWarning": "配送范围在9公里以内。如果您的地址超出此范围，订单将被取消。",
     "passwordVeryWeak": "非常弱",
     "passwordWeak": "弱",
     "passwordFair": "一般",
@@ -392,6 +384,12 @@
     "pageTitle": "订单确认 - Tokyo Sushi Bar",
     "liveTracking": "实时追踪 — 状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
+    "cancellationReasonLabel": "原因：",
+    "cancellationReasons": {
+      "OUT_OF_STOCK": "缺货",
+      "KITCHEN_CLOSED": "厨房已关闭",
+      "DELIVERY_AREA": "超出配送范围"
+    },
     "loadError": "加载订单详情失败，请重试。"
   },
   "404": {

@@ -1,172 +1,61 @@
 <template>
     <form autocomplete="off">
-        <!-- STREET FIELD -->
+        <!-- ADDRESS FIELD -->
         <div class="relative">
-            <label class="block text-sm text-gray-700 mb-1" for="street">
+            <label class="block text-sm text-gray-700 mb-1" for="address">
                 {{ $t('register.address') }}
             </label>
             <div class="relative">
                 <input
-                    id="street"
-                    ref="streetInput"
-                    v-model="streetQuery"
-                    :placeholder="$t('register.streetPlaceholder')"
+                    id="address"
+                    ref="addressInput"
+                    v-model="addressQuery"
+                    :placeholder="$t('register.addressPlaceholder')"
                     class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                    @focus="isStreetFocused = true"
-                    @blur="onStreetBlur"
-                    @keydown.enter.prevent="selectFirstStreet"
-                    :disabled="Boolean(selectedStreet)"
+                    :disabled="Boolean(selectedAddress)"
+                    @focus="onAddressFocus"
+                    @blur="onAddressBlur"
+                    @keydown.enter.prevent="selectFirstSuggestion"
+                    @input="handleAddressInput"
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
-                    <svg v-if="selectedStreet" @mousedown.prevent="clearStreet" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                    <svg v-if="isLoadingAddress" class="w-5 h-5 text-gray-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    <svg v-if="selectedAddress && !isLoadingAddress" @mousedown.prevent="clearAddress" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
-                    <svg v-if="selectedStreet" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg v-if="selectedAddress" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                 </div>
             </div>
+            <!-- Suggestions dropdown -->
             <ul
-                v-show="isStreetFocused && !selectedStreet && streets.length > 0"
+                v-show="isAddressFocused && !selectedAddress && suggestions.length > 0"
                 role="listbox"
-                class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
+                class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto rounded-md"
                 @mousedown.prevent
             >
                 <li
-                    v-for="street in streets"
-                    :key="street.id"
+                    v-for="(suggestion, index) in suggestions"
+                    :key="suggestion.placeId"
                     role="option"
-                    class="p-2 hover:bg-gray-100 cursor-pointer"
-                    @mousedown="selectStreet(street)"
+                    class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
+                    :class="{ 'bg-gray-50': highlightedIndex === index }"
+                    @mousedown="selectSuggestion(suggestion)"
                 >
-                    {{ street.streetName }} - {{ street.municipalityName }}, {{ street.postcode }}
+                    <div class="font-medium text-sm text-gray-900">{{ suggestion.mainText }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ suggestion.secondaryText }}</div>
                 </li>
             </ul>
-        </div>
-
-        <!-- HOUSE FIELD -->
-        <div class="relative mt-3">
-            <label class="block text-sm text-gray-700 mb-1" for="houseNumber">{{ $t('register.houseNumber') }}</label>
-            <div class="relative">
-                <input
-                    id="houseNumber"
-                    ref="houseInput"
-                    v-model="houseQuery"
-                    :placeholder="$t('register.houseNumberPlaceholder')"
-                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                    @focus="!isManualMode && (isHouseFocused = true)"
-                    @blur="!isManualMode && onHouseBlur()"
-                    @keydown.enter.prevent="isManualMode ? confirmManualAddress() : handleHouseEnter($event)"
-                    :disabled="houseConfirmed || !selectedStreet"
-                />
-                <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
-                    <svg v-if="houseConfirmed" @click.stop="clearHouse" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <svg v-if="houseConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </div>
-            <!-- House number dropdown (DB mode only) -->
-            <ul
-                v-show="!isManualMode && isHouseFocused && !houseConfirmed && filteredHouseNumbers.length > 0"
-                role="listbox"
-                class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
-                @mousedown.prevent
-            >
-                <li
-                    v-for="house in filteredHouseNumbers"
-                    :key="house"
-                    role="option"
-                    class="p-2 hover:bg-gray-100 cursor-pointer"
-                    @mousedown="selectHouse(house)"
-                >
-                    {{ house }}
-                </li>
-            </ul>
-            <!-- "Can't find my number" link (DB mode only) -->
-            <button
-                v-if="!isManualMode && selectedStreet && !houseConfirmed"
-                type="button"
-                class="mt-1.5 text-xs text-red-500 hover:text-red-600 transition-colors"
-                @click="enableManualMode"
-            >
-                {{ $t('register.cantFindNumber') }}
-            </button>
-            <!-- "Back to list" link (manual mode only) -->
-            <button
-                v-if="isManualMode && !houseConfirmed"
-                type="button"
-                class="mt-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                @click="disableManualMode"
-            >
-                {{ $t('register.backToList') }}
-            </button>
-        </div>
-
-        <!-- BOX FIELD (DB mode: shown if 2+ boxes; Manual mode: always shown as free-text) -->
-        <div class="relative mt-3" v-if="isManualMode ? (houseConfirmed || houseQuery.trim() !== '') : boxNumbers.length > 1">
-            <label class="block text-sm text-gray-700 mb-1" for="boxNumber">{{ $t('register.boxNumber') }}</label>
-            <div class="relative">
-                <input
-                    :disabled="isManualMode ? houseConfirmed : !(selectedHouseNumber)"
-                    id="boxNumber"
-                    ref="boxInput"
-                    v-model="boxQuery"
-                    :placeholder="$t('register.boxNumberPlaceholder')"
-                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
-                    @focus="!isManualMode && (isBoxFocused = true)"
-                    @blur="!isManualMode && onBoxBlur()"
-                    @keydown.enter.prevent="isManualMode ? confirmManualAddress() : selectFirstBox()"
-                />
-                <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
-                    <svg v-if="boxConfirmed" @mousedown.prevent="clearBox" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <svg v-if="boxConfirmed" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </div>
-            <!-- Box dropdown (DB mode only) -->
-            <ul
-                v-show="!isManualMode && isBoxFocused"
-                role="listbox"
-                class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto"
-                @mousedown.prevent
-            >
-                <li
-                    v-for="box in filteredBoxNumbers"
-                    :key="box === null || box === '' ? 'none' : box"
-                    role="option"
-                    class="p-2 hover:bg-gray-100 cursor-pointer"
-                    @mousedown="selectBox(box)"
-                >
-                    {{ box === null ? '\u00A0' : box }}
-                </li>
-            </ul>
-        </div>
-
-        <!-- Manual mode: confirm button + warning -->
-        <div v-if="isManualMode && !houseConfirmed" class="mt-3 space-y-2">
-            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-                {{ $t('register.manualAddressWarning') }}
-            </p>
-            <button
-                type="button"
-                class="w-full h-10 bg-red-500 text-white rounded-md font-medium hover:bg-red-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="!houseQuery.trim()"
-                @click="confirmManualAddress"
-            >
-                {{ $t('register.confirmManualAddress') }}
-            </button>
         </div>
     </form>
 </template>
 
 <script lang="ts" setup>
-import type { Address, Street } from '~/types'
+import type { Address, AddressSuggestion } from '~/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
@@ -180,487 +69,201 @@ const emit = defineEmits<{
 const { $gqlFetch } = useNuxtApp()
 const { t } = useI18n()
 
-const SEARCH_STREETS = gql`query ($query: String!) {
-    streets(query: $query) {
-        id
-        streetName
-        municipalityName
-        postcode
+const AUTOCOMPLETE_ADDRESSES = gql`
+    query ($input: String!, $sessionToken: String!) {
+        autocompleteAddresses(input: $input, sessionToken: $sessionToken) {
+            placeId
+            description
+            mainText
+            secondaryText
+        }
     }
-}`
+`
 
-const SEARCH_HOUSE_NUMBERS = gql`query ($streetId: String!) {
-    houseNumbers(streetId: $streetId)
-}`
-
-const SEARCH_BOX_NUMBERS = gql`query ($streetId: String!, $houseNumber: String!) {
-    boxNumbers(streetId: $streetId, houseNumber: $houseNumber)
-}`
-
-const ADDRESS_BY_ID = gql`query ($streetId: String!, $houseNumber: String!, $boxNumber: String) {
-    addressByLocation(streetID: $streetId, houseNumber: $houseNumber, boxNumber: $boxNumber) {
-        id
-        postcode
-        municipalityName
-        streetName
-        houseNumber
-        boxNumber
-        distance
+const RESOLVE_ADDRESS = gql`
+    query ($placeId: ID!, $sessionToken: String!) {
+        resolveAddress(placeId: $placeId, sessionToken: $sessionToken) {
+            id
+            postcode
+            municipalityName
+            streetName
+            houseNumber
+            boxNumber
+            distance
+            lat
+            lng
+            duration
+        }
     }
-}`
-
-const STREET_AVG_DISTANCE = gql`query ($streetId: String!) {
-    streetAverageDistance(streetId: $streetId)
-}`
+`
 
 // Reactive State
-const streetQuery = ref('')
-const streets = ref<Street[]>([])
-const selectedStreet = ref<Street | null>(null)
+const addressInput = ref<HTMLInputElement | null>(null)
+const addressQuery = ref('')
+const suggestions = ref<AddressSuggestion[]>([])
+const selectedAddress = ref<Address | null>(null)
+const isAddressFocused = ref(false)
+const isLoadingAddress = ref(false)
+const highlightedIndex = ref(-1)
 
-const houseNumbers = ref<string[]>([])
-const houseQuery = ref('')
-const selectedHouseNumber = ref('')
-const houseConfirmed = ref(false)
+// Session token for Google Places API
+let sessionToken = generateSessionToken()
 
-const boxNumbers = ref<(string | null)[]>([])
-const boxQuery = ref<(string | null)>(null)
-const selectedBoxNumber = ref<(string | null)>(null)
-const boxConfirmed = ref(false)
+// Debounce timer
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-const address = ref<Address | null>(null)
+// Generate a UUID for session token
+function generateSessionToken(): string {
+    return crypto.randomUUID()
+}
 
-// Manual mode state
-const isManualMode = ref(false)
+// Regenerate session token (after successful address resolve or reset)
+function regenerateSessionToken(): void {
+    sessionToken = generateSessionToken()
+}
 
-// Focus states
-const isStreetFocused = ref(false)
-const isHouseFocused = ref(false)
-const isBoxFocused = ref(false)
+// Input handlers
+const onAddressFocus = () => {
+    isAddressFocused.value = true
+}
 
-// Debounce Handlers
-let debounceStreetTimer: ReturnType<typeof setTimeout> | null = null
-let debounceHouseTimer: ReturnType<typeof setTimeout> | null = null
-let debounceBoxTimer: ReturnType<typeof setTimeout> | null = null
-
-// Input blur events
-const onStreetBlur = () => {
+const onAddressBlur = () => {
     setTimeout(() => {
-        isStreetFocused.value = false
+        isAddressFocused.value = false
+        highlightedIndex.value = -1
     }, 100)
 }
 
-const onHouseBlur = () => {
-    setTimeout(() => {
-        isHouseFocused.value = false
-    }, 100)
-}
+const handleAddressInput = () => {
+    highlightedIndex.value = -1
+    if (debounceTimer) clearTimeout(debounceTimer)
 
-const onBoxBlur = () => {
-    setTimeout(() => {
-        isBoxFocused.value = false
-    }, 100)
-}
-
-// Computed Properties
-const filteredHouseNumbers = computed(() => {
-    if (!houseQuery.value) return houseNumbers.value
-
-    const query = houseQuery.value.toLowerCase()
-
-    // 1. Try exact substring match first
-    const substringMatches = houseNumbers.value.filter(h =>
-        h.toLowerCase().includes(query)
-    )
-    if (substringMatches.length > 0) return substringMatches
-
-    // 2. Fuzzy match: extract numeric part and find close matches
-    const queryNum = parseInt(query.replace(/\D/g, ''), 10)
-    if (isNaN(queryNum)) return []
-
-    return houseNumbers.value.filter(h => {
-        const hNum = parseInt(h.replace(/\D/g, ''), 10)
-        if (isNaN(hNum)) return false
-        return Math.abs(hNum - queryNum) <= 3
-    })
-})
-
-const filteredBoxNumbers = computed(() => {
-    const query = boxQuery.value || ''
-    if (!query) return boxNumbers.value
-    return boxNumbers.value.filter(b => {
-        const val = b || ''
-        return val.toLowerCase().includes(query.toLowerCase())
-    })
-})
-
-// Watchers
-watch(streetQuery, () => handleStreetSearch())
-watch(selectedStreet, () => handleStreetSelection())
-watch(selectedHouseNumber, () => handleHouseNumberSelection())
-watch(filteredBoxNumbers, (newVal) => {
-    if (newVal.length === 1) selectedBoxNumber.value = newVal[0]!
-})
-watch(address, (newVal) => {
-    emit('update:address', newVal)
-})
-
-// Address Search Handlers
-const handleStreetSearch = () => {
-    if (debounceStreetTimer) clearTimeout(debounceStreetTimer)
-    debounceStreetTimer = setTimeout(async () => {
-        if (streetQuery.value.trim().length < 3) return
+    debounceTimer = setTimeout(async () => {
+        if (addressQuery.value.trim().length < 3) {
+            suggestions.value = []
+            return
+        }
 
         try {
-            const data: {streets: Street[]}  = await $gqlFetch(
-                print(SEARCH_STREETS),
+            const data: { autocompleteAddresses: AddressSuggestion[] } = await $gqlFetch(
+                print(AUTOCOMPLETE_ADDRESSES),
                 {
                     variables: {
-                        query: streetQuery.value,
+                        input: addressQuery.value.trim(),
+                        sessionToken,
                     }
                 }
-            );
+            )
 
-            if (data.streets) {
-                streets.value = data.streets;
-                const exactMatches = data.streets.filter(s =>
-                    s.streetName.toLowerCase() === streetQuery.value.toLowerCase()
-                );
-                if (exactMatches.length === 1) {
-                    await selectStreet(exactMatches[0]!);
-                }
+            if (data.autocompleteAddresses) {
+                suggestions.value = data.autocompleteAddresses
             }
-        } catch {
+        } catch (err) {
+            if (import.meta.dev) console.error('Autocomplete failed:', err)
             eventBus.emit('notify', {
                 message: t('notify.errors.addressLookupFailed'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
             })
+            suggestions.value = []
         }
-    }, 500)
+    }, 250)
 }
 
-const handleStreetSelection = () => {
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    isManualMode.value = false
-    if (selectedStreet.value) loadHouseNumbers()
-}
+// Keyboard navigation
+const handleKeyDown = (event: KeyboardEvent) => {
+    if (!isAddressFocused.value || suggestions.value.length === 0) return
 
-const loadHouseNumbers = () => {
-    if (debounceHouseTimer) clearTimeout(debounceHouseTimer)
-    debounceHouseTimer = setTimeout(async () => {
-        try {
-            const data: { houseNumbers: string[]} = await $gqlFetch(
-                print(SEARCH_HOUSE_NUMBERS),
-                {
-                    variables: {
-                        streetId: selectedStreet.value!.id
-                    }
-                }
-            );
-            if (data.houseNumbers) {
-                houseNumbers.value = data.houseNumbers;
-                houseQuery.value = ''; // Reset query
+    switch (event.key) {
+        case 'ArrowDown':
+            event.preventDefault()
+            highlightedIndex.value = Math.min(highlightedIndex.value + 1, suggestions.value.length - 1)
+            break
+        case 'ArrowUp':
+            event.preventDefault()
+            highlightedIndex.value = Math.max(highlightedIndex.value - 1, -1)
+            break
+        case 'Enter':
+            event.preventDefault()
+            if (highlightedIndex.value >= 0) {
+                selectSuggestion(suggestions.value[highlightedIndex.value]!)
             }
-        } catch {
-            eventBus.emit('notify', {
-                message: t('notify.errors.addressLookupFailed'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-        }
-    }, 500)
-}
-
-const handleHouseNumberSelection = () => {
-    // Clear box-related state
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    // Reset boxConfirmed so that its watcher will trigger later
-    boxConfirmed.value = false
-
-    // Set houseConfirmed only if the selected house number is nonempty
-    if (selectedHouseNumber.value && selectedHouseNumber.value.trim() !== '') {
-        houseConfirmed.value = true
-        if (!isManualMode.value) {
-            loadBoxNumbers()
-        }
-    } else {
-        houseConfirmed.value = false
+            break
+        case 'Escape':
+            event.preventDefault()
+            isAddressFocused.value = false
+            break
     }
 }
 
-const loadBoxNumbers = () => {
-    if (debounceBoxTimer) clearTimeout(debounceBoxTimer)
-    debounceBoxTimer = setTimeout(async () => {
-        try {
-            const data: { boxNumbers: (string | null)[]} = await $gqlFetch(
-                print(SEARCH_BOX_NUMBERS),
-                {
-                    variables: {
-                        streetId: selectedStreet.value!.id,
-                        houseNumber: selectedHouseNumber.value
-                    }
-                }
-            );
-
-            if (data.boxNumbers) {
-                boxNumbers.value = data.boxNumbers;
-                boxQuery.value = '';
-                // Auto-select and confirm only if there's exactly one box option
-                if (data.boxNumbers.length === 1) {
-                    selectedBoxNumber.value = data.boxNumbers[0]!;
-                    boxConfirmed.value = true;
-                }
-                // If there are multiple boxes, give user time to choose
-                // Focus on the box input field
-                if (data.boxNumbers.length > 1) {
-                    await nextTick();
-                    const boxEl = document.getElementById('boxNumber') as HTMLInputElement;
-                    if (boxEl) {
-                        boxEl.focus();
-                        isBoxFocused.value = true;
-                    }
-                }
-            }
-        } catch {
-            eventBus.emit('notify', {
-                message: t('notify.errors.addressLookupFailed'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-        }
-    }, 500)
-}
-
-watch(boxConfirmed,
-    (newVal) => {
-        // If the box is confirmed, load the final address.
-        // If the box is not confirmed, set address to null.
-        if (newVal === true && !isManualMode.value) {
-            loadAddress()
-        } else if (!newVal) {
-            address.value = null
-        }
-    },
-    { immediate: true, deep: true }
-)
-
-const loadAddress = async () => {
-    if (!selectedStreet.value || !selectedHouseNumber.value) return;
-
-    try {
-        const data: {addressByLocation: Address}= await $gqlFetch(
-            print(ADDRESS_BY_ID),
-            {
-                variables: {
-                    streetId: selectedStreet.value.id,
-                    houseNumber: selectedHouseNumber.value,
-                    boxNumber: selectedBoxNumber.value || ""
-                }
-            }
-        );
-        address.value = data.addressByLocation;
-    } catch (err) {
-        if (import.meta.dev) console.error("loadAddress failed:", err)
-        address.value = null
+const selectFirstSuggestion = () => {
+    if (suggestions.value.length > 0) {
+        selectSuggestion(suggestions.value[0]!)
     }
-};
-
-// Manual mode handlers
-const enableManualMode = () => {
-    isManualMode.value = true
-    isHouseFocused.value = false
-    houseQuery.value = ''
-    houseConfirmed.value = false
-    address.value = null
-
-    nextTick(() => {
-        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-        if (houseEl) houseEl.focus()
-    })
 }
 
-const disableManualMode = () => {
-    isManualMode.value = false
-    houseQuery.value = ''
-    houseConfirmed.value = false
-    boxQuery.value = ''
-    boxConfirmed.value = false
-    address.value = null
-
-    nextTick(() => {
-        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-        if (houseEl) houseEl.focus()
-        isHouseFocused.value = true
-    })
-}
-
-const confirmManualAddress = async () => {
-    if (!selectedStreet.value || !houseQuery.value.trim()) return
-
+const selectSuggestion = async (suggestion: AddressSuggestion) => {
+    isLoadingAddress.value = true
     try {
-        const data: { streetAverageDistance: number } = await $gqlFetch(
-            print(STREET_AVG_DISTANCE),
+        const data: { resolveAddress: Address } = await $gqlFetch(
+            print(RESOLVE_ADDRESS),
             {
                 variables: {
-                    streetId: selectedStreet.value.id
+                    placeId: suggestion.placeId,
+                    sessionToken,
                 }
             }
         )
 
-        const avgDistance = data.streetAverageDistance
-
-        // Construct the address from street data + typed values
-        address.value = {
-            id: '',
-            streetId: selectedStreet.value.id,
-            streetName: selectedStreet.value.streetName,
-            houseNumber: houseQuery.value.trim(),
-            boxNumber: (boxQuery.value && boxQuery.value.trim()) || null,
-            municipalityName: selectedStreet.value.municipalityName,
-            postcode: selectedStreet.value.postcode,
-            distance: avgDistance,
-            isManualAddress: true,
+        if (data.resolveAddress) {
+            selectedAddress.value = data.resolveAddress
+            addressQuery.value = suggestion.description
+            suggestions.value = []
+            isAddressFocused.value = false
+            emit('update:address', selectedAddress.value)
+            // Regenerate session token for next use
+            regenerateSessionToken()
         }
-
-        // Lock the fields
-        selectedHouseNumber.value = houseQuery.value.trim()
-        houseConfirmed.value = true
-        boxConfirmed.value = true
-    } catch {
+    } catch (err) {
+        if (import.meta.dev) console.error('Resolve address failed:', err)
         eventBus.emit('notify', {
             message: t('notify.errors.addressLookupFailed'),
             persistent: false,
             duration: 5000,
             variant: 'error',
         })
+    } finally {
+        isLoadingAddress.value = false
     }
 }
 
-// Selection Handlers
-const selectStreet = async (street: Street) => {
-    selectedStreet.value = street
-    streetQuery.value = `${street.streetName} - ${street.municipalityName}, ${street.postcode}`
-    streets.value = []
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    isManualMode.value = false
+const clearAddress = () => {
+    selectedAddress.value = null
+    addressQuery.value = ''
+    suggestions.value = []
+    isAddressFocused.value = true
+    highlightedIndex.value = -1
+    regenerateSessionToken()
+    emit('update:address', null)
 
-    // Load house numbers and wait for next tick.
-    await loadHouseNumbers()
-    await nextTick()
-    const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-    if (houseEl) {
-        houseEl.focus()
-    }
-}
-
-const selectFirstStreet = () => {
-    if (streets.value.length > 0) {
-        selectStreet(streets.value[0]!)
-    }
-}
-
-const selectHouse = (hn: string) => {
-    selectedHouseNumber.value = hn
-    houseQuery.value = hn
-    houseConfirmed.value = true
-    isHouseFocused.value = false
-}
-
-const selectFirstHouse = () => {
-    if (filteredHouseNumbers.value.length > 0) {
-        selectHouse(filteredHouseNumbers.value[0]!)
-    }
-}
-
-const handleHouseEnter = (event: KeyboardEvent) => {
-    // If the user hasn't typed anything, don't auto-select.
-    if (houseQuery.value.trim() === '') {
-        event.preventDefault();
-        return;
-    }
-    // Otherwise, select the first suggestion.
-    selectFirstHouse();
-}
-
-const selectBox = (box: string | null) => {
-    selectedBoxNumber.value = box
-    boxQuery.value = box
-    boxConfirmed.value = true
-    isBoxFocused.value = false
-    // Load final address
-    loadAddress()
-}
-
-const selectFirstBox = () => {
-    if (filteredBoxNumbers.value.length > 0) {
-        selectBox(filteredBoxNumbers.value[0]!)
-    }
-}
-
-// Clear functions
-const clearStreet = () => {
-    streets.value = []
-    selectedStreet.value = null
-    streetQuery.value = ''
-    houseNumbers.value = []
-    selectedHouseNumber.value = ''
-    houseQuery.value = ''
-    boxNumbers.value = []
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    isStreetFocused.value = true
-    isManualMode.value = false
-
-    // Use nextTick to ensure the state update is applied before refocusing.
     nextTick(() => {
-        const streetEl = document.getElementById('street') as HTMLInputElement
-        if (streetEl) streetEl.focus()
+        if (addressInput.value) {
+            addressInput.value.focus()
+        }
     })
 }
 
-const clearHouse = () => {
-    houseQuery.value = ''
-    selectedHouseNumber.value = ''
-    houseConfirmed.value = false
-    address.value = null
-
-    if (isManualMode.value) {
-        boxQuery.value = ''
-        boxConfirmed.value = false
-    } else {
-        isHouseFocused.value = true
+// Watch for keyboard events
+if (import.meta.client) {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+        if (addressInput.value && addressInput.value === document.activeElement) {
+            handleKeyDown(event)
+        }
     }
 
-    // Use nextTick to ensure the state update is applied before refocusing.
-    nextTick(() => {
-        const houseEl = document.getElementById('houseNumber') as HTMLInputElement
-        if (houseEl) houseEl.focus()
-    })
-}
-
-const clearBox = () => {
-    selectedBoxNumber.value = null
-    boxQuery.value = ''
-    boxConfirmed.value = false
-    isBoxFocused.value = true
-
-    // Use nextTick to ensure the state update is applied before refocusing.
-    nextTick(() => {
-        const boxEl = document.getElementById('boxNumber') as HTMLInputElement
-        if (boxEl) boxEl.focus()
-    })
+    if (process.client) {
+        document.addEventListener('keydown', handleGlobalKeyDown)
+    }
 }
 </script>

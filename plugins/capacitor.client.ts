@@ -43,7 +43,10 @@ export default defineNuxtPlugin(async () => {
             await Keyboard.setResizeMode({ mode: KeyboardResize.None })
             await Keyboard.addListener('keyboardWillShow', () => {
                 document.body.classList.add('keyboard-visible')
-                // Dismiss keyboard on scroll (matches native iOS behavior)
+            })
+            // Dismiss keyboard on scroll (matches native iOS behavior).
+            // Deferred to keyboardDidShow so animation scroll doesn't immediately hide it.
+            await Keyboard.addListener('keyboardDidShow', () => {
                 window.addEventListener('scroll', () => Keyboard.hide().catch(() => {}), { passive: true, capture: true, once: true })
             })
             await Keyboard.addListener('keyboardWillHide', () => {
@@ -63,6 +66,16 @@ export default defineNuxtPlugin(async () => {
             } else {
                 App.exitApp()
             }
+        })
+
+        // Rotate refresh token on foreground to reset Zitadel's 30-day idle window.
+        App.addListener('appStateChange', async ({ isActive }) => {
+            if (!isActive) return
+            try {
+                const { useOidc } = await import('~/composables/useOidc')
+                const { silentRenew } = useOidc()
+                await silentRenew()
+            } catch { /* Next protected navigation will redirect to login */ }
         })
 
         // Deep link handler (IdP OAuth callbacks, push notification taps, etc.)

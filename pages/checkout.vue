@@ -257,7 +257,6 @@ useFocusTrap(addressModalRef)
 const CREATE_ORDER = gql`
     mutation CreateOrder($input: CreateOrderInput!) {
         createOrder(input: $input) {
-            isManualAddress
             id
             createdAt
             updatedAt
@@ -450,12 +449,10 @@ const handleCheckout = async () => {
             preferredReadyTime = selectedPreferredReadyTime
         }
 
-        // Extras could be managed globally or via events; this is a placeholder.
-        const isManual = cartStore.address?.isManualAddress ?? false
         const orderData: CreateOrderRequest = {
             orderType: cartStore.collectionOption,
             isOnlinePayment: cartStore.paymentOption === 'ONLINE',
-            addressId: (cartStore.collectionOption === 'DELIVERY' && !isManual)
+            addressPlaceId: (cartStore.collectionOption === 'DELIVERY')
                 ? (cartStore.address?.id ?? null)
                 : null,
             addressExtra: cartStore.addressExtra,
@@ -468,13 +465,6 @@ const handleCheckout = async () => {
                 ...(item.selectedChoice ? { choiceId: item.selectedChoice.id } : {}),
             })),
             preferredReadyTime: preferredReadyTime,
-            // Manual address fields
-            ...(isManual && cartStore.address ? {
-                streetId: cartStore.address.streetId,
-                houseNumber: cartStore.address.houseNumber,
-                boxNumber: cartStore.address.boxNumber,
-                isManualAddress: true,
-            } : {}),
             // Capacitor: use custom URL scheme so Mollie redirects back to the app
             ...(isCapacitor ? {
                 paymentRedirectUrl: 'be.tokyosushibarliege.app://order-completed',
