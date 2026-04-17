@@ -81,7 +81,7 @@ const AUTOCOMPLETE_ADDRESSES = gql`
 `
 
 const RESOLVE_ADDRESS = gql`
-    query ($placeId: ID!, $sessionToken: String!) {
+    query ($placeId: String!, $sessionToken: String!) {
         resolveAddress(placeId: $placeId, sessionToken: $sessionToken) {
             id
             postcode
