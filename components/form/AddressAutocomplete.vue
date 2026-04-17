@@ -217,6 +217,16 @@ const selectSuggestion = async (suggestion: AddressSuggestion) => {
         )
 
         if (data.resolveAddress) {
+            if (!data.resolveAddress.houseNumber) {
+                eventBus.emit('notify', {
+                    message: t('notify.errors.addressMissingHouseNumber'),
+                    persistent: false,
+                    duration: 5000,
+                    variant: 'error',
+                })
+                regenerateSessionToken()
+                return
+            }
             selectedAddress.value = data.resolveAddress
             addressQuery.value = suggestion.description
             suggestions.value = []

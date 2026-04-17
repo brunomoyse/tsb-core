@@ -2,6 +2,7 @@
 import type { Address, UpdateUserRequest, User } from '@/types'
 import { computed, onMounted, ref } from 'vue'
 import { definePageMeta, useGqlMutation, useNuxtApp, useSwitchLocalePath } from '#imports'
+import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
@@ -343,6 +344,50 @@ const submitChangePassword = async () => {
     }
 }
 
+// ── Address edit modal ──
+
+const showAddressModal = ref(false)
+const addressModalRef = ref<HTMLElement | null>(null)
+useFocusTrap(addressModalRef)
+const pendingAddress = ref<Address | null>(null)
+const addressLoading = ref(false)
+
+const openAddressModal = () => {
+    pendingAddress.value = null
+    showAddressModal.value = true
+}
+
+const closeAddressModal = () => {
+    showAddressModal.value = false
+    pendingAddress.value = null
+}
+
+const submitAddressUpdate = async () => {
+    if (!pendingAddress.value?.id) return
+    addressLoading.value = true
+    try {
+        const res = await mutationUpdateMe({ input: { addressPlaceId: pendingAddress.value.id } })
+        authStore.updateUser(res.updateMe)
+        eventBus.emit('notify', {
+            message: t('me.profile.addressUpdateSuccess'),
+            persistent: false,
+            duration: 3000,
+            variant: 'success',
+        })
+        closeAddressModal()
+    } catch (error) {
+        if (import.meta.dev) console.error('Error updating address:', error)
+        eventBus.emit('notify', {
+            message: t('notify.errors.profileUpdateFailed'),
+            persistent: false,
+            duration: 5000,
+            variant: 'error',
+        })
+    } finally {
+        addressLoading.value = false
+    }
+}
+
 // ── Feature 2: Notification Preferences ──
 
 const handleLogout = async () => {
@@ -468,9 +513,16 @@ const updateNotificationPref = async (
                         </svg>
                     </div>
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.profile.address') }}</span>
-                    <span class="text-sm text-gray-900 mt-1 whitespace-pre-line">
-                        {{ authStore.user?.address ? formatAddress(authStore.user.address) : '–' }}
+                    <span v-if="authStore.user?.address" class="text-sm text-gray-900 mt-1 whitespace-pre-line">
+                        {{ formatAddress(authStore.user.address) }}
                     </span>
+                    <button
+                        type="button"
+                        class="mt-2 text-sm text-red-500 hover:text-red-600 transition text-left"
+                        @click="openAddressModal"
+                    >
+                        {{ authStore.user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
+                    </button>
                 </div>
             </div>
 
@@ -629,6 +681,41 @@ const updateNotificationPref = async (
                         {{ t('me.profile.update') }}
                     </h3>
                     <UserForm mode="edit" :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />
+                </div>
+            </div>
+        </transition>
+
+        <!-- Edit Address Modal -->
+        <transition name="fade">
+            <div
+                v-if="showAddressModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                @click.self="closeAddressModal"
+            >
+                <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="edit-address-title" class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4" @click.stop @keydown.esc="closeAddressModal">
+                    <h3 id="edit-address-title" class="text-2xl font-semibold text-gray-900 text-center mb-6">
+                        {{ t('me.profile.address') }}
+                    </h3>
+
+                    <AddressAutocomplete @update:address="(addr) => pendingAddress = addr" />
+
+                    <div class="flex gap-3 pt-6">
+                        <button
+                            type="button"
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
+                            @click="closeAddressModal"
+                        >
+                            {{ t('common.cancel') }}
+                        </button>
+                        <button
+                            type="button"
+                            :disabled="!pendingAddress?.id || addressLoading"
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            @click="submitAddressUpdate"
+                        >
+                            {{ t('common.save') }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </transition>
@@ -796,8 +883,7 @@ const updateNotificationPref = async (
         grid-template-areas:
             "profile       email          phone"
             "profile       address        password"
-            "notifications language        ."
-            "logout        .              ."
+            "notifications language        logout"
             "orders        orders         orders";
     }
 }
