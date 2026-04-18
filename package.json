@@ -33,7 +33,7 @@
     "@nuxtjs/sitemap": "^8.0.13",
     "@pinia/nuxt": "^0.11.3",
     "@sentry/nuxt": "^10.49.0",
-    "@unhead/vue": "^2.1.13",
+    "@unhead/vue": "^3.0.4",
     "@vueuse/core": "^14.2.0",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
