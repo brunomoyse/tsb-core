@@ -60,6 +60,9 @@
                 </div>
             </div>
 
+            <!-- Phone capture: required before an order can be placed. Persists to user profile. -->
+            <CheckoutPhoneCapture v-if="!authStore.user?.phoneNumber" class="mb-4" />
+
             <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
             <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                 <CheckoutProductSummary />
@@ -70,7 +73,7 @@
                     :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
                     :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
                 />
-                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
+                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" :isPhoneMissing="isPhoneMissing" />
             </div>
 
             <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
@@ -81,10 +84,10 @@
                 <button
                     data-testid="checkout-place-order"
                     @click="handleCheckout"
-                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
+                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar || isPhoneMissing"
                     :class="[
                         'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
-                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
+                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     ]"
@@ -179,6 +182,7 @@ import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
+import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
@@ -417,6 +421,16 @@ const handleCheckout = async () => {
             })
             return
         }
+        if (!authStore.user?.phoneNumber) {
+            trackEvent('checkout_error_phone_required')
+            eventBus.emit('notify', {
+                message: t('checkout.phoneCapture.requiredBeforeOrder'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
+            return
+        }
         if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
             trackEvent('checkout_error_address_required')
             eventBus.emit('notify', {
@@ -551,6 +565,8 @@ const totalDiscount = computed(() =>
 const isAddressTooFar = computed(() =>
     cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= 9000
 )
+
+const isPhoneMissing = computed(() => !authStore.user?.phoneNumber)
 
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {

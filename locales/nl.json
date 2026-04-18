@@ -327,6 +327,12 @@
       "tabRegister": "Account aanmaken",
       "returnToLogin": "E-mail bevestigd — nu inloggen"
     },
+    "phoneCapture": {
+      "title": "Telefoonnummer vereist",
+      "description": "Nodig om u te contacteren over uw bestelling.",
+      "saved": "Telefoonnummer opgeslagen",
+      "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt."
+    },
     "orderSummary": "Uw bestelling",
     "emptyCart": "Uw winkelwagen is leeg.",
     "subtotal": "Subtotaal:",
