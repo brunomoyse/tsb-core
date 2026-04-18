@@ -32,6 +32,7 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/sitemap": "^8.0.13",
     "@pinia/nuxt": "^0.11.3",
+    "@sentry/nuxt": "^10.49.0",
     "@unhead/vue": "^2.1.13",
     "@vueuse/core": "^14.2.0",
     "graphql": "^16.13.2",
