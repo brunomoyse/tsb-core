@@ -177,7 +177,7 @@ jobs:
             cd /opt/tokyosushi/tsb-infra
             git pull --ff-only
             sops -d "secrets/${APP}.secret.enc.yaml" | sudo kubectl apply -n tokyosushi -f -
-            sudo helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
+            sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
               --namespace tokyosushi \
               --reuse-values \
               --set "apps.${APP}.image.tag=${TAG}" \
@@ -205,7 +205,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/tokyosushi/tsb-infra
-            sudo helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
+            sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
               --namespace tokyosushi \
               --reuse-values \
               --set "apps.${APP}.image.tag=${TAG}" \
