@@ -155,15 +155,27 @@ jobs:
     environment: production
 
     steps:
-      - name: Deploy via SSH
+      - name: Deploy via SSH (Helm)
         uses: appleboy/ssh-action@v1
+        env:
+          APP: tsb-core
+          TAG: ${{ github.ref_name }}
         with:
           host: ${{ vars.OVH_HOST }}
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+          envs: APP,TAG
           script: |
-            sudo kubectl rollout restart deployment/tsb-core -n tokyosushi
-            sudo kubectl rollout status deployment/tsb-core -n tokyosushi --timeout=5m
+            set -euo pipefail
+            export SOPS_AGE_KEY_FILE=/opt/tokyosushi/.config/sops/age/keys.txt
+            cd /opt/tokyosushi/tsb-infra
+            git pull --ff-only
+            sops -d "secrets/${APP}.secret.enc.yaml" | sudo kubectl apply -n tokyosushi -f -
+            sudo helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
+              --namespace tokyosushi \
+              --reuse-values \
+              --set "apps.${APP}.image.tag=${TAG}" \
+              --atomic --timeout 5m
 
 # ── Rollback (manual trigger) ────────────────────────────────────────────────
 
@@ -174,12 +186,21 @@ jobs:
     environment: production
 
     steps:
-      - name: Rollback via SSH
+      - name: Rollback via SSH (Helm)
         uses: appleboy/ssh-action@v1
+        env:
+          APP: tsb-core
+          TAG: ${{ inputs.version }}
         with:
           host: ${{ vars.OVH_HOST }}
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+          envs: APP,TAG
           script: |
-            sudo kubectl set image deployment/tsb-core tsb-core=ghcr.io/brunomoyse/tsb-core:${{ inputs.version }} -n tokyosushi
-            sudo kubectl rollout status deployment/tsb-core -n tokyosushi --timeout=5m
+            set -euo pipefail
+            cd /opt/tokyosushi/tsb-infra
+            sudo helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
+              --namespace tokyosushi \
+              --reuse-values \
+              --set "apps.${APP}.image.tag=${TAG}" \
+              --atomic --timeout 5m
