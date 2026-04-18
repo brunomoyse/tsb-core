@@ -76,6 +76,9 @@ export default defineNuxtConfig({
         'pinia-plugin-persistedstate/nuxt',
         'nuxt-schema-org',
         ...isCapacitor ? [] : ['@nuxtjs/sitemap'],
+        // Sentry is a no-op unless SENTRY_DSN is set (see sentry.client|server.config.ts).
+        // Skip it on Capacitor builds to avoid shipping Sentry inside the native bundle.
+        ...isCapacitor ? [] : ['@sentry/nuxt/module'],
     ],
 
     plugins: [
@@ -132,6 +135,22 @@ export default defineNuxtConfig({
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
             zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
             turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+            // Sentry (DSN is safe to expose client-side by design)
+            sentryDsn: process.env.SENTRY_DSN || '',
+            sentryEnvironment: process.env.SENTRY_ENVIRONMENT || 'production',
+            sentryRelease: process.env.SENTRY_RELEASE || '',
+        },
+    },
+
+    // @sentry/nuxt module — configured via env vars read by the Sentry build plugin.
+    // SENTRY_AUTH_TOKEN is the release/source-map upload token (private, CI only).
+    // SENTRY_ORG + SENTRY_PROJECT are needed by the bundler plugin to upload sourcemaps.
+    sentry: {
+        sourceMapsUploadOptions: {
+            enabled: !!process.env.SENTRY_AUTH_TOKEN && !isCapacitor,
+            org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
+            project: process.env.SENTRY_PROJECT || 'tsb-core',
+            authToken: process.env.SENTRY_AUTH_TOKEN,
         },
     },
 
