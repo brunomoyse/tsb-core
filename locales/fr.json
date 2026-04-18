@@ -321,6 +321,13 @@
   },
   "checkout": {
     "title": "Commande",
+    "authStep": {
+      "heading": "Plus qu'une étape — connectez-vous pour valider votre commande",
+      "cartSaved": "Votre panier est sauvegardé",
+      "tabLogin": "Connexion",
+      "tabRegister": "Créer un compte",
+      "returnToLogin": "Email confirmé — se connecter maintenant"
+    },
     "orderSummary": "Votre commande",
     "emptyCart": "Votre panier est vide.",
     "subtotal": "Sous-total :",

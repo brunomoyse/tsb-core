@@ -322,6 +322,13 @@
   },
   "checkout": {
     "title": "Checkout",
+    "authStep": {
+      "heading": "Almost there — sign in to place your order",
+      "cartSaved": "Your cart is saved",
+      "tabLogin": "Log in",
+      "tabRegister": "Create account",
+      "returnToLogin": "Email verified — sign in now"
+    },
     "orderSummary": "Your Order",
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",

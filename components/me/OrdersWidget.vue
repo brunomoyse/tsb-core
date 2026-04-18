@@ -140,6 +140,7 @@
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
+                                            <span v-if="item.product.category?.name" class="text-gray-400 mr-1">{{ item.product.category.name }}</span>
                                             <span v-if="item.product.code" class="text-gray-400 mr-1">{{ item.product.code }}</span>
                                             {{ item.product.name }}
                                             <span v-if="item.choice" class="text-gray-400 text-xs ml-0.5">({{ item.choice.name }})</span>
@@ -264,6 +265,7 @@
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
+                                            <span v-if="item.product.category?.name" class="text-gray-400 mr-1">{{ item.product.category.name }}</span>
                                             <span v-if="item.product.code" class="text-gray-400 mr-1">{{ item.product.code }}</span>
                                             {{ item.product.name }}
                                             <span v-if="item.choice" class="text-gray-400 text-xs ml-0.5">({{ item.choice.name }})</span>
