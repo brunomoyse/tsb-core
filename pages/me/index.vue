@@ -627,10 +627,10 @@ const updateNotificationPref = async (
             </div>
 
             <!-- Logout cell -->
-            <div class="bento-logout bento-cell" style="--delay: 9">
+            <div class="bento-logout bento-cell self-start" style="--delay: 9">
                 <button
                     type="button"
-                    class="bg-tsb-two rounded-2xl p-6 h-full w-full flex flex-col text-left hover:bg-red-50 transition-colors"
+                    class="bg-tsb-two rounded-2xl p-6 w-full flex flex-col text-left hover:bg-red-50 transition-colors"
                     @click="handleLogout"
                 >
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
