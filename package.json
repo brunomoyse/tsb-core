@@ -52,7 +52,7 @@
     "nuxt-schema-org": "^6.0.4",
     "oxlint": "^1.60.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "vue-tsc": "^3.2.6"
   },
   "optionalDependencies": {
