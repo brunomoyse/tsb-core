@@ -322,6 +322,13 @@
   },
   "checkout": {
     "title": "结账",
+    "authStep": {
+      "heading": "就快完成了 — 请登录以完成下单",
+      "cartSaved": "购物车已保存",
+      "tabLogin": "登录",
+      "tabRegister": "创建账户",
+      "returnToLogin": "邮箱已验证 — 立即登录"
+    },
     "orderSummary": "您的订单",
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",

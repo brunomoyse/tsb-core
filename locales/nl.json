@@ -320,6 +320,13 @@
   },
   "checkout": {
     "title": "Bestelling",
+    "authStep": {
+      "heading": "Bijna klaar — log in om uw bestelling te plaatsen",
+      "cartSaved": "Uw winkelwagen is bewaard",
+      "tabLogin": "Inloggen",
+      "tabRegister": "Account aanmaken",
+      "returnToLogin": "E-mail bevestigd — nu inloggen"
+    },
     "orderSummary": "Uw bestelling",
     "emptyCart": "Uw winkelwagen is leeg.",
     "subtotal": "Subtotaal:",

@@ -42,65 +42,71 @@
             <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
         </nav>
 
-        <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
-        <div
-            v-if="showStickyBar && cartStore.products.length > 0"
-            class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-gray-200/60 transition-all"
-        >
-            <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">
-                    {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
-                </span>
-                <span class="font-bold text-gray-900">{{ formatPrice(cartTotal) }}</span>
-            </div>
-        </div>
+        <!-- Auth step: shown while the user is anonymous. Keeps them on /checkout instead of
+             redirecting to /auth/login; cart is already persisted in localStorage. -->
+        <CheckoutAuthStep v-if="!authStore.user" />
 
-        <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
-        <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            <CheckoutProductSummary />
-            <CheckoutCollectionOptions
-                @open-address-modal="openAddressModal"
-                :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
-                :ordering-hours="restaurantConfig?.restaurantConfig?.orderingHours"
-                :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
-                :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
-            />
-            <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
-        </div>
-
-        <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
-        <div
-            class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
-            :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
-        >
-            <button
-                data-testid="checkout-place-order"
-                @click="handleCheckout"
-                :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
-                :class="[
-                    'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
-                    isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
-                        ? 'bg-red-500 text-white hover:bg-red-600'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                ]"
+        <template v-else>
+            <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
+            <div
+                v-if="showStickyBar && cartStore.products.length > 0"
+                class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-gray-200/60 transition-all"
             >
-                <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
-                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                    </svg>
-                    {{ $t('checkout.processing') }}
-                </span>
-                <span v-else class="font-semibold text-sm uppercase tracking-wide">
-                    {{ cartStore.paymentOption === 'ONLINE'
-                        ? $t('checkout.goToPayment')
-                        : $t('checkout.placeOrder')
-                    }}
-                </span>
-                <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
-            </button>
-            <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
-        </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">
+                        {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
+                    </span>
+                    <span class="font-bold text-gray-900">{{ formatPrice(cartTotal) }}</span>
+                </div>
+            </div>
+
+            <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
+            <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                <CheckoutProductSummary />
+                <CheckoutCollectionOptions
+                    @open-address-modal="openAddressModal"
+                    :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
+                    :ordering-hours="restaurantConfig?.restaurantConfig?.orderingHours"
+                    :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
+                    :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
+                />
+                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" />
+            </div>
+
+            <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
+            <div
+                class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+                :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
+            >
+                <button
+                    data-testid="checkout-place-order"
+                    @click="handleCheckout"
+                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar"
+                    :class="[
+                        'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
+                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ]"
+                >
+                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        {{ $t('checkout.processing') }}
+                    </span>
+                    <span v-else class="font-semibold text-sm uppercase tracking-wide">
+                        {{ cartStore.paymentOption === 'ONLINE'
+                            ? $t('checkout.goToPayment')
+                            : $t('checkout.placeOrder')
+                        }}
+                    </span>
+                    <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
+                </button>
+                <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
+            </div>
+        </template>
 
         <!-- Payment Redirect Overlay -->
         <Teleport to="body">
@@ -164,12 +170,13 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ public: false })
+definePageMeta({ public: true })
 
 import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
 import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
@@ -378,13 +385,6 @@ const isRedirectingToPayment = ref(false)
 const handleCheckout = async () => {
     if (isCheckoutProcessing.value) return
     isCheckoutProcessing.value = true
-
-    // Check if user is authenticated
-    if (!authStore.user) {
-        // Redirect to login
-        navigateTo(localePath('/auth/login?from_checkout=true'))
-        return
-    }
 
     try {
         if (!isOrderingEnabled.value) {
