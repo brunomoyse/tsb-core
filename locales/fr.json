@@ -328,6 +328,12 @@
       "tabRegister": "Créer un compte",
       "returnToLogin": "Email confirmé — se connecter maintenant"
     },
+    "phoneCapture": {
+      "title": "Numéro de téléphone requis",
+      "description": "Nécessaire pour vous contacter au sujet de votre commande.",
+      "saved": "Numéro enregistré",
+      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
+    },
     "orderSummary": "Votre commande",
     "emptyCart": "Votre panier est vide.",
     "subtotal": "Sous-total :",

@@ -329,6 +329,12 @@
       "tabRegister": "创建账户",
       "returnToLogin": "邮箱已验证 — 立即登录"
     },
+    "phoneCapture": {
+      "title": "需要电话号码",
+      "description": "我们需要联系您以确认订单。",
+      "saved": "电话号码已保存",
+      "requiredBeforeOrder": "请在下单前填写您的电话号码。"
+    },
     "orderSummary": "您的订单",
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",

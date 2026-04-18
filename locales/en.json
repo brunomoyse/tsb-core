@@ -329,6 +329,12 @@
       "tabRegister": "Create account",
       "returnToLogin": "Email verified — sign in now"
     },
+    "phoneCapture": {
+      "title": "Phone number required",
+      "description": "Needed so we can reach you about your order.",
+      "saved": "Phone number saved",
+      "requiredBeforeOrder": "Please add your phone number before placing the order."
+    },
     "orderSummary": "Your Order",
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
