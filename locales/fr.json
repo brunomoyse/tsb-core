@@ -65,6 +65,8 @@
     "visitUsTitle": "Nous Rendre Visite",
     "openingHoursLabel": "Horaires d'ouverture",
     "contactLink": "Nous contacter",
+    "paymentsLabel": "Modes de paiement acceptés",
+    "cash": "Espèces",
     "infoCards": {
       "freeDelivery": "Livraison gratuite",
       "freeDeliveryDesc": "Gratuite dès 25 €, avec frais de livraison selon la distance au-delà.",
