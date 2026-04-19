@@ -16,13 +16,13 @@ export const useCartStore = defineStore("cart", {
         couponCode: null,
         couponDiscount: 0,
         paymentOption: 'ONLINE',
+        cashPaymentAmount: null,
         address: null,
         addressExtra: null,
         orderExtra: [
             {name: "chopsticks"},
             {name: "wasabi"},
             {name: "ginger"},
-            {name: "sauces", options: ["sweet", "salty"]},
         ],
         orderNote: null,
         preferredReadyTime: null,
@@ -110,6 +110,7 @@ export const useCartStore = defineStore("cart", {
             this.couponCode = null;
             this.couponDiscount = 0;
             this.paymentOption = 'ONLINE';
+            this.cashPaymentAmount = null;
             this.address = null;
             this.addressExtra = null;
             this.orderExtra = [

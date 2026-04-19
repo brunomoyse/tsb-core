@@ -44,6 +44,55 @@
                     <span class="font-semibold">{{ $t('checkout.cash', 'Cash') }}</span>
                 </button>
             </div>
+
+            <!-- Cash payment warning + acknowledgement + expected amount -->
+            <div
+                v-if="!isOnlinePayment"
+                data-testid="cash-payment-notice"
+                class="mt-4 rounded-lg bg-amber-50 border border-amber-200 p-4 space-y-3"
+            >
+                <div class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <p class="text-sm text-amber-800">
+                        {{ $t('checkout.cashWarning') }}
+                    </p>
+                </div>
+
+                <label class="flex items-start gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        data-testid="cash-acknowledge"
+                        v-model="cashAcknowledgedModel"
+                        class="mt-0.5 h-5 w-5 text-red-500 border-gray-300 rounded shrink-0"
+                    />
+                    <span class="text-sm text-amber-900 font-medium">
+                        {{ $t('checkout.cashAcknowledge') }}
+                    </span>
+                </label>
+
+                <div>
+                    <label for="cash-payment-amount" class="block text-sm font-medium text-amber-900 mb-1">
+                        {{ $t('checkout.cashAmountLabel') }}
+                        <span class="text-amber-700/70 text-xs font-normal">{{ $t('checkout.optional') }}</span>
+                    </label>
+                    <div class="relative">
+                        <input
+                            id="cash-payment-amount"
+                            data-testid="cash-payment-amount"
+                            v-model="cashPaymentAmount"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            inputmode="decimal"
+                            :placeholder="$t('checkout.cashAmountPlaceholder')"
+                            class="w-full pl-3 pr-8 py-2 border border-amber-300 rounded-md bg-white focus:ring focus:ring-amber-200 focus:border-amber-400 focus:outline-none"
+                        />
+                        <span class="absolute inset-y-0 right-3 flex items-center text-amber-700 text-sm pointer-events-none">€</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Extras -->
@@ -91,49 +140,25 @@
                 <!-- Soy Sauce Options Card - Pill Toggles -->
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                     <p class="font-medium text-gray-700 mb-3">
-                        {{ $t('checkout.soySauce', 'Soy Sauce (choose up to 2):') }}
+                        {{ $t('checkout.sauce') }}
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <p class="block text-sm text-gray-600 mb-2">{{ $t('checkout.sauce1') }}</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button
-                                    v-for="option in sauceOptions"
-                                    :key="option.value"
-                                    type="button"
-                                    :aria-pressed="sauce1 === option.value"
-                                    @click="sauce1 = option.value"
-                                    :class="[
-                                        'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
-                                        sauce1 === option.value
-                                            ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
-                                            : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                                    ]"
-                                >
-                                    {{ option.label }}
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="block text-sm text-gray-600 mb-2">{{ $t('checkout.sauce2') }}</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button
-                                    v-for="option in sauceOptions"
-                                    :key="option.value"
-                                    type="button"
-                                    :aria-pressed="sauce2 === option.value"
-                                    @click="sauce2 = option.value"
-                                    :class="[
-                                        'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
-                                        sauce2 === option.value
-                                            ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
-                                            : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                                    ]"
-                                >
-                                    {{ option.label }}
-                                </button>
-                            </div>
-                        </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            v-for="option in sauceOptions"
+                            :key="option.value"
+                            type="button"
+                            :data-testid="`sauce-option-${option.value}`"
+                            :aria-pressed="sauce === option.value"
+                            @click="sauce = option.value"
+                            :class="[
+                                'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
+                                sauce === option.value
+                                    ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
+                                    : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                            ]"
+                        >
+                            {{ option.label }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -164,10 +189,10 @@
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-            isMinimumReached && !loading && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing
+            isMinimumReached && !loading && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing && !isCashBlocking
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!isMinimumReached || loading || !isOrderingAvailable || isAddressTooFar || isPhoneMissing">
+          ]" :disabled="!isMinimumReached || loading || !isOrderingAvailable || isAddressTooFar || isPhoneMissing || isCashBlocking">
             <span v-if="loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -193,12 +218,13 @@ import { useDebounceFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
-const { isMinimumReached = false, loading = false, isOrderingAvailable = true, isAddressTooFar = false, isPhoneMissing = false } = defineProps<{
+const { isMinimumReached = false, loading = false, isOrderingAvailable = true, isAddressTooFar = false, isPhoneMissing = false, cashAcknowledged = false } = defineProps<{
     isMinimumReached?: boolean
     loading?: boolean
     isOrderingAvailable?: boolean
     isAddressTooFar?: boolean
     isPhoneMissing?: boolean
+    cashAcknowledged?: boolean
 }>()
 
 const cartStore = useCartStore()
@@ -207,12 +233,28 @@ const { t } = useI18n()
 
 const emit = defineEmits<{
     checkout: []
+    'update:cashAcknowledged': [value: boolean]
 }>()
+
+const cashAcknowledgedModel = computed({
+    get: () => cashAcknowledged,
+    set: (value: boolean) => emit('update:cashAcknowledged', value),
+})
+
+const cashPaymentAmount = computed({
+    get: () => cartStore.cashPaymentAmount ?? '',
+    set: (value: string) => {
+        cartStore.cashPaymentAmount = value === '' ? null : value
+    },
+})
+
+const isCashBlocking = computed(() => !isOnlinePayment.value && !cashAcknowledged)
 
 const sauceOptions = computed(() => [
     { value: 'none', label: t('checkout.none') },
     { value: 'sweet', label: t('checkout.sweet') },
     { value: 'salty', label: t('checkout.salty') },
+    { value: 'both', label: t('checkout.both') },
 ])
 
 const setOnlinePayment = (value: boolean) => {
@@ -277,51 +319,26 @@ const addGinger = computed({
     }
 })
 
-// Helper computed property for sauces as an array of two strings
-const sauces = computed<[string,string]>({
+const sauce = computed<string>({
     get() {
-        const item = cartStore.orderExtra?.find(o => o.name === 'sauces')
-        const opts = item?.options ?? []
-        // Always return a 2-element tuple
-        return [ opts[0] || 'none', opts[1] || 'none' ]
+        const item = cartStore.orderExtra?.find(o => o.name === 'sauce')
+        return item?.options?.[0] ?? 'none'
     },
-    set([s1, s2]) {
-        // If both are none, remove the entry
-        const allNone = s1 === 'none' && s2 === 'none'
+    set(val: string) {
         if (!cartStore.orderExtra) cartStore.orderExtra = []
+        const idx = cartStore.orderExtra.findIndex(o => o.name === 'sauce')
 
-        const idx = cartStore.orderExtra.findIndex(o => o.name === 'sauces')
-
-        if (allNone) {
+        if (val === 'none') {
             if (idx !== -1) cartStore.orderExtra.splice(idx, 1)
             return
         }
 
-        const payload = { name: 'sauces', options: [s1, s2] }
-
+        const payload = { name: 'sauce', options: [val] }
         if (idx === -1) {
             cartStore.orderExtra.push(payload)
         } else {
-            cartStore.orderExtra![idx]!.options = payload.options
+            cartStore.orderExtra[idx]!.options = payload.options
         }
-    }
-})
-
-// Computed binding for individual sauces
-const sauce1 = computed({
-    get() {
-        return sauces.value[0]
-    },
-    set(val: string) {
-        sauces.value = [val, sauces.value[1]]
-    }
-})
-const sauce2 = computed({
-    get() {
-        return sauces.value[1]
-    },
-    set(val: string) {
-        sauces.value = [sauces.value[0], val]
     }
 })
 

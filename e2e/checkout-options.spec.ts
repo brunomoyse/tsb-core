@@ -29,14 +29,16 @@ test.describe('Checkout options', () => {
   test('Soy sauce pill selection', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
 
-    // Use aria-pressed attribute on pill buttons
-    const sauce1Buttons = page.locator('button[aria-pressed]')
+    const noneBtn = page.locator('[data-testid="sauce-option-none"]')
+    const bothBtn = page.locator('[data-testid="sauce-option-both"]')
 
-    // Click the second button in the first sauce group (sweet)
-    // Sauce buttons come in two groups of 3 (none/sweet/salty × 2)
-    const sweetBtn = sauce1Buttons.nth(1) // "sweet" for sauce 1
-    await sweetBtn.click()
-    await expect(sweetBtn).toHaveAttribute('aria-pressed', 'true')
+    // Default is "none"
+    await expect(noneBtn).toHaveAttribute('aria-pressed', 'true')
+
+    // Select "both" — only that pill should be pressed
+    await bothBtn.click()
+    await expect(bothBtn).toHaveAttribute('aria-pressed', 'true')
+    await expect(noneBtn).toHaveAttribute('aria-pressed', 'false')
   })
 
   test('Order comment textarea accepts text', async ({ authenticatedPage: page }) => {

@@ -73,7 +73,7 @@
                     :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
                     :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
                 />
-                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" :isPhoneMissing="isPhoneMissing" />
+                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" :isPhoneMissing="isPhoneMissing" v-model:cashAcknowledged="cashAcknowledged" />
             </div>
 
             <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
@@ -84,10 +84,10 @@
                 <button
                     data-testid="checkout-place-order"
                     @click="handleCheckout"
-                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar || isPhoneMissing"
+                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar || isPhoneMissing || isCashBlocking"
                     :class="[
                         'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
-                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing
+                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing && !isCashBlocking
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     ]"
@@ -280,6 +280,7 @@ const CREATE_ORDER = gql`
             addressExtra
             orderNote
             orderExtra
+            cashPaymentAmount
             address {
                 id
                 streetName
@@ -383,6 +384,15 @@ onMounted(() => {
     })
 })
 
+const cashAcknowledged = ref(false)
+const isCashBlocking = computed(() => cartStore.paymentOption === 'CASH' && !cashAcknowledged.value)
+watch(() => cartStore.paymentOption, (value) => {
+    if (value === 'ONLINE') {
+        cashAcknowledged.value = false
+        cartStore.cashPaymentAmount = null
+    }
+})
+
 // Checkout logic (simplified; extras and time selection are handled in CheckoutPaymentExtras component)
 const isCheckoutProcessing = ref(false)
 const isRedirectingToPayment = ref(false)
@@ -442,6 +452,17 @@ const handleCheckout = async () => {
             return
         }
 
+        if (cartStore.paymentOption === 'CASH' && !cashAcknowledged.value) {
+            trackEvent('checkout_error_cash_not_acknowledged')
+            eventBus.emit('notify', {
+                message: t('checkout.cashAcknowledge'),
+                persistent: false,
+                duration: 5000,
+                variant: 'error',
+            })
+            return
+        }
+
         if (cartStore.address?.distance && cartStore.address?.distance >= 9000) {
             trackEvent('checkout_error_address_too_far')
             eventBus.emit('notify', {
@@ -462,6 +483,10 @@ const handleCheckout = async () => {
             preferredReadyTime = selectedPreferredReadyTime
         }
 
+        const cashAmount = cartStore.paymentOption === 'CASH'
+            ? (cartStore.cashPaymentAmount?.trim() || null)
+            : null
+
         const orderData: CreateOrderRequest = {
             orderType: cartStore.collectionOption,
             isOnlinePayment: cartStore.paymentOption === 'ONLINE',
@@ -470,14 +495,15 @@ const handleCheckout = async () => {
                 : null,
             addressExtra: cartStore.addressExtra,
             couponCode: cartStore.couponCode,
-            orderNote: cartStore.orderNote,
+            orderNote: cartStore.orderNote?.trim() || null,
             orderExtra: cartStore.orderExtra,
             items: cartStore.products.map((item) => ({
                 productId: item.product.id,
                 quantity: item.quantity,
                 ...(item.selectedChoice ? { choiceId: item.selectedChoice.id } : {}),
             })),
-            preferredReadyTime: preferredReadyTime,
+            preferredReadyTime,
+            cashPaymentAmount: cashAmount,
             // Capacitor: use custom URL scheme so Mollie redirects back to the app
             ...(isCapacitor ? {
                 paymentRedirectUrl: 'be.tokyosushibarliege.app://order-completed',
