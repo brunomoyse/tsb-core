@@ -66,16 +66,18 @@
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
                                 <p class="text-[15px] font-semibold text-gray-900 truncate leading-tight">
-                                    <span v-if="item.product.code" class="text-gray-400 font-normal text-xs mr-1">{{ item.product.code }}</span>
-                                    {{ item.product.name }}
+                                    <template v-for="(part, i) in itemLabelSegments(item)" :key="i">
+                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
+                                        <span :class="part.muted ? 'text-gray-400 font-normal text-xs' : ''">{{ part.text }}</span>
+                                    </template>
                                 </p>
-                                <p class="text-xs text-gray-400 mt-0.5 truncate">
-                                    {{ item.product.category.name }}
-                                    <template v-if="item.selectedChoice">
-                                        &middot; <span class="text-red-500">{{ item.selectedChoice.name }}</span>
+                                <p v-if="itemChoice(item) || item.product.pieceCount" class="text-xs text-gray-400 mt-0.5 truncate">
+                                    <span v-if="itemChoice(item)" class="text-red-500">({{ itemChoice(item) }})</span>
+                                    <template v-if="itemChoice(item) && item.product.pieceCount">
+                                        &middot;
                                     </template>
                                     <template v-if="item.product.pieceCount">
-                                        &middot; {{ item.product.pieceCount }} {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
+                                        {{ item.product.pieceCount }} {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                                     </template>
                                 </p>
                             </div>
@@ -177,6 +179,7 @@ import { reactive, ref } from 'vue'
 import type { CartItem } from '@/types'
 import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import { formatPrice } from '~/lib/price'
+import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
@@ -194,6 +197,27 @@ const { trackEvent } = useTracking()
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
     (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+
+const itemLabelSegments = (item: CartItem): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const itemChoice = (item: CartItem): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.selectedChoice?.name,
+    }).choice
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice)
