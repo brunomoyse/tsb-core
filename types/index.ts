@@ -51,6 +51,7 @@ export interface CartItem {
 export interface CartState {
     address: Address | null;
     addressExtra: string | null;
+    cashPaymentAmount: string | null;
     collectionOption: OrderType;
     couponCode: string | null;
     couponDiscount: number;
@@ -120,6 +121,7 @@ export interface Order {
     paymentID: string | null;
     status: OrderStatus;
     totalPrice: string;
+    cashPaymentAmount: string | null;
     type: OrderType;
     updatedAt: string;
     userId: string;
@@ -158,6 +160,7 @@ export interface CreateOrderRequest {
     orderNote: string | null;
     orderType: OrderType;
     preferredReadyTime: string | null;
+    cashPaymentAmount?: string | null;
     // Custom Mollie redirect URL (native apps use custom URL scheme)
     paymentRedirectUrl?: string;
 }

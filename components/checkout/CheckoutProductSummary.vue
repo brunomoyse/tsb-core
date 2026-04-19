@@ -53,14 +53,13 @@
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
                                 <p class="text-[15px] font-semibold text-gray-900 truncate leading-tight">
-                                    <span v-if="item.product.code" class="text-gray-400 font-normal text-xs mr-1">{{ item.product.code }}</span>
-                                    {{ item.product.name }}
-                                </p>
-                                <p class="text-xs text-gray-400 mt-0.5 truncate">
-                                    {{ item.product.category?.name || '' }}
-                                    <template v-if="item.selectedChoice">
-                                        &middot; <span class="text-red-500">{{ item.selectedChoice.name }}</span>
+                                    <template v-for="(part, i) in itemLabelSegments(item)" :key="i">
+                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
+                                        <span :class="part.muted ? 'text-gray-400 font-normal text-xs' : ''">{{ part.text }}</span>
                                     </template>
+                                </p>
+                                <p v-if="itemChoice(item)" class="text-xs text-red-500 mt-0.5 truncate">
+                                    ({{ itemChoice(item) }})
                                 </p>
                             </div>
                             <span class="text-[15px] font-bold text-gray-900 shrink-0 tabular-nums">
@@ -156,6 +155,10 @@
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
+                <div v-if="cartStore.paymentOption === 'ONLINE'" class="flex justify-between text-gray-500">
+                    <span>{{ $t('checkout.transactionFee') }}</span>
+                    <span class="tabular-nums">{{ formatPrice(TRANSACTION_FEE) }}</span>
+                </div>
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
                     <span class="font-bold text-gray-900">{{ $t('checkout.total', 'Total:') }}</span>
@@ -171,7 +174,9 @@
 import { type ComputedRef, computed, ref } from 'vue'
 import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import { TRANSACTION_FEE } from '~/lib/fees'
 import { formatPrice } from '~/lib/price'
+import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
@@ -196,6 +201,27 @@ const getItemUnitPrice = (item: { product: { price: string | number }; selectedC
     const modifier = item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0
     return base + modifier
 }
+
+const itemLabelSegments = (item: CartItem): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const itemChoice = (item: CartItem): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.selectedChoice?.name,
+    }).choice
 
 const cartTotal = computed(() =>
     cartStore.products.reduce((total, item) => total + getItemUnitPrice(item) * item.quantity, 0)
@@ -223,7 +249,12 @@ const totalDiscount = computed(() => (
 
 const finalTotal: ComputedRef<number> = computed(() => {
     const fee = deliveryFee.value === -1 ? 0 : deliveryFee.value
-    return cartTotal.value + (cartStore.collectionOption === 'DELIVERY' ? fee : 0) - totalDiscount.value - cartStore.couponDiscount
+    const txFee = cartStore.paymentOption === 'ONLINE' ? TRANSACTION_FEE : 0
+    return cartTotal.value
+        + (cartStore.collectionOption === 'DELIVERY' ? fee : 0)
+        - totalDiscount.value
+        - cartStore.couponDiscount
+        + txFee
 })
 
 const handleIncrementQuantity = (item: CartItem) => {
