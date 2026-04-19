@@ -38,8 +38,8 @@ useSchemaOrg([
         },
         geo: {
             '@type': 'GeoCoordinates',
-            latitude: latitude,
-            longitude: longitude
+            latitude,
+            longitude
         },
         openingHoursSpecification: [
             {

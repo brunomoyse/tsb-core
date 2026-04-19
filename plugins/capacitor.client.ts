@@ -11,6 +11,16 @@ export default defineNuxtPlugin(async () => {
     // Add capacitor-app + platform class to body for safe-area and platform-specific CSS scoping
     document.body.classList.add('capacitor-app', platform)
 
+    // Block pinch + double-tap zoom in WKWebView/Android WebView.
+    // Scoped to Capacitor build — web version keeps accessible zoom.
+    const viewport = document.querySelector('meta[name="viewport"]')
+    if (viewport) {
+        viewport.setAttribute(
+            'content',
+            'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+        )
+    }
+
     // StatusBar styling — platform-specific
     try {
         const { StatusBar, Style } = await import('@capacitor/status-bar')

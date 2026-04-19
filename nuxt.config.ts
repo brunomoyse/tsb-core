@@ -147,7 +147,7 @@ export default defineNuxtConfig({
     // SENTRY_ORG + SENTRY_PROJECT are needed by the bundler plugin to upload sourcemaps.
     sentry: {
         sourceMapsUploadOptions: {
-            enabled: !!process.env.SENTRY_AUTH_TOKEN && !isCapacitor,
+            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN) && !isCapacitor,
             org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
             project: process.env.SENTRY_PROJECT || 'tsb-core',
             authToken: process.env.SENTRY_AUTH_TOKEN,
