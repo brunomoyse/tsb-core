@@ -20,15 +20,13 @@
 
             <!-- Sticky Categories Header -->
             <section ref="stickyHeader" :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']" :style="isCapacitor ? { paddingTop: 'calc(var(--safe-area-top, 0px) + 1rem)' } : undefined">
-                <!-- Unified Search + Filter Bar -->
-                <section class="mb-4 px-4">
-                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px] overflow-visible">
-                        <!-- Search icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 z-10 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+                <!-- Search Bar + Filter Row -->
+                <section class="mb-4 px-4 space-y-2">
+                    <!-- Search Bar -->
+                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
-
-                        <!-- Real search input (overlays when expanded) -->
                         <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
                         <input
                             id="menuSearch"
@@ -36,96 +34,13 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            @focus="isSearchExpanded = true"
-                            @blur="onSearchBlur"
-                            class="absolute inset-0 bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm transition-opacity duration-300"
-                            :class="isSearchExpanded ? 'opacity-100 z-20' : 'opacity-0 pointer-events-none'"
+                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
                         />
-
-                        <!-- Collapsed view: placeholder text + filter icon buttons -->
-                        <div
-                            role="button"
-                            tabindex="0"
-                            class="flex items-center flex-1 h-full pl-11 pr-2 cursor-text transition-all duration-300"
-                            :class="isSearchExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'"
-                            @click="expandSearch"
-                            @keydown.enter="expandSearch"
-                            @keydown.space.prevent="expandSearch"
-                        >
-                            <span class="flex-1 text-gray-400 text-sm select-none">{{ $t('nav.search') }}</span>
-
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                <!-- Halal toggle -->
-                                <button
-                                    @click.stop="toggleFilter('halal')"
-                                    :title="isCapacitor ? undefined : $t('menu.halal')"
-                                    class="group/halal relative flex items-center rounded-xl transition-all duration-300 ease-out"
-                                    :class="activeFilters.has('halal')
-                                        ? 'bg-blue-700 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-blue-200'
-                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
-                                >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/halal:opacity-100 transition-opacity duration-200 z-50">
-                                        {{ $t('menu.halal') }}
-                                    </span>
-                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                                    </svg>
-                                    <span
-                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
-                                        :class="activeFilters.has('halal') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
-                                    >{{ $t('menu.halal') }}</span>
-                                </button>
-
-                                <!-- Vegan toggle -->
-                                <button
-                                    @click.stop="toggleFilter('vegan')"
-                                    :title="isCapacitor ? undefined : $t('menu.vegan')"
-                                    class="group/vegan relative flex items-center rounded-xl transition-all duration-300 ease-out"
-                                    :class="activeFilters.has('vegan')
-                                        ? 'bg-emerald-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-emerald-200'
-                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
-                                >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/vegan:opacity-100 transition-opacity duration-200 z-50">
-                                        {{ $t('menu.vegan') }}
-                                    </span>
-                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
-                                        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                                    </svg>
-                                    <span
-                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
-                                        :class="activeFilters.has('vegan') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
-                                    >{{ $t('menu.vegan') }}</span>
-                                </button>
-
-                                <!-- Spicy toggle -->
-                                <button
-                                    @click.stop="toggleFilter('spicy')"
-                                    :title="isCapacitor ? undefined : $t('menu.spicy')"
-                                    class="group/spicy relative flex items-center rounded-xl transition-all duration-300 ease-out"
-                                    :class="activeFilters.has('spicy')
-                                        ? 'bg-red-500 text-white pl-2 pr-2.5 py-1.5 shadow-sm shadow-red-200'
-                                        : 'bg-white/50 text-gray-400 p-2 hover:bg-white/80 hover:text-gray-600'"
-                                >
-                                    <span v-if="!isCapacitor" class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none opacity-0 max-w-none group-hover/spicy:opacity-100 transition-opacity duration-200 z-50">
-                                        {{ $t('menu.spicy') }}
-                                    </span>
-                                    <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
-                                        <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
-                                    </svg>
-                                    <span
-                                        class="text-xs font-medium overflow-hidden transition-all duration-300 ease-out whitespace-nowrap"
-                                        :class="activeFilters.has('spicy') ? 'max-w-[60px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'"
-                                    >{{ $t('menu.spicy') }}</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Close button (visible when search expanded) -->
                         <button
-                            v-show="isSearchExpanded"
-                            @click.stop="collapseSearch"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 z-30 text-gray-400 hover:text-gray-700 transition-colors"
+                            v-show="searchValue.length > 0"
+                            @click.stop="searchValue = ''"
+                            :aria-label="$t('nav.search')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -133,31 +48,49 @@
                         </button>
                     </div>
 
-                    <!-- Active filter pills shown below bar when searching -->
-                    <div v-if="isSearchExpanded && activeFilters.size > 0" class="flex gap-1.5 mt-2 ml-1 animate-[slideDown_0.2s_ease-out]">
+                    <!-- Filter Row (labels always visible) -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <!-- Halal toggle -->
                         <button
-                            v-if="activeFilters.has('halal')"
                             @click="toggleFilter('halal')"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
+                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :class="activeFilters.has('halal')
+                                ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
                         >
+                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
                             {{ $t('menu.halal') }}
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
                         </button>
+
+                        <!-- Vegan toggle -->
                         <button
-                            v-if="activeFilters.has('vegan')"
                             @click="toggleFilter('vegan')"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :class="activeFilters.has('vegan')
+                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
+                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
+                                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                            </svg>
                             {{ $t('menu.vegan') }}
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
                         </button>
+
+                        <!-- Spicy toggle -->
                         <button
-                            v-if="activeFilters.has('spicy')"
                             @click="toggleFilter('spicy')"
-                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-medium hover:bg-red-100 transition-colors"
+                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :class="activeFilters.has('spicy')
+                                ? 'bg-red-500 text-white shadow-sm shadow-red-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
                         >
+                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
+                                <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
+                            </svg>
                             {{ $t('menu.spicy') }}
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round"/></svg>
                         </button>
                     </div>
                 </section>
@@ -166,9 +99,13 @@
                 <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
                     <!-- Left gradient fade -->
                     <div
-                        class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300"
+                        class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
                         :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
-                    />
+                    >
+                        <svg class="w-4 h-4 text-red-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
 
                     <!-- Scrollable Category Tabs -->
                     <div
@@ -195,9 +132,13 @@
 
                     <!-- Right gradient fade -->
                     <div
-                        class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300"
+                        class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end pr-1"
                         :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
-                    />
+                    >
+                        <svg class="w-4 h-4 text-red-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </section>
 
                 <!-- Allergen Notice -->
@@ -458,25 +399,7 @@ const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 const stickyHeader = ref<HTMLElement | null>(null)
 
-// Search expansion state
 const searchInputRef = ref<HTMLInputElement | null>(null)
-const isSearchExpanded = ref(false)
-
-const expandSearch = () => {
-    isSearchExpanded.value = true
-    nextTick(() => searchInputRef.value?.focus())
-}
-
-const onSearchBlur = () => {
-    if (!searchValue.value.trim()) {
-        isSearchExpanded.value = false
-    }
-}
-
-const collapseSearch = () => {
-    searchValue.value = ''
-    isSearchExpanded.value = false
-}
 
 // Filter state
 const activeFilters = ref<Set<string>>(new Set())
