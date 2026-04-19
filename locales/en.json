@@ -65,6 +65,8 @@
     "visitUsTitle": "Visit Us",
     "openingHoursLabel": "Opening Hours",
     "contactLink": "Get in touch",
+    "paymentsLabel": "Accepted payment methods",
+    "cash": "Cash",
     "infoCards": {
       "freeDelivery": "Free delivery",
       "freeDeliveryDesc": "Free from 25 EUR, with delivery fees based on distance beyond.",

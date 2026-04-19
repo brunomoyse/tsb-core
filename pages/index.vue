@@ -202,5 +202,34 @@ useSeoMeta({
             </div>
         </div>
 
+        <!-- Accepted payment methods -->
+        <div class="pt-4 pb-2 flex flex-col items-center gap-3">
+            <div class="flex items-center gap-3 w-full max-w-xs">
+                <div class="h-px flex-1 bg-gray-200" />
+                <span class="text-gray-400 text-[10px] tracking-[0.25em] uppercase whitespace-nowrap">{{ $t('about.paymentsLabel') }}</span>
+                <div class="h-px flex-1 bg-gray-200" />
+            </div>
+            <div class="flex items-center flex-wrap justify-center gap-2.5">
+                <!-- Visa -->
+                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center" aria-label="Visa">
+                    <span class="font-black italic text-[11px] text-gray-500 tracking-tight leading-none">VISA</span>
+                </div>
+                <!-- Mastercard -->
+                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-0.5" aria-label="Mastercard">
+                    <span class="w-3 h-3 rounded-full bg-gray-400/80" />
+                    <span class="w-3 h-3 rounded-full bg-gray-300 -ml-1.5" />
+                </div>
+                <!-- Bancontact -->
+                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center" aria-label="Bancontact">
+                    <span class="font-extrabold text-[11px] text-gray-500 tracking-tight leading-none">bc</span>
+                </div>
+                <!-- Cash -->
+                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-1" aria-label="Cash">
+                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25A2.25 2.25 0 014.5 6h15a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0119.5 18h-15a2.25 2.25 0 01-2.25-2.25v-7.5zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="text-[11px] text-gray-500 font-medium leading-none">{{ $t('about.cash') }}</span>
+                </div>
+            </div>
+        </div>
+
     </section>
 </template>
