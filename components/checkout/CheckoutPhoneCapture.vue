@@ -20,33 +20,27 @@
             </div>
         </div>
 
-        <form v-if="!saved" class="mt-3 flex flex-col sm:flex-row gap-2" @submit.prevent="submit">
-            <div class="flex gap-2 flex-1">
-                <select
-                    v-model="selectedCountry"
-                    :aria-label="$t('register.phone')"
-                    class="px-2.5 py-2.5 bg-white border border-gray-200 rounded-md text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                >
-                    <option v-for="country in countries" :key="country.code" :value="country.code">
-                        {{ country.flag }} {{ country.prefix }}
-                    </option>
-                </select>
+        <div v-if="!saved" class="mt-3 flex gap-2">
+            <select
+                v-model="selectedCountry"
+                :aria-label="$t('register.phone')"
+                class="px-2.5 py-2.5 bg-white border border-gray-200 rounded-md text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+            >
+                <option v-for="country in countries" :key="country.code" :value="country.code">
+                    {{ country.flag }} {{ country.prefix }}
+                </option>
+            </select>
+            <div class="relative flex-1 min-w-0">
                 <input
                     v-model="phoneLocal"
                     type="tel"
                     autocomplete="tel-national"
                     :placeholder="$t('register.phonePlaceholder')"
-                    class="flex-1 min-w-0 px-3 py-2.5 bg-white border border-gray-200 rounded-md text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                    class="w-full px-3 py-2.5 pr-9 bg-white border border-gray-200 rounded-md text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 />
+                <span v-if="loading" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
             </div>
-            <button
-                type="submit"
-                :disabled="loading"
-                class="px-4 py-2.5 rounded-md bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {{ loading ? $t('checkout.processing') : $t('common.save') }}
-            </button>
-        </form>
+        </div>
 
         <p v-if="phoneError" class="text-xs text-red-600 mt-2">{{ phoneError }}</p>
     </section>
@@ -54,7 +48,7 @@
 
 <script lang="ts" setup>
 import { type CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
 import type { User } from '~/types'
 import { eventBus } from '~/eventBus'
@@ -89,17 +83,15 @@ const UPDATE_ME = gql`
 `
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: Pick<User, 'id' | 'phoneNumber'> }>(UPDATE_ME)
 
-const submit = async () => {
-    phoneError.value = ''
-    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value)
-    if (!parsed?.isValid()) {
-        phoneError.value = t('register.invalidPhone')
-        return
-    }
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+let lastSubmittedE164 = ''
 
+const save = async (e164: string) => {
+    if (e164 === lastSubmittedE164) return
+    lastSubmittedE164 = e164
     loading.value = true
     try {
-        const res = await mutationUpdateMe({ input: { phoneNumber: parsed.format('E.164') } })
+        const res = await mutationUpdateMe({ input: { phoneNumber: e164 } })
         authStore.updateUser({ phoneNumber: res.updateMe.phoneNumber })
         eventBus.emit('notify', {
             message: t('checkout.phoneCapture.saved'),
@@ -110,8 +102,21 @@ const submit = async () => {
     } catch (err) {
         if (import.meta.dev) console.error('Failed to save phone:', err)
         phoneError.value = t('notify.errors.profileUpdateFailed')
+        lastSubmittedE164 = ''
     } finally {
         loading.value = false
     }
 }
+
+watch([phoneLocal, selectedCountry], ([value]) => {
+    phoneError.value = ''
+    if (debounceTimer) clearTimeout(debounceTimer)
+    if (!value.trim()) return
+    debounceTimer = setTimeout(() => {
+        const parsed = parsePhoneNumberFromString(value, selectedCountry.value)
+        if (parsed?.isValid()) {
+            save(parsed.format('E.164'))
+        }
+    }, 500)
+})
 </script>
