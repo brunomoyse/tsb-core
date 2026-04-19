@@ -140,10 +140,11 @@
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
-                                            <span v-if="item.product.category?.name" class="text-gray-400 mr-1">{{ item.product.category.name }}</span>
-                                            <span v-if="item.product.code" class="text-gray-400 mr-1">{{ item.product.code }}</span>
-                                            {{ item.product.name }}
-                                            <span v-if="item.choice" class="text-gray-400 text-xs ml-0.5">({{ item.choice.name }})</span>
+                                            <template v-for="(part, i) in orderItemSegments(item)" :key="i">
+                                                <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
+                                                <span :class="part.muted ? 'text-gray-400' : ''">{{ part.text }}</span>
+                                            </template>
+                                            <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
                                         <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
@@ -265,10 +266,11 @@
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
-                                            <span v-if="item.product.category?.name" class="text-gray-400 mr-1">{{ item.product.category.name }}</span>
-                                            <span v-if="item.product.code" class="text-gray-400 mr-1">{{ item.product.code }}</span>
-                                            {{ item.product.name }}
-                                            <span v-if="item.choice" class="text-gray-400 text-xs ml-0.5">({{ item.choice.name }})</span>
+                                            <template v-for="(part, i) in orderItemSegments(item)" :key="i">
+                                                <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
+                                                <span :class="part.muted ? 'text-gray-400' : ''">{{ part.text }}</span>
+                                            </template>
+                                            <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
                                         <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
@@ -366,6 +368,7 @@ import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '~/utils/utils'
 import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
+import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { print } from 'graphql/index'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '~/composables/useInvoiceDownload'
@@ -442,6 +445,32 @@ const MY_ORDERS = gql`
 
 const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
+
+interface OrderItemLike {
+    product: { code: string | null; name: string; category?: { name: string } | null }
+    choice?: { name: string } | null
+}
+
+const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const orderItemChoice = (item: OrderItemLike): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.choice?.name,
+    }).choice
 
 // ── Active / Past split ──
 

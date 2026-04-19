@@ -92,10 +92,11 @@
                         >
                             <div class="flex-1 min-w-0 pr-3">
                                 <p class="text-sm font-medium text-gray-900 truncate">
-                                    <span v-if="item.product.code" class="text-gray-400 font-normal">
-                                        {{ item.product.code }}
-                                    </span>
-                                    {{ item.product.category.name }} {{ item.product.name }}
+                                    <template v-for="(part, i) in orderItemSegments(item)" :key="i">
+                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
+                                        <span :class="part.muted ? 'text-gray-400 font-normal' : ''">{{ part.text }}</span>
+                                    </template>
+                                    <span v-if="orderItemChoice(item)" class="text-gray-400 font-normal ml-1">({{ orderItemChoice(item) }})</span>
                                 </p>
                             </div>
                             <span class="text-xs font-semibold text-gray-500 bg-gray-100 rounded-full px-2.5 py-0.5 shrink-0">
@@ -190,6 +191,7 @@ import type { Order } from '@/types'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
+import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { print } from 'graphql'
 import { useTracking } from '~/composables/useTracking'
 
@@ -269,6 +271,32 @@ const { data: dataOrder, error: orderError } = await useAsyncData<{ myOrder: Ord
 )
 
 const order = computed(() => dataOrder.value?.myOrder ?? null)
+
+interface OrderItemLike {
+    product: { code: string | null; name: string; category?: { name: string } | null }
+    choice?: { name: string } | null
+}
+
+const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const orderItemChoice = (item: OrderItemLike): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.choice?.name,
+    }).choice
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()

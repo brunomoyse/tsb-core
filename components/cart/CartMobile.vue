@@ -69,10 +69,14 @@
 
                     <!-- PRODUCT INFO -->
                     <div class="col-span-3 flex flex-col justify-center text-sm">
-                        <span class="font-medium text-gray-800">{{ item.product.name }}</span>
-                        <span class="text-gray-500">{{ item.product.category.name }}</span>
-                        <span v-if="item.selectedChoice" class="text-xs text-red-600">
-                            {{ item.selectedChoice.name }}
+                        <span class="font-medium text-gray-800">
+                            <template v-for="(part, i) in itemLabelSegments(item)" :key="i">
+                                <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
+                                <span :class="part.muted ? 'text-gray-400 font-normal' : ''">{{ part.text }}</span>
+                            </template>
+                        </span>
+                        <span v-if="itemChoice(item)" class="text-xs text-red-600">
+                            ({{ itemChoice(item) }})
                         </span>
                         <span
                             v-if="item.product.pieceCount"
@@ -160,6 +164,7 @@
 import type { CartItem } from '@/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatPrice } from '~/lib/price'
+import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
@@ -186,6 +191,27 @@ const openLightbox = (slug: string, name: string) => {
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
     (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+
+const itemLabelSegments = (item: CartItem): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const itemChoice = (item: CartItem): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.selectedChoice?.name,
+    }).choice
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     impact('Light')

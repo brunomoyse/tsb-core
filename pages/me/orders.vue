@@ -6,6 +6,7 @@ import PullToRefresh from "~/components/PullToRefresh.vue" // eslint-disable-lin
 import { eventBus } from '~/eventBus'
 import { formatAddress } from "~/utils/utils"
 import gql from 'graphql-tag'
+import { orderItemLabelParts } from "~/utils/orderItemLabel"
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
@@ -82,6 +83,32 @@ const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 
 const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
+
+interface OrderItemLike {
+    product: { code: string | null; name: string; category?: { name: string } | null }
+    choice?: { name: string } | null
+}
+
+const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    })
+    const segments: { text: string; muted: boolean }[] = []
+    if (parts.code) segments.push({ text: parts.code, muted: true })
+    if (parts.category) segments.push({ text: parts.category, muted: true })
+    segments.push({ text: parts.name, muted: false })
+    return segments
+}
+
+const orderItemChoice = (item: OrderItemLike): string | undefined =>
+    orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+        choiceName: item.choice?.name,
+    }).choice
 
 const handlePullRefresh = async () => {
     await refetchOrders()
@@ -416,9 +443,11 @@ const getStatusColorClass = (status: string) => {
                                 class="flex items-center justify-between py-2 px-3 rounded-lg bg-white/60"
                             >
                                 <p class="text-sm text-gray-800">
-                                    <span v-if="item.product.code" class="text-gray-400">{{ item.product.code }} — </span>
-                                    <span v-if="item.product.category?.name" class="text-gray-400">{{ item.product.category.name }} — </span>
-                                    {{ item.product.name }}
+                                    <template v-for="(part, i) in orderItemSegments(item)" :key="i">
+                                        <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
+                                        <span :class="part.muted ? 'text-gray-400' : ''">{{ part.text }}</span>
+                                    </template>
+                                    <span v-if="orderItemChoice(item)" class="text-gray-400 ml-1">({{ orderItemChoice(item) }})</span>
                                 </p>
                                 <div class="flex items-center gap-2 ml-3 flex-shrink-0">
                                     <span class="text-xs font-medium text-gray-500 tabular-nums">x{{ item.quantity }}</span>
