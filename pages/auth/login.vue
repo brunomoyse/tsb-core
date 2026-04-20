@@ -43,7 +43,7 @@
                     </div>
 
                     <!-- Session expired -->
-                    <p v-if="sessionExpired" class="text-sm text-amber-700 bg-amber-50/80 border border-amber-200/60 rounded-xl px-3.5 py-2.5 mb-4 animate-shake">
+                    <p v-if="sessionExpired" role="alert" aria-live="assertive" aria-atomic="true" class="text-sm text-amber-700 bg-amber-50/80 border border-amber-200/60 rounded-xl px-3.5 py-2.5 mb-4 animate-shake">
                         {{ $t('notify.errors.sessionExpired') }}
                     </p>
 
@@ -81,13 +81,14 @@
                         </div>
 
                         <!-- Inline Error -->
-                        <div v-if="errorMessage" role="alert" data-testid="login-error" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                        <div v-if="errorMessage" role="alert" aria-live="assertive" aria-atomic="true" data-testid="login-error" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
                             <p>{{ errorMessage }}</p>
                             <!-- Resend verification email button -->
                             <button
+                                type="button"
                                 v-if="showResendVerification"
                                 :disabled="resendCooldown > 0"
-                                class="mt-2 text-red-500 font-medium underline hover:text-red-600 transition-colors duration-300 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                                class="mt-2 inline-flex min-h-11 items-center text-red-500 font-medium underline hover:text-red-600 transition-colors duration-300 disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-md"
                                 @click="resendEmail"
                             >
                                 {{ resendSent ? $t('verify.sent') : resendCooldown > 0 ? `${$t('verify.resend')} (${resendCooldown}s)` : $t('verify.resend') }}
@@ -121,6 +122,7 @@
                     <div class="space-y-3">
                         <!-- Google -->
                         <button
+                            type="button"
                             :disabled="loading"
                             class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('google')"
@@ -131,6 +133,7 @@
 
                         <!-- Apple -->
                         <button
+                            type="button"
                             :disabled="loading"
                             class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('apple')"
@@ -143,12 +146,12 @@
                     <div class="mt-6 space-y-2 text-center">
                         <p class="text-sm text-gray-600">
                             {{ $t('login.noAccount') }}
-                            <NuxtLinkLocale to="/auth/register" class="whitespace-nowrap text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
-                                {{ $t('login.register') }}
-                            </NuxtLinkLocale>
+                                <NuxtLinkLocale to="/auth/register" class="inline-flex min-h-11 items-center whitespace-nowrap text-red-500 font-medium hover:text-red-600 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
+                                    {{ $t('login.register') }}
+                                </NuxtLinkLocale>
                         </p>
                         <p>
-                            <NuxtLinkLocale to="/auth/forgot-password" class="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/forgot-password" class="inline-flex min-h-11 items-center text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                                 {{ $t('login.forgot') }}
                             </NuxtLinkLocale>
                         </p>
@@ -161,7 +164,7 @@
                             :key="lang.code"
                             :to="switchLocalePath(lang.code)"
                             :class="[
-                                'text-[11px] transition-colors duration-300',
+                                'inline-flex min-h-11 items-center rounded-md px-2 text-[11px] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
                                 locale === lang.code
                                     ? 'text-gray-700 font-medium'
                                     : 'text-gray-400 hover:text-gray-500'

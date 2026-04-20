@@ -57,14 +57,14 @@
                             </div>
 
                             <!-- Inline Error -->
-                            <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                            <p v-if="errorMessage" role="alert" aria-live="assertive" aria-atomic="true" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
                                 {{ errorMessage }}
                             </p>
 
                             <!-- Submit Button -->
                             <button
                                 :disabled="loading"
-                                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
+                                class="w-full min-h-11 bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                                 type="submit"
                             >
                                 {{ loading ? $t('forgotPassword.submitting') : $t('forgotPassword.submit') }}
@@ -88,9 +88,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900">{{ $t('forgotPassword.successTitle') }}</h3>
+                            <h3 role="status" aria-live="polite" aria-atomic="true" class="text-lg font-medium text-gray-900">{{ $t('forgotPassword.successTitle') }}</h3>
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $t('forgotPassword.successMessage') }}</p>
-                            <NuxtLinkLocale to="/auth/login" class="inline-block text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/login" class="inline-flex min-h-11 items-center text-red-500 font-medium hover:text-red-600 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                                 {{ $t('forgotPassword.backToLogin') }}
                             </NuxtLinkLocale>
                         </div>

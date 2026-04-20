@@ -1,6 +1,10 @@
 <template>
     <li>
-        <NuxtLinkLocale :to="to">
+        <NuxtLinkLocale
+            :to="to"
+            :aria-label="tooltipText || alt"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+        >
             <!-- Container with dynamic colors based on active route -->
             <div :class="[
                 'relative group w-[50px] h-[50px] flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible',

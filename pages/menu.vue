@@ -37,10 +37,11 @@
                             class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
                         />
                         <button
+                            type="button"
                             v-show="searchValue.length > 0"
                             @click.stop="searchValue = ''"
                             :aria-label="$t('nav.search')"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -52,8 +53,10 @@
                     <div class="flex items-center gap-1.5 flex-wrap">
                         <!-- Halal toggle -->
                         <button
+                            type="button"
                             @click="toggleFilter('halal')"
-                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :aria-pressed="activeFilters.has('halal')"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
@@ -72,8 +75,10 @@
 
                         <!-- Vegan toggle -->
                         <button
+                            type="button"
                             @click="toggleFilter('vegan')"
-                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :aria-pressed="activeFilters.has('vegan')"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
                             :class="activeFilters.has('vegan')
                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
@@ -92,8 +97,10 @@
 
                         <!-- Spicy toggle -->
                         <button
+                            type="button"
                             @click="toggleFilter('spicy')"
-                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
+                            :aria-pressed="activeFilters.has('spicy')"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
@@ -165,7 +172,7 @@
                         {{ $t('menu.allergenNotice') }}
                         <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
                     </p>
-                    <button @click="dismissAllergenNotice" class="ml-1 p-0.5 hover:bg-amber-100 rounded" :aria-label="$t('common.close')">
+                    <button type="button" @click="dismissAllergenNotice" class="ml-1 p-0.5 hover:bg-amber-100 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>

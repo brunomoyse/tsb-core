@@ -1,12 +1,19 @@
 <template>
     <div>
-        <NuxtLinkLocale :to="to">
+        <NuxtLinkLocale
+            :to="to"
+            :aria-label="ariaLabel || alt"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+        >
             <!-- Container with overflow-visible -->
-            <div class="relative group w-[50px] h-[50px] flex items-center justify-center overflow-visible">
+            <div
+                class="relative group flex items-center justify-center overflow-visible"
+                :style="{ width: `${size}px`, height: `${size}px` }"
+            >
                 <picture>
                     <source :srcset="icon.replace('.png', '.avif')" type="image/avif" />
                     <source :srcset="icon.replace('.png', '.webp')" type="image/webp" />
-                    <img :alt="alt" :src="icon" width="50" height="50" class="fit" />
+                    <img :alt="alt" :src="icon" :width="size" :height="size" class="fit" />
                 </picture>
 
                 <!-- Tooltip positioned below -->
@@ -25,7 +32,9 @@ interface NavItemProps {
     icon: string
     alt?: string
     tooltipText?: string
+    ariaLabel?: string
+    size?: number
 }
 
-const { to, icon, alt, tooltipText } = defineProps<NavItemProps>()
+const { to, icon, alt, tooltipText, ariaLabel, size = 50 } = defineProps<NavItemProps>()
 </script>

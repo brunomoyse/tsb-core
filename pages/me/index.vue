@@ -450,7 +450,7 @@ const updateNotificationPref = async (
                     <h2 class="font-semibold text-gray-900 text-base">{{ fullName }}</h2>
                     <button
                         type="button"
-                        class="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-red-500 transition"
+                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-gray-500 hover:text-red-500 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         @click="openModal"
                     >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -496,7 +496,7 @@ const updateNotificationPref = async (
                     <a
                         v-if="authStore.user?.phoneNumber"
                         :href="`tel:${authStore.user.phoneNumber}`"
-                        class="text-sm text-gray-900 mt-1 hover:text-red-500 transition"
+                        class="inline-flex min-h-11 items-center text-sm text-gray-900 mt-1 hover:text-red-500 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-md"
                     >
                         {{ authStore.user.phoneNumber }}
                     </a>
@@ -518,7 +518,7 @@ const updateNotificationPref = async (
                     </span>
                     <button
                         type="button"
-                        class="mt-2 text-sm text-red-500 hover:text-red-600 transition text-left"
+                        class="mt-2 min-h-11 text-sm text-red-500 hover:text-red-600 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         @click="openAddressModal"
                     >
                         {{ authStore.user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
@@ -537,7 +537,7 @@ const updateNotificationPref = async (
                     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.changePassword.title') }}</span>
                     <button
                         type="button"
-                        class="mt-2 text-sm text-red-500 hover:text-red-600 transition text-left"
+                        class="mt-2 min-h-11 text-sm text-red-500 hover:text-red-600 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         @click="openPasswordModal"
                     >
                         {{ t('me.changePassword.button') }}
@@ -562,13 +562,13 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyMarketing"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                class="relative inline-flex items-center min-h-11 min-w-11 h-11 w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                 :class="notifyMarketing ? 'bg-red-400' : 'bg-gray-200'"
                                 @click="toggleNotifyMarketing"
                             >
                                 <span
-                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                    :class="notifyMarketing ? 'translate-x-5' : 'translate-x-0'"
+                                    class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                    :class="notifyMarketing ? 'translate-x-7' : 'translate-x-1'"
                                 />
                             </button>
                             <span class="text-sm text-gray-700">{{ t('me.notifications.marketingLabel') }}</span>
@@ -583,13 +583,13 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyOrderUpdates"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                class="relative inline-flex items-center min-h-11 min-w-11 h-11 w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                 :class="notifyOrderUpdates ? 'bg-red-400' : 'bg-gray-200'"
                                 @click="toggleNotifyOrderUpdates"
                             >
                                 <span
-                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                    :class="notifyOrderUpdates ? 'translate-x-5' : 'translate-x-0'"
+                                    class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                    :class="notifyOrderUpdates ? 'translate-x-7' : 'translate-x-1'"
                                 />
                             </button>
                             <span class="text-sm text-gray-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
@@ -614,7 +614,7 @@ const updateNotificationPref = async (
                             :key="lang.code"
                             :to="switchLocalePath(lang.code)"
                             :class="[
-                                'px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97]',
+                                'inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
                                 locale === lang.code
                                     ? 'bg-red-500 text-white font-medium'
                                     : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -630,7 +630,7 @@ const updateNotificationPref = async (
             <div class="bento-logout bento-cell self-start" style="--delay: 9">
                 <button
                     type="button"
-                    class="bg-tsb-two rounded-2xl p-6 w-full flex flex-col text-left hover:bg-red-50 transition-colors"
+                    class="bg-tsb-two rounded-2xl p-6 w-full flex flex-col text-left hover:bg-red-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                     @click="handleLogout"
                 >
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
@@ -654,7 +654,7 @@ const updateNotificationPref = async (
             <button
                 v-if="!authStore.user?.deletionRequestedAt"
                 type="button"
-                class="text-xs text-gray-400 hover:text-red-500 transition"
+                class="inline-flex min-h-11 items-center text-xs text-gray-400 hover:text-red-500 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                 @click="handleRequestDeletion"
             >
                 {{ t('me.profile.requestDeletion') }}
@@ -662,7 +662,7 @@ const updateNotificationPref = async (
             <button
                 v-else
                 type="button"
-                class="text-xs text-amber-600 hover:text-amber-700 transition"
+                class="inline-flex min-h-11 items-center text-xs text-amber-600 hover:text-amber-700 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
                 @click="handleCancelDeletionRequest"
             >
                 {{ t('me.profile.cancelDeletionRequest') }}
@@ -702,7 +702,7 @@ const updateNotificationPref = async (
                     <div class="flex gap-3 pt-6">
                         <button
                             type="button"
-                            class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
+                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
                             @click="closeAddressModal"
                         >
                             {{ t('common.cancel') }}
@@ -710,7 +710,7 @@ const updateNotificationPref = async (
                         <button
                             type="button"
                             :disabled="!pendingAddress?.id || addressLoading"
-                            class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                             @click="submitAddressUpdate"
                         >
                             {{ t('common.save') }}
@@ -811,18 +811,18 @@ const updateNotificationPref = async (
 
                         <!-- Actions -->
                         <div class="flex gap-3 pt-2">
-                            <button
-                                type="button"
-                                class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
-                                @click="closePasswordModal"
-                            >
+                        <button
+                            type="button"
+                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+                            @click="closePasswordModal"
+                        >
                                 {{ t('common.cancel') }}
                             </button>
-                            <button
-                                type="submit"
-                                :disabled="!canSubmitPassword || passwordLoading"
-                                class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
+                        <button
+                            type="submit"
+                            :disabled="!canSubmitPassword || passwordLoading"
+                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                        >
                                 {{ t('me.changePassword.submit') }}
                             </button>
                         </div>

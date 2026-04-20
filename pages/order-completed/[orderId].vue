@@ -160,13 +160,13 @@
         <div class="mt-6 w-full max-w-lg flex flex-col sm:flex-row gap-3 oc-stagger-5">
             <NuxtLinkLocale
                 to="/me/orders"
-                class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
             >
                 {{ $t('orderCompleted.viewOrders') }}
             </NuxtLinkLocale>
             <NuxtLinkLocale
                 to="/"
-                class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
             >
                 {{ $t('orderCompleted.returnHome') }}
             </NuxtLinkLocale>

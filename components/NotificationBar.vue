@@ -1,5 +1,11 @@
 <template>
-    <div role="status" aria-live="polite" class="notification-bar fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4" v-if="visible">
+    <div
+        :role="liveRole"
+        :aria-live="livePoliteness"
+        aria-atomic="true"
+        class="notification-bar fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4"
+        v-if="visible"
+    >
         <transition name="slide-up">
             <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" v-if="visible">
                 <div class="flex items-start justify-between gap-4">
@@ -9,6 +15,7 @@
                     <!-- Default action button for persistent notifications or cookie consent -->
                     <slot name="action" v-if="persistent || cookieConsent">
                         <button
+                            type="button"
                             class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
                             @click="close"
                             :aria-label="cookieConsent ? 'Accept cookies' : $t('common.close')"
@@ -69,6 +76,9 @@ const progressBarClass = computed(() => {
             return 'bg-gray-600'
     }
 })
+
+const liveRole = computed(() => (variant === 'error' ? 'alert' : 'status'))
+const livePoliteness = computed(() => (variant === 'error' ? 'assertive' : 'polite'))
 
 const close = () => {
     visible.value = false
