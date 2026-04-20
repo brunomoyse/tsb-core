@@ -362,6 +362,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { formatDateTime, formatTime } from '~/utils/datetime'
 import { useGqlQuery, useGqlSubscription, useNuxtApp } from '#imports'
 import type { Order } from '~/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
@@ -382,16 +383,9 @@ const { reorder } = useReorder()
 const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
 const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
 
-const formatDate = (iso: string) =>
-    new Date(iso).toLocaleString(dateLocale.value, {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit',
-    })
+const formatDate = (iso: string) => formatDateTime(iso, dateLocale.value)
 
-const formatReadyTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString(dateLocale.value, {
-        hour: '2-digit', minute: '2-digit',
-    })
+const formatReadyTime = (iso: string) => formatTime(iso, dateLocale.value)
 
 // ── Data ──
 

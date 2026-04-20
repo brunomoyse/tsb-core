@@ -187,6 +187,7 @@ import {
     useNuxtApp,
     useRoute,
 } from '#imports'
+import { formatDate, formatTime, isSameBrusselsDay } from '~/utils/datetime'
 import type { Order } from '@/types'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import { eventBus } from '~/eventBus'
@@ -208,13 +209,9 @@ let redirectedAfterCancel = false
 
 const formatEstimatedTime = (isoString: string): string => {
     const date = new Date(isoString)
-    const now = new Date()
-    const isToday = date.getFullYear() === now.getFullYear()
-        && date.getMonth() === now.getMonth()
-        && date.getDate() === now.getDate()
-    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    if (isToday) return time
-    return `${date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' })}, ${time}`
+    const time = formatTime(isoString, dateLocale.value)
+    if (isSameBrusselsDay(date, new Date())) return time
+    return `${formatDate(isoString, dateLocale.value)}, ${time}`
 }
 
 const ORDER_QUERY = print(gql`
@@ -300,7 +297,9 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
+const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
 
 watch(order, (orderData) => {
     if (!orderData) return

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getBrusselsParts } from '~/utils/datetime'
+
 definePageMeta({
     sitemap: { priority: 1, changefreq: 'daily' },
 })
@@ -6,7 +8,7 @@ definePageMeta({
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
-const yearsSince = new Date().getFullYear() - 2016
+const yearsSince = getBrusselsParts().year - 2016
 
 useSchemaOrg([
     defineWebSite({
@@ -42,7 +44,7 @@ useSeoMeta({
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 space-y-5">
 
         <!-- Hero -->
-        <div class="relative h-72 sm:h-96 overflow-hidden rounded-2xl">
+        <div class="relative h-[85vh] sm:h-96 overflow-hidden rounded-2xl">
             <picture>
                 <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
                 <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />

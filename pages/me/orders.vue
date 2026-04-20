@@ -5,6 +5,7 @@ import type { Order } from "~/types"
 import PullToRefresh from "~/components/PullToRefresh.vue" // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
 import { formatAddress } from "~/utils/utils"
+import { formatDateTime } from "~/utils/datetime"
 import gql from 'graphql-tag'
 import { orderItemLabelParts } from "~/utils/orderItemLabel"
 import { print } from "graphql/index"
@@ -376,16 +377,8 @@ const getStatusColorClass = (status: string) => {
                                 {{ getStatus(getTrackedOrder(order).status) }}
                             </span>
                         </div>
-                        <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
-                            {{
-                                new Date(order.createdAt).toLocaleString(dateLocale.value, {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })
-                            }}
+                        <p class="mt-0.5 text-xs text-gray-400 tabular-nums">
+                            {{ formatDateTime(order.createdAt, dateLocale.value) }}
                         </p>
                     </div>
                     <div class="flex items-center gap-2 ml-3 shrink-0">
