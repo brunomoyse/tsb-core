@@ -28,7 +28,7 @@
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger inline-flex min-h-11 min-w-11 flex-col items-center justify-center cursor-pointer rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >
@@ -132,26 +132,49 @@ watch(isMenuOpen, (open) => {
 }
 
 /* Hamburger lines */
+.hamburger {
+    position: relative;
+    color: #374151;
+}
+
 .hamburger span {
-    display: block;
+    position: absolute;
+    left: 50%;
     width: 24px;
     height: 2px;
+    border-radius: 9999px;
     background-color: currentColor;
-    margin: 5px 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateX(-50%);
+    transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
+}
+
+.hamburger span:nth-child(1) {
+    top: calc(50% - 8px);
+}
+
+.hamburger span:nth-child(2) {
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hamburger span:nth-child(3) {
+    top: calc(50% + 8px);
 }
 
 /* Transform the hamburger into an X when active */
 .hamburger-active span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .hamburger-active span:nth-child(2) {
     opacity: 0;
+    transform: translate(-50%, -50%) scaleX(0.6);
 }
 
 .hamburger-active span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 /* Mobile Menu Styles */
