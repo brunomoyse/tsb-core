@@ -78,7 +78,7 @@
 
             <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
             <div
-                class="fixed inset-x-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+                class="fixed left-0 right-0 sm:left-[142px] z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
                 :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
             >
                 <button
