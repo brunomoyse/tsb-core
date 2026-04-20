@@ -17,12 +17,13 @@ const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
 const turnstile = 'https://challenges.cloudflare.com'
+const iconifyHost = 'https://api.iconify.design'
 
 const csp = `${[
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
+    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''} ${iconifyHost}`,
     "font-src 'self' https://fonts.gstatic.com",
     `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile}`,
     `frame-src 'self' ${osm} ${zitadelOrigin} ${turnstile}`,
