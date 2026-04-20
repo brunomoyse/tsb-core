@@ -391,6 +391,7 @@
     "tbd": "待定",
     "optional": "（选填）",
     "openingPayment": "正在打开安全支付...",
+    "completeBeforeOrder": "下单前请先完成以下内容：",
     "addressDistanceKm": "距离 {distance} 公里",
     "addExtras": "加点配菜？",
     "extrasDescription": "为您的订单添加一些配菜"

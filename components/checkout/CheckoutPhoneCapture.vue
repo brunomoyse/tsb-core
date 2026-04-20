@@ -1,5 +1,7 @@
 <template>
     <section
+        id="checkout-phone-capture"
+        tabindex="-1"
         class="rounded-lg border p-4 shadow-sm"
         :class="saved
             ? 'bg-emerald-50/70 border-emerald-200'

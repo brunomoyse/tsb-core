@@ -391,6 +391,7 @@
     "tbd": "To be determined",
     "optional": "(optional)",
     "openingPayment": "Opening secure payment...",
+    "completeBeforeOrder": "Please complete these before placing your order:",
     "addressDistanceKm": "{distance} km away",
     "addExtras": "Add some extras?",
     "extrasDescription": "Complete your order with some accompaniments"

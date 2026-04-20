@@ -389,6 +389,7 @@
     "tbd": "Nader te bepalen",
     "optional": "(optioneel)",
     "openingPayment": "Veilige betaling openen...",
+    "completeBeforeOrder": "Vul dit eerst aan voordat u bestelt:",
     "addressDistanceKm": "{distance} km afstand",
     "addExtras": "Zin in extra's?",
     "extrasDescription": "Maak uw bestelling compleet met bijgerechten"

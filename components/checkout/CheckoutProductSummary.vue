@@ -52,11 +52,11 @@
                         <!-- Row 1: Name + price -->
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
-                                <p class="text-[15px] font-semibold text-gray-900 truncate leading-tight">
-                                    <template v-for="(part, i) in itemLabelSegments(item)" :key="i">
-                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
-                                        <span :class="part.muted ? 'text-gray-400 font-normal text-xs' : ''">{{ part.text }}</span>
-                                    </template>
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-gray-400 truncate leading-tight mb-0.5">
+                                    {{ itemLabelMeta(item) }}
+                                </p>
+                                <p class="text-[15px] font-semibold text-gray-900 leading-tight line-clamp-2 pr-1">
+                                    {{ itemLabelName(item) }}
                                 </p>
                                 <p v-if="itemChoice(item)" class="text-xs text-red-500 mt-0.5 truncate">
                                     ({{ itemChoice(item) }})
@@ -202,18 +202,19 @@ const getItemUnitPrice = (item: { product: { price: string | number }; selectedC
     return base + modifier
 }
 
-const itemLabelSegments = (item: CartItem): { text: string; muted: boolean }[] => {
-    const parts = orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-    })
-    const segments: { text: string; muted: boolean }[] = []
-    if (parts.code) segments.push({ text: parts.code, muted: true })
-    if (parts.category) segments.push({ text: parts.category, muted: true })
-    segments.push({ text: parts.name, muted: false })
-    return segments
+const itemLabelParts = (item: CartItem) => orderItemLabelParts({
+    code: item.product.code,
+    categoryName: item.product.category?.name,
+    productName: item.product.name,
+})
+
+const itemLabelMeta = (item: CartItem): string | undefined => {
+    const parts = itemLabelParts(item)
+    const meta = [parts.code, parts.category].filter(Boolean).join('·')
+    return meta || undefined
 }
+
+const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
     orderItemLabelParts({
