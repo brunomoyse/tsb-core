@@ -1,11 +1,12 @@
 <template>
     <li ref="rootRef" class="relative">
         <!-- Language Icon Button -->
-        <button type="button" data-testid="language-picker" class="relative group w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer"
-             :aria-expanded="showDropdown"
-             aria-haspopup="listbox"
-             @click.stop="toggleDropdown"
-             @keydown.escape="hideDropdown()">
+        <button type="button" data-testid="language-picker" class="relative group min-h-11 min-w-11 w-[50px] h-[50px] bg-white flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+              :aria-expanded="showDropdown"
+              :aria-label="tooltipText"
+              aria-haspopup="listbox"
+              @click.stop="toggleDropdown"
+              @keydown.escape="hideDropdown()">
             <img :alt="alt" :src="icon" class="h-6 w-6"/>
             <span
                 class="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max">

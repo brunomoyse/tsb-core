@@ -3,7 +3,14 @@
         <div class="px-4 flex justify-between items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center">
-                <Logo alt="Tokyo Sushi Bar logo" class="h-12 w-12 list-none" icon="/images/tsb-black-font-100.png" to="/"/>
+                <Logo
+                    :aria-label="$t('nav.home')"
+                    alt="Tokyo Sushi Bar logo"
+                    class="list-none"
+                    icon="/images/tsb-black-font-100.png"
+                    to="/"
+                    :size="56"
+                />
             </div>
 
             <!-- Right part -->
@@ -21,7 +28,7 @@
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger cursor-pointer p-2 rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                        class="hamburger inline-flex min-h-11 min-w-11 flex-col items-center justify-center cursor-pointer rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >
@@ -38,7 +45,7 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <li><Logo alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-black-font-100.png" to="/"
+                                <li><Logo :aria-label="$t('nav.home')" alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-black-font-100.png" to="/"
                                       @click="closeMenu"/></li>
                                 <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
                                                to="/menu"
@@ -63,15 +70,16 @@
                                 <!-- Divider -->
                                 <li class="w-full border-t border-gray-200 my-2"></li>
 
-                                <!-- Phone (tap-to-call) -->
-                                <li>
-                                    <a href="tel:042229888"
-                                       class="flex items-center justify-center space-x-2 p-3 rounded-xl hover:bg-tsb-one transition-colors"
-                                       @click="closeMenu">
-                                        <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
-                                        <span class="text-sm font-medium">04 222 98 88</span>
-                                    </a>
-                                </li>
+                                 <!-- Phone (tap-to-call) -->
+                                 <li>
+                                     <a href="tel:042229888"
+                                        aria-label="Appeler le restaurant"
+                                        class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
+                                        @click="closeMenu">
+                                         <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
+                                         <span class="text-sm font-medium">04 222 98 88</span>
+                                     </a>
+                                 </li>
                             </ul>
                         </div>
 

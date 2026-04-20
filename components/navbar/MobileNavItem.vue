@@ -3,8 +3,9 @@
     <li class="w-full">
         <NuxtLinkLocale
             :to="to"
-            active-class="bg-tsb-four"
-            class="flex items-center justify-center space-x-2 p-3 rounded-xl hover:bg-tsb-one transition-colors"
+            :aria-label="label"
+            active-class="bg-tsb-four text-red-700"
+            class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
         >
             <img :alt="label" :src="icon" class="w-6 h-6"/>
             <span class="text-sm font-medium">{{ label }}</span>

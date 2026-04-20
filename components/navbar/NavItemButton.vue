@@ -1,6 +1,11 @@
 <template>
     <li>
-        <button type="button" @click="$emit('click')">
+        <button
+            type="button"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+            :aria-label="tooltipText || alt"
+            @click="$emit('click')"
+        >
             <div class="relative group w-[50px] h-[50px] flex items-center justify-center rounded-full bg-white hover:shadow-md transition-shadow overflow-visible">
                 <img :alt="alt" :src="icon" class="h-6 w-6 select-none" draggable="false" />
 

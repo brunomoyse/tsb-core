@@ -1,7 +1,7 @@
 <template>
     <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
         <!-- Restaurant Closed Banner -->
-        <div v-if="!isOrderingAvailable" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+        <div v-if="!isOrderingAvailable" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Minimum Order Warning Banner -->
-        <div id="checkout-minimum-order-banner" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
+        <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
@@ -82,11 +82,12 @@
                 :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
             >
                 <button
+                    type="button"
                     data-testid="checkout-place-order"
                     @click="handleCheckout"
                     :disabled="isCheckoutProcessing || !isOrderingAvailable"
                     :class="[
-                        'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
+                        'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
                         !isCheckoutProcessing && isOrderingAvailable
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -115,6 +116,9 @@
         <Teleport to="body">
             <div
                 v-if="isRedirectingToPayment"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
                 class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
             >
                 <svg class="animate-spin h-8 w-8 text-red-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -138,7 +142,7 @@
                     type="button"
                     @click="closeAddressModal"
                     :aria-label="$t('common.close')"
-                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    class="absolute top-4 right-4 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -152,7 +156,7 @@
                     <button
                         type="button"
                         @click="closeAddressModal"
-                        class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97]"
+                        class="min-h-11 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
                     >
                         {{ $t('common.cancel', 'Cancel') }}
                     </button>
@@ -160,7 +164,7 @@
                         type="button"
                         @click="confirmAddress"
                         :disabled="!tempAddress"
-                        class="px-4 py-2 rounded text-white text-sm transition-all active:scale-[0.97]"
+                        class="min-h-11 px-4 py-2 rounded text-white text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         :class="!tempAddress ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'"
                     >
                         {{ $t('common.save', 'Save') }}

@@ -20,6 +20,8 @@
                 <!-- Delete action (revealed on swipe) -->
                 <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
                     <button
+                        type="button"
+                        :aria-label="$t('common.remove', 'Remove')"
                         class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
                     >
@@ -92,8 +94,9 @@
                             <!-- Stepper: compact pill -->
                             <div class="flex items-center gap-0 bg-gray-100 rounded-full">
                                 <button
+                                    type="button"
                                     :aria-label="$t('cart.decreaseQty')"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                                     @click="handleDecrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -104,8 +107,9 @@
                                     {{ item.quantity }}
                                 </span>
                                 <button
+                                    type="button"
                                     :aria-label="$t('cart.increaseQty')"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                                     @click="handleIncrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -137,7 +141,7 @@
         >
             <NuxtLinkLocale
                 to="checkout"
-                class="flex items-center justify-between w-full bg-red-500 hover:bg-red-600 text-white py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all"
+                class="flex min-h-11 items-center justify-between w-full bg-red-500 hover:bg-red-600 text-white py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
             >
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -165,7 +169,7 @@
             <p class="text-sm text-gray-400 text-center mb-6">{{ $t('cart.emptyHint', 'Browse the menu to add your favorites') }}</p>
             <NuxtLinkLocale
                 to="/menu"
-                class="px-8 py-3 rounded-2xl bg-gray-900 text-white text-sm font-semibold active:scale-[0.97] transition-transform"
+                class="inline-flex min-h-11 items-center justify-center px-8 py-3 rounded-2xl bg-gray-900 text-white text-sm font-semibold active:scale-[0.97] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2"
             >
                 {{ $t('nav.menu') }}
             </NuxtLinkLocale>

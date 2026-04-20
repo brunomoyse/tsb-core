@@ -55,11 +55,12 @@
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $t('register.successCheckEmail') }}</p>
 
                             <!-- Resend verification email -->
-                            <p v-if="resendSent" class="text-sm text-green-600 font-medium">{{ $t('verify.sent') }}</p>
+                            <p v-if="resendSent" role="status" aria-live="polite" aria-atomic="true" class="text-sm text-green-600 font-medium">{{ $t('verify.sent') }}</p>
                             <button
+                                type="button"
                                 v-else
                                 :disabled="resendCooldown > 0"
-                                class="inline-block bg-red-500 text-white py-2.5 px-6 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex min-h-11 items-center justify-center bg-red-500 text-white py-2.5 px-6 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                                 @click="resendEmail"
                             >
                                 {{ resendCooldown > 0 ? `${$t('verify.resend')} (${resendCooldown}s)` : $t('verify.resend') }}
@@ -67,7 +68,7 @@
 
                             <!-- Login link -->
                             <p class="text-sm text-gray-500">
-                                <NuxtLinkLocale to="/auth/login" class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                                <NuxtLinkLocale to="/auth/login" class="inline-flex min-h-11 items-center text-red-500 font-medium hover:text-red-600 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                                     {{ $t('login.title') }}
                                 </NuxtLinkLocale>
                             </p>
@@ -79,14 +80,14 @@
                         <UserForm mode="register" @submit="registerUser" />
 
                         <!-- Inline Error -->
-                        <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake mt-4">
+                        <p v-if="errorMessage" role="alert" aria-live="assertive" aria-atomic="true" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake mt-4">
                             {{ errorMessage }}
                         </p>
 
                         <!-- Login link -->
                         <p class="text-sm text-gray-600 text-center mt-6">
                             {{ $t('register.hasAccount') }}
-                            <NuxtLinkLocale to="/auth/login" class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300">
+                            <NuxtLinkLocale to="/auth/login" class="inline-flex min-h-11 items-center text-red-500 font-medium hover:text-red-600 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                                 {{ $t('login.title') }}
                             </NuxtLinkLocale>
                         </p>

@@ -127,7 +127,7 @@ useSeoMeta({
                         :href="googleMapsLink"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm"
+                        class="absolute bottom-3 right-3 inline-flex min-h-11 items-center bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                     >
                         {{ $t('contact.viewLargerMap') }}
                         <svg class="w-3 h-3 inline-block ml-1 -mt-px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
@@ -176,7 +176,7 @@ useSeoMeta({
                         :href="googleMapsLink"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-gray-900 hover:text-red-600 transition group/link"
+                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-gray-900 hover:text-red-600 transition group/link rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                     >
                         {{ $t('contact.viewLargerMap') }}
                         <svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
@@ -186,7 +186,7 @@ useSeoMeta({
 
             <!-- Phone -->
             <div class="bento-phone bento-cell" style="--delay: 4">
-                <a href="tel:+32422298888" class="block h-full">
+                <a href="tel:+32422298888" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                     <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col hover:bg-tsb-four/40 transition-colors duration-300">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-4">
                             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -201,7 +201,7 @@ useSeoMeta({
 
             <!-- Email -->
             <div class="bento-email bento-cell" style="--delay: 5">
-                <a href="mailto:tokyosushibar888@gmail.com" class="block h-full">
+                <a href="mailto:tokyosushibar888@gmail.com" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                     <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col hover:bg-tsb-four/40 transition-colors duration-300">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-4">
                             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -223,7 +223,7 @@ useSeoMeta({
                             href="https://www.instagram.com/tokyo_sushi_bar_liege/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300"
+                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
                             <img src="/icons/instagram-icon.svg" alt="Instagram" class="w-5 h-5"/>
                         </a>
@@ -231,7 +231,7 @@ useSeoMeta({
                             href="https://www.facebook.com/sushiliege"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300"
+                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-tsb-four transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
                             <img src="/icons/facebook-icon.svg" alt="Facebook" class="w-5 h-5"/>
                         </a>

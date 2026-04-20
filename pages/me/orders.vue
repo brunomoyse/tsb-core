@@ -330,7 +330,7 @@ const getStatusColorClass = (status: string) => {
         <div class="mb-6 sm:mb-8 bento-cell" style="--delay: 0">
             <NuxtLinkLocale
                 to="/me"
-                class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500 transition mb-4"
+                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm text-gray-500 hover:text-red-500 transition mb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
@@ -361,8 +361,9 @@ const getStatusColorClass = (status: string) => {
                 <button
                     type="button"
                     :aria-expanded="isExpanded(order.id)"
+                    :aria-controls="`order-panel-${order.id}`"
                     :aria-label="$t('me.orders.toggleOrder')"
-                    class="w-full text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between"
+                    class="w-full min-h-11 text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                     @click="toggleOrder(order.id)"
                 >
                     <div class="flex-1 min-w-0">
@@ -406,7 +407,7 @@ const getStatusColorClass = (status: string) => {
                     @leave="accordionLeave"
                     @after-leave="accordionAfterLeave"
                 >
-                    <div v-show="isExpanded(order.id)" class="px-5 sm:px-6 pb-5 sm:pb-6">
+                    <div :id="`order-panel-${order.id}`" v-show="isExpanded(order.id)" class="px-5 sm:px-6 pb-5 sm:pb-6">
 
                         <!-- Inline Timeline (for in-progress orders) -->
                         <div v-if="!isOrderCompleted(order.status)" class="mb-4">
@@ -460,7 +461,8 @@ const getStatusColorClass = (status: string) => {
                         <!-- Re-order Button -->
                         <button
                             v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
-                            class="mt-3 w-full rounded-xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            type="button"
+                            class="mt-3 w-full min-h-11 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
                             @click="reorder(order)"
                         >
                             {{ $t('reorder.button') }}
@@ -469,7 +471,8 @@ const getStatusColorClass = (status: string) => {
                         <!-- Download Invoice Button -->
                         <button
                             v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
-                            class="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            type="button"
+                            class="mt-2 w-full min-h-11 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-red-300"
                             @click.stop="downloadInvoice(order.id)"
                         >
                             {{ $t('me.orders.downloadInvoice') }}
@@ -481,7 +484,8 @@ const getStatusColorClass = (status: string) => {
             <!-- Load more -->
             <button
                 v-if="hasMore"
-                class="load-more-btn group mt-2 w-full rounded-2xl border border-dashed border-gray-300 hover:border-red-300 bg-tsb-two/60 hover:bg-tsb-four/50 py-4 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer"
+                type="button"
+                class="load-more-btn group mt-2 w-full min-h-11 rounded-2xl border border-dashed border-gray-300 hover:border-red-300 bg-tsb-two/60 hover:bg-tsb-four/50 py-4 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                 @click="loadMore"
             >
                 <span class="text-sm font-medium text-gray-400 group-hover:text-red-500 transition-colors duration-300">
