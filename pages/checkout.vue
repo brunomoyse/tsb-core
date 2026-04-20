@@ -69,9 +69,9 @@
                 <CheckoutCollectionOptions
                     @open-address-modal="openAddressModal"
                     :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
-                    :ordering-hours="restaurantConfig?.restaurantConfig?.orderingHours"
                     :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
                     :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
+                    :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
                 />
                 <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" :isPhoneMissing="isPhoneMissing" v-model:cashAcknowledged="cashAcknowledged" />
             </div>
@@ -176,6 +176,7 @@
 definePageMeta({ public: true })
 
 import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
+import { RESTAURANT_TZ, isSameBrusselsDay } from '~/utils/datetime'
 import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
@@ -186,7 +187,6 @@ import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
-import { getNextOpeningTime, hasAvailableFixedSlotsToday } from '~/utils/openingHours'
 import gql from 'graphql-tag'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
@@ -195,7 +195,7 @@ import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const localePath = useLocalePath()
@@ -205,14 +205,9 @@ const { trackEvent } = useTracking()
 
 // Check restaurant ordering status
 const { config: restaurantConfig } = await useRestaurantConfig()
-const openingHours = computed(() => restaurantConfig.value?.restaurantConfig?.openingHours)
-const orderingHours = computed(() => restaurantConfig.value?.restaurantConfig?.orderingHours)
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
-const hasFixedSlotsToday = computed(() => {
-    if (!openingHours.value) return false
-    return hasAvailableFixedSlotsToday(openingHours.value, new Date(), orderingHours.value)
-})
+const hasFixedSlotsToday = computed(() => (restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.length ?? 0) > 0)
 const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isOrderingCurrentlyOpen.value || hasFixedSlotsToday.value))
 
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
@@ -229,18 +224,15 @@ watch(isOrderingAvailable, (available) => {
 })
 
 const nextOpeningTime = computed(() => {
-    const hours = restaurantConfig.value?.restaurantConfig?.openingHours
-    if (!hours) return null
-    const dayLabels: Record<string, string> = {
-        monday: t('days.monday'),
-        tuesday: t('days.tuesday'),
-        wednesday: t('days.wednesday'),
-        thursday: t('days.thursday'),
-        friday: t('days.friday'),
-        saturday: t('days.saturday'),
-        sunday: t('days.sunday'),
-    }
-    return getNextOpeningTime(hours, dayLabels)
+    const iso = restaurantConfig.value?.restaurantConfig?.nextOpeningAt
+    if (!iso) return null
+    const next = new Date(iso)
+    const sameDay = isSameBrusselsDay(next, new Date())
+    return new Intl.DateTimeFormat(locale.value, {
+        ...(sameDay ? {} : { weekday: 'long' }),
+        hour: '2-digit', minute: '2-digit',
+        timeZone: RESTAURANT_TZ,
+    }).format(next)
 })
 
 useSeoMeta({
