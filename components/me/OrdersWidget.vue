@@ -139,11 +139,13 @@
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
-                                            <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                                                <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
-                                                <span :class="part.muted ? 'text-gray-400' : ''">{{ part.text }}</span>
-                                            </template>
+                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-gray-400 truncate leading-tight">
+                                                {{ orderItemMeta(item) }}
+                                            </span>
+                                            <span class="block text-gray-700 leading-tight line-clamp-2">
+                                                {{ orderItemName(item) }}
+                                            </span>
                                             <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
                                         <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
@@ -265,11 +267,13 @@
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
                                         <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0 truncate">
-                                            <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                                                <span v-if="i > 0" class="text-gray-400 mx-1">·</span>
-                                                <span :class="part.muted ? 'text-gray-400' : ''">{{ part.text }}</span>
-                                            </template>
+                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-gray-400 truncate leading-tight">
+                                                {{ orderItemMeta(item) }}
+                                            </span>
+                                            <span class="block text-gray-700 leading-tight line-clamp-2">
+                                                {{ orderItemName(item) }}
+                                            </span>
                                             <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
                                         <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
@@ -445,18 +449,19 @@ interface OrderItemLike {
     choice?: { name: string } | null
 }
 
-const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
-    const parts = orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-    })
-    const segments: { text: string; muted: boolean }[] = []
-    if (parts.code) segments.push({ text: parts.code, muted: true })
-    if (parts.category) segments.push({ text: parts.category, muted: true })
-    segments.push({ text: parts.name, muted: false })
-    return segments
+const orderItemParts = (item: OrderItemLike) => orderItemLabelParts({
+    code: item.product.code,
+    categoryName: item.product.category?.name,
+    productName: item.product.name,
+})
+
+const orderItemMeta = (item: OrderItemLike): string | undefined => {
+    const parts = orderItemParts(item)
+    const meta = [parts.code, parts.category].filter(Boolean).join('·')
+    return meta || undefined
 }
+
+const orderItemName = (item: OrderItemLike): string => orderItemParts(item).name
 
 const orderItemChoice = (item: OrderItemLike): string | undefined =>
     orderItemLabelParts({

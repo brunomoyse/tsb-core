@@ -25,7 +25,7 @@
         </div>
 
         <!-- Address Section (if DELIVERY) -->
-        <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex flex-col gap-2">
+        <div id="checkout-delivery-address" tabindex="-1" v-if="cartStore.collectionOption === 'DELIVERY'" class="flex flex-col gap-2">
             <label class="font-medium">
                 {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-red-400">*</span>
             </label>

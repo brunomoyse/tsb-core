@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-white rounded-lg shadow p-4 w-full mx-auto space-y-6">
+    <section id="checkout-payment-extras" tabindex="-1" class="bg-white rounded-lg shadow p-4 w-full mx-auto space-y-6">
         <h2 class="text-xl font-semibold mb-4">
             {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
         </h2>
@@ -142,7 +142,7 @@
                     <p class="font-medium text-gray-700 mb-3">
                         {{ $t('checkout.sauce') }}
                     </p>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-nowrap gap-2 overflow-x-auto pb-1">
                         <button
                             v-for="option in sauceOptions"
                             :key="option.value"
@@ -151,7 +151,7 @@
                             :aria-pressed="sauce === option.value"
                             @click="sauce = option.value"
                             :class="[
-                                'px-3 py-1.5 text-sm border rounded-full transition-all active:scale-[0.97]',
+                                'px-3 py-1.5 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
                                 sauce === option.value
                                     ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
                                     : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -189,10 +189,10 @@
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-            isMinimumReached && !loading && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing && !isCashBlocking
+            !loading && isOrderingAvailable
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          ]" :disabled="!isMinimumReached || loading || !isOrderingAvailable || isAddressTooFar || isPhoneMissing || isCashBlocking">
+          ]" :disabled="loading || !isOrderingAvailable">
             <span v-if="loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -218,12 +218,10 @@ import { useDebounceFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
-const { isMinimumReached = false, loading = false, isOrderingAvailable = true, isAddressTooFar = false, isPhoneMissing = false, cashAcknowledged = false } = defineProps<{
+const { isMinimumReached = false, loading = false, isOrderingAvailable = true, cashAcknowledged = false } = defineProps<{
     isMinimumReached?: boolean
     loading?: boolean
     isOrderingAvailable?: boolean
-    isAddressTooFar?: boolean
-    isPhoneMissing?: boolean
     cashAcknowledged?: boolean
 }>()
 
@@ -247,8 +245,6 @@ const cashPaymentAmount = computed({
         cartStore.cashPaymentAmount = value === '' ? null : value
     },
 })
-
-const isCashBlocking = computed(() => !isOnlinePayment.value && !cashAcknowledged)
 
 const sauceOptions = computed(() => [
     { value: 'none', label: t('checkout.none') },

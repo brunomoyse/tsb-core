@@ -12,7 +12,7 @@
         </div>
 
         <!-- Minimum Order Warning Banner -->
-        <div v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
+        <div id="checkout-minimum-order-banner" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
@@ -73,7 +73,7 @@
                     :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
                     :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
                 />
-                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :isAddressTooFar="isAddressTooFar" :isPhoneMissing="isPhoneMissing" v-model:cashAcknowledged="cashAcknowledged" />
+                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" v-model:cashAcknowledged="cashAcknowledged" />
             </div>
 
             <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
@@ -84,10 +84,10 @@
                 <button
                     data-testid="checkout-place-order"
                     @click="handleCheckout"
-                    :disabled="!isMinimumReached || isCheckoutProcessing || !isOrderingAvailable || isAddressTooFar || isPhoneMissing || isCashBlocking"
+                    :disabled="isCheckoutProcessing || !isOrderingAvailable"
                     :class="[
                         'flex items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all',
-                        isMinimumReached && !isCheckoutProcessing && isOrderingAvailable && !isAddressTooFar && !isPhoneMissing && !isCashBlocking
+                        !isCheckoutProcessing && isOrderingAvailable
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     ]"
@@ -377,7 +377,6 @@ onMounted(() => {
 })
 
 const cashAcknowledged = ref(false)
-const isCashBlocking = computed(() => cartStore.paymentOption === 'CASH' && !cashAcknowledged.value)
 watch(() => cartStore.paymentOption, (value) => {
     if (value === 'ONLINE') {
         cashAcknowledged.value = false
@@ -388,6 +387,73 @@ watch(() => cartStore.paymentOption, (value) => {
 // Checkout logic (simplified; extras and time selection are handled in CheckoutPaymentExtras component)
 const isCheckoutProcessing = ref(false)
 const isRedirectingToPayment = ref(false)
+
+interface CheckoutValidationError {
+    message: string
+    targetId: string
+    event: string
+}
+
+const scrollToValidationTarget = (targetId: string) => {
+    if (!import.meta.client) return
+    const target = document.getElementById(targetId)
+    if (!target) return
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (target instanceof HTMLElement) {
+        window.setTimeout(() => {
+            target.focus({ preventScroll: true })
+        }, 250)
+    }
+}
+
+const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
+    const errors: CheckoutValidationError[] = []
+
+    if (!isMinimumReached.value) {
+        errors.push({
+            message: cartStore.collectionOption === 'DELIVERY'
+                ? t('cart.minimumDelivery', { amount: 25 })
+                : t('cart.minimumPickup', { amount: 20 }),
+            targetId: 'checkout-minimum-order-banner',
+            event: 'checkout_error_minimum_not_reached',
+        })
+    }
+
+    if (!authStore.user?.phoneNumber) {
+        errors.push({
+            message: t('checkout.phoneCapture.requiredBeforeOrder'),
+            targetId: 'checkout-phone-capture',
+            event: 'checkout_error_phone_required',
+        })
+    }
+
+    if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
+        errors.push({
+            message: t('notify.errors.addressRequired', 'Delivery address is required.'),
+            targetId: 'checkout-delivery-address',
+            event: 'checkout_error_address_required',
+        })
+    }
+
+    if (cartStore.paymentOption === 'CASH' && !cashAcknowledged.value) {
+        errors.push({
+            message: t('checkout.cashAcknowledge'),
+            targetId: 'checkout-payment-extras',
+            event: 'checkout_error_cash_not_acknowledged',
+        })
+    }
+
+    if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= 9000) {
+        errors.push({
+            message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
+            targetId: 'checkout-delivery-address',
+            event: 'checkout_error_address_too_far',
+        })
+    }
+
+    return errors
+}
+
 const handleCheckout = async () => {
     if (isCheckoutProcessing.value) return
     isCheckoutProcessing.value = true
@@ -423,46 +489,20 @@ const handleCheckout = async () => {
             })
             return
         }
-        if (!authStore.user?.phoneNumber) {
-            trackEvent('checkout_error_phone_required')
-            eventBus.emit('notify', {
-                message: t('checkout.phoneCapture.requiredBeforeOrder'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
-        if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
-            trackEvent('checkout_error_address_required')
-            eventBus.emit('notify', {
-                message: t('notify.errors.addressRequired', 'Delivery address is required.'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
 
-        if (cartStore.paymentOption === 'CASH' && !cashAcknowledged.value) {
-            trackEvent('checkout_error_cash_not_acknowledged')
-            eventBus.emit('notify', {
-                message: t('checkout.cashAcknowledge'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
+        const validationErrors = getCheckoutValidationErrors()
+        if (validationErrors.length > 0) {
+            const [firstError] = validationErrors
+            if (firstError) {
+                trackEvent(firstError.event)
+                scrollToValidationTarget(firstError.targetId)
+            }
 
-        if (cartStore.address?.distance && cartStore.address?.distance >= 9000) {
-            trackEvent('checkout_error_address_too_far')
+            const details = validationErrors.map(error => error.message).join(', ')
             eventBus.emit('notify', {
-                message: t('notify.errors.deliveryAddressTooFar', {
-                    distance: 9
-                }),
+                message: `${t('checkout.completeBeforeOrder')} ${details}`,
                 persistent: false,
-                duration: 5000,
+                duration: 7000,
                 variant: 'error',
             })
             return
@@ -579,12 +619,6 @@ const totalDiscount = computed(() =>
                 : acc, 0)
         : 0
 );
-
-const isAddressTooFar = computed(() =>
-    cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= 9000
-)
-
-const isPhoneMissing = computed(() => !authStore.user?.phoneNumber)
 
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {
