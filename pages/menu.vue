@@ -58,9 +58,15 @@
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
                         >
-                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('halal') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                            </svg>
+                            <img
+                                class="w-4 h-4 shrink-0 transition-all duration-300"
+                                :class="activeFilters.has('halal') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                :src="activeFilters.has('halal')
+                                    ? 'https://api.iconify.design/hugeicons/halal.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/halal.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
                             {{ $t('menu.halal') }}
                         </button>
 
@@ -72,10 +78,15 @@
                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
-                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('vegan') ? 'scale-110' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
-                                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                            </svg>
+                            <img
+                                class="w-4 h-4 shrink-0 transition-all duration-300"
+                                :class="activeFilters.has('vegan') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                :src="activeFilters.has('vegan')
+                                    ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
                             {{ $t('menu.vegan') }}
                         </button>
 
@@ -87,9 +98,15 @@
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
                         >
-                            <svg class="w-4 h-4 shrink-0 transition-transform duration-300" :class="activeFilters.has('spicy') ? 'scale-110' : ''" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
-                                <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
-                            </svg>
+                            <img
+                                class="w-4 h-4 shrink-0 transition-all duration-300"
+                                :class="activeFilters.has('spicy') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                :src="activeFilters.has('spicy')
+                                    ? 'https://api.iconify.design/hugeicons/fire-02.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/fire-02.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
                             {{ $t('menu.spicy') }}
                         </button>
                     </div>
