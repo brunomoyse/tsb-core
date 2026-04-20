@@ -10,8 +10,11 @@ const RESTAURANT_CONFIG_QUERY = gql`
             orderingEnabled
             openingHours
             orderingHours
+            preparationMinutes
             isCurrentlyOpen
             isOrderingCurrentlyOpen
+            availableSlotsToday { label value }
+            nextOpeningAt
         }
     }
 `
@@ -22,18 +25,29 @@ const SUB_RESTAURANT_CONFIG = gql`
             orderingEnabled
             openingHours
             orderingHours
+            preparationMinutes
             isCurrentlyOpen
             isOrderingCurrentlyOpen
+            availableSlotsToday { label value }
+            nextOpeningAt
         }
     }
 `
+
+export interface RestaurantTimeSlot {
+    label: string
+    value: string
+}
 
 interface RestaurantConfig {
     orderingEnabled: boolean
     openingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null>
     orderingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null> | null
+    preparationMinutes: number
     isCurrentlyOpen: boolean
     isOrderingCurrentlyOpen: boolean
+    availableSlotsToday: RestaurantTimeSlot[]
+    nextOpeningAt: string | null
 }
 
 export async function useRestaurantConfig() {

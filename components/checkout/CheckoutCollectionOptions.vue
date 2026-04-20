@@ -113,8 +113,9 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { RestaurantTimeSlot } from '~/composables/useRestaurantConfig'
 import { formatAddress } from '~/utils/utils'
-import { getAvailableFixedSlotsToday } from '~/utils/openingHours'
+import { getBrusselsParts } from '~/utils/datetime'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
@@ -128,14 +129,14 @@ interface OpeningHourEntry {
 
 const {
     openingHours,
-    orderingHours,
     orderingEnabled,
-    isCurrentlyOpen
+    isCurrentlyOpen,
+    availableSlotsToday
 } = defineProps<{
     openingHours?: Record<string, OpeningHourEntry | null>
-    orderingHours?: Record<string, OpeningHourEntry | null> | null
     orderingEnabled?: boolean
     isCurrentlyOpen?: boolean
+    availableSlotsToday?: RestaurantTimeSlot[]
 }>()
 
 const emit = defineEmits<{
@@ -186,9 +187,7 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-const availableFixedSlots = computed(() =>
-    getAvailableFixedSlotsToday(openingHoursSource.value, now.value, orderingHours)
-)
+const availableFixedSlots = computed<RestaurantTimeSlot[]>(() => availableSlotsToday ?? [])
 
 // Selected preferred time binding
 const preferredReadyTime = computed<string>({
@@ -208,7 +207,8 @@ const isOpen = computed(() => {
     if (isCurrentlyOpen !== undefined) {
         return isCurrentlyOpen
     }
-    const dayKey = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.value.getDay()]!
+    const parts = getBrusselsParts(now.value)
+    const dayKey = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][parts.weekday]!
     const schedule = openingHoursSource.value[dayKey]
     if (!schedule) return false
 
@@ -216,7 +216,7 @@ const isOpen = computed(() => {
     if (schedule.dinnerOpen && schedule.dinnerClose) {
         ranges.push([schedule.dinnerOpen, schedule.dinnerClose])
     }
-    const cur = now.value.getHours() * 60 + now.value.getMinutes()
+    const cur = parts.hour * 60 + parts.minute
     return ranges.some(([s,e]) => {
         const end = toMins(e), start = toMins(s)
         return cur >= start && cur < end
