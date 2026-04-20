@@ -59,8 +59,8 @@ export default defineNuxtPlugin(() => {
             },
             geo: {
                 '@type': 'GeoCoordinates',
-                latitude: 50.642394,
-                longitude: 5.574711
+                latitude: 50.64245770697728,
+                longitude: 5.574703166758179
             },
             url: baseUrl,
             servesCuisine: 'Japanese',
