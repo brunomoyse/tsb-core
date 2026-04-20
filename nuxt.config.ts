@@ -81,10 +81,11 @@ export default defineNuxtConfig({
         ...isCapacitor ? [] : ['@sentry/nuxt/module'],
     ],
 
-    plugins: [
-        '~/plugins/api',
-        '~/plugins/gqlFetch',
-    ],
+        plugins: [
+            '~/plugins/api',
+            '~/plugins/gqlFetch',
+            '~/plugins/orientation-lock.client',
+        ],
 
     i18n: {
         baseUrl: process.env.BASE_URL,
