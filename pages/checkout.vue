@@ -42,9 +42,13 @@
             <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
         </nav>
 
+        <!-- Delivery zone gate: before we ask anonymous users to log in, confirm the address is deliverable.
+             Prevents the "filled cart, logged in, then blocked at checkout" frustration. -->
+        <CheckoutDeliveryGate v-if="needsDeliveryGate" />
+
         <!-- Auth step: shown while the user is anonymous. Keeps them on /checkout instead of
              redirecting to /auth/login; cart is already persisted in localStorage. -->
-        <CheckoutAuthStep v-if="!authStore.user" />
+        <CheckoutAuthStep v-else-if="!authStore.user" />
 
         <template v-else>
             <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
@@ -186,6 +190,7 @@ import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
+import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
@@ -194,6 +199,7 @@ import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
+import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
@@ -213,6 +219,14 @@ const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restauran
 const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
 const hasFixedSlotsToday = computed(() => (restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.length ?? 0) > 0)
 const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isOrderingCurrentlyOpen.value || hasFixedSlotsToday.value))
+
+// Pre-auth delivery zone gate: block anonymous users from hitting login/register
+// Until we know their address is deliverable. Preserves the cart either way.
+const needsDeliveryGate = computed(() =>
+    !authStore.user
+    && cartStore.collectionOption === 'DELIVERY'
+    && (!cartStore.address || (cartStore.address.distance ?? 0) >= DELIVERY_ZONE_METERS),
+)
 
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
 watch(isOrderingAvailable, (available) => {

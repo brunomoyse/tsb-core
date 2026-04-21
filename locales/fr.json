@@ -299,6 +299,35 @@
       "updateError": "Échec de la mise à jour des préférences."
     }
   },
+  "delivery": {
+    "chip": {
+      "verify": "Vérifier la livraison",
+      "inZone": "Livraison · {km} km",
+      "outOfZone": "Hors zone de livraison",
+      "pickup": "Retrait au restaurant",
+      "actionHint": "cliquer pour modifier"
+    },
+    "modal": {
+      "title": "Livraison ou retrait ?",
+      "subtitle": "Confirmez votre adresse avant de commander.",
+      "modeLabel": "Mode de retrait",
+      "deliveryTab": "Livraison",
+      "pickupTab": "À emporter",
+      "currentAddress": "Adresse actuelle",
+      "change": "Modifier",
+      "distanceOk": "Nous livrons à cette adresse",
+      "distanceTooFar": "Cette adresse est hors de notre zone de 9 km",
+      "distanceValue": "Distance : {km} km",
+      "switchToPickup": "Passer au retrait",
+      "confirm": "Confirmer",
+      "pickupLabel": "Retrait au restaurant",
+      "pickupHint": "Venez chercher votre commande sur place — aucune adresse nécessaire."
+    },
+    "gate": {
+      "title": "Avant de continuer",
+      "subtitle": "Vérifions d'abord que nous pouvons vous livrer à votre adresse. Cela évite toute mauvaise surprise au paiement."
+    }
+  },
   "cart": {
     "title": "Panier",
     "empty": "Votre panier est vide",

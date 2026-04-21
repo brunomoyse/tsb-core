@@ -116,6 +116,12 @@
                             />
                             {{ $t('menu.spicy') }}
                         </button>
+
+                        <!-- Delivery zone chip — passive indicator, opens modal on click.
+                             ml-auto pushes it right on wider rows; wraps below on narrow screens. -->
+                        <div class="ml-auto">
+                            <DeliveryZoneChip />
+                        </div>
                     </div>
                 </section>
 
@@ -279,6 +285,7 @@ import type { Product, ProductCategory } from '@/types'
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
+import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import PullToRefresh from '~/components/PullToRefresh.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { useHaptics } from '~/composables/useHaptics'

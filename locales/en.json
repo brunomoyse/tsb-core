@@ -300,6 +300,35 @@
     },
     "logout": "Logout"
   },
+  "delivery": {
+    "chip": {
+      "verify": "Check delivery",
+      "inZone": "Delivery · {km} km",
+      "outOfZone": "Outside delivery zone",
+      "pickup": "Pickup at restaurant",
+      "actionHint": "tap to change"
+    },
+    "modal": {
+      "title": "Delivery or pickup?",
+      "subtitle": "Confirm your address before ordering.",
+      "modeLabel": "Collection mode",
+      "deliveryTab": "Delivery",
+      "pickupTab": "Pickup",
+      "currentAddress": "Current address",
+      "change": "Change",
+      "distanceOk": "We deliver to this address",
+      "distanceTooFar": "This address is outside our 9 km delivery zone",
+      "distanceValue": "Distance: {km} km",
+      "switchToPickup": "Switch to pickup",
+      "confirm": "Confirm",
+      "pickupLabel": "Pickup at the restaurant",
+      "pickupHint": "Come by to collect your order — no address needed."
+    },
+    "gate": {
+      "title": "Before you continue",
+      "subtitle": "Let's first make sure we can deliver to your address. This avoids any surprises at checkout."
+    }
+  },
   "cart": {
     "title": "Cart",
     "empty": "Your cart is empty",

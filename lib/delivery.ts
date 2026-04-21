@@ -1,0 +1,1 @@
+export const DELIVERY_ZONE_METERS = 9000

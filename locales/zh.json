@@ -300,6 +300,35 @@
     },
     "logout": "您已成功登出"
   },
+  "delivery": {
+    "chip": {
+      "verify": "查看配送范围",
+      "inZone": "配送 · {km} 公里",
+      "outOfZone": "超出配送范围",
+      "pickup": "到店自取",
+      "actionHint": "点击修改"
+    },
+    "modal": {
+      "title": "配送还是自取？",
+      "subtitle": "下单前请确认您的地址。",
+      "modeLabel": "取餐方式",
+      "deliveryTab": "配送",
+      "pickupTab": "自取",
+      "currentAddress": "当前地址",
+      "change": "修改",
+      "distanceOk": "该地址在配送范围内",
+      "distanceTooFar": "该地址超出我们 9 公里的配送范围",
+      "distanceValue": "距离：{km} 公里",
+      "switchToPickup": "改为自取",
+      "confirm": "确认",
+      "pickupLabel": "到店自取",
+      "pickupHint": "请亲自到店取餐 — 无需填写地址。"
+    },
+    "gate": {
+      "title": "继续之前",
+      "subtitle": "先确认我们能否配送到您的地址，以免在结账时出现意外。"
+    }
+  },
   "cart": {
     "title": "购物车",
     "empty": "您的购物车为空",
