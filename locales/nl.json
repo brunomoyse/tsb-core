@@ -298,6 +298,35 @@
       "updateError": "Bijwerken van voorkeuren mislukt."
     }
   },
+  "delivery": {
+    "chip": {
+      "verify": "Levering controleren",
+      "inZone": "Levering · {km} km",
+      "outOfZone": "Buiten leveringszone",
+      "pickup": "Afhalen in het restaurant",
+      "actionHint": "tik om te wijzigen"
+    },
+    "modal": {
+      "title": "Leveren of afhalen?",
+      "subtitle": "Bevestig uw adres vóór u bestelt.",
+      "modeLabel": "Ophaalwijze",
+      "deliveryTab": "Levering",
+      "pickupTab": "Afhalen",
+      "currentAddress": "Huidig adres",
+      "change": "Wijzigen",
+      "distanceOk": "We leveren op dit adres",
+      "distanceTooFar": "Dit adres ligt buiten onze leveringszone van 9 km",
+      "distanceValue": "Afstand: {km} km",
+      "switchToPickup": "Overschakelen naar afhalen",
+      "confirm": "Bevestigen",
+      "pickupLabel": "Afhalen in het restaurant",
+      "pickupHint": "Kom uw bestelling ter plaatse ophalen — geen adres nodig."
+    },
+    "gate": {
+      "title": "Voordat u verdergaat",
+      "subtitle": "Laten we eerst controleren of we op uw adres kunnen leveren. Zo voorkomt u verrassingen bij het afrekenen."
+    }
+  },
   "cart": {
     "title": "Winkelwagen",
     "empty": "Uw winkelwagen is leeg",
