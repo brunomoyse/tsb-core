@@ -5,19 +5,19 @@
         </h3>
 
         <!-- Applied state -->
-        <div v-if="cartStore.couponCode" data-testid="coupon-applied" class="flex items-center justify-between p-3 border border-green-300 bg-green-50 rounded-lg">
+        <div v-if="cartStore.couponCode" data-testid="coupon-applied" class="flex items-center justify-between p-3 border border-red-200 bg-tsb-four rounded-lg">
             <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                <span class="text-sm text-green-700 font-medium">
+                <span class="text-sm text-red-700 font-medium">
                     {{ $t('coupon.applied', { discount: formatPrice(cartStore.couponDiscount) }) }}
                 </span>
             </div>
             <button
                 type="button"
                 data-testid="coupon-remove"
-                class="text-sm text-red-600 hover:text-red-700 font-medium"
+                class="min-h-11 inline-flex items-center text-sm text-red-600 hover:text-red-700 font-medium underline underline-offset-2 decoration-red-300 hover:decoration-red-500"
                 @click="removeCoupon"
             >
                 {{ $t('coupon.remove') }}

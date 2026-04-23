@@ -360,9 +360,10 @@
       "returnToLogin": "Email confirmé — se connecter maintenant"
     },
     "phoneCapture": {
-      "title": "Numéro de téléphone requis",
+      "title": "Numéro de téléphone",
       "description": "Nécessaire pour vous contacter au sujet de votre commande.",
       "saved": "Numéro enregistré",
+      "edit": "Modifier",
       "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
     },
     "orderSummary": "Votre commande",
@@ -391,6 +392,8 @@
     "cash": "Espèces",
     "cashWarning": "Attention : une fois la commande validée, il ne sera plus possible de changer de mode de paiement.",
     "cashAcknowledge": "J'ai bien compris et je confirme payer en espèces.",
+    "cashAcknowledged": "Paiement espèces confirmé",
+    "discardAddress": "Abandonner l'adresse saisie ?",
     "cashAmountLabel": "Avec combien allez-vous payer ?",
     "cashAmountPlaceholder": "ex. 50",
     "extras": "Options",
@@ -412,6 +415,10 @@
     "free": "Gratuit",
     "stepMenu": "Menu",
     "stepCheckout": "Commande",
+    "stepAddress": "Adresse",
+    "stepSignIn": "Connexion",
+    "stepPhone": "Téléphone",
+    "stepReview": "Vérification",
     "stepPayment": "Paiement",
     "itemCount": "{count} article | {count} articles",
     "opensAt": "Ouverture à {time}",

@@ -50,17 +50,23 @@ interface RestaurantConfig {
     nextOpeningAt: string | null
 }
 
-export async function useRestaurantConfig() {
+interface UseRestaurantConfigOptions {
+    // When true, don't block on the initial query — callers render a loading state via the returned `pending` ref. Default preserves the original awaited semantics.
+    lazy?: boolean
+}
+
+export async function useRestaurantConfig(options: UseRestaurantConfigOptions = {}) {
     // Register subscription BEFORE any await to preserve the active effect scope
     const sub = import.meta.client
         ? useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(print(SUB_RESTAURANT_CONFIG))
         : null
 
-    const { data, refresh } = await useGqlQuery<{ restaurantConfig: RestaurantConfig }>(
+    const asyncData = await useGqlQuery<{ restaurantConfig: RestaurantConfig }>(
         RESTAURANT_CONFIG_QUERY,
         {},
-        { immediate: true, cache: false }
+        { immediate: true, cache: false, ...(options.lazy ? { lazy: true } : {}) }
     )
+    const { data, refresh, pending } = asyncData
 
     if (sub) {
         watch(sub.data, (val) => {
@@ -79,5 +85,6 @@ export async function useRestaurantConfig() {
     return {
         config: data,
         refresh,
+        pending,
     }
 }

@@ -1,6 +1,6 @@
 <template>
-    <section id="checkout-payment-extras" tabindex="-1" class="bg-white rounded-lg shadow p-4 w-full mx-auto space-y-6">
-        <h2 class="text-xl font-semibold mb-4">
+    <section id="checkout-payment-extras" tabindex="-1" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 w-full mx-auto space-y-6">
+        <h2 class="text-lg font-bold text-gray-900">
             {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
         </h2>
 
@@ -12,46 +12,53 @@
             <h3 class="font-medium mb-2">
                 {{ $t('checkout.paymentMethod', 'Payment Method') }}
             </h3>
-            <div class="flex gap-4" role="radiogroup" :aria-label="$t('checkout.paymentMethod')">
+            <div class="flex gap-4" role="radiogroup" :aria-label="$t('checkout.paymentMethod')" @keydown="onPaymentKeydown">
                 <!-- Online Payment Card -->
                 <button
+                    ref="onlineRadioRef"
                     type="button"
                     role="radio"
                     :aria-checked="isOnlinePayment"
+                    :tabindex="isOnlinePayment ? 0 : -1"
                     data-testid="payment-online"
                     @click="setOnlinePayment(true)"
                     :class="[
-            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
+            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none',
             isOnlinePayment ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
           ]"
                 >
-                    <img src="/icons/online-payment-icon.svg" alt="Online Payment" class="w-10 h-10 mb-2" />
+                    <img src="/icons/online-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
                     <span class="font-semibold">{{ $t('checkout.online', 'Online Payment') }}</span>
                 </button>
                 <!-- Cash Payment Card -->
                 <button
+                    ref="cashRadioRef"
                     type="button"
                     role="radio"
                     :aria-checked="!isOnlinePayment"
+                    :tabindex="!isOnlinePayment ? 0 : -1"
                     data-testid="payment-cash"
                     @click="setOnlinePayment(false)"
                     :class="[
-            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md',
+            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none',
             !isOnlinePayment ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
           ]"
                 >
-                    <img src="/icons/cash-payment-icon.svg" alt="Cash" class="w-10 h-10 mb-2" />
+                    <img src="/icons/cash-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
                     <span class="font-semibold">{{ $t('checkout.cash', 'Cash') }}</span>
                 </button>
             </div>
 
-            <!-- Cash payment warning + acknowledgement + expected amount -->
+            <!-- Cash payment: amber warning until acknowledged, then a compact confirmed state. -->
             <div
                 v-if="!isOnlinePayment"
                 data-testid="cash-payment-notice"
-                class="mt-4 rounded-lg bg-amber-50 border border-amber-200 p-4 space-y-3"
+                :class="[
+                    'mt-4 rounded-lg border p-4 space-y-3 transition-colors',
+                    cashAcknowledgedModel ? 'bg-gray-50 border-gray-200' : 'bg-amber-50 border-amber-200'
+                ]"
             >
-                <div class="flex items-start gap-3">
+                <div v-if="!cashAcknowledgedModel" class="flex items-start gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
@@ -62,20 +69,27 @@
 
                 <label class="flex items-start gap-3 cursor-pointer">
                     <input
+                        ref="cashAckRef"
                         type="checkbox"
                         data-testid="cash-acknowledge"
                         v-model="cashAcknowledgedModel"
-                        class="mt-0.5 h-5 w-5 text-red-500 border-gray-300 rounded shrink-0"
+                        class="mt-0.5 h-5 w-5 text-red-500 border-gray-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-red-300"
                     />
-                    <span class="text-sm text-amber-900 font-medium">
+                    <span v-if="cashAcknowledgedModel" class="inline-flex items-center gap-1.5 text-sm text-gray-700 font-medium">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ $t('checkout.cashAcknowledged') }}
+                    </span>
+                    <span v-else class="text-sm text-amber-900 font-medium">
                         {{ $t('checkout.cashAcknowledge') }}
                     </span>
                 </label>
 
                 <div>
-                    <label for="cash-payment-amount" class="block text-sm font-medium text-amber-900 mb-1">
+                    <label for="cash-payment-amount" :class="['block text-sm font-medium mb-1', cashAcknowledgedModel ? 'text-gray-800' : 'text-amber-900']">
                         {{ $t('checkout.cashAmountLabel') }}
-                        <span class="text-amber-700/70 text-xs font-normal">{{ $t('checkout.optional') }}</span>
+                        <span :class="['text-xs font-normal', cashAcknowledgedModel ? 'text-gray-500' : 'text-amber-700/70']">{{ $t('checkout.optional') }}</span>
                     </label>
                     <div class="relative">
                         <input
@@ -87,9 +101,14 @@
                             step="0.01"
                             inputmode="decimal"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
-                            class="w-full pl-3 pr-8 py-2 border border-amber-300 rounded-md bg-white focus:ring focus:ring-amber-200 focus:border-amber-400 focus:outline-none"
+                            :class="[
+                                'w-full pl-3 pr-8 py-2 border rounded-md bg-white focus:outline-none',
+                                cashAcknowledgedModel
+                                    ? 'border-gray-300 focus:ring focus:ring-gray-200 focus:border-gray-400'
+                                    : 'border-amber-300 focus:ring focus:ring-amber-200 focus:border-amber-400',
+                            ]"
                         />
-                        <span class="absolute inset-y-0 right-3 flex items-center text-amber-700 text-sm pointer-events-none">€</span>
+                        <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-gray-500' : 'text-amber-700']">€</span>
                     </div>
                 </div>
             </div>
@@ -173,10 +192,19 @@
             <textarea
                 v-model="orderComment"
                 aria-labelledby="order-comment-label"
+                aria-describedby="order-comment-counter"
                 rows="3"
+                maxlength="500"
                 class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
                 :placeholder="$t('checkout.orderCommentPlaceholder', 'e.g. Allergies or special instructions')"
             ></textarea>
+            <p
+                id="order-comment-counter"
+                class="text-xs mt-1 tabular-nums text-right"
+                :class="orderComment.length >= ORDER_COMMENT_MAX ? 'text-red-600 font-medium' : 'text-gray-500'"
+            >
+                {{ orderComment.length }} / {{ ORDER_COMMENT_MAX }}
+            </p>
         </div>
 
         <!-- Minimum Order Warning -->
@@ -211,8 +239,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { computed } from 'vue'
 import { useCartStore } from '#imports'
 import { useDebounceFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -228,6 +256,8 @@ const { isMinimumReached = false, loading = false, isOrderingAvailable = true, c
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+
+const ORDER_COMMENT_MAX = 500
 
 const emit = defineEmits<{
     checkout: []
@@ -255,7 +285,7 @@ const sauceOptions = computed(() => [
 
 const setOnlinePayment = (value: boolean) => {
     trackEvent('payment_method_selected', { method: value ? 'ONLINE' : 'CASH' })
-    isOnlinePayment.value = value;
+    isOnlinePayment.value = value
 }
 
 // Computed binding for payment option
@@ -266,54 +296,45 @@ const isOnlinePayment = computed({
     }
 })
 
+// Roving-tabindex + arrow-key nav on the payment radio group.
+const onlineRadioRef = ref<HTMLButtonElement | null>(null)
+const cashRadioRef = ref<HTMLButtonElement | null>(null)
+const onPaymentKeydown = (e: KeyboardEvent) => {
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
+    if (!keys.includes(e.key)) return
+    e.preventDefault()
+    const wantOnline = e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'Home'
+        ? true
+        : e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'End'
+            ? false
+            : isOnlinePayment.value
+    setOnlinePayment(wantOnline)
+    nextTick(() => (wantOnline ? onlineRadioRef.value : cashRadioRef.value)?.focus())
+}
 
-// Computed binding for chopsticks
-const addChopsticks = computed({
-    get: () => cartStore.orderExtra?.some(o => o.name === 'chopsticks') || false,
-    set: (value: boolean) => {
-        if (!cartStore.orderExtra) cartStore.orderExtra = []
-        const idx = cartStore.orderExtra.findIndex(o => o.name === 'chopsticks')
-        if (value) {
-            if (idx === -1) {
-                cartStore.orderExtra.push({ name: 'chopsticks' })
-            }
-        } else if (idx !== -1) {
-            cartStore.orderExtra.splice(idx, 1)
-        }
+// Auto-focus the acknowledgement checkbox when the user switches to Cash — the ack control is far enough below the radio that users miss it otherwise.
+const cashAckRef = ref<HTMLInputElement | null>(null)
+watch(isOnlinePayment, (online, prev) => {
+    if (prev !== undefined && !online) {
+        nextTick(() => cashAckRef.value?.focus())
     }
 })
 
-// Computed binding for wasabi
-const addWasabi = computed({
-    get: () => cartStore.orderExtra?.some(o => o.name === 'wasabi') || false,
+
+// Factory for a two-way boolean binding against cartStore.orderExtra by name.
+const useExtraToggle = (name: string) => computed({
+    get: () => cartStore.orderExtra?.some(o => o.name === name) ?? false,
     set: (value: boolean) => {
         if (!cartStore.orderExtra) cartStore.orderExtra = []
-        const idx = cartStore.orderExtra.findIndex(o => o.name === 'wasabi')
-        if (value) {
-            if (idx === -1) {
-                cartStore.orderExtra.push({ name: 'wasabi' })
-            }
-        } else if (idx !== -1) {
-            cartStore.orderExtra.splice(idx, 1)
-        }
-    }
+        const idx = cartStore.orderExtra.findIndex(o => o.name === name)
+        if (value && idx === -1) cartStore.orderExtra.push({ name })
+        else if (!value && idx !== -1) cartStore.orderExtra.splice(idx, 1)
+    },
 })
 
-// Computed binding for ginger
-const addGinger = computed({
-    get: () => cartStore.orderExtra?.some(o => o.name === 'ginger') || false,
-    set: (value: boolean) => {
-        if (!cartStore.orderExtra) cartStore.orderExtra = []
-        const idx = cartStore.orderExtra.findIndex(o => o.name === 'ginger')
-        if (value) {
-            if (idx === -1) {
-                cartStore.orderExtra.push({ name: 'ginger' })
-            }
-        } else if (idx !== -1) {
-            cartStore.orderExtra.splice(idx, 1)
-        }
-    }
-})
+const addChopsticks = useExtraToggle('chopsticks')
+const addWasabi = useExtraToggle('wasabi')
+const addGinger = useExtraToggle('ginger')
 
 const sauce = computed<string>({
     get() {
