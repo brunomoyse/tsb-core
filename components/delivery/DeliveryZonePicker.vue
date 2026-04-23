@@ -19,10 +19,7 @@
                 ]"
             >
                 <span class="inline-flex items-center gap-1.5">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="10" r="3" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="/icons/moped-icon.svg" alt="" aria-hidden="true" class="w-4 h-4" />
                     {{ $t('delivery.modal.deliveryTab') }}
                 </span>
             </button>
@@ -39,9 +36,7 @@
                 ]"
             >
                 <span class="inline-flex items-center gap-1.5">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M6 2l1.5 4h9L18 2M4 6h16l-1.5 14a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2L4 6z" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-4 h-4" />
                     {{ $t('delivery.modal.pickupTab') }}
                 </span>
             </button>
@@ -117,9 +112,7 @@
                             @click="switchToPickup"
                             class="mt-3 inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-white border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 transition-all active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path d="M6 2l1.5 4h9L18 2M4 6h16l-1.5 14a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2L4 6z" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-3.5 h-3.5" />
                             {{ $t('delivery.modal.switchToPickup') }}
                         </button>
                     </div>

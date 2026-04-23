@@ -2,30 +2,31 @@
     <Transition name="slide-up">
         <div
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
-            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-gray-800 shadow-lg"
+            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-slate-900 shadow-lg"
             :class="{ 'animate-cart-pulse': isPulsing }"
         >
             <button
                 type="button"
-                class="w-full text-white px-4 py-3 flex items-center justify-between transition-all active:scale-[0.98]"
+                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-150 active:scale-[0.985] active:bg-slate-800"
                 @click="cartStore.toggleCartVisibility"
             >
-                <div class="flex items-center gap-2">
-                    <span class="bg-white text-gray-800 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="bg-white text-slate-900 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
                         {{ cartStore.totalItems }}
                     </span>
-                    <div class="flex flex-col items-start">
-                        <span class="text-sm font-medium">{{ $t('cart.title') }}</span>
-                        <Transition name="fade">
-                            <span v-if="addedProductName" class="text-xs text-gray-300 truncate max-w-[180px]">
-                                + {{ addedProductName }}
-                            </span>
-                        </Transition>
-                    </div>
+                    <span class="text-sm font-semibold truncate">
+                        {{ $t('cart.viewCart') }} · {{ cartStore.totalItems }}
+                        {{ cartStore.totalItems > 1 ? $t('cart.items') : $t('cart.item') }}
+                    </span>
                 </div>
-                <span class="font-semibold">{{ formatPrice(cartStore.totalPrice) }}</span>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="font-semibold tabular-nums">{{ formatPrice(cartStore.totalPrice) }}</span>
+                    <svg class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
             </button>
-            <div class="safe-area-spacer-bottom bg-gray-800" />
+            <div class="safe-area-spacer-bottom bg-slate-900" />
         </div>
     </Transition>
 </template>
@@ -39,19 +40,10 @@ import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
 
-const addedProductName = ref<string | null>(null)
 const isPulsing = ref(false)
-let nameTimeout: NodeJS.Timeout | null = null
 let pulseTimeout: NodeJS.Timeout | null = null
 
-const onCartItemAdded = (payload: { productName: string }) => {
-    // Show product name briefly
-    addedProductName.value = payload.productName
-    if (nameTimeout) clearTimeout(nameTimeout)
-    nameTimeout = setTimeout(() => {
-        addedProductName.value = null
-    }, 2000)
-
+const onCartItemAdded = () => {
     // Pulse animation
     isPulsing.value = false
     // Force reflow to restart animation
@@ -70,7 +62,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     eventBus.off('cart-item-added', onCartItemAdded)
-    if (nameTimeout) clearTimeout(nameTimeout)
     if (pulseTimeout) clearTimeout(pulseTimeout)
 })
 </script>
@@ -83,17 +74,6 @@ onUnmounted(() => {
 .slide-up-enter-from,
 .slide-up-leave-to {
     transform: translateY(100%);
-    opacity: 0;
-}
-
-.fade-enter-active {
-    transition: opacity 0.2s ease;
-}
-.fade-leave-active {
-    transition: opacity 0.5s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
     opacity: 0;
 }
 </style>

@@ -301,9 +301,12 @@
   "delivery": {
     "chip": {
       "verify": "Levering controleren",
+      "verifyCompact": "Afstand checken",
       "inZone": "Levering · {km} km",
       "outOfZone": "Buiten leveringszone",
+      "outOfZoneCompact": "Buiten zone",
       "pickup": "Afhalen in het restaurant",
+      "pickupCompact": "Afhalen",
       "actionHint": "tik om te wijzigen"
     },
     "modal": {
@@ -329,6 +332,7 @@
   },
   "cart": {
     "title": "Winkelwagen",
+    "viewCart": "Bekijk mijn winkelwagen",
     "empty": "Uw winkelwagen is leeg",
     "delivery": "Levering",
     "pickup": "Afhalen",

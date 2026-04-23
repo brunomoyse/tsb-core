@@ -33,13 +33,13 @@
                         <div class="flex items-baseline gap-2">
                             <h2
                                 id="delivery-zone-modal-title"
-                                class="font-channel text-xl sm:text-2xl font-semibold text-gray-900 tracking-wide"
+                                class="font-channel text-base sm:text-2xl font-semibold text-gray-900 tracking-wide leading-tight"
                             >
                                 {{ $t('delivery.modal.title') }}
                             </h2>
                             <span class="text-red-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達</span>
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">{{ $t('delivery.modal.subtitle') }}</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
                     </header>
 
                     <DeliveryZonePicker

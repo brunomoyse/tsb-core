@@ -28,7 +28,15 @@
     "about": "About",
     "menu": "Menu",
     "book": "Reservations",
-    "contact": "Contact"
+    "contact": "Contact",
+    "heroTagline": "Tokyo Sushi Bar · Liège",
+    "orderNow": "Order now",
+    "schedule": "Hours",
+    "status": {
+      "open": "Open",
+      "onsiteOnly": "Open · dine-in only",
+      "closed": "Closed"
+    }
   },
   "contact": {
     "title": "Contact Us",
@@ -303,9 +311,12 @@
   "delivery": {
     "chip": {
       "verify": "Check delivery",
+      "verifyCompact": "Check distance",
       "inZone": "Delivery · {km} km",
       "outOfZone": "Outside delivery zone",
+      "outOfZoneCompact": "Out of zone",
       "pickup": "Pickup at restaurant",
+      "pickupCompact": "Pickup",
       "actionHint": "tap to change"
     },
     "modal": {
@@ -331,6 +342,7 @@
   },
   "cart": {
     "title": "Cart",
+    "viewCart": "View cart",
     "empty": "Your cart is empty",
     "delivery": "Delivery",
     "pickup": "Pickup",

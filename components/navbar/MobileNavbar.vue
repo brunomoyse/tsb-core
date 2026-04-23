@@ -1,8 +1,8 @@
 <template>
     <nav class="mobile-only bg-white text-gray-700 fixed z-50 h-20 w-full">
-        <div class="px-4 flex justify-between items-center h-full mx-auto">
+        <div class="relative px-4 flex items-center h-full mx-auto">
             <!-- Mobile Logo -->
-            <div class="flex items-center">
+            <div class="flex items-center shrink-0">
                 <Logo
                     :aria-label="$t('nav.home')"
                     alt="Tokyo Sushi Bar logo"
@@ -13,11 +13,20 @@
                 />
             </div>
 
+            <div
+                v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
+                class="absolute left-1/2 -translate-x-1/2 min-w-0 max-w-[148px]"
+            >
+                <ClientOnly>
+                    <DeliveryZoneChip compact class="min-w-0 w-full" />
+                </ClientOnly>
+            </div>
+
             <!-- Right part -->
-            <div class="flex items-center">
+            <div class="flex items-center ml-auto shrink-0">
                 <!-- Cart icon -->
                 <div>
-                    <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
+                    <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && cartStore.totalItems === 0"
                                 class="lg:hidden"/>
                 </div>
 
@@ -96,14 +105,17 @@
 <script lang="ts" setup>
 import { ref, watch } from '#imports'
 import CartButton from '~/components/cart/CartButton.vue'
+import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
 import LanguagePicker from './LanguagePicker.vue'
 import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 import { useRoute } from 'vue-router'
 
 const currentRoute = useRoute();
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 
 const isMenuOpen = ref(false)
 
