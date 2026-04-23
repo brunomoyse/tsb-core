@@ -52,7 +52,7 @@
                         <!-- Row 1: Name + price -->
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
-                                <p v-if="itemLabelMeta(item)" class="text-xs text-gray-400 truncate leading-tight mb-0.5">
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-gray-500 truncate leading-tight mb-0.5">
                                     {{ itemLabelMeta(item) }}
                                 </p>
                                 <p class="text-[15px] font-semibold text-gray-900 leading-tight line-clamp-2 pr-1">
@@ -72,7 +72,7 @@
                             <div class="flex items-center gap-0 bg-gray-100 rounded-full">
                                 <button
                                     :aria-label="$t('cart.decreaseQty')"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors"
                                     @click="handleDecrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -84,7 +84,7 @@
                                 </span>
                                 <button
                                     :aria-label="$t('cart.increaseQty')"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors"
                                     @click="handleIncrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -95,7 +95,7 @@
                             </div>
                             <button
                                 :aria-label="$t('cart.removeItem')"
-                                class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:text-red-400 hover:bg-red-50 active:bg-red-100 transition-colors"
+                                class="w-11 h-11 flex items-center justify-center rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
                                 @click="handleRemoveFromCart(item)"
                             >
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -121,19 +121,22 @@
                     <div class="flex items-center gap-1">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
                         <button
+                            ref="tooltipButtonRef"
                             type="button"
-                            class="text-gray-400 hover:text-gray-600 focus:outline-none relative"
+                            :aria-label="$t('checkout.deliveryFee')"
+                            :aria-expanded="showTooltip"
+                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-gray-500 hover:text-gray-700 focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none rounded-full relative"
+                            @click.stop="showTooltip = !showTooltip"
                             @mouseenter="showTooltip = true"
                             @mouseleave="showTooltip = false"
-                            @focus="showTooltip = true"
-                            @blur="showTooltip = false"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                             </svg>
                             <div
                                 v-if="showTooltip"
-                                class="absolute left-0 bottom-6 min-w-[260px] max-w-xs p-3 bg-gray-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line pointer-events-none leading-relaxed text-left"
+                                role="tooltip"
+                                class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-gray-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
                             >
                                 {{ $t('checkout.deliveryFeeInfo') }}
                                 <div class="absolute top-full left-3 -mt-1">
@@ -144,14 +147,14 @@
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-gray-400 italic">{{ $t('checkout.tbd') }}</span>
                     <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium">{{ $t('checkout.tooFar') }}</span>
-                    <span v-else-if="deliveryFee === 0" class="text-emerald-600 font-medium">{{ $t('checkout.free') }}</span>
+                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'PICKUP'" class="flex justify-between text-gray-500">
                     <span>{{ $t('checkout.discount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(totalDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-emerald-600">
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-red-600">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
@@ -171,10 +174,11 @@
 </template>
 
 <script lang="ts" setup>
-import { type ComputedRef, computed, ref } from 'vue'
+import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { TRANSACTION_FEE } from '~/lib/fees'
+import { deliveryFeeForDistance } from '~/lib/delivery'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
@@ -185,6 +189,31 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { impact: hapticImpact } = useHaptics()
 const showTooltip = ref(false)
+const tooltipButtonRef = ref<HTMLElement | null>(null)
+
+const handleDocClick = (e: Event) => {
+    if (!showTooltip.value) return
+    const btn = tooltipButtonRef.value
+    if (btn && !btn.contains(e.target as Node)) showTooltip.value = false
+}
+const handleEscKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && showTooltip.value) showTooltip.value = false
+}
+watch(showTooltip, (open) => {
+    if (!import.meta.client) return
+    if (open) {
+        document.addEventListener('click', handleDocClick)
+        document.addEventListener('keydown', handleEscKey)
+    } else {
+        document.removeEventListener('click', handleDocClick)
+        document.removeEventListener('keydown', handleEscKey)
+    }
+})
+onBeforeUnmount(() => {
+    if (!import.meta.client) return
+    document.removeEventListener('click', handleDocClick)
+    document.removeEventListener('keydown', handleEscKey)
+})
 
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
@@ -230,13 +259,7 @@ const cartTotal = computed(() =>
 
 const deliveryFee = computed(() => {
     if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
-
-    const { distance } = cartStore.address
-    if (distance >= 9000) return -1
-
-    const thresholds = [4000, 5000, 6000, 7000, 8000, 9000]
-    const fee = thresholds.findIndex((threshold) => distance < threshold)
-    return fee === -1 ? 0 : fee
+    return deliveryFeeForDistance(cartStore.address.distance)
 })
 
 const totalDiscount = computed(() => (

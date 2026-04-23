@@ -1,25 +1,27 @@
 <template>
-    <section class="bg-white rounded-lg shadow p-4 w-full mx-auto space-y-6">
-        <h2 class="text-xl font-semibold mb-4">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 w-full mx-auto space-y-6">
+        <h2 class="text-lg font-bold text-gray-900">
             {{ $t('checkout.collection', 'Delivery / Pickup') }}
         </h2>
 
         <!-- Delivery/Pickup Options -->
-        <div class="flex gap-4 mb-6" role="radiogroup" :aria-label="$t('checkout.collection')">
+        <div class="flex gap-4 mb-6" role="radiogroup" :aria-label="$t('checkout.collection')" @keydown="onRadioKeydown">
             <button
-                v-for="option in collectionOptions"
+                v-for="(option, idx) in collectionOptions"
                 :key="option.value"
+                :ref="el => { if (el) radioRefs[idx] = el as HTMLButtonElement }"
                 type="button"
                 role="radio"
                 :aria-checked="cartStore.collectionOption === option.value"
+                :tabindex="cartStore.collectionOption === option.value ? 0 : -1"
                 :data-testid="option.value === 'DELIVERY' ? 'checkout-option-delivery' : 'checkout-option-pickup'"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
-          'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md text-left',
+          'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md text-left focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none',
           cartStore.collectionOption === option.value ? 'border-red-300 bg-tsb-four' : 'border-gray-200 bg-white'
         ]"
             >
-                <img :src="option.icon" :alt="option.label" class="w-10 h-10 mb-2" />
+                <img :src="option.icon" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
                 <span class="font-semibold">{{ option.label }}</span>
             </button>
         </div>
@@ -33,11 +35,11 @@
                 <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
                     @click="openAddressModal"
-                    class="text-blue-600 underline text-sm mt-2 self-start"
+                    class="min-h-11 inline-flex items-center self-start mt-2 px-3 -ml-3 text-sm font-medium text-red-600 hover:text-red-700 rounded-md focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none transition-colors"
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="cartStore.address.distance >= 9000" class="mt-2 text-sm text-red-600 font-medium">
+                <p v-if="cartStore.address.distance >= DELIVERY_ZONE_METERS" class="mt-2 text-sm text-red-600 font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-gray-500">
@@ -113,6 +115,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import type { RestaurantTimeSlot } from '~/composables/useRestaurantConfig'
 import { formatAddress } from '~/utils/utils'
 import { getBrusselsParts } from '~/utils/datetime'
@@ -157,6 +160,26 @@ const collectionOptions = [
 const setDeliveryOption = (v: 'DELIVERY' | 'PICKUP') => {
     trackEvent('collection_option_changed', { option: v })
     cartStore.collectionOption = v
+}
+
+// Roving-tabindex arrow-key nav for the radiogroup (WAI-ARIA Radio Group pattern).
+const radioRefs = ref<HTMLButtonElement[]>([])
+const onRadioKeydown = (e: KeyboardEvent) => {
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
+    if (!keys.includes(e.key)) return
+    e.preventDefault()
+    const options = collectionOptions
+    const currentIdx = options.findIndex(o => o.value === cartStore.collectionOption)
+    const safeCurrent = currentIdx === -1 ? 0 : currentIdx
+    let nextIdx = safeCurrent
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nextIdx = (safeCurrent - 1 + options.length) % options.length
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextIdx = (safeCurrent + 1) % options.length
+    else if (e.key === 'Home') nextIdx = 0
+    else if (e.key === 'End') nextIdx = options.length - 1
+    const next = options[nextIdx]
+    if (!next) return
+    setDeliveryOption(next.value as 'DELIVERY' | 'PICKUP')
+    radioRefs.value[nextIdx]?.focus()
 }
 
 // Reactive clock ticking every minute
@@ -258,10 +281,8 @@ const asapLabel = computed(() =>
         : t('checkout.asapPickup',   'ASAP (± 30 min)')
 )
 
-// Open address modal
-const showAddressModal = ref(false)
+// Parent owns the modal state; this emit opens it.
 const openAddressModal = () => {
     emit('open-address-modal')
-    showAddressModal.value = true
 }
 </script>

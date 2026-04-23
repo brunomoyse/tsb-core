@@ -361,9 +361,10 @@
       "returnToLogin": "Email verified — sign in now"
     },
     "phoneCapture": {
-      "title": "Phone number required",
+      "title": "Phone number",
       "description": "Needed so we can reach you about your order.",
       "saved": "Phone number saved",
+      "edit": "Edit",
       "requiredBeforeOrder": "Please add your phone number before placing the order."
     },
     "orderSummary": "Your Order",
@@ -392,6 +393,8 @@
     "cash": "Cash",
     "cashWarning": "Heads up: once the order is placed, the payment method can no longer be changed.",
     "cashAcknowledge": "I understand and confirm I will pay in cash.",
+    "cashAcknowledged": "Cash payment confirmed",
+    "discardAddress": "Discard the address you entered?",
     "cashAmountLabel": "How much are you planning to pay with?",
     "cashAmountPlaceholder": "e.g. 50",
     "extras": "Extras",
@@ -413,6 +416,10 @@
     "free": "Free",
     "stepMenu": "Menu",
     "stepCheckout": "Checkout",
+    "stepAddress": "Address",
+    "stepSignIn": "Sign in",
+    "stepPhone": "Phone",
+    "stepReview": "Review",
     "stepPayment": "Payment",
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",

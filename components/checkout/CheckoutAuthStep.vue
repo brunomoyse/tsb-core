@@ -1,21 +1,11 @@
 <template>
     <div class="max-w-md mx-auto">
-        <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
-            <!-- Decorative blurred accents -->
-            <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
-            <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
-
-            <!-- Kanji watermark: 歓迎 (welcome) -->
-            <span
-                class="absolute top-4 right-5 font-channel text-[80px] sm:text-[100px] text-red-200/[0.07] leading-none select-none pointer-events-none"
-                aria-hidden="true"
-            >歓迎</span>
-
-            <div class="relative px-6 sm:px-8 py-7 sm:py-8">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="px-6 sm:px-8 py-7 sm:py-8">
                 <!-- Cart-saved chip -->
                 <div class="flex items-center justify-center gap-2 mb-4">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 border border-gray-200/70 text-xs text-gray-600">
-                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-600">
+                        <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $t('checkout.authStep.cartSaved') }}
@@ -27,35 +17,26 @@
                 </div>
 
                 <!-- Heading -->
-                <h2 class="text-xl font-semibold text-gray-900 text-center">
+                <h2 class="text-xl font-semibold text-gray-900 text-center mb-6">
                     {{ $t('checkout.authStep.heading') }}
                 </h2>
-
-                <!-- Chopstick divider -->
-                <div class="flex justify-center items-center mt-2 mb-6" aria-hidden="true">
-                    <svg class="w-14 h-4 text-red-400/40" viewBox="0 0 80 20" fill="none">
-                        <line x1="5" y1="18" x2="38" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        <line x1="42" y1="2" x2="75" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        <circle cx="40" cy="2" r="1.5" fill="currentColor" opacity="0.6"/>
-                    </svg>
-                </div>
 
                 <!-- Post-register success state -->
                 <template v-if="registered">
                     <div class="text-center space-y-4">
-                        <div class="mx-auto w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <div class="mx-auto w-12 h-12 rounded-full bg-tsb-four flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
                         <h3 class="text-lg font-medium text-gray-900">{{ $t('register.successTitle') }}</h3>
                         <p class="text-sm text-gray-500 leading-relaxed">{{ $t('register.successCheckEmail') }}</p>
 
-                        <p v-if="resendSent" class="text-sm text-green-600 font-medium">{{ $t('verify.sent') }}</p>
+                        <p v-if="resendSent" class="text-sm text-red-600 font-medium">{{ $t('verify.sent') }}</p>
                         <button
                             v-else
                             :disabled="resendCooldown > 0"
-                            class="inline-block bg-white/80 border border-gray-200/80 text-gray-700 py-2 px-5 rounded-xl text-sm font-medium hover:bg-white transition-all duration-300 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-block bg-white border border-gray-200 text-gray-700 py-2 px-5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all duration-300 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                             @click="resendEmail"
                         >
                             {{ resendCooldown > 0 ? `${$t('verify.resend')} (${resendCooldown}s)` : $t('verify.resend') }}
@@ -77,19 +58,19 @@
                     <div class="space-y-3 mb-5">
                         <button
                             :disabled="loading"
-                            class="w-full flex items-center justify-center bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                            class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('google')"
                         >
-                            <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
+                            <img alt="" aria-hidden="true" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
                             <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
                         </button>
 
                         <button
                             :disabled="loading"
-                            class="w-full flex items-center justify-center bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                            class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('apple')"
                         >
-                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                            <svg aria-hidden="true" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
                             <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoApple') }}</span>
                         </button>
                     </div>
@@ -100,18 +81,17 @@
                             <div class="w-full border-t border-gray-300/50"></div>
                         </div>
                         <div class="relative text-center">
-                            <span class="bg-tsb-two px-3 text-xs text-gray-500 uppercase">
+                            <span class="bg-white px-3 text-xs text-gray-500 uppercase">
                                 {{ $t('login.dividerOr') }}
                             </span>
                         </div>
                     </div>
 
-                    <!-- Tab switcher -->
-                    <div class="flex gap-1 mb-5 p-1 bg-white/50 rounded-xl" role="tablist">
+                    <!-- Mode switcher (login / register) — simple aria-pressed buttons -->
+                    <div class="flex gap-1 mb-5 p-1 bg-gray-50 border border-gray-200 rounded-xl">
                         <button
                             type="button"
-                            role="tab"
-                            :aria-selected="tab === 'login'"
+                            :aria-pressed="tab === 'login'"
                             :class="[
                                 'flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-all duration-300',
                                 tab === 'login'
@@ -124,8 +104,7 @@
                         </button>
                         <button
                             type="button"
-                            role="tab"
-                            :aria-selected="tab === 'register'"
+                            :aria-pressed="tab === 'register'"
                             :class="[
                                 'flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-all duration-300',
                                 tab === 'register'
@@ -147,7 +126,7 @@
                                 v-model="email"
                                 :placeholder="$t('login.emailPlaceholder')"
                                 autocomplete="email"
-                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                                 name="email"
                                 required
                                 type="email"
@@ -161,14 +140,14 @@
                                 v-model="password"
                                 :placeholder="$t('login.passwordPlaceholder')"
                                 autocomplete="current-password"
-                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                                 name="password"
                                 required
                                 type="password"
                             />
                         </div>
 
-                        <div v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                        <div v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake">
                             <p>{{ errorMessage }}</p>
                             <button
                                 v-if="showResendVerification"
@@ -199,7 +178,7 @@
                     <!-- Register tab -->
                     <div v-else>
                         <UserForm mode="register" @submit="registerUser" />
-                        <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake mt-4">
+                        <p v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake mt-4">
                             {{ errorMessage }}
                         </p>
                     </div>

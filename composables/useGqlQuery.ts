@@ -10,6 +10,8 @@ interface Options {
     immediate?: boolean
     cache?: boolean
     server?: boolean
+    // When true, returns immediately without blocking on the initial fetch; callers rely on the returned `pending` ref to render a loading state.
+    lazy?: boolean
 }
 
 export async function useGqlQuery<T>(
@@ -25,6 +27,7 @@ export async function useGqlQuery<T>(
 
     const asyncData = await useAsyncData<T>(key, handler, {
         immediate: opts.immediate,
+        ...(opts.lazy ? { lazy: true } : {}),
         ...(opts.server === false ? { server: false } : {}),
         ...(opts.cache ? {} : { getCachedData: () => undefined as unknown as T }),
     })

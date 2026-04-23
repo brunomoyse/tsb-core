@@ -23,6 +23,35 @@
             </p>
         </div>
 
+        <!-- Validation Error Summary: rendered after a failed submit. Each item anchors to its field. -->
+        <div
+            v-if="submitErrors.length > 0"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4"
+        >
+            <div class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <p class="text-red-800 font-semibold text-sm mb-2">{{ $t('checkout.completeBeforeOrder') }}</p>
+                    <ul class="space-y-1.5">
+                        <li v-for="err in submitErrors" :key="err.targetId">
+                            <button
+                                type="button"
+                                class="text-left text-sm text-red-700 underline underline-offset-2 decoration-red-300 hover:text-red-800 hover:decoration-red-500 focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none rounded"
+                                @click="scrollToValidationTarget(err.targetId)"
+                            >
+                                {{ err.message }}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Page Title with Japanese accent -->
         <div class="flex items-center gap-3 mb-4">
             <h1 class="text-2xl font-bold">
@@ -31,15 +60,23 @@
             <span class="text-red-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
         </div>
 
-        <!-- Step Indicator with Japanese-style separators -->
-        <nav class="flex items-center justify-center gap-3 text-sm mb-6">
+        <!-- Step Indicator — reflects the current sub-step inside checkout so users
+             know which stage they're on (address, sign in, phone, review, payment). -->
+        <nav class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6" :aria-label="$t('checkout.stepCheckout')">
             <NuxtLinkLocale to="/menu" class="text-red-600 hover:text-red-700 font-medium">
                 {{ $t('checkout.stepMenu') }}
             </NuxtLinkLocale>
-            <span class="text-red-300 text-lg leading-none" aria-hidden="true">〉</span>
-            <span class="font-bold text-gray-900">{{ $t('checkout.stepCheckout') }}</span>
-            <span class="text-gray-300 text-lg leading-none" aria-hidden="true">〉</span>
-            <span class="text-gray-400">{{ $t('checkout.stepPayment') }}</span>
+            <template v-for="(step, idx) in visibleSteps" :key="step.key">
+                <span class="text-lg leading-none" :class="idx < currentStepIndex ? 'text-red-300' : 'text-gray-300'" aria-hidden="true">〉</span>
+                <span
+                    :class="[
+                        idx === currentStepIndex ? 'font-bold text-gray-900' : idx < currentStepIndex ? 'text-red-600' : 'text-gray-400',
+                    ]"
+                    :aria-current="idx === currentStepIndex ? 'step' : undefined"
+                >
+                    {{ step.label }}
+                </span>
+            </template>
         </nav>
 
         <!-- Delivery zone gate: before we ask anonymous users to log in, confirm the address is deliverable.
@@ -69,15 +106,33 @@
 
             <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
             <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                <CheckoutProductSummary />
-                <CheckoutCollectionOptions
-                    @open-address-modal="openAddressModal"
-                    :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
-                    :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
-                    :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
-                    :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
-                />
-                <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" v-model:cashAcknowledged="cashAcknowledged" />
+                <template v-if="restaurantConfigPending">
+                    <div
+                        v-for="n in 3"
+                        :key="`skel-${n}`"
+                        aria-hidden="true"
+                        class="relative overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4 animate-shimmer"
+                    >
+                        <div class="h-5 w-32 rounded bg-gray-100" />
+                        <div class="space-y-2">
+                            <div class="h-3 rounded bg-gray-100" />
+                            <div class="h-3 rounded bg-gray-100 w-5/6" />
+                            <div class="h-3 rounded bg-gray-100 w-2/3" />
+                        </div>
+                        <div class="h-10 rounded-lg bg-gray-100" />
+                    </div>
+                </template>
+                <template v-else>
+                    <CheckoutProductSummary />
+                    <CheckoutCollectionOptions
+                        @open-address-modal="openAddressModal"
+                        :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
+                        :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
+                        :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
+                        :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
+                    />
+                    <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" v-model:cashAcknowledged="cashAcknowledged" />
+                </template>
             </div>
 
             <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
@@ -139,12 +194,12 @@
             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
             :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 0px)' } : undefined"
             tabindex="0"
-            @click.self
+            @click.self="guardedCloseAddressModal"
         >
             <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
                 <button
                     type="button"
-                    @click="closeAddressModal"
+                    @click="guardedCloseAddressModal"
                     :aria-label="$t('common.close')"
                     class="absolute top-4 right-4 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                 >
@@ -159,7 +214,7 @@
                 <div class="mt-6 flex justify-end gap-2">
                     <button
                         type="button"
-                        @click="closeAddressModal"
+                        @click="guardedCloseAddressModal"
                         class="min-h-11 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
                     >
                         {{ $t('common.cancel', 'Cancel') }}
@@ -213,8 +268,8 @@ const { isCapacitor } = usePlatform()
 const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
-// Check restaurant ordering status
-const { config: restaurantConfig } = await useRestaurantConfig()
+// Check restaurant ordering status. Lazy so the checkout page can render a skeleton while the initial query resolves on slow client hydration.
+const { config: restaurantConfig, pending: restaurantConfigPending } = await useRestaurantConfig({ lazy: true })
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
 const hasFixedSlotsToday = computed(() => (restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.length ?? 0) > 0)
@@ -227,6 +282,29 @@ const needsDeliveryGate = computed(() =>
     && cartStore.collectionOption === 'DELIVERY'
     && (!cartStore.address || (cartStore.address.distance ?? 0) >= DELIVERY_ZONE_METERS),
 )
+
+const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
+
+// Steps conditionally appear based on the user's state; current step advances as each gate is cleared.
+const visibleSteps = computed(() => {
+    const steps: { key: string; label: string }[] = []
+    if (cartStore.collectionOption === 'DELIVERY') {
+        steps.push({ key: 'address', label: t('checkout.stepAddress') })
+    }
+    if (!authStore.user) steps.push({ key: 'auth', label: t('checkout.stepSignIn') })
+    if (needsPhoneCapture.value) steps.push({ key: 'phone', label: t('checkout.stepPhone') })
+    steps.push({ key: 'review', label: t('checkout.stepReview') })
+    steps.push({ key: 'payment', label: t('checkout.stepPayment') })
+    return steps
+})
+
+const currentStepIndex = computed(() => {
+    const steps = visibleSteps.value
+    if (needsDeliveryGate.value) return steps.findIndex(s => s.key === 'address')
+    if (!authStore.user) return steps.findIndex(s => s.key === 'auth')
+    if (needsPhoneCapture.value) return steps.findIndex(s => s.key === 'phone')
+    return steps.findIndex(s => s.key === 'review')
+})
 
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
 watch(isOrderingAvailable, (available) => {
@@ -362,6 +440,17 @@ const closeAddressModal = () => {
     showAddressModal.value = false
 }
 
+// Guarded close: warn before discarding a typed-but-unconfirmed address.
+const guardedCloseAddressModal = () => {
+    const typedSomething = Boolean(tempAddress.value)
+    const differsFromSaved = tempAddress.value?.id !== cartStore.address?.id
+    if (typedSomething && differsFromSaved) {
+        if (!import.meta.client) return
+        if (!window.confirm(t('checkout.discardAddress'))) return
+    }
+    closeAddressModal()
+}
+
 const handleAddressUpdate = (updatedAddress: Address | null) => {
     tempAddress.value = updatedAddress
 }
@@ -412,6 +501,9 @@ interface CheckoutValidationError {
     event: string
 }
 
+// Errors from the most recent submit attempt; recomputed on input changes so the list shrinks as the user fixes each issue.
+const submitErrors = ref<CheckoutValidationError[]>([])
+
 const scrollToValidationTarget = (targetId: string) => {
     if (!import.meta.client) return
     const target = document.getElementById(targetId)
@@ -461,7 +553,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= 9000) {
+    if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= DELIVERY_ZONE_METERS) {
         errors.push({
             message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
             targetId: 'checkout-delivery-address',
@@ -509,6 +601,7 @@ const handleCheckout = async () => {
         }
 
         const validationErrors = getCheckoutValidationErrors()
+        submitErrors.value = validationErrors
         if (validationErrors.length > 0) {
             const [firstError] = validationErrors
             if (firstError) {
@@ -516,11 +609,10 @@ const handleCheckout = async () => {
                 scrollToValidationTarget(firstError.targetId)
             }
 
-            const details = validationErrors.map(error => error.message).join(', ')
             eventBus.emit('notify', {
-                message: `${t('checkout.completeBeforeOrder')} ${details}`,
+                message: t('checkout.completeBeforeOrder'),
                 persistent: false,
-                duration: 7000,
+                duration: 3000,
                 variant: 'error',
             })
             return
@@ -646,4 +738,22 @@ const isMinimumReached = computed(() => {
     }
     return false
 })
+
+// Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.
+watch(
+    () => [
+        cartStore.collectionOption,
+        cartStore.products.length,
+        cartStore.address?.id,
+        cartStore.address?.distance,
+        authStore.user?.phoneNumber,
+        cartStore.paymentOption,
+        cashAcknowledged.value,
+        cartTotal.value,
+    ],
+    () => {
+        if (submitErrors.value.length === 0) return
+        submitErrors.value = getCheckoutValidationErrors()
+    },
+)
 </script>

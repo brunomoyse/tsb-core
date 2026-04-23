@@ -3,47 +3,15 @@
         <div class="w-full max-w-md">
 
             <!-- Card container -->
-            <div class="bg-tsb-two rounded-2xl relative overflow-hidden">
-                <!-- Decorative blurred accents -->
-                <div class="absolute -top-16 -right-16 w-56 h-56 bg-tsb-four/40 rounded-full blur-3xl pointer-events-none" />
-                <div class="absolute -bottom-16 -left-16 w-44 h-44 bg-tsb-four/30 rounded-full blur-3xl pointer-events-none" />
-
-                <!-- Kanji watermark: 歓迎 (welcome) -->
-                <span
-                    class="absolute top-4 right-5 font-channel text-[80px] sm:text-[100px] text-red-200/[0.07] leading-none select-none pointer-events-none"
-                    aria-hidden="true"
-                >歓迎</span>
-
-                <div class="relative px-7 sm:px-10 py-8 sm:py-10">
-                    <!-- Decorative torii gate -->
-                    <div class="flex justify-center mb-2" aria-hidden="true">
-                        <svg class="w-9 h-9 text-red-400/30" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                            <line x1="12" y1="55" x2="12" y2="15"/>
-                            <line x1="48" y1="55" x2="48" y2="15"/>
-                            <line x1="8" y1="18" x2="52" y2="18"/>
-                            <path d="M5 12 Q30 4 55 12" stroke-width="3"/>
-                            <line x1="20" y1="18" x2="20" y2="28"/>
-                            <line x1="40" y1="18" x2="40" y2="28"/>
-                            <line x1="15" y1="28" x2="45" y2="28"/>
-                        </svg>
-                    </div>
-
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <div class="px-7 sm:px-10 py-8 sm:py-10">
                     <!-- Title -->
-                    <h1 class="text-2xl font-semibold text-gray-900 text-center">
+                    <h1 class="text-2xl font-semibold text-gray-900 text-center mb-6">
                         {{ $t('login.title') }}
                     </h1>
 
-                    <!-- Chopstick divider -->
-                    <div class="flex justify-center items-center mt-2 mb-6" aria-hidden="true">
-                        <svg class="w-14 h-4 text-red-400/40" viewBox="0 0 80 20" fill="none">
-                            <line x1="5" y1="18" x2="38" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            <line x1="42" y1="2" x2="75" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            <circle cx="40" cy="2" r="1.5" fill="currentColor" opacity="0.6"/>
-                        </svg>
-                    </div>
-
                     <!-- Session expired -->
-                    <p v-if="sessionExpired" role="alert" aria-live="assertive" aria-atomic="true" class="text-sm text-amber-700 bg-amber-50/80 border border-amber-200/60 rounded-xl px-3.5 py-2.5 mb-4 animate-shake">
+                    <p v-if="sessionExpired" role="alert" aria-live="assertive" aria-atomic="true" class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-4 animate-shake">
                         {{ $t('notify.errors.sessionExpired') }}
                     </p>
 
@@ -58,7 +26,7 @@
                                 v-model="email"
                                 :placeholder="$t('login.emailPlaceholder')"
                                 autocomplete="email"
-                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                                 name="email"
                                 required
                                 type="email"
@@ -73,7 +41,7 @@
                                 v-model="password"
                                 :placeholder="$t('login.passwordPlaceholder')"
                                 autocomplete="current-password"
-                                class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                                 name="password"
                                 required
                                 type="password"
@@ -81,7 +49,7 @@
                         </div>
 
                         <!-- Inline Error -->
-                        <div v-if="errorMessage" role="alert" aria-live="assertive" aria-atomic="true" data-testid="login-error" class="text-sm text-red-700 bg-red-50/80 border border-red-200/60 rounded-xl px-3.5 py-2.5 animate-shake">
+                        <div v-if="errorMessage" role="alert" aria-live="assertive" aria-atomic="true" data-testid="login-error" class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake">
                             <p>{{ errorMessage }}</p>
                             <!-- Resend verification email button -->
                             <button
@@ -112,7 +80,7 @@
                             <div class="w-full border-t border-gray-300/50"></div>
                         </div>
                         <div class="relative text-center">
-                            <span class="bg-tsb-two px-3 text-sm text-gray-500 uppercase">
+                            <span class="bg-white px-3 text-sm text-gray-500 uppercase">
                                 {{ $t('login.dividerOr') }}
                             </span>
                         </div>
@@ -124,10 +92,10 @@
                         <button
                             type="button"
                             :disabled="loading"
-                            class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                            class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('google')"
                         >
-                            <img alt="Google" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
+                            <img alt="" aria-hidden="true" class="w-5 h-5 mr-2" src="/icons/google-icon.svg"/>
                             <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
                         </button>
 
@@ -135,10 +103,10 @@
                         <button
                             type="button"
                             :disabled="loading"
-                            class="w-full flex items-center justify-center bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                            class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
                             @click="loginWithProvider('apple')"
                         >
-                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                            <svg aria-hidden="true" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
                             <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoApple') }}</span>
                         </button>
                     </div>
