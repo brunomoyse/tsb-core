@@ -1,14 +1,54 @@
 <script setup lang="ts">
-import { getBrusselsParts } from '~/utils/datetime'
+import { RESTAURANT_TZ, getBrusselsParts, isSameBrusselsDay } from '~/utils/datetime'
+import { useCartStore } from '@/stores/cart'
 
 definePageMeta({
     sitemap: { priority: 1, changefreq: 'daily' },
 })
 
 const config = useRuntimeConfig()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const cartStore = useCartStore()
 
 const yearsSince = getBrusselsParts().year - 2016
+
+// Live ordering status for the hero order bar; lazy so the homepage renders without waiting on the config query.
+const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
+
+// Three-state status: restaurant open for online orders / open walk-in only / closed.
+type OrderingStatus = 'open' | 'onsiteOnly' | 'closed'
+const orderingStatus = computed<OrderingStatus>(() => {
+    const cfg = restaurantConfig.value?.restaurantConfig
+    if (!cfg) return 'closed'
+    if (cfg.isOrderingCurrentlyOpen) return 'open'
+    if (cfg.isCurrentlyOpen) return 'onsiteOnly'
+    return 'closed'
+})
+
+const nextOpeningTime = computed(() => {
+    const iso = restaurantConfig.value?.restaurantConfig?.nextOpeningAt
+    if (!iso) return null
+    const next = new Date(iso)
+    const sameDay = isSameBrusselsDay(next, new Date())
+    return new Intl.DateTimeFormat(locale.value, {
+        ...(sameDay ? {} : { weekday: 'long' }),
+        hour: '2-digit', minute: '2-digit',
+        timeZone: RESTAURANT_TZ,
+    }).format(next)
+})
+
+const collection = computed<'DELIVERY' | 'PICKUP'>({
+    get: () => cartStore.collectionOption,
+    set: (v: 'DELIVERY' | 'PICKUP') => { cartStore.collectionOption = v },
+})
+
+const scrollToOpeningHours = () => {
+    if (!import.meta.client) return
+    const el = document.getElementById('opening-hours')
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.setTimeout(() => el.focus({ preventScroll: true }), 300)
+}
 
 useSchemaOrg([
     defineWebSite({
@@ -43,30 +83,98 @@ useSeoMeta({
 <template>
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 space-y-5">
 
-        <!-- Hero -->
-        <div class="relative h-[85vh] sm:h-96 overflow-hidden rounded-2xl">
-            <picture>
-                <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
-                <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
-                <img
-                    alt="Tokyo Sushi Bar Restaurant"
-                    class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
-                    src="/images/restaurant-illustrated.png"
-                    width="1200"
-                    height="805"
-                />
-            </picture>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
-                <h1 class="font-channel text-4xl sm:text-6xl tracking-wide drop-shadow-lg">Tokyo</h1>
-                <p class="mt-4 text-sm sm:text-base text-white/90 font-light drop-shadow-md">{{ $t('about.heroSubtitle') }}</p>
-                <NuxtLinkLocale
-                    to="/menu"
-                    class="mt-4 sm:mt-5 -translate-y-6 sm:translate-y-0 inline-flex items-center gap-2 bg-white text-gray-900 py-2 px-6 rounded-full text-sm font-semibold hover:bg-white/90 transition shadow-lg"
+        <!-- First fold on mobile: image card flexes so the second card stays fully visible. -->
+        <div class="flex flex-col gap-3 h-[calc(100dvh-5rem-1.5rem)] min-h-[34rem] sm:h-auto sm:gap-5">
+            <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 overflow-hidden rounded-2xl">
+                <picture>
+                    <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
+                    <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
+                    <img
+                        alt="Tokyo Sushi Bar Restaurant"
+                        class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
+                        src="/images/restaurant-illustrated.png"
+                        width="1200"
+                        height="805"
+                    />
+                </picture>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 text-white">
+                    <h1 class="text-xs sm:text-sm text-white/90 font-semibold drop-shadow-md tracking-[0.25em] uppercase">
+                        {{ $t('home.heroTagline') }}
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Order bar remains fully visible in the first mobile viewport. -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 space-y-3 relative z-10">
+            <!-- Live status row: green = fully open, amber = walk-in only (online orders paused), red = closed. -->
+            <div class="flex items-center justify-between gap-3">
+                <div class="inline-flex items-center gap-2.5 min-w-0">
+                    <span class="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
+                        <span v-if="orderingStatus === 'open'" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span
+                            :class="[
+                                'relative inline-flex rounded-full h-2.5 w-2.5',
+                                orderingStatus === 'open' ? 'bg-emerald-500'
+                                    : orderingStatus === 'onsiteOnly' ? 'bg-amber-400'
+                                    : 'bg-red-500',
+                            ]"
+                        />
+                    </span>
+                    <span class="text-sm font-semibold text-gray-900 truncate">
+                        {{ $t(`home.status.${orderingStatus}`) }}
+                        <span v-if="orderingStatus === 'closed' && nextOpeningTime" class="font-normal text-gray-500">
+                            · {{ $t('checkout.opensAt', { time: nextOpeningTime }) }}
+                        </span>
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    class="shrink-0 min-h-11 inline-flex items-center text-xs font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2 decoration-gray-300 hover:decoration-gray-500 focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none rounded-md px-1 -mr-1"
+                    @click="scrollToOpeningHours"
                 >
-                    {{ $t('about.heroButton') }}
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </NuxtLinkLocale>
+                    {{ $t('home.schedule') }}
+                </button>
+            </div>
+
+            <!-- Collection toggle (writes to persisted cart store; menu + checkout pick it up) -->
+            <div class="flex gap-1 p-1 bg-gray-50 border border-gray-200 rounded-xl" role="radiogroup" :aria-label="$t('checkout.collection')">
+                <button
+                    type="button"
+                    role="radio"
+                    :aria-checked="collection === 'DELIVERY'"
+                    @click="collection = 'DELIVERY'"
+                    :class="[
+                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none',
+                        collection === 'DELIVERY' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    ]"
+                >
+                    <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
+                    {{ $t('cart.delivery') }}
+                </button>
+                <button
+                    type="button"
+                    role="radio"
+                    :aria-checked="collection === 'PICKUP'"
+                    @click="collection = 'PICKUP'"
+                    :class="[
+                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none',
+                        collection === 'PICKUP' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    ]"
+                >
+                    <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
+                    {{ $t('cart.pickup') }}
+                </button>
+            </div>
+
+            <!-- Primary CTA -->
+            <NuxtLinkLocale
+                to="/menu"
+                class="w-full inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] shadow-sm focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none"
+            >
+                {{ $t('home.orderNow') }}
+                <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </NuxtLinkLocale>
             </div>
         </div>
 
@@ -170,7 +278,7 @@ useSeoMeta({
         <!-- Visit Us -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <!-- Opening Hours -->
-            <div class="bg-tsb-two rounded-2xl p-6 sm:p-8">
+            <div id="opening-hours" tabindex="-1" class="bg-tsb-two rounded-2xl p-6 sm:p-8 scroll-mt-6">
                 <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     {{ $t('about.openingHoursLabel') }}

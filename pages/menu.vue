@@ -117,9 +117,8 @@
                             {{ $t('menu.spicy') }}
                         </button>
 
-                        <!-- Delivery zone chip — passive indicator, opens modal on click.
-                             ml-auto pushes it right on wider rows; wraps below on narrow screens. -->
-                        <div class="ml-auto">
+                        <!-- Delivery zone chip on desktop -->
+                        <div class="hidden sm:block sm:ml-auto">
                             <DeliveryZoneChip />
                         </div>
                     </div>
