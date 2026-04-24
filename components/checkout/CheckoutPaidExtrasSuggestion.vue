@@ -76,7 +76,7 @@ const EXTRA_PRODUCTS_QUERY = `
                 isAvailable
                 isHalal
                 isSpicy
-                isVegan
+                isVegetarian
                 isDiscountable
                 category {
                     id

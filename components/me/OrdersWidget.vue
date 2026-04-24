@@ -431,7 +431,7 @@ const MY_ORDERS = gql`
         quantity
         totalPrice
         product {
-          id name code slug price pieceCount isAvailable isDiscountable isHalal isVegan isVisible
+          id name code slug price pieceCount isAvailable isDiscountable isHalal isVegetarian isVisible
           category { id name order }
           choices { id productId priceModifier sortOrder name }
         }
