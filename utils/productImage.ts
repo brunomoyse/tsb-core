@@ -1,5 +1,5 @@
-const PRODUCT_IMAGE_FALLBACK = '/images/tokyo-sushi-takeaway-bag.png'
-const PRODUCT_IMAGE_FALLBACK_BASE = '/images/tokyo-sushi-takeaway-bag'
+const PRODUCT_IMAGE_FALLBACK = '/images/placeholder-product.png'
+const PRODUCT_IMAGE_FALLBACK_BASE = '/images/placeholder-product'
 
 type ProductImageExt = 'avif' | 'webp' | 'png'
 
