@@ -32,6 +32,7 @@
                         :src="`${src}.png`"
                         :alt="alt"
                         class="max-w-full max-h-[75vh] object-contain"
+                        @error="onImageError"
                     />
                 </picture>
             </div>
@@ -41,6 +42,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { PRODUCT_IMAGE_FALLBACK } from '~/utils/productImage'
 
 const { src, alt } = defineProps<{
     src: string
@@ -54,6 +56,15 @@ const close = () => { visible.value = false }
 
 const onKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && visible.value) close()
+}
+
+const onImageError = (event: Event): void => {
+    const img = event.target as HTMLImageElement | null
+    if (!img) return
+    if (img.dataset.fallbackApplied === 'true') return
+
+    img.dataset.fallbackApplied = 'true'
+    img.src = PRODUCT_IMAGE_FALLBACK
 }
 
 onMounted(() => document.addEventListener('keydown', onKeydown))

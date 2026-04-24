@@ -6,6 +6,10 @@ export interface Events {
         persistent?: boolean;
         duration?: number;
         variant?: string; // 'success' | 'error' | 'info';
+        action?: {
+            label: string;
+            handler: () => void;
+        };
     }
     'cart-item-added': {
         productName: string;

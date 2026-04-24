@@ -14,13 +14,14 @@
                 <!-- Image Section -->
                 <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.slug, p.name)">
                     <picture class="w-full h-full flex justify-center items-center p-4">
-                        <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.avif`" type="image/avif"/>
-                        <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.webp`" type="image/webp"/>
+                        <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif"/>
+                        <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp"/>
                         <img
                             :alt="p.name"
-                            :src="`${config.public.s3bucketUrl}/images/thumbnails/${p.slug}.png`"
+                            :src="`${productImageBaseSrc}.png`"
                             class="object-contain w-full h-full transition-opacity duration-500 rounded-lg shadow-sm"
                             :class="[!p.isAvailable ? 'grayscale' : '']"
+                            @error="handleProductImageError"
                         />
                     </picture>
                 </div>
@@ -148,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+import * as productImage from '~/utils/productImage'
 import type { Product, ProductChoice } from '@/types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
@@ -184,9 +186,11 @@ useFocusTrap(modalRef)
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
+const { handleProductImageError } = productImage
+const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, p?.slug))
 
 const openLightbox = (slug: string, name: string) => {
-    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, slug)
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }

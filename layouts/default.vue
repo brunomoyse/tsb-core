@@ -81,6 +81,7 @@
                 :persistent="notification.persistent"
                 :duration="notification.duration"
                 :variant="notification.variant"
+                :action="notification.action"
                 @close="showNotification = false"
             />
         </ClientOnly>
@@ -139,7 +140,13 @@ const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantCon
 
 const head = useLocaleHead()
 const showNotification = ref(false)
-const notification = ref({
+const notification = ref<{
+    message: string
+    persistent: boolean
+    duration: number
+    variant: string
+    action?: { label: string; handler: () => void }
+}>({
     message: '',
     persistent: false,
     duration: 5000,
@@ -158,7 +165,8 @@ const notifyHandler = (payload: any) => {
         message: payload.message,
         persistent: payload.persistent ?? false,
         duration: payload.duration ?? 5000,
-        variant: payload.variant ?? 'neutral'
+        variant: payload.variant ?? 'neutral',
+        action: payload.action,
     }
     showNotification.value = true
 

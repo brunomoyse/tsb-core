@@ -10,7 +10,7 @@
         </div>
 
         <!-- ═══ ITEMS LIST ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-6 space-y-2.5">
+        <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
                 v-for="item in cartStore.products"
@@ -21,7 +21,7 @@
                 <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
                     <button
                         type="button"
-                        :aria-label="$t('common.remove', 'Remove')"
+                        :aria-label="$t('cart.removeItem')"
                         class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
                     >
@@ -34,87 +34,102 @@
 
                 <!-- Card content (slides on swipe) -->
                 <div
-                    class="relative bg-white border border-gray-100 p-3 flex items-center gap-3 transition-transform duration-200 ease-out touch-pan-y"
+                    class="relative bg-white border border-gray-100 px-3 py-2.5 flex items-center gap-3 transition-transform duration-200 ease-out touch-pan-y"
                     :style="{ transform: `translateX(${getSwipeOffset(item)}px)` }"
                     @touchstart="onTouchStart($event, item)"
                     @touchmove="onTouchMove($event, item)"
                     @touchend="onTouchEnd(item)"
                 >
                     <!-- IMAGE — square, rounded, no crop -->
-                    <div class="w-[72px] h-[72px] shrink-0 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                    <div class="w-[68px] h-[68px] shrink-0 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
                         <picture>
                             <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
+                                :srcset="`${productImageBase(item.product.slug)}.avif`"
                                 type="image/avif"
                             />
                             <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.webp`"
+                                :srcset="`${productImageBase(item.product.slug)}.webp`"
                                 type="image/webp"
                             />
                             <img
-                                :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
+                                :src="`${productImageBase(item.product.slug)}.png`"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-1"
-                                width="72"
-                                height="72"
+                                width="68"
+                                height="68"
                                 draggable="false"
+                                @error="handleProductImageError"
                             />
                         </picture>
                     </div>
 
                     <!-- INFO + CONTROLS -->
                     <div class="flex-1 min-w-0">
-                        <!-- Row 1: Name + Code -->
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="min-w-0">
-                                <p class="text-[15px] font-semibold text-gray-900 truncate leading-tight">
-                                    <template v-for="(part, i) in itemLabelSegments(item)" :key="i">
-                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
-                                        <span :class="part.muted ? 'text-gray-400 font-normal text-xs' : ''">{{ part.text }}</span>
-                                    </template>
-                                </p>
-                                <p v-if="itemChoice(item) || item.product.pieceCount" class="text-xs text-gray-400 mt-0.5 truncate">
-                                    <span v-if="itemChoice(item)" class="text-red-500">({{ itemChoice(item) }})</span>
-                                    <template v-if="itemChoice(item) && item.product.pieceCount">
-                                        &middot;
-                                    </template>
-                                    <template v-if="item.product.pieceCount">
-                                        {{ item.product.pieceCount }} {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
-                                    </template>
-                                </p>
-                            </div>
-                        </div>
+                        <!-- Row 1: Metadata (small, gray, truncated) -->
+                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-gray-500 truncate leading-tight mb-0.5">
+                            {{ itemLabelMeta(item) }}
+                        </p>
 
-                        <!-- Row 2: Price + Quantity stepper -->
-                        <div class="flex items-center justify-between mt-2">
-                            <span class="text-[15px] font-bold text-gray-900">
-                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
-                            </span>
+                        <!-- Row 2: Product name (bold, wraps up to 2 lines) -->
+                        <p class="text-[15px] font-semibold text-gray-900 leading-tight line-clamp-2 pr-1">
+                            {{ itemLabelName(item) }}
+                        </p>
 
-                            <!-- Stepper: compact pill -->
-                            <div class="flex items-center gap-0 bg-gray-100 rounded-full">
-                                <button
-                                    type="button"
-                                    :aria-label="$t('cart.decreaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                                    @click="handleDecrementQuantity(item)"
-                                >
-                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
-                                    </svg>
-                                </button>
-                                <span class="w-7 text-center text-sm font-semibold text-gray-800 tabular-nums select-none">
-                                    {{ item.quantity }}
+                        <!-- Row 3: Choice (red) -->
+                        <p v-if="itemChoice(item)" class="text-xs text-red-500 mt-0.5 truncate">
+                            ({{ itemChoice(item) }})
+                        </p>
+
+                        <!-- Row 4: Price + Quantity stepper + remove -->
+                        <div class="flex items-center justify-between mt-1.5 gap-2">
+                            <div class="min-w-0 flex flex-col leading-tight">
+                                <span class="text-[15px] font-bold text-gray-900 tabular-nums">
+                                    {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                                 </span>
+                                <span v-if="item.quantity > 1" class="text-[11px] text-gray-400 tabular-nums">
+                                    {{ item.quantity }} × {{ formatPrice(getItemUnitPrice(item)) }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <!-- Stepper: compact pill -->
+                                <div class="flex items-center gap-0 bg-gray-100 rounded-full">
+                                    <button
+                                        type="button"
+                                        :aria-label="$t('cart.decreaseQty')"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                                        @click="handleDecrementQuantity(item)"
+                                    >
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                    </button>
+                                    <span class="w-6 text-center text-sm font-semibold text-gray-800 tabular-nums select-none">
+                                        {{ item.quantity }}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        :aria-label="$t('cart.increaseQty')"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                                        @click="handleIncrementQuantity(item)"
+                                    >
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Explicit remove -->
                                 <button
                                     type="button"
-                                    :aria-label="$t('cart.increaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-600 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                                    @click="handleIncrementQuantity(item)"
+                                    :aria-label="$t('cart.removeItem')"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                                    @click="handleRemoveItem(item)"
                                 >
-                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                        <line x1="12" y1="5" x2="12" y2="19"/>
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                                     </svg>
                                 </button>
                             </div>
@@ -125,9 +140,39 @@
 
         </div>
 
-        <!-- ═══ EXTRAS SUGGESTION ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-6">
-            <CheckoutExtrasSuggestion />
+        <!-- ═══ ORDER SUMMARY ═══ -->
+        <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
+            <div class="bg-white rounded-2xl border border-gray-100 px-4 py-3 space-y-1 text-sm">
+                <div v-if="summaryHasBreakdown" class="flex justify-between text-gray-500">
+                    <span>{{ $t('cart.subtotal') }}</span>
+                    <span class="tabular-nums">{{ formatPrice(cartStore.totalPrice) }}</span>
+                </div>
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500">
+                    <span>{{ $t('cart.deliveryFee') }}</span>
+                    <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                        {{ $t('cart.deliveryTbd') }}
+                    </span>
+                    <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                        {{ $t('checkout.tooFar') }}
+                    </span>
+                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
+                        {{ $t('checkout.free') }}
+                    </span>
+                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                </div>
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
+                    <span>{{ $t('cart.pickupDiscount') }}</span>
+                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                </div>
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-red-600">
+                    <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
+                    <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
+                </div>
+                <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
+                    <span class="font-bold text-gray-900">{{ $t('cart.total') }}</span>
+                    <span class="font-bold text-lg text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                </div>
+            </div>
         </div>
 
         <!-- Spacer pushes checkout bar to the bottom -->
@@ -151,7 +196,7 @@
                     </svg>
                     <span class="font-semibold text-sm uppercase tracking-wide">{{ $t('cart.checkout') }}</span>
                 </div>
-                <span class="font-bold text-base">{{ formatPrice(cartStore.totalPrice) }}</span>
+                <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
             </NuxtLinkLocale>
             <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
         </div>
@@ -179,13 +224,16 @@
 </template>
 
 <script lang="ts" setup>
+import * as productImage from '~/utils/productImage'
+import type { CartItem, ProductChoice } from '@/types'
 import { computed, reactive, ref } from 'vue'
-import type { CartItem } from '@/types'
-import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
+import { deliveryFeeForDistance } from '~/lib/delivery'
+import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
+import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
@@ -197,6 +245,9 @@ const cartStore = useCartStore()
 const { isCapacitor } = usePlatform()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
+const { t } = useI18n()
+const { handleProductImageError } = productImage
+const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 
 const cartPageMinHeightClass = computed(() =>
     isCapacitor
@@ -208,18 +259,25 @@ const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
     (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
 
-const itemLabelSegments = (item: CartItem): { text: string; muted: boolean }[] => {
-    const parts = orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-    })
-    const segments: { text: string; muted: boolean }[] = []
-    if (parts.code) segments.push({ text: parts.code, muted: true })
-    if (parts.category) segments.push({ text: parts.category, muted: true })
-    segments.push({ text: parts.name, muted: false })
-    return segments
+const itemLabelParts = (item: CartItem) => orderItemLabelParts({
+    code: item.product.code,
+    categoryName: item.product.category?.name,
+    productName: item.product.name,
+})
+
+const itemLabelMeta = (item: CartItem): string | undefined => {
+    const parts = itemLabelParts(item)
+    const bits: string[] = []
+    if (parts.code) bits.push(parts.code)
+    if (parts.category) bits.push(parts.category)
+    if (item.product.pieceCount) {
+        const suffix = item.product.pieceCount === 1 ? t('menu.pc') : t('menu.pcs')
+        bits.push(`${item.product.pieceCount} ${suffix}`)
+    }
+    return bits.length > 0 ? bits.join(' · ') : undefined
 }
+
+const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
     orderItemLabelParts({
@@ -229,6 +287,52 @@ const itemChoice = (item: CartItem): string | undefined =>
         choiceName: item.selectedChoice?.name,
     }).choice
 
+// ── Summary
+const deliveryFee = computed(() => {
+    if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
+    return deliveryFeeForDistance(cartStore.address.distance)
+})
+
+const pickupDiscount = computed(() =>
+    cartStore.collectionOption === 'PICKUP'
+        ? cartStore.products.reduce((acc, item) =>
+            item.product.isDiscountable
+                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
+                : acc, 0)
+        : 0
+)
+
+const displayTotal = computed(() => {
+    const fee = cartStore.collectionOption === 'DELIVERY' && deliveryFee.value > 0 ? deliveryFee.value : 0
+    return cartStore.totalPrice + fee - pickupDiscount.value - cartStore.couponDiscount
+})
+
+const summaryHasBreakdown = computed(() =>
+    cartStore.collectionOption === 'DELIVERY' ||
+    pickupDiscount.value > 0 ||
+    cartStore.couponDiscount > 0
+)
+
+// ── Cart mutations with undo support
+const restoreItem = (product: CartItem['product'], choice: ProductChoice | null, quantity: number): void => {
+    cartStore.addProduct(product, quantity, choice)
+    hapticImpact('Light')
+    trackEvent('product_removal_undone', { product_id: product.id, quantity })
+}
+
+const emitRemoveUndoToast = (item: CartItem): void => {
+    const { product, selectedChoice, quantity } = item
+    eventBus.emit('notify', {
+        message: t('cart.removedUndo', { name: product.name }),
+        duration: 4000,
+        variant: 'neutral',
+        action: {
+            label: t('cart.undo'),
+            handler: () => restoreItem(product, selectedChoice, quantity),
+        },
+    })
+}
+
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice)
     hapticImpact('Light')
@@ -236,18 +340,25 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
 }
 
 const handleDecrementQuantity = (cartItem: CartItem): void => {
+    if (cartItem.quantity === 1) {
+        // Route decrement-to-zero through the remove-with-undo path
+        handleRemoveItem(cartItem)
+        return
+    }
     cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice)
     hapticImpact('Light')
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 }
 
 const handleRemoveItem = (cartItem: CartItem): void => {
+    // Snapshot before removal so undo can restore the exact quantity
+    emitRemoveUndoToast(cartItem)
     cartStore.removeFromCart(cartItem.product, cartItem.selectedChoice)
     hapticImpact('Medium')
     trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
 }
 
-// Swipe-to-delete state
+// ── Swipe-to-delete state
 const SWIPE_THRESHOLD = 72
 const swipeState = reactive<Record<string, { startX: number; currentX: number; swiping: boolean; open: boolean }>>({})
 const swipingItemKey = ref<string | null>(null)

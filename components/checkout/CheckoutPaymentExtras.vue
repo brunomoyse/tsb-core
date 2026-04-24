@@ -119,6 +119,33 @@
             <h3 class="font-medium text-lg mb-4">
                 {{ $t('checkout.extras', 'Extras') }}
             </h3>
+            <div class="mb-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-red-700 mb-2">
+                    {{ $t('checkout.paidExtra', 'Paid extra') }}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="extra in paidExtras"
+                        :key="extra.code"
+                        type="button"
+                        :disabled="!extra.isAvailable"
+                        :aria-pressed="isPaidExtraSelected(extra.code)"
+                        @click="togglePaidExtra(extra.code)"
+                        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-[0.97]"
+                        :class="[
+                            isPaidExtraSelected(extra.code)
+                                ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
+                            !extra.isAvailable ? 'opacity-50 cursor-not-allowed' : '',
+                        ]"
+                    >
+                        <span>{{ extra.label }}</span>
+                        <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
+                            +{{ formatPrice(extra.price) }}
+                        </span>
+                    </button>
+                </div>
+            </div>
             <div class="grid grid-cols-1 gap-4">
                 <!-- Chopsticks Card -->
                 <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
@@ -239,10 +266,12 @@
 </template>
 
 <script lang="ts" setup>
+import type { Product, ProductCategory } from '@/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { useCartStore } from '#imports'
+import { useCartStore } from '@/stores/cart'
 import { useDebounceFn } from '@vueuse/core'
+import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
@@ -258,6 +287,90 @@ const { trackEvent } = useTracking()
 const { t } = useI18n()
 
 const ORDER_COMMENT_MAX = 500
+
+const PAID_EXTRA_DEFS = [
+    { code: 'K45', fallbackLabel: 'Wasabi', fallbackPrice: 0.8 },
+    { code: 'K42', fallbackLabel: 'Sauce soja salée', fallbackPrice: 1 },
+    { code: 'K43', fallbackLabel: 'Sauce soja sucrée', fallbackPrice: 1 },
+] as const
+
+const EXTRA_PRODUCTS_QUERY = `
+    query CheckoutPaidExtraProducts {
+        productCategories {
+            id
+            name
+            products {
+                id
+                categoryId
+                name
+                description
+                price
+                code
+                slug
+                pieceCount
+                isVisible
+                isAvailable
+                isHalal
+                isSpicy
+                isVegan
+                isDiscountable
+                category {
+                    id
+                    name
+                }
+                choices {
+                    id
+                    productId
+                    priceModifier
+                    sortOrder
+                    name
+                }
+            }
+        }
+    }
+`
+
+const { data: paidExtrasProductsData } = await useGqlQuery<{ productCategories: ProductCategory[] }>(
+    EXTRA_PRODUCTS_QUERY,
+    {},
+    { immediate: true, cache: true },
+)
+
+const paidProductsByCode = computed(() => {
+    const map = new Map<string, Product>()
+    for (const category of paidExtrasProductsData.value?.productCategories ?? []) {
+        for (const product of category.products ?? []) {
+            if (product.code) map.set(product.code, product)
+        }
+    }
+    return map
+})
+
+const getPaidProduct = (code: string): Product | undefined => paidProductsByCode.value.get(code)
+
+const isPaidExtraSelected = (code: string): boolean =>
+    cartStore.products.some((item) => item.product.code === code && !item.selectedChoice)
+
+const togglePaidExtra = (code: string): void => {
+    const product = getPaidProduct(code)
+    if (!product || !product.isAvailable) return
+
+    if (isPaidExtraSelected(code)) {
+        cartStore.removeFromCart(product, null)
+    } else {
+        cartStore.addProduct(product, 1, null)
+    }
+}
+
+const paidExtras = computed(() => PAID_EXTRA_DEFS.map((item) => {
+    const product = getPaidProduct(item.code)
+    return {
+        code: item.code,
+        label: product?.name || item.fallbackLabel,
+        price: Number(product?.price ?? item.fallbackPrice),
+        isAvailable: Boolean(product?.isAvailable),
+    }
+}))
 
 const emit = defineEmits<{
     checkout: []

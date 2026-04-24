@@ -12,8 +12,17 @@
                     <span class="flex-1 text-base break-words">
                       {{ message }}
                     </span>
+                    <!-- Custom action button (e.g. Undo) takes precedence -->
+                    <button
+                        v-if="action"
+                        type="button"
+                        class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100 active:scale-95 transition"
+                        @click="invokeAction"
+                    >
+                        {{ action.label }}
+                    </button>
                     <!-- Default action button for persistent notifications or cookie consent -->
-                    <slot name="action" v-if="persistent || cookieConsent">
+                    <slot v-else-if="persistent || cookieConsent" name="action">
                         <button
                             type="button"
                             class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
@@ -39,12 +48,13 @@ import { useHaptics } from '~/composables/useHaptics'
 
 const { notification: hapticNotification } = useHaptics()
 
-const { message, persistent = false, duration = 10000, cookieConsent = false, variant = 'neutral' } = defineProps<{
+const { message, persistent = false, duration = 10000, cookieConsent = false, variant = 'neutral', action } = defineProps<{
     message: string
     persistent?: boolean
     duration?: number
     cookieConsent?: boolean
     variant?: string
+    action?: { label: string; handler: () => void }
 }>()
 
 const emit = defineEmits<{
@@ -87,6 +97,11 @@ const close = () => {
     }
     emit('close')
     if (progressInterval) clearInterval(progressInterval)
+}
+
+const invokeAction = () => {
+    action?.handler()
+    close()
 }
 
 onMounted(() => {
