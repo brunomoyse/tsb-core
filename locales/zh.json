@@ -92,6 +92,7 @@
     "choices": "选择",
     "noProduct": "没有产品可用",
     "allergenNotice": "我们的产品可能含有鱼类、贝类和乳糖。请告知我们您的任何过敏情况。",
+    "allergenNoticeShort": "过敏？咨询：",
     "allergenNoticeLink": "04 222 98 88",
     "unavailable": "暂时缺货",
     "noResults": "未找到 \"{query}\" 的结果",

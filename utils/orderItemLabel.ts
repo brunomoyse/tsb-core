@@ -14,16 +14,14 @@ export interface OrderItemLabelParts {
 
 /**
  * Canonical order/cart item label parts — `code · category · name` plus
- * optional `choice`. Category is dropped when it contains "plateau"
- * (products like "Plateau Maki" already carry the word in their name).
+ * optional `choice`.
  */
 export function orderItemLabelParts(input: OrderItemLabelInput): OrderItemLabelParts {
     const code = input.code?.trim() || undefined;
     const rawCategory = input.categoryName?.trim() || undefined;
-    const hideCategory = rawCategory?.toLowerCase().includes('plateau');
     return {
         code,
-        category: hideCategory ? undefined : rawCategory,
+        category: rawCategory,
         name: input.productName,
         choice: input.choiceName?.trim() || undefined,
     };
