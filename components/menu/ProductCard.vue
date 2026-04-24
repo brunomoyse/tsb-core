@@ -242,6 +242,8 @@ const handleImageError = (event: Event) => {
 
 onMounted(() => {
     if (imageElement.value) {
+        productImage.ensureProductImageFallback(imageElement.value)
+
         // Check if the image is already loaded (e.g., cached)
         if (imageElement.value.complete) {
             loaded.value = true;

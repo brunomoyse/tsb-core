@@ -17,6 +17,7 @@
                         <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif"/>
                         <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp"/>
                         <img
+                            ref="imageElement"
                             :alt="p.name"
                             :src="`${productImageBaseSrc}.png`"
                             class="object-contain w-full h-full transition-opacity duration-500 rounded-lg shadow-sm"
@@ -186,6 +187,7 @@ useFocusTrap(modalRef)
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
+const imageElement = ref<HTMLImageElement | null>(null)
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, p?.slug))
 
@@ -260,6 +262,8 @@ const canAddToCart = computed(() => {
 
 // Close modal on escape key
 onMounted(() => {
+    productImage.ensureProductImageFallback(imageElement.value)
+
     const handleEscape = (e: KeyboardEvent) => {
         if (e.key === 'Escape') emit('close')
     }

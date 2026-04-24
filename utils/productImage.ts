@@ -25,6 +25,18 @@ export const productImageBase = (s3BaseUrl?: string, slug?: string | null): stri
 
 export const handleProductImageError = (event: Event): void => {
     const img = event.target as HTMLImageElement | null
+    applyProductImageFallback(img)
+}
+
+export const ensureProductImageFallback = (img: HTMLImageElement | null | undefined): void => {
+    if (!img) return
+    if (!img.complete) return
+    if (img.naturalWidth > 0) return
+
+    applyProductImageFallback(img)
+}
+
+const applyProductImageFallback = (img: HTMLImageElement | null): void => {
     if (!img) return
     if (img.dataset.fallbackApplied === 'true') return
 

@@ -52,6 +52,7 @@
                                 type="image/webp"
                             />
                             <img
+                                ref="itemImageElements"
                                 :src="`${productImageBase(item.product.slug)}.png`"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-1"
@@ -248,6 +249,11 @@ const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const itemImageElements = ref<HTMLImageElement[]>([])
+
+watch(itemImageElements, () => {
+    itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
+}, { flush: 'post' })
 
 const cartPageMinHeightClass = computed(() =>
     isCapacitor

@@ -56,7 +56,9 @@
                             <source
                                 :srcset="`${productImageBase(item.product?.slug)}.webp`"
                                 type="image/webp"/>
-                            <img :alt="item.product.name"
+                            <img
+                                 ref="itemImageElements"
+                                 :alt="item.product.name"
                                  :src="`${productImageBase(item.product?.slug)}.png`"
                                  class="max-w-full max-h-full"
                                  width="48"
@@ -168,7 +170,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import { computed, onMounted, onUnmounted, ref, useRuntimeConfig } from '#imports'
+import { computed, onMounted, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
@@ -200,6 +202,7 @@ const openLightbox = (slug: string, name: string) => {
 
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const itemImageElements = ref<HTMLImageElement[]>([])
 
 // Flash-highlight for newly added items
 const highlightedKey = ref<string | null>(null)
@@ -217,6 +220,10 @@ const onCartItemAdded = (payload: { productId: string; choiceId?: string }) => {
 onMounted(() => {
     eventBus.on('cart-item-added', onCartItemAdded)
 })
+
+watch(itemImageElements, () => {
+    itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
+}, { flush: 'post' })
 
 onUnmounted(() => {
     eventBus.off('cart-item-added', onCartItemAdded)

@@ -38,6 +38,7 @@
                                 type="image/webp"
                             />
                             <img
+                                ref="itemImageElements"
                                 :src="`${productImageBase(item.product.slug)}.png`"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-0.5"
@@ -229,6 +230,11 @@ const openLightbox = (slug: string, name: string) => {
 
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const itemImageElements = ref<HTMLImageElement[]>([])
+
+watch(itemImageElements, () => {
+    itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
+}, { flush: 'post' })
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)

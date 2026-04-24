@@ -58,6 +58,7 @@
                             type="image/webp"
                         />
                         <img
+                            ref="itemImageElements"
                             :src="`${productImageBase(item.product.slug)}.png`"
                             :alt="item.product.name"
                             class="object-contain w-full h-full"
@@ -163,14 +164,13 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
+import { ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
-import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
-import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
 
 const { isOrderingAvailable = true } = defineProps<{ isOrderingAvailable?: boolean }>()
@@ -192,6 +192,11 @@ const openLightbox = (slug: string, name: string) => {
 
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const itemImageElements = ref<HTMLImageElement[]>([])
+
+watch(itemImageElements, () => {
+    itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
+}, { flush: 'post' })
 
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
