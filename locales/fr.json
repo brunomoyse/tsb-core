@@ -23,7 +23,7 @@
     "toggleMenu": "Ouvrir/fermer le menu"
   },
   "home": {
-    "heroTagline": "Tokyo Sushi Bar · Liège",
+    "heroTagline": "Restaurant japonais · Liège",
     "orderNow": "Commander",
     "schedule": "Horaires",
     "status": {
@@ -54,6 +54,7 @@
     "yearsOfPassion": "ans de passion",
     "openingHoursLabel": "Horaires d'ouverture",
     "contactLink": "Nous contacter",
+    "callUs": "Nous appeler",
     "paymentsLabel": "Modes de paiement acceptés",
     "cash": "Espèces",
     "infoCards": {
@@ -265,8 +266,8 @@
   },
   "delivery": {
     "chip": {
-      "verify": "Vérifier la livraison",
-      "verifyCompact": "Vérifier distance",
+      "verify": "Vérifier la zone",
+      "verifyCompact": "La zone",
       "inZone": "Livraison · {km} km",
       "outOfZone": "Hors zone de livraison",
       "outOfZoneCompact": "Hors zone",

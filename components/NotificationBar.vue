@@ -3,7 +3,7 @@
         :role="liveRole"
         :aria-live="livePoliteness"
         aria-atomic="true"
-        class="notification-bar fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[500px] max-w-[calc(100vw-2rem)] px-4"
+        class="notification-bar fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
         v-if="visible"
     >
         <transition name="slide-up">
