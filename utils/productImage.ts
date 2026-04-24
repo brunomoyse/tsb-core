@@ -29,6 +29,15 @@ export const handleProductImageError = (event: Event): void => {
     if (img.dataset.fallbackApplied === 'true') return
 
     img.dataset.fallbackApplied = 'true'
+
+    const picture = img.parentElement
+    if (picture?.tagName === 'PICTURE') {
+        const sources = picture.querySelectorAll('source')
+        for (const source of sources) {
+            source.removeAttribute('srcset')
+        }
+    }
+
     img.src = PRODUCT_IMAGE_FALLBACK
 }
 
