@@ -12,9 +12,7 @@
   },
   "nav": {
     "home": "Home",
-    "about": "Over ons",
     "menu": "Menu",
-    "book": "Reservering",
     "contact": "Contact",
     "login": "Inloggen",
     "logout": "Uitloggen",
@@ -25,10 +23,14 @@
     "toggleMenu": "Menu openen/sluiten"
   },
   "home": {
-    "about": "Over ons",
-    "menu": "Menu",
-    "book": "Reservering",
-    "contact": "Contact"
+    "heroTagline": "Tokyo Sushi Bar · Luik",
+    "orderNow": "Nu bestellen",
+    "schedule": "Openingsuren",
+    "status": {
+      "open": "Geopend",
+      "onsiteOnly": "Open · enkel ter plaatse",
+      "closed": "Gesloten"
+    }
   },
   "contact": {
     "title": "Contacteer ons",
@@ -38,35 +40,22 @@
     "address": "Rue de la Cathédrale 59, Liège, Belgique",
     "phoneTitle": "Telefoon",
     "emailTitle": "E-mail",
-    "reservationsTitle": "Reserveringen",
-    "reservationsLink": "Reserveer een tafel",
     "openingHoursTitle": "Openingsuren",
     "followUs": "Volg ons",
-    "day": "Dag",
-    "hours": "Uren",
     "weekdays": "Maandag - Vrijdag",
     "weekends": "Zaterdag - Zondag",
     "closedTuesday": "Gesloten op dinsdag"
   },
   "about": {
-    "heroTitle": "Welkom bij Tokyo Sushi Bar",
-    "heroSubtitle": "Ontdek de beste smaken van Japan in Luik",
     "ourStoryTitle": "Ons Verhaal",
     "ourStoryText1": "In 2016 opende een jong koppel met een passie voor de Japanse keuken een klein restaurant in de Rue de la Régence in Luik, met de steun van hun ouders. Elke ochtend wordt de verse vis zorgvuldig geselecteerd en met de hand bereid om een onberispelijke kwaliteit te garanderen. De mond-tot-mondreclame deed snel zijn werk: tussen de klanten ter plaatse en de leveringsbestellingen was de kleine zaal al snel te klein.",
     "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft Tokyo Sushi Bar een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
     "ourStoryText3": "In 2026 viert Tokyo Sushi Bar zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde — dit avontuur is ook het uwe.",
     "yearsOfPassion": "jaar passie",
-    "meetTheTeamTitle": "Ontmoet het Team",
-    "chefName": "Zhu Mengmeng",
-    "chefRole": "Chef",
-    "waitressName": "Xu Sa",
-    "waitressRole": "Verantwoordelijke",
-    "heroButton": "Bekijk het Menu",
-    "visitUsTitle": "Bezoek Ons",
     "openingHoursLabel": "Openingsuren",
     "contactLink": "Contacteer ons",
     "paymentsLabel": "Aanvaarde betaalmethodes",
-    "cash": "Cash",
+    "cash": "Contant",
     "infoCards": {
       "freeDelivery": "Gratis levering",
       "freeDeliveryDesc": "Gratis vanaf 25 €, met leveringskosten op basis van afstand daarboven.",
@@ -106,15 +95,7 @@
     "pickupDiscountBadge": "10% korting bij afhalen",
     "restaurantClosed": "Het restaurant is momenteel gesloten. U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
   },
-  "days": {
-    "monday": "Maandag",
-    "tuesday": "Dinsdag",
-    "wednesday": "Woensdag",
-    "thursday": "Donderdag",
-    "friday": "Vrijdag",
-    "saturday": "Zaterdag",
-    "sunday": "Zondag"
-  },
+  "days": {},
   "forgotPassword": {
     "title": "Wachtwoord vergeten",
     "description": "Voer uw e-mailadres in en wij sturen u een link om uw wachtwoord opnieuw in te stellen.",
@@ -172,6 +153,7 @@
     "addressNoMatch": "Geen adres gevonden.",
     "addressExample": "Voorbeeld: Rue de Fragnée 12, Liège",
     "addressCallHint": "Als uw adres er niet tussen staat, bel ons gerust op",
+    "confirmAddress": "Bevestig dat dit uw adres is",
     "submit": "Verzenden",
     "passwordVeryWeak": "Zeer zwak",
     "passwordWeak": "Zwak",
@@ -199,21 +181,15 @@
     "greeting": "Goedendag",
     "subtitle": "Beheer uw profiel en bekijk uw bestellingen.",
     "orders": {
-      "title": "Mijn bestellingen",
       "recentTitle": "Recente bestellingen",
       "viewAll": "Alles bekijken",
-      "viewAllCount": "Bekijk de {count} bestellingen",
-      "nextStep": "Volgende stap",
       "backToAccount": "Mijn account",
       "allOrdersTitle": "Al mijn bestellingen",
       "loadMore": "Toon {count} meer",
       "loadMoreLast": "Toon de laatste {count}",
       "loading": "Bestellingen laden...",
       "empty": "Geen bestellingen gevonden",
-      "order": "Bestelling",
-      "items": "Gerechten",
       "total": "Totaal",
-      "follow": "Volgen",
       "toggleOrder": "Bestelgegevens",
       "downloadInvoice": "Factuur downloaden",
       "status": {
@@ -257,12 +233,7 @@
       "cancelDeletionRequest": "Verwijderingsaanvraag annuleren",
       "cancelDeletionSuccess": "Uw verwijderingsaanvraag is geannuleerd."
     },
-    "analytics": {
-      "title": "Analytische cookies",
-      "enabled": "Ingeschakeld",
-      "disabled": "Uitgeschakeld",
-      "description": "Helpt de website te verbeteren door het bezoekersgedrag te analyseren."
-    },
+    "analytics": {},
     "changePassword": {
       "title": "Wachtwoord",
       "button": "Wachtwoord wijzigen",
@@ -280,17 +251,10 @@
       "weakPassword": "Het wachtwoord voldoet niet aan de beveiligingsvereisten."
     },
     "verify": {
-      "verified": "Geverifieerd",
-      "notVerified": "Niet geverifieerd",
-      "resendButton": "Verificatie-e-mail opnieuw versturen",
-      "resendSuccess": "Verificatie-e-mail verstuurd!",
-      "resendError": "Versturen mislukt. Probeer het opnieuw.",
-      "cooldown": "Even geduld alvorens opnieuw te versturen."
+      "verified": "Geverifieerd"
     },
     "notifications": {
       "title": "E-mailmeldingen",
-      "enabled": "Ingeschakeld",
-      "disabled": "Uitgeschakeld",
       "marketingLabel": "Marketinge-mails",
       "marketingDescription": "Ontvang promotionele aanbiedingen en nieuws van het restaurant.",
       "orderUpdatesLabel": "Bestelstatus",
@@ -367,6 +331,7 @@
       "title": "Telefoonnummer vereist",
       "description": "Nodig om u te contacteren over uw bestelling.",
       "saved": "Telefoonnummer opgeslagen",
+      "edit": "Wijzigen",
       "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt."
     },
     "orderSummary": "Uw bestelling",
@@ -395,6 +360,8 @@
     "cash": "Contant",
     "cashWarning": "Let op: zodra de bestelling is geplaatst, kan de betaalmethode niet meer worden gewijzigd.",
     "cashAcknowledge": "Ik heb dit begrepen en bevestig dat ik contant betaal.",
+    "cashAcknowledged": "Contante betaling bevestigd",
+    "discardAddress": "Ingevoerd adres verwijderen?",
     "cashAmountLabel": "Met hoeveel gaat u betalen?",
     "cashAmountPlaceholder": "bv. 50",
     "extras": "Extra's",
@@ -416,6 +383,10 @@
     "free": "Gratis",
     "stepMenu": "Menu",
     "stepCheckout": "Bestelling",
+    "stepAddress": "Adres",
+    "stepSignIn": "Inloggen",
+    "stepPhone": "Telefoon",
+    "stepReview": "Controle",
     "stepPayment": "Betaling",
     "itemCount": "{count} artikel | {count} artikelen",
     "opensAt": "Opent om {time}",
@@ -432,12 +403,10 @@
     "title": "Bestelling ontvangen",
     "thankYou": "Bedankt voor uw aankoop!",
     "orderSuccess": "Uw bestelling is succesvol geplaatst.",
-    "placedAt": "Bestelling geplaatst op:",
     "items": "Gerechten",
     "loading": "Bestelgegevens laden...",
-    "returnHome": "Terug naar home",
+    "returnHome": "Terug naar start",
     "viewOrders": "Mijn bestellingen bekijken",
-    "orderAgain": "Opnieuw bestellen",
     "status": "Status",
     "pageTitle": "Bestelbevestiging - Tokyo Sushi Bar",
     "liveTracking": "Live tracking — de status wordt automatisch bijgewerkt",
@@ -450,13 +419,9 @@
     },
     "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw."
   },
-  "404": {
-    "message": "Sorry, wij konden de pagina die u zoekt niet vinden.",
-    "homeButton": "Home",
-    "menuButton": "Bekijk het Menu"
-  },
+  "404": {},
   "error": {
-    "homeButton": "Terug naar home",
+    "homeButton": "Terug naar start",
     "menuButton": "Bekijk het menu",
     "notFound": "Oeps! Deze pagina lijkt verdwenen te zijn...",
     "forbidden": "Toegang geweigerd. U heeft geen toestemming om deze pagina te bekijken.",
@@ -469,34 +434,28 @@
   },
   "footer": {
     "terms": "AV",
-    "hours": "Ma-Vr 12u-14u30, 18u-22u30 | Za-Zo 12u-15u, 18u-23u | Gesloten op dinsdag"
+    "privacy": "Privacybeleid"
   },
   "notify": {
-    "addedToCart": "{product} toegevoegd aan winkelwagen",
-    "verificationEmailSent": "Er is een verificatie-e-mail naar u verstuurd. Controleer uw inbox.",
-    "emailVerified": "Uw e-mailadres is geverifieerd. U kunt nu inloggen.",
-    "loginToValidateCart": "Gelieve in te loggen om uw winkelwagen te bevestigen.",
     "errors": {
-        "cartEmpty": "Uw winkelwagen is leeg.",
-        "notAuthenticated": "Gelieve in te loggen om te bestellen.",
-        "addressRequired": "Een adres is vereist voor levering.",
-        "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
-        "invalidCredentials": "Ongeldige e-mail of wachtwoord. Probeer het opnieuw.",
-        "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox.",
-        "orderingUnavailable": "Bestellingen zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
-        "fixedTimeRequiredWhileClosed": "Kies een vast tijdstip voor vandaag buiten de openingsuren.",
-        "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
-        "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
-        "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
-        "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",
-        "addressLookupFailed": "Het opzoeken van het adres is mislukt. Probeer het opnieuw.",
-        "addressMissingHouseNumber": "Selecteer een volledig adres met een huisnummer.",
-        "ordersLoadFailed": "Kan uw bestellingen niet laden.",
-        "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
-        "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
-        "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
-        "noPassword": "Dit account heeft geen wachtwoord. Log in via Google of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken.",
-        "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink."
+      "cartEmpty": "Uw winkelwagen is leeg.",
+      "addressRequired": "Een adres is vereist voor levering.",
+      "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
+      "invalidCredentials": "Ongeldige e-mail of wachtwoord. Probeer het opnieuw.",
+      "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink.",
+      "orderingUnavailable": "Bestellingen zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
+      "fixedTimeRequiredWhileClosed": "Kies een vast tijdstip voor vandaag buiten de openingsuren.",
+      "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
+      "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
+      "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
+      "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",
+      "addressLookupFailed": "Het opzoeken van het adres is mislukt. Probeer het opnieuw.",
+      "addressMissingHouseNumber": "Selecteer een volledig adres met een huisnummer.",
+      "ordersLoadFailed": "Kan uw bestellingen niet laden.",
+      "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
+      "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
+      "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
+      "noPassword": "Dit account heeft geen wachtwoord. Log in via Google of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken."
     }
   },
   "schema": {
@@ -546,17 +505,20 @@
     "myOrders": {
       "title": "Mijn bestellingen - Tokyo Sushi Bar"
     },
+    "privacy": {
+      "title": "Privacybeleid - Tokyo Sushi Bar",
+      "description": "Privacybeleid van Tokyo Sushi Bar. Verzamelde gegevens, doeleinden, GDPR-rechten en cookies."
+    },
     "orderConfirmation": {
       "title": "Bestelbevestiging - Tokyo Sushi Bar",
       "description": "Uw bestelling is bevestigd"
     },
     "breadcrumb": {
-      "home": "Home",
+      "home": "Start",
       "menu": "Menu",
       "contact": "Contact",
       "terms": "AV",
-      "login": "Inloggen",
-      "register": "Registratie"
+      "privacy": "Privacybeleid"
     }
   },
   "feedback": {
@@ -605,11 +567,8 @@
     "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
   },
   "verify": {
-    "banner": "Gelieve uw e-mailadres te verifiëren om de aanmaak van uw account te voltooien.",
     "resend": "Verificatie-e-mail opnieuw versturen",
-    "sent": "Verificatie-e-mail verstuurd!",
-    "error": "Het versturen van de verificatie-e-mail is mislukt. Probeer het opnieuw.",
-    "dismiss": "Sluiten"
+    "sent": "Verificatie-e-mail verstuurd!"
   },
   "verifyEmail": {
     "title": "E-mailverificatie",
@@ -620,12 +579,7 @@
     "invalidLink": "Deze verificatielink is ongeldig. Controleer de link in uw e-mail.",
     "expiredOrInvalid": "Deze verificatielink is verlopen of ongeldig. Vraag een nieuwe verificatie-e-mail aan."
   },
-  "cookies": {
-    "message": "Deze website gebruikt analytische cookies om te begrijpen hoe u onze site gebruikt. U kunt ze accepteren of weigeren.",
-    "learnMore": "Lees ons cookiebeleid",
-    "accept": "Accepteren",
-    "decline": "Weigeren"
-  },
+  "cookies": {},
   "faq": {
     "title": "Veelgestelde Vragen",
     "subtitle": "Vind antwoorden op uw vragen over Tokyo Sushi Bar",

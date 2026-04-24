@@ -12,9 +12,7 @@
   },
   "nav": {
     "home": "Home",
-    "about": "About",
     "menu": "Menu",
-    "book": "Reservations",
     "contact": "Contact",
     "login": "Login",
     "logout": "Logout",
@@ -25,10 +23,6 @@
     "toggleMenu": "Toggle menu"
   },
   "home": {
-    "about": "About",
-    "menu": "Menu",
-    "book": "Reservations",
-    "contact": "Contact",
     "heroTagline": "Tokyo Sushi Bar · Liège",
     "orderNow": "Order now",
     "schedule": "Hours",
@@ -46,31 +40,18 @@
     "address": "Rue de la Cathédrale 59, Liège, Belgium",
     "phoneTitle": "Phone",
     "emailTitle": "Email",
-    "reservationsTitle": "Reservations",
-    "reservationsLink": "Reserve a Table",
     "openingHoursTitle": "Opening Hours",
     "followUs": "Follow us",
-    "day": "Day",
-    "hours": "Hours",
     "weekdays": "Monday - Friday",
     "weekends": "Saturday - Sunday",
     "closedTuesday": "Closed on Tuesdays"
   },
   "about": {
-    "heroTitle": "Welcome to Tokyo Sushi Bar",
-    "heroSubtitle": "Experience the best flavors of Japan in Liège",
     "ourStoryTitle": "Our Story",
     "ourStoryText1": "In 2016, a young couple with a passion for Japanese cuisine opened a small restaurant on Rue de la Régence in Liège, with the support of their parents. Every morning, fresh fish is carefully selected and prepared by hand to guarantee uncompromising quality. Word spread quickly: between dine-in guests and a flood of delivery orders, the small space could no longer keep up.",
     "ourStoryText2": "At the end of 2024, the restaurant moved to Rue de la Cathédrale into a larger space, just steps from the original location. Today, Tokyo Sushi Bar remains a family affair where every dish is crafted with the same care as on day one.",
     "ourStoryText3": "In 2026, Tokyo Sushi Bar celebrates its 10th anniversary. A decade of fresh fish, refined recipes, and smiles shared with you. Thank you to everyone who has trusted us since day one, this journey is yours as much as ours.",
     "yearsOfPassion": "years of passion",
-    "meetTheTeamTitle": "Meet the Team",
-    "chefName": "Zhu Mengmeng",
-    "chefRole": "Executive Chef",
-    "waitressName": "Xu Sa",
-    "waitressRole": "Restaurant Manager",
-    "heroButton": "View Menu",
-    "visitUsTitle": "Visit Us",
     "openingHoursLabel": "Opening Hours",
     "contactLink": "Get in touch",
     "paymentsLabel": "Accepted payment methods",
@@ -114,15 +95,7 @@
     "pickupDiscountBadge": "10% off on pickup",
     "restaurantClosed": "The restaurant is currently closed. You can browse the menu, but ordering is unavailable."
   },
-  "days": {
-    "monday": "Monday",
-    "tuesday": "Tuesday",
-    "wednesday": "Wednesday",
-    "thursday": "Thursday",
-    "friday": "Friday",
-    "saturday": "Saturday",
-    "sunday": "Sunday"
-  },
+  "days": {},
   "forgotPassword": {
     "title": "Forgot Password",
     "description": "Enter your email address and we'll send you a link to reset your password.",
@@ -208,21 +181,15 @@
     "greeting": "Hello",
     "subtitle": "Manage your profile and view your orders.",
     "orders": {
-      "title": "My orders",
       "recentTitle": "Recent orders",
       "viewAll": "View all",
-      "viewAllCount": "View all {count} orders",
-      "nextStep": "Next step",
       "backToAccount": "My account",
       "allOrdersTitle": "All my orders",
       "loadMore": "Show {count} more",
       "loadMoreLast": "Show last {count}",
       "loading": "Loading orders...",
       "empty": "No orders found",
-      "order": "Order",
-      "items": "Items",
       "total": "Total",
-      "follow": "Follow",
       "toggleOrder": "Toggle order details",
       "downloadInvoice": "Download invoice",
       "status": {
@@ -266,12 +233,7 @@
       "cancelDeletionRequest": "Cancel Deletion Request",
       "cancelDeletionSuccess": "Your deletion request has been cancelled."
     },
-    "analytics": {
-      "title": "Analytics cookies",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "description": "Helps improve the site by analysing traffic."
-    },
+    "analytics": {},
     "changePassword": {
       "title": "Password",
       "button": "Change password",
@@ -289,25 +251,17 @@
       "weakPassword": "The password does not meet the security requirements."
     },
     "verify": {
-      "verified": "Verified",
-      "notVerified": "Not verified",
-      "resendButton": "Resend verification email",
-      "resendSuccess": "Verification email sent!",
-      "resendError": "Failed to send. Please try again.",
-      "cooldown": "Please wait before resending."
+      "verified": "Verified"
     },
     "notifications": {
       "title": "Email notifications",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
       "marketingLabel": "Marketing emails",
       "marketingDescription": "Receive promotional offers and restaurant news.",
       "orderUpdatesLabel": "Order updates",
       "orderUpdatesDescription": "Get emails at every step of your current order.",
       "updateSuccess": "Notification preferences updated.",
       "updateError": "Failed to update preferences."
-    },
-    "logout": "Logout"
+    }
   },
   "delivery": {
     "chip": {
@@ -449,12 +403,10 @@
     "title": "Order Completed",
     "thankYou": "Thank you for your purchase!",
     "orderSuccess": "Your order was placed successfully.",
-    "placedAt": "Order placed at:",
     "items": "Items",
     "loading": "Loading order details...",
     "returnHome": "Return to Home",
     "viewOrders": "View My Orders",
-    "orderAgain": "Order Again",
     "status": "Status",
     "pageTitle": "Order Confirmation - Tokyo Sushi Bar",
     "liveTracking": "Live tracking — status updates automatically",
@@ -467,11 +419,7 @@
     },
     "loadError": "Failed to load order details. Please try again."
   },
-  "404": {
-    "message": "Sorry, we couldn't find the page you are looking for.",
-    "homeButton": "Home",
-    "menuButton": "View Menu"
-  },
+  "404": {},
   "error": {
     "homeButton": "Back to Home",
     "menuButton": "View Menu",
@@ -486,21 +434,15 @@
   },
   "footer": {
     "terms": "Terms & Conditions",
-    "privacy": "Privacy Policy",
-    "hours": "Mon-Fri 12-14:30, 18-22:30 | Sat-Sun 12-15, 18-23 | Closed Tue"
+    "privacy": "Privacy Policy"
   },
   "notify": {
-    "addedToCart": "{product} added to cart",
-    "verificationEmailSent": "An email has been sent to you for verification. Please check your inbox.",
-    "emailVerified": "Your email has been verified. You can now log in.",
-    "loginToValidateCart": "Please log in to validate your cart.\n",
     "errors": {
       "cartEmpty": "Your cart is empty.",
-      "notAuthenticated": "You are not authenticated.",
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
       "invalidCredentials": "Invalid email or password. Please try again.",
-      "emailNotVerified": "Please verify your email address before logging in. Check your inbox.",
+      "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
       "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
       "fixedTimeRequiredWhileClosed": "Please select a fixed time slot for today while we are closed.",
       "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again.",
@@ -513,8 +455,7 @@
       "invoiceDownloadFailed": "Invoice download failed.",
       "sessionExpired": "Your session has expired. Please log in again.",
       "oauthFailed": "Login failed. Please try again.",
-      "noPassword": "This account doesn't have a password. Sign in with Google or Apple below, or use \"Forgot password\" to create one.",
-      "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link."
+      "noPassword": "This account doesn't have a password. Sign in with Google or Apple below, or use \"Forgot password\" to create one."
     }
   },
   "schema": {
@@ -577,9 +518,7 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "Terms",
-      "privacy": "Privacy",
-      "login": "Login",
-      "register": "Register"
+      "privacy": "Privacy"
     }
   },
   "feedback": {
@@ -628,11 +567,8 @@
     "empty": "No available items to re-order"
   },
   "verify": {
-    "banner": "Please verify your email address to complete your account setup.",
     "resend": "Resend verification email",
-    "sent": "Verification email sent!",
-    "error": "Failed to send verification email. Please try again.",
-    "dismiss": "Dismiss"
+    "sent": "Verification email sent!"
   },
   "verifyEmail": {
     "title": "Email Verification",
@@ -643,12 +579,7 @@
     "invalidLink": "This verification link is invalid. Please check the link in your email.",
     "expiredOrInvalid": "This verification link has expired or is invalid. Please request a new verification email."
   },
-  "cookies": {
-    "message": "This site uses analytics cookies to understand how you use our site. You can accept or decline them.",
-    "learnMore": "Read our cookie policy",
-    "accept": "Accept",
-    "decline": "Decline"
-  },
+  "cookies": {},
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to your questions about Tokyo Sushi Bar",

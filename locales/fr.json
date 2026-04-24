@@ -12,9 +12,7 @@
   },
   "nav": {
     "home": "Accueil",
-    "about": "À propos",
     "menu": "Menu",
-    "book": "Réservation",
     "contact": "Contact",
     "login": "Connexion",
     "logout": "Déconnexion",
@@ -25,10 +23,6 @@
     "toggleMenu": "Ouvrir/fermer le menu"
   },
   "home": {
-    "about": "À propos",
-    "menu": "Menu",
-    "book": "Réservation",
-    "contact": "Contact",
     "heroTagline": "Tokyo Sushi Bar · Liège",
     "orderNow": "Commander",
     "schedule": "Horaires",
@@ -46,31 +40,18 @@
     "address": "Rue de la Cathédrale 59, Liège, Belgique",
     "phoneTitle": "Téléphone",
     "emailTitle": "E-mail",
-    "reservationsTitle": "Réservations",
-    "reservationsLink": "Réserver une table",
     "openingHoursTitle": "Horaires d'ouverture",
     "followUs": "Suivez-nous",
-    "day": "Jour",
-    "hours": "Horaires",
     "weekdays": "Lundi - Vendredi",
     "weekends": "Samedi - Dimanche",
     "closedTuesday": "Fermé le mardi"
   },
   "about": {
-    "heroTitle": "Bienvenue chez Tokyo Sushi Bar",
-    "heroSubtitle": "Découvrez les meilleures saveurs du Japon à Liège",
     "ourStoryTitle": "Notre Histoire",
     "ourStoryText1": "En 2016, un jeune couple passionné de cuisine japonaise ouvre un petit restaurant rue de la Régence à Liège, avec le soutien de leurs parents. Chaque matin, le poisson frais est soigneusement sélectionné et préparé à la main pour garantir une qualité irréprochable. Le bouche-à-oreille fait vite son effet : entre les clients sur place et les commandes en livraison, la petite salle ne suffit plus.",
     "ourStoryText2": "Fin 2024, le restaurant déménage rue de la Cathédrale dans un espace plus grand, à quelques pas de l'adresse d'origine. Aujourd'hui, Tokyo Sushi Bar reste une affaire de famille où chaque plat est préparé avec le même soin qu'au premier jour.",
     "ourStoryText3": "En 2026, Tokyo Sushi Bar fête ses 10 ans. Une décennie de poisson frais, de recettes peaufinées et de sourires partagés avec vous. Merci à tous ceux qui nous ont fait confiance depuis le premier jour, cette aventure, c'est aussi la vôtre.",
     "yearsOfPassion": "ans de passion",
-    "meetTheTeamTitle": "Rencontrez l'Équipe",
-    "chefName": "Zhu Mengmeng",
-    "chefRole": "Chef",
-    "waitressName": "Xu Sa",
-    "waitressRole": "Responsable",
-    "heroButton": "Voir le Menu",
-    "visitUsTitle": "Nous Rendre Visite",
     "openingHoursLabel": "Horaires d'ouverture",
     "contactLink": "Nous contacter",
     "paymentsLabel": "Modes de paiement acceptés",
@@ -114,15 +95,7 @@
     "pickupDiscountBadge": "10% de remise à emporter",
     "restaurantClosed": "Le restaurant est actuellement fermé. Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
   },
-  "days": {
-    "monday": "Lundi",
-    "tuesday": "Mardi",
-    "wednesday": "Mercredi",
-    "thursday": "Jeudi",
-    "friday": "Vendredi",
-    "saturday": "Samedi",
-    "sunday": "Dimanche"
-  },
+  "days": {},
   "forgotPassword": {
     "title": "Mot de passe oublié",
     "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
@@ -208,21 +181,15 @@
     "greeting": "Bonjour",
     "subtitle": "Gérez votre profil et consultez vos commandes.",
     "orders": {
-      "title": "Mes commandes",
       "recentTitle": "Commandes récentes",
       "viewAll": "Tout voir",
-      "viewAllCount": "Voir les {count} commandes",
-      "nextStep": "Prochaine étape",
       "backToAccount": "Mon compte",
       "allOrdersTitle": "Toutes mes commandes",
       "loadMore": "Afficher {count} de plus",
       "loadMoreLast": "Afficher les {count} dernières",
       "loading": "Chargement des commandes...",
       "empty": "Aucune commande trouvée",
-      "order": "Commande",
-      "items": "Plats",
       "total": "Total",
-      "follow": "Suivre",
       "toggleOrder": "Détails de la commande",
       "downloadInvoice": "Télécharger la facture",
       "status": {
@@ -266,12 +233,7 @@
       "cancelDeletionRequest": "Annuler la demande de suppression",
       "cancelDeletionSuccess": "Votre demande de suppression a été annulée."
     },
-    "analytics": {
-      "title": "Cookies analytiques",
-      "enabled": "Activés",
-      "disabled": "Désactivés",
-      "description": "Aide à améliorer le site en analysant la fréquentation."
-    },
+    "analytics": {},
     "changePassword": {
       "title": "Mot de passe",
       "button": "Changer le mot de passe",
@@ -289,17 +251,10 @@
       "weakPassword": "Le mot de passe ne respecte pas les critères de sécurité."
     },
     "verify": {
-      "verified": "Vérifié",
-      "notVerified": "Non vérifié",
-      "resendButton": "Renvoyer l'e-mail de vérification",
-      "resendSuccess": "E-mail de vérification envoyé !",
-      "resendError": "Échec de l'envoi. Veuillez réessayer.",
-      "cooldown": "Veuillez patienter avant de renvoyer."
+      "verified": "Vérifié"
     },
     "notifications": {
       "title": "Notifications par e-mail",
-      "enabled": "Activés",
-      "disabled": "Désactivés",
       "marketingLabel": "E-mails marketing",
       "marketingDescription": "Recevez des offres promotionnelles et des nouvelles du restaurant.",
       "orderUpdatesLabel": "Suivi de la commande",
@@ -448,12 +403,10 @@
     "title": "Commande reçue",
     "thankYou": "Merci pour votre achat !",
     "orderSuccess": "Votre commande a été passée avec succès.",
-    "placedAt": "Commande passée le :",
     "items": "Plats",
     "loading": "Chargement des détails de la commande...",
     "returnHome": "Retour à l'accueil",
     "viewOrders": "Voir mes commandes",
-    "orderAgain": "Commander à nouveau",
     "status": "Status",
     "pageTitle": "Confirmation de commande - Tokyo Sushi Bar",
     "liveTracking": "Suivi en direct — le statut se met à jour automatiquement",
@@ -466,11 +419,7 @@
     },
     "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer."
   },
-  "404": {
-    "message": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
-    "homeButton": "Accueil",
-    "menuButton": "Voir le Menu"
-  },
+  "404": {},
   "error": {
     "homeButton": "Retour à l'accueil",
     "menuButton": "Voir le menu",
@@ -485,35 +434,28 @@
   },
   "footer": {
     "terms": "CGV",
-    "privacy": "Confidentialit\u00e9",
-    "hours": "Lun-Ven 12h-14h30, 18h-22h30 | Sam-Dim 12h-15h, 18h-23h | Fermé mardi"
+    "privacy": "Confidentialité"
   },
   "notify": {
-    "addedToCart": "{product} ajouté au panier",
-    "verificationEmailSent": "Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.",
-    "emailVerified": "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.",
-    "loginToValidateCart": "Veuillez vous connecter pour valider votre panier.",
     "errors": {
-        "cartEmpty": "Votre panier est vide.",
-        "notAuthenticated": "Veuillez vous connecter pour commander.",
-        "addressRequired": "Une adresse est requise pour une livraison.",
-        "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
-        "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
-        "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception.",
-        "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
-        "fixedTimeRequiredWhileClosed": "Veuillez choisir un créneau fixe pour aujourd'hui pendant la fermeture.",
-        "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
-        "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
-        "profileUpdateFailed": "La mise à jour du profil a échoué.",
-        "requestFailed": "La requête a échoué. Veuillez réessayer.",
-        "addressLookupFailed": "La recherche d'adresse a échoué. Veuillez réessayer.",
-        "addressMissingHouseNumber": "Veuillez sélectionner une adresse complète avec un numéro de rue.",
-        "ordersLoadFailed": "Impossible de charger vos commandes.",
-        "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
-        "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
-        "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
-        "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un.",
-        "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification."
+      "cartEmpty": "Votre panier est vide.",
+      "addressRequired": "Une adresse est requise pour une livraison.",
+      "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
+      "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
+      "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification.",
+      "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
+      "fixedTimeRequiredWhileClosed": "Veuillez choisir un créneau fixe pour aujourd'hui pendant la fermeture.",
+      "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+      "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
+      "profileUpdateFailed": "La mise à jour du profil a échoué.",
+      "requestFailed": "La requête a échoué. Veuillez réessayer.",
+      "addressLookupFailed": "La recherche d'adresse a échoué. Veuillez réessayer.",
+      "addressMissingHouseNumber": "Veuillez sélectionner une adresse complète avec un numéro de rue.",
+      "ordersLoadFailed": "Impossible de charger vos commandes.",
+      "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
+      "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+      "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
+      "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un."
     }
   },
   "schema": {
@@ -576,9 +518,7 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "CGV",
-      "privacy": "Confidentialit\u00e9",
-      "login": "Connexion",
-      "register": "Inscription"
+      "privacy": "Confidentialité"
     }
   },
   "feedback": {
@@ -627,11 +567,8 @@
     "empty": "Aucun article disponible à recommander"
   },
   "verify": {
-    "banner": "Veuillez vérifier votre adresse e-mail pour finaliser la création de votre compte.",
     "resend": "Renvoyer l'e-mail de vérification",
-    "sent": "E-mail de vérification envoyé !",
-    "error": "Échec de l'envoi de l'e-mail de vérification. Veuillez réessayer.",
-    "dismiss": "Fermer"
+    "sent": "E-mail de vérification envoyé !"
   },
   "verifyEmail": {
     "title": "Vérification de l'e-mail",
@@ -642,12 +579,7 @@
     "invalidLink": "Ce lien de vérification est invalide. Veuillez vérifier le lien dans votre e-mail.",
     "expiredOrInvalid": "Ce lien de vérification a expiré ou est invalide. Veuillez demander un nouvel e-mail de vérification."
   },
-  "cookies": {
-    "message": "Ce site utilise des cookies analytiques pour comprendre comment vous utilisez notre site. Vous pouvez les accepter ou les refuser.",
-    "learnMore": "Lire notre politique de cookies",
-    "accept": "Accepter",
-    "decline": "Refuser"
-  },
+  "cookies": {},
   "faq": {
     "title": "Questions Fréquentes",
     "subtitle": "Trouvez les réponses à vos questions sur Tokyo Sushi Bar",
