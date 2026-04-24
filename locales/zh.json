@@ -12,9 +12,7 @@
   },
   "nav": {
     "home": "首页",
-    "about": "关于我们",
     "menu": "菜单",
-    "book": "预订",
     "contact": "联系我们",
     "login": "登录",
     "logout": "登出",
@@ -25,10 +23,6 @@
     "toggleMenu": "切换菜单"
   },
   "home": {
-    "about": "关于我们",
-    "menu": "菜单",
-    "book": "预订",
-    "contact": "联系我们",
     "heroTagline": "Tokyo Sushi Bar · 列日",
     "orderNow": "立即下单",
     "schedule": "营业时间",
@@ -46,31 +40,18 @@
     "address": "Rue de la Cathédrale 59, 列日, 比利时",
     "phoneTitle": "电话",
     "emailTitle": "电子邮件",
-    "reservationsTitle": "预订",
-    "reservationsLink": "预订餐桌",
     "openingHoursTitle": "营业时间",
     "followUs": "关注我们",
-    "day": "天",
-    "hours": "时间",
     "weekdays": "周一 - 周五",
     "weekends": "周六 - 周日",
     "closedTuesday": "周二休息"
   },
   "about": {
-    "heroTitle": "欢迎来到 Tokyo Sushi Bar",
-    "heroSubtitle": "在列日体验最地道的日本风味",
     "ourStoryTitle": "我们的故事",
     "ourStoryText1": "2016年，一对热爱日本料理的年轻夫妇在父母的支持下，于列日Rue de la Régence开了一家小餐厅。每天清晨，新鲜鱼材都经过精心挑选和手工处理，以保证无可挑剔的品质。口碑迅速传开：堂食客人加上络绎不绝的外卖订单，小小的店面很快不够用了。",
     "ourStoryText2": "2024年底，餐厅搬到了几步之遥的Rue de la Cathédrale，拥有了更大的空间。如今，Tokyo Sushi Bar依然是一家家庭餐厅，每一道菜都保持着第一天的用心。",
     "ourStoryText3": "2026年，Tokyo Sushi Bar 迎来了十周年。十年间，新鲜的鱼材、不断精进的料理、与您分享的每一个微笑，都是我们最珍贵的记忆。感谢每一位从第一天起就信任我们的朋友，这段旅程，也属于你们。",
     "yearsOfPassion": "年的热忱",
-    "meetTheTeamTitle": "认识我们的团队",
-    "chefName": "朱猛猛",
-    "chefRole": "主厨",
-    "waitressName": "徐飒",
-    "waitressRole": "餐厅经理",
-    "heroButton": "查看菜单",
-    "visitUsTitle": "来访我们",
     "openingHoursLabel": "营业时间",
     "contactLink": "联系我们",
     "paymentsLabel": "接受的付款方式",
@@ -114,15 +95,7 @@
     "pickupDiscountBadge": "自取享9折",
     "restaurantClosed": "餐厅目前已关闭。您可以浏览菜单，但暂时无法下单。"
   },
-  "days": {
-    "monday": "周一",
-    "tuesday": "周二",
-    "wednesday": "周三",
-    "thursday": "周四",
-    "friday": "周五",
-    "saturday": "周六",
-    "sunday": "周日"
-  },
+  "days": {},
   "forgotPassword": {
     "title": "忘记密码",
     "description": "输入您的电子邮件地址，我们将向您发送重置密码的链接。",
@@ -208,21 +181,15 @@
     "greeting": "你好",
     "subtitle": "管理您的个人资料并查看订单。",
     "orders": {
-      "title": "我的订单",
       "recentTitle": "最近订单",
       "viewAll": "查看全部",
-      "viewAllCount": "查看全部 {count} 个订单",
-      "nextStep": "下一步",
       "backToAccount": "我的账户",
       "allOrdersTitle": "所有订单",
       "loadMore": "加载 {count} 条更多",
       "loadMoreLast": "加载最后 {count} 条",
       "loading": "加载订单中...",
       "empty": "没有找到订单",
-      "order": "订单",
-      "items": "商品",
       "total": "总计",
-      "follow": "跟踪",
       "toggleOrder": "展开订单详情",
       "downloadInvoice": "下载发票",
       "status": {
@@ -266,12 +233,7 @@
       "cancelDeletionRequest": "取消删除请求",
       "cancelDeletionSuccess": "您的删除请求已取消。"
     },
-    "analytics": {
-      "title": "分析 Cookie",
-      "enabled": "已启用",
-      "disabled": "已禁用",
-      "description": "通过分析流量帮助改善网站。"
-    },
+    "analytics": {},
     "changePassword": {
       "title": "密码",
       "button": "更改密码",
@@ -289,25 +251,17 @@
       "weakPassword": "密码不符合安全要求。"
     },
     "verify": {
-      "verified": "已验证",
-      "notVerified": "未验证",
-      "resendButton": "重新发送验证邮件",
-      "resendSuccess": "验证邮件已发送！",
-      "resendError": "发送失败，请重试。",
-      "cooldown": "请稍等再重新发送。"
+      "verified": "已验证"
     },
     "notifications": {
       "title": "邮件通知",
-      "enabled": "已启用",
-      "disabled": "已禁用",
       "marketingLabel": "营销邮件",
       "marketingDescription": "接收促销优惠和餐厅新闻。",
       "orderUpdatesLabel": "订单状态更新",
       "orderUpdatesDescription": "在当前订单的每个阶段接收电子邮件。",
       "updateSuccess": "通知偏好已更新。",
       "updateError": "更新偏好失败。"
-    },
-    "logout": "您已成功登出"
+    }
   },
   "delivery": {
     "chip": {
@@ -449,12 +403,10 @@
     "title": "订单完成",
     "thankYou": "感谢您的购买！",
     "orderSuccess": "您的订单已成功下达。",
-    "placedAt": "下单时间：",
     "items": "商品",
     "loading": "正在加载订单详情...",
     "returnHome": "返回首页",
     "viewOrders": "查看我的订单",
-    "orderAgain": "再次订购",
     "status": "状态",
     "pageTitle": "订单确认 - Tokyo Sushi Bar",
     "liveTracking": "实时追踪 — 状态自动更新",
@@ -467,11 +419,7 @@
     },
     "loadError": "加载订单详情失败，请重试。"
   },
-  "404": {
-    "message": "抱歉，我们找不到您正在寻找的页面。",
-    "homeButton": "首页",
-    "menuButton": "查看菜单"
-  },
+  "404": {},
   "error": {
     "homeButton": "返回首页",
     "menuButton": "查看菜单",
@@ -486,21 +434,15 @@
   },
   "footer": {
     "terms": "条款",
-    "privacy": "隐私政策",
-    "hours": "周一至五 12-14:30, 18-22:30 | 周末 12-15, 18-23 | 周二休息"
+    "privacy": "隐私政策"
   },
   "notify": {
-    "addedToCart": "{product} 已加入购物车",
-    "verificationEmailSent": "已向您发送了一封验证邮件。请检查您的收件箱。",
-    "emailVerified": "您的电子邮件已通过验证。您现在可以登录。",
-    "loginToValidateCart": "请登录以验证您的购物车。",
     "errors": {
       "cartEmpty": "您的购物车为空。",
-      "notAuthenticated": "您尚未认证。",
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
       "invalidCredentials": "电子邮件或密码无效。请重试。",
-      "emailNotVerified": "请在登录前验证您的电子邮件地址。请检查您的收件箱。",
+      "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",
       "orderingUnavailable": "目前无法下单。请稍后再试。",
       "fixedTimeRequiredWhileClosed": "餐厅关闭时，请选择今天的固定时间段。",
       "tooManyRequests": "尝试次数过多。请等待几分钟后再试。",
@@ -513,8 +455,7 @@
       "invoiceDownloadFailed": "发票下载失败。",
       "sessionExpired": "您的会话已过期，请重新登录。",
       "oauthFailed": "登录失败，请重试。",
-      "noPassword": "此账户没有密码。请使用下方的 Google 或 Apple 登录，或使用「忘记密码」创建密码。",
-      "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。"
+      "noPassword": "此账户没有密码。请使用下方的 Google 或 Apple 登录，或使用「忘记密码」创建密码。"
     }
   },
   "schema": {
@@ -577,9 +518,7 @@
       "menu": "菜单",
       "contact": "联系我们",
       "terms": "条款",
-      "privacy": "隐私政策",
-      "login": "登录",
-      "register": "注册"
+      "privacy": "隐私政策"
     }
   },
   "feedback": {
@@ -628,11 +567,8 @@
     "empty": "没有可重新订购的商品"
   },
   "verify": {
-    "banner": "请验证您的电子邮件地址以完成账户设置。",
     "resend": "重新发送验证邮件",
-    "sent": "验证邮件已发送！",
-    "error": "发送验证邮件失败，请重试。",
-    "dismiss": "关闭"
+    "sent": "验证邮件已发送！"
   },
   "verifyEmail": {
     "title": "邮箱验证",
@@ -643,12 +579,7 @@
     "invalidLink": "此验证链接无效。请检查您邮件中的链接。",
     "expiredOrInvalid": "此验证链接已过期或无效。请重新申请验证邮件。"
   },
-  "cookies": {
-    "message": "本网站使用分析 Cookie 来了解您如何使用我们的网站。您可以接受或拒绝。",
-    "learnMore": "阅读我们的Cookie政策",
-    "accept": "接受",
-    "decline": "拒绝"
-  },
+  "cookies": {},
   "faq": {
     "title": "常见问题",
     "subtitle": "找到关于 Tokyo Sushi Bar 的问题答案",
