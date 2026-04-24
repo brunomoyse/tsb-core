@@ -20,10 +20,10 @@
 
             <!-- Sticky Categories Header -->
             <section ref="stickyHeader" :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']" :style="isCapacitor ? { paddingTop: 'calc(var(--safe-area-top, 0px) + 1rem)' } : undefined">
-                <!-- Search Bar + Filter Row -->
-                <section class="mb-4 px-4 space-y-2">
-                    <!-- Search Bar -->
-                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[48px]">
+                <!-- Search + Filter Section -->
+                <section class="mb-4 px-4 space-y-1.5">
+                    <!-- Search Bar (full-width, labeled) -->
+                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
@@ -39,7 +39,7 @@
                         <button
                             type="button"
                             v-show="searchValue.length > 0"
-                            @click.stop="searchValue = ''"
+                            @click.stop="clearSearch"
                             :aria-label="$t('nav.search')"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         >
@@ -49,21 +49,21 @@
                         </button>
                     </div>
 
-                    <!-- Filter Row (labels always visible) -->
+                    <!-- Filter Row (compact chips) -->
                     <div class="flex items-center gap-1.5 flex-wrap">
                         <!-- Halal toggle -->
                         <button
                             type="button"
                             @click="toggleFilter('halal')"
                             :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
                         >
                             <img
-                                class="w-4 h-4 shrink-0 transition-all duration-300"
-                                :class="activeFilters.has('halal') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('halal') ? 'scale-110' : ''"
                                 :src="activeFilters.has('halal')
                                     ? 'https://api.iconify.design/hugeicons/halal.svg?color=%23ffffff'
                                     : 'https://api.iconify.design/hugeicons/halal.svg?color=%234b5563'"
@@ -78,14 +78,14 @@
                             type="button"
                             @click="toggleFilter('vegan')"
                             :aria-pressed="activeFilters.has('vegan')"
-                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                             :class="activeFilters.has('vegan')
                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
                             <img
-                                class="w-4 h-4 shrink-0 transition-all duration-300"
-                                :class="activeFilters.has('vegan') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('vegan') ? 'scale-110' : ''"
                                 :src="activeFilters.has('vegan')
                                     ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
                                     : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
@@ -100,14 +100,14 @@
                             type="button"
                             @click="toggleFilter('spicy')"
                             :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
                         >
                             <img
-                                class="w-4 h-4 shrink-0 transition-all duration-300"
-                                :class="activeFilters.has('spicy') ? 'scale-110 opacity-100' : 'opacity-90'"
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('spicy') ? 'scale-110' : ''"
                                 :src="activeFilters.has('spicy')
                                     ? 'https://api.iconify.design/hugeicons/fire-02.svg?color=%23ffffff'
                                     : 'https://api.iconify.design/hugeicons/fire-02.svg?color=%234b5563'"
@@ -169,21 +169,21 @@
                         </svg>
                     </div>
                 </section>
-
-                <!-- Allergen Notice -->
-                <div v-if="showAllergenNotice" class="mx-4 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-2 text-amber-800 text-xs">
-                    <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
-                    <p class="flex-1">
-                        {{ $t('menu.allergenNotice') }}
-                        <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
-                    </p>
-                    <button type="button" @click="dismissAllergenNotice" class="ml-1 p-0.5 hover:bg-amber-100 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
             </section>
+
+            <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
+            <div v-if="showAllergenNotice" class="mx-4 mb-2 h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
+                <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
+                <span class="flex-1 truncate">
+                    {{ $t('menu.allergenNoticeShort') }}
+                    <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
+                </span>
+                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
 
             <!-- Skeleton Loading State -->
             <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
@@ -430,6 +430,11 @@ const canScrollRight = ref(false)
 const stickyHeader = ref<HTMLElement | null>(null)
 
 const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const clearSearch = () => {
+    searchValue.value = ''
+    searchInputRef.value?.focus()
+}
 
 // Filter state
 const activeFilters = ref<Set<string>>(new Set())

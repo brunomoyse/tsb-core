@@ -92,6 +92,7 @@
     "choices": "choix",
     "noProduct": "Aucun produit disponible",
     "allergenNotice": "Nos produits peuvent contenir du poisson, des crustacés et du lactose. Merci de nous informer de toute allergie.",
+    "allergenNoticeShort": "Allergies ? Infos :",
     "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Indisponible",
     "noResults": "Aucun résultat pour \"{query}\"",

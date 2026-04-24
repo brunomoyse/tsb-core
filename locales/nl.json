@@ -84,6 +84,7 @@
     "choices": "keuzes",
     "noProduct": "Geen producten beschikbaar",
     "allergenNotice": "Onze producten kunnen vis, schaaldieren en lactose bevatten. Gelieve ons te informeren over eventuele allergieën.",
+    "allergenNoticeShort": "Allergieën? Info:",
     "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Niet beschikbaar",
     "noResults": "Geen resultaten voor \"{query}\"",

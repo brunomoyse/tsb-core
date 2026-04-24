@@ -92,6 +92,7 @@
     "choices": "choices",
     "noProduct": "No products available",
     "allergenNotice": "Our products may contain fish, shellfish and lactose. Please inform us of any allergies.",
+    "allergenNoticeShort": "Allergies? Info:",
     "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Unavailable",
     "noResults": "No results for \"{query}\"",
