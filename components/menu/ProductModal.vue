@@ -51,14 +51,14 @@
                             />
                             {{ $t('menu.halal') }}
                         </span>
-                        <span v-if="p.isVegan" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full inline-flex items-center gap-1.5">
+                        <span v-if="p.isVegetarian" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full inline-flex items-center gap-1.5">
                             <img
                                 src="https://api.iconify.design/hugeicons/leaf-01.svg?color=%23065f46"
                                 alt=""
                                 aria-hidden="true"
                                 class="w-3.5 h-3.5"
                             />
-                            {{ $t('menu.vegan') }}
+                            {{ $t('menu.vegetarian') }}
                         </span>
                         <span v-if="p.isSpicy" class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full inline-flex items-center gap-1.5">
                             <img
@@ -209,7 +209,7 @@ const PRODUCT_QUERY = gql`
       isAvailable
       isHalal
       isSpicy
-      isVegan
+      isVegetarian
       isDiscountable
       pieceCount
       code

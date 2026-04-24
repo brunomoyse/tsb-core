@@ -76,23 +76,23 @@
                         <!-- Vegan toggle -->
                         <button
                             type="button"
-                            @click="toggleFilter('vegan')"
-                            :aria-pressed="activeFilters.has('vegan')"
+                            @click="toggleFilter('vegetarian')"
+                            :aria-pressed="activeFilters.has('vegetarian')"
                             class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                            :class="activeFilters.has('vegan')
+                            :class="activeFilters.has('vegetarian')
                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
                             <img
                                 class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
-                                :class="activeFilters.has('vegan') ? 'scale-110' : ''"
-                                :src="activeFilters.has('vegan')
+                                :class="activeFilters.has('vegetarian') ? 'scale-110' : ''"
+                                :src="activeFilters.has('vegetarian')
                                     ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
                                     : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
                                 alt=""
                                 aria-hidden="true"
                             />
-                            {{ $t('menu.vegan') }}
+                            {{ $t('menu.vegetarian') }}
                         </button>
 
                         <!-- Spicy toggle -->
@@ -117,8 +117,8 @@
                             {{ $t('menu.spicy') }}
                         </button>
 
-                        <!-- Delivery zone chip on desktop -->
-                        <div class="hidden sm:block sm:ml-auto">
+                        <!-- Delivery zone chip: always visible on Capacitor, desktop-only on web -->
+                        <div :class="isCapacitor ? 'ml-auto' : 'hidden sm:block sm:ml-auto'">
                             <DeliveryZoneChip />
                         </div>
                     </div>
@@ -355,7 +355,7 @@ const PRODUCT_CATEGORIES = gql`
         isAvailable
         isHalal
         isSpicy
-        isVegan
+        isVegetarian
         isDiscountable
         category { id name }
         choices { id }
@@ -391,7 +391,7 @@ const SUB_PRODUCT_UPDATED = gql`
             pieceCount
             isHalal
             isSpicy
-            isVegan
+            isVegetarian
             isDiscountable
         }
     }
@@ -495,7 +495,7 @@ const dietaryFiltered = computed(() => {
     if (filters.size === 0) return filteredProducts.value
     return filteredProducts.value.filter(p => {
         if (filters.has('halal') && !p.isHalal) return false
-        if (filters.has('vegan') && !p.isVegan) return false
+        if (filters.has('vegetarian') && !p.isVegetarian) return false
         if (filters.has('spicy') && !p.isSpicy) return false
         return true
     })
