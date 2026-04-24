@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col min-h-[100dvh]">
+    <div class="flex flex-col" :class="cartPageMinHeightClass">
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
@@ -179,7 +179,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import type { CartItem } from '@/types'
 import CheckoutExtrasSuggestion from '~/components/checkout/CheckoutExtrasSuggestion.vue'
 import { formatPrice } from '~/lib/price'
@@ -197,6 +197,12 @@ const cartStore = useCartStore()
 const { isCapacitor } = usePlatform()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
+
+const cartPageMinHeightClass = computed(() =>
+    isCapacitor
+        ? 'min-h-[calc(100dvh-var(--safe-area-top,0px)-var(--cap-tab-clearance,56px))]'
+        : 'min-h-[100dvh]'
+)
 
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +

@@ -9,6 +9,7 @@ definePageMeta({
 const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
+const { isCapacitor } = usePlatform()
 
 const yearsSince = getBrusselsParts().year - 2016
 
@@ -51,6 +52,13 @@ const scrollToOpeningHours = () => {
     window.setTimeout(() => el.focus({ preventScroll: true }), reduceMotion ? 0 : 300)
 }
 
+const firstFoldClass = computed(() => {
+    const base = 'flex flex-col gap-3 min-h-[34rem] sm:h-auto sm:gap-5 lg:block lg:relative lg:gap-0 lg:min-h-0'
+    return isCapacitor
+        ? `${base} h-[calc(100dvh-var(--safe-area-top,0px)-var(--cap-tab-clearance,56px)-1.5rem)]`
+        : `${base} h-[calc(100dvh-5rem-1.5rem)]`
+})
+
 useSchemaOrg([
     defineWebSite({
         name: t('schema.siteName'),
@@ -85,7 +93,7 @@ useSeoMeta({
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 space-y-5">
 
         <!-- First fold: image card flexes on mobile; at lg the order panel floats as overlay on the image. -->
-        <div class="flex flex-col gap-3 h-[calc(100dvh-5rem-1.5rem)] min-h-[34rem] sm:h-auto sm:gap-5 lg:block lg:relative lg:gap-0 lg:min-h-0">
+        <div :class="firstFoldClass">
             <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl">
                 <picture>
                     <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />

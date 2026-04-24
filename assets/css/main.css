@@ -357,12 +357,8 @@ body.capacitor-app #mobile-menu {
 }
 
 /* Bottom tab bar: main content padding so nothing is hidden behind it */
-body.capacitor-app.android .capacitor-main-content {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-}
-/* iOS: floating glass bar (54px bar + 10px bottom offset + 10px breathing room) */
-body.capacitor-app.ios .capacitor-main-content {
-    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+body.capacitor-app .capacitor-main-content {
+    padding-bottom: var(--cap-tab-clearance, 56px);
 }
 
 /* Horizontal page transitions for Capacitor (native slide feel with spring) */
@@ -396,20 +392,27 @@ body.capacitor-app .capacitor-main-content {
 }
 
 /* Tab bar clearance for fixed-positioned overlays and bottom elements */
-body.capacitor-app.ios {
-    --cap-tab-clearance: 74px; /* 54px bar + 10px offset + 10px breathing */
-}
-body.capacitor-app.android {
-    --cap-tab-clearance: 56px; /* flush bar height */
+body.capacitor-app {
+    --cap-tab-height: 60px;
+    --cap-tab-clearance: calc(var(--cap-tab-height) + env(safe-area-inset-bottom, 0px));
 }
 
 /* iOS: slide tab bar below viewport when keyboard opens */
 body.capacitor-app.ios .capacitor-tab-bar {
     transition: transform 0.28s var(--spring);
     transform: translateY(0);
+    bottom: 0;
 }
 body.capacitor-app.ios.keyboard-visible .capacitor-tab-bar {
     transform: translateY(calc(100% + 24px));
+}
+
+/* Keep Capacitor tab bar pinned to viewport bottom while scrolling */
+body.capacitor-app .capacitor-tab-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 /* Android: Material touch ripple on tab items */
