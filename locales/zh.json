@@ -333,7 +333,7 @@
       "switchToPickup": "改为自取",
       "confirm": "确认",
       "pickupLabel": "到店自取",
-      "pickupHint": "请亲自到店取餐 — 无需填写地址。"
+      "pickupHint": "请亲自到店取餐。"
     },
     "gate": {
       "title": "继续之前",

@@ -333,7 +333,7 @@
       "switchToPickup": "Switch to pickup",
       "confirm": "Confirm",
       "pickupLabel": "Pickup at the restaurant",
-      "pickupHint": "Come by to collect your order — no address needed."
+      "pickupHint": "Come by to collect your order."
     },
     "gate": {
       "title": "Before you continue",
