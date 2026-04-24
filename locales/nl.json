@@ -23,7 +23,7 @@
     "toggleMenu": "Menu openen/sluiten"
   },
   "home": {
-    "heroTagline": "Tokyo Sushi Bar · Luik",
+    "heroTagline": "Japans restaurant · Luik",
     "orderNow": "Nu bestellen",
     "schedule": "Openingsuren",
     "status": {
@@ -54,6 +54,7 @@
     "yearsOfPassion": "jaar passie",
     "openingHoursLabel": "Openingsuren",
     "contactLink": "Contacteer ons",
+    "callUs": "Bel ons",
     "paymentsLabel": "Aanvaarde betaalmethodes",
     "cash": "Contant",
     "infoCards": {
@@ -265,8 +266,8 @@
   },
   "delivery": {
     "chip": {
-      "verify": "Levering controleren",
-      "verifyCompact": "Afstand checken",
+      "verify": "Zone controleren",
+      "verifyCompact": "Zone",
       "inZone": "Levering · {km} km",
       "outOfZone": "Buiten leveringszone",
       "outOfZoneCompact": "Buiten zone",

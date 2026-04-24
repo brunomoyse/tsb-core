@@ -15,11 +15,11 @@ const yearsSince = getBrusselsParts().year - 2016
 // Live ordering status for the hero order bar; lazy so the homepage renders without waiting on the config query.
 const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
 
-// Three-state status: restaurant open for online orders / open walk-in only / closed.
-type OrderingStatus = 'open' | 'onsiteOnly' | 'closed'
+// Status states: online-ordering open / walk-in only / closed / still loading from backend.
+type OrderingStatus = 'open' | 'onsiteOnly' | 'closed' | 'loading'
 const orderingStatus = computed<OrderingStatus>(() => {
     const cfg = restaurantConfig.value?.restaurantConfig
-    if (!cfg) return 'closed'
+    if (!cfg) return 'loading'
     if (cfg.isOrderingCurrentlyOpen) return 'open'
     if (cfg.isCurrentlyOpen) return 'onsiteOnly'
     return 'closed'
@@ -46,8 +46,9 @@ const scrollToOpeningHours = () => {
     if (!import.meta.client) return
     const el = document.getElementById('opening-hours')
     if (!el) return
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    window.setTimeout(() => el.focus({ preventScroll: true }), 300)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+    window.setTimeout(() => el.focus({ preventScroll: true }), reduceMotion ? 0 : 300)
 }
 
 useSchemaOrg([
@@ -83,9 +84,9 @@ useSeoMeta({
 <template>
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 space-y-5">
 
-        <!-- First fold on mobile: image card flexes so the second card stays fully visible. -->
-        <div class="flex flex-col gap-3 h-[calc(100dvh-5rem-1.5rem)] min-h-[34rem] sm:h-auto sm:gap-5">
-            <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 overflow-hidden rounded-2xl">
+        <!-- First fold: image card flexes on mobile; at lg the order panel floats as overlay on the image. -->
+        <div class="flex flex-col gap-3 h-[calc(100dvh-5rem-1.5rem)] min-h-[34rem] sm:h-auto sm:gap-5 lg:block lg:relative lg:gap-0 lg:min-h-0">
+            <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl">
                 <picture>
                     <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
                     <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
@@ -95,19 +96,24 @@ useSeoMeta({
                         src="/images/restaurant-illustrated.png"
                         width="1200"
                         height="805"
+                        fetchpriority="high"
+                        decoding="async"
                     />
                 </picture>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 text-white">
-                    <h1 class="text-xs sm:text-sm text-white/90 font-semibold drop-shadow-md tracking-[0.25em] uppercase">
-                        {{ $t('home.heroTagline') }}
+                    <h1 class="text-3xl sm:text-4xl font-bold drop-shadow-md">
+                        Tokyo Sushi Bar
                     </h1>
+                    <p class="mt-1 sm:mt-2 text-xs sm:text-sm text-white/90 font-semibold drop-shadow-md tracking-[0.25em] uppercase">
+                        {{ $t('home.heroTagline') }}
+                    </p>
                 </div>
             </div>
 
-            <!-- Order bar remains fully visible in the first mobile viewport. -->
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 space-y-3 relative z-10">
-            <!-- Live status row: green = fully open, amber = walk-in only (online orders paused), red = closed. -->
+            <!-- Order bar: stacked below image on mobile/sm; floats as overlay at top-right of image on lg (keeps the lucky cat visible below). -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm lg:shadow-xl p-4 sm:p-5 space-y-3 relative z-10 lg:absolute lg:right-8 lg:top-8 lg:w-96">
+            <!-- Live status row: green = fully open, amber = walk-in only (online orders paused), red = closed, gray shimmer = awaiting backend. -->
             <div class="flex items-center justify-between gap-3">
                 <div class="inline-flex items-center gap-2.5 min-w-0">
                     <span class="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
@@ -117,11 +123,13 @@ useSeoMeta({
                                 'relative inline-flex rounded-full h-2.5 w-2.5',
                                 orderingStatus === 'open' ? 'bg-emerald-500'
                                     : orderingStatus === 'onsiteOnly' ? 'bg-amber-400'
-                                    : 'bg-red-500',
+                                    : orderingStatus === 'closed' ? 'bg-red-500'
+                                    : 'bg-gray-300',
                             ]"
                         />
                     </span>
-                    <span class="text-sm font-semibold text-gray-900 truncate">
+                    <span v-if="orderingStatus === 'loading'" class="h-4 w-28 rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
+                    <span v-else class="text-sm font-semibold text-gray-900 truncate">
                         {{ $t(`home.status.${orderingStatus}`) }}
                         <span v-if="orderingStatus === 'closed' && nextOpeningTime" class="font-normal text-gray-500">
                             · {{ $t('checkout.opensAt', { time: nextOpeningTime }) }}
@@ -233,7 +241,7 @@ useSeoMeta({
                     <div class="mb-8 sm:mb-10">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2016</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2016</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center">
@@ -245,7 +253,7 @@ useSeoMeta({
                     <div class="mb-8 sm:mb-10">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2024</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2024</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center">
@@ -257,7 +265,7 @@ useSeoMeta({
                     <div>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/30 leading-none shrink-0">2026</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2026</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center mb-5">
@@ -278,37 +286,31 @@ useSeoMeta({
         <!-- Visit Us -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <!-- Opening Hours -->
-            <div id="opening-hours" tabindex="-1" class="bg-tsb-two rounded-2xl p-6 sm:p-8 scroll-mt-6">
-                <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
-                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    {{ $t('about.openingHoursLabel') }}
-                </h3>
-                <div class="space-y-2.5 text-sm text-gray-600">
-                    <div class="flex justify-between gap-4">
-                        <span>{{ $t('contact.weekdays') }}</span>
-                        <span class="text-gray-900 tabular-nums">12h-14h30 / 18h-22h30</span>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                        <span>{{ $t('contact.weekends') }}</span>
-                        <span class="text-gray-900 tabular-nums">12h-15h / 18h-23h</span>
-                    </div>
-                    <p class="text-red-500 text-xs pt-1">{{ $t('contact.closedTuesday') }}</p>
-                </div>
-            </div>
+            <OpeningHoursCard id="opening-hours" tabindex="-1" />
             <!-- Address -->
             <div class="bg-tsb-two rounded-2xl p-6 sm:p-8">
                 <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 0115 0z"/></svg>
-                    {{ $t('contact.addressTitle') }}
+                    {{ $t('contact.title') }}
                 </h3>
                 <p class="text-sm text-gray-600 mb-4">{{ $t('contact.address') }}</p>
-                <NuxtLinkLocale
-                    to="/contact"
-                    class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-gray-600 transition underline underline-offset-2"
+                <a
+                    href="tel:+32422298888"
+                    :aria-label="`${$t('about.callUs')} +32 4 222 98 88`"
+                    class="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white border border-gray-200 text-sm font-medium text-gray-900 hover:bg-tsb-four/40 hover:border-gray-300 transition focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none mb-3"
                 >
-                    {{ $t('about.contactLink') }}
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </NuxtLinkLocale>
+                    <svg aria-hidden="true" class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                    <span class="tabular-nums">+32 4 222 98 88</span>
+                </a>
+                <div>
+                    <NuxtLinkLocale
+                        to="/contact"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-gray-600 transition underline underline-offset-2"
+                    >
+                        {{ $t('about.contactLink') }}
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </NuxtLinkLocale>
+                </div>
             </div>
         </div>
 
@@ -349,3 +351,16 @@ useSeoMeta({
 
     </section>
 </template>
+
+<style scoped>
+@media (prefers-reduced-motion: reduce) {
+    :deep(.animate-ping),
+    :deep(.animate-shimmer) {
+        animation: none;
+    }
+    :deep(.transition),
+    :deep(.transition-all) {
+        transition: none;
+    }
+}
+</style>
