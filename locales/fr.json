@@ -332,7 +332,7 @@
       "switchToPickup": "Passer au retrait",
       "confirm": "Confirmer",
       "pickupLabel": "Retrait au restaurant",
-      "pickupHint": "Venez chercher votre commande sur place — aucune adresse nécessaire."
+      "pickupHint": "Venez chercher votre commande sur place."
     },
     "gate": {
       "title": "Avant de continuer",

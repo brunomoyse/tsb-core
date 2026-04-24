@@ -143,6 +143,8 @@ let sessionToken = generateSessionToken()
 // Debounce timer
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
+const hasHouseNumberInQuery = (input: string): boolean => /\d/.test(input)
+
 // Generate a UUID for session token
 function generateSessionToken(): string {
     return crypto.randomUUID()
@@ -170,7 +172,9 @@ const handleAddressInput = () => {
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(async () => {
-        if (addressQuery.value.trim().length < 3) {
+        const query = addressQuery.value.trim()
+
+        if (query.length < 3 || !hasHouseNumberInQuery(query)) {
             suggestions.value = []
             hasSearched.value = false
             return
@@ -181,7 +185,7 @@ const handleAddressInput = () => {
                 print(AUTOCOMPLETE_ADDRESSES),
                 {
                     variables: {
-                        input: addressQuery.value.trim(),
+                        input: query,
                         sessionToken,
                     }
                 }

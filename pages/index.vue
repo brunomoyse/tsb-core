@@ -331,7 +331,13 @@ useSeoMeta({
                 </div>
                 <!-- Bancontact -->
                 <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center" aria-label="Bancontact">
-                    <span class="font-extrabold text-[11px] text-gray-500 tracking-tight leading-none">bc</span>
+                    <img
+                        src="/icons/bancontact-logo.svg"
+                        alt=""
+                        aria-hidden="true"
+                        class="h-3.5 w-auto grayscale contrast-125 brightness-75 opacity-80"
+                        loading="lazy"
+                    />
                 </div>
                 <!-- Cash -->
                 <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-1" aria-label="Cash">

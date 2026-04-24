@@ -323,7 +323,7 @@
       "switchToPickup": "Overschakelen naar afhalen",
       "confirm": "Bevestigen",
       "pickupLabel": "Afhalen in het restaurant",
-      "pickupHint": "Kom uw bestelling ter plaatse ophalen — geen adres nodig."
+      "pickupHint": "Kom uw bestelling ter plaatse ophalen."
     },
     "gate": {
       "title": "Voordat u verdergaat",
