@@ -56,7 +56,7 @@
                         <circle cx="16.5" cy="19" r="1.4"/>
                     </svg>
                     <div
-                        v-if="cartCount > 0"
+                        v-if="cartCount > 0 && !isCartActive"
                         :class="['cap-cart-badge', badgeAnimating ? 'animate-bounce' : '']"
                     >
                         {{ cartBadgeLabel }}

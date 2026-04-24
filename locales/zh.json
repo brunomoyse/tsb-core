@@ -317,7 +317,11 @@
     "addToCart": "加入购物车",
     "item": "件商品",
     "items": "件商品",
-    "orderingUnavailable": "暂时无法下单"
+    "orderingUnavailable": "暂时无法下单",
+    "undo": "撤销",
+    "removedUndo": "已移除「{name}」",
+    "eachSuffix": "每份",
+    "deliveryTbd": "运费将在结账时计算"
   },
   "checkout": {
     "title": "结账",
@@ -398,7 +402,9 @@
     "completeBeforeOrder": "下单前请先完成以下内容：",
     "addressDistanceKm": "距离 {distance} 公里",
     "addExtras": "加点配菜？",
-    "extrasDescription": "为您的订单添加一些配菜"
+    "extrasDescription": "为您的订单添加一些配菜",
+    "paidExtra": "付费加购",
+    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。"
   },
   "orderCompleted": {
     "title": "订单完成",

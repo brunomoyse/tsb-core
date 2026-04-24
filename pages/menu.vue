@@ -297,6 +297,7 @@ import { useCartStore } from '@/stores/cart'
 import { useDebounce } from '@vueuse/core'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
+import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '~/utils/productImage'
 
 const { isCapacitor } = usePlatform()
 const { selection: hapticSelection } = useHaptics()
@@ -606,10 +607,15 @@ const menuItemSchemas = computed(() => (
         description: product.name,
         image: product.slug ? {
             '@type': 'ImageObject',
-            url: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.png`,
-            contentUrl: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.webp`,
-            thumbnail: `${config.public.s3bucketUrl}/images/thumbnails/${product.slug}.png`
-        } : undefined,
+            url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
+            contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
+            thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png')
+        } : {
+            '@type': 'ImageObject',
+            url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+            contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+            thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`
+        },
         offers: {
             '@type': 'Offer',
             price: product.price,

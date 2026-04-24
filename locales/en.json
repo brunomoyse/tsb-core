@@ -317,7 +317,11 @@
     "addToCart": "Add to cart",
     "item": "item",
     "items": "items",
-    "orderingUnavailable": "Ordering unavailable"
+    "orderingUnavailable": "Ordering unavailable",
+    "undo": "Undo",
+    "removedUndo": "“{name}” removed",
+    "eachSuffix": "each",
+    "deliveryTbd": "Delivery calculated at checkout"
   },
   "checkout": {
     "title": "Checkout",
@@ -398,7 +402,9 @@
     "completeBeforeOrder": "Please complete these before placing your order:",
     "addressDistanceKm": "{distance} km away",
     "addExtras": "Add some extras?",
-    "extrasDescription": "Complete your order with some accompaniments"
+    "extrasDescription": "Complete your order with some accompaniments",
+    "paidExtra": "Paid extra",
+    "paidExtrasNotice": "These extras are billed as products and added to your cart."
   },
   "orderCompleted": {
     "title": "Order Completed",

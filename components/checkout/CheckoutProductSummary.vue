@@ -30,19 +30,20 @@
                     >
                         <picture>
                             <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.avif`"
+                                :srcset="`${productImageBase(item.product.slug)}.avif`"
                                 type="image/avif"
                             />
                             <source
-                                :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.webp`"
+                                :srcset="`${productImageBase(item.product.slug)}.webp`"
                                 type="image/webp"
                             />
                             <img
-                                :src="`${config.public.s3bucketUrl}/images/thumbnails/${item.product.slug}.png`"
+                                :src="`${productImageBase(item.product.slug)}.png`"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-0.5"
                                 width="56"
                                 height="56"
+                                @error="handleProductImageError"
                             />
                         </picture>
                     </div>
@@ -174,6 +175,7 @@
 </template>
 
 <script lang="ts" setup>
+import * as productImage from '~/utils/productImage'
 import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -220,10 +222,13 @@ const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 
 const openLightbox = (slug: string, name: string) => {
-    lightboxSrc.value = `${config.public.s3bucketUrl}/images/thumbnails/${slug}`
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, slug)
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }
+
+const { handleProductImageError } = productImage
+const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)

@@ -34,16 +34,18 @@
                      style="background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;"
                 />
                 <picture class="w-full h-full flex justify-center items-center">
-                    <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.avif`"
+                    <source :srcset="`${productImageBaseSrc}.avif`"
                             type="image/avif"/>
-                    <source :srcset="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.webp`"
+                    <source :srcset="`${productImageBaseSrc}.webp`"
                             type="image/webp"/>
                     <img ref="imageElement" :alt="product.name"
                          width="185" height="130"
                          :class="[loaded ? 'opacity-100' : 'opacity-0', !product.isAvailable ? 'grayscale' : '']"
                          :draggable="false" :fetchpriority="index < 6 ? 'high' : 'low'"
                          :loading="index > 5 ? 'lazy' : 'eager'"
-                         :src="`${config.public.s3bucketUrl}/images/thumbnails/${product?.slug}.png`" class="object-contain max-h-full transition-opacity duration-500"/>
+                         :src="`${productImageBaseSrc}.png`"
+                         class="object-contain max-h-full transition-opacity duration-500"
+                         @error="handleImageError"/>
                 </picture>
             </div>
 
@@ -111,6 +113,7 @@
 </template>
 
 <script lang="ts" setup>
+import * as productImage from '~/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { Product } from '@/types'
@@ -152,6 +155,8 @@ onUnmounted(() => {
 });
 
 const hasChoices = computed(() => product.choices?.length > 0);
+const { handleProductImageError } = productImage
+const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.slug));
 
 const isInCart = computed(() =>
     cartStore.products.some(
@@ -230,6 +235,10 @@ const imageElement = ref<HTMLImageElement | null>(null);
 
 // Track whether the image has loaded
 const loaded = ref(false);
+const handleImageError = (event: Event) => {
+    handleProductImageError(event)
+    loaded.value = true
+}
 
 onMounted(() => {
     if (imageElement.value) {

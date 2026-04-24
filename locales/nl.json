@@ -398,7 +398,9 @@
     "completeBeforeOrder": "Vul dit eerst aan voordat u bestelt:",
     "addressDistanceKm": "{distance} km afstand",
     "addExtras": "Zin in extra's?",
-    "extrasDescription": "Maak uw bestelling compleet met bijgerechten"
+    "extrasDescription": "Maak uw bestelling compleet met bijgerechten",
+    "paidExtra": "Betaalde extra",
+    "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd."
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",

@@ -317,7 +317,11 @@
     "addToCart": "Ajouter au panier",
     "item": "article",
     "items": "articles",
-    "orderingUnavailable": "Commandes indisponibles"
+    "orderingUnavailable": "Commandes indisponibles",
+    "undo": "Annuler",
+    "removedUndo": "« {name} » retiré",
+    "eachSuffix": "pièce",
+    "deliveryTbd": "Livraison calculée au paiement"
   },
   "checkout": {
     "title": "Commande",
@@ -398,7 +402,9 @@
     "completeBeforeOrder": "Merci de compléter avant de valider :",
     "addressDistanceKm": "{distance} km",
     "addExtras": "Envie d'un accompagnement ?",
-    "extrasDescription": "Complétez votre commande avec des accompagnements"
+    "extrasDescription": "Complétez votre commande avec des accompagnements",
+    "paidExtra": "Supplément payant",
+    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier."
   },
   "orderCompleted": {
     "title": "Commande reçue",
