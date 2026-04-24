@@ -267,7 +267,7 @@
   "delivery": {
     "chip": {
       "verify": "Vérifier la zone",
-      "verifyCompact": "La zone",
+      "verifyCompact": "Vérifier",
       "inZone": "Livraison · {km} km",
       "outOfZone": "Hors zone de livraison",
       "outOfZoneCompact": "Hors zone",
