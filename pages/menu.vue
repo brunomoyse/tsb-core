@@ -117,8 +117,8 @@
                             {{ $t('menu.spicy') }}
                         </button>
 
-                        <!-- Delivery zone chip: always visible on Capacitor, desktop-only on web -->
-                        <div :class="isCapacitor ? 'ml-auto' : 'hidden sm:block sm:ml-auto'">
+                        <!-- Delivery zone chip on desktop -->
+                        <div class="hidden sm:block sm:ml-auto">
                             <DeliveryZoneChip />
                         </div>
                     </div>
@@ -184,6 +184,17 @@
                     </svg>
                 </button>
             </div>
+
+            <!-- Capacitor floating zone checker (no top bar needed) -->
+            <ClientOnly>
+                <div
+                    v-if="isCapacitor"
+                    class="fixed right-4 z-40"
+                    :style="{ bottom: 'calc(var(--cap-tab-clearance, 16px) + 68px)' }"
+                >
+                    <DeliveryZoneChip compact />
+                </div>
+            </ClientOnly>
 
             <!-- Skeleton Loading State -->
             <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
