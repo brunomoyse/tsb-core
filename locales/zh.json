@@ -101,7 +101,7 @@
     "title": "登录",
     "email": "电子邮件",
     "emailPlaceholder": "输入您的电子邮件",
-    "sendCode": "发送验证码",
+    "sendCode": "继续",
     "codeSent": "我们已将6位验证码发送至 {email}",
     "codeLabel": "验证码",
     "codePlaceholder": "123456",

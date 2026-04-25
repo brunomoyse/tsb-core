@@ -101,7 +101,7 @@
     "title": "Login",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
-    "sendCode": "Send code",
+    "sendCode": "Continue",
     "codeSent": "We sent a 6-digit code to {email}",
     "codeLabel": "Verification code",
     "codePlaceholder": "123456",

@@ -101,7 +101,7 @@
     "title": "Connexion",
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre e-mail",
-    "sendCode": "Envoyer le code",
+    "sendCode": "Continuer",
     "codeSent": "Nous avons envoyé un code à 6 chiffres à {email}",
     "codeLabel": "Code de vérification",
     "codePlaceholder": "123456",
