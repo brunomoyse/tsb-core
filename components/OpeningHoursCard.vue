@@ -4,19 +4,19 @@
             <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $t('about.openingHoursLabel') }}
         </component>
-        <div class="space-y-2.5 text-sm text-gray-600">
-            <div class="flex justify-between items-center gap-4">
-                <span>{{ $t('contact.weekdays') }}</span>
-                <span v-if="weekdaysHours" class="text-gray-900 tabular-nums">{{ weekdaysHours }}</span>
-                <span v-else class="h-4 w-40 rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
+        <dl class="space-y-3 text-sm text-gray-600">
+            <div>
+                <dt class="text-xs uppercase tracking-wide text-gray-500">{{ $t('contact.weekdays') }}</dt>
+                <dd v-if="weekdaysHours" class="mt-0.5 text-gray-900 tabular-nums whitespace-nowrap">{{ weekdaysHours }}</dd>
+                <dd v-else class="mt-0.5 h-4 w-40 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
             </div>
-            <div class="flex justify-between items-center gap-4">
-                <span>{{ $t('contact.weekends') }}</span>
-                <span v-if="weekendsHours" class="text-gray-900 tabular-nums">{{ weekendsHours }}</span>
-                <span v-else class="h-4 w-32 rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
+            <div>
+                <dt class="text-xs uppercase tracking-wide text-gray-500">{{ $t('contact.weekends') }}</dt>
+                <dd v-if="weekendsHours" class="mt-0.5 text-gray-900 tabular-nums whitespace-nowrap">{{ weekendsHours }}</dd>
+                <dd v-else class="mt-0.5 h-4 w-32 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
             </div>
             <p class="text-red-500 text-xs pt-1">{{ $t('contact.closedTuesday') }}</p>
-        </div>
+        </dl>
     </div>
 </template>
 
