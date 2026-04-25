@@ -17,7 +17,6 @@ interface CreateUserParams {
     firstName: string
     lastName: string
     email: string
-    password: string
     phone?: string
 }
 
@@ -37,11 +36,27 @@ export function useZitadelApi() {
         return 'fr'
     }
 
-    /** Create a session with email + password (login via proxy). */
-    function createSession(loginName: string, password: string): Promise<SessionResponse> {
-        return $fetch<SessionResponse>(`${apiUrl}/auth/session`, {
+    /** Step 1: request an OTP — creates a Zitadel session and emails a 6-digit code. */
+    function requestOtpLogin(loginName: string): Promise<SessionResponse> {
+        return $fetch<SessionResponse>(`${apiUrl}/auth/session/otp/request`, {
             method: 'POST',
-            body: { loginName, password },
+            body: { loginName, lang: getLang() },
+        })
+    }
+
+    /** Step 2: verify the OTP code; returns a fresh sessionToken with otpEmail check fulfilled. */
+    function verifyOtpLogin(sessionId: string, sessionToken: string, code: string): Promise<SessionResponse> {
+        return $fetch<SessionResponse>(`${apiUrl}/auth/session/otp/verify`, {
+            method: 'POST',
+            body: { sessionId, sessionToken, code },
+        })
+    }
+
+    /** Re-issue a fresh OTP code for an existing pending session. */
+    function resendOtpLogin(sessionId: string, sessionToken: string): Promise<{ success: true }> {
+        return $fetch<{ success: true }>(`${apiUrl}/auth/session/otp/resend`, {
+            method: 'POST',
+            body: { sessionId, sessionToken, lang: getLang() },
         })
     }
 
@@ -77,22 +92,6 @@ export function useZitadelApi() {
         })
     }
 
-    /** Request a password reset email for the given address. */
-    function requestPasswordReset(email: string): Promise<void> {
-        return $fetch(`${apiUrl}/auth/password/request-reset`, {
-            method: 'POST',
-            body: { email, lang: getLang() },
-        })
-    }
-
-    /** Complete a password reset using the verification code from the email. */
-    function setNewPassword(userId: string, code: string, password: string): Promise<void> {
-        return $fetch(`${apiUrl}/auth/password/reset`, {
-            method: 'POST',
-            body: { userId, code, password },
-        })
-    }
-
     /** Resend the verification email for an unverified account. */
     function resendVerification(email: string): Promise<void> {
         return $fetch(`${apiUrl}/auth/resend-verification`, {
@@ -110,13 +109,13 @@ export function useZitadelApi() {
     }
 
     return {
-        createSession,
+        requestOtpLogin,
+        verifyOtpLogin,
+        resendOtpLogin,
         finalizeOidcAuth,
         startIdpLogin,
         createIdpSession,
         createUser,
-        requestPasswordReset,
-        setNewPassword,
         verifyEmail,
         resendVerification,
     }

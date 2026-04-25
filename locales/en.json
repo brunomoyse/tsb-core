@@ -97,33 +97,19 @@
     "restaurantClosed": "The restaurant is currently closed. You can browse the menu, but ordering is unavailable."
   },
   "days": {},
-  "forgotPassword": {
-    "title": "Forgot Password",
-    "description": "Enter your email address and we'll send you a link to reset your password.",
-    "submit": "Send Reset Link",
-    "successTitle": "Email Sent",
-    "successMessage": "If an account exists with this email, you will receive a password reset link shortly. Please check your inbox.",
-    "backToLogin": "Back to Login"
-  },
-  "resetPassword": {
-    "title": "Reset Password",
-    "newPassword": "New Password",
-    "newPasswordPlaceholder": "Enter your new password",
-    "submit": "Reset Password",
-    "successTitle": "Password Reset",
-    "successMessage": "Your password has been successfully reset. You will be redirected to the login page shortly.",
-    "invalidToken": "This reset link is invalid or has expired.",
-    "requestNewLink": "Request a new link",
-    "passwordsMismatch": "Passwords do not match."
-  },
   "login": {
     "title": "Login",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
-    "password": "Password",
-    "passwordPlaceholder": "Enter your password",
+    "sendCode": "Send code",
+    "codeSent": "We sent a 6-digit code to {email}",
+    "codeLabel": "Verification code",
+    "codePlaceholder": "123456",
+    "verify": "Verify",
+    "resendCode": "Resend code",
+    "resendCooldown": "Resend in {seconds}s",
+    "backToEmail": "Back",
     "dividerOr": "or",
-    "forgot": "Forgot password?",
     "noAccount": "Don't have an account?",
     "register": "Create an account",
     "submit": "Login",
@@ -141,10 +127,6 @@
     "lastNamePlaceholder": "Enter your last name",
     "email": "Email",
     "emailPlaceholder": "Enter your email address",
-    "password": "Password",
-    "passwordPlaceholder": "Enter your password",
-    "confirmPassword": "Confirm Password",
-    "confirmPasswordPlaceholder": "Re-enter your password",
     "phone": "Phone",
     "phonePlaceholder": "Enter your phone number",
     "invalidPhone": "Invalid phone number",
@@ -156,16 +138,6 @@
     "addressCallHint": "If your address isn't listed, feel free to call us at",
     "submit": "Submit",
     "confirmAddress": "Confirm that this is your address",
-    "passwordVeryWeak": "Very Weak",
-    "passwordWeak": "Weak",
-    "passwordFair": "Fair",
-    "passwordGood": "Good",
-    "passwordStrong": "Strong",
-    "passwordMinLength": "At least 8 characters",
-    "passwordUpperCase": "One uppercase letter",
-    "passwordLowerCase": "One lowercase letter",
-    "passwordNumber": "One number",
-    "passwordSpecialChar": "One special character",
     "deliveryInfoTitle": "Delivery Information (optional)",
     "deliveryInfoDescription": "Required only if you want to order for delivery.",
     "hasAccount": "Already have an account?",
@@ -174,7 +146,6 @@
     "errors": {
       "email_already_exists": "An account with this email address already exists.",
       "invalid_email_format": "The email address format is invalid.",
-      "weak_password": "The password does not meet the security requirements.",
       "registration_failed": "Registration failed. Please try again."
     }
   },
@@ -235,22 +206,6 @@
       "cancelDeletionSuccess": "Your deletion request has been cancelled."
     },
     "analytics": {},
-    "changePassword": {
-      "title": "Password",
-      "button": "Change password",
-      "currentPassword": "Current password",
-      "currentPasswordPlaceholder": "Enter your current password",
-      "newPassword": "New password",
-      "newPasswordPlaceholder": "Enter your new password",
-      "confirmPassword": "Confirm new password",
-      "confirmPasswordPlaceholder": "Re-enter your new password",
-      "submit": "Change password",
-      "success": "Your password has been changed. Please log in again.",
-      "passwordsMismatch": "Passwords do not match.",
-      "wrongPassword": "Current password is incorrect.",
-      "googleOnly": "Your account uses Google sign-in. Please use Google to log in.",
-      "weakPassword": "The password does not meet the security requirements."
-    },
     "verify": {
       "verified": "Verified"
     },
@@ -449,7 +404,8 @@
       "cartEmpty": "Your cart is empty.",
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
-      "invalidCredentials": "Invalid email or password. Please try again.",
+      "invalidCode": "Invalid or expired code. Please try again.",
+      "codeExpired": "The code has expired. Request a new one.",
       "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
       "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
       "fixedTimeRequiredWhileClosed": "Please select a fixed time slot for today while we are closed.",
@@ -468,8 +424,7 @@
       "ordersLoadFailed": "Failed to load your orders.",
       "invoiceDownloadFailed": "Invoice download failed.",
       "sessionExpired": "Your session has expired. Please log in again.",
-      "oauthFailed": "Login failed. Please try again.",
-      "noPassword": "This account doesn't have a password. Sign in with Google or Apple below, or use \"Forgot password\" to create one."
+      "oauthFailed": "Login failed. Please try again."
     }
   },
   "schema": {
@@ -505,14 +460,6 @@
     "register": {
       "title": "Register - Tokyo Sushi Bar",
       "description": "Create your Tokyo Sushi Bar account"
-    },
-    "forgotPassword": {
-      "title": "Forgot Password - Tokyo Sushi Bar",
-      "description": "Reset your Tokyo Sushi Bar account password"
-    },
-    "resetPassword": {
-      "title": "Reset Password - Tokyo Sushi Bar",
-      "description": "Set a new password for your Tokyo Sushi Bar account"
     },
     "checkout": {
       "title": "Checkout - Tokyo Sushi Bar"

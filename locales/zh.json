@@ -97,33 +97,19 @@
     "restaurantClosed": "餐厅目前已关闭。您可以浏览菜单，但暂时无法下单。"
   },
   "days": {},
-  "forgotPassword": {
-    "title": "忘记密码",
-    "description": "输入您的电子邮件地址，我们将向您发送重置密码的链接。",
-    "submit": "发送重置链接",
-    "successTitle": "邮件已发送",
-    "successMessage": "如果此电子邮件存在关联账户，您将很快收到密码重置链接。请检查您的收件箱。",
-    "backToLogin": "返回登录"
-  },
-  "resetPassword": {
-    "title": "重置密码",
-    "newPassword": "新密码",
-    "newPasswordPlaceholder": "输入您的新密码",
-    "submit": "重置密码",
-    "successTitle": "密码已重置",
-    "successMessage": "您的密码已成功重置。您将很快被重定向到登录页面。",
-    "invalidToken": "此重置链接无效或已过期。",
-    "requestNewLink": "请求新链接",
-    "passwordsMismatch": "两次输入的密码不一致。"
-  },
   "login": {
     "title": "登录",
     "email": "电子邮件",
     "emailPlaceholder": "输入您的电子邮件",
-    "password": "密码",
-    "passwordPlaceholder": "输入您的密码",
+    "sendCode": "发送验证码",
+    "codeSent": "我们已将6位验证码发送至 {email}",
+    "codeLabel": "验证码",
+    "codePlaceholder": "123456",
+    "verify": "验证",
+    "resendCode": "重新发送验证码",
+    "resendCooldown": "{seconds}秒后可重发",
+    "backToEmail": "返回",
     "dividerOr": "或",
-    "forgot": "忘记密码？",
     "noAccount": "没有账户？",
     "register": "创建账户",
     "submit": "登录",
@@ -141,10 +127,6 @@
     "lastNamePlaceholder": "请输入您的姓氏",
     "email": "电子邮件",
     "emailPlaceholder": "请输入您的电子邮件地址",
-    "password": "密码",
-    "passwordPlaceholder": "请输入您的密码",
-    "confirmPassword": "确认密码",
-    "confirmPasswordPlaceholder": "请再次输入您的密码",
     "phone": "电话",
     "phonePlaceholder": "请输入您的电话号码",
     "invalidPhone": "电话号码无效",
@@ -156,16 +138,6 @@
     "addressCallHint": "如果找不到您的地址，请随时致电我们：",
     "submit": "提交",
     "confirmAddress": "确认这是您的地址",
-    "passwordVeryWeak": "非常弱",
-    "passwordWeak": "弱",
-    "passwordFair": "一般",
-    "passwordGood": "良好",
-    "passwordStrong": "强",
-    "passwordMinLength": "至少8个字符",
-    "passwordUpperCase": "一个大写字母",
-    "passwordLowerCase": "一个小写字母",
-    "passwordNumber": "一个数字",
-    "passwordSpecialChar": "一个特殊字符",
     "deliveryInfoTitle": "配送信息（可选）",
     "deliveryInfoDescription": "仅在您需要配送时填写。",
     "hasAccount": "已有账户？",
@@ -174,7 +146,6 @@
     "errors": {
       "email_already_exists": "该邮箱地址已注册。",
       "invalid_email_format": "邮箱地址格式无效。",
-      "weak_password": "密码不符合安全要求。",
       "registration_failed": "注册失败，请重试。"
     }
   },
@@ -235,22 +206,6 @@
       "cancelDeletionSuccess": "您的删除请求已取消。"
     },
     "analytics": {},
-    "changePassword": {
-      "title": "密码",
-      "button": "更改密码",
-      "currentPassword": "当前密码",
-      "currentPasswordPlaceholder": "输入当前密码",
-      "newPassword": "新密码",
-      "newPasswordPlaceholder": "输入新密码",
-      "confirmPassword": "确认新密码",
-      "confirmPasswordPlaceholder": "再次输入新密码",
-      "submit": "更改密码",
-      "success": "密码已更改，请重新登录。",
-      "passwordsMismatch": "两次输入的密码不一致。",
-      "wrongPassword": "当前密码不正确。",
-      "googleOnly": "您的账户使用 Google 登录，请使用 Google 登录。",
-      "weakPassword": "密码不符合安全要求。"
-    },
     "verify": {
       "verified": "已验证"
     },
@@ -449,7 +404,8 @@
       "cartEmpty": "您的购物车为空。",
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
-      "invalidCredentials": "电子邮件或密码无效。请重试。",
+      "invalidCode": "验证码无效或已过期。请重试。",
+      "codeExpired": "验证码已过期。请重新获取。",
       "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",
       "orderingUnavailable": "目前无法下单。请稍后再试。",
       "fixedTimeRequiredWhileClosed": "餐厅关闭时，请选择今天的固定时间段。",
@@ -468,8 +424,7 @@
       "ordersLoadFailed": "无法加载您的订单。",
       "invoiceDownloadFailed": "发票下载失败。",
       "sessionExpired": "您的会话已过期，请重新登录。",
-      "oauthFailed": "登录失败，请重试。",
-      "noPassword": "此账户没有密码。请使用下方的 Google 或 Apple 登录，或使用「忘记密码」创建密码。"
+      "oauthFailed": "登录失败，请重试。"
     }
   },
   "schema": {
@@ -505,14 +460,6 @@
     "register": {
       "title": "注册 - Tokyo Sushi Bar",
       "description": "创建您的 Tokyo Sushi Bar 账户"
-    },
-    "forgotPassword": {
-      "title": "忘记密码 - Tokyo Sushi Bar",
-      "description": "重置您的 Tokyo Sushi Bar 账户密码"
-    },
-    "resetPassword": {
-      "title": "重置密码 - Tokyo Sushi Bar",
-      "description": "为您的 Tokyo Sushi Bar 账户设置新密码"
     },
     "checkout": {
       "title": "结账 - Tokyo Sushi Bar"
