@@ -65,7 +65,6 @@ const EXTRA_PRODUCTS_QUERY = `
             name
             products {
                 id
-                categoryId
                 name
                 description
                 price

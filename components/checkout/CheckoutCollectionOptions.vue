@@ -210,7 +210,9 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-const availableFixedSlots = computed<RestaurantTimeSlot[]>(() => availableSlotsToday ?? [])
+const availableFixedSlots = computed<RestaurantTimeSlot[]>(() =>
+    (availableSlotsToday ?? []).filter(slot => new Date(slot.value) > now.value)
+)
 
 // Selected preferred time binding
 const preferredReadyTime = computed<string>({
