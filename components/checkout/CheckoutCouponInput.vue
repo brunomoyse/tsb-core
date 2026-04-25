@@ -32,7 +32,7 @@
                     type="text"
                     data-testid="coupon-input"
                     :aria-label="$t('coupon.title')"
-                    class="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200 text-sm"
+                    class="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-50"
                     :placeholder="$t('coupon.placeholder')"
                     :disabled="isValidating"
                     @keyup.enter="applyCoupon"
@@ -40,7 +40,7 @@
                 <button
                     type="button"
                     data-testid="coupon-apply"
-                    class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 transition-all active:scale-[0.97] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-all duration-300 ease-out active:scale-[0.97] disabled:bg-gray-300 disabled:cursor-not-allowed"
                     :disabled="!couponInput.trim() || isValidating"
                     @click="applyCoupon"
                 >

@@ -95,13 +95,13 @@
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
                             <div class="flex items-center gap-2">
-                                <button data-testid="cart-item-decrement" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                <button data-testid="cart-item-decrement" class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out"
                                         @click="handleDecrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                     -
                                 </button>
                                 <span data-testid="cart-item-quantity" class="text-sm w-6 text-center">{{ item.quantity }}</span>
-                                <button data-testid="cart-item-increment" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+                                <button data-testid="cart-item-increment" class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out"
                                         @click="handleIncrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                                     +

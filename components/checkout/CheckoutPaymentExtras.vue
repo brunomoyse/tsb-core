@@ -102,10 +102,10 @@
                             inputmode="decimal"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
                             :class="[
-                                'w-full pl-3 pr-8 py-2 border rounded-md bg-white focus:outline-none',
+                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
-                                    ? 'border-gray-300 focus:ring focus:ring-gray-200 focus:border-gray-400'
-                                    : 'border-amber-300 focus:ring focus:ring-amber-200 focus:border-amber-400',
+                                    ? 'border-gray-200 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300'
+                                    : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:border-amber-400',
                             ]"
                         />
                         <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-gray-500' : 'text-amber-700']">€</span>
@@ -231,7 +231,7 @@
                 aria-describedby="order-comment-counter"
                 rows="3"
                 maxlength="500"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 :placeholder="$t('checkout.orderCommentPlaceholder', 'e.g. Allergies or special instructions')"
             ></textarea>
             <p
