@@ -609,54 +609,67 @@ watch(activeCategory, newVal => {
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
-// Generate MenuItem schemas for all products
-const menuItemSchemas = computed(() => (
-    allProducts.value.map(product => ({
-        '@type': 'MenuItem',
-        '@id': `${config.public.baseUrl}/menu#${product.id}`,
-        name: product.name,
-        description: product.name,
-        image: product.slug ? {
-            '@type': 'ImageObject',
-            url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-            contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
-            thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png')
-        } : {
-            '@type': 'ImageObject',
-            url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-            contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-            thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`
-        },
-        offers: {
-            '@type': 'Offer',
-            price: product.price,
-            priceCurrency: 'EUR',
-            availability: product.isAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-        },
-        menuAddOn: product.category ? {
-            '@type': 'MenuSection',
-            name: product.category.name
-        } : undefined,
-        suitableForDiet: product.isHalal ? ['https://schema.org/HalalDiet'] : undefined
-    }))
-))
+// Build the Menu graph: Menu -> hasMenuSection[] -> hasMenuItem[]
+const menuSchema = computed(() => {
+    const fallbackImage = {
+        '@type': 'ImageObject',
+        url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+        contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+        thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+    }
 
-// Generate ItemList schema for the menu
-const itemListSchema = computed(() => ({
-    '@type': 'ItemList',
-    '@id': `${config.public.baseUrl}/menu#itemlist`,
-    name: t('schema.menu.name'),
-    numberOfItems: allProducts.value.length,
-    itemListElement: allProducts.value.map((product, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
+    const sections = new Map<string, { id: string, name: string, items: Record<string, unknown>[] }>()
+    for (const product of allProducts.value) {
+        if (!product.category) continue
+        if (!sections.has(product.category.id)) {
+            sections.set(product.category.id, {
+                id: product.category.id,
+                name: product.category.name,
+                items: [],
+            })
+        }
+        const diets: string[] = []
+        if (product.isHalal) diets.push('https://schema.org/HalalDiet')
+        if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
+
+        sections.get(product.category.id)!.items.push({
             '@type': 'MenuItem',
             '@id': `${config.public.baseUrl}/menu#${product.id}`,
-            name: product.name
-        }
-    }))
-}))
+            name: product.name,
+            image: product.slug
+                ? {
+                    '@type': 'ImageObject',
+                    url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
+                    contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
+                    thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
+                }
+                : fallbackImage,
+            offers: {
+                '@type': 'Offer',
+                price: product.price,
+                priceCurrency: 'EUR',
+                availability: product.isAvailable
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+            },
+            ...(diets.length ? { suitableForDiet: diets } : {}),
+        })
+    }
+
+    return {
+        '@type': 'Menu',
+        '@id': `${config.public.baseUrl}/menu#menu`,
+        name: t('schema.menu.name'),
+        description: t('schema.menu.description'),
+        inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
+        hasMenuSection: [...sections.values()].map(section => ({
+            '@type': 'MenuSection',
+            '@id': `${config.public.baseUrl}/menu#section-${section.id}`,
+            name: section.name,
+            hasMenuItem: section.items,
+        })),
+    }
+})
 
 // Breadcrumb schema
 const breadcrumbSchema = computed(() => ({
@@ -686,18 +699,19 @@ watch(allProducts, () => {
             description: t('schema.menu.description')
         }),
         breadcrumbSchema.value,
-        itemListSchema.value,
-        ...menuItemSchemas.value
+        menuSchema.value,
     ])
 }, { immediate: true })
 
 useSeoMeta({
     title: t('schema.menu.title'),
+    ogType: 'website',
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
     ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
 })
 
 /**

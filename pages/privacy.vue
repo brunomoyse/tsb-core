@@ -226,11 +226,13 @@ useSchemaOrg([
 
 useSeoMeta({
     title: t('schema.privacy.title'),
+    ogType: 'article',
     ogTitle: t('schema.privacy.title'),
     description: t('schema.privacy.description'),
     ogDescription: t('schema.privacy.description'),
     ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
 })
 </script>
 
