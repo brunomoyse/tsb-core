@@ -68,7 +68,7 @@
                 id="addressExtra"
                 v-model="addressExtra"
                 rows="3"
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 :placeholder="$t('checkout.addressCommentPlaceholder', 'e.g. Ring the bell twice')"
             ></textarea>
         </div>
@@ -96,7 +96,7 @@
                 <select
                     v-model="preferredReadyTime"
                     data-testid="checkout-preferred-time"
-                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                    class="mt-1 block w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 >
                     <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
                     <option

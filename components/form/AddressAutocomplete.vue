@@ -11,7 +11,7 @@
                     ref="addressInput"
                     v-model="addressQuery"
                     :placeholder="$t('register.addressPlaceholder')"
-                    class="w-full h-10 px-3 pr-10 py-2 leading-5 border border-gray-300 rounded-md focus:ring focus:ring-gray-200"
+                    class="w-full px-3.5 pr-10 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-70"
                     :disabled="Boolean(selectedAddress)"
                     @focus="onAddressFocus"
                     @blur="onAddressBlur"
@@ -35,7 +35,7 @@
             <ul
                 v-show="isAddressFocused && !selectedAddress && suggestions.length > 0"
                 role="listbox"
-                class="absolute z-10 w-full bg-white border border-gray-200 shadow-lg max-h-60 overflow-auto rounded-md"
+                class="absolute z-10 w-full bg-white border border-gray-200 shadow-md max-h-60 overflow-auto rounded-xl"
                 @mousedown.prevent
             >
                 <li

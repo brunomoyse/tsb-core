@@ -2,16 +2,16 @@
     <Transition name="slide-up">
         <div
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
-            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-slate-900 shadow-lg"
+            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-red-600 shadow-md"
             :class="{ 'animate-cart-pulse': isPulsing }"
         >
             <button
                 type="button"
-                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-150 active:scale-[0.985] active:bg-slate-800"
+                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-red-700"
                 @click="cartStore.toggleCartVisibility"
             >
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="bg-white text-slate-900 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
+                    <span class="bg-white text-red-600 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
                         {{ cartStore.totalItems }}
                     </span>
                     <span class="text-sm font-semibold truncate">
@@ -26,7 +26,7 @@
                     </svg>
                 </div>
             </button>
-            <div class="safe-area-spacer-bottom bg-slate-900" />
+            <div class="safe-area-spacer-bottom bg-red-600" />
         </div>
     </Transition>
 </template>

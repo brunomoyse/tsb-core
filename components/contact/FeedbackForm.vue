@@ -179,7 +179,7 @@ function resetForm() {
                         type="text"
                         maxlength="100"
                         :placeholder="$t('feedback.namePlaceholder')"
-                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-300 focus:ring-2 focus:ring-red-400/50 focus:border-red-300"
+                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none"
                     />
                 </div>
                 <div>
@@ -190,7 +190,7 @@ function resetForm() {
                         type="email"
                         maxlength="255"
                         :placeholder="$t('feedback.emailPlaceholder')"
-                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-300 focus:ring-2 focus:ring-red-400/50 focus:border-red-300"
+                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none"
                     />
                 </div>
             </div>
@@ -246,7 +246,7 @@ function resetForm() {
                     maxlength="2000"
                     rows="4"
                     :placeholder="$t('feedback.messagePlaceholder')"
-                    class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-300 focus:ring-2 focus:ring-red-400/50 focus:border-red-300 resize-none"
+                    class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none resize-none"
                 />
                 <p class="text-xs text-gray-400 text-right mt-1">{{ message.length }} / 2000</p>
             </div>
