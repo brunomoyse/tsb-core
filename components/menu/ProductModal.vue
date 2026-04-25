@@ -12,7 +12,7 @@
 
             <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Image Section -->
-                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.slug, p.name)">
+                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.id, p.name)">
                     <picture class="w-full h-full flex justify-center items-center p-4">
                         <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif"/>
                         <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp"/>
@@ -189,10 +189,10 @@ const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 const imageElement = ref<HTMLImageElement | null>(null)
 const { handleProductImageError } = productImage
-const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, p?.slug))
+const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, p?.id))
 
-const openLightbox = (slug: string, name: string) => {
-    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, slug)
+const openLightbox = (id: string, name: string) => {
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id)
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }

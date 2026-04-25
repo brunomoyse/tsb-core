@@ -47,19 +47,19 @@
                     <!-- Product Image -->
                     <div
                         class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
-                        @click="openLightbox(item.product?.slug, item.product.name)"
+                        @click="openLightbox(item.product?.id, item.product.name)"
                     >
                         <picture>
                             <source
-                                :srcset="`${productImageBase(item.product?.slug)}.avif`"
+                                :srcset="`${productImageBase(item.product?.id)}.avif`"
                                 type="image/avif"/>
                             <source
-                                :srcset="`${productImageBase(item.product?.slug)}.webp`"
+                                :srcset="`${productImageBase(item.product?.id)}.webp`"
                                 type="image/webp"/>
                             <img
                                  ref="itemImageElements"
                                  :alt="item.product.name"
-                                 :src="`${productImageBase(item.product?.slug)}.png`"
+                                 :src="`${productImageBase(item.product?.id)}.png`"
                                  class="max-w-full max-h-full"
                                  width="48"
                                  height="48"
@@ -194,14 +194,14 @@ const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 
-const openLightbox = (slug: string, name: string) => {
-    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, slug)
+const openLightbox = (id: string, name: string) => {
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id)
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }
 
 const { handleProductImageError } = productImage
-const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const productImageBase = (id?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, id)
 const itemImageElements = ref<HTMLImageElement[]>([])
 
 // Flash-highlight for newly added items

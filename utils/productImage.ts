@@ -5,22 +5,22 @@ type ProductImageExt = 'avif' | 'webp' | 'png'
 
 export const productImageUrl = (
     s3BaseUrl?: string,
-    slug?: string | null,
+    id?: string | null,
     ext: ProductImageExt = 'png',
 ): string => {
-    if (!s3BaseUrl || !slug) {
+    if (!s3BaseUrl || !id) {
         return PRODUCT_IMAGE_FALLBACK
     }
 
-    return `${s3BaseUrl}/images/thumbnails/${slug}.${ext}`
+    return `${s3BaseUrl}/images/thumbnails/${id}.${ext}`
 }
 
-export const productImageBase = (s3BaseUrl?: string, slug?: string | null): string => {
-    if (!s3BaseUrl || !slug) {
+export const productImageBase = (s3BaseUrl?: string, id?: string | null): string => {
+    if (!s3BaseUrl || !id) {
         return PRODUCT_IMAGE_FALLBACK_BASE
     }
 
-    return `${s3BaseUrl}/images/thumbnails/${slug}`
+    return `${s3BaseUrl}/images/thumbnails/${id}`
 }
 
 export const handleProductImageError = (event: Event): void => {

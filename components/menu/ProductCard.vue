@@ -156,7 +156,7 @@ onUnmounted(() => {
 
 const hasChoices = computed(() => product.choices?.length > 0);
 const { handleProductImageError } = productImage
-const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.slug));
+const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
 
 const isInCart = computed(() =>
     cartStore.products.some(

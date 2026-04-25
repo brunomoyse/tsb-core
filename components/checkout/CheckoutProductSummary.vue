@@ -26,20 +26,20 @@
                     <!-- Product image -->
                     <div
                         class="w-14 h-14 shrink-0 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
-                        @click="openLightbox(item.product.slug, item.product.name)"
+                        @click="openLightbox(item.product.id, item.product.name)"
                     >
                         <picture>
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.avif`"
+                                :srcset="`${productImageBase(item.product.id)}.avif`"
                                 type="image/avif"
                             />
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.webp`"
+                                :srcset="`${productImageBase(item.product.id)}.webp`"
                                 type="image/webp"
                             />
                             <img
                                 ref="itemImageElements"
-                                :src="`${productImageBase(item.product.slug)}.png`"
+                                :src="`${productImageBase(item.product.id)}.png`"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-0.5"
                                 width="56"
@@ -222,14 +222,14 @@ const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 
-const openLightbox = (slug: string, name: string) => {
-    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, slug)
+const openLightbox = (id: string, name: string) => {
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id)
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }
 
 const { handleProductImageError } = productImage
-const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const productImageBase = (id?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, id)
 const itemImageElements = ref<HTMLImageElement[]>([])
 
 watch(itemImageElements, () => {
