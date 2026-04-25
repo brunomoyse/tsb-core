@@ -81,11 +81,13 @@ useSchemaOrg([
 
 useSeoMeta({
     title: t('schema.home.title'),
+    ogType: 'website',
     ogTitle: t('schema.home.title'),
     description: t('schema.home.description'),
     ogDescription: t('schema.home.description'),
     ogImage: `${config.public.baseUrl}/images/restaurant-illustrated.png`,
     twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
 })
 </script>
 

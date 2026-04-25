@@ -118,10 +118,12 @@ useSchemaOrg([
 
 useSeoMeta({
     title: t('faq.schemaTitle'),
+    ogType: 'website',
     ogTitle: t('faq.schemaTitle'),
     description: t('faq.schemaDescription'),
     ogDescription: t('faq.schemaDescription'),
     ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
 })
 </script>

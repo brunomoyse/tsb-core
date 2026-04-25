@@ -82,11 +82,13 @@ useSchemaOrg([
 
 useSeoMeta({
     title: t('schema.contact.title'),
+    ogType: 'website',
     ogTitle: t('schema.contact.title'),
     description: t('schema.contact.description'),
     ogDescription: t('schema.contact.description'),
     ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
 })
 </script>
 
