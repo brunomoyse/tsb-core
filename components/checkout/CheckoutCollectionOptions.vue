@@ -134,16 +134,19 @@ const {
     openingHours,
     orderingEnabled,
     isCurrentlyOpen,
-    availableSlotsToday
+    availableSlotsToday,
+    preparationMinutes,
 } = defineProps<{
     openingHours?: Record<string, OpeningHourEntry | null>
     orderingEnabled?: boolean
     isCurrentlyOpen?: boolean
     availableSlotsToday?: RestaurantTimeSlot[]
+    preparationMinutes?: number
 }>()
 
 const emit = defineEmits<{
     'open-address-modal': []
+    'slot-expired': []
 }>()
 const { t } = useI18n()
 const cartStore = useCartStore()
@@ -210,9 +213,12 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-const availableFixedSlots = computed<RestaurantTimeSlot[]>(() =>
-    (availableSlotsToday ?? []).filter(slot => new Date(slot.value) > now.value)
-)
+// Filter out slots that are in the past or within the preparation buffer.
+const availableFixedSlots = computed<RestaurantTimeSlot[]>(() => {
+    const prepMs = (preparationMinutes ?? 30) * 60_000
+    const cutoff = new Date(now.value.getTime() + prepMs)
+    return (availableSlotsToday ?? []).filter(slot => new Date(slot.value) > cutoff)
+})
 
 // Selected preferred time binding
 const preferredReadyTime = computed<string>({
@@ -248,6 +254,10 @@ const isOpen = computed(() => {
     })
 })
 
+// Suppresses spurious expiry notifications that fire during the initial hydration pass.
+const hasMounted = ref(false)
+onMounted(() => { hasMounted.value = true })
+
 watch(
     [availableFixedSlots, isOpen],
     () => {
@@ -255,11 +265,13 @@ watch(
         const hasSelectedSlot = availableFixedSlots.value.some((slot) => slot.value === preferredReadyTime.value)
 
         if (!isOpen.value && availableFixedSlots.value.length > 0 && (!isSelectedFixedSlot || !hasSelectedSlot)) {
+            if (hasMounted.value && isSelectedFixedSlot) emit('slot-expired')
             preferredReadyTime.value = availableFixedSlots.value[0]!.value
             return
         }
 
         if (isSelectedFixedSlot && !hasSelectedSlot) {
+            if (hasMounted.value) emit('slot-expired')
             preferredReadyTime.value = 'ASAP'
         }
 
