@@ -269,6 +269,7 @@
 import type { Product, ProductCategory } from '@/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
+import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
 import { useDebounceFn } from '@vueuse/core'
 import { useGqlQuery } from '#imports'
@@ -301,7 +302,6 @@ const EXTRA_PRODUCTS_QUERY = `
             name
             products {
                 id
-                categoryId
                 name
                 description
                 price
