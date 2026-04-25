@@ -153,14 +153,13 @@ const resendEmail = async () => {
 // Handle the submitted data from UserForm
 const registerUser = async (formData: any) => {
     errorMessage.value = ''
-    const { firstName, lastName, email, password, phoneNumber } = formData
+    const { firstName, lastName, email, phoneNumber } = formData
 
     try {
         await createUser({
             firstName,
             lastName,
             email,
-            password,
             phone: phoneNumber || undefined,
         })
 

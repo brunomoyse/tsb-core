@@ -55,7 +55,7 @@
                 <!-- Auth form (login/register tabs) -->
                 <template v-else>
                     <!-- Social Login Buttons -->
-                    <div class="space-y-3 mb-5">
+                    <div v-if="step === 'email'" class="space-y-3 mb-5">
                         <button
                             :disabled="loading"
                             class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
@@ -76,7 +76,7 @@
                     </div>
 
                     <!-- Divider -->
-                    <div class="relative my-5">
+                    <div v-if="step === 'email'" class="relative my-5">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-300/50"></div>
                         </div>
@@ -87,8 +87,8 @@
                         </div>
                     </div>
 
-                    <!-- Mode switcher (login / register) — simple aria-pressed buttons -->
-                    <div class="flex gap-1 mb-5 p-1 bg-gray-50 border border-gray-200 rounded-xl">
+                    <!-- Mode switcher (login / register) -->
+                    <div v-if="step === 'email'" class="flex gap-1 mb-5 p-1 bg-gray-50 border border-gray-200 rounded-xl">
                         <button
                             type="button"
                             :aria-pressed="tab === 'login'"
@@ -117,8 +117,8 @@
                         </button>
                     </div>
 
-                    <!-- Login tab -->
-                    <form v-if="tab === 'login'" class="space-y-4" @submit.prevent="login">
+                    <!-- Login tab — Step 1: email -->
+                    <form v-if="tab === 'login' && step === 'email'" class="space-y-4" @submit.prevent="requestCode">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-step-email">{{ $t('login.email') }}</label>
                             <input
@@ -130,20 +130,6 @@
                                 name="email"
                                 required
                                 type="email"
-                            />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-step-password">{{ $t('login.password') }}</label>
-                            <input
-                                id="auth-step-password"
-                                v-model="password"
-                                :placeholder="$t('login.passwordPlaceholder')"
-                                autocomplete="current-password"
-                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                                name="password"
-                                required
-                                type="password"
                             />
                         </div>
 
@@ -165,14 +151,62 @@
                             class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
                             type="submit"
                         >
-                            {{ $t('login.submit') }}
+                            {{ $t('login.sendCode') }}
+                        </button>
+                    </form>
+
+                    <!-- Login tab — Step 2: code -->
+                    <form v-else-if="tab === 'login' && step === 'code'" class="space-y-4" @submit.prevent="verifyCode">
+                        <p class="text-sm text-gray-600">
+                            {{ $t('login.codeSent', { email }) }}
+                        </p>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-step-code">{{ $t('login.codeLabel') }}</label>
+                            <input
+                                id="auth-step-code"
+                                v-model="code"
+                                :placeholder="$t('login.codePlaceholder')"
+                                autocomplete="one-time-code"
+                                inputmode="numeric"
+                                pattern="[0-9]{6}"
+                                maxlength="6"
+                                class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 tracking-[0.5em] text-center text-lg font-mono focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                                name="code"
+                                required
+                                type="text"
+                            />
+                        </div>
+
+                        <div v-if="errorMessage" role="alert" class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake">
+                            {{ errorMessage }}
+                        </div>
+
+                        <button
+                            :disabled="loading || code.length < 6"
+                            class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
+                            type="submit"
+                        >
+                            {{ $t('login.verify') }}
                         </button>
 
-                        <p class="text-center">
-                            <NuxtLinkLocale to="/auth/forgot-password" class="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300" @click="saveReturnTo">
-                                {{ $t('login.forgot') }}
-                            </NuxtLinkLocale>
-                        </p>
+                        <div class="flex items-center justify-between text-sm">
+                            <button
+                                type="button"
+                                class="text-gray-500 hover:text-gray-700 transition-colors duration-300"
+                                @click="backToEmail"
+                            >
+                                {{ $t('login.backToEmail') }}
+                            </button>
+                            <button
+                                type="button"
+                                :disabled="resendCooldown > 0 || loading"
+                                class="text-red-500 font-medium hover:text-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="resendCode"
+                            >
+                                {{ resendCooldown > 0 ? $t('login.resendCooldown', { seconds: resendCooldown }) : $t('login.resendCode') }}
+                            </button>
+                        </div>
                     </form>
 
                     <!-- Register tab -->
@@ -208,9 +242,12 @@ const config = useRuntimeConfig()
 type Tab = 'login' | 'register'
 const tab = ref<Tab>('login')
 
-// Login state
+// OTP login state
+const step = ref<'email' | 'code'>('email')
 const email = ref('')
-const password = ref('')
+const code = ref('')
+const otpSessionId = ref('')
+const otpSessionToken = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
 const showResendVerification = ref(false)
@@ -294,9 +331,10 @@ const switchToLoginTab = () => {
     email.value = registeredEmail.value
     registered.value = false
     tab.value = 'login'
+    step.value = 'email'
 }
 
-const login = async () => {
+const requestCode = async () => {
     if (import.meta.server) return
     errorMessage.value = ''
     showResendVerification.value = false
@@ -304,50 +342,16 @@ const login = async () => {
     saveReturnTo()
 
     try {
-        const effectiveAuthRequestId = authRequestId.value || capacitorAuthRequestId.value
-
-        if (effectiveAuthRequestId) {
-            const { useZitadelApi } = await import('~/composables/useZitadelApi')
-            const { createSession, finalizeOidcAuth } = useZitadelApi()
-
-            const session = await createSession(email.value, password.value)
-            const result = await finalizeOidcAuth(effectiveAuthRequestId, session.sessionId, session.sessionToken)
-            trackEvent('user_logged_in', { method: 'email' })
-
-            if (isCapacitor) {
-                const callbackUrl = new URL(result.callbackUrl)
-                const code = callbackUrl.searchParams.get('code')
-                if (!code) throw new Error('No authorization code in callback URL')
-
-                const { useOidc } = await import('~/composables/useOidc')
-                const { exchangeCodeForTokens } = useOidc()
-                await exchangeCodeForTokens(code)
-
-                const { useAuthCallback } = await import('~/composables/useAuthCallback')
-                const { processCallback } = useAuthCallback()
-                await processCallback()
-            } else {
-                window.location.href = result.callbackUrl
-            }
-        } else if (isCapacitor) {
-            await initCapacitorAuth()
-            if (capacitorAuthRequestId.value) {
-                loading.value = false
-                return login()
-            }
-            throw new Error('Could not initialize OIDC flow')
-        } else {
-            const { useOidc } = await import('~/composables/useOidc')
-            const { signIn } = useOidc()
-            await signIn({ login_hint: email.value })
-        }
+        const { useZitadelApi } = await import('~/composables/useZitadelApi')
+        const { requestOtpLogin } = useZitadelApi()
+        const session = await requestOtpLogin(email.value)
+        otpSessionId.value = session.sessionId
+        otpSessionToken.value = session.sessionToken
+        step.value = 'code'
+        startCooldown()
+        trackEvent('otp_requested')
     } catch (error: unknown) {
-        loading.value = false
-        if (import.meta.dev) console.error('Login error:', error)
-        if (isCapacitor) {
-            await initCapacitorAuth()
-        }
-        const err = error as { response?: { status?: number }, statusCode?: number, data?: { error?: string }, message?: string }
+        const err = error as { response?: { status?: number }, statusCode?: number, data?: { error?: string } }
         const status = err?.response?.status || err?.statusCode
         const errorCode = err?.data?.error
         if (status === 429) {
@@ -357,14 +361,101 @@ const login = async () => {
             trackEvent('login_error', { error_type: 'email_not_verified' })
             errorMessage.value = t('notify.errors.emailNotVerified')
             showResendVerification.value = true
-        } else if (errorCode === 'no_password') {
-            trackEvent('login_error', { error_type: 'no_password' })
-            errorMessage.value = t('notify.errors.noPassword')
-        } else if (isCapacitor) {
-            errorMessage.value = err?.message || 'Login failed'
         } else {
-            trackEvent('login_error', { error_type: 'invalid_credentials' })
-            errorMessage.value = t('notify.errors.invalidCredentials')
+            trackEvent('login_error', { error_type: 'request_failed' })
+            errorMessage.value = t('notify.errors.requestFailed')
+        }
+    } finally {
+        loading.value = false
+    }
+}
+
+const backToEmail = () => {
+    step.value = 'email'
+    code.value = ''
+    errorMessage.value = ''
+    otpSessionId.value = ''
+    otpSessionToken.value = ''
+}
+
+const resendCode = async () => {
+    if (!otpSessionId.value || !otpSessionToken.value) return
+    errorMessage.value = ''
+    loading.value = true
+    try {
+        const { useZitadelApi } = await import('~/composables/useZitadelApi')
+        const { resendOtpLogin } = useZitadelApi()
+        await resendOtpLogin(otpSessionId.value, otpSessionToken.value)
+        startCooldown()
+        trackEvent('otp_resent')
+    } catch (error: unknown) {
+        const err = error as { response?: { status?: number }, statusCode?: number }
+        const status = err?.response?.status || err?.statusCode
+        errorMessage.value = status === 429
+            ? t('notify.errors.tooManyRequests')
+            : t('notify.errors.requestFailed')
+    } finally {
+        loading.value = false
+    }
+}
+
+const verifyCode = async () => {
+    if (import.meta.server) return
+    errorMessage.value = ''
+    loading.value = true
+
+    try {
+        const { useZitadelApi } = await import('~/composables/useZitadelApi')
+        const { verifyOtpLogin, finalizeOidcAuth } = useZitadelApi()
+
+        const verified = await verifyOtpLogin(otpSessionId.value, otpSessionToken.value, code.value)
+        let effectiveAuthRequestId = authRequestId.value || capacitorAuthRequestId.value
+
+        if (!effectiveAuthRequestId) {
+            if (isCapacitor) {
+                await initCapacitorAuth()
+                effectiveAuthRequestId = capacitorAuthRequestId.value
+                if (!effectiveAuthRequestId) throw new Error('Could not initialize OIDC flow')
+            } else {
+                const { useOidc } = await import('~/composables/useOidc')
+                const { signIn } = useOidc()
+                await signIn({ login_hint: email.value })
+                return
+            }
+        }
+
+        const result = await finalizeOidcAuth(effectiveAuthRequestId, verified.sessionId, verified.sessionToken)
+        trackEvent('user_logged_in', { method: 'otp' })
+
+        if (isCapacitor) {
+            const callbackUrl = new URL(result.callbackUrl)
+            const authCode = callbackUrl.searchParams.get('code')
+            if (!authCode) throw new Error('No authorization code in callback URL')
+
+            const { useOidc } = await import('~/composables/useOidc')
+            const { exchangeCodeForTokens } = useOidc()
+            await exchangeCodeForTokens(authCode)
+
+            const { useAuthCallback } = await import('~/composables/useAuthCallback')
+            const { processCallback } = useAuthCallback()
+            await processCallback()
+        } else {
+            window.location.href = result.callbackUrl
+        }
+    } catch (error: unknown) {
+        loading.value = false
+        if (import.meta.dev) console.error('OTP verify error:', error)
+        if (isCapacitor) {
+            await initCapacitorAuth()
+        }
+        const err = error as { response?: { status?: number }, statusCode?: number }
+        const status = err?.response?.status || err?.statusCode
+        if (status === 429) {
+            trackEvent('login_error', { error_type: 'rate_limited' })
+            errorMessage.value = t('notify.errors.tooManyRequests')
+        } else {
+            trackEvent('login_error', { error_type: 'invalid_code' })
+            errorMessage.value = t('notify.errors.invalidCode')
         }
     }
 }
@@ -434,13 +525,12 @@ interface RegisterFormData {
     firstName: string
     lastName: string
     email: string
-    password: string
     phoneNumber?: string
 }
 
 const registerUser = async (formData: RegisterFormData) => {
     errorMessage.value = ''
-    const { firstName, lastName, email: formEmail, password: formPassword, phoneNumber } = formData
+    const { firstName, lastName, email: formEmail, phoneNumber } = formData
 
     try {
         const { useZitadelApi } = await import('~/composables/useZitadelApi')
@@ -449,7 +539,6 @@ const registerUser = async (formData: RegisterFormData) => {
             firstName,
             lastName,
             email: formEmail,
-            password: formPassword,
             phone: phoneNumber || undefined,
         })
 

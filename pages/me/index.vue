@@ -26,7 +26,7 @@ const languages = [
     { code: 'zh', label: '中文' },
 ]
 const authStore = useAuthStore()
-const { $api, $gqlFetch } = useNuxtApp()
+const { $gqlFetch } = useNuxtApp()
 const { trackEvent } = useTracking()
 
 // Fetch user profile if not in store (e.g., page refresh with cleared persistence)
@@ -244,106 +244,6 @@ const handleCancelDeletionRequest = async () => {
     }
 }
 
-// ── Feature 1: Change Password ──
-
-const hasPassword = ref(false)
-onMounted(async () => {
-    try {
-        const res = await $api<{ hasPassword: boolean }>('/auth/has-password')
-        hasPassword.value = res.hasPassword
-    } catch {
-        hasPassword.value = false
-    }
-})
-
-const showPasswordModal = ref(false)
-const passwordModalRef = ref<HTMLElement | null>(null)
-useFocusTrap(passwordModalRef)
-
-const currentPassword = ref('')
-const newPassword = ref('')
-const confirmPassword = ref('')
-const passwordError = ref('')
-const passwordLoading = ref(false)
-
-const passwordRequirements = computed(() => [
-    { met: newPassword.value.length >= 8, label: t('register.passwordMinLength') },
-    { met: /[A-Z]/.test(newPassword.value), label: t('register.passwordUpperCase') },
-    { met: /[a-z]/.test(newPassword.value), label: t('register.passwordLowerCase') },
-    { met: /[0-9]/.test(newPassword.value), label: t('register.passwordNumber') },
-    { met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword.value), label: t('register.passwordSpecialChar') },
-])
-
-const passwordStrength = computed(() => {
-    const metCount = passwordRequirements.value.filter(r => r.met).length
-    const levels = [
-        { text: '', color: '', bgColor: '', width: '0%' },
-        { text: t('register.passwordVeryWeak'), color: 'text-red-500', bgColor: 'bg-red-500', width: '20%' },
-        { text: t('register.passwordWeak'), color: 'text-orange-500', bgColor: 'bg-orange-500', width: '40%' },
-        { text: t('register.passwordFair'), color: 'text-yellow-500', bgColor: 'bg-yellow-500', width: '60%' },
-        { text: t('register.passwordGood'), color: 'text-green-500', bgColor: 'bg-green-500', width: '80%' },
-        { text: t('register.passwordStrong'), color: 'text-green-600', bgColor: 'bg-green-600', width: '100%' },
-    ]
-    return levels[metCount]
-})
-
-const canSubmitPassword = computed(() =>
-    newPassword.value.length >= 8 &&
-    newPassword.value === confirmPassword.value &&
-    currentPassword.value.length > 0 &&
-    passwordRequirements.value.every(r => r.met)
-)
-
-const openPasswordModal = () => {
-    currentPassword.value = ''
-    newPassword.value = ''
-    confirmPassword.value = ''
-    passwordError.value = ''
-    showPasswordModal.value = true
-}
-
-const closePasswordModal = () => { showPasswordModal.value = false }
-
-const submitChangePassword = async () => {
-    passwordError.value = ''
-
-    if (newPassword.value !== confirmPassword.value) {
-        passwordError.value = t('me.changePassword.passwordsMismatch')
-        return
-    }
-
-    passwordLoading.value = true
-    try {
-        await $api('/auth/change-password', {
-            method: 'POST',
-            body: { currentPassword: currentPassword.value, newPassword: newPassword.value },
-        })
-        closePasswordModal()
-        eventBus.emit('notify', {
-            message: t('me.changePassword.success'),
-            persistent: false,
-            duration: 5000,
-            variant: 'success',
-        })
-        await authStore.logout()
-        navigateTo(localePath('login'))
-    } catch (err: unknown) {
-        const error = err as { data?: { error?: string } }
-        const code = error?.data?.error
-        if (code === 'wrong_password') {
-            passwordError.value = t('me.changePassword.wrongPassword')
-        } else if (code === 'google_only_account') {
-            passwordError.value = t('me.changePassword.googleOnly')
-        } else if (code === 'weak_password') {
-            passwordError.value = t('me.changePassword.weakPassword')
-        } else {
-            passwordError.value = t('notify.errors.requestFailed')
-        }
-    } finally {
-        passwordLoading.value = false
-    }
-}
-
 // ── Address edit modal ──
 
 const showAddressModal = ref(false)
@@ -526,25 +426,6 @@ const updateNotificationPref = async (
                 </div>
             </div>
 
-            <!-- Password cell (hidden for OAuth-only users) -->
-            <div v-if="hasPassword" class="bento-password bento-cell" style="--delay: 5">
-                <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
-                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
-                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-                        </svg>
-                    </div>
-                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ t('me.changePassword.title') }}</span>
-                    <button
-                        type="button"
-                        class="mt-2 min-h-11 text-sm text-red-500 hover:text-red-600 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                        @click="openPasswordModal"
-                    >
-                        {{ t('me.changePassword.button') }}
-                    </button>
-                </div>
-            </div>
-
             <!-- Notifications toggle cell -->
             <div class="bento-notifications bento-cell" style="--delay: 6">
                 <div class="bg-tsb-two rounded-2xl p-6 h-full flex flex-col">
@@ -720,117 +601,6 @@ const updateNotificationPref = async (
             </div>
         </transition>
 
-        <!-- Change Password Modal -->
-        <transition name="fade">
-            <div
-                v-if="showPasswordModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-                @click.self="closePasswordModal"
-            >
-                <div ref="passwordModalRef" role="dialog" aria-modal="true" aria-labelledby="change-password-title" class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4" @click.stop @keydown.esc="closePasswordModal">
-                    <h3 id="change-password-title" class="text-2xl font-semibold text-gray-900 text-center mb-6">
-                        {{ t('me.changePassword.button') }}
-                    </h3>
-
-                    <form class="space-y-4" @submit.prevent="submitChangePassword">
-                        <!-- Current password -->
-                        <div>
-                            <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ t('me.changePassword.currentPassword') }}
-                            </label>
-                            <input
-                                id="current-password"
-                                v-model="currentPassword"
-                                type="password"
-                                autocomplete="current-password"
-                                :placeholder="t('me.changePassword.currentPasswordPlaceholder')"
-                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
-                            />
-                        </div>
-
-                        <!-- New password -->
-                        <div>
-                            <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ t('me.changePassword.newPassword') }}
-                            </label>
-                            <input
-                                id="new-password"
-                                v-model="newPassword"
-                                type="password"
-                                autocomplete="new-password"
-                                :placeholder="t('me.changePassword.newPasswordPlaceholder')"
-                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
-                            />
-
-                            <!-- Strength indicator -->
-                            <div v-if="newPassword.length > 0" class="mt-2 space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1 h-1.5 bg-gray-200/60 rounded-full overflow-hidden">
-                                        <div
-                                            class="h-full rounded-full transition-all duration-300"
-                                            :class="passwordStrength.bgColor"
-                                            :style="{ width: passwordStrength.width }"
-                                        />
-                                    </div>
-                                    <span class="text-xs" :class="passwordStrength.color">{{ passwordStrength.text }}</span>
-                                </div>
-                                <ul class="space-y-1">
-                                    <li
-                                        v-for="req in passwordRequirements"
-                                        :key="req.label"
-                                        class="text-xs flex items-center gap-1.5"
-                                        :class="req.met ? 'text-green-600' : 'text-gray-400'"
-                                    >
-                                        <span v-html="req.met ? '&#10003;' : '&#10007;'" />
-                                        {{ req.label }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Confirm password -->
-                        <div>
-                            <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ t('me.changePassword.confirmPassword') }}
-                            </label>
-                            <input
-                                id="confirm-password"
-                                v-model="confirmPassword"
-                                type="password"
-                                autocomplete="new-password"
-                                :placeholder="t('me.changePassword.confirmPasswordPlaceholder')"
-                                class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50"
-                            />
-                            <p v-if="confirmPassword.length > 0 && newPassword !== confirmPassword" class="mt-1 text-xs text-red-500">
-                                {{ t('me.changePassword.passwordsMismatch') }}
-                            </p>
-                        </div>
-
-                        <!-- Error message -->
-                        <p v-if="passwordError" class="text-sm text-red-500">{{ passwordError }}</p>
-
-                        <!-- Actions -->
-                        <div class="flex gap-3 pt-2">
-                        <button
-                            type="button"
-                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
-                            @click="closePasswordModal"
-                        >
-                                {{ t('common.cancel') }}
-                            </button>
-                        <button
-                            type="submit"
-                            :disabled="!canSubmitPassword || passwordLoading"
-                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                        >
-                                {{ t('me.changePassword.submit') }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </transition>
-
     </section>
 </template>
 
@@ -845,7 +615,6 @@ const updateNotificationPref = async (
         "email"
         "phone"
         "address"
-        "password"
         "notifications"
         "language"
         "logout"
@@ -856,7 +625,6 @@ const updateNotificationPref = async (
 .bento-email { grid-area: email; }
 .bento-phone { grid-area: phone; }
 .bento-address { grid-area: address; }
-.bento-password { grid-area: password; }
 .bento-notifications { grid-area: notifications; }
 .bento-language { grid-area: language; }
 .bento-logout { grid-area: logout; }
@@ -869,9 +637,8 @@ const updateNotificationPref = async (
         grid-template-areas:
             "profile       profile"
             "email         phone"
-            "address       password"
-            "notifications language"
-            "logout        logout"
+            "address       notifications"
+            "language      logout"
             "orders        orders";
     }
 }
@@ -882,8 +649,8 @@ const updateNotificationPref = async (
         grid-template-columns: 1fr 1fr 1fr;
         grid-template-areas:
             "profile       email          phone"
-            "profile       address        password"
-            "notifications language        logout"
+            "profile       address        notifications"
+            "language      logout         logout"
             "orders        orders         orders";
     }
 }

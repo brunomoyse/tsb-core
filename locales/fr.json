@@ -97,33 +97,19 @@
     "restaurantClosed": "Le restaurant est actuellement fermé. Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
   },
   "days": {},
-  "forgotPassword": {
-    "title": "Mot de passe oublié",
-    "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
-    "submit": "Envoyer le lien",
-    "successTitle": "E-mail envoyé",
-    "successMessage": "Si un compte existe avec cet e-mail, vous recevrez un lien de réinitialisation sous peu. Veuillez vérifier votre boîte de réception.",
-    "backToLogin": "Retour à la connexion"
-  },
-  "resetPassword": {
-    "title": "Réinitialiser le mot de passe",
-    "newPassword": "Nouveau mot de passe",
-    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
-    "submit": "Réinitialiser le mot de passe",
-    "successTitle": "Mot de passe réinitialisé",
-    "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.",
-    "invalidToken": "Ce lien de réinitialisation est invalide ou a expiré.",
-    "requestNewLink": "Demander un nouveau lien",
-    "passwordsMismatch": "Les mots de passe ne correspondent pas."
-  },
   "login": {
     "title": "Connexion",
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre e-mail",
-    "password": "Mot de passe",
-    "passwordPlaceholder": "Entrez votre mot de passe",
+    "sendCode": "Envoyer le code",
+    "codeSent": "Nous avons envoyé un code à 6 chiffres à {email}",
+    "codeLabel": "Code de vérification",
+    "codePlaceholder": "123456",
+    "verify": "Vérifier",
+    "resendCode": "Renvoyer le code",
+    "resendCooldown": "Renvoyer dans {seconds}s",
+    "backToEmail": "Retour",
     "dividerOr": "ou",
-    "forgot": "Mot de passe oublié?",
     "noAccount": "Vous n'avez pas de compte?",
     "register": "Créer un compte",
     "submit": "Connexion",
@@ -141,10 +127,6 @@
     "lastNamePlaceholder": "Entrez votre nom de famille",
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre adresse e-mail",
-    "password": "Mot de passe",
-    "passwordPlaceholder": "Entrez votre mot de passe",
-    "confirmPassword": "Confirmez le mot de passe",
-    "confirmPasswordPlaceholder": "Ré-entrez votre mot de passe",
     "phone": "Téléphone",
     "phonePlaceholder": "Entrez votre numéro de téléphone",
     "invalidPhone": "Numéro de téléphone invalide",
@@ -156,16 +138,6 @@
     "addressCallHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
     "submit": "Soumettre",
     "confirmAddress": "Confirmez que ceci est bien votre adresse",
-    "passwordVeryWeak": "Très faible",
-    "passwordWeak": "Faible",
-    "passwordFair": "Moyen",
-    "passwordGood": "Bon",
-    "passwordStrong": "Fort",
-    "passwordMinLength": "Au moins 8 caractères",
-    "passwordUpperCase": "Une lettre majuscule",
-    "passwordLowerCase": "Une lettre minuscule",
-    "passwordNumber": "Un chiffre",
-    "passwordSpecialChar": "Un caractère spécial",
     "deliveryInfoTitle": "Informations de livraison (facultatif)",
     "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison.",
     "hasAccount": "Vous avez déjà un compte ?",
@@ -174,7 +146,6 @@
     "errors": {
       "email_already_exists": "Un compte avec cette adresse e-mail existe déjà.",
       "invalid_email_format": "Le format de l'adresse e-mail est invalide.",
-      "weak_password": "Le mot de passe ne respecte pas les critères de sécurité.",
       "registration_failed": "L'inscription a échoué. Veuillez réessayer."
     }
   },
@@ -235,22 +206,6 @@
       "cancelDeletionSuccess": "Votre demande de suppression a été annulée."
     },
     "analytics": {},
-    "changePassword": {
-      "title": "Mot de passe",
-      "button": "Changer le mot de passe",
-      "currentPassword": "Mot de passe actuel",
-      "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",
-      "newPassword": "Nouveau mot de passe",
-      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
-      "confirmPassword": "Confirmer le nouveau mot de passe",
-      "confirmPasswordPlaceholder": "Ré-entrez votre nouveau mot de passe",
-      "submit": "Changer le mot de passe",
-      "success": "Votre mot de passe a été modifié. Veuillez vous reconnecter.",
-      "passwordsMismatch": "Les mots de passe ne correspondent pas.",
-      "wrongPassword": "Le mot de passe actuel est incorrect.",
-      "googleOnly": "Votre compte utilise la connexion Google. Veuillez utiliser Google pour vous connecter.",
-      "weakPassword": "Le mot de passe ne respecte pas les critères de sécurité."
-    },
     "verify": {
       "verified": "Vérifié"
     },
@@ -449,7 +404,8 @@
       "cartEmpty": "Votre panier est vide.",
       "addressRequired": "Une adresse est requise pour une livraison.",
       "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
-      "invalidCredentials": "Email ou mot de passe invalide. Veuillez réessayer.",
+      "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
+      "codeExpired": "Le code a expiré. Demandez-en un nouveau.",
       "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification.",
       "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
       "fixedTimeRequiredWhileClosed": "Veuillez choisir un créneau fixe pour aujourd'hui pendant la fermeture.",
@@ -468,8 +424,7 @@
       "ordersLoadFailed": "Impossible de charger vos commandes.",
       "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
       "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
-      "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
-      "noPassword": "Ce compte n'a pas de mot de passe. Connectez-vous via Google ou Apple ci-dessous, ou utilisez « Mot de passe oublié » pour en créer un."
+      "oauthFailed": "La connexion a échoué. Veuillez réessayer."
     }
   },
   "schema": {
@@ -505,14 +460,6 @@
     "register": {
       "title": "Inscription - Tokyo Sushi Bar",
       "description": "Créez votre compte Tokyo Sushi Bar"
-    },
-    "forgotPassword": {
-      "title": "Mot de passe oublié - Tokyo Sushi Bar",
-      "description": "Réinitialisez le mot de passe de votre compte Tokyo Sushi Bar"
-    },
-    "resetPassword": {
-      "title": "Réinitialiser le mot de passe - Tokyo Sushi Bar",
-      "description": "Définissez un nouveau mot de passe pour votre compte Tokyo Sushi Bar"
     },
     "checkout": {
       "title": "Commande - Tokyo Sushi Bar"

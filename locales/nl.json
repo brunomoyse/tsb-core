@@ -97,33 +97,19 @@
     "restaurantClosed": "Het restaurant is momenteel gesloten. U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
   },
   "days": {},
-  "forgotPassword": {
-    "title": "Wachtwoord vergeten",
-    "description": "Voer uw e-mailadres in en wij sturen u een link om uw wachtwoord opnieuw in te stellen.",
-    "submit": "Link versturen",
-    "successTitle": "E-mail verstuurd",
-    "successMessage": "Als er een account bestaat met dit e-mailadres, ontvangt u binnenkort een link om uw wachtwoord opnieuw in te stellen. Controleer uw inbox.",
-    "backToLogin": "Terug naar inloggen"
-  },
-  "resetPassword": {
-    "title": "Wachtwoord opnieuw instellen",
-    "newPassword": "Nieuw wachtwoord",
-    "newPasswordPlaceholder": "Voer uw nieuw wachtwoord in",
-    "submit": "Wachtwoord opnieuw instellen",
-    "successTitle": "Wachtwoord opnieuw ingesteld",
-    "successMessage": "Uw wachtwoord is succesvol opnieuw ingesteld. U wordt doorgestuurd naar de inlogpagina.",
-    "invalidToken": "Deze link is ongeldig of verlopen.",
-    "requestNewLink": "Nieuwe link aanvragen",
-    "passwordsMismatch": "De wachtwoorden komen niet overeen."
-  },
   "login": {
     "title": "Inloggen",
     "email": "E-mail",
     "emailPlaceholder": "Voer uw e-mail in",
-    "password": "Wachtwoord",
-    "passwordPlaceholder": "Voer uw wachtwoord in",
+    "sendCode": "Code versturen",
+    "codeSent": "We hebben een 6-cijferige code naar {email} verzonden",
+    "codeLabel": "Verificatiecode",
+    "codePlaceholder": "123456",
+    "verify": "Verifiëren",
+    "resendCode": "Code opnieuw versturen",
+    "resendCooldown": "Opnieuw over {seconds}s",
+    "backToEmail": "Terug",
     "dividerOr": "of",
-    "forgot": "Wachtwoord vergeten?",
     "noAccount": "Heeft u geen account?",
     "register": "Account aanmaken",
     "submit": "Inloggen",
@@ -141,10 +127,6 @@
     "lastNamePlaceholder": "Voer uw achternaam in",
     "email": "E-mail",
     "emailPlaceholder": "Voer uw e-mailadres in",
-    "password": "Wachtwoord",
-    "passwordPlaceholder": "Voer uw wachtwoord in",
-    "confirmPassword": "Bevestig wachtwoord",
-    "confirmPasswordPlaceholder": "Voer uw wachtwoord opnieuw in",
     "phone": "Telefoon",
     "phonePlaceholder": "Voer uw telefoonnummer in",
     "invalidPhone": "Ongeldig telefoonnummer",
@@ -156,16 +138,6 @@
     "addressCallHint": "Als uw adres er niet tussen staat, bel ons gerust op",
     "confirmAddress": "Bevestig dat dit uw adres is",
     "submit": "Verzenden",
-    "passwordVeryWeak": "Zeer zwak",
-    "passwordWeak": "Zwak",
-    "passwordFair": "Gemiddeld",
-    "passwordGood": "Goed",
-    "passwordStrong": "Sterk",
-    "passwordMinLength": "Minstens 8 tekens",
-    "passwordUpperCase": "Een hoofdletter",
-    "passwordLowerCase": "Een kleine letter",
-    "passwordNumber": "Een cijfer",
-    "passwordSpecialChar": "Een speciaal teken",
     "deliveryInfoTitle": "Leveringsinformatie (optioneel)",
     "deliveryInfoDescription": "Alleen vereist als u een levering wenst te bestellen.",
     "hasAccount": "Heeft u al een account?",
@@ -174,7 +146,6 @@
     "errors": {
       "email_already_exists": "Er bestaat al een account met dit e-mailadres.",
       "invalid_email_format": "Het formaat van het e-mailadres is ongeldig.",
-      "weak_password": "Het wachtwoord voldoet niet aan de beveiligingsvereisten.",
       "registration_failed": "De registratie is mislukt. Probeer het opnieuw."
     }
   },
@@ -235,22 +206,6 @@
       "cancelDeletionSuccess": "Uw verwijderingsaanvraag is geannuleerd."
     },
     "analytics": {},
-    "changePassword": {
-      "title": "Wachtwoord",
-      "button": "Wachtwoord wijzigen",
-      "currentPassword": "Huidig wachtwoord",
-      "currentPasswordPlaceholder": "Voer uw huidig wachtwoord in",
-      "newPassword": "Nieuw wachtwoord",
-      "newPasswordPlaceholder": "Voer uw nieuw wachtwoord in",
-      "confirmPassword": "Bevestig nieuw wachtwoord",
-      "confirmPasswordPlaceholder": "Voer uw nieuw wachtwoord opnieuw in",
-      "submit": "Wachtwoord wijzigen",
-      "success": "Uw wachtwoord is gewijzigd. Gelieve opnieuw in te loggen.",
-      "passwordsMismatch": "De wachtwoorden komen niet overeen.",
-      "wrongPassword": "Het huidige wachtwoord is onjuist.",
-      "googleOnly": "Uw account gebruikt Google-aanmelding. Gebruik Google om in te loggen.",
-      "weakPassword": "Het wachtwoord voldoet niet aan de beveiligingsvereisten."
-    },
     "verify": {
       "verified": "Geverifieerd"
     },
@@ -444,7 +399,8 @@
       "cartEmpty": "Uw winkelwagen is leeg.",
       "addressRequired": "Een adres is vereist voor levering.",
       "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
-      "invalidCredentials": "Ongeldige e-mail of wachtwoord. Probeer het opnieuw.",
+      "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
+      "codeExpired": "De code is verlopen. Vraag een nieuwe aan.",
       "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink.",
       "orderingUnavailable": "Bestellingen zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
       "fixedTimeRequiredWhileClosed": "Kies een vast tijdstip voor vandaag buiten de openingsuren.",
@@ -457,8 +413,7 @@
       "ordersLoadFailed": "Kan uw bestellingen niet laden.",
       "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
       "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
-      "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
-      "noPassword": "Dit account heeft geen wachtwoord. Log in via Google of Apple hieronder, of gebruik \"Wachtwoord vergeten\" om er een aan te maken."
+      "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw."
     }
   },
   "schema": {
@@ -490,14 +445,6 @@
     "register": {
       "title": "Registratie - Tokyo Sushi Bar",
       "description": "Maak uw Tokyo Sushi Bar-account aan"
-    },
-    "forgotPassword": {
-      "title": "Wachtwoord vergeten - Tokyo Sushi Bar",
-      "description": "Stel het wachtwoord van uw Tokyo Sushi Bar-account opnieuw in"
-    },
-    "resetPassword": {
-      "title": "Wachtwoord opnieuw instellen - Tokyo Sushi Bar",
-      "description": "Stel een nieuw wachtwoord in voor uw Tokyo Sushi Bar-account"
     },
     "checkout": {
       "title": "Bestelling - Tokyo Sushi Bar"

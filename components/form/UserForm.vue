@@ -34,73 +34,6 @@
                    required type="email"/>
         </div>
 
-        <!-- Password Fields (only show for registration) -->
-        <div v-if="mode === 'register'">
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="password">
-                {{ $t('register.password') }}
-            </label>
-            <input id="password" v-model="password"
-                   :placeholder="$t('register.passwordPlaceholder')"
-                   autocomplete="new-password"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                   required type="password"/>
-
-            <!-- Password Strength Indicator -->
-            <div v-if="password" class="mt-2">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs font-medium" :class="passwordStrength.color">
-                        {{ passwordStrength.text }}
-                    </span>
-                </div>
-                <div class="w-full bg-gray-200/60 rounded-full h-1.5">
-                    <div
-                        class="h-1.5 rounded-full transition-all duration-300"
-                        :class="passwordStrength.bgColor"
-                        :style="{ width: passwordStrength.width }"
-                    ></div>
-                </div>
-                <ul class="mt-2 space-y-1 text-xs text-gray-600">
-                    <li :class="passwordRequirements.minLength ? 'text-green-600' : 'text-gray-500'">
-                        {{ passwordRequirements.minLength ? '✓' : '○' }} {{ $t('register.passwordMinLength') }}
-                    </li>
-                    <li :class="passwordRequirements.hasUpperCase ? 'text-green-600' : 'text-gray-500'">
-                        {{ passwordRequirements.hasUpperCase ? '✓' : '○' }} {{ $t('register.passwordUpperCase') }}
-                    </li>
-                    <li :class="passwordRequirements.hasLowerCase ? 'text-green-600' : 'text-gray-500'">
-                        {{ passwordRequirements.hasLowerCase ? '✓' : '○' }} {{ $t('register.passwordLowerCase') }}
-                    </li>
-                    <li :class="passwordRequirements.hasNumber ? 'text-green-600' : 'text-gray-500'">
-                        {{ passwordRequirements.hasNumber ? '✓' : '○' }} {{ $t('register.passwordNumber') }}
-                    </li>
-                    <li :class="passwordRequirements.hasSpecialChar ? 'text-green-600' : 'text-gray-500'">
-                        {{ passwordRequirements.hasSpecialChar ? '✓' : '○' }} {{ $t('register.passwordSpecialChar') }}
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div v-if="mode === 'register'">
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="confirmPassword">
-                {{ $t('register.confirmPassword') }}
-            </label>
-            <div class="relative">
-                <input id="confirmPassword" v-model="confirmPassword"
-                       :placeholder="$t('register.confirmPasswordPlaceholder')"
-                       autocomplete="new-password"
-                       class="w-full px-3.5 py-2.5 pr-10 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                       required type="password"/>
-                <svg
-                    v-if="passwordsMatch"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-600"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                >
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </div>
-        </div>
-
         <!-- Delivery Information Section (register only) -->
         <div v-if="mode === 'register'" class="border-t border-gray-300/50 pt-4 mt-2">
             <p class="text-sm font-medium text-gray-500">{{ $t('register.deliveryInfoTitle') }}</p>
@@ -212,8 +145,6 @@ const { t } = useI18n()
 const firstName = ref(initialValues.firstName || '')
 const lastName = ref(initialValues.lastName || '')
 const email = ref(initialValues.email || '')
-const password = ref('')
-const confirmPassword = ref('')
 const phoneLocal = ref(initialValues.phoneLocal || '')
 const selectedCountry = ref(initialValues.selectedCountry || 'BE')
 
@@ -241,67 +172,6 @@ const countries = [
 const formattedPhone = computed(() => {
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
     return parsed?.format('E.164') ?? phoneLocal.value
-})
-
-// Password match check
-const passwordsMatch = computed(() =>
-    password.value.length > 0 && confirmPassword.value.length > 0 && password.value === confirmPassword.value
-)
-
-// Password strength validation
-const passwordRequirements = computed(() => ({
-    minLength: password.value.length >= 8,
-    hasUpperCase: /[A-Z]/.test(password.value),
-    hasLowerCase: /[a-z]/.test(password.value),
-    hasNumber: /[0-9]/.test(password.value),
-    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password.value),
-}))
-
-const passwordStrength = computed(() => {
-    const reqs = passwordRequirements.value
-    const score = [
-        reqs.minLength,
-        reqs.hasUpperCase,
-        reqs.hasLowerCase,
-        reqs.hasNumber,
-        reqs.hasSpecialChar,
-    ].filter(Boolean).length
-
-    if (score === 0) {
-        return {
-            text: t('register.passwordVeryWeak'),
-            color: 'text-red-600',
-            bgColor: 'bg-red-500',
-            width: '20%',
-        }
-    } else if (score <= 2) {
-        return {
-            text: t('register.passwordWeak'),
-            color: 'text-red-600',
-            bgColor: 'bg-red-500',
-            width: '40%',
-        }
-    } else if (score === 3) {
-        return {
-            text: t('register.passwordFair'),
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-500',
-            width: '60%',
-        }
-    } else if (score === 4) {
-        return {
-            text: t('register.passwordGood'),
-            color: 'text-yellow-600',
-            bgColor: 'bg-yellow-500',
-            width: '80%',
-        }
-    }
-    return {
-        text: t('register.passwordStrong'),
-        color: 'text-green-600',
-        bgColor: 'bg-green-500',
-        width: '100%',
-    }
 })
 
 // Reset address confirmation when address changes
@@ -343,8 +213,7 @@ const submitButtonText = computed(() =>
 const handleSubmit = () => {
     // Example validations (expand as needed)
     if (phoneLocal.value && !validatePhone()) { triggerShake(); return }
-    if (mode === 'register' && password.value !== confirmPassword.value) { triggerShake(); return }
-    if (!firstName.value || !lastName.value || !email.value || (mode === 'register' && !password.value)) { triggerShake(); return }
+    if (!firstName.value || !lastName.value || !email.value) { triggerShake(); return }
     if (address.value?.id && !addressConfirmed.value) { triggerShake(); return }
 
     let form: CreateUserRequest | UpdateUserRequest;
@@ -354,7 +223,6 @@ const handleSubmit = () => {
             firstName: firstName.value,
             lastName: lastName.value,
             email: email.value,
-            password: password.value,
             phoneNumber: formattedPhone.value || null,
             addressPlaceId: addressConfirmed.value ? (address.value?.id || null) : null,
         } as CreateUserRequest;
