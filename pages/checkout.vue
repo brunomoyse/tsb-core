@@ -126,10 +126,12 @@
                     <CheckoutProductSummary />
                     <CheckoutCollectionOptions
                         @open-address-modal="openAddressModal"
+                        @slot-expired="handleSlotExpired"
                         :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
                         :ordering-enabled="restaurantConfig?.restaurantConfig?.orderingEnabled"
                         :is-currently-open="restaurantConfig?.restaurantConfig?.isOrderingCurrentlyOpen"
                         :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
+                        :preparation-minutes="restaurantConfig?.restaurantConfig?.preparationMinutes"
                     />
                     <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" v-model:cashAcknowledged="cashAcknowledged" />
                 </template>
@@ -406,6 +408,15 @@ const CREATE_ORDER = gql`
 `
 const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(CREATE_ORDER)
 
+const handleSlotExpired = () => {
+    eventBus.emit('notify', {
+        message: t('notify.errors.slotExpiredAutoReset'),
+        persistent: false,
+        duration: 5000,
+        variant: 'warning',
+    })
+}
+
 /** Extract a human-readable message from a GraphQL error, mapping known backend errors to i18n. */
 const extractGqlErrorMessage = (err: unknown): string | null => {
     const raw = Array.isArray(err) && err.length > 0 && err[0]?.message
@@ -426,6 +437,18 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
         return t('coupon.invalid')
     if (raw.includes('UNAUTHENTICATED'))
         return null // Let the auth middleware handle this
+    if (raw.includes('preferred ready time is no longer available') || raw.includes('preferred ready time must be at least'))
+        return t('notify.errors.slotTooSoon')
+    if (raw.includes('preferred ready time is outside allowed'))
+        return t('notify.errors.slotOutsideHours')
+    if (raw.includes('preferred ready time must be on the same day'))
+        return t('notify.errors.slotNotToday')
+    if (raw.includes('preferred ready time must be aligned'))
+        return t('notify.errors.slotNotAligned')
+    if (raw.includes('ordering is closed today'))
+        return t('notify.errors.orderingClosedToday')
+    if (raw.includes('fixed time is required while the restaurant is closed'))
+        return t('notify.errors.fixedTimeRequiredWhileClosed')
 
     return raw
 }
@@ -461,12 +484,15 @@ const confirmAddress = () => {
 }
 
 onMounted(() => {
-    // Always pre-check wasabi and ginger
+    // Always pre-check wasabi, ginger, and sauce (both)
     if (!cartStore.orderExtra) cartStore.orderExtra = []
     for (const name of ['wasabi', 'ginger']) {
         if (!cartStore.orderExtra.some(o => o.name === name)) {
             cartStore.orderExtra.push({ name })
         }
+    }
+    if (!cartStore.orderExtra.some(o => o.name === 'sauce')) {
+        cartStore.orderExtra.push({ name: 'sauce', options: ['both'] })
     }
 
     // If the user is logged in and has an address, pre-fill the cart address

@@ -183,14 +183,23 @@
                         {{ $t('checkout.addGinger') }}
                     </label>
                 </div>
-                <!-- Soy Sauce Options Card - Pill Toggles -->
-                <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <p class="font-medium text-gray-700 mb-3">
-                        {{ $t('checkout.sauce') }}
-                    </p>
-                    <div class="flex flex-nowrap gap-2 overflow-x-auto pb-1">
+                <!-- Soy Sauce -->
+                <div class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div class="flex items-center gap-4 shrink-0">
+                        <input
+                            type="checkbox"
+                            id="add-sauce"
+                            :checked="addSauce"
+                            class="h-5 w-5 text-red-500 border-gray-300 rounded"
+                            @change="addSauce = !addSauce"
+                        />
+                        <label for="add-sauce" class="text-gray-700 font-medium">
+                            {{ $t('checkout.addSoySauce') }}
+                        </label>
+                    </div>
+                    <div v-if="addSauce" class="flex flex-wrap gap-2">
                         <button
-                            v-for="option in sauceOptions"
+                            v-for="option in sauceTypeOptions"
                             :key="option.value"
                             type="button"
                             :data-testid="`sauce-option-${option.value}`"
@@ -389,12 +398,16 @@ const cashPaymentAmount = computed({
     },
 })
 
-const sauceOptions = computed(() => [
-    { value: 'none', label: t('checkout.none') },
+const sauceTypeOptions = computed(() => [
     { value: 'sweet', label: t('checkout.sweet') },
     { value: 'salty', label: t('checkout.salty') },
     { value: 'both', label: t('checkout.both') },
 ])
+
+const addSauce = computed({
+    get: () => sauce.value !== 'none',
+    set: (value: boolean) => { sauce.value = value ? 'both' : 'none' },
+})
 
 const setOnlinePayment = (value: boolean) => {
     trackEvent('payment_method_selected', { method: value ? 'ONLINE' : 'CASH' })
