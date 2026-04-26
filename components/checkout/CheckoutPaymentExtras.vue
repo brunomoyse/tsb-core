@@ -127,33 +127,6 @@
             <h3 class="font-medium text-lg mb-4">
                 {{ $t('checkout.extras', 'Extras') }}
             </h3>
-            <div class="mb-4">
-                <p class="text-xs font-semibold uppercase tracking-wide text-red-700 mb-2">
-                    {{ $t('checkout.paidExtra', 'Paid extra') }}
-                </p>
-                <div class="flex flex-wrap gap-2">
-                    <button
-                        v-for="extra in paidExtras"
-                        :key="extra.code"
-                        type="button"
-                        :disabled="!extra.isAvailable"
-                        :aria-pressed="isPaidExtraSelected(extra.code)"
-                        @click="togglePaidExtra(extra.code)"
-                        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-[0.97]"
-                        :class="[
-                            isPaidExtraSelected(extra.code)
-                                ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
-                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
-                            !extra.isAvailable ? 'opacity-50 cursor-not-allowed' : '',
-                        ]"
-                    >
-                        <span>{{ extra.label }}</span>
-                        <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
-                            +{{ formatPrice(extra.price) }}
-                        </span>
-                    </button>
-                </div>
-            </div>
             <div class="grid grid-cols-1 gap-4">
                 <!-- Chopsticks Card -->
                 <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
@@ -223,6 +196,33 @@
                             {{ option.label }}
                         </button>
                     </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-red-700 mb-2">
+                    {{ $t('checkout.paidExtra', 'Paid extra') }}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="extra in paidExtras"
+                        :key="extra.code"
+                        type="button"
+                        :disabled="!extra.isAvailable"
+                        :aria-pressed="isPaidExtraSelected(extra.code)"
+                        @click="togglePaidExtra(extra.code)"
+                        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-[0.97]"
+                        :class="[
+                            isPaidExtraSelected(extra.code)
+                                ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
+                            !extra.isAvailable ? 'opacity-50 cursor-not-allowed' : '',
+                        ]"
+                    >
+                        <span>{{ extra.label }}</span>
+                        <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
+                            +{{ formatPrice(extra.price) }}
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
