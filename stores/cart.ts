@@ -57,7 +57,7 @@ export const useCartStore = defineStore("cart", {
             } else {
                 this.products.push({
                     product,
-                    quantity,
+                    quantity: Math.min(Math.max(quantity, 1), MAX_ITEM_QUANTITY),
                     selectedChoice: choice,
                 });
             }
@@ -130,5 +130,13 @@ export const useCartStore = defineStore("cart", {
             this.isCartVisible = visible;
         }
     },
-    persist: true,
+    persist: {
+        afterHydrate: (ctx) => {
+            const store = ctx.store as { products: CartItem[] };
+            for (const item of store.products) {
+                if (item.quantity > MAX_ITEM_QUANTITY) item.quantity = MAX_ITEM_QUANTITY;
+                if (item.quantity < 1) item.quantity = 1;
+            }
+        },
+    },
 });
