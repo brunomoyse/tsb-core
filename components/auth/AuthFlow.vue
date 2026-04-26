@@ -10,8 +10,44 @@
             />
         </div>
 
-        <!-- Step 1: Email -->
+        <!-- Step 1: SSO (primary) + email (secondary) -->
         <form v-if="step === 'email'" class="space-y-4" @submit.prevent="onSubmitEmail">
+            <!-- SSO buttons: fastest path for the Google/Apple majority -->
+            <div class="space-y-3">
+                <button
+                    :disabled="loading"
+                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                    type="button"
+                    @click="loginWithProvider('google')"
+                >
+                    <img alt="" aria-hidden="true" class="w-5 h-5 mr-2" src="/icons/google-icon.svg" >
+                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
+                </button>
+
+                <button
+                    :disabled="loading"
+                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                    type="button"
+                    @click="loginWithProvider('apple')"
+                >
+                    <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="#000" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoApple') }}</span>
+                </button>
+            </div>
+
+            <!-- OR Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300/50" />
+                </div>
+                <div class="relative text-center">
+                    <span class="bg-white px-3 text-sm text-gray-500 uppercase">
+                        {{ $t('login.dividerOr') }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Email field: secondary path -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-email">
                     {{ $t('login.email') }}
@@ -59,41 +95,6 @@
             >
                 {{ $t('login.sendCode') }}
             </button>
-
-            <!-- OR Divider -->
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300/50" />
-                </div>
-                <div class="relative text-center">
-                    <span class="bg-white px-3 text-sm text-gray-500 uppercase">
-                        {{ $t('login.dividerOr') }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- SSO -->
-            <div class="space-y-3">
-                <button
-                    :disabled="loading"
-                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
-                    type="button"
-                    @click="loginWithProvider('google')"
-                >
-                    <img alt="" aria-hidden="true" class="w-5 h-5 mr-2" src="/icons/google-icon.svg" >
-                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
-                </button>
-
-                <button
-                    :disabled="loading"
-                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
-                    type="button"
-                    @click="loginWithProvider('apple')"
-                >
-                    <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="#000" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoApple') }}</span>
-                </button>
-            </div>
         </form>
 
         <!-- Step 2: OTP code -->
@@ -312,9 +313,6 @@ const initCapacitorAuth = async () => {
 
 onMounted(async () => {
     if (!import.meta.client) return
-
-    await nextTick()
-    emailInputRef.value?.focus()
 
     // Pending IdP provider survives the round-trip to Zitadel for authRequestID.
     // If the user picked Google/Apple from a fresh visit, we redirected to Zitadel
