@@ -1,12 +1,11 @@
 <template>
     <form class="space-y-4" :class="{ 'animate-shake': isShaking }" @submit.prevent="handleSubmit">
-        <!-- Personal Information Fields -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5" for="firstName">
-                {{ $t('register.firstName') }}
+                {{ $t('form.firstName') }}
             </label>
             <input id="firstName" v-model="firstName"
-                   :placeholder="$t('register.firstNamePlaceholder')"
+                   :placeholder="$t('form.firstNamePlaceholder')"
                    autocomplete="given-name"
                    class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
@@ -14,10 +13,10 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5" for="lastName">
-                {{ $t('register.lastName') }}
+                {{ $t('form.lastName') }}
             </label>
             <input id="lastName" v-model="lastName"
-                   :placeholder="$t('register.lastNamePlaceholder')"
+                   :placeholder="$t('form.lastNamePlaceholder')"
                    autocomplete="name"
                    class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
@@ -25,25 +24,18 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">
-                {{ $t('register.email') }}
+                {{ $t('form.email') }}
             </label>
             <input id="email" v-model="email"
-                   :placeholder="$t('register.emailPlaceholder')"
+                   :placeholder="$t('form.emailPlaceholder')"
                    autocomplete="email"
                    class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                    required type="email"/>
         </div>
 
-        <!-- Delivery Information Section (register only) -->
-        <div v-if="mode === 'register'" class="border-t border-gray-300/50 pt-4 mt-2">
-            <p class="text-sm font-medium text-gray-500">{{ $t('register.deliveryInfoTitle') }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{{ $t('register.deliveryInfoDescription') }}</p>
-        </div>
-
-        <!-- Phone Input -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5" for="phone">
-                {{ $t('register.phone') }}
+                {{ $t('form.phone') }}
             </label>
             <div class="flex space-x-2">
                 <select id="country" v-model="selectedCountry"
@@ -53,28 +45,20 @@
                     </option>
                 </select>
                 <input id="phone" v-model="phoneLocal"
-                       :placeholder="$t('register.phonePlaceholder')"
+                       :placeholder="$t('form.phonePlaceholder')"
                        class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                        type="tel"/>
             </div>
             <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
         </div>
 
-        <!-- Address Autocomplete Section -->
         <AddressAutocomplete v-show="!address" @update:address="(updatedAddress) => address = updatedAddress" />
 
-        <!-- Checkbox to confirm the selected address -->
         <div v-if="address" class="mt-2">
-            <Checkbox v-if="mode === 'register'" v-model="addressConfirmed">
-                <span>
-                  <strong>{{ $t('register.confirmAddress') }}</strong><br />
-                  <span class="whitespace-pre-line">{{ formatAddress(address) }}</span>
-                </span>
-            </Checkbox>
-            <div v-else class="p-3 border border-gray-200/80 rounded-xl bg-white/40 backdrop-blur-sm">
+            <div class="p-3 border border-gray-200/80 rounded-xl bg-white/40 backdrop-blur-sm">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <strong class="text-sm text-gray-700">{{ $t('register.address') }}</strong>
+                        <strong class="text-sm text-gray-700">{{ $t('form.address.label') }}</strong>
                         <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">{{ formatAddress(address) }}</p>
                     </div>
                     <button
@@ -88,36 +72,27 @@
             </div>
         </div>
 
-        <!-- Buttons Section -->
-        <div v-if="mode === 'edit'" class="flex gap-2">
+        <div class="flex gap-2">
             <button type="button" @click="emit('close')"
                     class="w-1/2 bg-white/60 backdrop-blur-sm text-gray-700 py-2.5 rounded-xl border border-gray-200/80 hover:bg-white transition-all duration-300 text-sm active:scale-[0.97]">
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
                     class="w-1/2 bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 text-sm active:scale-[0.97] shadow-sm hover:shadow-md">
-                {{ submitButtonText }}
-            </button>
-        </div>
-        <div v-else>
-            <button type="submit"
-                    class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md">
-                {{ submitButtonText }}
+                {{ $t('me.profile.update') }}
             </button>
         </div>
     </form>
 </template>
 
 <script lang="ts" setup>
-import type { Address, CreateUserRequest, UpdateUserRequest } from '~/types'
+import type { Address, UpdateUserRequest } from '~/types'
 import { computed, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import Checkbox from '~/components/Checkbox.vue'
 import { formatAddress } from '~/utils/utils'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { useI18n } from 'vue-i18n'
 
-// Define props to allow passing initial values and mode
 interface InitialValues {
     firstName?: string
     lastName?: string
@@ -125,23 +100,19 @@ interface InitialValues {
     phoneLocal?: string
     selectedCountry?: string
     address?: Address | null
-    addressConfirmed?: boolean
 }
 
-const { mode = 'register', initialValues = {} as InitialValues } = defineProps<{
-    mode?: string
+const { initialValues = {} as InitialValues } = defineProps<{
     initialValues?: InitialValues
 }>()
 
-// Define an emit event for form submission
 const emit = defineEmits<{
-    submit: [form: CreateUserRequest | UpdateUserRequest]
+    submit: [form: UpdateUserRequest]
     close: []
 }>()
 
 const { t } = useI18n()
 
-// Reactive state with defaults and initial values
 const firstName = ref(initialValues.firstName || '')
 const lastName = ref(initialValues.lastName || '')
 const email = ref(initialValues.email || '')
@@ -149,7 +120,6 @@ const phoneLocal = ref(initialValues.phoneLocal || '')
 const selectedCountry = ref(initialValues.selectedCountry || 'BE')
 
 const address = ref<Address | null>(initialValues.address || null)
-const addressConfirmed = ref<boolean>(initialValues.addressConfirmed || false)
 
 const phoneError = ref('')
 
@@ -159,7 +129,6 @@ const triggerShake = () => {
     setTimeout(() => { isShaking.value = false }, 400)
 }
 
-// Country list
 const countries = [
     { prefix: '+31', code: 'NL', flag: '🇳🇱' },
     { prefix: '+32', code: 'BE', flag: '🇧🇪' },
@@ -168,90 +137,50 @@ const countries = [
     { prefix: '+44', code: 'DE', flag: '🇩🇪' },
 ]
 
-// Computed property for formatted phone
 const formattedPhone = computed(() => {
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
     return parsed?.format('E.164') ?? phoneLocal.value
 })
 
-// Reset address confirmation when address changes
 watch(address, () => {
-    // In edit mode, auto-confirm the address
-    if (mode === 'edit') {
-        addressConfirmed.value = address.value !== null
-    } else {
-        addressConfirmed.value = false
-    }
+    // No-op: address state is committed immediately on selection in edit mode.
 })
 
-// When checked box becomes unchecked in register mode, reset address
-watch(addressConfirmed, (newValue) => {
-    if (mode === 'register' && newValue === false) {
-        address.value = null
-    }
-})
-
-// Function to remove address
 const removeAddress = () => {
     address.value = null
-    addressConfirmed.value = false
 }
 
-// Phone validation function
 const validatePhone = () => {
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
-    phoneError.value = parsed?.isValid() ? '' : t('register.invalidPhone')
+    phoneError.value = parsed?.isValid() ? '' : t('form.invalidPhone')
     return !phoneError.value
 }
 
-// Submit button text based on mode
-const submitButtonText = computed(() =>
-    mode === 'edit' ? t('me.profile.update') : t('register.submit')
-)
-
-// Handle form submission
 const handleSubmit = () => {
-    // Example validations (expand as needed)
     if (phoneLocal.value && !validatePhone()) { triggerShake(); return }
     if (!firstName.value || !lastName.value || !email.value) { triggerShake(); return }
-    if (address.value?.id && !addressConfirmed.value) { triggerShake(); return }
 
-    let form: CreateUserRequest | UpdateUserRequest;
+    // Send empty string to trigger deletion when a previously-set field is cleared.
+    const hasInitialAddress = initialValues.address !== null && initialValues.address !== undefined
+    const hasCurrentAddress = address.value !== null
 
-    if (mode === 'register') {
-        form = {
-            firstName: firstName.value,
-            lastName: lastName.value,
-            email: email.value,
-            phoneNumber: formattedPhone.value || null,
-            addressPlaceId: addressConfirmed.value ? (address.value?.id || null) : null,
-        } as CreateUserRequest;
-    } else {
-        // For edit mode, we need to explicitly handle address and phone removal
-        // If there was an initial address but now there's none, send empty string to trigger deletion
-        const hasInitialAddress = initialValues.address !== null && initialValues.address !== undefined
-        const hasCurrentAddress = address.value !== null
+    const hasInitialPhone = initialValues.phoneLocal && initialValues.phoneLocal.trim() !== ''
+    const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
 
-        // Handle phone number deletion: if there was a phone initially but now it's empty, send empty string
-        const hasInitialPhone = initialValues.phoneLocal && initialValues.phoneLocal.trim() !== ''
-        const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
-
-        let phoneValue = null
-        if (hasCurrentPhone) {
-            phoneValue = formattedPhone.value
-        } else if (hasInitialPhone) {
-            phoneValue = '' // Send empty string to trigger deletion
-        }
-
-        form = {
-            firstName: firstName.value,
-            lastName: lastName.value,
-            phoneNumber: phoneValue,
-            addressPlaceId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
-        } as UpdateUserRequest;
+    let phoneValue: string | null = null
+    if (hasCurrentPhone) {
+        phoneValue = formattedPhone.value
+    } else if (hasInitialPhone) {
+        phoneValue = ''
     }
 
-    // Emit the form data to the parent
+    const form: UpdateUserRequest = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        phoneNumber: phoneValue,
+        addressPlaceId: hasCurrentAddress ? address.value?.id || null : (hasInitialAddress ? '' : null),
+    }
+
     emit('submit', form)
 }
 </script>

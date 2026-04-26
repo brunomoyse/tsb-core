@@ -58,13 +58,6 @@ test.describe('Authentication flows', () => {
     await expect(page.locator('[role="alert"]')).toBeVisible({ timeout: 10_000 })
   })
 
-  test('Register page renders', async ({ page }) => {
-    await page.goto('/fr/auth/register')
-    await dismissCookieConsent(page)
-    await expect(page.locator('h1').first()).toBeVisible()
-    await expect(page.locator('#email')).toBeVisible()
-  })
-
   test('Forgot password page renders', async ({ page }) => {
     await page.goto('/fr/auth/forgot-password')
     await dismissCookieConsent(page)

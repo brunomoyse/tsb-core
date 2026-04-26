@@ -561,7 +561,7 @@ const updateNotificationPref = async (
                     <h3 id="edit-profile-title" class="text-2xl font-semibold text-gray-900 text-center mb-6">
                         {{ t('me.profile.update') }}
                     </h3>
-                    <UserForm mode="edit" :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />
+                    <UserForm :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />
                 </div>
             </div>
         </transition>

@@ -89,14 +89,6 @@ export interface UpdateUserRequest {
     phoneNumber: string | null;
 }
 
-export interface CreateUserRequest {
-    addressPlaceId: string | null;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string | null;
-}
-
 export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
 
 export type OrderDeliveryStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'FAILED'

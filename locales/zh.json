@@ -110,17 +110,20 @@
     "resendCooldown": "{seconds}秒后可重发",
     "backToEmail": "返回",
     "dividerOr": "或",
-    "noAccount": "没有账户？",
-    "register": "创建账户",
-    "submit": "登录",
     "ssoGoogle": "使用 Google 登录",
     "ssoApple": "使用 Apple 登录",
     "authenticating": "正在验证...",
     "callbackError": "验证失败，请重试。",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "profileTitle": "快完成了 — 我们该怎么称呼您？",
+    "profileSubtitle": "我们将使用您的名字来个性化您的订单和邮件。",
+    "completeSignup": "完成注册",
+    "stepEmail": "邮箱",
+    "stepCode": "验证码",
+    "stepProfile": "资料",
+    "stepsAriaLabel": "登录进度"
   },
-  "register": {
-    "title": "注册",
+  "form": {
     "firstName": "名字",
     "firstNamePlaceholder": "请输入您的名字",
     "lastName": "姓氏",
@@ -130,23 +133,13 @@
     "phone": "电话",
     "phonePlaceholder": "请输入您的电话号码",
     "invalidPhone": "电话号码无效",
-    "address": "地址",
-    "addressPlaceholder": "开始输入您的地址…",
-    "addressHouseNumberRequired": "必须填写门牌号。",
-    "addressNoMatch": "未找到地址。",
-    "addressExample": "示例：Rue de Fragnée 12, Liège",
-    "addressCallHint": "如果找不到您的地址，请随时致电我们：",
-    "submit": "提交",
-    "confirmAddress": "确认这是您的地址",
-    "deliveryInfoTitle": "配送信息（可选）",
-    "deliveryInfoDescription": "仅在您需要配送时填写。",
-    "hasAccount": "已有账户？",
-    "successTitle": "账户已创建！",
-    "successCheckEmail": "我们已发送验证邮件到您的邮箱，请点击链接激活您的账户。",
-    "errors": {
-      "email_already_exists": "该邮箱地址已注册。",
-      "invalid_email_format": "邮箱地址格式无效。",
-      "registration_failed": "注册失败，请重试。"
+    "address": {
+      "label": "地址",
+      "placeholder": "开始输入您的地址…",
+      "noMatch": "未找到地址。",
+      "callHint": "如果找不到您的地址，请随时致电我们：",
+      "houseNumberRequired": "必须填写门牌号。",
+      "example": "示例：Rue de Fragnée 12, Liège"
     }
   },
   "me": {
@@ -319,6 +312,7 @@
     "cash": "现金",
     "cashWarning": "请注意：订单确认后，将无法更改付款方式。",
     "cashAcknowledge": "我已知悉并确认以现金付款。",
+    "cashAcknowledgeMissing": "请确认以现金付款",
     "cashAcknowledged": "现金支付已确认",
     "discardAddress": "放弃已输入的地址？",
     "cashAmountLabel": "您打算用多少钱付款？",
@@ -356,6 +350,7 @@
     "optional": "（选填）",
     "openingPayment": "正在打开安全支付...",
     "completeBeforeOrder": "下单前请先完成以下内容：",
+    "completeBeforeOrderCount": "{count} 项内容未完成",
     "addressDistanceKm": "距离 {distance} 公里",
     "addExtras": "加点配菜？",
     "extrasDescription": "为您的订单添加一些配菜",
@@ -424,7 +419,10 @@
       "ordersLoadFailed": "无法加载您的订单。",
       "invoiceDownloadFailed": "发票下载失败。",
       "sessionExpired": "您的会话已过期，请重新登录。",
-      "oauthFailed": "登录失败，请重试。"
+      "oauthFailed": "登录失败，请重试。",
+      "invalidEmail": "请输入有效的邮箱地址。",
+      "networkError": "无法连接到服务器，请检查您的网络后重试。",
+      "serverError": "服务器暂时不可用，请稍后再试。"
     }
   },
   "schema": {
@@ -456,10 +454,6 @@
     "login": {
       "title": "登录 - Tokyo Sushi Bar",
       "description": "登录您的 Tokyo Sushi Bar 账户"
-    },
-    "register": {
-      "title": "注册 - Tokyo Sushi Bar",
-      "description": "创建您的 Tokyo Sushi Bar 账户"
     },
     "checkout": {
       "title": "结账 - Tokyo Sushi Bar"
@@ -526,19 +520,6 @@
     "success": "{count} 件商品已添加到购物车",
     "partial": "{added} 件已添加，{skipped} 件缺货已跳过",
     "empty": "没有可重新订购的商品"
-  },
-  "verify": {
-    "resend": "重新发送验证邮件",
-    "sent": "验证邮件已发送！"
-  },
-  "verifyEmail": {
-    "title": "邮箱验证",
-    "verifying": "正在验证您的邮箱地址...",
-    "successTitle": "邮箱已验证！",
-    "successMessage": "您的邮箱已成功验证。您现在可以登录您的账户。",
-    "errorTitle": "验证失败",
-    "invalidLink": "此验证链接无效。请检查您邮件中的链接。",
-    "expiredOrInvalid": "此验证链接已过期或无效。请重新申请验证邮件。"
   },
   "cookies": {},
   "faq": {
