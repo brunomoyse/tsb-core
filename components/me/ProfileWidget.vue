@@ -111,6 +111,7 @@
 
 <script setup lang="ts">
 import type { Address, UpdateUserRequest, User } from '~/types'
+import { EUROPEAN_COUNTRIES } from '~/utils/europeanCountries'
 import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
 import { formatAddress } from '~/utils/utils'
@@ -183,13 +184,7 @@ const userInitialValues = ref({
 })
 
 // Country list (used for processing the phone number)
-const countries = [
-    { prefix: '+31', code: 'NL', flag: '\u{1F1F3}\u{1F1F1}' },
-    { prefix: '+32', code: 'BE', flag: '\u{1F1E7}\u{1F1EA}' },
-    { prefix: '+33', code: 'FR', flag: '\u{1F1EB}\u{1F1F7}' },
-    { prefix: '+352', code: 'LU', flag: '\u{1F1F1}\u{1F1FA}' },
-    { prefix: '+44', code: 'DE', flag: '\u{1F1E9}\u{1F1EA}' },
-]
+const countries = EUROPEAN_COUNTRIES
 
 // Open modal and set UserForm initial values based on authStore.user
 const openModal = () => {

@@ -41,7 +41,7 @@
                 class="px-2.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
             >
                 <option v-for="country in countries" :key="country.code" :value="country.code">
-                    {{ country.flag }} {{ country.prefix }}
+                    {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
                 </option>
             </select>
             <div class="relative flex-1 min-w-0">
@@ -63,6 +63,7 @@
 
 <script lang="ts" setup>
 import { type CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
 import type { User } from '~/types'
@@ -70,16 +71,10 @@ import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const authStore = useAuthStore()
 
-const countries = [
-    { prefix: '+31', code: 'NL', flag: '\u{1F1F3}\u{1F1F1}' },
-    { prefix: '+32', code: 'BE', flag: '\u{1F1E7}\u{1F1EA}' },
-    { prefix: '+33', code: 'FR', flag: '\u{1F1EB}\u{1F1F7}' },
-    { prefix: '+352', code: 'LU', flag: '\u{1F1F1}\u{1F1FA}' },
-    { prefix: '+44', code: 'DE', flag: '\u{1F1E9}\u{1F1EA}' },
-]
+const countries = EUROPEAN_COUNTRIES
 
 const phoneLocal = ref('')
 const selectedCountry = ref<CountryCode>('BE')

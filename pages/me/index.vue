@@ -3,6 +3,7 @@ import type { Address, UpdateUserRequest, User } from '@/types'
 import { computed, onMounted, ref } from 'vue'
 import { definePageMeta, useGqlMutation, useNuxtApp, useSwitchLocalePath } from '#imports'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import { EUROPEAN_COUNTRIES } from '~/utils/europeanCountries'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
 import { eventBus } from '~/eventBus'
@@ -140,13 +141,7 @@ const userInitialValues = ref({
     addressConfirmed: false,
 })
 
-const countries = [
-    { prefix: '+31', code: 'NL', flag: '\u{1F1F3}\u{1F1F1}' },
-    { prefix: '+32', code: 'BE', flag: '\u{1F1E7}\u{1F1EA}' },
-    { prefix: '+33', code: 'FR', flag: '\u{1F1EB}\u{1F1F7}' },
-    { prefix: '+352', code: 'LU', flag: '\u{1F1F1}\u{1F1FA}' },
-    { prefix: '+44', code: 'DE', flag: '\u{1F1E9}\u{1F1EA}' },
-]
+const countries = EUROPEAN_COUNTRIES
 
 const openModal = () => {
     userInitialValues.value.firstName = authStore.user?.firstName || ''
