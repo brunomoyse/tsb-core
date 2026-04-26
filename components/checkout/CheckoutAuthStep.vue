@@ -32,8 +32,8 @@
 
 <script lang="ts" setup>
 import AuthFlow from '~/components/auth/AuthFlow.vue'
-import { useLocalePath } from '#imports'
 import { useCartStore } from '~/stores/cart'
+import { useLocalePath } from '#imports'
 import { usePlatform } from '~/composables/usePlatform'
 
 const cartStore = useCartStore()

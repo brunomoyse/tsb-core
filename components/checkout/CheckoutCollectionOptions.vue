@@ -73,6 +73,9 @@
             ></textarea>
         </div>
 
+        <!-- Phone capture: required before an order can be placed. Persists to user profile. -->
+        <CheckoutPhoneCapture />
+
         <!-- Preferred Time / Status -->
         <div class="mt-4">
             <!-- Ordering disabled -->
@@ -115,6 +118,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import type { RestaurantTimeSlot } from '~/composables/useRestaurantConfig'
 import { formatAddress } from '~/utils/utils'

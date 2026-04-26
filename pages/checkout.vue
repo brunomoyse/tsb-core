@@ -101,9 +101,6 @@
                 </div>
             </div>
 
-            <!-- Phone capture: required before an order can be placed. Persists to user profile. -->
-            <CheckoutPhoneCapture v-if="!authStore.user?.phoneNumber" class="mb-4" />
-
             <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
             <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                 <template v-if="restaurantConfigPending">
@@ -249,7 +246,6 @@ import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
 import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionOptions.vue'
 import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
-import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'

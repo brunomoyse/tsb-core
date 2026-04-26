@@ -233,15 +233,15 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
 import StepIndicator from '~/components/global/StepIndicator.vue'
-import { useI18n } from 'vue-i18n'
 import { isValidEmail } from '~/lib/validators'
+import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
 import { useTracking } from '~/composables/useTracking'
 
 interface Props {
     /** 'page' = standalone /auth/login, 'inline' = embedded in checkout. */
     mode?: 'page' | 'inline'
-    /** authRequestID from URL query (web) — leave undefined to fetch via Capacitor bridge. */
+    /** AuthRequestID from URL query (web) — leave undefined to fetch via Capacitor bridge. */
     authRequestId?: string
     /** Where to navigate / what to do after a successful OIDC finalize. */
     onComplete?: (callbackUrl: string) => Promise<void> | void
@@ -249,12 +249,11 @@ interface Props {
     onBeforeRedirect?: () => void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    mode: 'page',
-    authRequestId: '',
-    onComplete: undefined,
-    onBeforeRedirect: undefined,
-})
+const {
+    authRequestId = '',
+    onComplete,
+    onBeforeRedirect,
+} = defineProps<Props>()
 
 const { t } = useI18n()
 const { isCapacitor } = usePlatform()
@@ -314,10 +313,12 @@ const initCapacitorAuth = async () => {
 onMounted(async () => {
     if (!import.meta.client) return
 
-    // Pending IdP provider survives the round-trip to Zitadel for authRequestID.
-    // If the user picked Google/Apple from a fresh visit, we redirected to Zitadel
-    // first; on return we resume the IdP flow with the now-known authRequestID.
-    if (props.authRequestId) {
+    /*
+     * Pending IdP provider survives the round-trip to Zitadel for authRequestID.
+     * If the user picked Google/Apple from a fresh visit, we redirected to Zitadel
+     * first; on return we resume the IdP flow with the now-known authRequestID.
+     */
+    if (authRequestId) {
         const pendingProvider = sessionStorage.getItem('pendingIdpProvider')
         if (pendingProvider) {
             sessionStorage.removeItem('pendingIdpProvider')
@@ -355,9 +356,11 @@ const validateEmailOnBlur = () => {
     emailFormatError.value = !isValidEmail(email.value)
 }
 
-// Map a fetch error to a specific i18n key. Network failures (no `response`
-// field), 5xx, 429, and unknown errors each get their own message so the user
-// knows what to try next.
+/*
+ * Map a fetch error to a specific i18n key. Network failures (no `response`
+ * field), 5xx, 429, and unknown errors each get their own message so the user
+ * knows what to try next.
+ */
 const formatError = (error: unknown, fallback: string): string => {
     const err = error as { response?: { status?: number }, statusCode?: number, message?: string }
     const status = err?.response?.status ?? err?.statusCode
@@ -379,7 +382,7 @@ const onSubmitEmail = async () => {
     errorMessage.value = ''
     emailFormatError.value = false
     loading.value = true
-    props.onBeforeRedirect?.()
+    onBeforeRedirect?.()
 
     try {
         const { useZitadelApi } = await import('~/composables/useZitadelApi')
@@ -387,8 +390,10 @@ const onSubmitEmail = async () => {
         const session = await requestOtpLogin(email.value)
 
         if (!session.sessionId || !session.sessionToken) {
-            // Backend short-circuited (auth service unavailable, etc.). Surface
-            // a generic error so the user can retry.
+            /*
+             * Backend short-circuited (auth service unavailable, etc.). Surface
+             * a generic error so the user can retry.
+             */
             errorMessage.value = t('notify.errors.serverError')
             return
         }
@@ -451,8 +456,10 @@ const onSubmitCode = async () => {
         requiresProfile.value = verified.requiresProfile
 
         if (verified.requiresProfile) {
-            // Identifier-first signup: collect name before OIDC finalize so the
-            // app user is JIT-provisioned with real values, not the placeholder.
+            /*
+             * Identifier-first signup: collect name before OIDC finalize so the
+             * app user is JIT-provisioned with real values, not the placeholder.
+             */
             step.value = 'profile'
             loading.value = false
             await nextTick()
@@ -465,8 +472,10 @@ const onSubmitCode = async () => {
         loading.value = false
         if (import.meta.dev) console.error('OTP verify error:', error)
         if (isCapacitor) {
-            // Re-fetch a fresh authRequestID for the inevitable retry — Zitadel
-            // invalidates the in-flight one on a verify failure.
+            /*
+             * Re-fetch a fresh authRequestID for the inevitable retry — Zitadel
+             * invalidates the in-flight one on a verify failure.
+             */
             await initCapacitorAuth()
         }
         const err = error as { response?: { status?: number }, statusCode?: number }
@@ -493,12 +502,12 @@ const onSubmitProfile = async () => {
     try {
         const { useZitadelApi } = await import('~/composables/useZitadelApi')
         const { completeOtpProfile } = useZitadelApi()
-        await completeOtpProfile(
-            otpSessionId.value,
-            otpSessionToken.value,
-            firstName.value.trim(),
-            lastName.value.trim(),
-        )
+        await completeOtpProfile({
+            sessionId: otpSessionId.value,
+            sessionToken: otpSessionToken.value,
+            firstName: firstName.value.trim(),
+            lastName: lastName.value.trim(),
+        })
         trackEvent('user_registered', { method: 'otp' })
 
         await finalizeAndComplete()
@@ -509,13 +518,15 @@ const onSubmitProfile = async () => {
     }
 }
 
-// Resolve the authRequestID, run the OIDC finalize call, and hand the resulting
-// callbackUrl back to the parent (page mode redirects, checkout stays inline).
+/*
+ * Resolve the authRequestID, run the OIDC finalize call, and hand the resulting
+ * callbackUrl back to the parent (page mode redirects, checkout stays inline).
+ */
 const finalizeAndComplete = async () => {
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { finalizeOidcAuth } = useZitadelApi()
 
-    let effectiveAuthRequestId = props.authRequestId || capacitorAuthRequestId.value
+    let effectiveAuthRequestId = authRequestId || capacitorAuthRequestId.value
 
     if (!effectiveAuthRequestId) {
         if (isCapacitor) {
@@ -534,13 +545,15 @@ const finalizeAndComplete = async () => {
     const result = await finalizeOidcAuth(effectiveAuthRequestId, otpSessionId.value, otpSessionToken.value)
     trackEvent('user_logged_in', { method: 'otp' })
 
-    if (props.onComplete) {
-        await props.onComplete(result.callbackUrl)
+    if (onComplete) {
+        await onComplete(result.callbackUrl)
         return
     }
 
-    // Default behaviour: web does a full redirect; Capacitor exchanges the code
-    // and runs the post-auth callback inline.
+    /*
+     * Default behaviour: web does a full redirect; Capacitor exchanges the code
+     * and runs the post-auth callback inline.
+     */
     if (isCapacitor) {
         const callbackUrl = new URL(result.callbackUrl)
         const authCode = callbackUrl.searchParams.get('code')
@@ -561,13 +574,13 @@ const finalizeAndComplete = async () => {
 const startIdpFlow = async (provider: string) => {
     errorMessage.value = ''
     loading.value = true
-    props.onBeforeRedirect?.()
+    onBeforeRedirect?.()
 
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { startIdpLogin } = useZitadelApi()
 
     const uiLocale = route.path.split('/')[1] || 'fr'
-    const effectiveAuthId = props.authRequestId || capacitorAuthRequestId.value
+    const effectiveAuthId = authRequestId || capacitorAuthRequestId.value
     sessionStorage.setItem('oidcAuthRequestId', effectiveAuthId)
 
     const baseUrl = isCapacitor
@@ -599,9 +612,9 @@ const loginWithProvider = async (provider: string) => {
     if (import.meta.server || loading.value) return
     loading.value = true
     trackEvent('oauth_click', { provider })
-    props.onBeforeRedirect?.()
+    onBeforeRedirect?.()
 
-    if (props.authRequestId || capacitorAuthRequestId.value) {
+    if (authRequestId || capacitorAuthRequestId.value) {
         await startIdpFlow(provider)
     } else if (isCapacitor) {
         await initCapacitorAuth()
