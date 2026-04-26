@@ -49,13 +49,16 @@
                 </button>
             </div>
 
-            <!-- Cash payment: amber warning until acknowledged, then a compact confirmed state. -->
+            <!-- Cash payment: amber warning until acknowledged, then a compact confirmed state.
+                 If validation fails on the ack checkbox, the wrapper switches to a red ring to draw the eye. -->
             <div
                 v-if="!isOnlinePayment"
                 data-testid="cash-payment-notice"
                 :class="[
                     'mt-4 rounded-lg border p-4 space-y-3 transition-colors',
-                    cashAcknowledgedModel ? 'bg-gray-50 border-gray-200' : 'bg-amber-50 border-amber-200'
+                    showCashAckError
+                        ? 'bg-red-50 border-red-300 ring-2 ring-red-300/60'
+                        : cashAcknowledgedModel ? 'bg-gray-50 border-gray-200' : 'bg-amber-50 border-amber-200'
                 ]"
             >
                 <div v-if="!cashAcknowledgedModel" class="flex items-start gap-3">
@@ -67,13 +70,18 @@
                     </p>
                 </div>
 
-                <label class="flex items-start gap-3 cursor-pointer">
+                <label id="cash-acknowledge-row" tabindex="-1" class="flex items-start gap-3 cursor-pointer">
                     <input
                         ref="cashAckRef"
                         type="checkbox"
                         data-testid="cash-acknowledge"
                         v-model="cashAcknowledgedModel"
-                        class="mt-0.5 h-5 w-5 text-red-500 border-gray-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-red-300"
+                        :class="[
+                            'mt-0.5 h-5 w-5 rounded shrink-0 focus-visible:ring-2',
+                            showCashAckError
+                                ? 'text-red-600 border-red-500 focus-visible:ring-red-400'
+                                : 'text-red-500 border-gray-300 focus-visible:ring-red-300'
+                        ]"
                     />
                     <span v-if="cashAcknowledgedModel" class="inline-flex items-center gap-1.5 text-sm text-gray-700 font-medium">
                         <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -81,7 +89,7 @@
                         </svg>
                         {{ $t('checkout.cashAcknowledged') }}
                     </span>
-                    <span v-else class="text-sm text-amber-900 font-medium">
+                    <span v-else :class="['text-sm font-medium', showCashAckError ? 'text-red-800' : 'text-amber-900']">
                         {{ $t('checkout.cashAcknowledge') }}
                     </span>
                 </label>
@@ -285,12 +293,16 @@ import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
 
-const { isMinimumReached = false, loading = false, isOrderingAvailable = true, cashAcknowledged = false } = defineProps<{
+const { isMinimumReached = false, loading = false, isOrderingAvailable = true, cashAcknowledged = false, cashAckError = false } = defineProps<{
     isMinimumReached?: boolean
     loading?: boolean
     isOrderingAvailable?: boolean
     cashAcknowledged?: boolean
+    cashAckError?: boolean
 }>()
+
+// Only emphasise as an error while the box is still unchecked; the moment the user ticks it the highlight goes away even if the error list hasn't recomputed yet.
+const showCashAckError = computed(() => cashAckError && !cashAcknowledged)
 
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()

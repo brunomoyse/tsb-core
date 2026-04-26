@@ -133,7 +133,7 @@
                         :available-slots-today="restaurantConfig?.restaurantConfig?.availableSlotsToday"
                         :preparation-minutes="restaurantConfig?.restaurantConfig?.preparationMinutes"
                     />
-                    <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" v-model:cashAcknowledged="cashAcknowledged" />
+                    <CheckoutPaymentExtras @checkout="handleCheckout" :isMinimumReached="isMinimumReached" :loading="isCheckoutProcessing" :isOrderingAvailable="isOrderingAvailable" :cashAckError="hasCashAckError" v-model:cashAcknowledged="cashAcknowledged" />
                 </template>
             </div>
 
@@ -530,6 +530,10 @@ interface CheckoutValidationError {
 // Errors from the most recent submit attempt; recomputed on input changes so the list shrinks as the user fixes each issue.
 const submitErrors = ref<CheckoutValidationError[]>([])
 
+const hasCashAckError = computed(() =>
+    submitErrors.value.some(e => e.targetId === 'cash-acknowledge-row'),
+)
+
 const scrollToValidationTarget = (targetId: string) => {
     if (!import.meta.client) return
     const target = document.getElementById(targetId)
@@ -573,8 +577,8 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
 
     if (cartStore.paymentOption === 'CASH' && !cashAcknowledged.value) {
         errors.push({
-            message: t('checkout.cashAcknowledge'),
-            targetId: 'checkout-payment-extras',
+            message: t('checkout.cashAcknowledgeMissing'),
+            targetId: 'cash-acknowledge-row',
             event: 'checkout_error_cash_not_acknowledged',
         })
     }
@@ -635,8 +639,12 @@ const handleCheckout = async () => {
                 scrollToValidationTarget(firstError.targetId)
             }
 
+            // Surface the actual first missing field in the toast so the user knows what's wrong without scrolling up to the summary.
+            const toastMessage = validationErrors.length === 1
+                ? firstError!.message
+                : t('checkout.completeBeforeOrderCount', { count: validationErrors.length }, validationErrors.length)
             eventBus.emit('notify', {
-                message: t('checkout.completeBeforeOrder'),
+                message: toastMessage,
                 persistent: false,
                 duration: 3000,
                 variant: 'error',
