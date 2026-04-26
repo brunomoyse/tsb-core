@@ -115,7 +115,7 @@
     "authenticating": "正在验证...",
     "callbackError": "验证失败，请重试。",
     "tryAgain": "重试",
-    "profileTitle": "快完成了 — 我们该怎么称呼您？",
+    "profileTitle": "快完成了，我们该怎么称呼您？",
     "profileSubtitle": "我们将使用您的名字来个性化您的订单和邮件。",
     "completeSignup": "完成注册",
     "stepEmail": "邮箱",
@@ -274,11 +274,11 @@
   "checkout": {
     "title": "结账",
     "authStep": {
-      "heading": "就快完成了 — 请登录以完成下单",
+      "heading": "就快完成了，请登录以完成下单",
       "cartSaved": "购物车已保存",
       "tabLogin": "登录",
       "tabRegister": "创建账户",
-      "returnToLogin": "邮箱已验证 — 立即登录"
+      "returnToLogin": "邮箱已验证，立即登录"
     },
     "phoneCapture": {
       "title": "电话号码",
@@ -367,7 +367,7 @@
     "viewOrders": "查看我的订单",
     "status": "状态",
     "pageTitle": "订单确认 - Tokyo Sushi Bar",
-    "liveTracking": "实时追踪 — 状态自动更新",
+    "liveTracking": "实时追踪，状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
     "cancellationReasonLabel": "原因：",
     "cancellationReasons": {

@@ -50,7 +50,7 @@
     "ourStoryTitle": "Ons Verhaal",
     "ourStoryText1": "In 2016 opende een jong koppel met een passie voor de Japanse keuken een klein restaurant in de Rue de la Régence in Luik, met de steun van hun ouders. Elke ochtend wordt de verse vis zorgvuldig geselecteerd en met de hand bereid om een onberispelijke kwaliteit te garanderen. De mond-tot-mondreclame deed snel zijn werk: tussen de klanten ter plaatse en de leveringsbestellingen was de kleine zaal al snel te klein.",
     "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft Tokyo Sushi Bar een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
-    "ourStoryText3": "In 2026 viert Tokyo Sushi Bar zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde — dit avontuur is ook het uwe.",
+    "ourStoryText3": "In 2026 viert Tokyo Sushi Bar zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde. Dit avontuur is ook het uwe.",
     "yearsOfPassion": "jaar passie",
     "openingHoursLabel": "Openingsuren",
     "contactLink": "Contacteer ons",
@@ -115,7 +115,7 @@
     "authenticating": "Bezig met aanmelden...",
     "callbackError": "De aanmelding is mislukt. Probeer het opnieuw.",
     "tryAgain": "Opnieuw proberen",
-    "profileTitle": "Bijna klaar — hoe mogen we u noemen?",
+    "profileTitle": "Bijna klaar, hoe mogen we u noemen?",
     "profileSubtitle": "We gebruiken uw voornaam om uw bestellingen en e-mails te personaliseren.",
     "completeSignup": "Registratie voltooien",
     "stepEmail": "E-mail",
@@ -270,11 +270,11 @@
   "checkout": {
     "title": "Bestelling",
     "authStep": {
-      "heading": "Bijna klaar — log in om uw bestelling te plaatsen",
+      "heading": "Bijna klaar, log in om uw bestelling te plaatsen",
       "cartSaved": "Uw winkelwagen is bewaard",
       "tabLogin": "Inloggen",
       "tabRegister": "Account aanmaken",
-      "returnToLogin": "E-mail bevestigd — nu inloggen"
+      "returnToLogin": "E-mail bevestigd, nu inloggen"
     },
     "phoneCapture": {
       "title": "Telefoonnummer vereist",
@@ -360,7 +360,7 @@
     "viewOrders": "Mijn bestellingen bekijken",
     "status": "Status",
     "pageTitle": "Bestelbevestiging - Tokyo Sushi Bar",
-    "liveTracking": "Live tracking — de status wordt automatisch bijgewerkt",
+    "liveTracking": "Live tracking, de status wordt automatisch bijgewerkt",
     "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 222 98 88 voor meer informatie.",
     "cancellationReasonLabel": "Reden:",
     "cancellationReasons": {
