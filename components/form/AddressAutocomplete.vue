@@ -3,14 +3,14 @@
         <!-- ADDRESS FIELD -->
         <div class="relative">
             <label class="block text-sm text-gray-700 mb-1" for="address">
-                {{ $t('register.address') }}
+                {{ $t('form.address.label') }}
             </label>
             <div class="relative">
                 <input
                     id="address"
                     ref="addressInput"
                     v-model="addressQuery"
-                    :placeholder="$t('register.addressPlaceholder')"
+                    :placeholder="$t('form.address.placeholder')"
                     class="w-full px-3.5 pr-10 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-70"
                     :disabled="Boolean(selectedAddress)"
                     @focus="onAddressFocus"
@@ -61,15 +61,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                 </svg>
                 <p v-if="showNoMatchHint">
-                    <span class="font-semibold">{{ $t('register.addressNoMatch') }}</span>
+                    <span class="font-semibold">{{ $t('form.address.noMatch') }}</span>
                     <span class="block mt-0.5 opacity-90">
-                        {{ $t('register.addressCallHint') }}
+                        {{ $t('form.address.callHint') }}
                         <a href="tel:+32422298888" class="underline font-medium whitespace-nowrap">+32 4 222 98 88</a>
                     </span>
                 </p>
                 <p v-else>
-                    <span class="font-semibold">{{ $t('register.addressHouseNumberRequired') }}</span>
-                    <span class="block mt-0.5 opacity-90">{{ $t('register.addressExample') }}</span>
+                    <span class="font-semibold">{{ $t('form.address.houseNumberRequired') }}</span>
+                    <span class="block mt-0.5 opacity-90">{{ $t('form.address.example') }}</span>
                 </p>
             </div>
         </div>

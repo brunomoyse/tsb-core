@@ -5,19 +5,18 @@ interface SessionResponse {
     sessionToken: string
 }
 
+interface VerifyOtpResponse extends SessionResponse {
+    /** True when the OTP request created a placeholder Zitadel user — the
+     *  frontend must capture first/last name before /auth/finalize. */
+    requiresProfile: boolean
+}
+
 interface FinalizeResponse {
     callbackUrl: string
 }
 
 interface IdpStartResponse {
     authUrl: string
-}
-
-interface CreateUserParams {
-    firstName: string
-    lastName: string
-    email: string
-    phone?: string
 }
 
 /**
@@ -44,11 +43,22 @@ export function useZitadelApi() {
         })
     }
 
-    /** Step 2: verify the OTP code; returns a fresh sessionToken with otpEmail check fulfilled. */
-    function verifyOtpLogin(sessionId: string, sessionToken: string, code: string): Promise<SessionResponse> {
-        return $fetch<SessionResponse>(`${apiUrl}/auth/session/otp/verify`, {
+    /** Step 2: verify the OTP code; returns a fresh sessionToken with otpEmail check fulfilled.
+     *  When requiresProfile is true the user is a fresh placeholder created during request — the
+     *  frontend must call completeOtpProfile before /auth/finalize. */
+    function verifyOtpLogin(sessionId: string, sessionToken: string, code: string): Promise<VerifyOtpResponse> {
+        return $fetch<VerifyOtpResponse>(`${apiUrl}/auth/session/otp/verify`, {
             method: 'POST',
             body: { sessionId, sessionToken, code },
+        })
+    }
+
+    /** Step 2b (Pattern B identifier-first signup): fill in first/last name on a fresh
+     *  placeholder account. Only called when verifyOtpLogin returned requiresProfile: true. */
+    function completeOtpProfile(sessionId: string, sessionToken: string, firstName: string, lastName: string): Promise<{ success: true }> {
+        return $fetch<{ success: true }>(`${apiUrl}/auth/session/otp/complete-profile`, {
+            method: 'POST',
+            body: { sessionId, sessionToken, firstName, lastName },
         })
     }
 
@@ -84,39 +94,13 @@ export function useZitadelApi() {
         })
     }
 
-    /** Register a new user (creates Zitadel user, sends verification email via Scaleway). */
-    function createUser(params: CreateUserParams): Promise<void> {
-        return $fetch(`${apiUrl}/auth/register`, {
-            method: 'POST',
-            body: { ...params, lang: getLang() },
-        })
-    }
-
-    /** Resend the verification email for an unverified account. */
-    function resendVerification(email: string): Promise<void> {
-        return $fetch(`${apiUrl}/auth/resend-verification`, {
-            method: 'POST',
-            body: { email, lang: getLang() },
-        })
-    }
-
-    /** Verify a user's email address using the code from the verification email. */
-    function verifyEmail(userId: string, code: string): Promise<void> {
-        return $fetch(`${apiUrl}/auth/verify-email`, {
-            method: 'POST',
-            body: { userId, code },
-        })
-    }
-
     return {
         requestOtpLogin,
         verifyOtpLogin,
+        completeOtpProfile,
         resendOtpLogin,
         finalizeOidcAuth,
         startIdpLogin,
         createIdpSession,
-        createUser,
-        verifyEmail,
-        resendVerification,
     }
 }

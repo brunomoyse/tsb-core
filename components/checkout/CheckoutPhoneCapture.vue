@@ -37,7 +37,7 @@
         <div v-if="!isCollapsed" class="mt-3 flex gap-2">
             <select
                 v-model="selectedCountry"
-                :aria-label="$t('register.phone')"
+                :aria-label="$t('form.phone')"
                 class="px-2.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
             >
                 <option v-for="country in countries" :key="country.code" :value="country.code">
@@ -50,7 +50,7 @@
                     v-model="phoneLocal"
                     type="tel"
                     autocomplete="tel-national"
-                    :placeholder="$t('register.phonePlaceholder')"
+                    :placeholder="$t('form.phonePlaceholder')"
                     class="w-full px-3 py-2.5 pr-9 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 />
                 <span v-if="loading" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />

@@ -184,7 +184,6 @@ export default defineNuxtConfig({
         exclude: [
             '/auth/**',
             '/**/login',
-            '/**/register',
             '/**/checkout',
             '/**/me',
             '/**/me/**',

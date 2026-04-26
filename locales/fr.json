@@ -110,43 +110,36 @@
     "resendCooldown": "Renvoyer dans {seconds}s",
     "backToEmail": "Retour",
     "dividerOr": "ou",
-    "noAccount": "Vous n'avez pas de compte?",
-    "register": "Créer un compte",
-    "submit": "Connexion",
     "ssoGoogle": "Connexion avec Google",
     "ssoApple": "Connexion avec Apple",
     "authenticating": "Authentification en cours...",
     "callbackError": "L'authentification a échoué. Veuillez réessayer.",
-    "tryAgain": "Réessayer"
+    "tryAgain": "Réessayer",
+    "profileTitle": "Presque terminé — comment souhaitez-vous être appelé ?",
+    "profileSubtitle": "Nous utiliserons votre prénom pour personnaliser vos commandes et e-mails.",
+    "completeSignup": "Terminer l'inscription",
+    "stepEmail": "E-mail",
+    "stepCode": "Code",
+    "stepProfile": "Profil",
+    "stepsAriaLabel": "Progression de la connexion"
   },
-  "register": {
-    "title": "Inscription",
+  "form": {
     "firstName": "Prénom",
     "firstNamePlaceholder": "Entrez votre prénom",
     "lastName": "Nom de famille",
-    "lastNamePlaceholder": "Entrez votre nom de famille",
+    "lastNamePlaceholder": "Entrez votre nom",
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre adresse e-mail",
     "phone": "Téléphone",
     "phonePlaceholder": "Entrez votre numéro de téléphone",
     "invalidPhone": "Numéro de téléphone invalide",
-    "address": "Adresse",
-    "addressPlaceholder": "Commencez à taper votre adresse…",
-    "addressHouseNumberRequired": "Le numéro de rue est obligatoire.",
-    "addressNoMatch": "Aucune adresse trouvée.",
-    "addressExample": "Exemple : Rue de Fragnée 12, Liège",
-    "addressCallHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
-    "submit": "Soumettre",
-    "confirmAddress": "Confirmez que ceci est bien votre adresse",
-    "deliveryInfoTitle": "Informations de livraison (facultatif)",
-    "deliveryInfoDescription": "Requis uniquement si vous souhaitez commander en livraison.",
-    "hasAccount": "Vous avez déjà un compte ?",
-    "successTitle": "Compte créé !",
-    "successCheckEmail": "Nous avons envoyé un e-mail de vérification à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
-    "errors": {
-      "email_already_exists": "Un compte avec cette adresse e-mail existe déjà.",
-      "invalid_email_format": "Le format de l'adresse e-mail est invalide.",
-      "registration_failed": "L'inscription a échoué. Veuillez réessayer."
+    "address": {
+      "label": "Adresse",
+      "placeholder": "Commencez à taper votre adresse…",
+      "noMatch": "Aucune adresse trouvée.",
+      "callHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
+      "houseNumberRequired": "Le numéro de rue est obligatoire.",
+      "example": "Exemple : Rue de Fragnée 12, Liège"
     }
   },
   "me": {
@@ -320,6 +313,7 @@
     "cash": "Espèces",
     "cashWarning": "Attention : une fois la commande validée, il ne sera plus possible de changer de mode de paiement.",
     "cashAcknowledge": "J'ai bien compris et je confirme payer en espèces.",
+    "cashAcknowledgeMissing": "Merci de confirmer le paiement en espèces",
     "cashAcknowledged": "Paiement espèces confirmé",
     "discardAddress": "Abandonner l'adresse saisie ?",
     "cashAmountLabel": "Avec combien allez-vous payer ?",
@@ -356,6 +350,7 @@
     "optional": "(facultatif)",
     "openingPayment": "Ouverture du paiement sécurisé...",
     "completeBeforeOrder": "Merci de compléter avant de valider :",
+    "completeBeforeOrderCount": "{count} élément manquant | {count} éléments manquants",
     "addressDistanceKm": "{distance} km",
     "addExtras": "Envie d'un accompagnement ?",
     "extrasDescription": "Complétez votre commande avec des accompagnements",
@@ -424,7 +419,10 @@
       "ordersLoadFailed": "Impossible de charger vos commandes.",
       "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
       "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
-      "oauthFailed": "La connexion a échoué. Veuillez réessayer."
+      "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
+      "networkError": "Connexion impossible. Vérifiez votre réseau et réessayez.",
+      "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants."
     }
   },
   "schema": {
@@ -456,10 +454,6 @@
     "login": {
       "title": "Connexion - Tokyo Sushi Bar",
       "description": "Connectez-vous à votre compte Tokyo Sushi Bar"
-    },
-    "register": {
-      "title": "Inscription - Tokyo Sushi Bar",
-      "description": "Créez votre compte Tokyo Sushi Bar"
     },
     "checkout": {
       "title": "Commande - Tokyo Sushi Bar"
@@ -526,19 +520,6 @@
     "success": "{count} articles ajoutés au panier",
     "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
     "empty": "Aucun article disponible à recommander"
-  },
-  "verify": {
-    "resend": "Renvoyer l'e-mail de vérification",
-    "sent": "E-mail de vérification envoyé !"
-  },
-  "verifyEmail": {
-    "title": "Vérification de l'e-mail",
-    "verifying": "Vérification de votre adresse e-mail...",
-    "successTitle": "E-mail vérifié !",
-    "successMessage": "Votre e-mail a été vérifié avec succès. Vous pouvez maintenant vous connecter à votre compte.",
-    "errorTitle": "Échec de la vérification",
-    "invalidLink": "Ce lien de vérification est invalide. Veuillez vérifier le lien dans votre e-mail.",
-    "expiredOrInvalid": "Ce lien de vérification a expiré ou est invalide. Veuillez demander un nouvel e-mail de vérification."
   },
   "cookies": {},
   "faq": {

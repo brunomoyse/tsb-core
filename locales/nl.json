@@ -110,17 +110,20 @@
     "resendCooldown": "Opnieuw over {seconds}s",
     "backToEmail": "Terug",
     "dividerOr": "of",
-    "noAccount": "Heeft u geen account?",
-    "register": "Account aanmaken",
-    "submit": "Inloggen",
     "ssoGoogle": "Inloggen met Google",
     "ssoApple": "Inloggen met Apple",
     "authenticating": "Bezig met aanmelden...",
     "callbackError": "De aanmelding is mislukt. Probeer het opnieuw.",
-    "tryAgain": "Opnieuw proberen"
+    "tryAgain": "Opnieuw proberen",
+    "profileTitle": "Bijna klaar — hoe mogen we u noemen?",
+    "profileSubtitle": "We gebruiken uw voornaam om uw bestellingen en e-mails te personaliseren.",
+    "completeSignup": "Registratie voltooien",
+    "stepEmail": "E-mail",
+    "stepCode": "Code",
+    "stepProfile": "Profiel",
+    "stepsAriaLabel": "Voortgang van aanmelding"
   },
-  "register": {
-    "title": "Registratie",
+  "form": {
     "firstName": "Voornaam",
     "firstNamePlaceholder": "Voer uw voornaam in",
     "lastName": "Achternaam",
@@ -130,23 +133,13 @@
     "phone": "Telefoon",
     "phonePlaceholder": "Voer uw telefoonnummer in",
     "invalidPhone": "Ongeldig telefoonnummer",
-    "address": "Adres",
-    "addressPlaceholder": "Begin uw adres te typen…",
-    "addressHouseNumberRequired": "Huisnummer is verplicht.",
-    "addressNoMatch": "Geen adres gevonden.",
-    "addressExample": "Voorbeeld: Rue de Fragnée 12, Liège",
-    "addressCallHint": "Als uw adres er niet tussen staat, bel ons gerust op",
-    "confirmAddress": "Bevestig dat dit uw adres is",
-    "submit": "Verzenden",
-    "deliveryInfoTitle": "Leveringsinformatie (optioneel)",
-    "deliveryInfoDescription": "Alleen vereist als u een levering wenst te bestellen.",
-    "hasAccount": "Heeft u al een account?",
-    "successTitle": "Account aangemaakt!",
-    "successCheckEmail": "Wij hebben een verificatie-e-mail naar uw adres gestuurd. Klik op de link om uw account te activeren.",
-    "errors": {
-      "email_already_exists": "Er bestaat al een account met dit e-mailadres.",
-      "invalid_email_format": "Het formaat van het e-mailadres is ongeldig.",
-      "registration_failed": "De registratie is mislukt. Probeer het opnieuw."
+    "address": {
+      "label": "Adres",
+      "placeholder": "Begin uw adres te typen…",
+      "noMatch": "Geen adres gevonden.",
+      "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
+      "houseNumberRequired": "Huisnummer is verplicht.",
+      "example": "Voorbeeld: Rue de Fragnée 12, Liège"
     }
   },
   "me": {
@@ -413,7 +406,10 @@
       "ordersLoadFailed": "Kan uw bestellingen niet laden.",
       "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
       "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
-      "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw."
+      "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
+      "invalidEmail": "Voer een geldig e-mailadres in.",
+      "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
+      "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw."
     }
   },
   "schema": {
@@ -441,10 +437,6 @@
     "login": {
       "title": "Inloggen - Tokyo Sushi Bar",
       "description": "Log in op uw Tokyo Sushi Bar-account"
-    },
-    "register": {
-      "title": "Registratie - Tokyo Sushi Bar",
-      "description": "Maak uw Tokyo Sushi Bar-account aan"
     },
     "checkout": {
       "title": "Bestelling - Tokyo Sushi Bar"
@@ -515,19 +507,6 @@
     "success": "{count} artikelen toegevoegd aan winkelwagen",
     "partial": "{added} artikelen toegevoegd, {skipped} niet-beschikbare artikelen overgeslagen",
     "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
-  },
-  "verify": {
-    "resend": "Verificatie-e-mail opnieuw versturen",
-    "sent": "Verificatie-e-mail verstuurd!"
-  },
-  "verifyEmail": {
-    "title": "E-mailverificatie",
-    "verifying": "Uw e-mailadres wordt geverifieerd...",
-    "successTitle": "E-mail geverifieerd!",
-    "successMessage": "Uw e-mail is succesvol geverifieerd. U kunt nu inloggen op uw account.",
-    "errorTitle": "Verificatie mislukt",
-    "invalidLink": "Deze verificatielink is ongeldig. Controleer de link in uw e-mail.",
-    "expiredOrInvalid": "Deze verificatielink is verlopen of ongeldig. Vraag een nieuwe verificatie-e-mail aan."
   },
   "cookies": {},
   "faq": {
