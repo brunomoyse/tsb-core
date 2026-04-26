@@ -115,7 +115,7 @@
     "authenticating": "Authentification en cours...",
     "callbackError": "L'authentification a échoué. Veuillez réessayer.",
     "tryAgain": "Réessayer",
-    "profileTitle": "Presque terminé — comment souhaitez-vous être appelé ?",
+    "profileTitle": "Presque terminé, comment souhaitez-vous être appelé ?",
     "profileSubtitle": "Nous utiliserons votre prénom pour personnaliser vos commandes et e-mails.",
     "completeSignup": "Terminer l'inscription",
     "stepEmail": "E-mail",
@@ -274,11 +274,11 @@
   "checkout": {
     "title": "Commande",
     "authStep": {
-      "heading": "Plus qu'une étape — connectez-vous pour valider votre commande",
+      "heading": "Plus qu'une étape, connectez-vous pour valider votre commande",
       "cartSaved": "Votre panier est sauvegardé",
       "tabLogin": "Connexion",
       "tabRegister": "Créer un compte",
-      "returnToLogin": "Email confirmé — se connecter maintenant"
+      "returnToLogin": "Email confirmé, se connecter maintenant"
     },
     "phoneCapture": {
       "title": "Numéro de téléphone",
@@ -367,7 +367,7 @@
     "viewOrders": "Voir mes commandes",
     "status": "Status",
     "pageTitle": "Confirmation de commande - Tokyo Sushi Bar",
-    "liveTracking": "Suivi en direct — le statut se met à jour automatiquement",
+    "liveTracking": "Suivi en direct, le statut se met à jour automatiquement",
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
     "cancellationReasonLabel": "Motif :",
     "cancellationReasons": {
