@@ -354,7 +354,7 @@ const EXTRA_PRODUCTS_QUERY = `
 const { data: paidExtrasProductsData } = await useGqlQuery<{ productCategories: ProductCategory[] }>(
     EXTRA_PRODUCTS_QUERY,
     {},
-    { immediate: true, cache: true },
+    { immediate: true, cache: true, lazy: true },
 )
 
 const paidProductsByCode = computed(() => {

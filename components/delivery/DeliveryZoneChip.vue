@@ -3,10 +3,12 @@
         type="button"
         @click="open = true"
         :aria-label="chipAriaLabel"
+        v-bind="forwardedAttrs"
         :class="[
             'inline-flex min-h-11 items-center gap-1.5 rounded-xl font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 max-w-full',
             compact ? 'px-2.5 py-1.5 text-[11px]' : 'px-3 py-2 text-xs',
-            stateClasses
+            stateClasses,
+            $attrs.class as string | undefined
         ]"
     >
         <!-- Status dot (in-zone / out-of-zone) -->
@@ -54,15 +56,23 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, useAttrs } from 'vue'
 import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import DeliveryZoneModal from '~/components/delivery/DeliveryZoneModal.vue'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({ inheritAttrs: false })
+
 const { compact = false } = defineProps<{
     compact?: boolean
 }>()
+
+const attrs = useAttrs()
+const forwardedAttrs = computed(() => {
+    const { class: _class, ...rest } = attrs
+    return rest
+})
 
 const open = ref(false)
 const cartStore = useCartStore()
