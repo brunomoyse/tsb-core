@@ -55,10 +55,10 @@ export function useZitadelApi() {
 
     /** Step 2b (Pattern B identifier-first signup): fill in first/last name on a fresh
      *  placeholder account. Only called when verifyOtpLogin returned requiresProfile: true. */
-    function completeOtpProfile(sessionId: string, sessionToken: string, firstName: string, lastName: string): Promise<{ success: true }> {
+    function completeOtpProfile(params: { sessionId: string; sessionToken: string; firstName: string; lastName: string }): Promise<{ success: true }> {
         return $fetch<{ success: true }>(`${apiUrl}/auth/session/otp/complete-profile`, {
             method: 'POST',
-            body: { sessionId, sessionToken, firstName, lastName },
+            body: params,
         })
     }
 
