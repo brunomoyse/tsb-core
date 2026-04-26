@@ -316,9 +316,12 @@ const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
-const showAllergenNotice = ref(
-    import.meta.client ? localStorage.getItem('allergenNoticeDismissed') !== 'true' : true
-)
+const showAllergenNotice = ref(true)
+onMounted(() => {
+    if (localStorage.getItem('allergenNoticeDismissed') === 'true') {
+        showAllergenNotice.value = false
+    }
+})
 const dismissAllergenNotice = () => {
     showAllergenNotice.value = false
     localStorage.setItem('allergenNoticeDismissed', 'true')
