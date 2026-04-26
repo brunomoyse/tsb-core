@@ -1,30 +1,27 @@
 <template>
     <div class="flex justify-center px-4 pt-6 sm:pt-10 pb-12">
         <div class="w-full max-w-md">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="relative bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <div class="absolute top-3 right-3 z-10 flex gap-0.5">
+                    <NuxtLink
+                        v-for="lang in languages"
+                        :key="lang.code"
+                        :to="switchLocalePath(lang.code)"
+                        :class="[
+                            'inline-flex items-center justify-center min-h-8 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
+                            locale === lang.code
+                                ? 'text-gray-700 font-medium'
+                                : 'text-gray-400 hover:text-gray-500'
+                        ]"
+                    >
+                        {{ lang.label }}
+                    </NuxtLink>
+                </div>
+
                 <div class="px-7 sm:px-10 py-8 sm:py-10">
-                    <!-- Top bar: language switcher (top-right) -->
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="w-12" aria-hidden="true" />
-                        <h1 class="text-2xl font-semibold text-gray-900 text-center flex-1">
-                            {{ $t('login.title') }}
-                        </h1>
-                        <div class="flex justify-end gap-1.5">
-                            <NuxtLink
-                                v-for="lang in languages"
-                                :key="lang.code"
-                                :to="switchLocalePath(lang.code)"
-                                :class="[
-                                    'inline-flex items-center justify-center min-h-8 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
-                                    locale === lang.code
-                                        ? 'text-gray-700 font-medium'
-                                        : 'text-gray-400 hover:text-gray-500'
-                                ]"
-                            >
-                                {{ lang.label }}
-                            </NuxtLink>
-                        </div>
-                    </div>
+                    <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">
+                        {{ $t('login.title') }}
+                    </h1>
 
                     <!-- Session expired notice -->
                     <p
