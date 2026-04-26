@@ -124,9 +124,10 @@
                                         class="w-12 text-center border-0 focus:ring-0"
                                     >{{quantity}}</span>
                                     <button
-                                        @click="quantity++"
+                                        @click="quantity < maxQuantity ? quantity++ : null"
                                         :aria-label="$t('cart.increaseQty')"
                                         class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
+                                        :disabled="quantity === maxQuantity"
                                     >+</button>
                                 </div>
                             </div>
@@ -198,6 +199,7 @@ const openLightbox = (id: string, name: string) => {
 }
 
 const quantity = ref(1)
+const maxQuantity = 99
 const selectedChoiceId = ref<string | null>(null)
 
 const PRODUCT_QUERY = gql`
