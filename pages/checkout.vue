@@ -652,7 +652,7 @@ const handleCheckout = async () => {
         }
 
         const cashAmount = cartStore.paymentOption === 'CASH'
-            ? (cartStore.cashPaymentAmount?.trim() || null)
+            ? (String(cartStore.cashPaymentAmount ?? '').trim() || null)
             : null
 
         const orderData: CreateOrderRequest = {

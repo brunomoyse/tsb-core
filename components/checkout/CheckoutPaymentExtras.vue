@@ -96,10 +96,10 @@
                             id="cash-payment-amount"
                             data-testid="cash-payment-amount"
                             v-model="cashPaymentAmount"
-                            type="number"
-                            min="0"
-                            step="0.01"
+                            type="text"
                             inputmode="decimal"
+                            pattern="[0-9]*([.,][0-9]{0,2})?"
+                            autocomplete="off"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
                             :class="[
                                 'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none transition-all duration-300',
@@ -393,8 +393,15 @@ const cashAcknowledgedModel = computed({
 
 const cashPaymentAmount = computed({
     get: () => cartStore.cashPaymentAmount ?? '',
-    set: (value: string) => {
-        cartStore.cashPaymentAmount = value === '' ? null : value
+    set: (value: string | number | null) => {
+        if (value === '' || value === null || value === undefined) {
+            cartStore.cashPaymentAmount = null
+            return
+        }
+        const raw = String(value).replace(',', '.')
+        const match = raw.match(/^(\d*)(\.\d{0,2})?/)
+        const sanitized = match ? `${match[1] ?? ''}${match[2] ?? ''}` : ''
+        cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
     },
 })
 
