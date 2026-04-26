@@ -33,7 +33,7 @@
                         <div class="flex items-baseline gap-2">
                             <h2
                                 id="delivery-zone-modal-title"
-                                class="font-channel text-base sm:text-2xl font-semibold text-gray-900 tracking-wide leading-tight"
+                                class="text-base sm:text-2xl font-semibold text-gray-900 tracking-wide leading-tight"
                             >
                                 {{ $t('delivery.modal.title') }}
                             </h2>

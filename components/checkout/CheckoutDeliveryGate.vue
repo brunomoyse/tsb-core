@@ -9,7 +9,7 @@
             <div class="flex items-baseline gap-2 mb-2">
                 <h2
                     :id="titleId"
-                    class="font-channel text-xl sm:text-2xl font-semibold text-gray-900 tracking-wide"
+                    class="text-xl sm:text-2xl font-semibold text-gray-900 tracking-wide"
                 >
                     {{ $t('delivery.gate.title') }}
                 </h2>

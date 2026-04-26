@@ -41,7 +41,7 @@
                 <select id="country" v-model="selectedCountry"
                         class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300">
                     <option v-for="country in countries" :key="country.code" :value="country.code">
-                        {{ country.flag }} {{ country.prefix }}
+                        {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
                     </option>
                 </select>
                 <input id="phone" v-model="phoneLocal"
@@ -87,10 +87,11 @@
 
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest } from '~/types'
+import { type CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
 import { computed, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import { formatAddress } from '~/utils/utils'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { useI18n } from 'vue-i18n'
 
 interface InitialValues {
@@ -111,7 +112,7 @@ const emit = defineEmits<{
     close: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const firstName = ref(initialValues.firstName || '')
 const lastName = ref(initialValues.lastName || '')
@@ -129,16 +130,10 @@ const triggerShake = () => {
     setTimeout(() => { isShaking.value = false }, 400)
 }
 
-const countries = [
-    { prefix: '+31', code: 'NL', flag: '🇳🇱' },
-    { prefix: '+32', code: 'BE', flag: '🇧🇪' },
-    { prefix: '+33', code: 'FR', flag: '🇫🇷' },
-    { prefix: '+352', code: 'LU', flag: '🇱🇺' },
-    { prefix: '+44', code: 'DE', flag: '🇩🇪' },
-]
+const countries = EUROPEAN_COUNTRIES
 
 const formattedPhone = computed(() => {
-    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
+    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
     return parsed?.format('E.164') ?? phoneLocal.value
 })
 
@@ -151,7 +146,7 @@ const removeAddress = () => {
 }
 
 const validatePhone = () => {
-    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as any)
+    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
     phoneError.value = parsed?.isValid() ? '' : t('form.invalidPhone')
     return !phoneError.value
 }
