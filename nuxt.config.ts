@@ -156,15 +156,6 @@ export default defineNuxtConfig({
         },
     },
 
-    schemaOrg: {
-        identity: {
-            type: 'Restaurant',
-            name: 'Tokyo Sushi Bar',
-            url: process.env.BASE_URL,
-            logo: `${process.env.BASE_URL}/images/tsb-black-font-400.png`,
-        }
-    },
-
     // Workaround: @unhead/schema-org@2.x declares auto-imports from its vue subpath
     // That don't actually exist there. Alias it to the main entry which has all exports.
     vite: {
