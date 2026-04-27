@@ -94,7 +94,8 @@
     "yes": "Oui",
     "no": "Non",
     "pickupDiscountBadge": "10% de remise à emporter",
-    "restaurantClosed": "Le restaurant est actuellement fermé. Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
+    "restaurantClosed": "Le restaurant est actuellement fermé.",
+    "restaurantClosedDetails": "Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
   },
   "days": {},
   "login": {
