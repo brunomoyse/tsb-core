@@ -94,7 +94,8 @@
     "yes": "Yes",
     "no": "No",
     "pickupDiscountBadge": "10% off on pickup",
-    "restaurantClosed": "The restaurant is currently closed. You can browse the menu, but ordering is unavailable."
+    "restaurantClosed": "The restaurant is currently closed.",
+    "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable."
   },
   "days": {},
   "login": {

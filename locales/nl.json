@@ -94,7 +94,8 @@
     "yes": "Ja",
     "no": "Nee",
     "pickupDiscountBadge": "10% korting bij afhalen",
-    "restaurantClosed": "Het restaurant is momenteel gesloten. U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
+    "restaurantClosed": "Het restaurant is momenteel gesloten.",
+    "restaurantClosedDetails": "U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
   },
   "days": {},
   "login": {

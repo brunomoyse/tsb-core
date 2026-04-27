@@ -94,7 +94,8 @@
     "yes": "是",
     "no": "否",
     "pickupDiscountBadge": "自取享9折",
-    "restaurantClosed": "餐厅目前已关闭。您可以浏览菜单，但暂时无法下单。"
+    "restaurantClosed": "餐厅目前已关闭。",
+    "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。"
   },
   "days": {},
   "login": {
