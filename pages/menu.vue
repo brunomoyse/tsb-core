@@ -306,6 +306,7 @@ import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
+import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '@/stores/cart'
@@ -722,6 +723,52 @@ useSeoMeta({
     ogImage: `${config.public.baseUrl}/images/about-hero.png`,
     twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
+})
+
+/**
+ * Preserve scroll anchor across the cart sidebar appearing/disappearing.
+ * The grid reflows between ~100vw and ~67vw, so cards jump vertically.
+ * We capture an anchor card's top before the reflow and scroll by the delta.
+ */
+const preserveScrollFor = (cardEl: HTMLElement | null) => {
+    if (!cardEl || window.innerWidth < 1024) return
+    const { productId } = cardEl.dataset
+    if (!productId) return
+    const oldTop = cardEl.getBoundingClientRect().top
+    nextTick(() => {
+        requestAnimationFrame(() => {
+            const newCard = document.querySelector<HTMLElement>(`[data-product-id="${productId}"]`)
+            if (!newCard) return
+            const delta = newCard.getBoundingClientRect().top - oldTop
+            if (Math.abs(delta) > 1) window.scrollBy(0, delta)
+        })
+    })
+}
+
+const findTopVisibleCard = (): HTMLElement | null => {
+    const cards = document.querySelectorAll<HTMLElement>('[data-product-id]')
+    const stickyHeight = stickyHeader.value?.offsetHeight ?? 0
+    for (const card of cards) {
+        const rect = card.getBoundingClientRect()
+        if (rect.bottom > stickyHeight && rect.top < window.innerHeight) return card
+    }
+    return null
+}
+
+const handleCartItemAdded = ({ productId }: { productId: string }) => {
+    if (cartStore.products.length !== 1) return
+    preserveScrollFor(document.querySelector<HTMLElement>(`[data-product-id="${productId}"]`))
+}
+
+watch(() => cartStore.products.length, (newLen, oldLen) => {
+    if (oldLen >= 1 && newLen === 0) preserveScrollFor(findTopVisibleCard())
+})
+
+onMounted(() => {
+    eventBus.on('cart-item-added', handleCartItemAdded)
+})
+onUnmounted(() => {
+    eventBus.off('cart-item-added', handleCartItemAdded)
 })
 
 /**

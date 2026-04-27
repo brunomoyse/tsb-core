@@ -2,6 +2,7 @@
     <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
              data-testid="product-card"
+             :data-product-id="product.id"
              :data-has-choices="hasChoices"
              class="min-w-[140px] max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
