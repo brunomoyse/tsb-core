@@ -173,9 +173,11 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 
 const {
-    product
+    product,
+    orderingDisabled = false,
 } = defineProps<{
     product: string
+    orderingDisabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -257,6 +259,7 @@ const displayPrice = computed(() => {
 })
 
 const canAddToCart = computed(() => {
+    if (orderingDisabled) return false
     if (!p?.isAvailable) return false
     if (hasChoices.value && !selectedChoiceId.value) return false
     return true

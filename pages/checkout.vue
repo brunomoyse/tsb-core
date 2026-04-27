@@ -270,8 +270,7 @@ const { trackEvent } = useTracking()
 const { config: restaurantConfig, pending: restaurantConfigPending } = await useRestaurantConfig({ lazy: true })
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
-const hasFixedSlotsToday = computed(() => (restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.length ?? 0) > 0)
-const isOrderingAvailable = computed(() => isOrderingEnabled.value && (isOrderingCurrentlyOpen.value || hasFixedSlotsToday.value))
+const isOrderingAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
 
 // Pre-auth delivery zone gate: block anonymous users from hitting login/register
 // Until we know their address is deliverable. Preserves the cart either way.
