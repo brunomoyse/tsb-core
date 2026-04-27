@@ -187,7 +187,14 @@
         >
             <NuxtLinkLocale
                 to="checkout"
-                class="flex min-h-11 items-center justify-between w-full bg-red-500 hover:bg-red-600 text-white py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
+                :class="[
+                    'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
+                    isCheckoutAvailable
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-gray-300 text-gray-500 pointer-events-none'
+                ]"
+                :tabindex="isCheckoutAvailable ? 0 : -1"
+                :aria-disabled="!isCheckoutAvailable"
             >
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -199,6 +206,9 @@
                 </div>
                 <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
             </NuxtLinkLocale>
+            <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
+                {{ $t('cart.orderingUnavailable') }}
+            </p>
             <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
         </div>
 
@@ -236,6 +246,7 @@ import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
+import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
 
@@ -250,6 +261,12 @@ const { t } = useI18n()
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
+const { config: restaurantConfig } = await useRestaurantConfig()
+const isCheckoutAvailable = computed(() => {
+    const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
+    const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
+    return orderingEnabled && isOrderingCurrentlyOpen
+})
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))

@@ -11,7 +11,7 @@
             <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
 
             <!-- Restaurant Closed Banner -->
-            <div v-if="!isOrderingAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
+            <div v-if="!isCheckoutAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
@@ -231,7 +231,7 @@
                         <ProductCard
                             :index="idx"
                             :product="prod"
-                            :ordering-disabled="!isOrderingAvailable"
+                            :ordering-disabled="!isCartAddAvailable"
                             class="min-width-[200px] animate-fade-in-up"
                             :style="{ animationDelay: `${idx * 50}ms` }"
                             v-for="(prod, idx) in cat.products"
@@ -263,7 +263,7 @@
             v-if="cartStore.products.length"
             class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
         >
-            <SideCart :is-ordering-available="isOrderingAvailable" />
+            <SideCart :is-ordering-available="isCheckoutAvailable" />
         </aside>
 
 
@@ -277,6 +277,7 @@
                         <ProductModal
                             :key="route.query.product"
                             :product="route.query.product as string"
+                            :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
                         />
                     </Transition>
@@ -329,7 +330,10 @@ const dismissAllergenNotice = () => {
 
 // Restaurant config
 const { config: restaurantConfig } = await useRestaurantConfig()
-const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
+const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
+const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
+const isCheckoutAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
+const isCartAddAvailable = computed(() => isOrderingEnabled.value)
 
 const openModal = (id: string) => {
     // Add productId to URL query
