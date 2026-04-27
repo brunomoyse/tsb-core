@@ -88,7 +88,7 @@
                                 </span>
                             </div>
                             <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
-                                {{ formatPrice(calculateItemPrice(item)) }}
+                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                             </span>
                         </div>
 
@@ -298,14 +298,6 @@ const isMinimumReached = computed(() => {
     }
     return false
 })
-
-const calculateItemPrice = (item: CartItem) => {
-    const basePrice = getItemUnitPrice(item) * item.quantity;
-    if (cartStore.collectionOption === 'PICKUP' && item.product.isDiscountable) {
-        return basePrice * 0.9;
-    }
-    return basePrice;
-};
 
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {
