@@ -1,4 +1,4 @@
-import { defineFoodEstablishment, defineNuxtPlugin, defineOrganization, useRuntimeConfig, useSchemaOrg } from '#imports'
+import { defineFoodEstablishment, defineNuxtPlugin, useRuntimeConfig, useSchemaOrg } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
@@ -7,15 +7,6 @@ export default defineNuxtPlugin(() => {
 
     const baseUrl = config.public.baseUrl as string
     useSchemaOrg([
-        defineOrganization({
-            name: 'Tokyo Sushi Bar',
-            logo: '/logo.png',
-            url: baseUrl,
-            sameAs: [
-                'https://www.instagram.com/tokyo_sushi_bar_liege/',
-                'https://www.facebook.com/sushiliege'
-            ]
-        }),
         {
             '@type': 'Offer',
             '@id': `${baseUrl}#pickup-discount`,
@@ -63,8 +54,12 @@ export default defineNuxtPlugin(() => {
                 longitude: 5.574703166758179
             },
             url: baseUrl,
+            sameAs: [
+                'https://www.instagram.com/tokyo_sushi_bar_liege/',
+                'https://www.facebook.com/sushiliege'
+            ],
             servesCuisine: 'Japanese',
-            priceRange: '$$',
+            priceRange: '€€',
             acceptsReservations: true,
             hasMenu: {
                 '@type': 'Menu',
