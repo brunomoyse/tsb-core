@@ -41,7 +41,7 @@
             <ul class="flex-1 overflow-y-auto p-4 space-y-3">
                 <li
                     v-for="item in cartStore.products"
-                    :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                    :key="getItemKey(item)"
                     class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
                 >
                     <!-- IMAGE -->
@@ -200,7 +200,21 @@ watch(itemImageElements, () => {
 
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
-    (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+    ((item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
+            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+            if (!choice) return sum
+            return sum + Number(choice.priceModifier) * selection.quantity
+        }, 0)
+        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
+
+const getItemKey = (item: CartItem): string => {
+    const signature = (item.selectedChoices ?? [])
+        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+        .sort()
+        .join('|')
+    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
+}
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
@@ -217,22 +231,37 @@ const itemLabelMeta = (item: CartItem): string | undefined => {
 const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-    }).choice
+    (item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? [])
+            .map((selection) => {
+                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+                if (!choice) return ''
+                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
+            })
+            .filter(Boolean)
+            .join(', ') || undefined
+        : orderItemLabelParts({
+            code: item.product.code,
+            categoryName: item.product.category?.name,
+            productName: item.product.name,
+            choiceName: item.selectedChoice?.name,
+        }).choice
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     impact('Light')
-    cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
+    cartStore.incrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
 const handleDecrementQuantity = (cartItem: CartItem): void => {
     impact('Light')
-    cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
+    cartStore.decrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 </script>

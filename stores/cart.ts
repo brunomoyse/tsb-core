@@ -1,12 +1,54 @@
 // Stores: cart.ts
 
-import type { CartItem, CartState, Product, ProductChoice } from '@/types'
+import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
 import { defineStore } from 'pinia'
 
 export const MAX_ITEM_QUANTITY = 99
 
-const matchesCartItem = (item: CartItem, productId: string, choiceId: string | null): boolean =>
-    item.product.id === productId && (item.selectedChoice?.id ?? null) === choiceId
+interface ItemSelectionInput {
+    choice?: ProductChoice | null;
+    selections?: ProductChoiceSelection[];
+}
+
+const normalizeSelections = (choice: ProductChoice | null, selections: ProductChoiceSelection[] = []): ProductChoiceSelection[] => {
+    if (selections.length > 0) {
+        return selections
+            .filter((selection) => selection.quantity > 0)
+            .map((selection) => ({
+                groupId: selection.groupId,
+                choiceId: selection.choiceId,
+                quantity: selection.quantity,
+            }))
+            .sort((a, b) => a.choiceId.localeCompare(b.choiceId))
+    }
+
+    if (choice) {
+        return [{ groupId: choice.choiceGroupId, choiceId: choice.id, quantity: 1 }]
+    }
+
+    return []
+}
+
+const selectionSignature = (selections: ProductChoiceSelection[]): string =>
+    selections
+        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+        .join('|')
+
+const matchesCartItem = (item: CartItem, productId: string, signature: string): boolean =>
+    item.product.id === productId && selectionSignature(item.selectedChoices ?? []) === signature
+
+const selectionModifierTotal = (product: Product, selections: ProductChoiceSelection[] = [], fallbackChoice?: ProductChoice | null): number => {
+    if (selections.length > 0) {
+        const choiceMap = new Map((product.choices ?? []).map((choice) => [choice.id, choice]))
+        return selections.reduce((sum, selection) => {
+            const choice = choiceMap.get(selection.choiceId)
+            if (!choice) return sum
+            return sum + Number(choice.priceModifier) * selection.quantity
+        }, 0)
+    }
+
+    return fallbackChoice ? Number(fallbackChoice.priceModifier) : 0
+}
 
 export const useCartStore = defineStore("cart", {
     state: (): CartState => ({
@@ -37,7 +79,7 @@ export const useCartStore = defineStore("cart", {
             return state.products.reduce(
                 (total, item) => {
                     const unitPrice = Number(item.product.price) +
-                        (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0);
+                        selectionModifierTotal(item.product, item.selectedChoices ?? [], item.selectedChoice);
                     return total + unitPrice * item.quantity;
                 },
                 0
@@ -47,10 +89,11 @@ export const useCartStore = defineStore("cart", {
     },
 
     actions: {
-        addProduct(product: Product, quantity: number, choice: ProductChoice | null = null): void {
-            const choiceId = choice?.id ?? null;
+        addProduct(product: Product, quantity: number, selection: ItemSelectionInput = {}): void {
+            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
+            const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, choiceId)
+                (item) => matchesCartItem(item, product.id, signature)
             );
             if (cartItem) {
                 cartItem.quantity = Math.min(cartItem.quantity + quantity, MAX_ITEM_QUANTITY);
@@ -58,14 +101,16 @@ export const useCartStore = defineStore("cart", {
                 this.products.push({
                     product,
                     quantity: Math.min(Math.max(quantity, 1), MAX_ITEM_QUANTITY),
-                    selectedChoice: choice,
+                    selectedChoices: normalizedSelections,
+                    selectedChoice: selection.choice ?? null,
                 });
             }
         },
-        incrementQuantity(product: Product, choice: ProductChoice | null = null): void {
-            const choiceId = choice?.id ?? null;
+        incrementQuantity(product: Product, selection: ItemSelectionInput = {}): void {
+            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
+            const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, choiceId)
+                (item) => matchesCartItem(item, product.id, signature)
             );
             if (cartItem) {
                 if (cartItem.quantity < MAX_ITEM_QUANTITY) {
@@ -75,31 +120,34 @@ export const useCartStore = defineStore("cart", {
                 this.products.push({
                     product,
                     quantity: 1,
-                    selectedChoice: choice,
+                    selectedChoices: normalizedSelections,
+                    selectedChoice: selection.choice ?? null,
                 });
             }
         },
 
-        decrementQuantity(product: Product, choice: ProductChoice | null = null): void {
-            const choiceId = choice?.id ?? null;
+        decrementQuantity(product: Product, selection: ItemSelectionInput = {}): void {
+            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
+            const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, choiceId)
+                (item) => matchesCartItem(item, product.id, signature)
             );
             if (cartItem) {
                 if (cartItem.quantity > 1) {
                     cartItem.quantity -= 1;
                 } else {
                     this.products = this.products.filter(
-                        (item) => !matchesCartItem(item, product.id, choiceId)
+                        (item) => !matchesCartItem(item, product.id, signature)
                     );
                 }
             }
         },
 
-        removeFromCart(product: Product, choice: ProductChoice | null = null): void {
-            const choiceId = choice?.id ?? null;
+        removeFromCart(product: Product, selection: ItemSelectionInput = {}): void {
+            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
+            const signature = selectionSignature(normalizedSelections)
             this.products = this.products.filter(
-                (item) => !matchesCartItem(item, product.id, choiceId)
+                (item) => !matchesCartItem(item, product.id, signature)
             );
         },
 
@@ -136,6 +184,15 @@ export const useCartStore = defineStore("cart", {
             for (const item of store.products) {
                 if (item.quantity > MAX_ITEM_QUANTITY) item.quantity = MAX_ITEM_QUANTITY;
                 if (item.quantity < 1) item.quantity = 1;
+                if (!Array.isArray(item.selectedChoices)) {
+                    item.selectedChoices = item.selectedChoice
+                        ? [{
+                            groupId: item.selectedChoice.choiceGroupId,
+                            choiceId: item.selectedChoice.id,
+                            quantity: 1,
+                        }]
+                        : []
+                }
             }
         },
     },

@@ -9,14 +9,32 @@ export interface CouponValidation {
 export interface ProductChoice {
     id: string;
     productId: string;
+    choiceGroupId?: string;
     priceModifier: string;
     sortOrder: number;
     name: string;
 }
 
+export interface ProductChoiceGroup {
+    id: string;
+    productId: string;
+    minSelections: number;
+    maxSelections: number;
+    sortOrder: number;
+    name: string;
+    choices: ProductChoice[];
+}
+
+export interface ProductChoiceSelection {
+    groupId: string;
+    choiceId: string;
+    quantity: number;
+}
+
 export interface Product {
     categoryId: string;
     choices: ProductChoice[];
+    choiceGroups?: ProductChoiceGroup[];
     code: string | null;
     id: string;
     isAvailable: boolean;
@@ -45,6 +63,7 @@ export interface ProductCategory {
 export interface CartItem {
     product: Product;
     quantity: number;
+    selectedChoices: ProductChoiceSelection[];
     selectedChoice: ProductChoice | null;
 }
 
@@ -146,7 +165,7 @@ export interface CreateOrderRequest {
     addressPlaceId?: string | null;
     couponCode?: string | null;
     isOnlinePayment: boolean;
-    items: { productId: string; quantity: number; choiceId?: string; }[]
+    items: { productId: string; quantity: number; choiceId?: string; selections?: ProductChoiceSelection[]; }[]
     orderExtra: { name: string; options?: string[] }[] | null;
     orderNote: string | null;
     orderType: OrderType;

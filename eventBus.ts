@@ -15,6 +15,7 @@ export interface Events {
         productName: string;
         productId: string;
         choiceId?: string;
+        selectionSignature?: string;
     }
     'order-status-push': {
         orderId: string;

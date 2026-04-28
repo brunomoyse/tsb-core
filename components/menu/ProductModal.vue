@@ -86,26 +86,51 @@
                     <!-- Choice Selection -->
                     <div v-if="hasChoices" class="space-y-3 border-t pt-4">
                         <h3 class="text-sm font-semibold text-gray-700">{{ $t('menu.selectChoice') }}</h3>
-                        <div class="space-y-2">
-                            <label
-                                v-for="choice in sortedChoices"
-                                :key="choice.id"
-                                :data-testid="'product-modal-choice-' + choice.id"
-                                class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                                :class="selectedChoiceId === choice.id ? 'border-red-300 bg-tsb-four' : 'border-gray-200 hover:border-gray-300'"
+                        <div class="space-y-3">
+                            <div
+                                v-for="group in choiceGroups"
+                                :key="group.id"
+                                class="rounded-lg border border-gray-200 p-3"
                             >
-                                <input
-                                    type="radio"
-                                    name="product-choice"
-                                    :value="choice.id"
-                                    v-model="selectedChoiceId"
-                                    class="w-4 h-4 text-red-500 focus:ring-red-500"
-                                />
-                                <span class="flex-1 text-sm text-gray-900">{{ choice.name }}</span>
-                                <span v-if="Number(choice.priceModifier) !== 0" class="text-sm text-gray-600">
-                                    {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
-                                </span>
-                            </label>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-900">{{ group.name }}</span>
+                                    <span class="text-xs text-gray-500">
+                                        {{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ group.maxSelections }}
+                                    </span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div
+                                        v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
+                                        :key="choice.id"
+                                        :data-testid="'product-modal-choice-' + choice.id"
+                                        class="flex items-center gap-3 p-2.5 rounded-lg border border-gray-200"
+                                    >
+                                        <span class="flex-1 text-sm text-gray-900">{{ choice.name }}</span>
+                                        <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-gray-500">
+                                            {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
+                                        </span>
+                                        <div class="flex items-center gap-1 bg-gray-100 rounded-full">
+                                            <button
+                                                type="button"
+                                                :data-testid="`product-modal-choice-dec-${choice.id}`"
+                                                class="w-8 h-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
+                                                :aria-label="$t('cart.decreaseQty')"
+                                                :disabled="!(selectedChoiceQuantities[choice.id] > 0)"
+                                                @click="decrementChoice(choice)"
+                                            >−</button>
+                                            <span class="w-6 text-center text-xs font-semibold">{{ selectedChoiceQuantities[choice.id] ?? 0 }}</span>
+                                            <button
+                                                type="button"
+                                                :data-testid="`product-modal-choice-inc-${choice.id}`"
+                                                class="w-8 h-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
+                                                :aria-label="$t('cart.increaseQty')"
+                                                :disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= group.maxSelections"
+                                                @click="incrementChoice(choice)"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -152,7 +177,7 @@
 
 <script setup lang="ts">
 import * as productImage from '~/utils/productImage'
-import type { Product, ProductChoice } from '@/types'
+import type { Product, ProductChoice, ProductChoiceSelection } from '@/types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -202,7 +227,7 @@ const openLightbox = (id: string, name: string) => {
 
 const quantity = ref(1)
 const maxQuantity = 99
-const selectedChoiceId = ref<string | null>(null)
+const selectedChoiceQuantities = ref<Record<string, number>>({})
 
 const PRODUCT_QUERY = gql`
   query Product($id: ID!) {
@@ -225,9 +250,26 @@ const PRODUCT_QUERY = gql`
       choices {
         id
         productId
+        choiceGroupId
         priceModifier
         sortOrder
         name
+      }
+      choiceGroups {
+        id
+        productId
+        minSelections
+        maxSelections
+        sortOrder
+        name
+        choices {
+          id
+          productId
+          choiceGroupId
+          priceModifier
+          sortOrder
+          name
+        }
       }
     }
   }
@@ -241,29 +283,110 @@ const p = dataProduct.value?.product
 
 const hasChoices = computed(() => p?.choices && p.choices.length > 0)
 
-const sortedChoices = computed(() => {
-    if (!p?.choices) return []
-    return p.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)
+const choiceGroups = computed(() => {
+    if (!p?.choiceGroups || p.choiceGroups.length === 0) {
+        if (!p?.choices || p.choices.length === 0) return []
+        return [{
+            id: 'legacy-single',
+            productId: p.id,
+            minSelections: 1,
+            maxSelections: 1,
+            sortOrder: 0,
+            name: 'Choice',
+            choices: p.choices.toSorted((a, b) => a.sortOrder - b.sortOrder),
+        }]
+    }
+    return p.choiceGroups.toSorted((a, b) => a.sortOrder - b.sortOrder)
 })
 
 const selectedChoice = computed((): ProductChoice | null => {
-    if (!selectedChoiceId.value || !p?.choices) return null
-    return p.choices.find(c => c.id === selectedChoiceId.value) ?? null
+    const selection = selectionList.value.find((item) => item.quantity === 1)
+    if (!selection || !p?.choices) return null
+    return p.choices.find((choice) => choice.id === selection.choiceId) ?? null
 })
 
 const displayPrice = computed(() => {
     if (!p) return '0'
     const base = Number(p.price)
-    const modifier = selectedChoice.value ? Number(selectedChoice.value.priceModifier) : 0
+    const modifier = Object.entries(selectedChoiceQuantities.value).reduce((sum, [choiceId, selectedQty]) => {
+        const choice = p.choices?.find((c) => c.id === choiceId)
+        if (!choice || selectedQty <= 0) return sum
+        return sum + Number(choice.priceModifier) * selectedQty
+    }, 0)
     return String(base + modifier)
+})
+
+const selectedQuantitiesByGroup = computed(() => {
+    const currentProduct = p
+    const byGroup: Record<string, number> = {}
+    if (!currentProduct?.choices) return byGroup
+
+    for (const [choiceId, selectedQty] of Object.entries(selectedChoiceQuantities.value)) {
+        if (selectedQty <= 0) continue
+        const choice = currentProduct.choices.find((c) => c.id === choiceId)
+        if (!choice) continue
+        const groupId = choice.choiceGroupId
+        byGroup[groupId] = (byGroup[groupId] ?? 0) + selectedQty
+    }
+
+    return byGroup
+})
+
+const selectionList = computed((): ProductChoiceSelection[] => {
+    const currentProduct = p
+    if (!currentProduct?.choices) return []
+    return Object.entries(selectedChoiceQuantities.value)
+        .filter(([, selectedQty]) => selectedQty > 0)
+        .map(([choiceId, selectedQty]) => {
+            const choice = currentProduct.choices.find((c) => c.id === choiceId)
+            if (!choice) return null
+            return {
+                groupId: choice.choiceGroupId,
+                choiceId,
+                quantity: selectedQty,
+            }
+        })
+        .filter((item): item is ProductChoiceSelection => Boolean(item))
 })
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false
     if (!p?.isAvailable) return false
-    if (hasChoices.value && !selectedChoiceId.value) return false
+    if (choiceGroups.value.length === 0) return true
+
+    const counts = selectedQuantitiesByGroup.value
+    for (const group of choiceGroups.value) {
+        const selected = counts[group.id] ?? 0
+        if (selected < group.minSelections || selected > group.maxSelections) {
+            return false
+        }
+    }
     return true
 })
+
+const incrementChoice = (choice: ProductChoice) => {
+    const group = choiceGroups.value.find((g) => g.id === choice.choiceGroupId)
+    if (!group) return
+    const currentCount = selectedQuantitiesByGroup.value[group.id] ?? 0
+    if (currentCount >= group.maxSelections) return
+    selectedChoiceQuantities.value = {
+        ...selectedChoiceQuantities.value,
+        [choice.id]: (selectedChoiceQuantities.value[choice.id] ?? 0) + 1,
+    }
+}
+
+const decrementChoice = (choice: ProductChoice) => {
+    const current = selectedChoiceQuantities.value[choice.id] ?? 0
+    if (current <= 0) return
+    const next = current - 1
+    const copy = { ...selectedChoiceQuantities.value }
+    if (next === 0) {
+        delete copy[choice.id]
+    } else {
+        copy[choice.id] = next
+    }
+    selectedChoiceQuantities.value = copy
+}
 
 // Close modal on escape key
 onMounted(() => {
@@ -290,19 +413,26 @@ onMounted(() => {
 const addToCart = () => {
     if (!p || !canAddToCart.value) return
 
-    cartStore.addProduct(p, quantity.value, selectedChoice.value)
+    cartStore.addProduct(p, quantity.value, {
+        choice: selectedChoice.value,
+        selections: selectionList.value,
+    })
     trackEvent('product_added_to_cart', {
         product_id: p.id,
         product_name: p.name,
         price: p.price,
         quantity: quantity.value,
         choice_id: selectedChoice.value?.id,
+        selections_count: selectionList.value.reduce((sum, selection) => sum + selection.quantity, 0),
         source: 'modal',
     })
     eventBus.emit('cart-item-added', {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
+        selectionSignature: selectionList.value
+            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+            .join('|'),
     })
 
 
@@ -312,7 +442,7 @@ const addToCart = () => {
 // Reset quantity when product changes
 watch(() => p, () => {
     quantity.value = 1
-    selectedChoiceId.value = null
+    selectedChoiceQuantities.value = {}
 })
 
 </script>

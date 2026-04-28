@@ -370,16 +370,16 @@ const paidProductsByCode = computed(() => {
 const getPaidProduct = (code: string): Product | undefined => paidProductsByCode.value.get(code)
 
 const isPaidExtraSelected = (code: string): boolean =>
-    cartStore.products.some((item) => item.product.code === code && !item.selectedChoice)
+    cartStore.products.some((item) => item.product.code === code && (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0))
 
 const togglePaidExtra = (code: string): void => {
     const product = getPaidProduct(code)
     if (!product || !product.isAvailable) return
 
     if (isPaidExtraSelected(code)) {
-        cartStore.removeFromCart(product, null)
+        cartStore.removeFromCart(product)
     } else {
-        cartStore.addProduct(product, 1, null)
+        cartStore.addProduct(product, 1)
     }
 }
 

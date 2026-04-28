@@ -20,7 +20,7 @@
             <div class="px-5 space-y-3 pb-4">
                 <div
                     v-for="item in cartStore.products"
-                    :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                    :key="getItemKey(item)"
                     class="flex items-center gap-3"
                 >
                     <!-- Product image -->
@@ -238,8 +238,23 @@ watch(itemImageElements, () => {
 
 const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
     const base = Number(item.product.price)
-    const modifier = item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0
+    const cartItem = item as CartItem
+    const modifier = (cartItem.selectedChoices?.length ?? 0) > 0
+        ? (cartItem.selectedChoices ?? []).reduce((sum, selection) => {
+            const choice = cartItem.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+            if (!choice) return sum
+            return sum + Number(choice.priceModifier) * selection.quantity
+        }, 0)
+        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
     return base + modifier
+}
+
+const getItemKey = (item: CartItem): string => {
+    const signature = (item.selectedChoices ?? [])
+        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+        .sort()
+        .join('|')
+    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
 }
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
@@ -257,12 +272,21 @@ const itemLabelMeta = (item: CartItem): string | undefined => {
 const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-    }).choice
+    (item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? [])
+            .map((selection) => {
+                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+                if (!choice) return ''
+                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
+            })
+            .filter(Boolean)
+            .join(', ') || undefined
+        : orderItemLabelParts({
+            code: item.product.code,
+            categoryName: item.product.category?.name,
+            productName: item.product.name,
+            choiceName: item.selectedChoice?.name,
+        }).choice
 
 const cartTotal = computed(() =>
     cartStore.products.reduce((total, item) => total + getItemUnitPrice(item) * item.quantity, 0)
@@ -293,17 +317,26 @@ const finalTotal: ComputedRef<number> = computed(() => {
 })
 
 const handleIncrementQuantity = (item: CartItem) => {
-    cartStore.incrementQuantity(item.product, item.selectedChoice)
+    cartStore.incrementQuantity(item.product, {
+        choice: item.selectedChoice,
+        selections: item.selectedChoices,
+    })
     hapticImpact('Light')
 }
 
 const handleDecrementQuantity = (item: CartItem) => {
-    cartStore.decrementQuantity(item.product, item.selectedChoice)
+    cartStore.decrementQuantity(item.product, {
+        choice: item.selectedChoice,
+        selections: item.selectedChoices,
+    })
     hapticImpact('Light')
 }
 
 const handleRemoveFromCart = (item: CartItem) => {
-    cartStore.removeFromCart(item.product, item.selectedChoice)
+    cartStore.removeFromCart(item.product, {
+        choice: item.selectedChoice,
+        selections: item.selectedChoices,
+    })
     hapticImpact('Medium')
 }
 </script>

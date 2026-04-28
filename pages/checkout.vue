@@ -672,6 +672,7 @@ const handleCheckout = async () => {
                 productId: item.product.id,
                 quantity: item.quantity,
                 ...(item.selectedChoice ? { choiceId: item.selectedChoice.id } : {}),
+                ...((item.selectedChoices?.length ?? 0) > 0 ? { selections: item.selectedChoices } : {}),
             })),
             preferredReadyTime,
             cashPaymentAmount: cashAmount,
@@ -743,7 +744,13 @@ const cartTotal = computed(() => {
 
 const getItemUnitPrice = (item: CartItem) =>
     Number(item.product.price) +
-    (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+    ((item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
+            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+            if (!choice) return sum
+            return sum + Number(choice.priceModifier) * selection.quantity
+        }, 0)
+        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
 
 const subtotal = computed(() =>
     cartStore.products.reduce((acc, item) =>
