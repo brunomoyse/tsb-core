@@ -68,4 +68,34 @@ test.describe('Menu browsing', () => {
       test.skip(true, 'No products with choices available')
     }
   })
+
+  test('Choice product requires exact selections before add to cart', async ({ page }) => {
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await dismissCookieConsent(page)
+    await page.locator(SEL.productCard).first().waitFor()
+
+    const choiceProduct = page.locator(SEL.choiceProduct).first()
+    if (await choiceProduct.isVisible().catch(() => false)) {
+      await choiceProduct.locator('img').first().click()
+      await page.waitForURL('**product=**', { timeout: 5_000 })
+      await expect(page.locator(SEL.productModal)).toBeVisible({ timeout: 15_000 })
+
+      const addBtn = page.locator(SEL.productModalAddToCart)
+      await expect(addBtn).toBeDisabled()
+
+      const firstInc = page.locator(SEL.productModalChoiceInc).first()
+      if (await firstInc.isVisible().catch(() => false)) {
+        await firstInc.click()
+        // Still disabled unless all groups satisfy constraints.
+        await expect(addBtn).toBeDisabled()
+      } else {
+        test.skip(true, 'No increment controls found for grouped selections')
+      }
+
+      await page.keyboard.press('Escape')
+    } else {
+      test.skip(true, 'No products with choices available')
+    }
+  })
 })

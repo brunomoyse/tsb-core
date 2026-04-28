@@ -9,6 +9,7 @@ export const SEL = {
   // Product modal
   productModal: '[data-testid="product-modal"]',
   productModalAddToCart: '[data-testid="product-modal-add-to-cart"]',
+  productModalChoiceInc: '[data-testid^="product-modal-choice-inc-"]',
 
   // SideCart (desktop)
   sideCart: '[data-testid="side-cart"]',

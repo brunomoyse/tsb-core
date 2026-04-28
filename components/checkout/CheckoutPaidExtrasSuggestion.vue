@@ -121,7 +121,7 @@ const paidExtras = computed(() => PAID_EXTRA_DEFS.map((item) => {
 const getProductByCode = (code: string): Product | undefined => productsByCode.value.get(code)
 
 const isSelected = (code: string): boolean =>
-    cartStore.products.some((item) => item.product.code === code && !item.selectedChoice)
+    cartStore.products.some((item) => item.product.code === code && (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0))
 
 const isAvailable = (code: string): boolean => Boolean(getProductByCode(code)?.isAvailable)
 
@@ -130,9 +130,9 @@ const toggle = (code: string): void => {
     if (!product || !product.isAvailable) return
 
     if (isSelected(code)) {
-        cartStore.removeFromCart(product, null)
+        cartStore.removeFromCart(product)
     } else {
-        cartStore.addProduct(product, 1, null)
+        cartStore.addProduct(product, 1)
     }
 }
 </script>

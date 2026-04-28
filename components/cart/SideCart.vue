@@ -40,10 +40,10 @@
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
-                <div v-for="item in cartStore.products" :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                <div v-for="item in cartStore.products" :key="getItemKey(item)"
                      data-testid="cart-item"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
-                     :class="{ 'animate-cart-flash': highlightedKey === `${item.product.id}-${item.selectedChoice?.id ?? 'none'}` }">
+                     :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
                     <div
                         class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
@@ -208,8 +208,16 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const onCartItemAdded = (payload: { productId: string; choiceId?: string }) => {
-    const key = `${payload.productId}-${payload.choiceId ?? 'none'}`
+const toSelectionSignature = (item: CartItem): string =>
+    (item.selectedChoices ?? [])
+        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+        .sort()
+        .join('|')
+
+const getItemKey = (item: CartItem) => `${item.product.id}-${toSelectionSignature(item) || (item.selectedChoice?.id ?? 'none')}`
+
+const onCartItemAdded = (payload: { productId: string; choiceId?: string; selectionSignature?: string }) => {
+    const key = `${payload.productId}-${payload.selectionSignature ?? payload.choiceId ?? 'none'}`
     highlightedKey.value = key
     if (highlightTimeout) clearTimeout(highlightTimeout)
     highlightTimeout = setTimeout(() => {
@@ -245,7 +253,12 @@ const handleOrderType = (option: string) => {
 // Price calculations
 const getItemUnitPrice = (item: CartItem) => {
     const base = Number(item.product.price)
-    const modifier = item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0
+    const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
+    const modifier = (item.selectedChoices ?? []).reduce((sum, selection) => {
+        const choice = choiceMap.get(selection.choiceId)
+        if (!choice) return sum
+        return sum + (Number(choice.priceModifier) * selection.quantity)
+    }, item.selectedChoices?.length ? 0 : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
     return base + modifier
 }
 
@@ -264,12 +277,21 @@ const itemLabelMeta = (item: CartItem): string | undefined => {
 const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-    }).choice
+    (item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? [])
+            .map((selection) => {
+                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+                if (!choice) return ''
+                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
+            })
+            .filter(Boolean)
+            .join(', ') || undefined
+        : orderItemLabelParts({
+            code: item.product.code,
+            categoryName: item.product.category?.name,
+            productName: item.product.name,
+            choiceName: item.selectedChoice?.name,
+        }).choice
 
 const subtotal = computed(() =>
     cartStore.products.reduce((acc, item) =>
@@ -302,19 +324,28 @@ const isMinimumReached = computed(() => {
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     impact('Light')
-    cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice);
+    cartStore.incrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
 const handleDecrementQuantity = (cartItem: CartItem): void => {
     impact('Light')
-    cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice);
+    cartStore.decrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
 const handleRemoveFromCart = (cartItem: CartItem): void => {
     trackEvent('product_removed_from_cart', { product_id: cartItem.product.id, product_name: cartItem.product.name })
-    cartStore.removeFromCart(cartItem.product, cartItem.selectedChoice);
+    cartStore.removeFromCart(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    });
 };
 
 </script>

@@ -14,7 +14,7 @@
             <!-- Swipeable cart item wrapper -->
             <div
                 v-for="item in cartStore.products"
-                :key="`${item.product.id}-${item.selectedChoice?.id ?? 'none'}`"
+                :key="getItemKey(item)"
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
@@ -236,7 +236,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import type { CartItem, ProductChoice } from '@/types'
+import type { CartItem, ProductChoice, ProductChoiceSelection } from '@/types'
 import { computed, reactive, ref } from 'vue'
 import { deliveryFeeForDistance } from '~/lib/delivery'
 import { eventBus } from '~/eventBus'
@@ -280,7 +280,13 @@ const cartPageMinHeightClass = computed(() =>
 
 const getItemUnitPrice = (item: CartItem): number =>
     Number(item.product.price) +
-    (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+    ((item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
+            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+            if (!choice) return sum
+            return sum + Number(choice.priceModifier) * selection.quantity
+        }, 0)
+        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
@@ -303,12 +309,21 @@ const itemLabelMeta = (item: CartItem): string | undefined => {
 const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
 
 const itemChoice = (item: CartItem): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-    }).choice
+    (item.selectedChoices?.length ?? 0) > 0
+        ? (item.selectedChoices ?? [])
+            .map((selection) => {
+                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
+                if (!choice) return ''
+                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
+            })
+            .filter(Boolean)
+            .join(', ') || undefined
+        : orderItemLabelParts({
+            code: item.product.code,
+            categoryName: item.product.category?.name,
+            productName: item.product.name,
+            choiceName: item.selectedChoice?.name,
+        }).choice
 
 // ── Summary
 const deliveryFee = computed(() => {
@@ -337,27 +352,43 @@ const summaryHasBreakdown = computed(() =>
 )
 
 // ── Cart mutations with undo support
-const restoreItem = (product: CartItem['product'], choice: ProductChoice | null, quantity: number): void => {
-    cartStore.addProduct(product, quantity, choice)
+const restoreItem = (item: {
+    product: CartItem['product'];
+    choice: ProductChoice | null;
+    selections: ProductChoiceSelection[];
+    quantity: number;
+}): void => {
+    cartStore.addProduct(item.product, item.quantity, {
+        choice: item.choice,
+        selections: item.selections,
+    })
     hapticImpact('Light')
-    trackEvent('product_removal_undone', { product_id: product.id, quantity })
+    trackEvent('product_removal_undone', { product_id: item.product.id, quantity: item.quantity })
 }
 
 const emitRemoveUndoToast = (item: CartItem): void => {
-    const { product, selectedChoice, quantity } = item
+    const { product, selectedChoice, selectedChoices, quantity } = item
     eventBus.emit('notify', {
         message: t('cart.removedUndo', { name: product.name }),
         duration: 4000,
         variant: 'neutral',
         action: {
             label: t('cart.undo'),
-            handler: () => restoreItem(product, selectedChoice, quantity),
+            handler: () => restoreItem({
+                product,
+                choice: selectedChoice,
+                selections: selectedChoices,
+                quantity,
+            }),
         },
     })
 }
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
-    cartStore.incrementQuantity(cartItem.product, cartItem.selectedChoice)
+    cartStore.incrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    })
     hapticImpact('Light')
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 }
@@ -368,7 +399,10 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
         handleRemoveItem(cartItem)
         return
     }
-    cartStore.decrementQuantity(cartItem.product, cartItem.selectedChoice)
+    cartStore.decrementQuantity(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    })
     hapticImpact('Light')
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 }
@@ -376,7 +410,10 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
 const handleRemoveItem = (cartItem: CartItem): void => {
     // Snapshot before removal so undo can restore the exact quantity
     emitRemoveUndoToast(cartItem)
-    cartStore.removeFromCart(cartItem.product, cartItem.selectedChoice)
+    cartStore.removeFromCart(cartItem.product, {
+        choice: cartItem.selectedChoice,
+        selections: cartItem.selectedChoices,
+    })
     hapticImpact('Medium')
     trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
 }
@@ -386,7 +423,13 @@ const SWIPE_THRESHOLD = 72
 const swipeState = reactive<Record<string, { startX: number; currentX: number; swiping: boolean; open: boolean }>>({})
 const swipingItemKey = ref<string | null>(null)
 
-const getItemKey = (item: CartItem) => `${item.product.id}-${item.selectedChoice?.id ?? 'none'}`
+const getItemKey = (item: CartItem) => {
+    const signature = (item.selectedChoices ?? [])
+        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
+        .sort()
+        .join('|')
+    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
+}
 
 const getSwipeOffset = (item: CartItem) => {
     const key = getItemKey(item)

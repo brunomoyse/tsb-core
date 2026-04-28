@@ -19,7 +19,9 @@ export function useReorder() {
                 skipped += item.quantity
                 continue
             }
-            cartStore.addProduct(item.product, item.quantity, item.choice ?? null)
+            cartStore.addProduct(item.product, item.quantity, {
+                choice: item.choice ?? null,
+            })
             added += item.quantity
         }
 
