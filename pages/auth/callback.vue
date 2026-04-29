@@ -27,7 +27,17 @@ const { processCallback } = useAuthCallback()
 const { isCapacitor } = usePlatform()
 const error = ref(false)
 
+/*
+ * Module-instance once-guard. Hydration mismatches, accidental remounts and
+ * HMR can fire onMounted twice; the OIDC authorization code in the URL is
+ * one-shot, so a second handleCallback() call hits Zitadel with an
+ * already-consumed code and returns invalid_grant — the user sees "expired".
+ */
+let callbackHandled = false
+
 onMounted(async () => {
+    if (callbackHandled) return
+    callbackHandled = true
     try {
         if (import.meta.dev) console.log('Callback URL:', window.location.href)
 

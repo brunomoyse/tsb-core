@@ -371,14 +371,26 @@ const formatError = (error: unknown, fallback: string): string => {
     return t(fallback)
 }
 
+/*
+ * Synchronous in-flight flags. The reactive `loading` ref drives the UI,
+ * but Vue's reactivity is async — a tight double-fire (form submit + click,
+ * hydration remount, retry path) can sneak past the loading guard. These
+ * plain JS booleans flip atomically inside the handler, blocking the
+ * duplicate before it ever reaches the network.
+ */
+let requestInFlight = false
+let verifyInFlight = false
+
 const onSubmitEmail = async () => {
     if (import.meta.server) return
+    if (requestInFlight || loading.value) return
 
     if (!isValidEmail(email.value)) {
         emailFormatError.value = true
         return
     }
 
+    requestInFlight = true
     errorMessage.value = ''
     emailFormatError.value = false
     loading.value = true
@@ -410,6 +422,7 @@ const onSubmitEmail = async () => {
         trackEvent('login_error', { error_type: 'request_failed' })
         errorMessage.value = formatError(error, 'notify.errors.requestFailed')
     } finally {
+        requestInFlight = false
         loading.value = false
     }
 }
@@ -444,6 +457,8 @@ const resendCode = async () => {
 
 const onSubmitCode = async () => {
     if (import.meta.server) return
+    if (verifyInFlight || loading.value) return
+    verifyInFlight = true
     errorMessage.value = ''
     loading.value = true
 
@@ -491,6 +506,12 @@ const onSubmitCode = async () => {
             trackEvent('login_error', { error_type: 'invalid_code' })
             errorMessage.value = t('notify.errors.invalidCode')
         }
+    } finally {
+        /*
+         * Always release the in-flight flag so retries can re-fire. The
+         * success path navigates away; clearing the flag there is a no-op.
+         */
+        verifyInFlight = false
     }
 }
 
