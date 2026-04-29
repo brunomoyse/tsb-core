@@ -95,13 +95,19 @@
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
                             <div class="flex items-center gap-2">
-                                <button data-testid="cart-item-decrement" class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out"
+                                <button data-testid="cart-item-decrement"
+                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                                        :disabled="hasChoices(item)"
+                                        :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
                                     -
                                 </button>
                                 <span data-testid="cart-item-quantity" class="text-sm w-6 text-center">{{ item.quantity }}</span>
-                                <button data-testid="cart-item-increment" class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out"
+                                <button data-testid="cart-item-increment"
+                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                                        :disabled="hasChoices(item)"
+                                        :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
                                     +
@@ -112,6 +118,9 @@
                                 {{ $t('cart.removeItem') }}
                             </button>
                         </div>
+                        <p v-if="hasChoices(item)" class="text-[11px] text-gray-400 italic mt-1">
+                            {{ $t('cart.customizedItemHint') }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -215,6 +224,9 @@ const toSelectionSignature = (item: CartItem): string =>
         .join('|')
 
 const getItemKey = (item: CartItem) => `${item.product.id}-${toSelectionSignature(item) || (item.selectedChoice?.id ?? 'none')}`
+
+const hasChoices = (item: CartItem): boolean =>
+    (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
 
 const onCartItemAdded = (payload: { productId: string; choiceId?: string; selectionSignature?: string }) => {
     const key = `${payload.productId}-${payload.selectionSignature ?? payload.choiceId ?? 'none'}`
