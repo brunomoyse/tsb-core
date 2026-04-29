@@ -96,7 +96,9 @@
                     <div class="col-span-2 grid grid-cols-3 items-center justify-items-center">
                         <button
                             :aria-label="$t('cart.decreaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
+                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
+                            :disabled="hasChoices(item)"
+                            :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
                             @click="handleDecrementQuantity(item)"
                         >
                             <img
@@ -108,7 +110,9 @@
                         <span class="text-center text-gray-700">{{ item.quantity }}</span>
                         <button
                             :aria-label="$t('cart.increaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10"
+                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
+                            :disabled="hasChoices(item)"
+                            :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
                             @click="handleIncrementQuantity(item)"
                         >
                             <img
@@ -118,6 +122,9 @@
                             />
                         </button>
                     </div>
+                    <p v-if="hasChoices(item)" class="col-span-6 text-[11px] text-gray-400 italic mt-1">
+                        {{ $t('cart.customizedItemHint') }}
+                    </p>
                 </li>
 
                 <!-- EMPTY STATE -->
@@ -215,6 +222,9 @@ const getItemKey = (item: CartItem): string => {
         .join('|')
     return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
 }
+
+const hasChoices = (item: CartItem): boolean =>
+    (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,

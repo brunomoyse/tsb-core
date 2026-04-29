@@ -107,7 +107,7 @@
                                         class="text-xs font-semibold whitespace-nowrap"
                                         :class="isGroupSatisfied(group) ? 'text-emerald-600' : 'text-red-600'"
                                     >
-                                        {{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ group.maxSelections }}
+                                        {{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ groupTargetMax(group) }}
                                     </span>
                                 </div>
                                 <div class="space-y-2">
@@ -136,7 +136,7 @@
                                                 :data-testid="`product-modal-choice-inc-${choice.id}`"
                                                 class="w-8 h-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
                                                 :aria-label="$t('cart.increaseQty')"
-                                                :disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= group.maxSelections"
+                                                :disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= groupTargetMax(group)"
                                                 @click="incrementChoice(choice)"
                                             >+</button>
                                         </div>
@@ -361,6 +361,9 @@ const selectionList = computed((): ProductChoiceSelection[] => {
         .filter((item): item is ProductChoiceSelection => Boolean(item))
 })
 
+const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value
+const groupTargetMax = (group: ProductChoiceGroup) => group.maxSelections * quantity.value
+
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false
     if (!p?.isAvailable) return false
@@ -369,7 +372,7 @@ const canAddToCart = computed(() => {
     const counts = selectedQuantitiesByGroup.value
     for (const group of choiceGroups.value) {
         const selected = counts[group.id] ?? 0
-        if (selected < group.minSelections || selected > group.maxSelections) {
+        if (selected < groupTargetMin(group) || selected > groupTargetMax(group)) {
             return false
         }
     }
@@ -378,16 +381,21 @@ const canAddToCart = computed(() => {
 
 const isGroupSatisfied = (group: ProductChoiceGroup) => {
     const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
-    return selected >= group.minSelections && selected <= group.maxSelections
+    return selected >= groupTargetMin(group) && selected <= groupTargetMax(group)
 }
 
 const groupHint = (group: ProductChoiceGroup) => {
     const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
+    const targetMin = groupTargetMin(group)
+    const targetMax = groupTargetMax(group)
+    if (selected > targetMax) {
+        const excess = selected - targetMax
+        return t('menu.removeExcess', { count: excess }, excess)
+    }
+    const remaining = Math.max(0, targetMin - selected)
     if (group.minSelections === group.maxSelections) {
-        const remaining = Math.max(0, group.minSelections - selected)
         return t('menu.chooseRemaining', { count: remaining }, remaining)
     }
-    const remaining = Math.max(0, group.minSelections - selected)
     return t('menu.chooseAtLeast', { count: remaining }, remaining)
 }
 
@@ -395,7 +403,7 @@ const incrementChoice = (choice: ProductChoice) => {
     const group = choiceGroups.value.find((g) => g.id === choice.choiceGroupId)
     if (!group) return
     const currentCount = selectedQuantitiesByGroup.value[group.id] ?? 0
-    if (currentCount >= group.maxSelections) return
+    if (currentCount >= groupTargetMax(group)) return
     selectedChoiceQuantities.value = {
         ...selectedChoiceQuantities.value,
         [choice.id]: (selectedChoiceQuantities.value[choice.id] ?? 0) + 1,
