@@ -87,6 +87,8 @@
     "pcs": "pièces",
     "addToCart": "Ajouter",
     "selectChoice": "Choisir une option",
+    "chooseRemaining": "Encore {count} à sélectionner | Encore {count} à sélectionner",
+    "chooseAtLeast": "Sélectionnez au moins {count} option | Sélectionnez au moins {count} options",
     "price": "Prix",
     "code": "Code",
     "description": "Description",

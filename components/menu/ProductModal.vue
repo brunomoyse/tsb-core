@@ -90,11 +90,23 @@
                             <div
                                 v-for="group in choiceGroups"
                                 :key="group.id"
-                                class="rounded-lg border border-gray-200 p-3"
+                                class="rounded-lg border p-3 transition-colors"
+                                :class="isGroupSatisfied(group) ? 'border-gray-200' : 'border-red-300 bg-red-50/30'"
                             >
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium text-gray-900">{{ group.name }}</span>
-                                    <span class="text-xs text-gray-500">
+                                <div class="flex items-center justify-between mb-2 gap-3">
+                                    <div class="min-w-0">
+                                        <span class="text-sm font-medium text-gray-900">{{ group.name }}</span>
+                                        <p
+                                            v-if="!isGroupSatisfied(group)"
+                                            class="text-xs text-red-600 mt-0.5"
+                                        >
+                                            {{ groupHint(group) }}
+                                        </p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold whitespace-nowrap"
+                                        :class="isGroupSatisfied(group) ? 'text-emerald-600' : 'text-red-600'"
+                                    >
                                         {{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ group.maxSelections }}
                                     </span>
                                 </div>
@@ -177,7 +189,7 @@
 
 <script setup lang="ts">
 import * as productImage from '~/utils/productImage'
-import type { Product, ProductChoice, ProductChoiceSelection } from '@/types'
+import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '@/types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -193,7 +205,7 @@ import { useTracking } from '~/composables/useTracking'
 
 
 const { trackEvent } = useTracking()
-useI18n()
+const { t } = useI18n()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 
@@ -363,6 +375,21 @@ const canAddToCart = computed(() => {
     }
     return true
 })
+
+const isGroupSatisfied = (group: ProductChoiceGroup) => {
+    const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
+    return selected >= group.minSelections && selected <= group.maxSelections
+}
+
+const groupHint = (group: ProductChoiceGroup) => {
+    const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
+    if (group.minSelections === group.maxSelections) {
+        const remaining = Math.max(0, group.minSelections - selected)
+        return t('menu.chooseRemaining', { count: remaining }, remaining)
+    }
+    const remaining = Math.max(0, group.minSelections - selected)
+    return t('menu.chooseAtLeast', { count: remaining }, remaining)
+}
 
 const incrementChoice = (choice: ProductChoice) => {
     const group = choiceGroups.value.find((g) => g.id === choice.choiceGroupId)
