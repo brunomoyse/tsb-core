@@ -1,9 +1,10 @@
 /**
  * On app start, validate that the stored OIDC refresh token is still accepted by Zitadel.
  *
- * Both web and Capacitor now persist tokens in localStorage, so a user profile in the Pinia
- * store may outlive the refresh token's idle expiry (7 days web, 30 days Capacitor). This
- * plugin calls silentRenew() and clears the store if Zitadel rejects the refresh token.
+ * Both web and Capacitor persist tokens in localStorage, so a user profile in the Pinia
+ * store may outlive the refresh token's idle expiry (Zitadel default: 30 days idle / 90
+ * days absolute). This plugin calls silentRenew() and clears the store only if Zitadel
+ * rejects the refresh token.
  */
 export default defineNuxtPlugin(async () => {
     const { useAuthStore } = await import('~/stores/auth')
