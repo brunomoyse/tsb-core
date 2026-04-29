@@ -668,12 +668,16 @@ const handleCheckout = async () => {
             couponCode: cartStore.couponCode,
             orderNote: cartStore.orderNote?.trim() || null,
             orderExtra: cartStore.orderExtra,
-            items: cartStore.products.map((item) => ({
-                productId: item.product.id,
-                quantity: item.quantity,
-                ...(item.selectedChoice ? { choiceId: item.selectedChoice.id } : {}),
-                ...((item.selectedChoices?.length ?? 0) > 0 ? { selections: item.selectedChoices } : {}),
-            })),
+            items: cartStore.products.map((item) => {
+                const hasSelections = (item.selectedChoices?.length ?? 0) > 0
+                return {
+                    productId: item.product.id,
+                    quantity: item.quantity,
+                    ...(hasSelections
+                        ? { selections: item.selectedChoices }
+                        : (item.selectedChoice ? { choiceId: item.selectedChoice.id } : {})),
+                }
+            }),
             preferredReadyTime,
             cashPaymentAmount: cashAmount,
             // Capacitor: use custom URL scheme so Mollie redirects back to the app
