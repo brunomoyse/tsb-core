@@ -305,7 +305,9 @@ export function useOidc() {
     /** Capacitor: clear local tokens without browser redirect. */
     function logoutCapacitor() {
         capacitorTokenCache = null
-        localStorage.removeItem(CAPACITOR_TOKEN_KEY)
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(CAPACITOR_TOKEN_KEY)
+        }
         oidcUser.value = null
     }
 

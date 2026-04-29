@@ -31,19 +31,16 @@ export default defineNuxtPlugin(() => {
             'Accept': 'application/json',
             'Accept-Language': userLocale
         },
-        async onRequest({ options }) {
+        async onRequest({ options }: { options: { headers?: Record<string, string> } }) {
             if (import.meta.server) {
                 // SSR: forward cookies for Accept-Language if available
                 const event = useRequestEvent()
                 const serverLocale = useCookie('i18n_redirected').value ?? 'fr'
                 const cookies = event?.node.req.headers.cookie
 
-                // Try to extract access_token from cookies for SSR API calls
-                // (during OIDC transition, cookies may still be present)
                 if (cookies) {
                     options.headers = {
                         ...options.headers,
-                        // @ts-expect-error cookie is not in the HeadersInit type but needed for SSR forwarding
                         cookie: cookies,
                         'Accept-Language': serverLocale
                     }
