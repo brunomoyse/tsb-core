@@ -1,8 +1,6 @@
 // Plugins/api.ts — OIDC Bearer token authentication via Zitadel
 import { defineNuxtPlugin, navigateTo, useCookie, useLocalePath, useRequestEvent, useRuntimeConfig } from '#imports'
 
-let refreshPromise: Promise<boolean> | null = null
-
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     const apiUrl: string = config.public.api as string
@@ -17,20 +15,12 @@ export default defineNuxtPlugin(() => {
         return getAccessToken()
     }
 
-    /** Attempt silent OIDC token renewal */
+    /** Attempt silent OIDC token renewal (coalesced inside useOidc). */
     const refreshAuth = async (): Promise<boolean> => {
         const { useOidc } = await import('~/composables/useOidc')
         const { silentRenew } = useOidc()
         const user = await silentRenew()
         return Boolean(user)
-    }
-
-    /** Coalesce concurrent refresh calls into a single request */
-    const attemptRefreshOnce = (): Promise<boolean> => {
-        refreshPromise ??= refreshAuth().finally(() => {
-            refreshPromise = null
-        })
-        return refreshPromise
     }
 
     const baseApi = $fetch.create({
@@ -81,7 +71,7 @@ export default defineNuxtPlugin(() => {
                 && err && typeof err === 'object' && 'status' in err
                 && (err as { status: number }).status === 401
             ) {
-                const ok = await attemptRefreshOnce()
+                const ok = await refreshAuth()
                 if (ok) return await baseApi(request, options) as T
                 navigateTo(`${localePath('auth-login')}?session=expired`)
             }

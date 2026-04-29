@@ -11,6 +11,14 @@ const CAPACITOR_TOKEN_KEY = 'capacitor_oidc_tokens'
 // In-memory cache — avoids any localStorage timing issues in WKWebView
 let capacitorTokenCache: CapacitorTokens | null = null
 
+/*
+ * Module-scope coalescer for silent renewal. Every caller (middleware, plugins,
+ * getAccessToken, accessTokenExpired event) routes through the same in-flight
+ * promise. Zitadel rotates the refresh token on first use, so two concurrent
+ * renews would race and the loser would be logged out mid-session.
+ */
+let silentRenewPromise: Promise<OidcUser | null> | null = null
+
 interface CapacitorTokens {
     access_token: string
     refresh_token?: string
@@ -58,7 +66,7 @@ export function useOidc() {
                 scope: 'openid profile email offline_access urn:zitadel:iam:org:project:roles',
                 // Off: the background renewal raced with middleware/plugin calls on the same refresh token; Zitadel's rotation logged the loser out mid-session. Renew lazily on navigation and on 401 instead.
                 automaticSilentRenew: false,
-                // Persist tokens across browser close; Zitadel enforces the 7-day idle expiry.
+                // Persist tokens across browser close; Zitadel enforces the 30-day idle / 90-day absolute refresh-token TTL.
                 userStore: new WebStorageStateStore({ store: localStorage }),
                 stateStore: new WebStorageStateStore({ store: localStorage }),
             })
@@ -68,23 +76,21 @@ export function useOidc() {
         userManager.events.addUserUnloaded(() => { oidcUser.value = null })
 
         userManager.events.addAccessTokenExpired(async () => {
-            // Token expired — attempt silent renew before clearing state
-            try {
-                await userManager!.signinSilent()
-            } catch {
-                // Renew failed — clear stale OIDC session + Pinia store
-                await userManager!.removeUser()
-                const { useAuthStore } = await import('~/stores/auth')
-                useAuthStore().clearUser()
-            }
+            /*
+             * Route through the module-level coalescer so this event-driven
+             * renewal cannot race with a concurrent silentRenew() call from
+             * middleware/plugins on the same refresh token.
+             */
+            await silentRenew()
         })
 
-        userManager.events.addSilentRenewError(async () => {
-            // Silent renew failed — clear stale OIDC session + Pinia store
-            await userManager!.removeUser()
-            const { useAuthStore } = await import('~/stores/auth')
-            useAuthStore().clearUser()
-        })
+        /*
+         * Note: addSilentRenewError intentionally has no handler. A losing race
+         * (Zitadel rejected an already-rotated refresh token) would otherwise
+         * call removeUser() and wipe a session another caller had just renewed.
+         * Real session termination is handled by the callers checking the
+         * silentRenew() return value.
+         */
 
         return userManager
     }
@@ -220,21 +226,28 @@ export function useOidc() {
         if (user && !user.expired) return user.access_token
         if (!user) return null // No session — nothing to renew
 
-        // Token expired — attempt silent renew before returning null
-        try {
-            const renewed = await mgr.signinSilent()
-            if (renewed) {
-                oidcUser.value = renewed
-                return renewed.access_token
-            }
-        } catch {
-            // Silent renew failed
-        }
-        return null
+        /*
+         * Token expired — route through the coalesced silentRenew so concurrent
+         * callers share one refresh-token use (Zitadel rotates on first use).
+         */
+        const renewed = await silentRenew()
+        return renewed?.access_token ?? null
     }
 
-    /** Attempt silent token renewal. */
-    async function silentRenew(): Promise<OidcUser | null> {
+    /**
+     * Attempt silent token renewal. All callers (middleware, plugins, the
+     * accessTokenExpired event, getAccessToken) share a single in-flight
+     * promise so we never use the same refresh token twice in parallel —
+     * Zitadel rotates on first use and would log the loser out.
+     */
+    function silentRenew(): Promise<OidcUser | null> {
+        silentRenewPromise ??= doSilentRenew().finally(() => {
+            silentRenewPromise = null
+        })
+        return silentRenewPromise
+    }
+
+    async function doSilentRenew(): Promise<OidcUser | null> {
         if (isCapacitor) {
             // Read stored refresh token
             const stored = localStorage.getItem(CAPACITOR_TOKEN_KEY)

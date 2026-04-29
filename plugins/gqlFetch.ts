@@ -14,8 +14,6 @@ interface GqlOptions {
     signal?: AbortSignal
 }
 
-let refreshPromise: Promise<boolean> | null = null
-
 export default defineNuxtPlugin(() => {
     const cfg     = useRuntimeConfig()
     const httpURL = cfg.public.graphqlHttp as string
@@ -46,7 +44,7 @@ export default defineNuxtPlugin(() => {
             res = await doFetch(body, signal)
         } catch (err: unknown) {
             if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 401) {
-                const ok = await attemptRefreshOnce()
+                const ok = await attemptRefresh()
                 if (ok) {
                     res = await doFetch(body, signal)
                 } else {
@@ -63,7 +61,7 @@ export default defineNuxtPlugin(() => {
                 (e) => e.extensions?.code === 'UNAUTHENTICATED'
             )
             if (unauth) {
-                const ok = await attemptRefreshOnce()
+                const ok = await attemptRefresh()
                 if (ok) {
                     res = await doFetch(body, signal)
                     if (res.errors?.length) {
@@ -111,7 +109,7 @@ export default defineNuxtPlugin(() => {
         return headers
     }
 
-    /** Attempt OIDC silent renewal */
+    /** Attempt OIDC silent renewal (coalesced inside useOidc). */
     const attemptRefresh = async (): Promise<boolean> => {
         try {
             if (import.meta.server) return false
@@ -123,14 +121,6 @@ export default defineNuxtPlugin(() => {
             navigateTo(`${localePath('auth-login')}?session=expired`)
             return false
         }
-    }
-
-    /** Coalesce concurrent refresh calls into a single request */
-    const attemptRefreshOnce = (): Promise<boolean> => {
-        refreshPromise ??= attemptRefresh().finally(() => {
-            refreshPromise = null
-        })
-        return refreshPromise
     }
 
     return { provide: { gqlFetch } }
