@@ -87,6 +87,8 @@
     "pcs": "pieces",
     "addToCart": "Add",
     "selectChoice": "Select an option",
+    "chooseRemaining": "{count} more to select | {count} more to select",
+    "chooseAtLeast": "Select at least {count} option | Select at least {count} options",
     "price": "Price",
     "code": "Code",
     "description": "Description",
