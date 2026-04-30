@@ -70,6 +70,9 @@
                             />
                             {{ $t('menu.spicy') }}
                         </span>
+                        <span v-if="p.isLunchOnly" class="px-3 py-1 bg-tsb-four text-red-700 text-sm rounded-full inline-flex items-center gap-1.5">
+                            {{ $t('menu.lunchOnly') }}
+                        </span>
                         <span v-if="p.isDiscountable" class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200">
                             {{ $t('menu.pickupDiscountBadge') }}
                         </span>
@@ -251,6 +254,7 @@ const PRODUCT_QUERY = gql`
       slug
       isAvailable
       isHalal
+      isLunchOnly
       isSpicy
       isVegetarian
       isDiscountable

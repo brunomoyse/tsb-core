@@ -13,7 +13,7 @@ const RESTAURANT_CONFIG_QUERY = gql`
             preparationMinutes
             isCurrentlyOpen
             isOrderingCurrentlyOpen
-            availableSlotsToday { label value }
+            availableSlotsToday { label value isLunchOnlyAllowed }
             nextOpeningAt
         }
     }
@@ -28,7 +28,7 @@ const SUB_RESTAURANT_CONFIG = gql`
             preparationMinutes
             isCurrentlyOpen
             isOrderingCurrentlyOpen
-            availableSlotsToday { label value }
+            availableSlotsToday { label value isLunchOnlyAllowed }
             nextOpeningAt
         }
     }
@@ -37,6 +37,7 @@ const SUB_RESTAURANT_CONFIG = gql`
 export interface RestaurantTimeSlot {
     label: string
     value: string
+    isLunchOnlyAllowed: boolean
 }
 
 interface RestaurantConfig {

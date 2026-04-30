@@ -332,6 +332,7 @@ const EXTRA_PRODUCTS_QUERY = `
                 isVisible
                 isAvailable
                 isHalal
+                isLunchOnly
                 isSpicy
                 isVegetarian
                 isDiscountable
