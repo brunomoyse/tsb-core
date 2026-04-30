@@ -614,6 +614,24 @@ const handleCheckout = async () => {
             return
         }
 
+        // Lunch-only products require a slot in the weekday lunch window.
+        const cartHasLunchOnly = cartStore.products.some(item => item.product.isLunchOnly)
+        if (cartHasLunchOnly) {
+            const slotValue = cartStore.preferredReadyTime
+            const slot = slotValue
+                ? restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.find(s => s.value === slotValue)
+                : null
+            if (!slot || !slot.isLunchOnlyAllowed) {
+                eventBus.emit('notify', {
+                    message: t('notify.errors.lunchOnlyRequiresLunchSlot'),
+                    persistent: false,
+                    duration: 5000,
+                    variant: 'error',
+                })
+                return
+            }
+        }
+
         if (cartStore.products.length === 0) {
             trackEvent('checkout_error_cart_empty')
             eventBus.emit('notify', {

@@ -376,6 +376,7 @@ const PRODUCT_CATEGORIES = gql`
         isVisible
         isAvailable
         isHalal
+        isLunchOnly
         isSpicy
         isVegetarian
         isDiscountable
@@ -412,6 +413,7 @@ const SUB_PRODUCT_UPDATED = gql`
             code
             pieceCount
             isHalal
+            isLunchOnly
             isSpicy
             isVegetarian
             isDiscountable

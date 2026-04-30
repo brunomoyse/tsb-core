@@ -29,6 +29,10 @@
                         </svg>
                     </div>
                 </div>
+                <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
+                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-tsb-four text-red-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
+                    {{ $t('menu.lunchOnlyShort') }}
+                </div>
                 <!-- Shimmer placeholder -->
                 <div v-if="!loaded"
                      class="absolute inset-0 animate-shimmer rounded-lg"
