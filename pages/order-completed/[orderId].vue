@@ -373,44 +373,39 @@ watch(order, (orderData) => {
     })
 }, { immediate: true })
 
-// 2) subscribe to updates on mount
-let closeWs: () => void = () => {}
-
-onMounted(() => {
-    // Now destructure the `close` out of your updated composable
-    const { data: liveUpdate, closeAll: close } = useGqlSubscription<{
-        myOrderUpdated: Partial<Order>
-    }>(
-        print(gql`
+// Must stay at <script setup> top-level: nesting inside onMounted leaks the
+// WebSocket because onScopeDispose can't bind to the component scope.
+const { data: liveUpdate } = useGqlSubscription<{
+    myOrderUpdated: Partial<Order>
+}>(
+    print(gql`
       subscription ($orderId: ID!) {
         myOrderUpdated(orderId: $orderId) { id status updatedAt estimatedReadyTime cancellationReason }
       }
     `),
-        { orderId }
-    )
+    { orderId }
+)
 
-    // Store it
-    closeWs = close
+watch(liveUpdate, (val) => {
+    if (val?.myOrderUpdated?.status) {
+        trackEvent('order_status_updated', {
+            order_id: orderId,
+            new_status: val.myOrderUpdated.status,
+        })
+    }
 
-    watch(liveUpdate, (val) => {
-        if (val?.myOrderUpdated?.status) {
-            trackEvent('order_status_updated', {
-                order_id: orderId,
-                new_status: val.myOrderUpdated.status,
-            })
+    if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
+        orderFailed.value = true
+    }
+
+    if (val?.myOrderUpdated && dataOrder.value?.myOrder) {
+        dataOrder.value = {
+            myOrder: { ...dataOrder.value.myOrder, ...val.myOrderUpdated },
         }
+    }
+})
 
-        if (val?.myOrderUpdated?.status === "FAILED" || val?.myOrderUpdated?.status === "CANCELLED") {
-            orderFailed.value = true
-        }
-
-        if (val?.myOrderUpdated && dataOrder.value?.myOrder) {
-            dataOrder.value = {
-                myOrder: { ...dataOrder.value.myOrder, ...val.myOrderUpdated },
-            }
-        }
-    })
-
+onMounted(() => {
     // Polling fallback: if WebSocket subscription fails silently (CORS, auth, Safari timeout),
     // Poll for order updates every 15 seconds until order is in a terminal state.
     const POLL_INTERVAL = 15_000
@@ -438,13 +433,10 @@ onMounted(() => {
     // Start polling after a delay — gives WebSocket a chance to connect first
     const pollDelay = setTimeout(startPolling, POLL_INTERVAL)
 
-    // Clean up polling on unmount (closeWs handles WebSocket)
-    const origCloseWs = closeWs
-    closeWs = () => {
-        origCloseWs()
+    onUnmounted(() => {
         clearTimeout(pollDelay)
         if (pollTimer) clearInterval(pollTimer)
-    }
+    })
 
     // Refetch order when a foreground push notification is received
     const onPush = async (evt: { orderId: string }) => {
@@ -474,9 +466,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     eventBus.off('order-status-push')
-    if (typeof closeWs === 'function') {
-        closeWs()
-    }
 })
 </script>
 

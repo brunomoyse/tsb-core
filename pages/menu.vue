@@ -422,21 +422,19 @@ const SUB_PRODUCT_UPDATED = gql`
 `
 const liveProductData = ref<Record<string, Partial<Product>>>({})
 
-onMounted(() => {
-    const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
-        print(SUB_PRODUCT_UPDATED)
-    )
+const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
+    print(SUB_PRODUCT_UPDATED)
+)
 
-    watch(liveProduct, (val) => {
-        if (!val?.productUpdated?.id) return
-        liveProductData.value = {
-            ...liveProductData.value,
-            [val.productUpdated.id]: {
-                ...liveProductData.value[val.productUpdated.id],
-                ...val.productUpdated,
-            },
-        }
-    })
+watch(liveProduct, (val) => {
+    if (!val?.productUpdated?.id) return
+    liveProductData.value = {
+        ...liveProductData.value,
+        [val.productUpdated.id]: {
+            ...liveProductData.value[val.productUpdated.id],
+            ...val.productUpdated,
+        },
+    }
 })
 
 /**
