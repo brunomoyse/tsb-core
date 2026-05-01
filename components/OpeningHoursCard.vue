@@ -6,17 +6,17 @@
         </component>
         <dl class="space-y-3 text-sm text-gray-600">
             <div>
-                <dt class="text-xs uppercase tracking-wide text-gray-500">{{ $t('contact.weekdays') }}</dt>
+                <dt class="text-xs uppercase tracking-wide text-gray-700">{{ $t('contact.weekdays') }}</dt>
                 <dd v-if="weekdaysHours" class="mt-0.5 text-gray-900 tabular-nums whitespace-nowrap">{{ weekdaysHours }}</dd>
                 <dd v-else class="mt-0.5 h-4 w-40 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
             </div>
             <div>
-                <dt class="text-xs uppercase tracking-wide text-gray-500">{{ $t('contact.weekends') }}</dt>
+                <dt class="text-xs uppercase tracking-wide text-gray-700">{{ $t('contact.weekends') }}</dt>
                 <dd v-if="weekendsHours" class="mt-0.5 text-gray-900 tabular-nums whitespace-nowrap">{{ weekendsHours }}</dd>
                 <dd v-else class="mt-0.5 h-4 w-32 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
             </div>
-            <p class="text-red-500 text-xs pt-1">{{ $t('contact.closedTuesday') }}</p>
         </dl>
+        <p class="text-red-700 text-xs pt-3">{{ $t('contact.closedTuesday') }}</p>
     </div>
 </template>
 

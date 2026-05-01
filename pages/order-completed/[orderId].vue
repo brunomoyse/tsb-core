@@ -316,12 +316,12 @@ watch(order, (orderData) => {
         return
     }
 
-    useSchemaOrg([
-        defineWebPage({
+    useJsonLd([
+        {
             '@type': 'WebPage',
             name: t('schema.orderConfirmation.title'),
-            description: t('schema.orderConfirmation.description')
-        }),
+            description: t('schema.orderConfirmation.description'),
+        },
         {
             '@type': 'Order',
             '@id': `${config.public.baseUrl}/order-completed/${orderId}`,
@@ -362,9 +362,9 @@ watch(order, (orderData) => {
                     postalCode: orderData.address.postcode,
                     addressCountry: 'BE'
                 }
-            } : undefined
-        }
-    ])
+            } : undefined,
+        },
+    ], 'page-jsonld')
 
     // SEO meta
     useSeoMeta({

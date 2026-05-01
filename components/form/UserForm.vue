@@ -87,9 +87,9 @@
 
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest } from '~/types'
-import { type CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import type { CountryCode } from 'libphonenumber-js'
 import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import { formatAddress } from '~/utils/utils'
 import { useI18n } from 'vue-i18n'
@@ -132,11 +132,6 @@ const triggerShake = () => {
 
 const countries = EUROPEAN_COUNTRIES
 
-const formattedPhone = computed(() => {
-    const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
-    return parsed?.format('E.164') ?? phoneLocal.value
-})
-
 watch(address, () => {
     // No-op: address state is committed immediately on selection in edit mode.
 })
@@ -145,14 +140,16 @@ const removeAddress = () => {
     address.value = null
 }
 
-const validatePhone = () => {
+// Lazy-load libphonenumber-js (~75KB) only when the user actually submits/validates a phone number.
+const validatePhone = async () => {
+    const { parsePhoneNumberFromString } = await import('libphonenumber-js')
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
     phoneError.value = parsed?.isValid() ? '' : t('form.invalidPhone')
     return !phoneError.value
 }
 
-const handleSubmit = () => {
-    if (phoneLocal.value && !validatePhone()) { triggerShake(); return }
+const handleSubmit = async () => {
+    if (phoneLocal.value && !(await validatePhone())) { triggerShake(); return }
     if (!firstName.value || !lastName.value || !email.value) { triggerShake(); return }
 
     // Send empty string to trigger deletion when a previously-set field is cleared.
@@ -164,7 +161,9 @@ const handleSubmit = () => {
 
     let phoneValue: string | null = null
     if (hasCurrentPhone) {
-        phoneValue = formattedPhone.value
+        const { parsePhoneNumberFromString } = await import('libphonenumber-js')
+        const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
+        phoneValue = parsed?.format('E.164') ?? phoneLocal.value
     } else if (hasInitialPhone) {
         phoneValue = ''
     }

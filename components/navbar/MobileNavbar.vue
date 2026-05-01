@@ -103,9 +103,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from '#imports'
+import { defineAsyncComponent, ref, watch } from '#imports'
 import CartButton from '~/components/cart/CartButton.vue'
-import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
+const DeliveryZoneChip = defineAsyncComponent(() => import('~/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
 import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'

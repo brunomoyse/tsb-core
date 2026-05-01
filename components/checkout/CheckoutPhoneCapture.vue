@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js'
+import type { CountryCode } from 'libphonenumber-js'
 import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
@@ -87,11 +87,17 @@ const saved = computed(() => Boolean(authStore.user?.phoneNumber))
 // Collapsed: we have a saved number and the user isn't actively editing.
 const isCollapsed = computed(() => saved.value && !isEditing.value)
 
+// Lazy-load libphonenumber-js (~75KB) only when the user actually edits or submits a phone number.
 const startEditing = async () => {
     const current = authStore.user?.phoneNumber ?? ''
-    const parsed = current ? parsePhoneNumberFromString(current) : null
-    if (parsed?.country) selectedCountry.value = parsed.country as CountryCode
-    phoneLocal.value = parsed?.nationalNumber ?? current.replace(/^\+\d+/, '')
+    if (current) {
+        const { parsePhoneNumberFromString } = await import('libphonenumber-js')
+        const parsed = parsePhoneNumberFromString(current)
+        if (parsed?.country) selectedCountry.value = parsed.country as CountryCode
+        phoneLocal.value = parsed?.nationalNumber ?? current.replace(/^\+\d+/, '')
+    } else {
+        phoneLocal.value = ''
+    }
     lastSubmittedE164 = current
     isEditing.value = true
     await nextTick()
@@ -138,7 +144,8 @@ watch([phoneLocal, selectedCountry], ([value]) => {
     phoneError.value = ''
     if (debounceTimer) clearTimeout(debounceTimer)
     if (!value.trim()) return
-    debounceTimer = setTimeout(() => {
+    debounceTimer = setTimeout(async () => {
+        const { parsePhoneNumberFromString } = await import('libphonenumber-js')
         const parsed = parsePhoneNumberFromString(value, selectedCountry.value)
         if (parsed?.isValid()) {
             save(parsed.format('E.164'))

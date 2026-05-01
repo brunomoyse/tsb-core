@@ -701,17 +701,16 @@ const breadcrumbSchema = computed(() => ({
     ]
 }))
 
-// Update schema whenever products change
 watch(allProducts, () => {
-    useSchemaOrg([
-        defineWebPage({
+    useJsonLd([
+        {
             '@type': 'WebPage',
             name: t('schema.menu.title'),
-            description: t('schema.menu.description')
-        }),
+            description: t('schema.menu.description'),
+        },
         breadcrumbSchema.value,
         menuSchema.value,
-    ])
+    ], 'page-jsonld')
 }, { immediate: true })
 
 useSeoMeta({

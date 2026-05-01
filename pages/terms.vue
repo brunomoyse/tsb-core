@@ -293,19 +293,17 @@ onMounted(() => {
     }
 })
 
-useSchemaOrg([
-    defineWebPage({
+useJsonLd([
+    {
         '@type': 'WebPage',
         name: t('schema.terms.title'),
-        description: t('schema.terms.description')
-    }),
-    defineBreadcrumb({
-        itemListElement: [
-            { name: t('schema.breadcrumb.home'), item: '/' },
-            { name: t('schema.breadcrumb.terms'), item: '/terms' }
-        ]
-    })
-])
+        description: t('schema.terms.description'),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('schema.breadcrumb.terms'), item: `${config.public.baseUrl}/terms` },
+    ]),
+], 'page-jsonld')
 
 useSeoMeta({
     title: t('schema.terms.title'),

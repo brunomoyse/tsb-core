@@ -210,19 +210,17 @@ definePageMeta({
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
-useSchemaOrg([
-    defineWebPage({
+useJsonLd([
+    {
         '@type': 'WebPage',
         name: t('schema.privacy.title'),
-        description: t('schema.privacy.description')
-    }),
-    defineBreadcrumb({
-        itemListElement: [
-            { name: t('schema.breadcrumb.home'), item: '/' },
-            { name: t('schema.breadcrumb.privacy'), item: '/privacy' }
-        ]
-    })
-])
+        description: t('schema.privacy.description'),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('schema.breadcrumb.privacy'), item: `${config.public.baseUrl}/privacy` },
+    ]),
+], 'page-jsonld')
 
 useSeoMeta({
     title: t('schema.privacy.title'),

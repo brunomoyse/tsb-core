@@ -75,11 +75,10 @@ export default defineNuxtConfig({
         "@nuxtjs/i18n",
         "@pinia/nuxt",
         'pinia-plugin-persistedstate/nuxt',
-        'nuxt-schema-org',
         ...isCapacitor ? [] : ['@nuxtjs/sitemap'],
-        // Sentry is a no-op unless SENTRY_DSN is set (see sentry.client|server.config.ts).
-        // Skip it on Capacitor builds to avoid shipping Sentry inside the native bundle.
-        ...isCapacitor ? [] : ['@sentry/nuxt/module'],
+        // Skip Sentry on Capacitor (native) and when no DSN is set at build time —
+        // including the module bundles ~50KB of SDK that's inert without a DSN.
+        ...(isCapacitor || !process.env.SENTRY_DSN ? [] : ['@sentry/nuxt/module']),
     ],
 
         plugins: [
@@ -156,16 +155,6 @@ export default defineNuxtConfig({
         },
     },
 
-    // Workaround: @unhead/schema-org@2.x declares auto-imports from its vue subpath
-    // That don't actually exist there. Alias it to the main entry which has all exports.
-    vite: {
-        resolve: {
-            alias: {
-                '@unhead/schema-org/vue': '@unhead/schema-org',
-            },
-        },
-    },
-
     sitemap: {
         autoLastmod: true,
         defaults: {
@@ -186,6 +175,11 @@ export default defineNuxtConfig({
         families: {
             Montserrat: [400, 500, 600, 700],
         },
+        display: 'swap',
+        download: true,
+        preload: true,
+        inject: true,
+        overwriting: true,
     },
 
     routeRules: isCapacitor ? {} : {
@@ -199,6 +193,18 @@ export default defineNuxtConfig({
                 'Content-Security-Policy': csp,
             },
         },
+        '/_nuxt/**': {
+            headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+        },
+    },
+
+    // Per-subdirectory cache headers for static assets. Nitro's public-asset handler sets Cache-Control directly; routeRules headers don't override it, which is why /images, /fonts, /icons were leaking 4h max-age in production.
+    nitro: isCapacitor ? {} : {
+        publicAssets: [
+            { baseURL: 'images', dir: 'public/images', maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: 'fonts',  dir: 'public/fonts',  maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: 'icons',  dir: 'public/icons',  maxAge: 60 * 60 * 24 * 365 },
+        ],
     },
 
     compatibilityDate: "2025-07-08", // Nuxt 4 RC release date
