@@ -171,9 +171,9 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import { ref, useRuntimeConfig, watch } from '#imports'
+import { defineAsyncComponent, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
@@ -187,7 +187,7 @@ const cartStore = useCartStore();
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
 
-const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
+const lightboxRef = ref<{ open: () => void } | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 

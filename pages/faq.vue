@@ -93,9 +93,8 @@ const faqs = computed(() => [
     }
 ])
 
-// FAQPage Schema
-useSchemaOrg([
-    defineWebPage({
+useJsonLd([
+    {
         '@type': 'FAQPage',
         name: t('faq.schemaTitle'),
         description: t('faq.schemaDescription'),
@@ -104,17 +103,15 @@ useSchemaOrg([
             name: faq.question,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: faq.answer
-            }
-        }))
-    }),
-    defineBreadcrumb({
-        itemListElement: [
-            { name: t('schema.breadcrumb.home'), item: '/' },
-            { name: t('faq.breadcrumb'), item: '/faq' }
-        ]
-    })
-])
+                text: faq.answer,
+            },
+        })),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('faq.breadcrumb'), item: `${config.public.baseUrl}/faq` },
+    ]),
+], 'page-jsonld')
 
 useSeoMeta({
     title: t('faq.schemaTitle'),

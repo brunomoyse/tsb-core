@@ -12,19 +12,17 @@ const googleMapsLink = `https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7`;
 const config = useRuntimeConfig()
 const { t } = useI18n()
 
-useSchemaOrg([
-    defineWebPage({
+useJsonLd([
+    {
         '@type': 'ContactPage',
         name: t('schema.contact.title'),
-        description: t('schema.contact.description')
-    }),
-    defineBreadcrumb({
-        itemListElement: [
-            { name: t('schema.breadcrumb.home'), item: '/' },
-            { name: t('schema.breadcrumb.contact'), item: '/contact' }
-        ]
-    })
-])
+        description: t('schema.contact.description'),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('schema.breadcrumb.contact'), item: `${config.public.baseUrl}/contact` },
+    ]),
+], 'page-jsonld')
 
 useSeoMeta({
     title: t('schema.contact.title'),

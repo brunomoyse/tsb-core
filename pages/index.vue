@@ -59,25 +59,27 @@ const firstFoldClass = computed(() => {
         : `${base} h-[calc(100dvh-5rem-1.5rem)]`
 })
 
-useSchemaOrg([
-    defineWebSite({
+useJsonLd([
+    {
+        '@type': 'WebSite',
+        url: config.public.baseUrl,
         name: t('schema.siteName'),
         description: t('schema.siteDescription'),
         potentialAction: {
             '@type': 'SearchAction',
-            'target': {
+            target: {
                 '@type': 'EntryPoint',
-                'urlTemplate': `${config.public.baseUrl}/menu?q={search_term_string}`
+                urlTemplate: `${config.public.baseUrl}/menu?q={search_term_string}`,
             },
-            'query-input': 'required name=search_term_string'
-        }
-    }),
-    defineWebPage({
+            'query-input': 'required name=search_term_string',
+        },
+    },
+    {
         '@type': 'WebPage',
         name: t('schema.home.title'),
-        description: t('schema.home.description')
-    })
-])
+        description: t('schema.home.description'),
+    },
+], 'page-jsonld')
 
 useSeoMeta({
     title: t('schema.home.title'),
@@ -89,6 +91,27 @@ useSeoMeta({
     twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
+
+useHead({
+    link: [
+        {
+            rel: 'preload',
+            as: 'image',
+            href: '/images/restaurant-illustrated-mobile.avif',
+            media: '(max-width: 640px)',
+            type: 'image/avif',
+            fetchpriority: 'high',
+        },
+        {
+            rel: 'preload',
+            as: 'image',
+            href: '/images/restaurant-illustrated.avif',
+            media: '(min-width: 641px)',
+            type: 'image/avif',
+            fetchpriority: 'high',
+        },
+    ],
+})
 </script>
 
 <template>
@@ -98,14 +121,16 @@ useSeoMeta({
         <div :class="firstFoldClass">
             <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl">
                 <picture>
+                    <source media="(max-width: 640px)" srcset="/images/restaurant-illustrated-mobile.avif" type="image/avif" />
+                    <source media="(max-width: 640px)" srcset="/images/restaurant-illustrated-mobile.webp" type="image/webp" />
                     <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
                     <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
                     <img
                         alt="Tokyo Sushi Bar Restaurant"
                         class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
                         src="/images/restaurant-illustrated.png"
-                        width="1200"
-                        height="805"
+                        width="1024"
+                        height="687"
                         fetchpriority="high"
                         decoding="async"
                     />
@@ -188,7 +213,7 @@ useSeoMeta({
             <!-- Primary CTA -->
             <NuxtLinkLocale
                 to="/menu"
-                class="w-full inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] shadow-sm focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none"
+                class="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] shadow-sm focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none"
             >
                 {{ $t('home.orderNow') }}
                 <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
@@ -203,7 +228,7 @@ useSeoMeta({
                     <!-- Moped icon (Tabler Icons, same as OrdersWidget) -->
                     <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
                 </div>
-                <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freeDelivery') }}</h3>
+                <p class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freeDelivery') }}</p>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
@@ -211,7 +236,7 @@ useSeoMeta({
                     <!-- Shopping bag icon (Heroicons, same as OrdersWidget) -->
                     <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                 </div>
-                <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount') }}</h3>
+                <p class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount') }}</p>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
@@ -219,7 +244,7 @@ useSeoMeta({
                     <!-- Fish icon (Tabler Icons) -->
                     <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571"/><path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504"/><path d="M18 11v.01"/><path d="M11.5 10.5c-.667 1 -.667 2 0 3"/></svg>
                 </div>
-                <h3 class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freshDaily') }}</h3>
+                <p class="font-semibold text-gray-900 mb-1 text-[15px]">{{ $t('about.infoCards.freshDaily') }}</p>
                 <p class="text-gray-600 text-sm leading-relaxed">{{ $t('about.infoCards.freshDailyDesc') }}</p>
             </div>
         </div>
@@ -251,7 +276,7 @@ useSeoMeta({
                     <div class="mb-8 sm:mb-10">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2016</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-700 leading-none shrink-0">2016</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center">
@@ -263,7 +288,7 @@ useSeoMeta({
                     <div class="mb-8 sm:mb-10">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2024</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-700 leading-none shrink-0">2024</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center">
@@ -275,7 +300,7 @@ useSeoMeta({
                     <div>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-400/60 leading-none shrink-0">2026</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-700 leading-none shrink-0">2026</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center mb-5">
@@ -284,7 +309,7 @@ useSeoMeta({
                         <!-- Years counter -->
                         <div class="flex justify-center">
                             <div class="bg-white/60 backdrop-blur-sm rounded-xl px-8 py-5 text-center shadow-sm">
-                                <span class="font-channel text-5xl sm:text-6xl text-red-500/70 block leading-none">{{ yearsSince }}</span>
+                                <span class="font-channel text-5xl sm:text-6xl text-red-700 block leading-none">{{ yearsSince }}</span>
                                 <span class="text-gray-600 text-xs tracking-widest uppercase mt-2 block">{{ $t('about.yearsOfPassion') }}</span>
                             </div>
                         </div>
@@ -333,16 +358,16 @@ useSeoMeta({
             </div>
             <div class="flex items-center flex-wrap justify-center gap-2.5">
                 <!-- Visa -->
-                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center" aria-label="Visa">
+                <div role="img" aria-label="Visa" class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center">
                     <span class="font-black italic text-[11px] text-gray-500 tracking-tight leading-none">VISA</span>
                 </div>
                 <!-- Mastercard -->
-                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-0.5" aria-label="Mastercard">
+                <div role="img" aria-label="Mastercard" class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-0.5">
                     <span class="w-3 h-3 rounded-full bg-gray-400/80" />
                     <span class="w-3 h-3 rounded-full bg-gray-300 -ml-1.5" />
                 </div>
                 <!-- Bancontact -->
-                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center" aria-label="Bancontact">
+                <div role="img" aria-label="Bancontact" class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center">
                     <img
                         src="/icons/bancontact-logo.svg"
                         alt=""
@@ -352,7 +377,7 @@ useSeoMeta({
                     />
                 </div>
                 <!-- Cash -->
-                <div class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-1" aria-label="Cash">
+                <div role="img" aria-label="Cash" class="h-7 px-2.5 rounded-md border border-gray-200 bg-white flex items-center gap-1">
                     <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25A2.25 2.25 0 014.5 6h15a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0119.5 18h-15a2.25 2.25 0 01-2.25-2.25v-7.5zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span class="text-[11px] text-gray-500 font-medium leading-none">{{ $t('about.cash') }}</span>
                 </div>

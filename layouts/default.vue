@@ -68,14 +68,14 @@
             </footer>
         </div>
         <ClientOnly>
-            <CapacitorTabBar />
+            <LazyCapacitorTabBar />
         </ClientOnly>
         <ClientOnly>
-            <CartMobile v-if="!isCapacitor" :is-ordering-available="isOrderingAvailable" />
-            <FloatingCartBar v-if="!isCapacitor && isMenuPage" />
+            <LazyCartMobile v-if="!isCapacitor" :is-ordering-available="isOrderingAvailable" />
+            <LazyFloatingCartBar v-if="!isCapacitor && isMenuPage" />
         </ClientOnly>
         <ClientOnly>
-            <NotificationBar
+            <LazyNotificationBar
                 v-if="showNotification && notification"
                 :message="notification.message"
                 :persistent="notification.persistent"
@@ -87,7 +87,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <ScrollToTopButton class="sm:hidden"/>
+            <LazyScrollToTopButton class="sm:hidden"/>
         </ClientOnly>
 
 
@@ -99,12 +99,7 @@
 
 <script lang="ts" setup>
 import { computed, onUnmounted, ref } from 'vue'
-import CapacitorTabBar from '~/components/navbar/CapacitorTabBar.vue'
-import CartMobile from '~/components/cart/CartMobile.vue'
-import FloatingCartBar from '~/components/cart/FloatingCartBar.vue'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
-import NotificationBar from '~/components/NotificationBar.vue'
-import ScrollToTopButton from '~/components/ScrollToTopButton.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
 import { eventBus } from '~/eventBus'
 import { useHead } from '#imports'
@@ -135,7 +130,9 @@ const { isCapacitor, isIos } = usePlatform()
 if (import.meta.client && isIos) {
     useSwipeBack('#main-content')
 }
-const { config: restaurantConfig } = await useRestaurantConfig()
+// Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
+// Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
+const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
 const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 
 const head = useLocaleHead()
