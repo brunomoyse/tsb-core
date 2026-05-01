@@ -7,6 +7,68 @@ import { useRuntimeConfig } from '#imports'
 let wsClient: Client | null = null
 let wsClientPromise: Promise<Client> | null = null
 
+/*
+ * Subscribers register here so global lifecycle events (visibility,
+ * online/offline) are handled exactly once across the whole app. With
+ * multiple parallel subscriptions on a single page (e.g. /me/orders
+ * subscribing per active order), per-subscription listeners would race —
+ * each handler would dispose the client another handler had just created,
+ * preventing the connection from ever stabilizing on Safari mobile where
+ * the OS aggressively backgrounds tabs and severs the WebSocket.
+ */
+interface Subscriber {
+    restart: () => void
+    setOffline: (value: boolean) => void
+}
+const subscribers = new Set<Subscriber>()
+
+let globalListenersBound = false
+let hiddenAt = 0
+let wentOffline = false
+
+const recycleClient = () => {
+    wsClient?.dispose()
+    wsClient = null
+    wsClientPromise = null
+    // Snapshot in case a restart callback mutates the set.
+    Array.from(subscribers).forEach((s) => s.restart())
+}
+
+const handleOffline = () => {
+    wentOffline = true
+    subscribers.forEach((s) => s.setOffline(true))
+}
+
+const handleOnline = () => {
+    if (!wentOffline) return
+    wentOffline = false
+    subscribers.forEach((s) => s.setOffline(false))
+    recycleClient()
+}
+
+const handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden') {
+        hiddenAt = Date.now()
+        return
+    }
+    /*
+     * Only recycle after ≥3s in background — avoids thrashing on quick
+     * tab switches but catches Safari mobile / Capacitor backgrounding
+     * where the WS is silently killed.
+     */
+    if (document.visibilityState === 'visible' && Date.now() - hiddenAt > 3_000) {
+        recycleClient()
+    }
+}
+
+const ensureGlobalListeners = () => {
+    if (globalListenersBound || !import.meta.client) return
+    globalListenersBound = true
+    window.addEventListener('offline', handleOffline)
+    window.addEventListener('online', handleOnline)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+}
+
 const getWsClient = (): Promise<Client> => {
     if (wsClient) return Promise.resolve(wsClient)
     if (!wsClientPromise) {
@@ -46,13 +108,13 @@ export function useGqlSubscription<T = unknown>(
     const data  = ref<T>()
     const error = ref<Error | null>(null)
     let stop: () => void = () => {}
-
-    // Track if we've genuinely gone offline
-    let wentOffline = false
+    let disposed = false
 
     const startSubscription = () => {
+        if (disposed) return
         getWsClient()
             .then((client) => {
+                if (disposed) return
                 stop = client.subscribe(
                     {
                         query: typeof rawSub === 'string' ? rawSub : print(rawSub),
@@ -70,66 +132,49 @@ export function useGqlSubscription<T = unknown>(
                 )
             })
             .catch((e) => {
-                error.value = e instanceof Error ? e : new Error(String(e))
+                if (!disposed) error.value = e instanceof Error ? e : new Error(String(e))
             })
     }
 
-    const handleOffline = () => {
-        wentOffline = true
-        error.value = new Error('Lost internet connection')
-    }
-
-    const handleOnline = () => {
-        if (!wentOffline) return
-        wentOffline = false
-        error.value = null
-        // Re-establish subscription (graphql-ws auto-reconnects the WebSocket)
-        stop()
-        startSubscription()
-    }
-
-    // On iOS (Capacitor), backgrounding kills the WebSocket but doesn't fire
-    // Offline/online events. Restart subscription when the app returns to foreground.
-    let hiddenAt = 0
-    const handleVisibilityChange = () => {
-        if (document.visibilityState === 'hidden') {
-            hiddenAt = Date.now()
-            return
-        }
-        // Only reset after ≥3s in background (avoids thrashing on quick tab switches)
-        if (document.visibilityState === 'visible' && Date.now() - hiddenAt > 3_000) {
-            // Dispose the shared WS client — the connection is likely dead
-            wsClient?.dispose()
-            wsClient = null
-            wsClientPromise = null
+    const subscriber: Subscriber = {
+        restart: () => {
+            /*
+             * Shared client was just torn down — the previous stop() targets
+             * a disposed client, so drop it and resubscribe against the next
+             * client created on demand.
+             */
+            stop = () => {}
             error.value = null
-            stop()
             startSubscription()
-        }
+        },
+        setOffline: (value) => {
+            error.value = value ? new Error('Lost internet connection') : null
+        },
     }
 
     if (import.meta.client) {
+        ensureGlobalListeners()
+        subscribers.add(subscriber)
         startSubscription()
-
-        window.addEventListener('offline', handleOffline)
-        window.addEventListener('online', handleOnline)
-        document.addEventListener('visibilitychange', handleVisibilityChange)
     }
 
-    onScopeDispose(() => {
+    const cleanup = () => {
+        if (disposed) return
+        disposed = true
+        subscribers.delete(subscriber)
         stop()
-        if (import.meta.client) {
-            window.removeEventListener('offline', handleOffline)
-            window.removeEventListener('online', handleOnline)
-            document.removeEventListener('visibilitychange', handleVisibilityChange)
-        }
-    })
-
-    const closeAll = () => {
-        wsClient?.dispose()
-        wsClient = null
-        wsClientPromise = null
     }
 
-    return { data, error, stop, closeAll }
+    onScopeDispose(cleanup)
+
+    return {
+        data,
+        error,
+        stop: cleanup,
+        /*
+         * Retained for backward compatibility — global lifecycle is now
+         * handled internally, so this only tears down the local subscription.
+         */
+        closeAll: cleanup,
+    }
 }
