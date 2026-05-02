@@ -192,7 +192,7 @@ const lightboxSrc = ref('')
 const lightboxAlt = ref('')
 
 const openLightbox = (id: string, name: string) => {
-    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id)
+    lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id, 'classic')
     lightboxAlt.value = name
     lightboxRef.value?.open()
 }

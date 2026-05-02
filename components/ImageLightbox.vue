@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts" setup>
+import * as productImage from '~/utils/productImage'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { PRODUCT_IMAGE_FALLBACK } from '~/utils/productImage'
 
 const { src, alt } = defineProps<{
     src: string
@@ -59,12 +59,7 @@ const onKeydown = (e: KeyboardEvent) => {
 }
 
 const onImageError = (event: Event): void => {
-    const img = event.target as HTMLImageElement | null
-    if (!img) return
-    if (img.dataset.fallbackApplied === 'true') return
-
-    img.dataset.fallbackApplied = 'true'
-    img.src = PRODUCT_IMAGE_FALLBACK
+    productImage.handleProductImageError(event, 'classic')
 }
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
