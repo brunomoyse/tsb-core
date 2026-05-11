@@ -8,6 +8,10 @@ if (cfg.public.sentryDsn) {
         environment: (cfg.public.sentryEnvironment as string) || 'production',
         release: (cfg.public.sentryRelease as string) || undefined,
 
+        // Route envelopes through our own origin to bypass ad-blockers and
+        // privacy extensions that block *.ingest.sentry.io.
+        tunnel: '/api/sentry-tunnel',
+
         // ~10% of transactions get a performance trace; lower in prod if volume is high.
         tracesSampleRate: 0.1,
 
