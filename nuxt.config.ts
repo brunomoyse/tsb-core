@@ -18,6 +18,7 @@ const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
 const turnstile = 'https://challenges.cloudflare.com'
 const iconifyHost = 'https://api.iconify.design'
+const sentryHost = 'https://*.ingest.de.sentry.io'
 
 const csp = `${[
     "default-src 'self'",
@@ -25,7 +26,7 @@ const csp = `${[
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''} ${iconifyHost}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile}`,
+    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
     `frame-src 'self' ${osm} ${zitadelOrigin} ${turnstile}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
