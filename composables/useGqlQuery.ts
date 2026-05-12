@@ -4,6 +4,7 @@ import { useAsyncData, useNuxtApp } from '#imports'
 import type { AsyncData } from 'nuxt/app'
 import { hash } from 'ohash'
 import { watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 type Vars = Record<string, unknown> | (() => Record<string, unknown>)
 interface Options {
@@ -20,10 +21,12 @@ export async function useGqlQuery<T>(
     opts: Options = { immediate: true, cache: false },
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
     const { $gqlFetch } = useNuxtApp()
+    const { locale } = useI18n()
     const getVars = () => (typeof variables === 'function' ? variables() : variables)
     const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
 
-    const key = `gql:${hash(printIfAst(rawQuery))}`
+    // Scope the cache key on locale so SSR/cached payloads don't bleed across languages.
+    const key = `gql:${hash(printIfAst(rawQuery))}:${locale.value}`
 
     const asyncData = await useAsyncData<T>(key, handler, {
         immediate: opts.immediate,
@@ -39,6 +42,11 @@ export async function useGqlQuery<T>(
             { deep: true },
         )
     }
+
+    // Refetch when locale changes — covers layout-mounted queries that don't unmount on route change.
+    watch(locale, (next, prev) => {
+        if (next !== prev) asyncData.refresh({ dedupe: 'cancel' })
+    })
 
     return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & { refetch: () => Promise<void> }
 }
