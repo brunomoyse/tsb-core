@@ -292,6 +292,7 @@
       "description": "Nécessaire pour vous contacter au sujet de votre commande.",
       "saved": "Numéro enregistré",
       "edit": "Modifier",
+      "addCountryPrefix": "Pour un numéro non belge, ajoutez l'indicatif du pays (ex. +33)",
       "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
     },
     "orderSummary": "Votre commande",

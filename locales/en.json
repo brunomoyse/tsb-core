@@ -292,6 +292,7 @@
       "description": "Needed so we can reach you about your order.",
       "saved": "Phone number saved",
       "edit": "Edit",
+      "addCountryPrefix": "For a non-Belgian number, add the country code (e.g. +33)",
       "requiredBeforeOrder": "Please add your phone number before placing the order."
     },
     "orderSummary": "Your Order",

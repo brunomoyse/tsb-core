@@ -282,6 +282,7 @@
       "description": "Nodig om u te contacteren over uw bestelling.",
       "saved": "Telefoonnummer opgeslagen",
       "edit": "Wijzigen",
+      "addCountryPrefix": "Voor een niet-Belgisch nummer, voeg het landnummer toe (bijv. +33)",
       "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt."
     },
     "orderSummary": "Uw bestelling",
