@@ -34,24 +34,17 @@
             </button>
         </div>
 
-        <div v-if="!isCollapsed" class="mt-3 flex gap-2">
-            <select
-                v-model="selectedCountry"
-                :aria-label="$t('form.phone')"
-                class="px-2.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-            >
-                <option v-for="country in countries" :key="country.code" :value="country.code">
-                    {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
-                </option>
-            </select>
-            <div class="relative flex-1 min-w-0">
+        <div v-if="!isCollapsed" class="mt-3">
+            <div class="relative">
                 <input
                     ref="phoneInputRef"
                     v-model="phoneLocal"
                     type="tel"
-                    autocomplete="tel-national"
+                    autocomplete="tel"
+                    inputmode="tel"
                     :placeholder="$t('form.phonePlaceholder')"
-                    class="w-full px-3 py-2.5 pr-9 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
+                    :aria-label="$t('form.phone')"
+                    class="w-full px-3 py-2.5 pr-9 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 tabular-nums focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
                 />
                 <span v-if="loading" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
             </div>
@@ -62,8 +55,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { CountryCode } from 'libphonenumber-js'
-import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
 import type { User } from '~/types'
@@ -71,13 +62,10 @@ import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { useI18n } from 'vue-i18n'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const authStore = useAuthStore()
 
-const countries = EUROPEAN_COUNTRIES
-
 const phoneLocal = ref('')
-const selectedCountry = ref<CountryCode>('BE')
 const phoneError = ref('')
 const loading = ref(false)
 const isEditing = ref(false)
@@ -93,8 +81,13 @@ const startEditing = async () => {
     if (current) {
         const { parsePhoneNumberFromString } = await import('libphonenumber-js')
         const parsed = parsePhoneNumberFromString(current)
-        if (parsed?.country) selectedCountry.value = parsed.country as CountryCode
-        phoneLocal.value = parsed?.nationalNumber ?? current.replace(/^\+\d+/, '')
+        if (parsed?.country === 'BE') {
+            phoneLocal.value = parsed.formatNational()
+        } else if (parsed) {
+            phoneLocal.value = parsed.formatInternational()
+        } else {
+            phoneLocal.value = current
+        }
     } else {
         phoneLocal.value = ''
     }
@@ -140,15 +133,21 @@ const save = async (e164: string) => {
     }
 }
 
-watch([phoneLocal, selectedCountry], ([value]) => {
+watch(phoneLocal, (value) => {
     phoneError.value = ''
     if (debounceTimer) clearTimeout(debounceTimer)
-    if (!value.trim()) return
+    const trimmed = value.trim()
+    if (!trimmed) return
     debounceTimer = setTimeout(async () => {
         const { parsePhoneNumberFromString } = await import('libphonenumber-js')
-        const parsed = parsePhoneNumberFromString(value, selectedCountry.value)
+        // Default to BE so a leading "0" parses as a Belgian national number; a leading "+" overrides the default and parses as international.
+        const parsed = parsePhoneNumberFromString(trimmed, 'BE')
         if (parsed?.isValid()) {
             save(parsed.format('E.164'))
+        } else if (trimmed.startsWith('+')) {
+            phoneError.value = t('form.invalidPhone')
+        } else {
+            phoneError.value = t('checkout.phoneCapture.addCountryPrefix')
         }
     }, 500)
 })

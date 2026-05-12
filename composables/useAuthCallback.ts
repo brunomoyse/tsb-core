@@ -28,6 +28,15 @@ const ME = print(gql`
     }
 `)
 
+const RESTAURANT_STATUS = print(gql`
+    query AuthCallbackRestaurantStatus {
+        restaurantConfig {
+            orderingEnabled
+            isOrderingCurrentlyOpen
+        }
+    }
+`)
+
 /**
  * Shared post-auth callback logic used by both:
  * - pages/auth/callback.vue (web OIDC redirect)
@@ -65,10 +74,24 @@ export function useAuthCallback() {
         const returnTo = consumeReturnTo()
         if (returnTo) {
             navigateTo(returnTo)
-        } else if (cartStore.products.length > 0) {
-            navigateTo(localePath('checkout'))
-        } else {
+            return
+        }
+        if (cartStore.products.length === 0) {
             navigateTo(localePath('menu'))
+            return
+        }
+        // Cart has items — only auto-jump to checkout when ordering is actually available.
+        // Otherwise land on /cart so the user sees the disabled state instead of getting bounced.
+        const canCheckout = await isCheckoutAvailable()
+        navigateTo(localePath(canCheckout ? 'checkout' : 'cart'))
+    }
+
+    async function isCheckoutAvailable(): Promise<boolean> {
+        try {
+            const data = await $gqlFetch<{ restaurantConfig: { orderingEnabled: boolean; isOrderingCurrentlyOpen: boolean } }>(RESTAURANT_STATUS)
+            return Boolean(data?.restaurantConfig?.orderingEnabled && data?.restaurantConfig?.isOrderingCurrentlyOpen)
+        } catch {
+            return false
         }
     }
 
