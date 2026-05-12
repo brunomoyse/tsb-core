@@ -145,11 +145,9 @@
                 </div>
             </div>
 
-            <!-- Minimum Order Warning -->
+            <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center">
-                {{ cartStore.collectionOption === 'DELIVERY'
-                    ? $t('cart.minimumDelivery', { amount: 25})
-                    : $t('cart.minimumPickup', { amount: 20}) }}
+                {{ $t('cart.minimumDelivery', { amount: 25}) }}
             </div>
 
             <!-- Ordering Unavailable Warning -->
@@ -311,7 +309,7 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() => (
-    cartStore.collectionOption === 'PICKUP'
+    cartStore.collectionOption === 'PICKUP' && subtotal.value >= 20
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
                 ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
@@ -327,10 +325,8 @@ const cartTotal = computed(() => {
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {
         return cartTotal.value >= 25;
-    } else if (cartStore.collectionOption === 'PICKUP') {
-        return cartTotal.value >= 20;
     }
-    return false
+    return true
 })
 
 // Cart actions

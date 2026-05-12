@@ -17,9 +17,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <p class="text-red-700 font-medium text-sm">
-                {{ cartStore.collectionOption === 'DELIVERY'
-                    ? $t('cart.minimumDelivery', { amount: 25 })
-                    : $t('cart.minimumPickup', { amount: 20 }) }}
+                {{ $t('cart.minimumDelivery', { amount: 25 }) }}
             </p>
         </div>
 
@@ -420,8 +418,6 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
     if (!raw) return null
 
     // Map known backend error strings to translated messages
-    if (raw.includes('minimum order amount for pickup'))
-        return t('checkout.minimumPickup', { amount: 20 })
     if (raw.includes('minimum order amount for delivery'))
         return t('checkout.minimumDelivery', { amount: 25 })
     if (raw.includes('ordering is currently unavailable'))
@@ -552,9 +548,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
 
     if (!isMinimumReached.value) {
         errors.push({
-            message: cartStore.collectionOption === 'DELIVERY'
-                ? t('cart.minimumDelivery', { amount: 25 })
-                : t('cart.minimumPickup', { amount: 20 }),
+            message: t('cart.minimumDelivery', { amount: 25 }),
             targetId: 'checkout-minimum-order-banner',
             event: 'checkout_error_minimum_not_reached',
         })
@@ -786,7 +780,7 @@ const subtotal = computed(() =>
 );
 
 const totalDiscount = computed(() =>
-    cartStore.collectionOption === 'PICKUP'
+    cartStore.collectionOption === 'PICKUP' && subtotal.value >= 20
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
                 ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
@@ -797,10 +791,8 @@ const totalDiscount = computed(() =>
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {
         return cartTotal.value >= 25;
-    } else if (cartStore.collectionOption === 'PICKUP') {
-        return cartTotal.value >= 20;
     }
-    return false
+    return true
 })
 
 // Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.

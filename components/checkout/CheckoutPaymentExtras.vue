@@ -251,11 +251,9 @@
             </p>
         </div>
 
-        <!-- Minimum Order Warning -->
+        <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
         <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
-            {{ cartStore.collectionOption === 'DELIVERY'
-            ? $t('cart.minimumDelivery', { amount: 25})
-            : $t('cart.minimumPickup', { amount: 20}) }}
+            {{ $t('cart.minimumDelivery', { amount: 25}) }}
         </div>
 
         <!-- Checkout Button (desktop only) -->

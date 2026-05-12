@@ -152,7 +152,7 @@
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'PICKUP'" class="flex justify-between text-gray-500">
+                <div v-if="cartStore.collectionOption === 'PICKUP' && totalDiscount > 0" class="flex justify-between text-gray-500">
                     <span>{{ $t('checkout.discount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(totalDiscount) }}</span>
                 </div>
@@ -298,7 +298,7 @@ const deliveryFee = computed(() => {
 })
 
 const totalDiscount = computed(() => (
-    cartStore.collectionOption === 'PICKUP'
+    cartStore.collectionOption === 'PICKUP' && cartTotal.value >= 20
         ? cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
                 ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
