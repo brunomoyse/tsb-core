@@ -479,6 +479,12 @@ const confirmAddress = () => {
 }
 
 onMounted(() => {
+    // Defend against an SSR-to-CSR hydration race: post-OIDC redirects land here with `cart.products = []` from the server payload, and the orderExtra/address writes below would persist that empty array — wiping the pre-auth selection. `$hydrate` (pinia-plugin-persistedstate) forces a re-read from localStorage first.
+    if (import.meta.client) {
+        const persisted = cartStore as unknown as { $hydrate?: (opts?: { runHooks?: boolean }) => void }
+        persisted.$hydrate?.({ runHooks: false })
+    }
+
     // Always pre-check wasabi, ginger, and sauce (both)
     if (!cartStore.orderExtra) cartStore.orderExtra = []
     for (const name of ['wasabi', 'ginger']) {
