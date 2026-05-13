@@ -68,11 +68,11 @@
             </footer>
         </div>
         <ClientOnly>
-            <LazyCapacitorTabBar />
+            <LazyNavbarCapacitorTabBar />
         </ClientOnly>
         <ClientOnly>
             <LazyCartMobile v-if="!isCapacitor" :is-ordering-available="isOrderingAvailable" />
-            <LazyFloatingCartBar v-if="!isCapacitor && isMenuPage" />
+            <LazyCartFloatingCartBar v-if="!isCapacitor && isMenuPage" />
         </ClientOnly>
         <ClientOnly>
             <LazyNotificationBar

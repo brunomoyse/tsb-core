@@ -1,5 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
+import { fileURLToPath } from 'node:url'
 
+const rootDir = fileURLToPath(new URL('.', import.meta.url))
 const isCapacitor = process.env.APP_BUILD === 'capacitor'
 
 // Capacitor builds always target the test server
@@ -182,9 +184,9 @@ export default defineNuxtConfig({
     // Per-subdirectory cache headers for static assets. Nitro's public-asset handler sets Cache-Control directly; routeRules headers don't override it, which is why /images, /fonts, /icons were leaking 4h max-age in production.
     nitro: isCapacitor ? {} : {
         publicAssets: [
-            { baseURL: 'images', dir: 'public/images', maxAge: 60 * 60 * 24 * 365 },
-            { baseURL: 'fonts',  dir: 'public/fonts',  maxAge: 60 * 60 * 24 * 365 },
-            { baseURL: 'icons',  dir: 'public/icons',  maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: '/images', dir: `${rootDir}public/images`, maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: '/fonts',  dir: `${rootDir}public/fonts`,  maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: '/icons',  dir: `${rootDir}public/icons`,  maxAge: 60 * 60 * 24 * 365 },
         ],
     },
 
