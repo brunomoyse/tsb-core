@@ -179,8 +179,16 @@ export const useCartStore = defineStore("cart", {
         }
     },
     persist: {
+        /*
+         * `isCartVisible` is transient UI state. Persisting it caused users to
+         * land on /menu with an empty drawer but `isCartVisible: true` still in
+         * localStorage, hiding the FloatingCartBar (its v-if depends on
+         * `!isCartVisible`) and leaving no visible way to open the cart.
+         */
+        omit: ['isCartVisible'],
         afterHydrate: (ctx) => {
-            const store = ctx.store as { products: CartItem[] };
+            const store = ctx.store as { products: CartItem[]; isCartVisible: boolean };
+            store.isCartVisible = false;
             for (const item of store.products) {
                 if (item.quantity > MAX_ITEM_QUANTITY) item.quantity = MAX_ITEM_QUANTITY;
                 if (item.quantity < 1) item.quantity = 1;
