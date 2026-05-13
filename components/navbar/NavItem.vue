@@ -56,7 +56,7 @@ const isActive = computed(() => {
     // Normalize to to always start with "/"
     const normalizedTo = to.startsWith('/') ? to : `/${to}`;
     // Remove the first segment (locale) from route.path, e.g. "/fr/me" becomes "/me"
-    const normalizedPath = route.path.replace(/^\/[^/]+/, '');
+    const normalizedPath = route.path.replace(/^\/[^/]+/u, '');
     return normalizedPath === normalizedTo || normalizedPath.startsWith(`${normalizedTo}/`);
 })
 </script>

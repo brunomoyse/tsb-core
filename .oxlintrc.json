@@ -10,6 +10,7 @@
   },
   "rules": {
     "no-shadow": "warn",
+    "no-underscore-dangle": ["warn", { "allow": ["__dirname", "__vue_app__", "_client"] }],
     "default-case-last": "warn",
     "prefer-const": "error",
     "no-var": "error",

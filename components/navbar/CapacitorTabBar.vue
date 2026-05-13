@@ -102,7 +102,7 @@ const cartStore = useCartStore()
 const authStore = useAuthStore()
 const route = useRoute()
 
-const normalizedPath = computed(() => route.path.replace(/^\/[^/]+/, ''))
+const normalizedPath = computed(() => route.path.replace(/^\/[^/]+/u, ''))
 
 const isHomeActive = computed(() => normalizedPath.value === '/' || normalizedPath.value === '')
 const isMenuActive = computed(() => normalizedPath.value === '/menu' || normalizedPath.value.startsWith('/menu/'))

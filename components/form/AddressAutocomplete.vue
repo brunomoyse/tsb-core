@@ -143,7 +143,7 @@ let sessionToken = generateSessionToken()
 // Debounce timer
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-const hasHouseNumberInQuery = (input: string): boolean => /\d/.test(input)
+const hasHouseNumberInQuery = (input: string): boolean => /\d/u.test(input)
 
 // Generate a UUID for session token
 function generateSessionToken(): string {

@@ -501,7 +501,7 @@ const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =
 const filteredProducts = computed(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
     if (!q) return allProducts.value
-    const words = q.split(/\s+/)
+    const words = q.split(/\s+/u)
     return allProducts.value.filter(p => {
         const haystack = [p.name, p.code, p.category.name]
             .filter(Boolean)

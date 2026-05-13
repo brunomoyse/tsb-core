@@ -92,7 +92,7 @@ export default defineNuxtPlugin(async () => {
         App.addListener('appUrlOpen', async ({ url }) => {
             if (url.startsWith('be.tokyosushibarliege.app:')) {
                 // Strip scheme to get a clean path (e.g. /fr/auth/idp/callback?id=...)
-                const path = url.replace(/^be\.tokyosushibarliege\.app:\/\//, '/')
+                const path = url.replace(/^be\.tokyosushibarliege\.app:\/\//u, '/')
 
                 // Close SFSafariViewController on OAuth callbacks and payment redirects
                 if (path.includes('/auth/idp/callback') || path.includes('/order-completed/')) {
