@@ -20,6 +20,7 @@ const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
 const turnstile = 'https://challenges.cloudflare.com'
 const iconifyHost = 'https://api.iconify.design'
+const sentryHost = 'https://*.ingest.de.sentry.io'
 
 const csp = `${[
     "default-src 'self'",
@@ -27,7 +28,7 @@ const csp = `${[
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''} ${iconifyHost}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile}`,
+    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
     `frame-src 'self' ${osm} ${zitadelOrigin} ${turnstile}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
@@ -78,6 +79,11 @@ export default defineNuxtConfig({
         "@pinia/nuxt",
         'pinia-plugin-persistedstate/nuxt',
         ...isCapacitor ? [] : ['@nuxtjs/sitemap'],
+        /*
+         * Skip Sentry on Capacitor (native) and when no DSN is set at build time —
+         * including the module bundles ~50KB of SDK that's inert without a DSN.
+         */
+        ...(isCapacitor || !process.env.SENTRY_DSN ? [] : ['@sentry/nuxt/module']),
     ],
 
         plugins: [
@@ -135,6 +141,24 @@ export default defineNuxtConfig({
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
             zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
             turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+            // Sentry (DSN is safe to expose client-side by design)
+            sentryDsn: process.env.SENTRY_DSN || '',
+            sentryEnvironment: process.env.SENTRY_ENVIRONMENT || 'production',
+            sentryRelease: process.env.SENTRY_RELEASE || '',
+        },
+    },
+
+    /*
+     * @sentry/nuxt module — configured via env vars read by the Sentry build plugin.
+     * SENTRY_AUTH_TOKEN is the release/source-map upload token (private, CI only).
+     * SENTRY_ORG + SENTRY_PROJECT are needed by the bundler plugin to upload sourcemaps.
+     */
+    sentry: {
+        sourceMapsUploadOptions: {
+            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN) && !isCapacitor,
+            org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
+            project: process.env.SENTRY_PROJECT || 'tsb-core',
+            authToken: process.env.SENTRY_AUTH_TOKEN,
         },
     },
 
