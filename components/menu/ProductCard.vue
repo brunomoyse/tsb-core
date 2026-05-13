@@ -58,11 +58,12 @@
             <div class="shrink-0 px-2 pb-1">
                 <!-- Text block: fixed height so price always aligns across cards -->
                 <div class="min-h-[76px] flex flex-col items-center">
-                    <span class="text-gray-600 font-medium text-xs mb-0.5 truncate">
+                    <span translate="no" class="text-gray-600 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
                     <span
                         data-testid="product-name"
+                        translate="no"
                         class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5"
                         :title="product.name"
                     >

@@ -220,7 +220,7 @@
                     <!-- Category Title with Japanese bracket decoration -->
                     <div class="flex items-center gap-3 ml-4">
                         <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
-                        <h2 class="font-channel inline-block text-xl font-semibold text-gray-800 tracking-wide">
+                        <h2 translate="no" class="font-channel inline-block text-xl font-semibold text-gray-800 tracking-wide">
                             {{ cat.name }}
                         </h2>
                         <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
