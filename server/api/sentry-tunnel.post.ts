@@ -52,13 +52,18 @@ export default defineEventHandler(async (event) => {
     const projectId = incoming.pathname.replace(/^\//, '')
     const ingestUrl = `https://${incoming.hostname}/api/${projectId}/envelope/`
 
-    await $fetch(ingestUrl, {
-        method: 'POST',
-        body: envelope,
-        headers: { 'content-type': 'application/x-sentry-envelope' },
-        responseType: 'text',
-    })
+    try {
+        await $fetch(ingestUrl, {
+            method: 'POST',
+            body: envelope,
+            headers: { 'content-type': 'application/x-sentry-envelope' },
+            responseType: 'text',
+            timeout: 5000,
+        })
+    } catch {
+        // Sentry ingest is best-effort — never surface failures to the client.
+    }
 
-    setResponseStatus(event, 200)
+    setResponseStatus(event, 204)
     return ''
 })
