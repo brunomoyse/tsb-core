@@ -183,6 +183,7 @@ import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-lin
 import { TRANSACTION_FEE } from '~/lib/fees'
 import { deliveryFeeForDistance } from '~/lib/delivery'
 import { formatPrice } from '~/lib/price'
+import { roundToNearest10Cents } from '~/utils/money'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
@@ -297,23 +298,24 @@ const deliveryFee = computed(() => {
     return deliveryFeeForDistance(cartStore.address.distance)
 })
 
-const totalDiscount = computed(() => (
-    cartStore.collectionOption === 'PICKUP' && cartTotal.value >= 20
-        ? cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-                : acc, 0)
-        : 0
-));
+const totalDiscount = computed(() => {
+    if (cartStore.collectionOption !== 'PICKUP' || cartTotal.value < 20) return 0
+    const raw = cartStore.products.reduce((acc, item) =>
+        item.product.isDiscountable
+            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
+            : acc, 0)
+    return roundToNearest10Cents(raw)
+});
 
 const finalTotal: ComputedRef<number> = computed(() => {
     const fee = deliveryFee.value === -1 ? 0 : deliveryFee.value
     const txFee = cartStore.paymentOption === 'ONLINE' ? TRANSACTION_FEE : 0
-    return cartTotal.value
+    const raw = cartTotal.value
         + (cartStore.collectionOption === 'DELIVERY' ? fee : 0)
         - totalDiscount.value
         - cartStore.couponDiscount
         + txFee
+    return roundToNearest10Cents(raw)
 })
 
 const handleIncrementQuantity = (item: CartItem) => {

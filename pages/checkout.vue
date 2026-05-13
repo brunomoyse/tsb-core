@@ -247,6 +247,7 @@ import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.v
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
+import { roundToNearest10Cents } from '~/utils/money'
 import gql from 'graphql-tag'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
@@ -761,7 +762,7 @@ const handleCheckout = async () => {
 }
 const cartTotal = computed(() => {
     const total = subtotal.value - totalDiscount.value - cartStore.couponDiscount;
-    return Math.max(total, 0);
+    return roundToNearest10Cents(Math.max(total, 0));
 });
 
 const getItemUnitPrice = (item: CartItem) =>
@@ -779,14 +780,14 @@ const subtotal = computed(() =>
         acc + (getItemUnitPrice(item) * item.quantity), 0)
 );
 
-const totalDiscount = computed(() =>
-    cartStore.collectionOption === 'PICKUP' && subtotal.value >= 20
-        ? cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-                : acc, 0)
-        : 0
-);
+const totalDiscount = computed(() => {
+    if (cartStore.collectionOption !== 'PICKUP' || subtotal.value < 20) return 0
+    const raw = cartStore.products.reduce((acc, item) =>
+        item.product.isDiscountable
+            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
+            : acc, 0)
+    return roundToNearest10Cents(raw)
+});
 
 const isMinimumReached = computed(() => {
     if (cartStore.collectionOption === 'DELIVERY') {
