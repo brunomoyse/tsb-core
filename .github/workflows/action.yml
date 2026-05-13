@@ -145,6 +145,12 @@ jobs:
             --build-arg UMAMI_HOST=${{ vars.UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }} \
             --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NUXT_PUBLIC_TURNSTILE_SITE_KEY }} \
+            --build-arg SENTRY_DSN=${{ vars.SENTRY_DSN }} \
+            --build-arg SENTRY_ENVIRONMENT=production \
+            --build-arg SENTRY_RELEASE=${{ github.ref_name }} \
+            --build-arg SENTRY_ORG=${{ vars.SENTRY_ORG }} \
+            --build-arg SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }} \
+            --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
             --push
 
   deploy_production:
