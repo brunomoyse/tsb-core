@@ -30,8 +30,8 @@
                 <!-- Details Section -->
                 <div class="space-y-6">
                     <div class="flex items-center flex-col">
-                        <p class="text-lg text-gray-600 mb-2">{{ p.category.name }}</p>
-                        <h2 id="product-modal-title" class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
+                        <p translate="no" class="text-lg text-gray-600 mb-2">{{ p.category.name }}</p>
+                        <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
                     </div>
 
                     <!-- Price & Badges -->
