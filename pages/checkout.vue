@@ -235,7 +235,7 @@
 <script lang="ts" setup>
 definePageMeta({ public: true })
 
-import type { Address, CartItem, CreateOrderRequest, Order } from '~/types'
+import type { Address, CreateOrderRequest, Order } from '~/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '~/utils/datetime'
 import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
@@ -249,6 +249,7 @@ import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { roundToNearest10Cents } from '~/utils/money'
 import gql from 'graphql-tag'
+import { useCartTotals } from '~/composables/useCartTotals'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
@@ -260,6 +261,11 @@ import { useTracking } from '~/composables/useTracking'
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const {
+    subtotal,
+    pickupDiscount,
+    isMinimumReached,
+} = useCartTotals()
 const localePath = useLocalePath()
 const { isCapacitor } = usePlatform()
 const { notification: hapticNotification } = useHaptics()
@@ -760,41 +766,9 @@ const handleCheckout = async () => {
         isCheckoutProcessing.value = false
     }
 }
-const cartTotal = computed(() => {
-    const total = subtotal.value - totalDiscount.value - cartStore.couponDiscount;
-    return roundToNearest10Cents(Math.max(total, 0));
-});
-
-const getItemUnitPrice = (item: CartItem) =>
-    Number(item.product.price) +
-    ((item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
-            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-            if (!choice) return sum
-            return sum + Number(choice.priceModifier) * selection.quantity
-        }, 0)
-        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
-
-const subtotal = computed(() =>
-    cartStore.products.reduce((acc, item) =>
-        acc + (getItemUnitPrice(item) * item.quantity), 0)
-);
-
-const totalDiscount = computed(() => {
-    if (cartStore.collectionOption !== 'PICKUP' || subtotal.value < 20) return 0
-    const raw = cartStore.products.reduce((acc, item) =>
-        item.product.isDiscountable
-            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-            : acc, 0)
-    return roundToNearest10Cents(raw)
-});
-
-const isMinimumReached = computed(() => {
-    if (cartStore.collectionOption === 'DELIVERY') {
-        return cartTotal.value >= 25;
-    }
-    return true
-})
+const cartTotal = computed(() =>
+    roundToNearest10Cents(Math.max(subtotal.value - pickupDiscount.value - cartStore.couponDiscount, 0)),
+)
 
 // Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.
 watch(
