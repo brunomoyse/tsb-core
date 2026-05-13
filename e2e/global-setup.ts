@@ -13,7 +13,7 @@ const DB_NAME = process.env.DB_DATABASE || 'tokyosushi'
 
 function psql(sql: string): string {
   return execSync(
-    `PGPASSWORD='${DB_PASS}' psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t -A -c "${sql.replace(/"/g, '\\"')}"`,
+    `PGPASSWORD='${DB_PASS}' psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t -A -c "${sql.replace(/"/gu, '\\"')}"`,
     { encoding: 'utf-8' },
   ).trim()
 }

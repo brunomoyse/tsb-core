@@ -13,7 +13,7 @@ test.describe('Public page smoke tests', () => {
     await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await expect(page.locator('h1').first()).toBeVisible()
-    await expect(page).toHaveTitle(/Tokyo Sushi/i)
+    await expect(page).toHaveTitle(/Tokyo Sushi/iu)
   })
 
   test('Menu page loads with products', async ({ page }) => {

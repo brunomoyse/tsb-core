@@ -3,8 +3,8 @@ import { type DocumentNode, print } from 'graphql'
 import { useAsyncData, useNuxtApp } from '#imports'
 import type { AsyncData } from 'nuxt/app'
 import { hash } from 'ohash'
-import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { watch } from 'vue'
 
 type Vars = Record<string, unknown> | (() => Record<string, unknown>)
 interface Options {

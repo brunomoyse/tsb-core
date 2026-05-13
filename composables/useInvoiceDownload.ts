@@ -31,7 +31,7 @@ export function useInvoiceDownload() {
             const disposition = response.headers.get('Content-Disposition')
             let filename = `invoice-${orderId}.pdf`
             if (disposition) {
-                const [, extracted] = disposition.match(/filename="(.+?)"/) ?? []
+                const [, extracted] = disposition.match(/filename="(.+?)"/u) ?? []
                 if (extracted) filename = extracted
             }
 

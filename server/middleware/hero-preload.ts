@@ -3,7 +3,7 @@ const HERO_LINK = [
     '</images/restaurant-illustrated.avif>; rel=preload; as=image; type="image/avif"; media="(min-width: 641px)"; fetchpriority="high"',
 ].join(', ')
 
-const HOMEPAGE_PATH = /^\/(?:(?:fr|en|zh|nl)\/?)?$/
+const HOMEPAGE_PATH = /^\/(?:(?:fr|en|zh|nl)\/?)?$/u
 
 export default defineEventHandler((event) => {
     const [pathname] = (event.path || '').split('?')

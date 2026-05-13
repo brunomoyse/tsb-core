@@ -102,7 +102,7 @@ export function useAuthCallback() {
         // Only allow same-origin absolute paths; reject protocol-relative (//) or off-site URLs.
         if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null
         // Don't bounce back into the auth flow itself.
-        if (/^\/[^/]+\/auth(\/|$)/.test(raw)) return null
+        if (/^\/[^/]+\/auth(\/|$)/u.test(raw)) return null
         return raw
     }
 

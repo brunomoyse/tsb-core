@@ -55,7 +55,7 @@ export function useOidc() {
                 stateStore: new WebStorageStateStore({ store: localStorage }),
             })
         } else {
-            const baseUrl = (config.public.baseUrl as string).replace(/\/+$/, '')
+            const baseUrl = (config.public.baseUrl as string).replace(/\/+$/u, '')
             userManager = new UserManager({
                 authority: config.public.zitadelAuthority as string,
                 client_id: config.public.zitadelClientId as string,
@@ -291,9 +291,11 @@ export function useOidc() {
             oidcUser.value = user
             return user
         } catch {
-            // Wipe the stale user so subsequent getAccessToken() calls return null
-            // instead of triggering an iframe storm against Zitadel.
-            try { await mgr.removeUser() } catch { /* ignore */ }
+            /*
+             * Wipe the stale user so subsequent getAccessToken() calls return null
+             * instead of triggering an iframe storm against Zitadel.
+             */
+            try { await mgr.removeUser() } catch { /* Best-effort cleanup */ }
             oidcUser.value = null
             return null
         }

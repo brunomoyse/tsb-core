@@ -410,7 +410,7 @@ const cashPaymentAmount = computed({
             return
         }
         const raw = String(value).replace(',', '.')
-        const match = raw.match(/^(\d*)(\.\d{0,2})?/)
+        const match = raw.match(/^(\d*)(\.\d{0,2})?/u)
         const sanitized = match ? `${match[1] ?? ''}${match[2] ?? ''}` : ''
         cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
     },

@@ -87,10 +87,10 @@
 
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest } from '~/types'
-import type { CountryCode } from 'libphonenumber-js'
 import { EUROPEAN_COUNTRIES, getCountryName } from '~/utils/europeanCountries'
 import { ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import type { CountryCode } from 'libphonenumber-js'
 import { formatAddress } from '~/utils/utils'
 import { useI18n } from 'vue-i18n'
 
