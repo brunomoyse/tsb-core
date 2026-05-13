@@ -241,6 +241,7 @@ import { computed, reactive, ref } from 'vue'
 import { deliveryFeeForDistance } from '~/lib/delivery'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
+import { roundToNearest10Cents } from '~/utils/money'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useHaptics } from '~/composables/useHaptics'
@@ -331,18 +332,20 @@ const deliveryFee = computed(() => {
     return deliveryFeeForDistance(cartStore.address.distance)
 })
 
-const pickupDiscount = computed(() =>
-    cartStore.collectionOption === 'PICKUP'
-        ? cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-                : acc, 0)
-        : 0
-)
+const pickupDiscount = computed(() => {
+    if (cartStore.collectionOption !== 'PICKUP') return 0
+    const raw = cartStore.products.reduce((acc, item) =>
+        item.product.isDiscountable
+            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
+            : acc, 0)
+    return roundToNearest10Cents(raw)
+})
 
 const displayTotal = computed(() => {
     const fee = cartStore.collectionOption === 'DELIVERY' && deliveryFee.value > 0 ? deliveryFee.value : 0
-    return cartStore.totalPrice + fee - pickupDiscount.value - cartStore.couponDiscount
+    return roundToNearest10Cents(
+        cartStore.totalPrice + fee - pickupDiscount.value - cartStore.couponDiscount,
+    )
 })
 
 const summaryHasBreakdown = computed(() =>
