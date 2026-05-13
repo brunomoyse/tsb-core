@@ -117,7 +117,7 @@
             <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
                 <div class="flex justify-between text-gray-500">
                     <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(cartTotal) }}</span>
+                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500 relative">
                     <div class="flex items-center gap-1">
@@ -152,9 +152,9 @@
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'PICKUP' && totalDiscount > 0" class="flex justify-between text-gray-500">
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
                     <span>{{ $t('checkout.discount') }}</span>
-                    <span class="tabular-nums">-{{ formatPrice(totalDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
                 <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-red-600">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
@@ -181,17 +181,23 @@ import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { TRANSACTION_FEE } from '~/lib/fees'
-import { deliveryFeeForDistance } from '~/lib/delivery'
 import { formatPrice } from '~/lib/price'
-import { roundToNearest10Cents } from '~/utils/money'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
+import { roundToNearest10Cents } from '~/utils/money'
 import { useCartStore } from '@/stores/cart'
+import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { impact: hapticImpact } = useHaptics()
+const {
+    getItemUnitPrice,
+    subtotal,
+    pickupDiscount,
+    deliveryFee,
+} = useCartTotals()
 const showTooltip = ref(false)
 const tooltipButtonRef = ref<HTMLElement | null>(null)
 
@@ -237,19 +243,6 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemUnitPrice = (item: { product: { price: string | number }; selectedChoice?: { priceModifier: string | number } | null }) => {
-    const base = Number(item.product.price)
-    const cartItem = item as CartItem
-    const modifier = (cartItem.selectedChoices?.length ?? 0) > 0
-        ? (cartItem.selectedChoices ?? []).reduce((sum, selection) => {
-            const choice = cartItem.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-            if (!choice) return sum
-            return sum + Number(choice.priceModifier) * selection.quantity
-        }, 0)
-        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
-    return base + modifier
-}
-
 const getItemKey = (item: CartItem): string => {
     const signature = (item.selectedChoices ?? [])
         .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
@@ -289,33 +282,12 @@ const itemChoice = (item: CartItem): string | undefined =>
             choiceName: item.selectedChoice?.name,
         }).choice
 
-const cartTotal = computed(() =>
-    cartStore.products.reduce((total, item) => total + getItemUnitPrice(item) * item.quantity, 0)
-)
-
-const deliveryFee = computed(() => {
-    if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
-    return deliveryFeeForDistance(cartStore.address.distance)
-})
-
-const totalDiscount = computed(() => {
-    if (cartStore.collectionOption !== 'PICKUP' || cartTotal.value < 20) return 0
-    const raw = cartStore.products.reduce((acc, item) =>
-        item.product.isDiscountable
-            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-            : acc, 0)
-    return roundToNearest10Cents(raw)
-});
-
 const finalTotal: ComputedRef<number> = computed(() => {
-    const fee = deliveryFee.value === -1 ? 0 : deliveryFee.value
+    const fee = cartStore.collectionOption === 'DELIVERY' ? Math.max(deliveryFee.value, 0) : 0
     const txFee = cartStore.paymentOption === 'ONLINE' ? TRANSACTION_FEE : 0
-    const raw = cartTotal.value
-        + (cartStore.collectionOption === 'DELIVERY' ? fee : 0)
-        - totalDiscount.value
-        - cartStore.couponDiscount
-        + txFee
-    return roundToNearest10Cents(raw)
+    return roundToNearest10Cents(
+        subtotal.value + fee - pickupDiscount.value - cartStore.couponDiscount + txFee,
+    )
 })
 
 const handleIncrementQuantity = (item: CartItem) => {

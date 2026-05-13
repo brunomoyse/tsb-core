@@ -130,18 +130,34 @@
         <footer class="p-4 space-y-4 flex-none">
             <!-- Price Breakdown -->
             <div class="space-y-2">
-                <div class="flex justify-between items-center text-sm text-gray-600">
+                <div v-if="hasBreakdown" class="flex justify-between items-center text-sm text-gray-600">
                     <span>{{ $t('cart.subtotal') }}:</span>
-                    <span>{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'PICKUP' && totalDiscount > 0"
-                     class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-gray-600">
+                    <span>{{ $t('cart.deliveryFee') }}:</span>
+                    <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                        {{ $t('cart.deliveryTbd') }}
+                    </span>
+                    <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                        {{ $t('checkout.tooFar') }}
+                    </span>
+                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
+                        {{ $t('checkout.free') }}
+                    </span>
+                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                </div>
+                <div v-if="pickupDiscount > 0" class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
-                    <span>-{{ formatPrice(totalDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                </div>
+                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-red-600">
+                    <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
+                    <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span data-testid="cart-total">{{ formatPrice(cartTotal) }}</span>
+                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(displayTotal) }}</span>
                 </div>
             </div>
 
@@ -177,13 +193,14 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import { computed, onMounted, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { onMounted, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
+import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
@@ -196,6 +213,16 @@ const cartStore = useCartStore();
 const { impact } = useHaptics()
 const {t} = useI18n()
 const { trackEvent } = useTracking()
+const {
+    getItemUnitPrice,
+    subtotal,
+    pickupDiscount,
+    deliveryFee,
+    couponDiscount,
+    displayTotal,
+    hasBreakdown,
+    isMinimumReached,
+} = useCartTotals()
 
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')
@@ -260,18 +287,6 @@ const handleOrderType = (option: string) => {
     trackEvent('cart_collection_option_changed', { from, to: option })
 };
 
-// Price calculations
-const getItemUnitPrice = (item: CartItem) => {
-    const base = Number(item.product.price)
-    const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
-    const modifier = (item.selectedChoices ?? []).reduce((sum, selection) => {
-        const choice = choiceMap.get(selection.choiceId)
-        if (!choice) return sum
-        return sum + (Number(choice.priceModifier) * selection.quantity)
-    }, item.selectedChoices?.length ? 0 : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
-    return base + modifier
-}
-
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
     categoryName: item.product.category?.name,
@@ -302,32 +317,6 @@ const itemChoice = (item: CartItem): string | undefined =>
             productName: item.product.name,
             choiceName: item.selectedChoice?.name,
         }).choice
-
-const subtotal = computed(() =>
-    cartStore.products.reduce((acc, item) =>
-        acc + (getItemUnitPrice(item) * item.quantity), 0)
-);
-
-const totalDiscount = computed(() => (
-    cartStore.collectionOption === 'PICKUP' && subtotal.value >= 20
-        ? cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-                : acc, 0)
-        : 0
-));
-
-const cartTotal = computed(() => {
-    const total = subtotal.value - totalDiscount.value;
-    return Math.max(total, 0);
-});
-
-const isMinimumReached = computed(() => {
-    if (cartStore.collectionOption === 'DELIVERY') {
-        return cartTotal.value >= 25;
-    }
-    return true
-})
 
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {

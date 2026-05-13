@@ -144,9 +144,9 @@
         <!-- ═══ ORDER SUMMARY ═══ -->
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
             <div class="bg-white rounded-2xl border border-gray-100 px-4 py-3 space-y-1 text-sm">
-                <div v-if="summaryHasBreakdown" class="flex justify-between text-gray-500">
+                <div v-if="hasBreakdown" class="flex justify-between text-gray-500">
                     <span>{{ $t('cart.subtotal') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(cartStore.totalPrice) }}</span>
+                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500">
                     <span>{{ $t('cart.deliveryFee') }}</span>
@@ -238,12 +238,11 @@
 import * as productImage from '~/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '@/types'
 import { computed, reactive, ref } from 'vue'
-import { deliveryFeeForDistance } from '~/lib/delivery'
 import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
-import { roundToNearest10Cents } from '~/utils/money'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
+import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
@@ -263,6 +262,15 @@ const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
 const { config: restaurantConfig } = await useRestaurantConfig()
+const {
+    getItemUnitPrice,
+    subtotal,
+    pickupDiscount,
+    deliveryFee,
+    couponDiscount,
+    displayTotal,
+    hasBreakdown,
+} = useCartTotals()
 const isCheckoutAvailable = computed(() => {
     const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
     const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
@@ -278,16 +286,6 @@ const cartPageMinHeightClass = computed(() =>
         ? 'min-h-[calc(100dvh-var(--safe-area-top,0px)-var(--cap-tab-clearance,56px))]'
         : 'min-h-[100dvh]'
 )
-
-const getItemUnitPrice = (item: CartItem): number =>
-    Number(item.product.price) +
-    ((item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
-            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-            if (!choice) return sum
-            return sum + Number(choice.priceModifier) * selection.quantity
-        }, 0)
-        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
@@ -325,34 +323,6 @@ const itemChoice = (item: CartItem): string | undefined =>
             productName: item.product.name,
             choiceName: item.selectedChoice?.name,
         }).choice
-
-// ── Summary
-const deliveryFee = computed(() => {
-    if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
-    return deliveryFeeForDistance(cartStore.address.distance)
-})
-
-const pickupDiscount = computed(() => {
-    if (cartStore.collectionOption !== 'PICKUP') return 0
-    const raw = cartStore.products.reduce((acc, item) =>
-        item.product.isDiscountable
-            ? acc + (getItemUnitPrice(item) * item.quantity * 0.1)
-            : acc, 0)
-    return roundToNearest10Cents(raw)
-})
-
-const displayTotal = computed(() => {
-    const fee = cartStore.collectionOption === 'DELIVERY' && deliveryFee.value > 0 ? deliveryFee.value : 0
-    return roundToNearest10Cents(
-        cartStore.totalPrice + fee - pickupDiscount.value - cartStore.couponDiscount,
-    )
-})
-
-const summaryHasBreakdown = computed(() =>
-    cartStore.collectionOption === 'DELIVERY' ||
-    pickupDiscount.value > 0 ||
-    cartStore.couponDiscount > 0
-)
 
 // ── Cart mutations with undo support
 const restoreItem = (item: {

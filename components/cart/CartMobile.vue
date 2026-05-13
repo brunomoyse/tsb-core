@@ -140,9 +140,36 @@
 
             <!-- FOOTER: TOTAL + CHECKOUT -->
             <footer v-if="cartStore.products.length" class="p-4 border-t border-gray-200 bg-white rounded-b-none">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-sm font-medium text-gray-700">{{ $t('cart.total') }}:</span>
-                    <span class="text-lg font-semibold text-gray-900">{{ formatPrice(cartStore.totalPrice) }}</span>
+                <div class="space-y-1.5 text-sm mb-4">
+                    <div v-if="hasBreakdown" class="flex justify-between text-gray-500">
+                        <span>{{ $t('cart.subtotal') }}</span>
+                        <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    </div>
+                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500">
+                        <span>{{ $t('cart.deliveryFee') }}</span>
+                        <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                            {{ $t('cart.deliveryTbd') }}
+                        </span>
+                        <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                            {{ $t('checkout.tooFar') }}
+                        </span>
+                        <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
+                            {{ $t('checkout.free') }}
+                        </span>
+                        <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    </div>
+                    <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                        <span>{{ $t('cart.pickupDiscount') }}</span>
+                        <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    </div>
+                    <div v-if="couponDiscount > 0" class="flex justify-between text-red-600">
+                        <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
+                        <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
+                    </div>
+                    <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
+                        <span class="font-medium text-gray-700">{{ $t('cart.total') }}</span>
+                        <span class="text-lg font-semibold text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    </div>
                 </div>
                 <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
@@ -177,6 +204,7 @@ const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLight
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
+import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useTracking } from '~/composables/useTracking'
 
@@ -186,6 +214,15 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
+const {
+    getItemUnitPrice,
+    subtotal,
+    pickupDiscount,
+    deliveryFee,
+    couponDiscount,
+    displayTotal,
+    hasBreakdown,
+} = useCartTotals()
 
 const lightboxRef = ref<{ open: () => void } | null>(null)
 const lightboxSrc = ref('')
@@ -204,16 +241,6 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
-
-const getItemUnitPrice = (item: CartItem): number =>
-    Number(item.product.price) +
-    ((item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? []).reduce((sum, selection) => {
-            const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-            if (!choice) return sum
-            return sum + Number(choice.priceModifier) * selection.quantity
-        }, 0)
-        : (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0))
 
 const getItemKey = (item: CartItem): string => {
     const signature = (item.selectedChoices ?? [])
