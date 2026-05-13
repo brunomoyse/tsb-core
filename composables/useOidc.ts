@@ -291,6 +291,10 @@ export function useOidc() {
             oidcUser.value = user
             return user
         } catch {
+            // Wipe the stale user so subsequent getAccessToken() calls return null
+            // instead of triggering an iframe storm against Zitadel.
+            try { await mgr.removeUser() } catch { /* ignore */ }
+            oidcUser.value = null
             return null
         }
     }
