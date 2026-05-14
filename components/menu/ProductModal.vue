@@ -185,9 +185,9 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
+            <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
+        </div>
 </template>
 
 <script setup lang="ts">
