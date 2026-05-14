@@ -43,5 +43,19 @@ export const useAuthStore = defineStore("auth", {
             }
         }
     },
-    persist: true,
+    /*
+     * Explicit localStorage. `pinia-plugin-persistedstate/nuxt` defaults to
+     * cookies; the OIDC tokens already live in localStorage (see useOidc), and
+     * `logout()` above force-clears `localStorage.removeItem('auth')`, so we
+     * keep the persisted user record in the same storage to avoid double-write
+     * quirks where SSR hydration could resurrect a stale cookie copy.
+     */
+    persist: {
+        storage: {
+            getItem: (key) => (import.meta.client ? window.localStorage.getItem(key) : null),
+            setItem: (key, value) => {
+                if (import.meta.client) window.localStorage.setItem(key, value)
+            },
+        },
+    },
 });
