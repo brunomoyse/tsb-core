@@ -1,8 +1,8 @@
+import { type Ref, watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
-import { watch } from 'vue'
 
 const RESTAURANT_CONFIG_QUERY = gql`
     query RestaurantConfig {
@@ -57,31 +57,47 @@ interface UseRestaurantConfigOptions {
 }
 
 export async function useRestaurantConfig(options: UseRestaurantConfigOptions = {}) {
-    // Register subscription BEFORE any await to preserve the active effect scope
+    /*
+     * Register BOTH the subscription and its watcher synchronously, before
+     * any await. After an `await`, Vue's active effect-scope binding is
+     * fragile and the watch can leak across CSR navigations — manifesting
+     * as a "Cannot destructure property 'bum' of 'v' as it is null" crash
+     * when the next page's Suspense unmounts and the stale watch still
+     * mutates state on the unmounting component.
+     *
+     * The watcher captures `dataRef` (set after the await) via closure so
+     * subscription messages that arrive before the initial query resolves
+     * are simply dropped — the initial query will return the up-to-date
+     * config anyway.
+     */
+    interface ConfigResponse { restaurantConfig: RestaurantConfig }
+    let dataRef: Ref<ConfigResponse | null> | null = null
+
     const sub = import.meta.client
         ? useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(print(SUB_RESTAURANT_CONFIG))
         : null
 
-    const asyncData = await useGqlQuery<{ restaurantConfig: RestaurantConfig }>(
-        RESTAURANT_CONFIG_QUERY,
-        {},
-        { immediate: true, cache: false, ...(options.lazy ? { lazy: true } : {}) }
-    )
-    const { data, refresh, pending } = asyncData
-
     if (sub) {
         watch(sub.data, (val) => {
-            if (val?.restaurantConfigUpdated && data.value) {
-                data.value = {
-                    ...data.value,
+            if (val?.restaurantConfigUpdated && dataRef?.value) {
+                dataRef.value = {
+                    ...dataRef.value,
                     restaurantConfig: {
-                        ...data.value.restaurantConfig,
+                        ...dataRef.value.restaurantConfig,
                         ...val.restaurantConfigUpdated,
                     },
                 }
             }
         })
     }
+
+    const asyncData = await useGqlQuery<ConfigResponse>(
+        RESTAURANT_CONFIG_QUERY,
+        {},
+        { immediate: true, cache: false, ...(options.lazy ? { lazy: true } : {}) }
+    )
+    const { data, refresh, pending } = asyncData
+    dataRef = data as unknown as Ref<ConfigResponse | null>
 
     return {
         config: data,
