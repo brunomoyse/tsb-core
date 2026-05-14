@@ -550,19 +550,29 @@ const finalizeAndComplete = async () => {
     let effectiveAuthRequestId = authRequestId || capacitorAuthRequestId.value
 
     if (!effectiveAuthRequestId) {
-        if (isCapacitor) {
-            await initCapacitorAuth()
-            effectiveAuthRequestId = capacitorAuthRequestId.value
-            if (!effectiveAuthRequestId) throw new Error('Could not initialize OIDC flow')
-        } else {
-            /*
-             * Web: login.vue bounces through Zitadel before rendering this
-             * component, so an authRequestId is always supposed to be present.
-             * Reaching here means mid-flow state loss (page revisit, manual
-             * URL edit). Surface a clear error rather than minting a fresh
-             * signIn() — that path orphans the auth_request and strands the
-             * user with an OTP session they cannot finalize.
-             */
+        /*
+         * Inline mode (e.g. /checkout) has no authRequestId on the URL —
+         * mint one via the same backend proxy Capacitor uses. Do NOT fall
+         * back to signinRedirect({ login_hint }) here: that triggered a
+         * full-page redirect to Zitadel, which redirected to /auth/login
+         * and destroyed the in-memory OTP session, orphaning the
+         * auth_request and forcing the user to redo OTP.
+         */
+        try {
+            if (isCapacitor) {
+                await initCapacitorAuth()
+                effectiveAuthRequestId = capacitorAuthRequestId.value
+            } else {
+                const { useOidc } = await import('~/composables/useOidc')
+                const { getAuthRequestId } = useOidc()
+                effectiveAuthRequestId = await getAuthRequestId()
+            }
+        } catch {
+            errorMessage.value = t('notify.errors.sessionExpired')
+            loading.value = false
+            return
+        }
+        if (!effectiveAuthRequestId) {
             errorMessage.value = t('notify.errors.sessionExpired')
             loading.value = false
             return
