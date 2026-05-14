@@ -198,31 +198,58 @@
                     </div>
                 </div>
             </div>
-            <div class="mt-4">
+            <div v-if="paidExtras.length > 0" class="mt-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-red-700 mb-2">
                     {{ $t('checkout.paidExtra', 'Paid extra') }}
                 </p>
                 <div class="flex flex-wrap gap-2">
-                    <button
-                        v-for="extra in paidExtras"
-                        :key="extra.code"
-                        type="button"
-                        :disabled="!extra.isAvailable"
-                        :aria-pressed="isPaidExtraSelected(extra.code)"
-                        @click="togglePaidExtra(extra.code)"
-                        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-[0.97]"
-                        :class="[
-                            isPaidExtraSelected(extra.code)
-                                ? 'border-red-300 bg-tsb-four text-red-700 font-medium'
-                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
-                            !extra.isAvailable ? 'opacity-50 cursor-not-allowed' : '',
-                        ]"
-                    >
-                        <span>{{ extra.label }}</span>
-                        <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
-                            +{{ formatPrice(extra.price) }}
-                        </span>
-                    </button>
+                    <template v-for="extra in paidExtras" :key="extra.code">
+                        <button
+                            v-if="extra.quantity === 0"
+                            type="button"
+                            :disabled="!extra.isAvailable"
+                            :aria-pressed="false"
+                            :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
+                            @click="incrementPaidExtra(extra.code)"
+                            class="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white text-gray-700 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-gray-400"
+                            :class="!extra.isAvailable ? 'opacity-50 cursor-not-allowed' : ''"
+                        >
+                            <span>{{ extra.label }}</span>
+                            <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
+                                +{{ formatPrice(extra.price) }}
+                            </span>
+                        </button>
+                        <div
+                            v-else
+                            role="group"
+                            :aria-label="extra.label"
+                            class="inline-flex items-stretch"
+                        >
+                            <button
+                                type="button"
+                                :disabled="!extra.isAvailable || extra.quantity >= MAX_ITEM_QUANTITY"
+                                :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
+                                @click="incrementPaidExtra(extra.code)"
+                                class="inline-flex items-center gap-2 rounded-l-full border border-red-300 bg-tsb-four text-red-700 font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <span>{{ extra.label }}</span>
+                                <span
+                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-red-500 text-white text-[10px] font-semibold tabular-nums px-1.5"
+                                >×{{ extra.quantity }}</span>
+                                <span class="rounded-full bg-white/80 border border-red-200 px-2 py-0.5 tabular-nums">
+                                    +{{ formatPrice(extra.price) }}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                :aria-label="`${extra.label} — ${$t('cart.decreaseQty')}`"
+                                @click="decrementPaidExtra(extra.code)"
+                                class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-red-300 bg-tsb-four text-red-700 hover:bg-red-100 transition-colors active:scale-[0.97]"
+                            >
+                                <span class="text-sm leading-none" aria-hidden="true">−</span>
+                            </button>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -281,11 +308,11 @@
 </template>
 
 <script lang="ts" setup>
+import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import type { Product, ProductCategory } from '@/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { formatPrice } from '~/lib/price'
-import { useCartStore } from '@/stores/cart'
 import { useDebounceFn } from '@vueuse/core'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -308,11 +335,19 @@ const { t } = useI18n()
 
 const ORDER_COMMENT_MAX = 500
 
-const PAID_EXTRA_DEFS = [
-    { code: 'K45', fallbackLabel: 'Wasabi', fallbackPrice: 0.8 },
-    { code: 'K42', fallbackLabel: 'Sauce soja salée', fallbackPrice: 1 },
-    { code: 'K43', fallbackLabel: 'Sauce soja sucrée', fallbackPrice: 1 },
-] as const
+const PAID_EXTRA_PRICE_MAX = 1
+
+// The accompagnement category has no slug in the GraphQL schema, only a locale-translated name.
+// Match against every known localized form so we resolve the right category regardless of Accept-Language.
+const ACCOMPAGNEMENT_CATEGORY_NAMES = new Set([
+    'accompagnement',
+    'accompagnements',
+    'side dish',
+    'side dishes',
+    'bijgerecht',
+    'bijgerechten',
+    '配菜',
+])
 
 const EXTRA_PRODUCTS_QUERY = `
     query CheckoutPaidExtraProducts {
@@ -356,41 +391,55 @@ const { data: paidExtrasProductsData } = await useGqlQuery<{ productCategories: 
     { immediate: true, cache: true, lazy: true },
 )
 
-const paidProductsByCode = computed(() => {
-    const map = new Map<string, Product>()
-    for (const category of paidExtrasProductsData.value?.productCategories ?? []) {
-        for (const product of category.products ?? []) {
-            if (product.code) map.set(product.code, product)
-        }
-    }
-    return map
+const accompagnementCategory = computed<ProductCategory | null>(() => {
+    const categories = paidExtrasProductsData.value?.productCategories ?? []
+    return categories.find((c) =>
+        ACCOMPAGNEMENT_CATEGORY_NAMES.has(c.name?.trim().toLowerCase() ?? ''),
+    ) ?? null
 })
 
-const getPaidProduct = (code: string): Product | undefined => paidProductsByCode.value.get(code)
+const getPaidProduct = (code: string): Product | undefined =>
+    accompagnementCategory.value?.products?.find((p) => p.code === code)
 
-const isPaidExtraSelected = (code: string): boolean =>
-    cartStore.products.some((item) => item.product.code === code && (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0))
+const paidExtraQuantity = (code: string): number =>
+    cartStore.products
+        .filter((item) => item.product.code === code && (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0))
+        .reduce((sum, item) => sum + item.quantity, 0)
 
-const togglePaidExtra = (code: string): void => {
+const incrementPaidExtra = (code: string): void => {
     const product = getPaidProduct(code)
     if (!product || !product.isAvailable) return
-
-    if (isPaidExtraSelected(code)) {
-        cartStore.removeFromCart(product)
-    } else {
-        cartStore.addProduct(product, 1)
-    }
+    cartStore.incrementQuantity(product)
 }
 
-const paidExtras = computed(() => PAID_EXTRA_DEFS.map((item) => {
-    const product = getPaidProduct(item.code)
-    return {
-        code: item.code,
-        label: product?.name || item.fallbackLabel,
-        price: Number(product?.price ?? item.fallbackPrice),
-        isAvailable: Boolean(product?.isAvailable),
-    }
-}))
+const decrementPaidExtra = (code: string): void => {
+    const product = getPaidProduct(code)
+    if (!product) return
+    cartStore.decrementQuantity(product)
+}
+
+const paidExtras = computed(() => {
+    const products = accompagnementCategory.value?.products ?? []
+    return products
+        .filter((p) => {
+            const price = Number(p.price)
+            return (
+                p.isVisible &&
+                p.code !== null &&
+                Number.isFinite(price) &&
+                price > 0 &&
+                price <= PAID_EXTRA_PRICE_MAX
+            )
+        })
+        .map((p) => ({
+            code: p.code as string,
+            label: p.name,
+            price: Number(p.price),
+            isAvailable: p.isAvailable,
+            quantity: paidExtraQuantity(p.code as string),
+        }))
+        .sort((a, b) => a.price - b.price || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
+})
 
 const emit = defineEmits<{
     checkout: []
