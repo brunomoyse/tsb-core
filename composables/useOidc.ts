@@ -304,6 +304,14 @@ export function useOidc() {
     /** Sign out via OIDC end-session endpoint (web only). */
     async function signOut() {
         const mgr = getUserManager()
+        /*
+         * Wipe local oidc.user:* before redirecting. signoutRedirect() does
+         * window.location.replace() and never returns control, and oidc-client-ts
+         * does not clear the user store on its own. Without this, the access
+         * token sits in localStorage for its full TTL after logout — any later
+         * isAuthenticated() check passes and bounces the user off /login.
+         */
+        try { await mgr.removeUser() } catch { /* Best-effort cleanup */ }
         await mgr.signoutRedirect()
     }
 
