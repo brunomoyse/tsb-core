@@ -25,11 +25,26 @@ const subscribers = new Set<Subscriber>()
 let globalListenersBound = false
 let hiddenAt = 0
 let wentOffline = false
+let suspendTimer: ReturnType<typeof setTimeout> | null = null
+let proactivelyDisposed = false
 
-const recycleClient = () => {
+/*
+ * Tear down the client without notifying subscribers to restart. Used when
+ * the page is unloading or the WebView is about to be suspended by the OS —
+ * sends a clean WS close frame so the server cancels in-flight resolvers
+ * without the lib/pq "canceling statement due to user request" noise that
+ * arises from a timeout-based close. Subscribers keep their `stop` handles
+ * pointing at the disposed client (no-ops); they will reconnect on the next
+ * recycleClient() call (e.g. on resume).
+ */
+const disposeClient = () => {
     wsClient?.dispose()
     wsClient = null
     wsClientPromise = null
+}
+
+const recycleClient = () => {
+    disposeClient()
     // Snapshot in case a restart callback mutates the set.
     Array.from(subscribers).forEach((s) => s.restart())
 }
@@ -49,16 +64,46 @@ const handleOnline = () => {
 const handleVisibilityChange = () => {
     if (document.visibilityState === 'hidden') {
         hiddenAt = Date.now()
+        /*
+         * After a short grace, proactively close the WS so the server sees
+         * a clean close frame before iOS suspends our WebView. The grace
+         * window avoids thrashing on quick tab switches.
+         */
+        if (suspendTimer) clearTimeout(suspendTimer)
+        suspendTimer = setTimeout(() => {
+            suspendTimer = null
+            proactivelyDisposed = true
+            disposeClient()
+        }, 2_000)
         return
     }
-    /*
-     * Only recycle after ≥3s in background — avoids thrashing on quick
-     * tab switches but catches Safari mobile / Capacitor backgrounding
-     * where the WS is silently killed.
-     */
-    if (document.visibilityState === 'visible' && Date.now() - hiddenAt > 3_000) {
-        recycleClient()
+    if (suspendTimer) {
+        clearTimeout(suspendTimer)
+        suspendTimer = null
     }
+    if (document.visibilityState === 'visible') {
+        /*
+         * Recycle if we proactively closed the WS while hidden, OR if we
+         * stayed hidden ≥3s (likely the OS killed the socket silently).
+         */
+        if (proactivelyDisposed || Date.now() - hiddenAt > 3_000) {
+            proactivelyDisposed = false
+            recycleClient()
+        }
+    }
+}
+
+const handlePageHide = () => {
+    if (suspendTimer) {
+        clearTimeout(suspendTimer)
+        suspendTimer = null
+    }
+    disposeClient()
+}
+
+const handlePageShow = (e: PageTransitionEvent) => {
+    // Restored from bfcache — visibilitychange may not fire, so recycle here.
+    if (e.persisted) recycleClient()
 }
 
 const ensureGlobalListeners = () => {
@@ -66,6 +111,8 @@ const ensureGlobalListeners = () => {
     globalListenersBound = true
     window.addEventListener('offline', handleOffline)
     window.addEventListener('online', handleOnline)
+    window.addEventListener('pagehide', handlePageHide)
+    window.addEventListener('pageshow', handlePageShow)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 }
 
@@ -79,11 +126,49 @@ const getWsClient = (): Promise<Client> => {
             const cfg = useRuntimeConfig()
             const { getAccessToken } = useOidc()
 
+            /*
+             * Track the underlying WebSocket so the ping/pong timeout
+             * handler can force-close on silent drops. `keepAlive` only
+             * schedules pings — detection requires our own pong timer.
+             */
+            let activeSocket: WebSocket | null = null
+            let pongTimer: ReturnType<typeof setTimeout> | null = null
+
             const client = createClient({
                 url: cfg.public.graphqlWs as string,
                 connectionParams: async () => {
                     const token = await getAccessToken()
                     return token ? { Authorization: `Bearer ${token}` } : {}
+                },
+                /*
+                 * Ping every 12s. Combined with the pong watchdog below,
+                 * detects silent drops (cellular handoff, Cloudflare Tunnel
+                 * idle timeout) within ~17s instead of waiting for the next
+                 * outbound message.
+                 */
+                keepAlive: 12_000,
+                on: {
+                    connected: (socket) => { activeSocket = socket as WebSocket },
+                    closed: () => {
+                        if (pongTimer) { clearTimeout(pongTimer); pongTimer = null }
+                        activeSocket = null
+                    },
+                    ping: (received) => {
+                        // We sent a ping; arm a 5s watchdog for the pong.
+                        if (received) return
+                        if (pongTimer) clearTimeout(pongTimer)
+                        pongTimer = setTimeout(() => {
+                            if (activeSocket?.readyState === WebSocket.OPEN) {
+                                activeSocket.close(4408, 'Pong timeout')
+                            }
+                        }, 5_000)
+                    },
+                    pong: (received) => {
+                        if (received && pongTimer) {
+                            clearTimeout(pongTimer)
+                            pongTimer = null
+                        }
+                    },
                 },
                 retryAttempts: Infinity,
                 retryWait: async (retries) => {
