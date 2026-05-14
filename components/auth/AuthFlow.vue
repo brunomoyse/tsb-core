@@ -555,10 +555,16 @@ const finalizeAndComplete = async () => {
             effectiveAuthRequestId = capacitorAuthRequestId.value
             if (!effectiveAuthRequestId) throw new Error('Could not initialize OIDC flow')
         } else {
-            // Web: fall back to launching a fresh signIn() with login_hint.
-            const { useOidc } = await import('~/composables/useOidc')
-            const { signIn } = useOidc()
-            await signIn({ login_hint: email.value })
+            /*
+             * Web: login.vue bounces through Zitadel before rendering this
+             * component, so an authRequestId is always supposed to be present.
+             * Reaching here means mid-flow state loss (page revisit, manual
+             * URL edit). Surface a clear error rather than minting a fresh
+             * signIn() — that path orphans the auth_request and strands the
+             * user with an OTP session they cannot finalize.
+             */
+            errorMessage.value = t('notify.errors.sessionExpired')
+            loading.value = false
             return
         }
     }

@@ -46,7 +46,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import { definePageMeta, useRoute, useSeoMeta, useSwitchLocalePath } from '#imports'
+import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta, useSwitchLocalePath } from '#imports'
 import AuthFlow from '~/components/auth/AuthFlow.vue'
 import { useI18n } from 'vue-i18n'
 import { usePlatform } from '~/composables/usePlatform'
@@ -77,24 +77,45 @@ useSeoMeta({
 })
 
 onMounted(async () => {
+    if (!import.meta.client) return
+
+    /*
+     * Persist the session-expired notice across the Zitadel round-trip below.
+     * Without this, the redirect would wipe the `?session=expired` query param
+     * and the user would land on the form with no context.
+     */
     if (route.query.session === 'expired') {
+        sessionStorage.setItem('auth_session_expired', '1')
+    }
+    if (sessionStorage.getItem('auth_session_expired') === '1') {
         sessionExpired.value = true
+        if (authRequestId.value) sessionStorage.removeItem('auth_session_expired')
+    }
+
+    // Have an authRequestId — AuthFlow can drive the OTP / SSO flows.
+    if (authRequestId.value) return
+
+    const { useOidc } = await import('~/composables/useOidc')
+    const { isAuthenticated } = useOidc()
+
+    // Already authenticated and no auth flow in progress — they don't belong here.
+    if (await isAuthenticated()) {
+        const localePath = useLocalePath()
+        await navigateTo(localePath('menu'))
         return
     }
 
-    if (!authRequestId.value && import.meta.client) {
-        const { useOidc } = await import('~/composables/useOidc')
-        const { isAuthenticated } = useOidc()
-        if (await isAuthenticated()) return
-
-        if (!isCapacitor) {
-            // Web: bounce through Zitadel so we come back with an authRequestID;
-            // AuthFlow can then drive the OTP / SSO flows.
-            const { signIn } = useOidc()
-            const uiLocale = route.path.split('/')[1] || 'fr'
-            await signIn({ ui_locales: uiLocale })
-        }
-        // Capacitor handles its own bootstrap inside AuthFlow.
+    /*
+     * Web: bounce through Zitadel so we come back with an authRequestID. This
+     * is the ONLY way AuthFlow obtains one — its finalize step must not mint
+     * a fresh signIn() mid-flow, which orphans the auth_request and strands
+     * the user mid-OTP.
+     */
+    if (!isCapacitor) {
+        const { signIn } = useOidc()
+        const uiLocale = route.path.split('/')[1] || 'fr'
+        await signIn({ ui_locales: uiLocale })
     }
+    // Capacitor handles its own bootstrap inside AuthFlow.
 })
 </script>
