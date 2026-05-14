@@ -80,10 +80,15 @@ export function useAuthCallback() {
             navigateTo(localePath('menu'))
             return
         }
-        // Cart has items — only auto-jump to checkout when ordering is actually available.
-        // Otherwise land on /cart so the user sees the disabled state instead of getting bounced.
+        /*
+         * Cart has items — auto-jump to checkout when ordering is actually
+         * available. When the restaurant is closed, /cart is a dead-end (the
+         * user can see items but cannot do anything with them), so send them
+         * to /menu instead, where the closed banner appears alongside the
+         * menu the user might still want to browse.
+         */
         const canCheckout = await isCheckoutAvailable()
-        navigateTo(localePath(canCheckout ? 'checkout' : 'cart'))
+        navigateTo(localePath(canCheckout ? 'checkout' : 'menu'))
     }
 
     async function isCheckoutAvailable(): Promise<boolean> {
