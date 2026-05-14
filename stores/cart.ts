@@ -180,6 +180,24 @@ export const useCartStore = defineStore("cart", {
     },
     persist: {
         /*
+         * Explicit localStorage. `pinia-plugin-persistedstate/nuxt` defaults to
+         * cookies (per-cookie ~4 KB limit), and a cart of ~10 items — each
+         * carrying a full Product (description, choices, nested category) —
+         * easily exceeds that. Oversized cookies get silently truncated/dropped,
+         * so on the next full page reload (e.g. the OIDC redirect that lands on
+         * /auth/callback) SSR receives a partial cart from the request cookie
+         * header, hydration adopts the partial state, and the post-hydration
+         * write persists it back — wiping items the user had added pre-login.
+         * SSR is a no-op (returns null); the client-side $hydrate fires after
+         * mount and rehydrates from localStorage.
+         */
+        storage: {
+            getItem: (key) => (import.meta.client ? window.localStorage.getItem(key) : null),
+            setItem: (key, value) => {
+                if (import.meta.client) window.localStorage.setItem(key, value)
+            },
+        },
+        /*
          * `isCartVisible` is transient UI state. Persisting it caused users to
          * land on /menu with an empty drawer but `isCartVisible: true` still in
          * localStorage, hiding the FloatingCartBar (its v-if depends on
