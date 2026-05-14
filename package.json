@@ -52,7 +52,7 @@
     "oxlint": "^1.64.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.8.3",
-    "vue-tsc": "^3.2.8"
+    "vue-tsc": "^3.2.9"
   },
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.28.0",
