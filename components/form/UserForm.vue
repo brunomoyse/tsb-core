@@ -141,15 +141,25 @@ const removeAddress = () => {
 }
 
 // Lazy-load libphonenumber-js (~75KB) only when the user actually submits/validates a phone number.
-const validatePhone = async () => {
+// Returns the E.164 string on success, or null on failure (and sets phoneError).
+const validatePhone = async (): Promise<string | null> => {
     const { parsePhoneNumberFromString } = await import('libphonenumber-js')
     const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
-    phoneError.value = parsed?.isValid() ? '' : t('form.invalidPhone')
-    return !phoneError.value
+    if (!parsed?.isValid()) {
+        phoneError.value = t('form.invalidPhone')
+        return null
+    }
+    phoneError.value = ''
+    return parsed.format('E.164')
 }
 
 const handleSubmit = async () => {
-    if (phoneLocal.value && !(await validatePhone())) { triggerShake(); return }
+    const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
+    let phoneE164: string | null = null
+    if (hasCurrentPhone) {
+        phoneE164 = await validatePhone()
+        if (!phoneE164) { triggerShake(); return }
+    }
     if (!firstName.value || !lastName.value || !email.value) { triggerShake(); return }
 
     // Send empty string to trigger deletion when a previously-set field is cleared.
@@ -157,13 +167,10 @@ const handleSubmit = async () => {
     const hasCurrentAddress = address.value !== null
 
     const hasInitialPhone = initialValues.phoneLocal && initialValues.phoneLocal.trim() !== ''
-    const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
 
     let phoneValue: string | null = null
     if (hasCurrentPhone) {
-        const { parsePhoneNumberFromString } = await import('libphonenumber-js')
-        const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
-        phoneValue = parsed?.format('E.164') ?? phoneLocal.value
+        phoneValue = phoneE164
     } else if (hasInitialPhone) {
         phoneValue = ''
     }
