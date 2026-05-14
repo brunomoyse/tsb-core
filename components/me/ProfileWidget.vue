@@ -239,8 +239,10 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error during profile update:', error)
+        const errs = Array.isArray(error) ? error as { extensions?: { field?: string } }[] : []
+        const isPhoneError = errs.some((e) => e.extensions?.field === 'phoneNumber')
         eventBus.emit('notify', {
-            message: t('notify.errors.profileUpdateFailed'),
+            message: isPhoneError ? t('form.invalidPhone') : t('notify.errors.profileUpdateFailed'),
             persistent: false,
             duration: 5000,
             variant: 'error',
