@@ -83,6 +83,27 @@ export interface CartState {
     products: CartItem[];
 }
 
+export interface NotificationAction {
+    label: string;
+    handler: () => void;
+}
+
+export interface NotifyPayload {
+    message: string;
+    persistent?: boolean;
+    duration?: number;
+    variant?: string;
+    action?: NotificationAction;
+}
+
+export interface Notification {
+    message: string;
+    persistent: boolean;
+    duration: number;
+    variant: string;
+    action?: NotificationAction;
+}
+
 export interface LoginResponse {
     user: User;
     accessToken?: string;

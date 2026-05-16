@@ -58,12 +58,13 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
 import type { User } from '~/types'
-import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const notifications = useNotificationsStore()
 
 const phoneLocal = ref('')
 const phoneError = ref('')
@@ -118,7 +119,7 @@ const save = async (e164: string) => {
         const res = await mutationUpdateMe({ input: { phoneNumber: e164 } })
         authStore.updateUser({ phoneNumber: res.updateMe.phoneNumber })
         isEditing.value = false
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('checkout.phoneCapture.saved'),
             persistent: false,
             duration: 3000,

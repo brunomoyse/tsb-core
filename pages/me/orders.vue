@@ -3,7 +3,6 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
 import type { Order } from "~/types"
 import PullToRefresh from "~/components/PullToRefresh.vue" // eslint-disable-line typescript-eslint/consistent-type-imports
-import { eventBus } from '~/eventBus'
 import { formatAddress } from "~/utils/utils"
 import { formatDateTime } from "~/utils/datetime"
 import gql from 'graphql-tag'
@@ -11,6 +10,7 @@ import { orderItemLabelParts } from "~/utils/orderItemLabel"
 import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
+import { useNotificationsStore } from "~/stores/notifications"
 import { usePlatform } from "~/composables/usePlatform"
 import { useReorder } from "~/composables/useReorder"
 
@@ -19,6 +19,7 @@ import { useReorder } from "~/composables/useReorder"
 definePageMeta({ public: false })
 
 const { $gqlFetch } = useNuxtApp()
+const notifications = useNotificationsStore()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
@@ -117,7 +118,7 @@ const handlePullRefresh = async () => {
 }
 
 if (ordersError.value) {
-    eventBus.emit('notify', {
+    notifications.notify({
         message: t('notify.errors.ordersLoadFailed'),
         persistent: false,
         duration: 5000,
@@ -158,7 +159,9 @@ const subscribeToOrder = (orderId: string) => {
     if (subscriptionStops.has(orderId)) return
 
     const { data: liveUpdate, stop } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
-        print(SUB_ORDER_UPDATES), { orderId }
+        print(SUB_ORDER_UPDATES),
+        { orderId },
+        { onReconnect: () => { refetchOrders() } },
     )
 
     subscriptionStops.set(orderId, stop)
@@ -187,9 +190,6 @@ const unsubscribeFromOrder = (orderId: string) => {
 
 // Polling fallback for when WebSocket subscriptions fail (mobile Safari, CORS, etc.)
 let pollTimer: ReturnType<typeof setInterval> | null = null
-
-// Refetch all orders when a foreground push notification is received
-eventBus.on('order-status-push', () => refetchOrders())
 
 onMounted(() => {
     // Subscribe to all active (non-terminated) orders for live updates
@@ -223,7 +223,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    eventBus.off('order-status-push')
     subscriptionStops.forEach((stopFn) => stopFn())
     subscriptionStops.clear()
     if (pollTimer) {

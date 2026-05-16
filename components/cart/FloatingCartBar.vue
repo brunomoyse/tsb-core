@@ -32,12 +32,13 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from '#imports'
+import { onUnmounted, ref } from '#imports'
 
-import { eventBus } from '~/eventBus'
+import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
 import { useCartStore } from '@/stores/cart'
 import { useCartTotals } from '~/composables/useCartTotals'
+import { useEventBus } from '@vueuse/core'
 
 const cartStore = useCartStore()
 const { displayTotal } = useCartTotals()
@@ -58,12 +59,10 @@ const onCartItemAdded = () => {
     })
 }
 
-onMounted(() => {
-    eventBus.on('cart-item-added', onCartItemAdded)
-})
+// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
+useEventBus(cartItemAddedKey).on(onCartItemAdded)
 
 onUnmounted(() => {
-    eventBus.off('cart-item-added', onCartItemAdded)
     if (pulseTimeout) clearTimeout(pulseTimeout)
 })
 </script>

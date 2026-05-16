@@ -245,8 +245,8 @@ import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionO
 import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
-import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
+import { useNotificationsStore } from '~/stores/notifications'
 import { roundToNearest10Cents } from '~/utils/money'
 import gql from 'graphql-tag'
 import { useCartTotals } from '~/composables/useCartTotals'
@@ -261,6 +261,7 @@ import { useTracking } from '~/composables/useTracking'
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const notifications = useNotificationsStore()
 const {
     subtotal,
     pickupDiscount,
@@ -311,7 +312,7 @@ const currentStepIndex = computed(() => {
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
 watch(isOrderingAvailable, (available) => {
     if (!available && import.meta.client) {
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.orderingUnavailable'),
             persistent: false,
             duration: 5000,
@@ -409,7 +410,7 @@ const CREATE_ORDER = gql`
 const { mutate: mutationCreateOrder } = useGqlMutation<{ createOrder: Order }>(CREATE_ORDER)
 
 const handleSlotExpired = () => {
-    eventBus.emit('notify', {
+    notifications.notify({
         message: t('notify.errors.slotExpiredAutoReset'),
         persistent: false,
         duration: 5000,
@@ -602,7 +603,7 @@ const handleCheckout = async () => {
 
     try {
         if (!isOrderingEnabled.value) {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('notify.errors.orderingUnavailable'),
                 persistent: false,
                 duration: 5000,
@@ -612,7 +613,7 @@ const handleCheckout = async () => {
         }
 
         if (!isOrderingCurrentlyOpen.value && !cartStore.preferredReadyTime) {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('notify.errors.fixedTimeRequiredWhileClosed'),
                 persistent: false,
                 duration: 5000,
@@ -629,7 +630,7 @@ const handleCheckout = async () => {
                 ? restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.find(s => s.value === slotValue)
                 : null
             if (!slot || !slot.isLunchOnlyAllowed) {
-                eventBus.emit('notify', {
+                notifications.notify({
                     message: t('notify.errors.lunchOnlyRequiresLunchSlot'),
                     persistent: false,
                     duration: 5000,
@@ -641,7 +642,7 @@ const handleCheckout = async () => {
 
         if (cartStore.products.length === 0) {
             trackEvent('checkout_error_cart_empty')
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('notify.errors.cartEmpty', 'Your cart is empty.'),
                 persistent: false,
                 duration: 5000,
@@ -663,7 +664,7 @@ const handleCheckout = async () => {
             const toastMessage = validationErrors.length === 1
                 ? firstError!.message
                 : t('checkout.completeBeforeOrderCount', { count: validationErrors.length }, validationErrors.length)
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: toastMessage,
                 persistent: false,
                 duration: 3000,
@@ -745,7 +746,7 @@ const handleCheckout = async () => {
         } catch (err: unknown) {
             if (import.meta.dev) console.error('Error creating order:', err)
             hapticNotification('Error')
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
                 persistent: false,
                 duration: 5000,
@@ -756,7 +757,7 @@ const handleCheckout = async () => {
     } catch (err: unknown) {
         if (import.meta.dev) console.error('Order processing failed:', err)
         hapticNotification('Error')
-        eventBus.emit('notify', {
+        notifications.notify({
             message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
             persistent: false,
             duration: 5000,

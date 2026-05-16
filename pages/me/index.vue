@@ -6,12 +6,12 @@ import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import { EUROPEAN_COUNTRIES } from '~/utils/europeanCountries'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
-import { eventBus } from '~/eventBus'
 import { formatAddress } from '~/utils/utils'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useAuthStore } from '@/stores/auth'
 import { useFocusTrap } from '~/composables/useFocusTrap'
+import { useNotificationsStore } from '~/stores/notifications'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
@@ -27,6 +27,7 @@ const languages = [
     { code: 'zh', label: '中文' },
 ]
 const authStore = useAuthStore()
+const notifications = useNotificationsStore()
 const { $gqlFetch } = useNuxtApp()
 const { trackEvent } = useTracking()
 
@@ -177,7 +178,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         const res: { updateMe: User } = await mutationUpdateMe({ input: formData })
         authStore.updateUser(res.updateMe)
         trackEvent('profile_updated')
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.updateSuccess'),
             persistent: false,
             duration: 3000,
@@ -185,7 +186,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error during profile update:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
             duration: 5000,
@@ -201,7 +202,7 @@ const handleRequestDeletion = async () => {
     try {
         const res = await mutationRequestDeletion()
         authStore.updateUser({ deletionRequestedAt: res.requestDeletion.deletionRequestedAt })
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.requestDeletionSuccess'),
             persistent: false,
             duration: 3000,
@@ -209,7 +210,7 @@ const handleRequestDeletion = async () => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error requesting deletion:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.requestFailed'),
             persistent: false,
             duration: 5000,
@@ -222,7 +223,7 @@ const handleCancelDeletionRequest = async () => {
     try {
         const res = await mutationCancelDeletionRequest()
         authStore.updateUser({ deletionRequestedAt: res.cancelDeletionRequest.deletionRequestedAt })
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.cancelDeletionSuccess'),
             persistent: false,
             duration: 3000,
@@ -230,7 +231,7 @@ const handleCancelDeletionRequest = async () => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error canceling deletion request:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.requestFailed'),
             persistent: false,
             duration: 5000,
@@ -263,7 +264,7 @@ const submitAddressUpdate = async () => {
     try {
         const res = await mutationUpdateMe({ input: { addressPlaceId: pendingAddress.value.id } })
         authStore.updateUser(res.updateMe)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.addressUpdateSuccess'),
             persistent: false,
             duration: 3000,
@@ -272,7 +273,7 @@ const submitAddressUpdate = async () => {
         closeAddressModal()
     } catch (error) {
         if (import.meta.dev) console.error('Error updating address:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
             duration: 5000,
@@ -303,14 +304,14 @@ const updateNotificationPref = async (
     try {
         const res = await mutationUpdateMe({ input: { [field]: newVal } })
         authStore.updateUser(res.updateMe)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.notifications.updateSuccess'),
             persistent: false,
             duration: 3000,
             variant: 'success',
         })
     } catch {
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.notifications.updateError'),
             persistent: false,
             duration: 5000,

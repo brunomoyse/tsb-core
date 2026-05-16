@@ -1,12 +1,13 @@
 import { navigateTo, useCartStore, useLocalePath } from '#imports'
 import type { Order } from '~/types'
-import { eventBus } from '~/eventBus'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 
 export function useReorder() {
     const cartStore = useCartStore()
     const localePath = useLocalePath()
     const { t } = useI18n()
+    const notifications = useNotificationsStore()
 
     const reorder = (order: Order) => {
         cartStore.resetState()
@@ -26,17 +27,17 @@ export function useReorder() {
         }
 
         if (added === 0) {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('reorder.empty'),
                 variant: 'error',
             })
         } else if (skipped > 0) {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('reorder.partial', { added, skipped }),
                 variant: 'info',
             })
         } else {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('reorder.success', { count: added }),
                 variant: 'success',
             })

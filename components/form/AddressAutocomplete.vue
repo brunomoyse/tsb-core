@@ -79,10 +79,10 @@
 <script lang="ts" setup>
 import type { Address, AddressSuggestion } from '~/types'
 import { computed, nextTick, ref, watch } from 'vue'
-import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 import { useNuxtApp } from '#imports'
 
 const emit = defineEmits<{
@@ -90,6 +90,7 @@ const emit = defineEmits<{
 }>()
 const { $gqlFetch } = useNuxtApp()
 const { t } = useI18n()
+const notifications = useNotificationsStore()
 
 const AUTOCOMPLETE_ADDRESSES = gql`
     query ($input: String!, $sessionToken: String!) {
@@ -195,7 +196,7 @@ const handleAddressInput = () => {
             hasSearched.value = true
         } catch (err) {
             if (import.meta.dev) console.error('Autocomplete failed:', err)
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('notify.errors.addressLookupFailed'),
                 persistent: false,
                 duration: 5000,
@@ -253,7 +254,7 @@ const selectSuggestion = async (suggestion: AddressSuggestion) => {
 
         if (data.resolveAddress) {
             if (!data.resolveAddress.houseNumber) {
-                eventBus.emit('notify', {
+                notifications.notify({
                     message: t('notify.errors.addressMissingHouseNumber'),
                     persistent: false,
                     duration: 5000,
@@ -272,7 +273,7 @@ const selectSuggestion = async (suggestion: AddressSuggestion) => {
         }
     } catch (err) {
         if (import.meta.dev) console.error('Resolve address failed:', err)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.addressLookupFailed'),
             persistent: false,
             duration: 5000,

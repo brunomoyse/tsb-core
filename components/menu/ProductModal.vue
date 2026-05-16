@@ -196,14 +196,17 @@ import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
-import { eventBus } from '~/eventBus'
+import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '~/stores/cart'
+import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
+
+const cartItemAdded = useEventBus(cartItemAddedKey)
 
 
 
@@ -465,7 +468,7 @@ const addToCart = () => {
         selections_count: selectionList.value.reduce((sum, selection) => sum + selection.quantity, 0),
         source: 'modal',
     })
-    eventBus.emit('cart-item-added', {
+    cartItemAdded.emit({
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,

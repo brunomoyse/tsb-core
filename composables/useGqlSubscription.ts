@@ -19,6 +19,7 @@ let wsClientPromise: Promise<Client> | null = null
 interface Subscriber {
     restart: () => void
     setOffline: (value: boolean) => void
+    onReconnect: (() => void | Promise<void>) | null
 }
 const subscribers = new Set<Subscriber>()
 
@@ -46,7 +47,15 @@ const disposeClient = () => {
 const recycleClient = () => {
     disposeClient()
     // Snapshot in case a restart callback mutates the set.
-    Array.from(subscribers).forEach((s) => s.restart())
+    Array.from(subscribers).forEach((s) => {
+        s.restart()
+        /*
+         * GraphQL subscriptions don't replay history — events emitted during the
+         * disconnect window are lost. Callers that need gap recovery pass an
+         * onReconnect callback that refetches the underlying query.
+         */
+        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch(() => {})
+    })
 }
 
 const handleOffline = () => {
@@ -186,9 +195,20 @@ const getWsClient = (): Promise<Client> => {
     return wsClientPromise
 }
 
+interface SubscriptionOptions {
+    /*
+     * Called after the shared WS client reconnects (cellular handoff, CF tunnel
+     * timeout, online event, visibility-driven recycle). The handler typically
+     * refetches the underlying query so events emitted during the disconnect
+     * window — which GraphQL subscriptions don't replay — are not lost.
+     */
+    onReconnect?: () => void | Promise<void>
+}
+
 export function useGqlSubscription<T = unknown>(
     rawSub: string | DocumentNode,
-    variables: Record<string, unknown> = {}
+    variables: Record<string, unknown> = {},
+    options: SubscriptionOptions = {}
 ) {
     const data  = ref<T>()
     const error = ref<Error | null>(null)
@@ -235,6 +255,7 @@ export function useGqlSubscription<T = unknown>(
         setOffline: (value) => {
             error.value = value ? new Error('Lost internet connection') : null
         },
+        onReconnect: options.onReconnect ?? null,
     }
 
     if (import.meta.client) {

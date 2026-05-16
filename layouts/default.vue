@@ -76,13 +76,14 @@
         </ClientOnly>
         <ClientOnly>
             <LazyNotificationBar
-                v-if="showNotification && notification"
-                :message="notification.message"
-                :persistent="notification.persistent"
-                :duration="notification.duration"
-                :variant="notification.variant"
-                :action="notification.action"
-                @close="showNotification = false"
+                v-if="notifications.current"
+                :key="notifications.seq"
+                :message="notifications.current.message"
+                :persistent="notifications.current.persistent"
+                :duration="notifications.current.duration"
+                :variant="notifications.current.variant"
+                :action="notifications.current.action"
+                @close="notifications.dismiss()"
             />
         </ClientOnly>
 
@@ -98,13 +99,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onUnmounted, ref } from 'vue'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
-import { eventBus } from '~/eventBus'
+import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRoute } from 'vue-router'
@@ -136,50 +137,7 @@ const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
 const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 
 const head = useLocaleHead()
-const showNotification = ref(false)
-const notification = ref<{
-    message: string
-    persistent: boolean
-    duration: number
-    variant: string
-    action?: { label: string; handler: () => void }
-}>({
-    message: '',
-    persistent: false,
-    duration: 5000,
-    variant: 'neutral'
-})
-
-let notificationTimeout: ReturnType<typeof setTimeout> | null = null
-
-const notifyHandler = (payload: any) => {
-    if (notificationTimeout) {
-        clearTimeout(notificationTimeout)
-        notificationTimeout = null
-    }
-
-    notification.value = {
-        message: payload.message,
-        persistent: payload.persistent ?? false,
-        duration: payload.duration ?? 5000,
-        variant: payload.variant ?? 'neutral',
-        action: payload.action,
-    }
-    showNotification.value = true
-
-    if (!notification.value.persistent) {
-        notificationTimeout = setTimeout(() => {
-            showNotification.value = false
-        }, notification.value.duration)
-    }
-}
-
-eventBus.on('notify', notifyHandler)
-
-onUnmounted(() => {
-    eventBus.off('notify', notifyHandler)
-    if (notificationTimeout) clearTimeout(notificationTimeout)
-})
+const notifications = useNotificationsStore()
 
 const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
 const isMenuPage = computed(() => route.path.endsWith('/menu'))

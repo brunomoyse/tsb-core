@@ -193,14 +193,15 @@
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import { onMounted, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
-import { eventBus } from '~/eventBus'
+import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useCartTotals } from '~/composables/useCartTotals'
+import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '~/composables/useTracking'
@@ -262,16 +263,14 @@ const onCartItemAdded = (payload: { productId: string; choiceId?: string; select
     }, 1500)
 }
 
-onMounted(() => {
-    eventBus.on('cart-item-added', onCartItemAdded)
-})
+// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
+useEventBus(cartItemAddedKey).on(onCartItemAdded)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
 onUnmounted(() => {
-    eventBus.off('cart-item-added', onCartItemAdded)
     if (highlightTimeout) clearTimeout(highlightTimeout)
 })
 

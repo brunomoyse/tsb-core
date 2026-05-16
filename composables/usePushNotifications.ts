@@ -68,15 +68,12 @@ export function usePushNotifications() {
             PushNotifications.register()
         })
 
-        // Handle foreground push: emit event so pages can refetch order status
-        await PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            if (notification.data?.orderId) {
-                import('~/eventBus').then(({ eventBus }) => {
-                    eventBus.emit('order-status-push', { orderId: notification.data.orderId })
-                })
-            }
-        })
-
+        /*
+         * Foreground push no longer triggers a refetch directly. The
+         * useGqlSubscription `onReconnect` hook covers the "events emitted
+         * during disconnect" gap across all platforms; the push notification's
+         * only remaining UX role is the tap-to-open handler below.
+         */
         // Handle notification tap (app was backgrounded/closed)
         await PushNotifications.addListener('pushNotificationActionPerformed', () => {
             const router = useNuxtApp().$router

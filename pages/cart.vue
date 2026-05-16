@@ -238,13 +238,13 @@
 import * as productImage from '~/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '@/types'
 import { computed, reactive, ref } from 'vue'
-import { eventBus } from '~/eventBus'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { useCartStore } from '@/stores/cart'
 import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRuntimeConfig } from '#imports'
@@ -254,6 +254,7 @@ definePageMeta({ public: true })
 
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
+const notifications = useNotificationsStore()
 const { isCapacitor } = usePlatform()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
@@ -341,7 +342,7 @@ const restoreItem = (item: {
 
 const emitRemoveUndoToast = (item: CartItem): void => {
     const { product, selectedChoice, selectedChoices, quantity } = item
-    eventBus.emit('notify', {
+    notifications.notify({
         message: t('cart.removedUndo', { name: product.name }),
         duration: 4000,
         variant: 'neutral',
