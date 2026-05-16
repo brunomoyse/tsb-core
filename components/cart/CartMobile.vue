@@ -13,6 +13,7 @@
         <Transition name="slide-up">
             <aside
                 v-if="cartStore.isCartVisible"
+                data-testid="cart-mobile"
                 aria-labelledby="cart-heading"
                 class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
             >
@@ -42,6 +43,7 @@
                 <li
                     v-for="item in cartStore.products"
                     :key="getItemKey(item)"
+                    data-testid="cart-item"
                     class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
                 >
                     <!-- IMAGE -->
@@ -95,6 +97,7 @@
                     <!-- QTY CONTROLS -->
                     <div class="col-span-2 grid grid-cols-3 items-center justify-items-center">
                         <button
+                            data-testid="cart-item-decrement"
                             :aria-label="$t('cart.decreaseQty')"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
                             :disabled="hasChoices(item)"
@@ -107,8 +110,9 @@
                                 class="h-4 w-4 flex-shrink-0"
                             />
                         </button>
-                        <span class="text-center text-gray-700">{{ item.quantity }}</span>
+                        <span data-testid="cart-item-quantity" class="text-center text-gray-700">{{ item.quantity }}</span>
                         <button
+                            data-testid="cart-item-increment"
                             :aria-label="$t('cart.increaseQty')"
                             class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
                             :disabled="hasChoices(item)"
@@ -168,7 +172,7 @@
                     </div>
                     <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
                         <span class="font-medium text-gray-700">{{ $t('cart.total') }}</span>
-                        <span class="text-lg font-semibold text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                        <span data-testid="cart-total" class="text-lg font-semibold text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
                     </div>
                 </div>
                 <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
