@@ -29,16 +29,25 @@ test.describe('Checkout options', () => {
   test('Soy sauce pill selection', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
 
-    const noneBtn = page.locator('[data-testid="sauce-option-none"]')
+    /*
+     * "None" is the unchecked state of the #add-sauce checkbox; pills
+     * (sweet / salty / both) only render when sauce is enabled. Ensure the
+     * checkbox is on, then verify pill swap via aria-pressed.
+     */
+    const addSauceCheckbox = page.locator('#add-sauce')
+    if (!(await addSauceCheckbox.isChecked())) {
+      await addSauceCheckbox.check()
+    }
+
+    const sweetBtn = page.locator('[data-testid="sauce-option-sweet"]')
     const bothBtn = page.locator('[data-testid="sauce-option-both"]')
 
-    // Default is "none"
-    await expect(noneBtn).toHaveAttribute('aria-pressed', 'true')
-
-    // Select "both" — only that pill should be pressed
-    await bothBtn.click()
+    // Enabling the checkbox defaults the selection to "both"
     await expect(bothBtn).toHaveAttribute('aria-pressed', 'true')
-    await expect(noneBtn).toHaveAttribute('aria-pressed', 'false')
+
+    await sweetBtn.click()
+    await expect(sweetBtn).toHaveAttribute('aria-pressed', 'true')
+    await expect(bothBtn).toHaveAttribute('aria-pressed', 'false')
   })
 
   test('Order comment textarea accepts text', async ({ authenticatedPage: page }) => {
@@ -80,18 +89,50 @@ test.describe('Checkout options', () => {
     expect(optionCount).toBeGreaterThanOrEqual(1)
   })
 
+  test('Cash payment without acknowledgement is rejected by validation', async ({ authenticatedPage: page }) => {
+    await addProductsAndGoToCheckout(page)
+
+    /*
+     * Race the closed banner — if the kitchen is shut the place-order button
+     * never renders and the validation we want to test doesn't fire.
+     */
+    await page.locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`).first().waitFor({ timeout: 10_000 })
+    if (await page.locator(SEL.checkoutRestaurantClosed).isVisible()) {
+      test.skip(true, 'Restaurant is currently closed')
+      return
+    }
+
+    /*
+     * The place-order button stays clickable for both online and cash; cash
+     * validation runs on click and short-circuits with a notification when
+     * the acknowledgement checkbox is unticked. Verify we stay on /checkout
+     * and the cash-acknowledge row is still visible (no navigation happened).
+     */
+    await page.locator(SEL.paymentCash).click()
+    await expect(page.locator(SEL.cashAcknowledge)).not.toBeChecked()
+
+    await page.locator(SEL.checkoutPlaceOrder).first().click()
+    /* Polls for ~1.5s; succeeds because the URL never matches order-completed. */
+    await expect(page).not.toHaveURL(/\/order-completed\//u, { timeout: 1_500 })
+    await expect(page).toHaveURL(/\/checkout(?:[/?#]|$)/u)
+  })
+
   test('Delivery mode shows address prompt, pickup hides it', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
 
-    // Currently in pickup mode (set by helper). Switch to delivery.
+    /*
+     * Test the structural invariant rather than the inner copy: the
+     * #checkout-delivery-address container shows under DELIVERY and is
+     * removed under PICKUP. The inner button text varies ("Add Address"
+     * vs "Edit Address") depending on whether the test user already has
+     * a saved profile address — the seeded e2e user does.
+     */
+    const addressSection = page.locator('#checkout-delivery-address')
+
     await page.locator(SEL.checkoutOptionDelivery).click()
+    await expect(addressSection).toBeVisible({ timeout: 3_000 })
 
-    // Address prompt should appear (the "Add Address" button)
-    const addressPrompt = page.locator('text=Add Address').or(page.locator('text=Ajouter une adresse'))
-    await expect(addressPrompt.first()).toBeVisible({ timeout: 3_000 })
-
-    // Switch back to pickup — address section should disappear
     await page.locator(SEL.checkoutOptionPickup).click()
-    await expect(addressPrompt.first()).not.toBeVisible()
+    await expect(addressSection).not.toBeVisible()
   })
 })

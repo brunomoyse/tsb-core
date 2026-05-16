@@ -1,19 +1,14 @@
 import { dirname, join } from 'node:path'
-import { readFileSync, unlinkSync } from 'node:fs'
+import { existsSync, readFileSync, unlinkSync } from 'node:fs'
+import { dbEnv } from './helpers/db-env'
 import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const DB_HOST = process.env.DB_HOST || 'localhost'
-const DB_PORT = process.env.DB_PORT || '15432'
-const DB_USER = process.env.DB_USERNAME || 'brunomoyse'
-const DB_PASS = process.env.DB_PASSWORD || 'k5zQuoJNG1Vdre8kiNnaWrjajnyAnvF'
-const DB_NAME = process.env.DB_DATABASE || 'tokyosushi'
-
 function psql(sql: string): void {
   execSync(
-    `PGPASSWORD='${DB_PASS}' psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -c "${sql.replace(/"/gu, '\\"')}"`,
+    `PGPASSWORD='${dbEnv.DB_PASS}' psql -h ${dbEnv.DB_HOST} -p ${dbEnv.DB_PORT} -U ${dbEnv.DB_USER} -d ${dbEnv.DB_NAME} -c "${sql.replace(/"/gu, '\\"')}"`,
     { encoding: 'utf-8' },
   )
 }
@@ -31,5 +26,11 @@ export default function globalTeardown() {
     console.log('E2E teardown: restaurant config restored')
   } catch {
     console.warn('E2E teardown: no backup found, skipping restore')
+  }
+
+  // Drop captured OIDC state so the next run is forced to re-authenticate (token TTL is ~1h)
+  const authStatePath = join(__dirname, '.auth-state.json')
+  if (existsSync(authStatePath)) {
+    unlinkSync(authStatePath)
   }
 }

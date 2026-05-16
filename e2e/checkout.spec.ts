@@ -1,79 +1,51 @@
 import { expect, test } from './fixtures/auth.fixture'
 import { SEL } from './helpers/selectors'
+import { addProductsAndGoToCheckout } from './helpers/cart.helpers'
 
 test.describe('Checkout flows', () => {
-  test.fixme('Cash order happy path: login, add to cart, pickup, cash, place order', async ({ authenticatedPage: page }) => {
-    await test.step('Browse menu', async () => {
-      await page.locator(SEL.productCard).first().waitFor()
-    })
+  test('Cash order happy path lands on /order-completed and appears in /me/orders', async ({ authenticatedPage: page }) => {
+    await addProductsAndGoToCheckout(page)
 
-    let addedCount = 0
-    await test.step('Add products to cart', async () => {
-      const simpleCards = page.locator(SEL.simpleProduct)
-      const count = await simpleCards.count()
-
-      for (let i = 0; i < count && addedCount < 5; i++) {
-        const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-        if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
-          await addBtn.click()
-          await expect(page.locator(SEL.cartItem).nth(addedCount)).toBeVisible()
-          addedCount++
-        }
-      }
-    })
-
-    if (addedCount === 0) {
-      test.skip(true, 'No products can be added — restaurant may be closed')
-      return
-    }
-
-    await test.step('Set pickup in SideCart', async () => {
-      const sideCart = page.locator(SEL.sideCart)
-      await sideCart.waitFor()
-      await sideCart.locator(SEL.cartOptionPickup).click()
-    })
-
-    await test.step('Ensure minimum order is met', async () => {
-      const warning = page.locator(SEL.cartMinimumWarning)
-      if (await warning.isVisible()) {
-        const simpleCards = page.locator(SEL.simpleProduct)
-        const count = await simpleCards.count()
-        for (let i = 0; i < count; i++) {
-          const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-          if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
-            await addBtn.click()
-            await expect(page.locator(SEL.cartItem).last()).toBeVisible()
-          }
-          if (!(await warning.isVisible())) break
-        }
-      }
-      await expect(warning).not.toBeVisible()
-    })
-
-    await test.step('Go to checkout', async () => {
-      await page.locator(SEL.cartCheckoutLink).click()
-      await page.waitForURL('**/fr/checkout')
-    })
-
-    // Wait for checkout to render, then skip if restaurant is closed
+    /*
+     * Whether the restaurant is currently open varies by time-of-day. The
+     * checkout page renders either the closed banner or the place-order
+     * button; race them and skip if the kitchen is shut.
+     */
     await page.locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`).first().waitFor({ timeout: 10_000 })
-    const closedBanner = page.locator(SEL.checkoutRestaurantClosed)
-    if (await closedBanner.isVisible()) {
+    if (await page.locator(SEL.checkoutRestaurantClosed).isVisible()) {
       test.skip(true, 'Restaurant is currently closed')
       return
     }
 
-    await test.step('Select cash payment', async () => {
+    await test.step('Select cash payment + place order', async () => {
       await page.locator(SEL.paymentCash).click()
-    })
-
-    await test.step('Place order', async () => {
+      /*
+       * Cash requires the customer to tick "I confirm I'll pay cash"; the
+       * place-order button stays disabled otherwise.
+       */
+      await page.locator(SEL.cashAcknowledge).check()
       await page.locator(SEL.checkoutPlaceOrder).first().click()
       await page.waitForURL('**/fr/order-completed/**', { timeout: 15_000 })
     })
 
-    await test.step('Verify order completion', async () => {
+    const orderId = page.url().match(/order-completed\/([^/?#]+)/u)?.[1] ?? ''
+    expect(orderId).toMatch(/^[0-9a-f-]{36}$/u)
+
+    await test.step('Order-completed page shows confirmation + items', async () => {
       await expect(page.locator(SEL.orderCompletedTitle)).toBeVisible()
+      await expect(page.locator('[data-testid="order-completed-items"]')).toBeVisible()
+    })
+
+    await test.step('Order appears in /me/orders', async () => {
+      await page.goto('/fr/me/orders')
+      /*
+       * Each order card wraps an accordion panel with id `order-panel-<uuid>`,
+       * which is the most stable hook we have until the list gets explicit
+       * data-testid coverage. Matching by id avoids the rendered card text
+       * (status/date/total) which varies and isn't unique.
+       */
+      const panel = page.locator(`#order-panel-${orderId}`)
+      await expect(panel).toHaveCount(1, { timeout: 15_000 })
     })
   })
 })

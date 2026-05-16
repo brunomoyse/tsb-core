@@ -11,8 +11,10 @@ export const SEL = {
   productModalAddToCart: '[data-testid="product-modal-add-to-cart"]',
   productModalChoiceInc: '[data-testid^="product-modal-choice-inc-"]',
 
-  // SideCart (desktop)
+  // SideCart (desktop) + CartMobile (mobile)
   sideCart: '[data-testid="side-cart"]',
+  cartMobile: '[data-testid="cart-mobile"]',
+  floatingCartBar: '[data-testid="floating-cart-bar"]',
   cartOptionDelivery: '[data-testid="cart-option-delivery"]',
   cartOptionPickup: '[data-testid="cart-option-pickup"]',
   cartTotal: '[data-testid="cart-total"]',
@@ -35,6 +37,7 @@ export const SEL = {
   checkoutPreferredTime: '[data-testid="checkout-preferred-time"]',
   paymentOnline: '[data-testid="payment-online"]',
   paymentCash: '[data-testid="payment-cash"]',
+  cashAcknowledge: '[data-testid="cash-acknowledge"]',
 
   // Coupon
   couponInput: '[data-testid="coupon-input"]',
@@ -45,6 +48,7 @@ export const SEL = {
 
   // Auth
   loginSubmit: '[data-testid="login-submit"]',
+  loginVerify: '[data-testid="login-verify"]',
   loginError: '[data-testid="login-error"]',
 
   // Order completed
