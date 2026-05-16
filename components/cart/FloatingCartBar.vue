@@ -7,6 +7,7 @@
         >
             <button
                 type="button"
+                data-testid="floating-cart-bar"
                 class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-red-700"
                 @click="cartStore.toggleCartVisibility"
             >
