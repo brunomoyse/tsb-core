@@ -123,13 +123,15 @@ import * as productImage from '~/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { Product } from '@/types'
-import { eventBus } from '~/eventBus'
+import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
+import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
 
+const cartItemAdded = useEventBus(cartItemAddedKey)
 const cartStore = useCartStore();
 useI18n()
 const config = useRuntimeConfig();
@@ -198,7 +200,7 @@ const addToCart = () => {
         quantity: 1,
         source: 'card',
     });
-    eventBus.emit('cart-item-added', {
+    cartItemAdded.emit({
         productName: product.name,
         productId: product.id,
     });

@@ -113,17 +113,18 @@
 import type { Address, UpdateUserRequest, User } from '~/types'
 import { EUROPEAN_COUNTRIES } from '~/utils/europeanCountries'
 import UserForm from '~/components/form/UserForm.vue'
-import { eventBus } from '~/eventBus'
 import { formatAddress } from '~/utils/utils'
 import gql from 'graphql-tag'
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useGqlMutation } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 import { useTracking } from '~/composables/useTracking'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const notifications = useNotificationsStore()
 const { trackEvent } = useTracking()
 
 const UPDATE_ME = gql`
@@ -231,7 +232,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         authStore.updateUser(updatedUser)
 
         trackEvent('profile_updated')
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.updateSuccess'),
             persistent: false,
             duration: 3000,
@@ -241,7 +242,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
         if (import.meta.dev) console.error('Error during profile update:', error)
         const errs = Array.isArray(error) ? error as { extensions?: { field?: string } }[] : []
         const isPhoneError = errs.some((e) => e.extensions?.field === 'phoneNumber')
-        eventBus.emit('notify', {
+        notifications.notify({
             message: isPhoneError ? t('form.invalidPhone') : t('notify.errors.profileUpdateFailed'),
             persistent: false,
             duration: 5000,
@@ -261,7 +262,7 @@ const handleRequestDeletion = async () => {
         const res = await mutationRequestDeletion()
         authStore.updateUser({ deletionRequestedAt: res.requestDeletion.deletionRequestedAt })
 
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.requestDeletionSuccess'),
             persistent: false,
             duration: 3000,
@@ -269,7 +270,7 @@ const handleRequestDeletion = async () => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error requesting deletion:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.requestFailed'),
             persistent: false,
             duration: 5000,
@@ -283,7 +284,7 @@ const handleCancelDeletionRequest = async () => {
         const res = await mutationCancelDeletionRequest()
         authStore.updateUser({ deletionRequestedAt: res.cancelDeletionRequest.deletionRequestedAt })
 
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('me.profile.cancelDeletionSuccess'),
             persistent: false,
             duration: 3000,
@@ -291,7 +292,7 @@ const handleCancelDeletionRequest = async () => {
         })
     } catch (error) {
         if (import.meta.dev) console.error('Error canceling deletion request:', error)
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('notify.errors.requestFailed'),
             persistent: false,
             duration: 5000,

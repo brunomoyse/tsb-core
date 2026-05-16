@@ -190,16 +190,17 @@ import {
 import { formatDate, formatTime, isSameBrusselsDay } from '~/utils/datetime'
 import type { Order } from '@/types'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
-import { eventBus } from '~/eventBus'
 import gql from 'graphql-tag'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { print } from 'graphql'
+import { useNotificationsStore } from '~/stores/notifications'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
 
 const route     = useRoute()
 const cartStore = useCartStore()
+const notifications = useNotificationsStore()
 const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
@@ -306,7 +307,7 @@ watch(order, (orderData) => {
 
     if (orderData.status === 'CANCELLED' && !redirectedAfterCancel) {
         redirectedAfterCancel = true
-        eventBus.emit('notify', {
+        notifications.notify({
             message: t('orderCompleted.orderCanceled'),
             persistent: false,
             duration: 6000,
@@ -375,6 +376,15 @@ watch(order, (orderData) => {
 
 // Must stay at <script setup> top-level: nesting inside onMounted leaks the
 // WebSocket because onScopeDispose can't bind to the component scope.
+const refetchOrderOnReconnect = async () => {
+    try {
+        const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
+        if (fresh?.myOrder && dataOrder.value?.myOrder) {
+            dataOrder.value = { myOrder: { ...dataOrder.value.myOrder, ...fresh.myOrder } }
+        }
+    } catch { /* Non-critical */ }
+}
+
 const { data: liveUpdate } = useGqlSubscription<{
     myOrderUpdated: Partial<Order>
 }>(
@@ -383,7 +393,8 @@ const { data: liveUpdate } = useGqlSubscription<{
         myOrderUpdated(orderId: $orderId) { id status updatedAt estimatedReadyTime cancellationReason }
       }
     `),
-    { orderId }
+    { orderId },
+    { onReconnect: refetchOrderOnReconnect },
 )
 
 watch(liveUpdate, (val) => {
@@ -438,18 +449,6 @@ onMounted(() => {
         if (pollTimer) clearInterval(pollTimer)
     })
 
-    // Refetch order when a foreground push notification is received
-    const onPush = async (evt: { orderId: string }) => {
-        if (evt.orderId !== orderId) return
-        try {
-            const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
-            if (fresh?.myOrder && dataOrder.value?.myOrder) {
-                dataOrder.value = { myOrder: { ...dataOrder.value.myOrder, ...fresh.myOrder } }
-            }
-        } catch { /* Non-critical */ }
-    }
-    eventBus.on('order-status-push', onPush)
-
     cartStore.setCartVisibility(false)
     cartStore.resetState()
 
@@ -464,9 +463,6 @@ onMounted(() => {
     }
 })
 
-onUnmounted(() => {
-    eventBus.off('order-status-push')
-})
 </script>
 
 <style scoped>

@@ -306,11 +306,11 @@ import { useHaptics } from '~/composables/useHaptics'
 import { usePlatform } from '~/composables/usePlatform'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
-import { eventBus } from '~/eventBus'
+import { cartItemAddedKey } from '~/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '@/stores/cart'
-import { useDebounce } from '@vueuse/core'
+import { useDebounce, useEventBus } from '@vueuse/core'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '~/utils/productImage'
@@ -763,12 +763,8 @@ watch(() => cartStore.products.length, (newLen, oldLen) => {
     if (oldLen >= 1 && newLen === 0) preserveScrollFor(findTopVisibleCard())
 })
 
-onMounted(() => {
-    eventBus.on('cart-item-added', handleCartItemAdded)
-})
-onUnmounted(() => {
-    eventBus.off('cart-item-added', handleCartItemAdded)
-})
+// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
+useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
 /**
  * IntersectionObserver: Scroll Spy

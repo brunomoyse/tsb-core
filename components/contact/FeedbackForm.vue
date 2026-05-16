@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { eventBus } from '~/eventBus'
+import { useNotificationsStore } from '~/stores/notifications'
 
 const { t } = useI18n()
 const { $api } = useNuxtApp()
+const notifications = useNotificationsStore()
 const config = useRuntimeConfig()
 const turnstileSiteKey = config.public.turnstileSiteKey as string
 
@@ -107,13 +108,13 @@ async function handleSubmit() {
         const status = (error as { response?: { status?: number } })?.response?.status
         const errorCode = (error as { data?: { error?: string } })?.data?.error
         if (status === 429) {
-            eventBus.emit('notify', { message: t('feedback.errorTooManyRequests'), variant: 'error', duration: 5000 })
+            notifications.notify({ message: t('feedback.errorTooManyRequests'), variant: 'error', duration: 5000 })
         } else if (status === 400 && errorCode === 'captcha_failed') {
-            eventBus.emit('notify', { message: t('feedback.errorCaptchaFailed'), variant: 'error', duration: 5000 })
+            notifications.notify({ message: t('feedback.errorCaptchaFailed'), variant: 'error', duration: 5000 })
         } else if (status === 400) {
-            eventBus.emit('notify', { message: t('feedback.errorInvalidInput'), variant: 'error', duration: 5000 })
+            notifications.notify({ message: t('feedback.errorInvalidInput'), variant: 'error', duration: 5000 })
         } else {
-            eventBus.emit('notify', { message: t('feedback.errorGeneric'), variant: 'error', duration: 5000 })
+            notifications.notify({ message: t('feedback.errorGeneric'), variant: 'error', duration: 5000 })
         }
     } finally {
         submitting.value = false

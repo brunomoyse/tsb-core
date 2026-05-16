@@ -1,10 +1,11 @@
-import { eventBus } from '~/eventBus'
 import { useI18n } from 'vue-i18n'
+import { useNotificationsStore } from '~/stores/notifications'
 import { useRuntimeConfig } from '#imports'
 
 export function useInvoiceDownload() {
     const config = useRuntimeConfig()
     const { t } = useI18n()
+    const notifications = useNotificationsStore()
 
     const downloadInvoice = async (orderId: string) => {
         try {
@@ -45,7 +46,7 @@ export function useInvoiceDownload() {
             document.body.removeChild(a)
             window.URL.revokeObjectURL(url)
         } catch {
-            eventBus.emit('notify', {
+            notifications.notify({
                 message: t('notify.errors.invoiceDownloadFailed'),
                 persistent: false,
                 duration: 5000,
