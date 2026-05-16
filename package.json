@@ -12,7 +12,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "lint": "oxlint",
+    "lint": "oxlint && node scripts/check-ssr-safety.mjs",
     "cap:build": "APP_BUILD=capacitor nuxt build && node scripts/cap-extract-spa.mjs",
     "cap:sync": "npx cap sync",
     "cap:ios": "npm run cap:build && npx cap sync ios && npx cap open ios",
