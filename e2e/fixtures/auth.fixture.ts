@@ -1,43 +1,45 @@
 import { type Page, test as base } from '@playwright/test'
-import { dismissCookieConsent, waitForNuxtHydration } from './cookie-consent.fixture'
-import { SEL } from '../helpers/selectors'
+import { dirname, join } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import type { CapturedOidcState } from '../helpers/auth-flow'
+import { fileURLToPath } from 'node:url'
 
-async function login(page: Page): Promise<void> {
-  const email = process.env.E2E_USER_EMAIL
-  const password = process.env.E2E_USER_PASSWORD
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const STATE_FILE = join(__dirname, '..', '.auth-state.json')
 
-  if (!email || !password) {
-    base.skip(true, 'E2E_USER_EMAIL and E2E_USER_PASSWORD must be set')
-    return
-  }
+let cachedState: CapturedOidcState | null = null
 
-  // Clear any existing Zitadel session
-  await page.goto('https://tsbauth.brunomoyse.be/oidc/v1/end_session')
-  await page.waitForLoadState('domcontentloaded')
-
-  // Navigate to login — OIDC flow: app → Zitadel → custom login page with authRequestID
-  await page.goto('http://localhost:3000/fr/auth/login')
-  await page.waitForURL('**authRequest**', { timeout: 30_000 })
-
-  // Wait for Vue hydration so @submit.prevent handler is attached
-  await page.waitForFunction(() => Boolean(document.querySelector('#__nuxt')?.__vue_app__))
-  await page.locator('#email').fill(email)
-  await page.locator('#password').fill(password)
-  await page.locator(SEL.loginSubmit).click()
-
-  // After submit: createSession → finalizeOidcAuth → callback page → token exchange → /menu
-  // The callback page now falls back to /menu even if processCallback fails.
-  await page.waitForURL('**/fr/menu', { timeout: 30_000 })
-
-  await waitForNuxtHydration(page)
-  await dismissCookieConsent(page)
+function loadAuthState(): CapturedOidcState | null {
+  if (cachedState) return cachedState
+  if (!existsSync(STATE_FILE)) return null
+  cachedState = JSON.parse(readFileSync(STATE_FILE, 'utf-8')) as CapturedOidcState
+  return cachedState
 }
 
+/*
+ * The fixture shortcuts the OTP UI by replaying the oidc-client-ts localStorage
+ * entries captured in globalSetup. Tests that need an authenticated user get a
+ * ready-to-use page without paying the email-poll cost on every test.
+ *
+ * Mechanism: addInitScript runs before any page script on every navigation,
+ * so the OIDC user is in localStorage by the time the auth middleware reads
+ * it via isAuthenticated().
+ */
 export const test = base.extend<{ authenticatedPage: Page }>({
   authenticatedPage: async ({ page, context }, use) => {
+    const state = loadAuthState()
+    if (!state) {
+      base.skip(true, 'No e2e auth state — set E2E_USER_EMAIL and ensure the zitadel DB tunnel is reachable so globalSetup can capture a session')
+      return
+    }
+
     await context.clearCookies()
-    // Only clear cookies — oidc-client-ts stores PKCE state in sessionStorage
-    await login(page)
+    await context.addInitScript((entries: [string, string][]) => {
+      for (const [key, value] of entries) {
+        localStorage.setItem(key, value)
+      }
+    }, state.entries)
+
     await use(page)
   },
 })
