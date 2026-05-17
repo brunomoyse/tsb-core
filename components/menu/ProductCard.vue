@@ -1,6 +1,7 @@
 <template>
     <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
+             ref="cardRef"
              data-testid="product-card"
              :data-product-id="product.id"
              :data-has-choices="hasChoices"
@@ -122,10 +123,10 @@
 import * as productImage from '~/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useEventBus, useIntersectionObserver } from '@vueuse/core'
 import type { Product } from '@/types'
 import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
-import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
@@ -240,6 +241,26 @@ const resetTimeout = () => {
 
 // Define the ref with the correct type (HTMLImageElement)
 const imageElement = ref<HTMLImageElement | null>(null);
+
+// Fire one product_viewed event per mount when the card scrolls ≥50% into view.
+const cardRef = ref<HTMLElement | null>(null)
+const hasTrackedImpression = ref(false)
+const { stop: stopImpressionObserver } = useIntersectionObserver(
+    cardRef,
+    ([entry]) => {
+        if (!entry?.isIntersecting || hasTrackedImpression.value) return
+        hasTrackedImpression.value = true
+        trackEvent('product_viewed', {
+            product_id: product.id,
+            product_name: product.name,
+            category_name: product.category?.name,
+            price: product.price,
+            source: 'card',
+        })
+        stopImpressionObserver()
+    },
+    { threshold: 0.5 },
+)
 
 // Track whether the image has loaded
 const loaded = ref(false);
