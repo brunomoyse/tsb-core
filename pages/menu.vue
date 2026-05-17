@@ -464,12 +464,18 @@ const activeFilters = ref<Set<string>>(new Set())
 const toggleFilter = (filter: string) => {
     hapticSelection()
     const next = new Set(activeFilters.value)
-    if (next.has(filter)) {
-        next.delete(filter)
-    } else {
+    const willEnable = !next.has(filter)
+    if (willEnable) {
         next.add(filter)
+    } else {
+        next.delete(filter)
     }
     activeFilters.value = next
+    trackEvent('dietary_filter_toggled', {
+        filter,
+        enabled: willEnable,
+        active_filters_count: next.size,
+    })
 }
 
 /**

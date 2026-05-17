@@ -374,6 +374,58 @@ watch(order, (orderData) => {
     })
 }, { immediate: true })
 
+const hasTrackedPageView = ref(false)
+watch(order, (orderData) => {
+    if (!orderData || hasTrackedPageView.value) return
+    hasTrackedPageView.value = true
+    trackEvent('order_completed_page_viewed', {
+        order_id: orderId,
+        order_type: orderData.type,
+        total_price: orderData.totalPrice,
+        items_count: orderData.items?.length,
+    })
+}, { immediate: true })
+
+// Fire payment_succeeded / payment_failed at most once per order across reloads.
+// Both online (after Mollie webhook) and cash (immediate CONFIRMED) flow through here.
+const PAID_STATUSES = new Set(['CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'OUT_FOR_DELIVERY', 'DELIVERED', 'PICKED_UP'])
+const paymentEventStorageKey = `tsb_payment_event_${orderId}`
+const readPaymentEventFlag = (): boolean => {
+    if (typeof window === 'undefined') return false
+    try { return window.localStorage.getItem(paymentEventStorageKey) !== null } catch { return false }
+}
+const writePaymentEventFlag = () => {
+    if (typeof window === 'undefined') return
+    try { window.localStorage.setItem(paymentEventStorageKey, '1') } catch { /* Quota / private mode — funnel can dedupe by session */ }
+}
+
+watch(order, (orderData) => {
+    if (!orderData || readPaymentEventFlag()) return
+
+    if (orderData.status === 'FAILED') {
+        trackEvent('payment_failed', {
+            order_id: orderData.id,
+            order_type: orderData.type,
+            is_online_payment: orderData.isOnlinePayment,
+            total_price: orderData.totalPrice,
+        })
+        writePaymentEventFlag()
+        return
+    }
+
+    if (PAID_STATUSES.has(orderData.status)) {
+        trackEvent('payment_succeeded', {
+            order_id: orderData.id,
+            order_type: orderData.type,
+            method: orderData.isOnlinePayment ? 'online' : 'cash',
+            total_price: orderData.totalPrice,
+            revenue: orderData.totalPrice,
+            currency: 'EUR',
+        })
+        writePaymentEventFlag()
+    }
+}, { immediate: true })
+
 // Must stay at <script setup> top-level: nesting inside onMounted leaks the
 // WebSocket because onScopeDispose can't bind to the component scope.
 const refetchOrderOnReconnect = async () => {
@@ -451,16 +503,6 @@ onMounted(() => {
 
     cartStore.setCartVisibility(false)
     cartStore.resetState()
-
-    // Track page view with order details
-    if (order.value) {
-        trackEvent('order_completed_page_viewed', {
-            order_id: orderId,
-            order_type: order.value.type,
-            total_price: order.value.totalPrice,
-            items_count: order.value.items?.length,
-        })
-    }
 })
 
 </script>

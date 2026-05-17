@@ -726,6 +726,8 @@ const handleCheckout = async () => {
                 is_online_payment: cartStore.paymentOption === 'ONLINE',
                 total_price: cartTotal.value,
                 items_count: cartStore.totalItems,
+                revenue: order?.totalPrice ?? cartTotal.value,
+                currency: 'EUR',
             })
 
             if (order?.payment?.links) {
