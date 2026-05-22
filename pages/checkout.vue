@@ -146,7 +146,7 @@
                         'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
                         !isCheckoutProcessing && isOrderingAvailable
                             ? 'bg-red-500 text-white hover:bg-red-600'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
                     ]"
                 >
                     <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
@@ -601,6 +601,12 @@ const handleCheckout = async () => {
     if (isCheckoutProcessing.value) return
     isCheckoutProcessing.value = true
 
+    /* Set true once the order is created and we're committed to a redirect.
+       The finally block leaves the button locked in that case so a stale
+       tap during the navigation gap (or on Capacitor, while the Mollie
+       Browser overlay is on top of this page) can't fire a second submit. */
+    let createdOrder = false
+
     try {
         if (!isOrderingEnabled.value) {
             notifications.notify({
@@ -733,6 +739,7 @@ const handleCheckout = async () => {
             if (order?.payment?.links) {
                 trackEvent('payment_redirect', { order_id: order.id })
                 isRedirectingToPayment.value = true
+                createdOrder = true
                 if (isCapacitor) {
                     // Open Mollie checkout in SFSafariViewController.
                     // Mollie redirects to be.tokyosushibarliege.app://order-completed/{id}
@@ -743,6 +750,7 @@ const handleCheckout = async () => {
                     navigateTo(order.payment.links.checkout.href, { external: true })
                 }
             } else if (order?.id) {
+                createdOrder = true
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }
         } catch (err: unknown) {
@@ -766,7 +774,10 @@ const handleCheckout = async () => {
             variant: 'error',
         })
     } finally {
-        isCheckoutProcessing.value = false
+        /* Only re-enable the button on validation failure or network error,
+           so a created order stays locked until the page navigates / the
+           Mollie overlay closes. */
+        if (!createdOrder) isCheckoutProcessing.value = false
     }
 }
 const cartTotal = computed(() =>
