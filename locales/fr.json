@@ -377,6 +377,8 @@
     "pageTitle": "Confirmation de commande - Tokyo Sushi Bar",
     "liveTracking": "Suivi en direct, le statut se met à jour automatiquement",
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
+    "notConfirmedYet": "Votre commande n'a pas encore été confirmée. Vous pouvez appeler le restaurant pour vérifier :",
+    "restaurantPhone": "04 222 98 88",
     "cancellationReasonLabel": "Motif :",
     "cancellationReasons": {
       "OUT_OF_STOCK": "Rupture de stock",

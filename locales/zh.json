@@ -377,6 +377,8 @@
     "pageTitle": "订单确认 - Tokyo Sushi Bar",
     "liveTracking": "实时追踪，状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
+    "notConfirmedYet": "您的订单尚未确认。您可以致电餐厅确认：",
+    "restaurantPhone": "04 222 98 88",
     "cancellationReasonLabel": "原因：",
     "cancellationReasons": {
       "OUT_OF_STOCK": "缺货",

@@ -121,6 +121,29 @@
                         </span>
                         {{ $t('orderCompleted.liveTracking') }}
                     </div>
+
+                    <!-- Restaurant hasn't confirmed within 5 min — invite to call. -->
+                    <div
+                        v-if="pendingTooLong"
+                        class="mt-4 flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs text-amber-800"
+                    >
+                        <svg
+                            class="w-4 h-4 mt-0.5 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <p>
+                            {{ $t('orderCompleted.notConfirmedYet') }}
+                            <a href="tel:+3242229888" class="font-semibold underline">{{ $t('orderCompleted.restaurantPhone') }}</a>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Failed / Cancelled -->
@@ -194,6 +217,7 @@ import gql from 'graphql-tag'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { print } from 'graphql'
 import { useNotificationsStore } from '~/stores/notifications'
+import { useNow } from '@vueuse/core'
 import { useTracking } from '~/composables/useTracking'
 
 definePageMeta({ public: false })
@@ -448,6 +472,17 @@ const { data: liveUpdate } = useGqlSubscription<{
     { orderId },
     { onReconnect: refetchOrderOnReconnect },
 )
+
+/* Reactive "now" ticks every 30s so the unconfirmed-order banner appears
+   without a hard reload. The subscription updates `order.status` separately
+   — once it leaves PENDING the computed flips back to false. */
+const now = useNow({ interval: 30_000 })
+const pendingTooLong = computed(() => {
+    const o = order.value
+    if (!o || o.status !== 'PENDING' || !o.createdAt) return false
+    const created = new Date(o.createdAt).getTime()
+    return (now.value.getTime() - created) >= 5 * 60 * 1000
+})
 
 watch(liveUpdate, (val) => {
     if (val?.myOrderUpdated?.status) {
