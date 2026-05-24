@@ -70,9 +70,11 @@
                     >
                       {{ product.name }}
                     </span>
-                    <span class="text-gray-600 text-xs">
-                      {{ product?.pieceCount }}
-                        {{ product?.pieceCount ? product?.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') : "" }}
+                    <span class="text-gray-600 text-xs text-center">
+                      <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
+                      <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
+                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ group.name.toLowerCase() }}
+                      </template>
                     </span>
                 </div>
 
@@ -164,6 +166,12 @@ onUnmounted(() => {
 });
 
 const hasChoices = computed(() => product.choices?.length > 0);
+
+const forcedChoiceGroups = computed(() =>
+    (product.choiceGroups ?? [])
+        .filter((g) => g.minSelections > 0)
+        .toSorted((a, b) => a.sortOrder - b.sortOrder),
+);
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
 

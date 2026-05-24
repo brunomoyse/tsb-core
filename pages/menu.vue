@@ -383,6 +383,13 @@ const PRODUCT_CATEGORIES = gql`
         isDiscountable
         category { id name slug }
         choices { id }
+        choiceGroups {
+          id
+          name
+          minSelections
+          maxSelections
+          sortOrder
+        }
       }
     }
   }
