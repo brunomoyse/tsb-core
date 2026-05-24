@@ -366,6 +366,7 @@ const PRODUCT_CATEGORIES = gql`
       id
       name
       order
+      slug
       products {
         id
         name
@@ -380,7 +381,7 @@ const PRODUCT_CATEGORIES = gql`
         isSpicy
         isVegetarian
         isDiscountable
-        category { id name }
+        category { id name slug }
         choices { id }
       }
     }

@@ -141,37 +141,49 @@
                     </label>
                 </div>
                 <!-- Wasabi Card -->
-                <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div
+                    class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
+                >
                     <input
                         type="checkbox"
                         id="wasabi"
                         v-model="addWasabi"
-                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded"
+                        :disabled="isTokyoHotOnlyCart"
+                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="wasabi" class="text-gray-700 font-medium">
                         {{ $t('checkout.addWasabi') }}
                     </label>
                 </div>
                 <!-- Ginger Card -->
-                <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div
+                    class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
+                >
                     <input
                         type="checkbox"
                         id="ginger"
                         v-model="addGinger"
-                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded"
+                        :disabled="isTokyoHotOnlyCart"
+                        class="mr-4 h-5 w-5 text-red-500 border-gray-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="ginger" class="text-gray-700 font-medium">
                         {{ $t('checkout.addGinger') }}
                     </label>
                 </div>
                 <!-- Soy Sauce -->
-                <div class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div
+                    class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
+                >
                     <div class="flex items-center gap-4 shrink-0">
                         <input
                             type="checkbox"
                             id="add-sauce"
                             :checked="addSauce"
-                            class="h-5 w-5 text-red-500 border-gray-300 rounded"
+                            :disabled="isTokyoHotOnlyCart"
+                            class="h-5 w-5 text-red-500 border-gray-300 rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
                         <label for="add-sauce" class="text-gray-700 font-medium">
@@ -337,23 +349,18 @@ const ORDER_COMMENT_MAX = 500
 
 const PAID_EXTRA_PRICE_MAX = 1
 
-// The accompagnement category has no slug in the GraphQL schema, only a locale-translated name.
-// Match against every known localized form so we resolve the right category regardless of Accept-Language.
-const ACCOMPAGNEMENT_CATEGORY_NAMES = new Set([
-    'accompagnement',
-    'accompagnements',
-    'side dish',
-    'side dishes',
-    'bijgerecht',
-    'bijgerechten',
-    '配菜',
-])
+const isTokyoHotOnlyCart = computed(() => {
+    const items = cartStore.products
+    if (items.length === 0) return false
+    return items.every((item) => item.product.category?.slug === 'tokyo-hot')
+})
 
 const EXTRA_PRODUCTS_QUERY = `
     query CheckoutPaidExtraProducts {
         productCategories {
             id
             name
+            slug
             products {
                 id
                 name
@@ -372,6 +379,7 @@ const EXTRA_PRODUCTS_QUERY = `
                 category {
                     id
                     name
+                    slug
                 }
                 choices {
                     id
@@ -393,9 +401,7 @@ const { data: paidExtrasProductsData } = await useGqlQuery<{ productCategories: 
 
 const accompagnementCategory = computed<ProductCategory | null>(() => {
     const categories = paidExtrasProductsData.value?.productCategories ?? []
-    return categories.find((c) =>
-        ACCOMPAGNEMENT_CATEGORY_NAMES.has(c.name?.trim().toLowerCase() ?? ''),
-    ) ?? null
+    return categories.find((c) => c.slug === 'accompagnement') ?? null
 })
 
 const getPaidProduct = (code: string): Product | undefined =>
@@ -551,6 +557,13 @@ const sauce = computed<string>({
         }
     }
 })
+
+watch(isTokyoHotOnlyCart, (locked) => {
+    if (!locked) return
+    addWasabi.value = false
+    addGinger.value = false
+    sauce.value = 'none'
+}, { immediate: true })
 
 // Computed binding for order comment
 const orderComment = computed({

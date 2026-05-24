@@ -58,6 +58,7 @@ export interface ProductCategory {
     id: string;
     name: string;
     order: number;
+    slug: string;
     products: Product[];
 }
 
