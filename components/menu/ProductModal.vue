@@ -98,7 +98,7 @@
                             >
                                 <div class="flex items-center justify-between mb-2 gap-3">
                                     <div class="min-w-0">
-                                        <span class="text-sm font-medium text-gray-900">{{ group.name }}</span>
+                                        <span class="text-sm font-medium text-gray-900">{{ choiceGroupDisplayName(group) }}</span>
                                         <p
                                             v-if="!isGroupSatisfied(group)"
                                             class="text-xs text-red-600 mt-0.5"
@@ -265,6 +265,7 @@ const PRODUCT_QUERY = gql`
       code
       category {
         name
+        slug
       }
       choices {
         id
@@ -370,6 +371,11 @@ const selectionList = computed((): ProductChoiceSelection[] => {
 
 const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value
 const groupTargetMax = (group: ProductChoiceGroup) => group.maxSelections * quantity.value
+
+const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
+    if (p?.category?.slug === 'menu-plateau') return t('menu.soup')
+    return group.name
+}
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false

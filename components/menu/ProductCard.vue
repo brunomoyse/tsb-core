@@ -73,7 +73,7 @@
                     <span class="text-gray-600 text-xs text-center">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
-                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ group.name.toLowerCase() }}
+                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ forcedChoiceGroupLabel(group) }}
                       </template>
                     </span>
                 </div>
@@ -136,7 +136,7 @@ import { useTracking } from '~/composables/useTracking'
 
 const cartItemAdded = useEventBus(cartItemAddedKey)
 const cartStore = useCartStore();
-useI18n()
+const { t } = useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
 const { impact } = useHaptics()
@@ -172,6 +172,11 @@ const forcedChoiceGroups = computed(() =>
         .filter((g) => g.minSelections > 0)
         .toSorted((a, b) => a.sortOrder - b.sortOrder),
 );
+
+const forcedChoiceGroupLabel = (group: { name: string }) => {
+    if (product.category?.slug === 'menu-plateau') return t('menu.soup').toLowerCase();
+    return group.name.toLowerCase();
+};
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
 
