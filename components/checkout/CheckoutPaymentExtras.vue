@@ -298,10 +298,10 @@
         <!-- Checkout Button (desktop only) -->
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-            !loading && isOrderingAvailable
+            !loading && isOrderingAvailable && !isCartEmpty
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
-          ]" :disabled="loading || !isOrderingAvailable">
+          ]" :disabled="loading || !isOrderingAvailable || isCartEmpty">
             <span v-if="loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -354,6 +354,8 @@ const isTokyoHotOnlyCart = computed(() => {
     if (items.length === 0) return false
     return items.every((item) => item.product.category?.slug === 'tokyo-hot')
 })
+
+const isCartEmpty = computed(() => cartStore.products.length === 0)
 
 const EXTRA_PRODUCTS_QUERY = `
     query CheckoutPaidExtraProducts {
@@ -558,11 +560,16 @@ const sauce = computed<string>({
     }
 })
 
-watch(isTokyoHotOnlyCart, (locked) => {
-    if (!locked) return
-    addWasabi.value = false
-    addGinger.value = false
-    sauce.value = 'none'
+watch(isTokyoHotOnlyCart, (locked, prev) => {
+    if (locked) {
+        addWasabi.value = false
+        addGinger.value = false
+        sauce.value = 'none'
+    } else if (prev === true && cartStore.products.length > 0) {
+        addWasabi.value = true
+        addGinger.value = true
+        sauce.value = 'both'
+    }
 }, { immediate: true })
 
 // Computed binding for order comment

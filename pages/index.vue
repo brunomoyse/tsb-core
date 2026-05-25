@@ -38,8 +38,12 @@ const nextOpeningTime = computed(() => {
     }).format(next)
 })
 
+// SSR can't read the persisted store value (lives in localStorage), so it always renders the default 'DELIVERY'. We mirror that during SSR/hydration, then switch to the real store value after mount to avoid a hydration class mismatch on the toggle buttons.
+const hydrated = ref(false)
+onMounted(() => { hydrated.value = true })
+
 const collection = computed<'DELIVERY' | 'PICKUP'>({
-    get: () => cartStore.collectionOption,
+    get: () => hydrated.value ? cartStore.collectionOption : 'DELIVERY',
     set: (v: 'DELIVERY' | 'PICKUP') => { cartStore.collectionOption = v },
 })
 

@@ -196,14 +196,15 @@
             </footer>
             </aside>
         </Transition>
-        <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
+        <ImageLightbox v-if="showLightbox" ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import * as productImage from '~/utils/productImage'
-import { defineAsyncComponent, ref, useRuntimeConfig, watch } from '#imports'
+import { defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '@/types'
+// Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
@@ -231,10 +232,13 @@ const {
 const lightboxRef = ref<{ open: () => void } | null>(null)
 const lightboxSrc = ref('')
 const lightboxAlt = ref('')
+const showLightbox = ref(false)
 
-const openLightbox = (id: string, name: string) => {
+const openLightbox = async (id: string, name: string) => {
     lightboxSrc.value = productImage.productImageBase(config.public.s3bucketUrl, id, 'classic')
     lightboxAlt.value = name
+    showLightbox.value = true
+    await nextTick()
     lightboxRef.value?.open()
 }
 

@@ -141,10 +141,10 @@
                     type="button"
                     data-testid="checkout-place-order"
                     @click="handleCheckout"
-                    :disabled="isCheckoutProcessing || !isOrderingAvailable"
+                    :disabled="isCheckoutProcessing || !isOrderingAvailable || cartStore.products.length === 0"
                     :class="[
                         'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
-                        !isCheckoutProcessing && isOrderingAvailable
+                        !isCheckoutProcessing && isOrderingAvailable && cartStore.products.length > 0
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
                     ]"
@@ -168,10 +168,9 @@
             </div>
         </template>
 
-        <!-- Payment Redirect Overlay -->
-        <Teleport to="body">
+        <!-- Payment Redirect Overlay — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
+        <Teleport v-if="isRedirectingToPayment" to="body">
             <div
-                v-if="isRedirectingToPayment"
                 role="status"
                 aria-live="polite"
                 aria-atomic="true"
@@ -233,7 +232,8 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ public: true })
+// PageTransition disabled to avoid a Vue/Suspense + `mode: "out-in"` race that crashes with "Cannot read 'type' of null" during unmount when navigating away from /checkout. With out-in, the old subtree is held until the new page's async deps resolve; the resolve callback then unmounts the old branch and trips a stale vnode in the deep tree.
+definePageMeta({ public: true, pageTransition: false })
 
 import type { Address, CreateOrderRequest, Order } from '~/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '~/utils/datetime'
@@ -489,15 +489,23 @@ onMounted(() => {
         persisted.$hydrate?.({ runHooks: false })
     }
 
-    // Always pre-check wasabi, ginger, and sauce (both)
     if (!cartStore.orderExtra) cartStore.orderExtra = []
-    for (const name of ['wasabi', 'ginger']) {
-        if (!cartStore.orderExtra.some(o => o.name === name)) {
-            cartStore.orderExtra.push({ name })
+
+    // Tokyo-hot-only carts can't take wasabi/ginger/sauce; the matching checkboxes in CheckoutPaymentExtras are disabled, so don't pre-check them here either.
+    const isTokyoHotOnly = cartStore.products.length > 0
+        && cartStore.products.every((item) => item.product.category?.slug === 'tokyo-hot')
+
+    if (isTokyoHotOnly) {
+        cartStore.orderExtra = cartStore.orderExtra.filter(o => !['wasabi', 'ginger', 'sauce'].includes(o.name))
+    } else {
+        for (const name of ['wasabi', 'ginger']) {
+            if (!cartStore.orderExtra.some(o => o.name === name)) {
+                cartStore.orderExtra.push({ name })
+            }
         }
-    }
-    if (!cartStore.orderExtra.some(o => o.name === 'sauce')) {
-        cartStore.orderExtra.push({ name: 'sauce', options: ['both'] })
+        if (!cartStore.orderExtra.some(o => o.name === 'sauce')) {
+            cartStore.orderExtra.push({ name: 'sauce', options: ['both'] })
+        }
     }
 
     // If the user is logged in and has an address, pre-fill the cart address
