@@ -26,7 +26,7 @@
             <div class="flex items-center ml-auto shrink-0">
                 <!-- Cart icon -->
                 <div>
-                    <CartButton v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && cartStore.totalItems === 0"
+                    <CartButton v-if="isMounted && typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && cartStore.totalItems === 0"
                                 class="lg:hidden"/>
                 </div>
 
@@ -111,11 +111,14 @@ import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
 const currentRoute = useRoute();
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+// Cart store rehydrates from localStorage post-mount; defer the totalItems read.
+const isMounted = useMounted()
 
 const isMenuOpen = ref(false)
 

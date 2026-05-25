@@ -4,9 +4,9 @@
         <div
             ref="contentContainer"
             class="w-full sm:w-[calc(100vw-142px)]"
-            :class="cartStore.products.length === 0
-        ? 'lg:w-[calc(100vw-142px)]'
-        : 'lg:w-[calc(67vw-71px)]'"
+            :class="hasCartItems
+        ? 'lg:w-[calc(67vw-71px)]'
+        : 'lg:w-[calc(100vw-142px)]'"
         >
             <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
 
@@ -263,7 +263,7 @@
 
         <!-- Desktop Cart Sidebar -->
         <aside
-            v-if="cartStore.products.length"
+            v-if="hasCartItems"
             class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
         >
             <SideCart :is-ordering-available="isCheckoutAvailable" />
@@ -310,7 +310,7 @@ import { cartItemAddedKey } from '~/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '@/stores/cart'
-import { useDebounce, useEventBus } from '@vueuse/core'
+import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '~/utils/productImage'
@@ -399,6 +399,9 @@ const PRODUCT_CATEGORIES = gql`
  * Stores & Data Fetch
  */
 const cartStore = useCartStore()
+// SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
+const isMounted = useMounted()
+const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
 const { data: dataCategories, refetch: refetchCategories } = await useGqlQuery<{
     productCategories: ProductCategory[]
 }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })

@@ -10,7 +10,7 @@
             <NavItem :tooltipText="$t('nav.contact')" alt="Contact Icon" icon="/icons/contact-icon.svg" to="contact"/>
             <!-- Cart button for tablet (hidden on lg+ where SideCart is visible) -->
             <NavItemButton
-                v-if="cartStore.totalItems > 0 && isMenuPage"
+                v-if="isMounted && cartStore.totalItems > 0 && isMenuPage"
                 class="lg:hidden"
                 :tooltipText="$t('nav.cart')"
                 alt="Cart Icon"
@@ -51,10 +51,13 @@ import NavItemButton from './NavItemButton.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const route = useRoute()
 const isMenuPage = computed(() => route.path.endsWith('/menu'))
+// Cart store rehydrates from localStorage post-mount; defer the totalItems read.
+const isMounted = useMounted()
 </script>

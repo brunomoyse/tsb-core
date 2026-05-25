@@ -125,7 +125,7 @@
 import * as productImage from '~/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '@/stores/cart'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useEventBus, useIntersectionObserver } from '@vueuse/core'
+import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '@/types'
 import { cartItemAddedKey } from '~/composables/useEventBuses'
 import { formatPrice } from '~/lib/price'
@@ -173,23 +173,30 @@ const forcedChoiceGroups = computed(() =>
         .toSorted((a, b) => a.sortOrder - b.sortOrder),
 );
 
-const forcedChoiceGroupLabel = (group: { name: string }) => {
-    if (product.category?.slug === 'menu-plateau') return t('menu.soup').toLowerCase();
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
+    if (product.category?.slug === 'menu-plateau') {
+        return t(group.maxSelections > 1 ? 'menu.soups' : 'menu.soup').toLowerCase();
+    }
     return group.name.toLowerCase();
 };
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
 
+// SSR-safe: cart store hydrates from localStorage post-mount, so render as empty until then.
+const isMounted = useMounted()
+
 const isInCart = computed(() =>
-    cartStore.products.some(
+    isMounted.value && cartStore.products.some(
         (cartItem) => cartItem.product.id === product.id
     )
 );
 
 const cardQuantity = computed(() =>
-    cartStore.products
-        .filter((cartItem) => cartItem.product.id === product.id)
-        .reduce((sum, item) => sum + item.quantity, 0)
+    isMounted.value
+        ? cartStore.products
+            .filter((cartItem) => cartItem.product.id === product.id)
+            .reduce((sum, item) => sum + item.quantity, 0)
+        : 0
 );
 
 const isQuantityBouncing = ref(false)

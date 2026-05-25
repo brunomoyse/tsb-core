@@ -61,6 +61,7 @@ import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import DeliveryZoneModal from '~/components/delivery/DeliveryZoneModal.vue'
 import { useCartStore } from '@/stores/cart'
 import { useI18n } from 'vue-i18n'
+import { useMounted } from '@vueuse/core'
 
 defineOptions({ inheritAttrs: false })
 
@@ -77,10 +78,13 @@ const forwardedAttrs = computed(() => {
 const open = ref(false)
 const cartStore = useCartStore()
 const { t } = useI18n()
+// SSR-safe: cart store hydrates from localStorage post-mount; render 'notSet' until then.
+const isMounted = useMounted()
 
 type ChipState = 'notSet' | 'inZone' | 'outOfZone' | 'pickup'
 
 const state = computed<ChipState>(() => {
+    if (!isMounted.value) return 'notSet'
     if (cartStore.collectionOption === 'PICKUP') return 'pickup'
     if (!cartStore.address) return 'notSet'
     const d = cartStore.address.distance ?? 0
