@@ -1,4 +1,4 @@
-FROM node:24.15-slim AS builder
+FROM node:24.16-slim AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -52,7 +52,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:24.15-alpine3.23
+FROM node:24.16-alpine3.23
 
 # Create non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
