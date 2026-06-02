@@ -235,13 +235,12 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import StepIndicator from '~/components/global/StepIndicator.vue'
 import { isValidEmail } from '~/lib/validators'
 import { useI18n } from 'vue-i18n'
-import { usePlatform } from '~/composables/usePlatform'
 import { useTracking } from '~/composables/useTracking'
 
 interface Props {
     /** 'page' = standalone /auth/login, 'inline' = embedded in checkout. */
     mode?: 'page' | 'inline'
-    /** AuthRequestID from URL query (web) — leave undefined to fetch via Capacitor bridge. */
+    /** AuthRequestID from URL query (web). Inline mode mints one on demand. */
     authRequestId?: string
     /** Where to navigate / what to do after a successful OIDC finalize. */
     onComplete?: (callbackUrl: string) => Promise<void> | void
@@ -256,7 +255,6 @@ const {
 } = defineProps<Props>()
 
 const { t } = useI18n()
-const { isCapacitor } = usePlatform()
 const { trackEvent } = useTracking()
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -286,8 +284,6 @@ let cooldownTimer: ReturnType<typeof setInterval> | null = null
 // "3 steps" variant of the indicator and gates the profile step.
 const requiresProfile = ref(false)
 
-const capacitorAuthRequestId = ref('')
-
 const totalSteps = computed(() => (requiresProfile.value ? 3 : 2))
 const stepIndex = computed(() => {
     if (step.value === 'email') return 0
@@ -299,16 +295,6 @@ const stepLabels = computed(() => {
     if (requiresProfile.value) labels.push(t('login.stepProfile'))
     return labels
 })
-
-const initCapacitorAuth = async () => {
-    try {
-        const { useOidc } = await import('~/composables/useOidc')
-        const { getAuthRequestId } = useOidc()
-        capacitorAuthRequestId.value = await getAuthRequestId()
-    } catch (e: unknown) {
-        if (import.meta.dev) console.error('Capacitor OIDC init error:', e)
-    }
-}
 
 onMounted(async () => {
     if (!import.meta.client) return
@@ -323,12 +309,7 @@ onMounted(async () => {
         if (pendingProvider) {
             sessionStorage.removeItem('pendingIdpProvider')
             await startIdpFlow(pendingProvider)
-            return
         }
-    }
-
-    if (isCapacitor) {
-        await initCapacitorAuth()
     }
 })
 
@@ -486,13 +467,6 @@ const onSubmitCode = async () => {
     } catch (error: unknown) {
         loading.value = false
         if (import.meta.dev) console.error('OTP verify error:', error)
-        if (isCapacitor) {
-            /*
-             * Re-fetch a fresh authRequestID for the inevitable retry — Zitadel
-             * invalidates the in-flight one on a verify failure.
-             */
-            await initCapacitorAuth()
-        }
         const err = error as { response?: { status?: number }, statusCode?: number }
         const status = err?.response?.status ?? err?.statusCode
         if (status === 429) {
@@ -547,26 +521,21 @@ const finalizeAndComplete = async () => {
     const { useZitadelApi } = await import('~/composables/useZitadelApi')
     const { finalizeOidcAuth } = useZitadelApi()
 
-    let effectiveAuthRequestId = authRequestId || capacitorAuthRequestId.value
+    let effectiveAuthRequestId = authRequestId
 
     if (!effectiveAuthRequestId) {
         /*
          * Inline mode (e.g. /checkout) has no authRequestId on the URL —
-         * mint one via the same backend proxy Capacitor uses. Do NOT fall
-         * back to signinRedirect({ login_hint }) here: that triggered a
-         * full-page redirect to Zitadel, which redirected to /auth/login
-         * and destroyed the in-memory OTP session, orphaning the
-         * auth_request and forcing the user to redo OTP.
+         * mint one via the backend proxy. Do NOT fall back to
+         * signinRedirect({ login_hint }) here: that triggered a full-page
+         * redirect to Zitadel, which redirected to /auth/login and destroyed
+         * the in-memory OTP session, orphaning the auth_request and forcing
+         * the user to redo OTP.
          */
         try {
-            if (isCapacitor) {
-                await initCapacitorAuth()
-                effectiveAuthRequestId = capacitorAuthRequestId.value
-            } else {
-                const { useOidc } = await import('~/composables/useOidc')
-                const { getAuthRequestId } = useOidc()
-                effectiveAuthRequestId = await getAuthRequestId()
-            }
+            const { useOidc } = await import('~/composables/useOidc')
+            const { getAuthRequestId } = useOidc()
+            effectiveAuthRequestId = await getAuthRequestId()
         } catch {
             errorMessage.value = t('notify.errors.sessionExpired')
             loading.value = false
@@ -587,25 +556,8 @@ const finalizeAndComplete = async () => {
         return
     }
 
-    /*
-     * Default behaviour: web does a full redirect; Capacitor exchanges the code
-     * and runs the post-auth callback inline.
-     */
-    if (isCapacitor) {
-        const callbackUrl = new URL(result.callbackUrl)
-        const authCode = callbackUrl.searchParams.get('code')
-        if (!authCode) throw new Error('No authorization code in callback URL')
-
-        const { useOidc } = await import('~/composables/useOidc')
-        const { exchangeCodeForTokens } = useOidc()
-        await exchangeCodeForTokens(authCode)
-
-        const { useAuthCallback } = await import('~/composables/useAuthCallback')
-        const { processCallback } = useAuthCallback()
-        await processCallback()
-    } else {
-        window.location.href = result.callbackUrl
-    }
+    // Full redirect to the OIDC callback (oidc-client-ts exchanges the code).
+    window.location.href = result.callbackUrl
 }
 
 const startIdpFlow = async (provider: string) => {
@@ -617,23 +569,15 @@ const startIdpFlow = async (provider: string) => {
     const { startIdpLogin } = useZitadelApi()
 
     const uiLocale = route.path.split('/')[1] || 'fr'
-    const effectiveAuthId = authRequestId || capacitorAuthRequestId.value
-    sessionStorage.setItem('oidcAuthRequestId', effectiveAuthId)
+    sessionStorage.setItem('oidcAuthRequestId', authRequestId)
 
-    const baseUrl = isCapacitor
-        ? 'be.tokyosushibarliege.app:/'
-        : (config.public.baseUrl as string)
+    const baseUrl = config.public.baseUrl as string
     const successUrl = `${baseUrl}/${uiLocale}/auth/idp/callback`
     const failureUrl = `${baseUrl}/${uiLocale}/auth/idp/callback?error=true`
 
     try {
         const { authUrl } = await startIdpLogin(provider, successUrl, failureUrl)
-        if (isCapacitor) {
-            const { Browser } = await import('@capacitor/browser')
-            await Browser.open({ url: authUrl, presentationStyle: 'popover' })
-        } else {
-            window.location.href = authUrl
-        }
+        window.location.href = authUrl
     } catch (error: unknown) {
         loading.value = false
         if (import.meta.dev) console.error('IdP start error:', error)
@@ -651,16 +595,8 @@ const loginWithProvider = async (provider: string) => {
     trackEvent('oauth_click', { provider })
     onBeforeRedirect?.()
 
-    if (authRequestId || capacitorAuthRequestId.value) {
+    if (authRequestId) {
         await startIdpFlow(provider)
-    } else if (isCapacitor) {
-        await initCapacitorAuth()
-        if (capacitorAuthRequestId.value) {
-            await startIdpFlow(provider)
-        } else {
-            loading.value = false
-            errorMessage.value = t('notify.errors.oauthFailed')
-        }
     } else {
         // Web: stash the choice, redirect to Zitadel for authRequestID, resume on return.
         sessionStorage.setItem('pendingIdpProvider', provider)

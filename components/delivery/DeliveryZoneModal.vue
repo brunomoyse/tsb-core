@@ -4,7 +4,6 @@
             <div
                 v-if="open"
                 class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50"
-                :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 0px)' } : undefined"
                 @click.self="onBackdropClick"
                 @keydown.esc="close"
             >
@@ -59,7 +58,6 @@
 import { ref, watch } from 'vue'
 import DeliveryZonePicker from '~/components/delivery/DeliveryZonePicker.vue'
 import { useFocusTrap } from '~/composables/useFocusTrap'
-import { usePlatform } from '~/composables/usePlatform'
 
 const { open } = defineProps<{
     open: boolean
@@ -68,8 +66,6 @@ const { open } = defineProps<{
 const emit = defineEmits<{
     'update:open': [value: boolean]
 }>()
-
-const { isCapacitor } = usePlatform()
 
 const modalRef = ref<HTMLElement | null>(null)
 useFocusTrap(modalRef)

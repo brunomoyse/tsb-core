@@ -18,13 +18,11 @@
 import { definePageMeta, onMounted, ref } from '#imports'
 import { useAuthCallback } from '~/composables/useAuthCallback'
 import { useOidc } from '~/composables/useOidc'
-import { usePlatform } from '~/composables/usePlatform'
 
 definePageMeta({ public: true })
 
-const { handleCallback, exchangeCodeForTokens } = useOidc()
+const { handleCallback } = useOidc()
 const { processCallback } = useAuthCallback()
-const { isCapacitor } = usePlatform()
 const error = ref(false)
 
 /*
@@ -41,16 +39,8 @@ onMounted(async () => {
     try {
         if (import.meta.dev) console.log('Callback URL:', window.location.href)
 
-        if (isCapacitor) {
-            // Capacitor: extract code from URL and exchange via backend proxy
-            const url = new URL(window.location.href)
-            const code = url.searchParams.get('code')
-            if (!code) throw new Error('No authorization code in callback URL')
-            await exchangeCodeForTokens(code)
-        } else {
-            // Web: use oidc-client-ts signinRedirectCallback (direct Zitadel call)
-            await handleCallback()
-        }
+        // Oidc-client-ts exchanges the authorization code for tokens.
+        await handleCallback()
 
         if (import.meta.dev) console.log('Token exchange succeeded')
 

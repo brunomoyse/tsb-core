@@ -2,14 +2,6 @@ import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url))
-const isCapacitor = process.env.APP_BUILD === 'capacitor'
-
-// Capacitor builds always target the test server
-if (isCapacitor) {
-    process.env.BASE_URL ||= 'https://tsb.brunomoyse.be'
-    process.env.API_BASE_URL = process.env.API_BASE_URL_CAP || 'https://tsb.brunomoyse.be/api/v1'
-    process.env.GRAPHQL_WS_URL = process.env.GRAPHQL_WS_URL_CAP || 'wss://tsb.brunomoyse.be/api/v1/graphql'
-}
 
 // Derive origins for CSP from environment variables (dev defaults)
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
@@ -34,7 +26,7 @@ const csp = `${[
 ].join('; ')};`
 
 export default defineNuxtConfig({
-    ssr: !isCapacitor,
+    ssr: true,
 
     css: ["~/assets/css/main.css", "~/assets/css/sakura.css"],
 
@@ -48,7 +40,6 @@ export default defineNuxtConfig({
     },
 
     app: {
-        ...(isCapacitor ? { crossOriginLoading: false } : {}),
         pageTransition: {name: "page", mode: "out-in"},
         head: {
             title: "Tokyo Sushi Bar",
@@ -78,12 +69,12 @@ export default defineNuxtConfig({
         "@nuxtjs/i18n",
         "@pinia/nuxt",
         'pinia-plugin-persistedstate/nuxt',
-        ...isCapacitor ? [] : ['@nuxtjs/sitemap'],
+        '@nuxtjs/sitemap',
         /*
-         * Skip Sentry on Capacitor (native) and when no DSN is set at build time —
-         * including the module bundles ~50KB of SDK that's inert without a DSN.
+         * Skip Sentry when no DSN is set at build time — including the module
+         * bundles ~50KB of SDK that's inert without a DSN.
          */
-        ...(isCapacitor || !process.env.SENTRY_DSN ? [] : ['@sentry/nuxt/module']),
+        ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
     ],
 
         plugins: [
@@ -120,7 +111,7 @@ export default defineNuxtConfig({
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
-            redirectOn: isCapacitor ? 'root' : 'all', // Capacitor: avoid aggressive WebView redirects
+            redirectOn: 'all',
         },
         strategy: 'prefix',
         vueI18n: "../i18n.config.ts",
@@ -128,7 +119,6 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            appBuild: process.env.APP_BUILD || 'web',
             baseUrl: process.env.BASE_URL,
             s3bucketUrl: process.env.S3_BUCKET_URL,
             api: process.env.API_BASE_URL,
@@ -155,7 +145,7 @@ export default defineNuxtConfig({
      */
     sentry: {
         sourceMapsUploadOptions: {
-            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN) && !isCapacitor,
+            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN),
             org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
             project: process.env.SENTRY_PROJECT || 'tsb-core',
             authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -189,7 +179,7 @@ export default defineNuxtConfig({
         overwriting: true,
     },
 
-    routeRules: isCapacitor ? {} : {
+    routeRules: {
         '/**': {
             headers: {
                 'X-Frame-Options': 'SAMEORIGIN',
@@ -206,7 +196,7 @@ export default defineNuxtConfig({
     },
 
     // Per-subdirectory cache headers for static assets. Nitro's public-asset handler sets Cache-Control directly; routeRules headers don't override it, which is why /images, /fonts, /icons were leaking 4h max-age in production.
-    nitro: isCapacitor ? {} : {
+    nitro: {
         publicAssets: [
             { baseURL: '/images', dir: `${rootDir}public/images`, maxAge: 60 * 60 * 24 * 365 },
             { baseURL: '/fonts',  dir: `${rootDir}public/fonts`,  maxAge: 60 * 60 * 24 * 365 },

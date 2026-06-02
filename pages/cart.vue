@@ -182,8 +182,7 @@
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
             v-if="cartStore.products.length > 0"
-            class="sticky z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
-            :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0px' }"
+            class="sticky bottom-0 z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
             <NuxtLinkLocale
                 to="checkout"
@@ -209,7 +208,7 @@
             <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
             </p>
-            <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
+            <div class="safe-area-spacer-bottom" />
         </div>
 
         <!-- ═══ EMPTY STATE ═══ -->
@@ -245,7 +244,6 @@ import { useCartTotals } from '~/composables/useCartTotals'
 import { useHaptics } from '~/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '~/stores/notifications'
-import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '~/composables/useTracking'
@@ -255,7 +253,6 @@ definePageMeta({ public: true })
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
 const notifications = useNotificationsStore()
-const { isCapacitor } = usePlatform()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
@@ -282,11 +279,7 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const cartPageMinHeightClass = computed(() =>
-    isCapacitor
-        ? 'min-h-[calc(100dvh-var(--safe-area-top,0px)-var(--cap-tab-clearance,56px))]'
-        : 'min-h-[100dvh]'
-)
+const cartPageMinHeightClass = 'min-h-[100dvh]'
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,

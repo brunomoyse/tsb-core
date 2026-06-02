@@ -1,25 +1,13 @@
-import { usePlatform } from '~/composables/usePlatform'
-
+/**
+ * Haptics shim. The web platform has no reliable cross-browser haptics API, so
+ * these are no-ops — kept as a stable interface for the components that call
+ * them (cart, menu, pull-to-refresh, swipe-back…) without per-call guards.
+ * (Native haptics lived in the now-removed Capacitor build.)
+ */
 export function useHaptics() {
-    const { isCapacitor } = usePlatform()
-
-    const impact = async (style: 'Light' | 'Medium' | 'Heavy' = 'Light') => {
-        if (!isCapacitor) return
-        const { Haptics, ImpactStyle } = await import('@capacitor/haptics')
-        await Haptics.impact({ style: ImpactStyle[style] }).catch(() => {})
-    }
-
-    const notification = async (type: 'Success' | 'Warning' | 'Error' = 'Success') => {
-        if (!isCapacitor) return
-        const { Haptics, NotificationType } = await import('@capacitor/haptics')
-        await Haptics.notification({ type: NotificationType[type] }).catch(() => {})
-    }
-
-    const selection = async () => {
-        if (!isCapacitor) return
-        const { Haptics } = await import('@capacitor/haptics')
-        await Haptics.selectionChanged().catch(() => {})
-    }
+    const impact = async (_style: 'Light' | 'Medium' | 'Heavy' = 'Light') => {}
+    const notification = async (_type: 'Success' | 'Warning' | 'Error' = 'Success') => {}
+    const selection = async () => {}
 
     return { impact, notification, selection }
 }

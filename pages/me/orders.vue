@@ -2,7 +2,6 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
 import type { Order } from "~/types"
-import PullToRefresh from "~/components/PullToRefresh.vue" // eslint-disable-line typescript-eslint/consistent-type-imports
 import { formatAddress } from "~/utils/utils"
 import { formatDateTime } from "~/utils/datetime"
 import gql from 'graphql-tag'
@@ -11,7 +10,6 @@ import { print } from "graphql/index"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "~/composables/useInvoiceDownload"
 import { useNotificationsStore } from "~/stores/notifications"
-import { usePlatform } from "~/composables/usePlatform"
 import { useReorder } from "~/composables/useReorder"
 
 
@@ -80,9 +78,6 @@ const MY_ORDERS = gql`
 const LOAD_STEP = 5
 const visibleCount = ref(10)
 
-const { isCapacitor } = usePlatform()
-const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
-
 const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed(() => dataOrders.value?.myOrders ?? [])
 
@@ -111,11 +106,6 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
         productName: item.product.name,
         choiceName: item.choice?.name,
     }).choice
-
-const handlePullRefresh = async () => {
-    await refetchOrders()
-    pullToRefreshRef.value?.finishRefresh()
-}
 
 if (ordersError.value) {
     notifications.notify({
@@ -323,8 +313,6 @@ const getStatusColorClass = (status: string) => {
 
 <template>
     <section class="max-w-5xl mx-auto pt-6 sm:pt-8 pb-8 px-4 sm:px-6">
-        <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
-
         <!-- Back link + Header -->
         <div class="mb-6 sm:mb-8 bento-cell" style="--delay: 0">
             <NuxtLinkLocale

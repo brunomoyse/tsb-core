@@ -34,11 +34,9 @@
 import AuthFlow from '~/components/auth/AuthFlow.vue'
 import { useCartStore } from '~/stores/cart'
 import { useLocalePath } from '#imports'
-import { usePlatform } from '~/composables/usePlatform'
 
 const cartStore = useCartStore()
 const localePath = useLocalePath()
-const { isCapacitor } = usePlatform()
 
 // Stash the return URL before any redirect so the OIDC callback lands back on /checkout.
 const saveReturnTo = () => {
@@ -46,21 +44,7 @@ const saveReturnTo = () => {
     sessionStorage.setItem('oidc_return_to', localePath('/checkout'))
 }
 
-const handleComplete = async (callbackUrl: string) => {
-    if (isCapacitor) {
-        const url = new URL(callbackUrl)
-        const authCode = url.searchParams.get('code')
-        if (!authCode) throw new Error('No authorization code in callback URL')
-
-        const { useOidc } = await import('~/composables/useOidc')
-        const { exchangeCodeForTokens } = useOidc()
-        await exchangeCodeForTokens(authCode)
-
-        const { useAuthCallback } = await import('~/composables/useAuthCallback')
-        const { processCallback } = useAuthCallback()
-        await processCallback()
-    } else {
-        window.location.href = callbackUrl
-    }
+const handleComplete = (callbackUrl: string) => {
+    window.location.href = callbackUrl
 }
 </script>

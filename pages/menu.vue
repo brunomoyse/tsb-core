@@ -8,8 +8,6 @@
         ? 'lg:w-[calc(67vw-71px)]'
         : 'lg:w-[calc(100vw-142px)]'"
         >
-            <PullToRefresh v-if="isCapacitor" ref="pullToRefreshRef" @refresh="handlePullRefresh" />
-
             <!-- Restaurant Closed Banner -->
             <div v-if="!isCheckoutAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,7 +20,7 @@
             </div>
 
             <!-- Sticky Categories Header -->
-            <section ref="stickyHeader" :class="['sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one', isCapacitor ? 'top-0' : 'top-[80px] sm:top-0']" :style="isCapacitor ? { paddingTop: 'calc(var(--safe-area-top, 0px) + 1rem)' } : undefined">
+            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[80px] sm:top-0">
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
@@ -188,17 +186,6 @@
                 </button>
             </div>
 
-            <!-- Capacitor floating zone checker (no top bar needed) -->
-            <ClientOnly>
-                <div
-                    v-if="isCapacitor"
-                    class="fixed right-4 z-40"
-                    :style="{ bottom: 'calc(var(--cap-tab-clearance, 16px) + 68px)' }"
-                >
-                    <DeliveryZoneChip compact />
-                </div>
-            </ClientOnly>
-
             <!-- Skeleton Loading State -->
             <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div v-for="i in 3" :key="i" class="space-y-4">
@@ -274,7 +261,6 @@
             <Transition name="modal-backdrop">
                 <div v-if="route.query.product"
                      class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
-                     :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 16px)' } : undefined"
                      @click.self="closeModal">
                     <Transition name="modal-panel" appear>
                         <ProductModal
@@ -301,9 +287,7 @@ import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
-import PullToRefresh from '~/components/PullToRefresh.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { useHaptics } from '~/composables/useHaptics'
-import { usePlatform } from '~/composables/usePlatform'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
 import { cartItemAddedKey } from '~/composables/useEventBuses'
@@ -315,9 +299,7 @@ import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '~/utils/productImage'
 
-const { isCapacitor } = usePlatform()
 const { selection: hapticSelection } = useHaptics()
-const pullToRefreshRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
@@ -402,14 +384,9 @@ const cartStore = useCartStore()
 // SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
 const isMounted = useMounted()
 const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
-const { data: dataCategories, refetch: refetchCategories } = await useGqlQuery<{
+const { data: dataCategories } = await useGqlQuery<{
     productCategories: ProductCategory[]
 }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
-
-const handlePullRefresh = async () => {
-    await refetchCategories()
-    pullToRefreshRef.value?.finishRefresh()
-}
 
 /**
  * Live product updates via WebSocket subscription
@@ -591,7 +568,7 @@ const scrollToCategory = (categoryId: string) => {
     activeCategory.value = categoryId
 
     const headerHeight = stickyHeader.value.offsetHeight
-    const navbarHeight = !isCapacitor.value && window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
+    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
     const gap = 16
     const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
     window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })

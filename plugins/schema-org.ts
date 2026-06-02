@@ -2,8 +2,6 @@ import { defineNuxtPlugin, useHead, useRuntimeConfig } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
-    if (config.public.appBuild === 'capacitor') return
-
     const baseUrl = config.public.baseUrl as string
 
     const schema = {

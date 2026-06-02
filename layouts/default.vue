@@ -19,20 +19,19 @@
         </a>
         <div class="min-h-screen flex flex-col">
             <header>
-                <MobileNavbar v-if="!isCapacitor"/>
-                <div v-if="!isCapacitor" class="mobile-only h-20"/>
+                <MobileNavbar/>
+                <div class="mobile-only h-20"/>
                 <SideNavbar/>
             </header>
 
             <main
                 id="main-content"
-                class="flex-1 bg-tsb-one px-4 sm:ml-[142px] overflow-x-clip"
-                :class="isCapacitor ? 'capacitor-main-content' : 'pb-4'"
+                class="flex-1 bg-tsb-one px-4 sm:ml-[142px] overflow-x-clip pb-4"
             >
                 <slot/>
             </main>
 
-            <footer v-if="!isCapacitor" class="p-4 sm:ml-[142px] text-xs text-gray-600">
+            <footer class="p-4 sm:ml-[142px] text-xs text-gray-600">
                 <!-- Decorative seigaiha wave divider -->
                 <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
                     <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-gray-200" />
@@ -68,11 +67,8 @@
             </footer>
         </div>
         <ClientOnly>
-            <LazyNavbarCapacitorTabBar />
-        </ClientOnly>
-        <ClientOnly>
-            <LazyCartMobile v-if="!isCapacitor" :is-ordering-available="isOrderingAvailable" />
-            <LazyCartFloatingCartBar v-if="!isCapacitor && isMenuPage" />
+            <LazyCartMobile :is-ordering-available="isOrderingAvailable" />
+            <LazyCartFloatingCartBar v-if="isMenuPage" />
         </ClientOnly>
         <ClientOnly>
             <LazyNotificationBar
@@ -106,10 +102,8 @@ import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '~/stores/notifications'
-import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useRoute } from 'vue-router'
-import { useSwipeBack } from '~/composables/useSwipeBack'
 
 useHead({
     link: [
@@ -125,12 +119,7 @@ useHead({
 
 const route = useRoute()
 const {t} = useI18n()
-const { isCapacitor, isIos } = usePlatform()
 
-// Swipe-from-left-edge to go back (iOS convention)
-if (import.meta.client && isIos) {
-    useSwipeBack('#main-content')
-}
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
 const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })

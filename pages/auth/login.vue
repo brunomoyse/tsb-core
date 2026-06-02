@@ -49,13 +49,11 @@ import { computed, onMounted, ref } from 'vue'
 import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta, useSwitchLocalePath } from '#imports'
 import AuthFlow from '~/components/auth/AuthFlow.vue'
 import { useI18n } from 'vue-i18n'
-import { usePlatform } from '~/composables/usePlatform'
 
 definePageMeta({ public: true })
 
 const { t, locale } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
-const { isCapacitor } = usePlatform()
 const route = useRoute()
 
 const languages = [
@@ -106,16 +104,13 @@ onMounted(async () => {
     }
 
     /*
-     * Web: bounce through Zitadel so we come back with an authRequestID. This
+     * Bounce through Zitadel so we come back with an authRequestID. This
      * is the ONLY way AuthFlow obtains one — its finalize step must not mint
      * a fresh signIn() mid-flow, which orphans the auth_request and strands
      * the user mid-OTP.
      */
-    if (!isCapacitor) {
-        const { signIn } = useOidc()
-        const uiLocale = route.path.split('/')[1] || 'fr'
-        await signIn({ ui_locales: uiLocale })
-    }
-    // Capacitor handles its own bootstrap inside AuthFlow.
+    const { signIn } = useOidc()
+    const uiLocale = route.path.split('/')[1] || 'fr'
+    await signIn({ ui_locales: uiLocale })
 })
 </script>

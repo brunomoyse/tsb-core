@@ -132,10 +132,9 @@
                 </template>
             </div>
 
-            <!-- Fixed Bottom Checkout Button (mobile only, both web & Capacitor) -->
+            <!-- Fixed Bottom Checkout Button (mobile only) -->
             <div
-                class="fixed left-0 right-0 sm:left-[142px] z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
-                :style="{ bottom: isCapacitor ? 'var(--cap-tab-clearance, 0px)' : '0' }"
+                class="fixed left-0 right-0 sm:left-[142px] bottom-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
             >
                 <button
                     type="button"
@@ -164,7 +163,7 @@
                     </span>
                     <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
                 </button>
-                <div v-if="!isCapacitor" class="safe-area-spacer-bottom" />
+                <div class="safe-area-spacer-bottom" />
             </div>
         </template>
 
@@ -188,7 +187,6 @@
         <div
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
-            :style="isCapacitor ? { paddingBottom: 'var(--cap-tab-clearance, 0px)' } : undefined"
             tabindex="0"
             @click.self="guardedCloseAddressModal"
         >
@@ -254,7 +252,6 @@ import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
 import { useHaptics } from '~/composables/useHaptics'
-import { usePlatform } from '~/composables/usePlatform'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
 
@@ -268,7 +265,6 @@ const {
     isMinimumReached,
 } = useCartTotals()
 const localePath = useLocalePath()
-const { isCapacitor } = usePlatform()
 const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
@@ -720,10 +716,6 @@ const handleCheckout = async () => {
             }),
             preferredReadyTime,
             cashPaymentAmount: cashAmount,
-            // Capacitor: use custom URL scheme so Mollie redirects back to the app
-            ...(isCapacitor ? {
-                paymentRedirectUrl: 'be.tokyosushibarliege.app://order-completed',
-            } : {}),
         }
 
         try {
@@ -748,15 +740,7 @@ const handleCheckout = async () => {
                 trackEvent('payment_redirect', { order_id: order.id })
                 isRedirectingToPayment.value = true
                 createdOrder = true
-                if (isCapacitor) {
-                    // Open Mollie checkout in SFSafariViewController.
-                    // Mollie redirects to be.tokyosushibarliege.app://order-completed/{id}
-                    // Deep link handler in capacitor.client.ts closes browser and navigates
-                    const { Browser } = await import('@capacitor/browser')
-                    await Browser.open({ url: order.payment.links.checkout.href })
-                } else {
-                    navigateTo(order.payment.links.checkout.href, { external: true })
-                }
+                navigateTo(order.payment.links.checkout.href, { external: true })
             } else if (order?.id) {
                 createdOrder = true
                 navigateTo(localePath(`/order-completed/${order.id}`))

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { definePageMeta, navigateTo, onMounted, useLocalePath, useRoute, useRuntimeConfig } from '#imports'
+import { definePageMeta, navigateTo, onMounted, useLocalePath, useRoute } from '#imports'
 import { useAuthStore } from '@/stores/auth'
 import { useTracking } from '~/composables/useTracking'
 
@@ -7,7 +7,6 @@ definePageMeta({ public: true })
 
 const authStore = useAuthStore()
 const localePath = useLocalePath()
-const config = useRuntimeConfig()
 const route = useRoute()
 const { trackEvent, resetUser } = useTracking()
 
@@ -17,14 +16,6 @@ onMounted(async () => {
     authStore.clearUser()
 
     const { useOidc } = await import('~/composables/useOidc')
-
-    if (config.public.appBuild === 'capacitor') {
-        // Capacitor: clear local tokens without browser redirect
-        const { logoutCapacitor } = useOidc()
-        logoutCapacitor()
-        navigateTo(localePath('/'))
-        return
-    }
 
     // Front-channel logout: Zitadel already ended the session and notified us via
     // A logout_token query param. Just clear local state and redirect — do NOT
