@@ -486,7 +486,12 @@
       "menu": "菜单",
       "contact": "联系我们",
       "terms": "条款",
-      "privacy": "隐私政策"
+      "privacy": "隐私政策",
+      "accountDeletion": "删除账户"
+    },
+    "accountDeletion": {
+      "title": "删除账户 - Tokyo Sushi Bar",
+      "description": "如何申请删除您的 Tokyo Sushi Bar 账户及个人数据。"
     }
   },
   "feedback": {
@@ -581,5 +586,25 @@
         "answer": "我们的餐厅位于列日市中心。附近有几个公共停车场：Parking Cathédrale、Parking Opéra 以及街边停车位（付费）。"
       }
     }
+  },
+  "accountDeletion": {
+    "title": "删除账户",
+    "lastUpdated": "最后更新：2026/06/04",
+    "intro": "本页面说明如何申请删除您的 Tokyo Sushi Bar 账户及其相关的个人数据。",
+    "howTitle": "如何申请删除",
+    "howBody": "如需删除您的账户，请使用与您账户关联的电子邮箱，向下方邮箱地址发送一封主题为「删除账户」的电子邮件。我们将在核实您的身份后处理您的申请。",
+    "emailSubject": "删除账户",
+    "dataTitle": "将被删除的数据",
+    "dataIntro": "申请处理完成后，以下数据将被永久删除：",
+    "dataItems": [
+      "账户资料 — 姓、名、电子邮箱、电话号码",
+      "送货地址",
+      "推送通知令牌"
+    ],
+    "retainTitle": "将被保留的数据",
+    "retainBody": "根据比利时会计法规的要求，订单和账单记录将保留 7 年，如我们的隐私政策所述。这些记录将不再与有效账户关联。",
+    "timingTitle": "处理时间",
+    "timingBody": "删除申请将在收到后 30 天内处理完成。",
+    "contactBody": "有疑问？请通过上述邮箱地址联系我们。"
   }
 }

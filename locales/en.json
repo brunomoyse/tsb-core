@@ -486,7 +486,12 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "Terms",
-      "privacy": "Privacy"
+      "privacy": "Privacy",
+      "accountDeletion": "Account deletion"
+    },
+    "accountDeletion": {
+      "title": "Account Deletion - Tokyo Sushi Bar",
+      "description": "How to request deletion of your Tokyo Sushi Bar account and personal data."
     }
   },
   "feedback": {
@@ -581,5 +586,25 @@
         "answer": "Our restaurant is located in the center of Liège. There are several public parking lots nearby: Parking Cathédrale, Parking Opéra, and street parking spaces (paid)."
       }
     }
+  },
+  "accountDeletion": {
+    "title": "Account deletion",
+    "lastUpdated": "Last updated: 04/06/2026",
+    "intro": "This page explains how to request deletion of your Tokyo Sushi Bar account and the personal data associated with it.",
+    "howTitle": "How to request deletion",
+    "howBody": "To request deletion of your account, send an email to the address below from the email address linked to your account, with the subject “Account deletion”. We will process your request after verifying your identity.",
+    "emailSubject": "Account deletion",
+    "dataTitle": "What data is deleted",
+    "dataIntro": "Once your request is processed, the following data is permanently deleted:",
+    "dataItems": [
+      "Account profile — first name, last name, email address, phone number",
+      "Delivery addresses",
+      "Push notification tokens"
+    ],
+    "retainTitle": "What data is retained",
+    "retainBody": "Order and billing records are kept for 7 years to comply with Belgian accounting obligations, as stated in our privacy policy. They are no longer linked to an active account.",
+    "timingTitle": "Processing time",
+    "timingBody": "Deletion requests are processed within 30 days of receipt.",
+    "contactBody": "Questions? Contact us at the address above."
   }
 }

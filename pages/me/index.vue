@@ -528,14 +528,13 @@ const updateNotificationPref = async (
 
         <!-- Account deletion — subtle, outside the grid -->
         <div class="mt-8 text-center bento-cell" style="--delay: 11">
-            <button
+            <NuxtLinkLocale
                 v-if="!authStore.user?.deletionRequestedAt"
-                type="button"
+                to="/account-deletion"
                 class="inline-flex min-h-11 items-center text-xs text-gray-400 hover:text-red-500 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                @click="handleRequestDeletion"
             >
                 {{ t('me.profile.requestDeletion') }}
-            </button>
+            </NuxtLinkLocale>
             <button
                 v-else
                 type="button"

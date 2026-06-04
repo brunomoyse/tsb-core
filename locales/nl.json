@@ -464,7 +464,12 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "AV",
-      "privacy": "Privacybeleid"
+      "privacy": "Privacybeleid",
+      "accountDeletion": "Account verwijderen"
+    },
+    "accountDeletion": {
+      "title": "Account verwijderen - Tokyo Sushi Bar",
+      "description": "Hoe u verwijdering van uw Tokyo Sushi Bar-account en persoonsgegevens aanvraagt."
     }
   },
   "feedback": {
@@ -559,5 +564,25 @@
         "answer": "Ons restaurant is gelegen in het centrum van Luik. Er zijn meerdere openbare parkings in de buurt: Parking Cathédrale, Parking Opéra, en straatparkeerplaatsen (betalend)."
       }
     }
+  },
+  "accountDeletion": {
+    "title": "Account verwijderen",
+    "lastUpdated": "Laatst bijgewerkt: 04/06/2026",
+    "intro": "Deze pagina legt uit hoe u kunt verzoeken om verwijdering van uw Tokyo Sushi Bar-account en de bijbehorende persoonsgegevens.",
+    "howTitle": "Hoe verwijdering aanvragen",
+    "howBody": "Om uw account te laten verwijderen, stuurt u een e-mail naar het onderstaande adres vanaf het e-mailadres dat aan uw account is gekoppeld, met als onderwerp “Account verwijderen”. Wij behandelen uw verzoek na verificatie van uw identiteit.",
+    "emailSubject": "Account verwijderen",
+    "dataTitle": "Welke gegevens worden verwijderd",
+    "dataIntro": "Zodra uw verzoek is verwerkt, worden de volgende gegevens definitief verwijderd:",
+    "dataItems": [
+      "Accountprofiel — voornaam, achternaam, e-mailadres, telefoonnummer",
+      "Bezorgadressen",
+      "Push-notificatietokens"
+    ],
+    "retainTitle": "Welke gegevens worden bewaard",
+    "retainBody": "Bestel- en facturatiegegevens worden 7 jaar bewaard om te voldoen aan de Belgische boekhoudkundige verplichtingen, zoals vermeld in ons privacybeleid. Ze zijn niet langer gekoppeld aan een actief account.",
+    "timingTitle": "Verwerkingstijd",
+    "timingBody": "Verwijderingsverzoeken worden binnen 30 dagen na ontvangst verwerkt.",
+    "contactBody": "Vragen? Neem contact met ons op via het bovenstaande adres."
   }
 }

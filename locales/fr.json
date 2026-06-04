@@ -486,7 +486,12 @@
       "menu": "Menu",
       "contact": "Contact",
       "terms": "CGV",
-      "privacy": "Confidentialité"
+      "privacy": "Confidentialité",
+      "accountDeletion": "Suppression du compte"
+    },
+    "accountDeletion": {
+      "title": "Suppression du compte - Tokyo Sushi Bar",
+      "description": "Comment demander la suppression de votre compte Tokyo Sushi Bar et de vos données personnelles."
     }
   },
   "feedback": {
@@ -581,5 +586,25 @@
         "answer": "Notre restaurant est situé en centre-ville de Liège. Il y a plusieurs parkings publics à proximité : Parking Cathédrale, Parking Opéra, et des places de stationnement dans la rue (payant)."
       }
     }
+  },
+  "accountDeletion": {
+    "title": "Suppression du compte",
+    "lastUpdated": "Dernière mise à jour : 04/06/2026",
+    "intro": "Cette page explique comment demander la suppression de votre compte Tokyo Sushi Bar et des données personnelles qui y sont associées.",
+    "howTitle": "Comment demander la suppression",
+    "howBody": "Pour demander la suppression de votre compte, envoyez un e-mail à l'adresse ci-dessous depuis l'adresse e-mail associée à votre compte, avec pour objet « Suppression du compte ». Nous traiterons votre demande après vérification de votre identité.",
+    "emailSubject": "Suppression du compte",
+    "dataTitle": "Données supprimées",
+    "dataIntro": "Une fois votre demande traitée, les données suivantes sont définitivement supprimées :",
+    "dataItems": [
+      "Profil du compte — nom, prénom, adresse e-mail, numéro de téléphone",
+      "Adresses de livraison",
+      "Jetons de notification push"
+    ],
+    "retainTitle": "Données conservées",
+    "retainBody": "Les données de commande et de facturation sont conservées 7 ans afin de respecter les obligations comptables belges, comme indiqué dans notre politique de confidentialité. Elles ne sont plus associées à un compte actif.",
+    "timingTitle": "Délai de traitement",
+    "timingBody": "Les demandes de suppression sont traitées dans un délai de 30 jours à compter de leur réception.",
+    "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
   }
 }
