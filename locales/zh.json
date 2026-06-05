@@ -1,4 +1,5 @@
 {
+  "404": {},
   "head": {
     "title": "Tokyo Sushi Bar"
   },
@@ -387,9 +388,21 @@
       "KITCHEN_CLOSED": "厨房已关闭",
       "DELIVERY_AREA": "超出配送范围"
     },
-    "loadError": "加载订单详情失败，请重试。"
+    "loadError": "加载订单详情失败，请重试。",
+    "backToMenu": "返回菜单",
+    "payment": {
+      "canceledTitle": "支付已取消",
+      "canceledBody": "您已取消支付，订单未提交。购物车已保留——您可以重试。",
+      "failedTitle": "支付失败",
+      "failedBody": "我们无法处理您的支付，未产生任何扣款。购物车已保留——请重试。",
+      "expiredTitle": "支付已过期",
+      "expiredBody": "支付会话在完成前已过期。购物车已保留——您可以重试。",
+      "abandonedTitle": "支付未完成",
+      "abandonedBody": "您在支付完成前离开，订单未提交。购物车已保留——您可以重试。",
+      "tryAgain": "重试",
+      "verifying": "正在验证您的支付…"
+    }
   },
-  "404": {},
   "error": {
     "homeButton": "返回首页",
     "menuButton": "查看菜单",

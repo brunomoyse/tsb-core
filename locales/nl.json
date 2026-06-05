@@ -1,4 +1,5 @@
 {
+  "404": {},
   "head": {
     "title": "Tokyo Sushi Bar"
   },
@@ -372,9 +373,21 @@
       "KITCHEN_CLOSED": "Keuken gesloten",
       "DELIVERY_AREA": "Buiten bezorggebied"
     },
-    "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw."
+    "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw.",
+    "backToMenu": "Terug naar menu",
+    "payment": {
+      "canceledTitle": "Betaling geannuleerd",
+      "canceledBody": "U hebt de betaling geannuleerd, dus uw bestelling is niet geplaatst. Uw winkelwagen is bewaard — u kunt het opnieuw proberen.",
+      "failedTitle": "Betaling mislukt",
+      "failedBody": "We konden uw betaling niet verwerken en er is niets afgeschreven. Uw winkelwagen is bewaard — probeer het opnieuw.",
+      "expiredTitle": "Betaling verlopen",
+      "expiredBody": "De betaalsessie is verlopen voordat deze was voltooid. Uw winkelwagen is bewaard — u kunt het opnieuw proberen.",
+      "abandonedTitle": "Betaling niet voltooid",
+      "abandonedBody": "U bent vertrokken voordat de betaling was voltooid, dus uw bestelling is niet geplaatst. Uw winkelwagen is bewaard — u kunt het opnieuw proberen.",
+      "tryAgain": "Opnieuw proberen",
+      "verifying": "Uw betaling controleren…"
+    }
   },
-  "404": {},
   "error": {
     "homeButton": "Terug naar start",
     "menuButton": "Bekijk het menu",
