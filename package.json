@@ -21,7 +21,7 @@
     "@sentry/nuxt": "^10.51.0",
     "@unhead/vue": "^2.1.13",
     "@vueuse/core": "^14.3.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.1",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^6.0.8",
     "libphonenumber-js": "^1.13.4",
