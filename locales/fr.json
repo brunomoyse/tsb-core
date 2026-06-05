@@ -1,4 +1,5 @@
 {
+  "404": {},
   "head": {
     "title": "Tokyo Sushi Bar"
   },
@@ -387,9 +388,21 @@
       "KITCHEN_CLOSED": "Cuisine fermée",
       "DELIVERY_AREA": "Hors zone de livraison"
     },
-    "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer."
+    "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer.",
+    "backToMenu": "Retour au menu",
+    "payment": {
+      "canceledTitle": "Paiement annulé",
+      "canceledBody": "Vous avez annulé le paiement, votre commande n’a donc pas été passée. Votre panier est conservé — vous pouvez réessayer.",
+      "failedTitle": "Paiement échoué",
+      "failedBody": "Nous n’avons pas pu traiter votre paiement et aucun montant n’a été débité. Votre panier est conservé — veuillez réessayer.",
+      "expiredTitle": "Paiement expiré",
+      "expiredBody": "La session de paiement a expiré avant d’être finalisée. Votre panier est conservé — vous pouvez réessayer.",
+      "abandonedTitle": "Paiement non finalisé",
+      "abandonedBody": "Vous avez quitté avant la fin du paiement, votre commande n’a donc pas été passée. Votre panier est conservé — vous pouvez réessayer.",
+      "tryAgain": "Réessayer",
+      "verifying": "Vérification de votre paiement…"
+    }
   },
-  "404": {},
   "error": {
     "homeButton": "Retour à l'accueil",
     "menuButton": "Voir le menu",

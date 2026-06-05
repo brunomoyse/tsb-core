@@ -1,6 +1,55 @@
 <template>
     <div class="min-h-calc flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16">
 
+        <!-- Online payment did not complete: distinct per-status outcome
+             (canceled / failed / expired / abandoned). The cart is kept so the
+             user can retry — mirrors tsb-mobile. -->
+        <div
+            v-if="paymentProblem"
+            class="flex flex-col items-center w-full max-w-md mt-8 sm:mt-12"
+        >
+            <div class="flex items-center justify-center w-24 h-24 rounded-full bg-red-100">
+                <svg class="w-11 h-11 text-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+            </div>
+            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+                {{ paymentProblemTitle }}
+            </h1>
+            <p class="mt-3 text-gray-600 text-sm sm:text-base text-center max-w-sm">
+                {{ paymentProblemBody }}
+            </p>
+            <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
+                <NuxtLinkLocale
+                    to="/checkout"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                >
+                    {{ $t('orderCompleted.payment.tryAgain') }}
+                </NuxtLinkLocale>
+                <NuxtLinkLocale
+                    to="/menu"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                >
+                    {{ $t('orderCompleted.backToMenu', 'Back to menu') }}
+                </NuxtLinkLocale>
+            </div>
+        </div>
+
+        <!-- Just returned from Mollie and the webhook is still landing: resolve
+             the real status before rendering success vs. a payment problem, so a
+             paid-but-lagging order never flashes "not completed". -->
+        <div
+            v-else-if="resolvingPayment"
+            class="flex flex-col items-center justify-center w-full max-w-md mt-16 gap-3"
+        >
+            <div class="w-8 h-8 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
+            <p class="text-sm text-gray-500">{{ $t('orderCompleted.payment.verifying', 'Verifying your payment…') }}</p>
+        </div>
+
+        <template v-else>
+
         <!-- Hero: Bag + Title -->
         <div class="relative flex flex-col items-center w-full max-w-md">
 
@@ -194,19 +243,20 @@
                 {{ $t('orderCompleted.returnHome') }}
             </NuxtLinkLocale>
         </div>
+
+        </template>
     </div>
 </template>
 
 <script setup lang="ts">
+import { type PaymentOutcome, isPaymentProblem, outcomeFromPaymentStatus } from '~/lib/paymentOutcome'
 import { computed, onMounted, onUnmounted, watch } from 'vue'
 import {
     definePageMeta,
-    navigateTo,
     ref,
     useAsyncData,
     useCartStore,
     useGqlSubscription,
-    useLocalePath,
     useNuxtApp,
     useRoute,
 } from '#imports'
@@ -216,7 +266,6 @@ import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 import gql from 'graphql-tag'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { print } from 'graphql'
-import { useNotificationsStore } from '~/stores/notifications'
 import { useNow } from '@vueuse/core'
 import { useTracking } from '~/composables/useTracking'
 
@@ -224,13 +273,10 @@ definePageMeta({ public: false })
 
 const route     = useRoute()
 const cartStore = useCartStore()
-const notifications = useNotificationsStore()
 const orderId   = route.params.orderId as string
 const orderFailed = ref(false)
 const { trackEvent } = useTracking()
 const { $gqlFetch } = useNuxtApp()
-const localePath = useLocalePath()
-let redirectedAfterCancel = false
 
 const formatEstimatedTime = (isoString: string): string => {
     const date = new Date(isoString)
@@ -294,6 +340,38 @@ const { data: dataOrder, error: orderError } = await useAsyncData<{ myOrder: Ord
 
 const order = computed(() => dataOrder.value?.myOrder ?? null)
 
+/* ── Online payment outcome ──
+   Mollie redirects back here for every outcome, so the redirect tells us
+   nothing; the order's payment.status (set by the webhook) is the truth. We map
+   it to a user-facing outcome and, when the payment didn't succeed, render a
+   distinct per-status screen instead of the celebratory hero. The cart is kept
+   (reset only on success in onMounted) so the user can retry. Mirrors tsb-mobile. */
+const resolvingPayment = ref(false)
+
+const paymentOutcome = computed<PaymentOutcome | null>(() => {
+    const o = order.value
+    if (!o || !o.isOnlinePayment) return null // Cash orders never have a payment problem
+    const out = outcomeFromPaymentStatus(o.payment?.status)
+    if (out === 'paid') return null
+    /* Only surface a problem while the order hasn't progressed: an online order
+       is PENDING until paid, and CANCELLED once payment fails/cancels/expires. */
+    if (o.status !== 'PENDING' && o.status !== 'CANCELLED' && o.status !== 'FAILED') return null
+    return out
+})
+
+const paymentProblem = computed(
+    () => !resolvingPayment.value && paymentOutcome.value !== null && isPaymentProblem(paymentOutcome.value),
+)
+
+/* Avoid a "not completed" flash for a paid-but-lagging order: if we land here
+   with an online order still open/pending, hold the resolving state until the
+   onMounted poll settles it. */
+if (order.value?.isOnlinePayment
+    && order.value.status === 'PENDING'
+    && outcomeFromPaymentStatus(order.value.payment?.status) === 'abandoned') {
+    resolvingPayment.value = true
+}
+
 interface OrderItemLike {
     product: { code: string | null; name: string; category?: { name: string } | null }
     choice?: { name: string } | null
@@ -323,23 +401,18 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
 // Schema.org Order structured data
 const config = useRuntimeConfig()
 const { t, locale } = useI18n()
+
+const paymentProblemTitle = computed(() =>
+    paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Title`) : '',
+)
+const paymentProblemBody = computed(() =>
+    paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Body`) : '',
+)
 const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
 const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
 
 watch(order, (orderData) => {
     if (!orderData) return
-
-    if (orderData.status === 'CANCELLED' && !redirectedAfterCancel) {
-        redirectedAfterCancel = true
-        notifications.notify({
-            message: t('orderCompleted.orderCanceled'),
-            persistent: false,
-            duration: 6000,
-            variant: 'error',
-        })
-        navigateTo(localePath('/'))
-        return
-    }
 
     useJsonLd([
         {
@@ -537,8 +610,35 @@ onMounted(() => {
     })
 
     cartStore.setCartVisibility(false)
-    cartStore.resetState()
+    void finalizeCartAfterPayment()
 })
+
+/**
+ * Decide whether to commit (clear) the cart. For online payments we wait until
+ * the webhook-updated status is known — polling briefly if we returned from
+ * Mollie before it landed — and keep the cart on any non-paid outcome so the
+ * user can retry from /checkout. Cash orders commit immediately.
+ */
+async function finalizeCartAfterPayment() {
+    if (resolvingPayment.value) {
+        const delays = [800, 1200, 1500, 2000]
+        for (const d of delays) {
+            await new Promise((resolve) => { setTimeout(resolve, d) })
+            try {
+                const fresh = await $gqlFetch<{ myOrder: Order }>(ORDER_QUERY, { variables: { orderId } })
+                if (fresh?.myOrder && dataOrder.value?.myOrder) {
+                    dataOrder.value = { myOrder: { ...dataOrder.value.myOrder, ...fresh.myOrder } }
+                }
+                const out = outcomeFromPaymentStatus(fresh?.myOrder?.payment?.status)
+                if (out !== 'abandoned' || (fresh?.myOrder && fresh.myOrder.status !== 'PENDING')) break
+            } catch { /* Transient — keep polling */ }
+        }
+        resolvingPayment.value = false
+    }
+
+    // Keep the cart for any payment problem; clear it once the order is committed.
+    if (!paymentProblem.value) cartStore.resetState()
+}
 
 </script>
 

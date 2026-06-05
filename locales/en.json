@@ -1,4 +1,5 @@
 {
+  "404": {},
   "head": {
     "title": "Tokyo Sushi Bar"
   },
@@ -387,9 +388,21 @@
       "KITCHEN_CLOSED": "Kitchen closed",
       "DELIVERY_AREA": "Outside delivery area"
     },
-    "loadError": "Failed to load order details. Please try again."
+    "loadError": "Failed to load order details. Please try again.",
+    "backToMenu": "Back to menu",
+    "payment": {
+      "canceledTitle": "Payment canceled",
+      "canceledBody": "You canceled the payment, so your order wasn’t placed. Your cart is saved — you can try again.",
+      "failedTitle": "Payment failed",
+      "failedBody": "We couldn’t process your payment and no charge was made. Your cart is saved — please try again.",
+      "expiredTitle": "Payment expired",
+      "expiredBody": "The payment session expired before it was completed. Your cart is saved — you can try again.",
+      "abandonedTitle": "Payment not completed",
+      "abandonedBody": "You left before the payment was completed, so your order wasn’t placed. Your cart is saved — you can try again.",
+      "tryAgain": "Try again",
+      "verifying": "Verifying your payment…"
+    }
   },
-  "404": {},
   "error": {
     "homeButton": "Back to Home",
     "menuButton": "View Menu",
