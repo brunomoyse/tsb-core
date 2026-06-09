@@ -108,25 +108,13 @@ const UPDATE_ME = gql`
         }
     }
 `
-const REQUEST_DELETION = gql`
+const DELETE_ME = gql`
     mutation {
-        requestDeletion {
-            id
-            deletionRequestedAt
-        }
-    }
-`
-const CANCEL_DELETION_REQUEST = gql`
-    mutation {
-        cancelDeletionRequest {
-            id
-            deletionRequestedAt
-        }
+        deleteMe
     }
 `
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
-const { mutate: mutationRequestDeletion } = useGqlMutation<{ requestDeletion: User }>(REQUEST_DELETION)
-const { mutate: mutationCancelDeletionRequest } = useGqlMutation<{ cancelDeletionRequest: User }>(CANCEL_DELETION_REQUEST)
+const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELETE_ME)
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -197,42 +185,51 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
     closeModal()
 }
 
-const handleRequestDeletion = async () => {
-    if (!confirm(t('me.profile.requestDeletionConfirm'))) return
-    try {
-        const res = await mutationRequestDeletion()
-        authStore.updateUser({ deletionRequestedAt: res.requestDeletion.deletionRequestedAt })
-        notifications.notify({
-            message: t('me.profile.requestDeletionSuccess'),
-            persistent: false,
-            duration: 3000,
-            variant: 'success',
-        })
-    } catch (error) {
-        if (import.meta.dev) console.error('Error requesting deletion:', error)
-        notifications.notify({
-            message: t('notify.errors.requestFailed'),
-            persistent: false,
-            duration: 5000,
-            variant: 'error',
-        })
-    }
+// ── Account deletion (immediate, in-app — App Store 5.1.1(v) / GDPR) ──
+
+const showDeleteModal = ref(false)
+const deleteModalRef = ref<HTMLElement | null>(null)
+useFocusTrap(deleteModalRef)
+const deleting = ref(false)
+
+// GitHub-style "type to confirm" guard: the user must retype their email.
+const confirmText = ref('')
+const canDelete = computed(() => {
+    const email = (authStore.user?.email ?? '').trim().toLowerCase()
+    return email.length > 0 && confirmText.value.trim().toLowerCase() === email
+})
+
+const openDeleteModal = () => {
+    confirmText.value = ''
+    showDeleteModal.value = true
+}
+const closeDeleteModal = () => {
+    if (deleting.value) return
+    confirmText.value = ''
+    showDeleteModal.value = false
 }
 
-const handleCancelDeletionRequest = async () => {
+const handleDeleteAccount = async () => {
+    if (deleting.value || !canDelete.value) return
+    deleting.value = true
     try {
-        const res = await mutationCancelDeletionRequest()
-        authStore.updateUser({ deletionRequestedAt: res.cancelDeletionRequest.deletionRequestedAt })
+        // Run the mutation while still authenticated, then force-logout.
+        // The access token stays cryptographically valid, so we must clear it locally.
+        await mutationDeleteMe()
+        trackEvent('account_deleted')
+        await authStore.deleteAccountSession()
         notifications.notify({
-            message: t('me.profile.cancelDeletionSuccess'),
+            message: t('me.profile.deleteSuccess'),
             persistent: false,
-            duration: 3000,
+            duration: 4000,
             variant: 'success',
         })
+        await navigateTo(localePath('/'))
     } catch (error) {
-        if (import.meta.dev) console.error('Error canceling deletion request:', error)
+        if (import.meta.dev) console.error('Error deleting account:', error)
+        deleting.value = false
         notifications.notify({
-            message: t('notify.errors.requestFailed'),
+            message: t('me.profile.deleteError'),
             persistent: false,
             duration: 5000,
             variant: 'error',
@@ -528,22 +525,99 @@ const updateNotificationPref = async (
 
         <!-- Account deletion — subtle, outside the grid -->
         <div class="mt-8 text-center bento-cell" style="--delay: 11">
-            <NuxtLinkLocale
-                v-if="!authStore.user?.deletionRequestedAt"
-                to="/account-deletion"
-                class="inline-flex min-h-11 items-center text-xs text-gray-400 hover:text-red-500 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-            >
-                {{ t('me.profile.requestDeletion') }}
-            </NuxtLinkLocale>
             <button
-                v-else
                 type="button"
-                class="inline-flex min-h-11 items-center text-xs text-amber-600 hover:text-amber-700 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
-                @click="handleCancelDeletionRequest"
+                class="inline-flex min-h-11 items-center text-xs text-gray-400 hover:text-red-500 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                @click="openDeleteModal"
             >
-                {{ t('me.profile.cancelDeletionRequest') }}
+                {{ t('me.profile.deleteAccount') }}
             </button>
         </div>
+
+        <!-- Delete Account Confirmation Modal -->
+        <transition name="fade">
+            <div
+                v-if="showDeleteModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                @click.self="closeDeleteModal"
+            >
+                <div
+                    ref="deleteModalRef"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-account-title"
+                    class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4"
+                    @click.stop
+                    @keydown.esc="closeDeleteModal"
+                >
+                    <h3 id="delete-account-title" class="text-xl font-semibold text-gray-900 text-center mb-3">
+                        {{ t('me.profile.deleteConfirmTitle') }}
+                    </h3>
+                    <p class="text-sm text-gray-600 text-center mb-4">
+                        {{ t('me.profile.deleteConfirmBody') }}
+                    </p>
+
+                    <!-- What happens: PII anonymized, orders retained for accounting law -->
+                    <div class="mb-5 rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm text-gray-600 space-y-2">
+                        <p class="flex gap-2">
+                            <span aria-hidden="true">🗑️</span>
+                            <span>{{ t('me.profile.deleteAnonymizeNote') }}</span>
+                        </p>
+                        <p class="flex gap-2">
+                            <span aria-hidden="true">📄</span>
+                            <span>{{ t('me.profile.deleteOrdersNote') }}</span>
+                        </p>
+                    </div>
+
+                    <!-- GitHub-style type-to-confirm -->
+                    <label for="delete-confirm-input" class="block text-sm text-gray-600 mb-2">
+                        {{ t('me.profile.deleteConfirmPrompt') }}
+                    </label>
+                    <p class="mb-2 select-all break-all rounded-md bg-gray-100 px-3 py-2 text-center font-mono text-sm text-gray-900">
+                        {{ authStore.user?.email }}
+                    </p>
+                    <input
+                        id="delete-confirm-input"
+                        v-model="confirmText"
+                        type="email"
+                        inputmode="email"
+                        autocomplete="off"
+                        autocapitalize="none"
+                        spellcheck="false"
+                        :placeholder="t('me.profile.deleteConfirmPlaceholder')"
+                        class="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                        @keydown.enter.prevent="canDelete && handleDeleteAccount()"
+                    >
+
+                    <p class="text-center mb-5">
+                        <NuxtLinkLocale
+                            to="/account-deletion"
+                            class="text-xs text-gray-400 underline hover:text-gray-600 transition"
+                        >
+                            {{ t('me.profile.deleteLearnMore') }}
+                        </NuxtLinkLocale>
+                    </p>
+                    <div class="flex gap-3">
+                        <button
+                            type="button"
+                            :disabled="deleting"
+                            class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+                            @click="closeDeleteModal"
+                        >
+                            {{ t('me.profile.deleteCancel') }}
+                        </button>
+                        <button
+                            type="button"
+                            :disabled="deleting || !canDelete"
+                            class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-white hover:bg-red-700 transition-colors font-medium disabled:cursor-not-allowed disabled:opacity-50"
+                            @click="handleDeleteAccount"
+                        >
+                            {{ deleting ? t('me.profile.deleting') : t('me.profile.deleteConfirmCta') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
 
         <!-- Edit Profile Modal -->
         <transition name="fade">

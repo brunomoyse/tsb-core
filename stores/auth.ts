@@ -34,6 +34,27 @@ export const useAuthStore = defineStore("auth", {
             } catch (error) {
                 if (import.meta.dev) console.error('Logout error:', error)
             }
+        },
+        /*
+         * Force-logout after account deletion. Unlike logout(), this does NOT hit
+         * Zitadel's end-session endpoint: the Zitadel identity has just been
+         * deleted, so a signOut() round-trip is pointless and could error. We only
+         * wipe the local session — the access token stays cryptographically valid
+         * until it expires, so clearing it locally is what actually logs the user
+         * out. The caller redirects afterwards.
+         */
+        async deleteAccountSession() {
+            this.user = null
+            if (import.meta.client) {
+                localStorage.removeItem('auth')
+            }
+            try {
+                const { useOidc } = await import('~/composables/useOidc')
+                const { removeUser } = useOidc()
+                await removeUser()
+            } catch (error) {
+                if (import.meta.dev) console.error('Delete-account session clear error:', error)
+            }
         }
     },
     /*

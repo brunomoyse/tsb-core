@@ -201,11 +201,19 @@
       "editAddress": "Edit address",
       "addressUpdateSuccess": "Your address has been successfully updated.",
       "updateSuccess": "Your profile has been successfully updated.",
-      "requestDeletion": "Request Account Deletion",
-      "requestDeletionConfirm": "Are you sure you want to request the deletion of your account? The restaurant team will be notified.",
-      "requestDeletionSuccess": "Your deletion request has been sent.",
-      "cancelDeletionRequest": "Cancel Deletion Request",
-      "cancelDeletionSuccess": "Your deletion request has been cancelled."
+      "deleteAccount": "Delete account",
+      "deleteConfirmTitle": "Delete your account?",
+      "deleteConfirmBody": "This action is permanent and cannot be undone.",
+      "deleteAnonymizeNote": "Your account and personal data — name, email, phone number and saved addresses — are permanently anonymized, and you are signed out.",
+      "deleteOrdersNote": "Your past orders stay with the restaurant in anonymized form, as Belgian accounting law requires — they are no longer linked to you.",
+      "deleteConfirmPrompt": "To confirm, type your email address below:",
+      "deleteConfirmPlaceholder": "Type your email to confirm",
+      "deleteConfirmCta": "Delete permanently",
+      "deleteCancel": "Cancel",
+      "deleting": "Deleting…",
+      "deleteLearnMore": "Learn more about account deletion",
+      "deleteSuccess": "Your account has been deleted.",
+      "deleteError": "We could not delete your account. Please try again."
     },
     "analytics": {},
     "verify": {
@@ -602,13 +610,15 @@
   },
   "accountDeletion": {
     "title": "Account deletion",
-    "lastUpdated": "Last updated: 04/06/2026",
-    "intro": "This page explains how to request deletion of your Tokyo Sushi Bar account and the personal data associated with it.",
-    "howTitle": "How to request deletion",
-    "howBody": "To request deletion of your account, send an email to the address below from the email address linked to your account, with the subject “Account deletion”. We will process your request after verifying your identity.",
+    "lastUpdated": "Last updated: 08/06/2026",
+    "intro": "You can delete your Tokyo Sushi Bar account and the personal data associated with it yourself, at any time, directly from the app or this website.",
+    "howTitle": "How to delete your account",
+    "howBody": "Sign in, open your account page, and select “Delete account”. After you confirm, your account is deleted immediately and you are signed out — there is no waiting period.",
+    "fallbackTitle": "Can't sign in?",
+    "fallbackBody": "If you can no longer access your account, email us from the address linked to it, with the subject “Account deletion”. We'll delete it after verifying your identity.",
     "emailSubject": "Account deletion",
     "dataTitle": "What data is deleted",
-    "dataIntro": "Once your request is processed, the following data is permanently deleted:",
+    "dataIntro": "When your account is deleted, the following data is permanently removed:",
     "dataItems": [
       "Account profile — first name, last name, email address, phone number",
       "Delivery addresses",
@@ -617,7 +627,7 @@
     "retainTitle": "What data is retained",
     "retainBody": "Order and billing records are kept for 7 years to comply with Belgian accounting obligations, as stated in our privacy policy. They are no longer linked to an active account.",
     "timingTitle": "Processing time",
-    "timingBody": "Deletion requests are processed within 30 days of receipt.",
+    "timingBody": "Self-service deletion from the app or website is immediate. Requests sent by email are processed within 30 days.",
     "contactBody": "Questions? Contact us at the address above."
   }
 }
