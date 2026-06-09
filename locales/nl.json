@@ -194,11 +194,19 @@
       "editAddress": "Adres wijzigen",
       "addressUpdateSuccess": "Uw adres is succesvol bijgewerkt.",
       "updateSuccess": "Het profiel is succesvol bijgewerkt.",
-      "requestDeletion": "Accountverwijdering aanvragen",
-      "requestDeletionConfirm": "Weet u zeker dat u de verwijdering van uw account wilt aanvragen? Het restaurantteam wordt op de hoogte gebracht.",
-      "requestDeletionSuccess": "Uw verwijderingsaanvraag is succesvol verzonden.",
-      "cancelDeletionRequest": "Verwijderingsaanvraag annuleren",
-      "cancelDeletionSuccess": "Uw verwijderingsaanvraag is geannuleerd."
+      "deleteAccount": "Account verwijderen",
+      "deleteConfirmTitle": "Uw account verwijderen?",
+      "deleteConfirmBody": "Deze actie is permanent en kan niet ongedaan worden gemaakt.",
+      "deleteAnonymizeNote": "Uw account en persoonsgegevens — naam, e-mail, telefoonnummer en opgeslagen adressen — worden permanent geanonimiseerd en u wordt afgemeld.",
+      "deleteOrdersNote": "Uw eerdere bestellingen blijven bij het restaurant in geanonimiseerde vorm, zoals de Belgische boekhoudwetgeving vereist — ze zijn niet langer aan u gekoppeld.",
+      "deleteConfirmPrompt": "Typ ter bevestiging uw e-mailadres hieronder:",
+      "deleteConfirmPlaceholder": "Typ uw e-mail ter bevestiging",
+      "deleteConfirmCta": "Definitief verwijderen",
+      "deleteCancel": "Annuleren",
+      "deleting": "Bezig met verwijderen…",
+      "deleteLearnMore": "Meer over accountverwijdering",
+      "deleteSuccess": "Uw account is verwijderd.",
+      "deleteError": "We konden uw account niet verwijderen. Probeer het opnieuw."
     },
     "analytics": {},
     "verify": {
@@ -580,13 +588,15 @@
   },
   "accountDeletion": {
     "title": "Account verwijderen",
-    "lastUpdated": "Laatst bijgewerkt: 04/06/2026",
-    "intro": "Deze pagina legt uit hoe u kunt verzoeken om verwijdering van uw Tokyo Sushi Bar-account en de bijbehorende persoonsgegevens.",
-    "howTitle": "Hoe verwijdering aanvragen",
-    "howBody": "Om uw account te laten verwijderen, stuurt u een e-mail naar het onderstaande adres vanaf het e-mailadres dat aan uw account is gekoppeld, met als onderwerp “Account verwijderen”. Wij behandelen uw verzoek na verificatie van uw identiteit.",
+    "lastUpdated": "Laatst bijgewerkt: 08/06/2026",
+    "intro": "U kunt uw Tokyo Sushi Bar-account en de bijbehorende persoonsgegevens zelf verwijderen, op elk moment, rechtstreeks vanuit de app of deze website.",
+    "howTitle": "Uw account verwijderen",
+    "howBody": "Meld u aan, open de pagina van uw account en selecteer “Account verwijderen”. Na bevestiging wordt uw account onmiddellijk verwijderd en wordt u afgemeld — zonder wachttijd.",
+    "fallbackTitle": "Kunt u niet aanmelden?",
+    "fallbackBody": "Als u geen toegang meer heeft tot uw account, stuur ons dan een e-mail vanaf het gekoppelde adres, met als onderwerp “Account verwijderen”. We verwijderen het na verificatie van uw identiteit.",
     "emailSubject": "Account verwijderen",
     "dataTitle": "Welke gegevens worden verwijderd",
-    "dataIntro": "Zodra uw verzoek is verwerkt, worden de volgende gegevens definitief verwijderd:",
+    "dataIntro": "Wanneer uw account wordt verwijderd, worden de volgende gegevens definitief verwijderd:",
     "dataItems": [
       "Accountprofiel — voornaam, achternaam, e-mailadres, telefoonnummer",
       "Bezorgadressen",
@@ -595,7 +605,7 @@
     "retainTitle": "Welke gegevens worden bewaard",
     "retainBody": "Bestel- en facturatiegegevens worden 7 jaar bewaard om te voldoen aan de Belgische boekhoudkundige verplichtingen, zoals vermeld in ons privacybeleid. Ze zijn niet langer gekoppeld aan een actief account.",
     "timingTitle": "Verwerkingstijd",
-    "timingBody": "Verwijderingsverzoeken worden binnen 30 dagen na ontvangst verwerkt.",
+    "timingBody": "Zelf verwijderen via de app of website is onmiddellijk. Verzoeken die per e-mail worden verzonden, worden binnen 30 dagen verwerkt.",
     "contactBody": "Vragen? Neem contact met ons op via het bovenstaande adres."
   }
 }

@@ -201,11 +201,19 @@
       "editAddress": "修改地址",
       "addressUpdateSuccess": "您的地址已成功更新。",
       "updateSuccess": "您的资料已成功更新。",
-      "requestDeletion": "请求删除账户",
-      "requestDeletionConfirm": "您确定要请求删除您的账户吗？餐厅团队将收到通知。",
-      "requestDeletionSuccess": "您的删除请求已发送。",
-      "cancelDeletionRequest": "取消删除请求",
-      "cancelDeletionSuccess": "您的删除请求已取消。"
+      "deleteAccount": "删除账户",
+      "deleteConfirmTitle": "删除您的账户？",
+      "deleteConfirmBody": "此操作是永久性的，无法撤销。",
+      "deleteAnonymizeNote": "您的账户和个人数据——姓名、电子邮箱、电话号码和已保存的地址——将被永久匿名化，并且您会退出登录。",
+      "deleteOrdersNote": "根据比利时会计法规的要求，您的过往订单将以匿名形式保留在餐厅——不再与您关联。",
+      "deleteConfirmPrompt": "请在下方输入您的电子邮箱以确认：",
+      "deleteConfirmPlaceholder": "输入您的电子邮箱以确认",
+      "deleteConfirmCta": "永久删除",
+      "deleteCancel": "取消",
+      "deleting": "正在删除…",
+      "deleteLearnMore": "了解有关账户删除的更多信息",
+      "deleteSuccess": "您的账户已删除。",
+      "deleteError": "无法删除您的账户，请重试。"
     },
     "analytics": {},
     "verify": {
@@ -602,13 +610,15 @@
   },
   "accountDeletion": {
     "title": "删除账户",
-    "lastUpdated": "最后更新：2026/06/04",
-    "intro": "本页面说明如何申请删除您的 Tokyo Sushi Bar 账户及其相关的个人数据。",
-    "howTitle": "如何申请删除",
-    "howBody": "如需删除您的账户，请使用与您账户关联的电子邮箱，向下方邮箱地址发送一封主题为「删除账户」的电子邮件。我们将在核实您的身份后处理您的申请。",
+    "lastUpdated": "最后更新：2026/06/08",
+    "intro": "您可以随时自行删除您的 Tokyo Sushi Bar 账户及其相关的个人数据，可直接在应用程序或本网站中操作。",
+    "howTitle": "如何删除您的账户",
+    "howBody": "登录后，打开您的账户页面，选择「删除账户」。确认后，您的账户将立即被删除，并且您会退出登录——没有等待期。",
+    "fallbackTitle": "无法登录？",
+    "fallbackBody": "如果您无法再访问您的账户，请使用与账户关联的电子邮箱，向我们发送一封主题为「删除账户」的电子邮件。我们将在核实您的身份后将其删除。",
     "emailSubject": "删除账户",
     "dataTitle": "将被删除的数据",
-    "dataIntro": "申请处理完成后，以下数据将被永久删除：",
+    "dataIntro": "删除您的账户时，以下数据将被永久删除：",
     "dataItems": [
       "账户资料 — 姓、名、电子邮箱、电话号码",
       "送货地址",
@@ -617,7 +627,7 @@
     "retainTitle": "将被保留的数据",
     "retainBody": "根据比利时会计法规的要求，订单和账单记录将保留 7 年，如我们的隐私政策所述。这些记录将不再与有效账户关联。",
     "timingTitle": "处理时间",
-    "timingBody": "删除申请将在收到后 30 天内处理完成。",
+    "timingBody": "通过应用程序或网站自助删除是即时的。通过电子邮件发送的申请将在 30 天内处理完成。",
     "contactBody": "有疑问？请通过上述邮箱地址联系我们。"
   }
 }

@@ -15,10 +15,16 @@
                 <p>{{ t('accountDeletion.intro') }}</p>
             </section>
 
-            <!-- How to request -->
+            <!-- How to delete (in-app, self-service) -->
             <section>
                 <h2 class="ad-heading">{{ t('accountDeletion.howTitle') }}</h2>
                 <p>{{ t('accountDeletion.howBody') }}</p>
+            </section>
+
+            <!-- Fallback: can't sign in -->
+            <section>
+                <h2 class="ad-heading">{{ t('accountDeletion.fallbackTitle') }}</h2>
+                <p>{{ t('accountDeletion.fallbackBody') }}</p>
 
                 <div class="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
                     <a

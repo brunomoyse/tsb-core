@@ -201,11 +201,19 @@
       "editAddress": "Modifier l'adresse",
       "addressUpdateSuccess": "Votre adresse a bien été mise à jour.",
       "updateSuccess": "Le profil a correctement été mis à jour.",
-      "requestDeletion": "Demander la suppression du compte",
-      "requestDeletionConfirm": "Êtes-vous sûr de vouloir demander la suppression de votre compte ? L'équipe du restaurant sera notifiée.",
-      "requestDeletionSuccess": "Votre demande de suppression a bien été envoyée.",
-      "cancelDeletionRequest": "Annuler la demande de suppression",
-      "cancelDeletionSuccess": "Votre demande de suppression a été annulée."
+      "deleteAccount": "Supprimer le compte",
+      "deleteConfirmTitle": "Supprimer votre compte ?",
+      "deleteConfirmBody": "Cette action est définitive et irréversible.",
+      "deleteAnonymizeNote": "Votre compte et vos données personnelles — nom, e-mail, numéro de téléphone et adresses enregistrées — sont définitivement anonymisés, et vous êtes déconnecté.",
+      "deleteOrdersNote": "Vos commandes passées restent chez le restaurant sous forme anonymisée, comme l'exige la législation comptable belge — elles ne sont plus liées à vous.",
+      "deleteConfirmPrompt": "Pour confirmer, saisissez votre adresse e-mail ci-dessous :",
+      "deleteConfirmPlaceholder": "Saisissez votre e-mail pour confirmer",
+      "deleteConfirmCta": "Supprimer définitivement",
+      "deleteCancel": "Annuler",
+      "deleting": "Suppression…",
+      "deleteLearnMore": "En savoir plus sur la suppression du compte",
+      "deleteSuccess": "Votre compte a été supprimé.",
+      "deleteError": "Nous n'avons pas pu supprimer votre compte. Veuillez réessayer."
     },
     "analytics": {},
     "verify": {
@@ -602,13 +610,15 @@
   },
   "accountDeletion": {
     "title": "Suppression du compte",
-    "lastUpdated": "Dernière mise à jour : 04/06/2026",
-    "intro": "Cette page explique comment demander la suppression de votre compte Tokyo Sushi Bar et des données personnelles qui y sont associées.",
-    "howTitle": "Comment demander la suppression",
-    "howBody": "Pour demander la suppression de votre compte, envoyez un e-mail à l'adresse ci-dessous depuis l'adresse e-mail associée à votre compte, avec pour objet « Suppression du compte ». Nous traiterons votre demande après vérification de votre identité.",
+    "lastUpdated": "Dernière mise à jour : 08/06/2026",
+    "intro": "Vous pouvez supprimer vous-même votre compte Tokyo Sushi Bar et les données personnelles qui y sont associées, à tout moment, directement depuis l'application ou ce site web.",
+    "howTitle": "Comment supprimer votre compte",
+    "howBody": "Connectez-vous, ouvrez la page de votre compte et sélectionnez « Supprimer le compte ». Après confirmation, votre compte est supprimé immédiatement et vous êtes déconnecté — sans délai d'attente.",
+    "fallbackTitle": "Impossible de vous connecter ?",
+    "fallbackBody": "Si vous ne pouvez plus accéder à votre compte, envoyez-nous un e-mail depuis l'adresse qui y est associée, avec pour objet « Suppression du compte ». Nous le supprimerons après vérification de votre identité.",
     "emailSubject": "Suppression du compte",
     "dataTitle": "Données supprimées",
-    "dataIntro": "Une fois votre demande traitée, les données suivantes sont définitivement supprimées :",
+    "dataIntro": "Lors de la suppression de votre compte, les données suivantes sont définitivement supprimées :",
     "dataItems": [
       "Profil du compte — nom, prénom, adresse e-mail, numéro de téléphone",
       "Adresses de livraison",
@@ -617,7 +627,7 @@
     "retainTitle": "Données conservées",
     "retainBody": "Les données de commande et de facturation sont conservées 7 ans afin de respecter les obligations comptables belges, comme indiqué dans notre politique de confidentialité. Elles ne sont plus associées à un compte actif.",
     "timingTitle": "Délai de traitement",
-    "timingBody": "Les demandes de suppression sont traitées dans un délai de 30 jours à compter de leur réception.",
+    "timingBody": "La suppression en libre-service depuis l'application ou le site web est immédiate. Les demandes envoyées par e-mail sont traitées dans un délai de 30 jours.",
     "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
   }
 }
