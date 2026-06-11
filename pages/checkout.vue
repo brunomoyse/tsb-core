@@ -250,7 +250,7 @@ import gql from 'graphql-tag'
 import { useCartTotals } from '~/composables/useCartTotals'
 import { useFocusTrap } from '~/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
-import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
+import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '~/lib/delivery'
 import { useHaptics } from '~/composables/useHaptics'
 import { useRestaurantConfig } from '~/composables/useRestaurantConfig'
 import { useTracking } from '~/composables/useTracking'
@@ -279,7 +279,7 @@ const isOrderingAvailable = computed(() => isOrderingEnabled.value && isOrdering
 const needsDeliveryGate = computed(() =>
     !authStore.user
     && cartStore.collectionOption === 'DELIVERY'
-    && (!cartStore.address || (cartStore.address.distance ?? 0) >= DELIVERY_ZONE_METERS),
+    && (!cartStore.address || !isDeliverable(cartStore.address.distance ?? 0, cartStore.address.postcode)),
 )
 
 const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
@@ -426,6 +426,8 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
         return t('checkout.minimumDelivery', { amount: 25 })
     if (raw.includes('ordering is currently unavailable'))
         return t('notify.errors.orderingUnavailable')
+    if (raw.includes('not eligible for delivery'))
+        return t('notify.errors.deliveryAddressExcluded')
     if (raw.includes('address too far'))
         return t('notify.errors.deliveryAddressTooFar', { distance: 9 })
     if (raw.includes('coupon is no longer valid'))
@@ -590,7 +592,13 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= DELIVERY_ZONE_METERS) {
+    if (cartStore.collectionOption === 'DELIVERY' && isExcludedPostcode(cartStore.address?.postcode)) {
+        errors.push({
+            message: t('notify.errors.deliveryAddressExcluded'),
+            targetId: 'checkout-delivery-address',
+            event: 'checkout_error_address_excluded',
+        })
+    } else if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= DELIVERY_ZONE_METERS) {
         errors.push({
             message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
             targetId: 'checkout-delivery-address',

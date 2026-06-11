@@ -311,7 +311,7 @@
     "emptyCart": "Votre panier est vide.",
     "subtotal": "Sous-total :",
     "deliveryFee": "Frais de livraison :",
-    "deliveryFeeInfo": "Frais de livraison selon la distance :\n• Moins de 4 km : Gratuit\n• 4-5 km : 1€\n• 5-6 km : 2€\n• 6-7 km : 3€\n• 7-8 km : 4€\n• 8-9 km : 5€",
+    "deliveryFeeInfo": "Frais de livraison selon la distance :\n• Moins de 3 km : Gratuit\n• 3-4 km : 1€\n• 4-5 km : 2€\n• 5-6 km : 3€\n• 6-7 km : 4€\n• 7-8 km : 5€\n• 8-9 km : 6€",
     "transactionFee": "Frais de transaction :",
     "discount": "Remise (à emporter)",
     "total": "Total :",
@@ -366,6 +366,7 @@
     "itemCount": "{count} article | {count} articles",
     "opensAt": "Ouverture à {time}",
     "tooFar": "Trop loin pour la livraison (max 9 km)",
+    "notDeliverableArea": "Nous ne livrons pas dans votre zone.",
     "tbd": "À déterminer",
     "optional": "(facultatif)",
     "openingPayment": "Ouverture du paiement sécurisé...",
@@ -433,6 +434,7 @@
       "cartEmpty": "Votre panier est vide.",
       "addressRequired": "Une adresse est requise pour une livraison.",
       "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
+      "deliveryAddressExcluded": "Nous ne livrons pas dans votre zone.",
       "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
       "codeExpired": "Le code a expiré. Demandez-en un nouveau.",
       "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification.",
@@ -573,7 +575,7 @@
     "questions": {
       "delivery": {
         "question": "Livrez-vous ? Quelle est la zone de livraison ?",
-        "answer": "Oui, nous livrons depuis notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance :<br><br>• Moins de 4 km : <strong>Gratuit</strong> (minimum 25 €)<br>• 4-5 km : 1 €<br>• 5-6 km : 2 €<br>• 6-7 km : 3 €<br>• 7-8 km : 4 €<br>• 8-9 km : 5 €<br><br>Au-delà de 9 km, la livraison n'est pas disponible sauf pour les commandes de 130 € ou plus. Vous pouvez vérifier votre adresse lors du passage de commande."
+        "answer": "Oui, nous livrons depuis notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance :<br><br>• Moins de 3 km : <strong>Gratuit</strong> (minimum 25 €)<br>• 3-4 km : 1 €<br>• 4-5 km : 2 €<br>• 5-6 km : 3 €<br>• 6-7 km : 4 €<br>• 7-8 km : 5 €<br>• 8-9 km : 6 €<br><br>Au-delà de 9 km, la livraison n'est pas disponible sauf pour les commandes de 130 € ou plus. Vous pouvez vérifier votre adresse lors du passage de commande."
       },
       "hours": {
         "question": "Quels sont vos horaires d'ouverture ?",
