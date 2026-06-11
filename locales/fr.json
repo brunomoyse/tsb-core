@@ -205,6 +205,7 @@
       "deleteAccount": "Supprimer le compte",
       "deleteConfirmTitle": "Supprimer votre compte ?",
       "deleteConfirmBody": "Cette action est définitive et irréversible.",
+      "deleteActiveOrderWarning": "Vous avez une commande en cours. Si vous supprimez votre compte maintenant, vous ne pourrez plus la suivre ni recevoir de mises à jour. Le restaurant la préparera tout de même.",
       "deleteAnonymizeNote": "Votre compte et vos données personnelles (nom, e-mail, numéro de téléphone et adresses enregistrées) sont définitivement anonymisés, et vous êtes déconnecté.",
       "deleteOrdersNote": "Vos commandes passées restent chez le restaurant sous forme anonymisée, comme l'exige la législation comptable belge. Elles ne sont plus liées à vous.",
       "deleteConfirmPrompt": "Pour confirmer, saisissez votre adresse e-mail ci-dessous :",

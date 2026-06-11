@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest, User } from '@/types'
 import { computed, onMounted, ref } from 'vue'
-import { definePageMeta, useGqlMutation, useNuxtApp, useSwitchLocalePath } from '#imports'
+import { definePageMeta, useGqlMutation, useGqlQuery, useNuxtApp, useSwitchLocalePath } from '#imports'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import { EUROPEAN_COUNTRIES } from '~/utils/europeanCountries'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
@@ -115,6 +115,27 @@ const DELETE_ME = gql`
 `
 const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: User }>(UPDATE_ME)
 const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELETE_ME)
+
+/*
+ * Soft guard: warn before deletion when an order is still in progress. Deletion
+ * is never blocked (App Store 5.1.1(v)); the order keeps its denormalized data
+ * and is fulfilled regardless, but the customer loses tracking once anonymized.
+ */
+const ACTIVE_ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'OUT_FOR_DELIVERY']
+const MY_ACTIVE_ORDERS = print(gql`
+    query {
+        myOrders(first: 5) {
+            id
+            status
+        }
+    }
+`)
+const { data: activeOrdersData } = await useGqlQuery<{ myOrders: { id: string, status: string }[] }>(
+    MY_ACTIVE_ORDERS, {}, { server: false },
+)
+const hasActiveOrder = computed(() =>
+    (activeOrdersData.value?.myOrders ?? []).some(o => ACTIVE_ORDER_STATUSES.includes(o.status)),
+)
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -556,6 +577,15 @@ const updateNotificationPref = async (
                     <p class="text-sm text-gray-600 text-center mb-4">
                         {{ t('me.profile.deleteConfirmBody') }}
                     </p>
+
+                    <!-- Soft warning when an order is still in progress (deletion not blocked) -->
+                    <div
+                        v-if="hasActiveOrder"
+                        class="mb-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
+                    >
+                        <span aria-hidden="true">⚠️</span>
+                        <span>{{ t('me.profile.deleteActiveOrderWarning') }}</span>
+                    </div>
 
                     <!-- What happens: PII anonymized, orders retained for accounting law -->
                     <div class="mb-5 rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm text-gray-600 space-y-2">

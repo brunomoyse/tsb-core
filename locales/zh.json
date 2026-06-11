@@ -205,6 +205,7 @@
       "deleteAccount": "删除账户",
       "deleteConfirmTitle": "删除您的账户？",
       "deleteConfirmBody": "此操作是永久性的，无法撤销。",
+      "deleteActiveOrderWarning": "您有一笔进行中的订单。如果您现在删除账户，将无法再追踪订单或接收更新。餐厅仍会照常备餐。",
       "deleteAnonymizeNote": "您的账户和个人数据（姓名、电子邮箱、电话号码和已保存的地址）将被永久匿名化，并且您会退出登录。",
       "deleteOrdersNote": "根据比利时会计法规的要求，您的过往订单将以匿名形式保留在餐厅，不再与您关联。",
       "deleteConfirmPrompt": "请在下方输入您的电子邮箱以确认：",

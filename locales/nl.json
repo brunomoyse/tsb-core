@@ -197,6 +197,7 @@
       "deleteAccount": "Account verwijderen",
       "deleteConfirmTitle": "Uw account verwijderen?",
       "deleteConfirmBody": "Deze actie is permanent en kan niet ongedaan worden gemaakt.",
+      "deleteActiveOrderWarning": "U hebt een bestelling in behandeling. Als u uw account nu verwijdert, kunt u deze niet meer volgen of updates ontvangen. Het restaurant bereidt deze toch nog voor.",
       "deleteAnonymizeNote": "Uw account en persoonsgegevens (naam, e-mail, telefoonnummer en opgeslagen adressen) worden permanent geanonimiseerd en u wordt afgemeld.",
       "deleteOrdersNote": "Uw eerdere bestellingen blijven bij het restaurant in geanonimiseerde vorm, zoals de Belgische boekhoudwetgeving vereist. Ze zijn niet langer aan u gekoppeld.",
       "deleteConfirmPrompt": "Typ ter bevestiging uw e-mailadres hieronder:",

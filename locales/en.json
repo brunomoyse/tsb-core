@@ -205,6 +205,7 @@
       "deleteAccount": "Delete account",
       "deleteConfirmTitle": "Delete your account?",
       "deleteConfirmBody": "This action is permanent and cannot be undone.",
+      "deleteActiveOrderWarning": "You have an order in progress. If you delete your account now, you won't be able to track it or receive updates. The restaurant will still prepare it.",
       "deleteAnonymizeNote": "Your account and personal data (name, email, phone number and saved addresses) are permanently anonymized, and you are signed out.",
       "deleteOrdersNote": "Your past orders stay with the restaurant in anonymized form, as Belgian accounting law requires. They are no longer linked to you.",
       "deleteConfirmPrompt": "To confirm, type your email address below:",
