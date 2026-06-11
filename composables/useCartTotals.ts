@@ -1,6 +1,6 @@
 import { type ComputedRef, computed } from 'vue'
 import type { CartItem } from '@/types'
-import { deliveryFeeForDistance } from '~/lib/delivery'
+import { deliveryFeeForDistance, isExcludedPostcode } from '~/lib/delivery'
 import { roundToNearest10Cents } from '~/utils/money'
 import { useCartStore } from '@/stores/cart'
 
@@ -59,6 +59,7 @@ export function useCartTotals(): CartTotals {
 
     const deliveryFee = computed(() => {
         if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
+        if (isExcludedPostcode(cartStore.address.postcode)) return -1
         return deliveryFeeForDistance(cartStore.address.distance)
     })
 

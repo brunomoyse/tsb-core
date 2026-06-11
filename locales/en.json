@@ -311,7 +311,7 @@
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
     "deliveryFee": "Delivery Fee:",
-    "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 4 km: Free\n• 4-5 km: €1\n• 5-6 km: €2\n• 6-7 km: €3\n• 7-8 km: €4\n• 8-9 km: €5",
+    "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 3 km: Free\n• 3-4 km: €1\n• 4-5 km: €2\n• 5-6 km: €3\n• 6-7 km: €4\n• 7-8 km: €5\n• 8-9 km: €6",
     "transactionFee": "Transaction fee:",
     "discount": "Pick-up discount",
     "total": "Total:",
@@ -366,6 +366,7 @@
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",
     "tooFar": "Too far for delivery (max 9 km)",
+    "notDeliverableArea": "We don't deliver to your area.",
     "tbd": "To be determined",
     "optional": "(optional)",
     "openingPayment": "Opening secure payment...",
@@ -433,6 +434,7 @@
       "cartEmpty": "Your cart is empty.",
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
+      "deliveryAddressExcluded": "We don't deliver to your area.",
       "invalidCode": "Invalid or expired code. Please try again.",
       "codeExpired": "The code has expired. Request a new one.",
       "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
@@ -573,7 +575,7 @@
     "questions": {
       "delivery": {
         "question": "Do you deliver? What is the delivery area?",
-        "answer": "Yes, we deliver from our restaurant at Rue de la Cathédrale 59, Liège. Delivery fees vary by distance:<br><br>• Under 4 km: <strong>Free</strong> (minimum 25 EUR)<br>• 4-5 km: 1 EUR<br>• 5-6 km: 2 EUR<br>• 6-7 km: 3 EUR<br>• 7-8 km: 4 EUR<br>• 8-9 km: 5 EUR<br><br>Beyond 9 km, delivery is not available unless your order is 130 EUR or more. You can check your address when placing an order."
+        "answer": "Yes, we deliver from our restaurant at Rue de la Cathédrale 59, Liège. Delivery fees vary by distance:<br><br>• Under 3 km: <strong>Free</strong> (minimum 25 EUR)<br>• 3-4 km: 1 EUR<br>• 4-5 km: 2 EUR<br>• 5-6 km: 3 EUR<br>• 6-7 km: 4 EUR<br>• 7-8 km: 5 EUR<br>• 8-9 km: 6 EUR<br><br>Beyond 9 km, delivery is not available unless your order is 130 EUR or more. You can check your address when placing an order."
       },
       "hours": {
         "question": "What are your opening hours?",

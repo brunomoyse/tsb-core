@@ -311,7 +311,7 @@
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",
     "deliveryFee": "配送费：",
-    "deliveryFeeInfo": "配送费按距离计算：\n• 4公里以内：免费\n• 4-5公里：1€\n• 5-6公里：2€\n• 6-7公里：3€\n• 7-8公里：4€\n• 8-9公里：5€",
+    "deliveryFeeInfo": "配送费按距离计算：\n• 3公里以内：免费\n• 3-4公里：1€\n• 4-5公里：2€\n• 5-6公里：3€\n• 6-7公里：4€\n• 7-8公里：5€\n• 8-9公里：6€",
     "transactionFee": "交易费：",
     "total": "总计：",
     "collection": "取货/配送",
@@ -366,6 +366,7 @@
     "itemCount": "{count} 件商品",
     "opensAt": "营业时间：{time}",
     "tooFar": "超出配送范围（最远9公里）",
+    "notDeliverableArea": "我们不配送到您所在的区域。",
     "tbd": "待定",
     "optional": "（选填）",
     "openingPayment": "正在打开安全支付...",
@@ -433,6 +434,7 @@
       "cartEmpty": "您的购物车为空。",
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
+      "deliveryAddressExcluded": "我们不配送到您所在的区域。",
       "invalidCode": "验证码无效或已过期。请重试。",
       "codeExpired": "验证码已过期。请重新获取。",
       "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",
@@ -573,7 +575,7 @@
     "questions": {
       "delivery": {
         "question": "你们提供配送吗？配送范围是什么？",
-        "answer": "是的，我们从位于列日 Rue de la Cathédrale 59 的餐厅提供配送服务。配送费按距离收取：<br><br>• 4公里以内：<strong>免费</strong>（最低25欧元）<br>• 4-5公里：1欧元<br>• 5-6公里：2欧元<br>• 6-7公里：3欧元<br>• 7-8公里：4欧元<br>• 8-9公里：5欧元<br><br>超过9公里不提供配送，除非订单金额达到130欧元或以上。您可以在下单时查看您的地址。"
+        "answer": "是的，我们从位于列日 Rue de la Cathédrale 59 的餐厅提供配送服务。配送费按距离收取：<br><br>• 3公里以内：<strong>免费</strong>（最低25欧元）<br>• 3-4公里：1欧元<br>• 4-5公里：2欧元<br>• 5-6公里：3欧元<br>• 6-7公里：4欧元<br>• 7-8公里：5欧元<br>• 8-9公里：6欧元<br><br>超过9公里不提供配送，除非订单金额达到130欧元或以上。您可以在下单时查看您的地址。"
       },
       "hours": {
         "question": "营业时间是什么时候？",

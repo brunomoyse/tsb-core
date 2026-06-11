@@ -148,6 +148,7 @@
                         </button>
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-gray-400 italic">{{ $t('checkout.tbd') }}</span>
+                    <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-red-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
                     <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium">{{ $t('checkout.tooFar') }}</span>
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
@@ -181,6 +182,7 @@ import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '~/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { TRANSACTION_FEE } from '~/lib/fees'
+import { isExcludedPostcode } from '~/lib/delivery'
 import { formatPrice } from '~/lib/price'
 import { orderItemLabelParts } from '~/utils/orderItemLabel'
 import { roundToNearest10Cents } from '~/utils/money'

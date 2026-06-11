@@ -39,7 +39,10 @@
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="cartStore.address.distance >= DELIVERY_ZONE_METERS" class="mt-2 text-sm text-red-600 font-medium">
+                <p v-if="isExcludedPostcode(cartStore.address.postcode)" class="mt-2 text-sm text-red-600 font-medium">
+                    {{ $t('checkout.notDeliverableArea') }}
+                </p>
+                <p v-else-if="cartStore.address.distance >= DELIVERY_ZONE_METERS" class="mt-2 text-sm text-red-600 font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-gray-500">
@@ -119,7 +122,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
-import { DELIVERY_ZONE_METERS } from '~/lib/delivery'
+import { DELIVERY_ZONE_METERS, isExcludedPostcode } from '~/lib/delivery'
 import type { RestaurantTimeSlot } from '~/composables/useRestaurantConfig'
 import { formatAddress } from '~/utils/utils'
 import { getBrusselsParts } from '~/utils/datetime'

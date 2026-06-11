@@ -298,7 +298,7 @@
     "emptyCart": "Uw winkelwagen is leeg.",
     "subtotal": "Subtotaal:",
     "deliveryFee": "Leveringskosten:",
-    "deliveryFeeInfo": "Leveringskosten op basis van afstand:\n• Minder dan 4 km: Gratis\n• 4-5 km: 1€\n• 5-6 km: 2€\n• 6-7 km: 3€\n• 7-8 km: 4€\n• 8-9 km: 5€",
+    "deliveryFeeInfo": "Leveringskosten op basis van afstand:\n• Minder dan 3 km: Gratis\n• 3-4 km: 1€\n• 4-5 km: 2€\n• 5-6 km: 3€\n• 6-7 km: 4€\n• 7-8 km: 5€\n• 8-9 km: 6€",
     "transactionFee": "Transactiekosten:",
     "discount": "Korting (afhalen)",
     "total": "Totaal:",
@@ -351,6 +351,7 @@
     "itemCount": "{count} artikel | {count} artikelen",
     "opensAt": "Opent om {time}",
     "tooFar": "Te ver voor levering (max 9 km)",
+    "notDeliverableArea": "Wij leveren niet in uw zone.",
     "tbd": "Nader te bepalen",
     "optional": "(optioneel)",
     "openingPayment": "Veilige betaling openen...",
@@ -417,6 +418,7 @@
       "cartEmpty": "Uw winkelwagen is leeg.",
       "addressRequired": "Een adres is vereist voor levering.",
       "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
+      "deliveryAddressExcluded": "Wij leveren niet in uw zone.",
       "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
       "codeExpired": "De code is verlopen. Vraag een nieuwe aan.",
       "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink.",
@@ -550,7 +552,7 @@
     "questions": {
       "delivery": {
         "question": "Leveren jullie? Wat is het leveringsgebied?",
-        "answer": "Ja, wij leveren vanuit ons restaurant aan de Rue de la Cathédrale 59, Luik. De leveringskosten variëren op basis van de afstand:<br><br>• Minder dan 4 km: <strong>Gratis</strong> (minimum 25 €)<br>• 4-5 km: 1 €<br>• 5-6 km: 2 €<br>• 6-7 km: 3 €<br>• 7-8 km: 4 €<br>• 8-9 km: 5 €<br><br>Boven 9 km is levering niet beschikbaar, tenzij voor bestellingen van 130 € of meer. U kunt uw adres controleren bij het plaatsen van uw bestelling."
+        "answer": "Ja, wij leveren vanuit ons restaurant aan de Rue de la Cathédrale 59, Luik. De leveringskosten variëren op basis van de afstand:<br><br>• Minder dan 3 km: <strong>Gratis</strong> (minimum 25 €)<br>• 3-4 km: 1 €<br>• 4-5 km: 2 €<br>• 5-6 km: 3 €<br>• 6-7 km: 4 €<br>• 7-8 km: 5 €<br>• 8-9 km: 6 €<br><br>Boven 9 km is levering niet beschikbaar, tenzij voor bestellingen van 130 € of meer. U kunt uw adres controleren bij het plaatsen van uw bestelling."
       },
       "hours": {
         "question": "Wat zijn de openingsuren?",
