@@ -209,6 +209,7 @@
       "deleteAnonymizeNote": "您的账户和个人数据（姓名、电子邮箱、电话号码和已保存的地址）将被永久匿名化，并且您会退出登录。",
       "deleteOrdersNote": "根据比利时会计法规的要求，您的过往订单将以匿名形式保留在餐厅，不再与您关联。",
       "deleteConfirmPrompt": "请在下方输入您的电子邮箱以确认：",
+      "deleteConfirmCheckbox": "我理解我的账户和数据将被永久删除。",
       "deleteConfirmPlaceholder": "输入您的电子邮箱以确认",
       "deleteConfirmCta": "永久删除",
       "deleteCancel": "取消",

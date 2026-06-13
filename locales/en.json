@@ -209,6 +209,7 @@
       "deleteAnonymizeNote": "Your account and personal data (name, email, phone number and saved addresses) are permanently anonymized, and you are signed out.",
       "deleteOrdersNote": "Your past orders stay with the restaurant in anonymized form, as Belgian accounting law requires. They are no longer linked to you.",
       "deleteConfirmPrompt": "To confirm, type your email address below:",
+      "deleteConfirmCheckbox": "I understand my account and data will be permanently deleted.",
       "deleteConfirmPlaceholder": "Type your email to confirm",
       "deleteConfirmCta": "Delete permanently",
       "deleteCancel": "Cancel",

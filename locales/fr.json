@@ -209,6 +209,7 @@
       "deleteAnonymizeNote": "Votre compte et vos données personnelles (nom, e-mail, numéro de téléphone et adresses enregistrées) sont définitivement anonymisés, et vous êtes déconnecté.",
       "deleteOrdersNote": "Vos commandes passées restent chez le restaurant sous forme anonymisée, comme l'exige la législation comptable belge. Elles ne sont plus liées à vous.",
       "deleteConfirmPrompt": "Pour confirmer, saisissez votre adresse e-mail ci-dessous :",
+      "deleteConfirmCheckbox": "Je comprends que mon compte et mes données seront définitivement supprimés.",
       "deleteConfirmPlaceholder": "Saisissez votre e-mail pour confirmer",
       "deleteConfirmCta": "Supprimer définitivement",
       "deleteCancel": "Annuler",

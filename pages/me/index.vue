@@ -213,20 +213,21 @@ const deleteModalRef = ref<HTMLElement | null>(null)
 useFocusTrap(deleteModalRef)
 const deleting = ref(false)
 
-// GitHub-style "type to confirm" guard: the user must retype their email.
-const confirmText = ref('')
-const canDelete = computed(() => {
-    const email = (authStore.user?.email ?? '').trim().toLowerCase()
-    return email.length > 0 && confirmText.value.trim().toLowerCase() === email
-})
+/*
+ * Explicit "I understand" checkbox guards against accidental deletion. We must
+ * NOT key this on the email: Apple "Hide My Email" users sign in with a relay
+ * address they never see and can't retype.
+ */
+const acceptDelete = ref(false)
+const canDelete = computed(() => acceptDelete.value)
 
 const openDeleteModal = () => {
-    confirmText.value = ''
+    acceptDelete.value = false
     showDeleteModal.value = true
 }
 const closeDeleteModal = () => {
     if (deleting.value) return
-    confirmText.value = ''
+    acceptDelete.value = false
     showDeleteModal.value = false
 }
 
@@ -599,25 +600,15 @@ const updateNotificationPref = async (
                         </p>
                     </div>
 
-                    <!-- GitHub-style type-to-confirm -->
-                    <label for="delete-confirm-input" class="block text-sm text-gray-600 mb-2">
-                        {{ t('me.profile.deleteConfirmPrompt') }}
+                    <!-- Explicit acknowledgement (email-free: works for Hide My Email) -->
+                    <label class="mb-4 flex items-start gap-2.5 cursor-pointer select-none">
+                        <input
+                            v-model="acceptDelete"
+                            type="checkbox"
+                            class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-red-600 focus:ring-2 focus:ring-red-300"
+                        >
+                        <span class="text-sm text-gray-600">{{ t('me.profile.deleteConfirmCheckbox') }}</span>
                     </label>
-                    <p class="mb-2 select-all break-all rounded-md bg-gray-100 px-3 py-2 text-center font-mono text-sm text-gray-900">
-                        {{ authStore.user?.email }}
-                    </p>
-                    <input
-                        id="delete-confirm-input"
-                        v-model="confirmText"
-                        type="email"
-                        inputmode="email"
-                        autocomplete="off"
-                        autocapitalize="none"
-                        spellcheck="false"
-                        :placeholder="t('me.profile.deleteConfirmPlaceholder')"
-                        class="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                        @keydown.enter.prevent="canDelete && handleDeleteAccount()"
-                    >
 
                     <p class="text-center mb-5">
                         <NuxtLinkLocale

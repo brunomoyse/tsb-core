@@ -201,6 +201,7 @@
       "deleteAnonymizeNote": "Uw account en persoonsgegevens (naam, e-mail, telefoonnummer en opgeslagen adressen) worden permanent geanonimiseerd en u wordt afgemeld.",
       "deleteOrdersNote": "Uw eerdere bestellingen blijven bij het restaurant in geanonimiseerde vorm, zoals de Belgische boekhoudwetgeving vereist. Ze zijn niet langer aan u gekoppeld.",
       "deleteConfirmPrompt": "Typ ter bevestiging uw e-mailadres hieronder:",
+      "deleteConfirmCheckbox": "Ik begrijp dat mijn account en gegevens permanent worden verwijderd.",
       "deleteConfirmPlaceholder": "Typ uw e-mail ter bevestiging",
       "deleteConfirmCta": "Definitief verwijderen",
       "deleteCancel": "Annuleren",
