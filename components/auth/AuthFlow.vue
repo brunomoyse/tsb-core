@@ -162,76 +162,20 @@
             </div>
         </form>
 
-        <!-- Step 3: Profile (new users only) -->
-        <form v-else-if="step === 'profile'" class="space-y-4" @submit.prevent="onSubmitProfile">
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900">
-                    {{ $t('login.profileTitle') }}
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    {{ $t('login.profileSubtitle') }}
-                </p>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-firstname">
-                    {{ $t('form.firstName') }}
-                </label>
-                <input
-                    id="auth-firstname"
-                    ref="firstNameInputRef"
-                    v-model="firstName"
-                    :placeholder="$t('form.firstNamePlaceholder')"
-                    autocomplete="given-name"
-                    class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                    maxlength="60"
-                    name="firstName"
-                    required
-                    type="text"
-                >
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-lastname">
-                    {{ $t('form.lastName') }}
-                </label>
-                <input
-                    id="auth-lastname"
-                    v-model="lastName"
-                    :placeholder="$t('form.lastNamePlaceholder')"
-                    autocomplete="family-name"
-                    class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-red-300/50 focus-visible:border-red-300 focus-visible:outline-none transition-all duration-300"
-                    maxlength="60"
-                    name="lastName"
-                    required
-                    type="text"
-                >
-            </div>
-
-            <div
-                v-if="errorMessage"
-                aria-atomic="true"
-                aria-live="assertive"
-                class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake"
-                role="alert"
-            >
-                {{ errorMessage }}
-            </div>
-
-            <button
-                :disabled="loading || !firstName.trim() || !lastName.trim()"
-                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
-                type="submit"
-            >
-                {{ $t('login.completeSignup') }}
-            </button>
-        </form>
+        <!-- Step 3: Profile (new users only) — shared with the IdP callback -->
+        <ProfileNameForm
+            v-else-if="step === 'profile'"
+            :loading="loading"
+            :error-message="errorMessage"
+            @submit="onSubmitProfile"
+        />
     </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
+import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
 import StepIndicator from '~/components/global/StepIndicator.vue'
 import { isValidEmail } from '~/lib/validators'
 import { useI18n } from 'vue-i18n'
@@ -264,12 +208,9 @@ const step = ref<Step>('email')
 
 const email = ref('')
 const code = ref('')
-const firstName = ref('')
-const lastName = ref('')
 
 const emailInputRef = ref<HTMLInputElement | null>(null)
 const codeInputRef = ref<HTMLInputElement | null>(null)
-const firstNameInputRef = ref<HTMLInputElement | null>(null)
 
 const otpSessionId = ref('')
 const otpSessionToken = ref('')
@@ -455,11 +396,10 @@ const onSubmitCode = async () => {
             /*
              * Identifier-first signup: collect name before OIDC finalize so the
              * app user is JIT-provisioned with real values, not the placeholder.
+             * ProfileNameForm self-focuses its first input on mount.
              */
             step.value = 'profile'
             loading.value = false
-            await nextTick()
-            firstNameInputRef.value?.focus()
             return
         }
 
@@ -489,7 +429,7 @@ const onSubmitCode = async () => {
     }
 }
 
-const onSubmitProfile = async () => {
+const onSubmitProfile = async (payload: { firstName: string; lastName: string }) => {
     if (import.meta.server) return
     errorMessage.value = ''
     loading.value = true
@@ -500,8 +440,8 @@ const onSubmitProfile = async () => {
         await completeOtpProfile({
             sessionId: otpSessionId.value,
             sessionToken: otpSessionToken.value,
-            firstName: firstName.value.trim(),
-            lastName: lastName.value.trim(),
+            firstName: payload.firstName,
+            lastName: payload.lastName,
         })
         trackEvent('user_registered', { method: 'otp' })
 

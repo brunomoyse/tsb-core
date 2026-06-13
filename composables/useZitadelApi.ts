@@ -11,6 +11,13 @@ interface VerifyOtpResponse extends SessionResponse {
     requiresProfile: boolean
 }
 
+interface IdpSessionResponse extends SessionResponse {
+    /** True when the IdP returned no name (e.g. Apple only sends it on the
+     *  first-ever authorization) and a placeholder Zitadel user was created —
+     *  the frontend must capture first/last name before /auth/finalize. */
+    requiresProfile: boolean
+}
+
 interface FinalizeResponse {
     callbackUrl: string
 }
@@ -86,9 +93,11 @@ export function useZitadelApi() {
         })
     }
 
-    /** Create a session from a completed IdP intent. userId is optional (provided when user already exists in Zitadel). */
-    function createIdpSession(idpIntentId: string, idpIntentToken: string, userId?: string): Promise<SessionResponse> {
-        return $fetch<SessionResponse>(`${apiUrl}/auth/idp/session`, {
+    /** Create a session from a completed IdP intent. userId is optional (provided when user already exists in Zitadel).
+     *  When requiresProfile is true the IdP omitted the name and a placeholder account was created — the
+     *  frontend must call completeOtpProfile before /auth/finalize (same as the OTP flow). */
+    function createIdpSession(idpIntentId: string, idpIntentToken: string, userId?: string): Promise<IdpSessionResponse> {
+        return $fetch<IdpSessionResponse>(`${apiUrl}/auth/idp/session`, {
             method: 'POST',
             body: { idpIntentId, idpIntentToken, ...(userId && { userId }) },
         })
