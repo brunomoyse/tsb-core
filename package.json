@@ -50,8 +50,8 @@
     "@oxc-transform/binding-linux-x64-gnu": "^0.136.0",
     "@rollup/rollup-linux-arm64-gnu": "^4.61.1",
     "@rollup/rollup-linux-x64-gnu": "^4.61.1",
-    "@tailwindcss/oxide-linux-arm64-gnu": "^4.3.0",
-    "@tailwindcss/oxide-linux-x64-gnu": "^4.3.0",
+    "@tailwindcss/oxide-linux-arm64-gnu": "^4.3.1",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.3.1",
     "lightningcss-linux-arm64-gnu": "^1.32.0",
     "lightningcss-linux-x64-gnu": "^1.32.0"
   }
