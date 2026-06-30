@@ -22,7 +22,7 @@
     "@unhead/vue": "^2.1.13",
     "@vueuse/core": "^14.3.0",
     "graphql": "^16.14.2",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "^2.12.7",
     "graphql-ws": "^6.0.8",
     "libphonenumber-js": "^1.13.7",
     "nuxt": "^4.4.8",
