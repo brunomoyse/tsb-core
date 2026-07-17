@@ -5,7 +5,7 @@
             <div class="flex items-center shrink-0">
                 <Logo
                     :aria-label="$t('nav.home')"
-                    alt="Tokyo Sushi Bar logo"
+                    :alt="logoAlt"
                     class="list-none"
                     icon="/images/tsb-black-font-100.png"
                     to="/"
@@ -54,7 +54,7 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <li><Logo :aria-label="$t('nav.home')" alt="Tokyo Sushi Bar logo" class="mb-6" icon="/images/tsb-black-font-100.png" to="/"
+                                <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/tsb-black-font-100.png" to="/"
                                       @click="closeMenu"/></li>
                                 <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
                                                to="/menu"
@@ -117,6 +117,7 @@ import { useRoute } from 'vue-router'
 const currentRoute = useRoute();
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const logoAlt = `${useAppConfig().brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 

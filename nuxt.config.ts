@@ -3,6 +3,12 @@ import { fileURLToPath } from 'node:url'
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url))
 
+// Active white-label brand. Selects the Nuxt layer under brands/ at build time
+// (NUXT_BRAND, default tokyo-sushi). The layer supplies theme, assets, company
+// facts (app.config) and locale overrides; #brand aliases its directory.
+const brand = process.env.NUXT_BRAND || 'tokyo-sushi'
+const brandDir = fileURLToPath(new URL(`./brands/${brand}`, import.meta.url))
+
 // Derive origins for CSP from environment variables (dev defaults)
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
@@ -26,14 +32,18 @@ const csp = `${[
 ].join('; ')};`
 
 export default defineNuxtConfig({
+    // Brand layer (theme, assets, app.config facts, locale overrides).
+    extends: [`./brands/${brand}`],
+
+    // Resolve #brand/* imports (e.g. locale overrides in i18n.config.ts) to the
+    // active brand directory.
+    alias: {
+        '#brand': brandDir,
+    },
+
     ssr: true,
 
     css: ["~/assets/css/main.css", "~/assets/css/sakura.css"],
-
-    $meta: {
-        title: "Tokyo Sushi Bar",
-        description: "Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.",
-    },
 
     site: {
         url: process.env.BASE_URL,
@@ -42,11 +52,10 @@ export default defineNuxtConfig({
     app: {
         pageTransition: {name: "page", mode: "out-in"},
         head: {
-            title: "Tokyo Sushi Bar",
+            // title, description meta and $meta come from the brand layer.
             meta: [
                 {charset: "utf-8"},
                 {name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover"},
-                {name: "description", content: "Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter."},
             ],
             link: [
                 // Favicon: light theme (black logo)
@@ -146,8 +155,9 @@ export default defineNuxtConfig({
     sentry: {
         sourceMapsUploadOptions: {
             enabled: Boolean(process.env.SENTRY_AUTH_TOKEN),
-            org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
-            project: process.env.SENTRY_PROJECT || 'tsb-core',
+            // org/project defaults come from the brand layer.
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
             authToken: process.env.SENTRY_AUTH_TOKEN,
         },
     },
@@ -198,9 +208,13 @@ export default defineNuxtConfig({
     // Per-subdirectory cache headers for static assets. Nitro's public-asset handler sets Cache-Control directly; routeRules headers don't override it, which is why /images, /fonts, /icons were leaking 4h max-age in production.
     nitro: {
         publicAssets: [
+            // Base (brand-neutral) assets.
             { baseURL: '/images', dir: `${rootDir}public/images`, maxAge: 60 * 60 * 24 * 365 },
-            { baseURL: '/fonts',  dir: `${rootDir}public/fonts`,  maxAge: 60 * 60 * 24 * 365 },
             { baseURL: '/icons',  dir: `${rootDir}public/icons`,  maxAge: 60 * 60 * 24 * 365 },
+            // Brand-layer assets (logos, hero images, display font) — same long
+            // cache headers as the base handler.
+            { baseURL: '/images', dir: `${brandDir}/public/images`, maxAge: 60 * 60 * 24 * 365 },
+            { baseURL: '/fonts',  dir: `${brandDir}/public/fonts`,  maxAge: 60 * 60 * 24 * 365 },
         ],
     },
 

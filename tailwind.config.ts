@@ -15,37 +15,9 @@ module.exports = {
             },
         },
         extend: {
-            backgroundColor: {
-                'tsb': {
-                    'one': {
-                        DEFAULT: '#F6F5F2',
-                    },
-                    'two': {
-                        DEFAULT: '#F0EBE3'
-                    },
-                    'three': {
-                        DEFAULT: '#F2A9BD'
-                    },
-                    'four': {
-                        DEFAULT: '#FFEFEF'
-                    },
-                },
-            },
+            // Brand color tokens (tsb-*) and the `channel` display font live in
+            // the active brand layer's tailwind.config (brands/<name>/).
             colors: {
-                'tsb': {
-                    'one': {
-                        DEFAULT: '#F6F5F2',
-                    },
-                    'two': {
-                        DEFAULT: '#F0EBE3'
-                    },
-                    'three': {
-                        DEFAULT: '#F2A9BD'
-                    },
-                    'four': {
-                        DEFAULT: '#FFEFEF'
-                    },
-                },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
@@ -79,9 +51,6 @@ module.exports = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
-            },
-            fontFamily: {
-                channel: ['Channel', 'sans-serif'],
             },
             borderRadius: {
                 lg: "var(--radius)",

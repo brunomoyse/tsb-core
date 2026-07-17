@@ -1,4 +1,6 @@
-const PRODUCTION_BASE_URL = 'https://tokyosushibarliege.be'
+import { brand } from '#brand/brand'
+
+const PRODUCTION_BASE_URL = `https://${brand.domain}`
 
 export default defineEventHandler((event) => {
     const isProduction = process.env.BASE_URL === PRODUCTION_BASE_URL
@@ -9,7 +11,7 @@ export default defineEventHandler((event) => {
 
     setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
 
-    return `# Tokyo Sushi Bar
+    return `# ${brand.name}
 
 > Restaurant japonais à Liège (Belgique). Sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter, commande en ligne.
 
@@ -20,7 +22,7 @@ export default defineEventHandler((event) => {
 
 ## Informations pratiques
 
-- [Contact](${PRODUCTION_BASE_URL}/fr/contact): Adresse (Rue de la Cathédrale 59, 4000 Liège), téléphone (+32 4 222 98 88), horaires d'ouverture, plan d'accès.
+- [Contact](${PRODUCTION_BASE_URL}/fr/contact): Adresse (${brand.address.street}, ${brand.address.postal} ${brand.address.city}), téléphone (${brand.phone}), horaires d'ouverture, plan d'accès.
 - [FAQ](${PRODUCTION_BASE_URL}/fr/faq): Questions fréquentes — livraison, options halal, allergies, paiement.
 
 ## Mentions légales

@@ -1,4 +1,6 @@
-const PRODUCTION_BASE_URL = 'https://tokyosushibarliege.be'
+import { brand } from '#brand/brand'
+
+const PRODUCTION_BASE_URL = `https://${brand.domain}`
 
 export default defineEventHandler((event) => {
     setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')

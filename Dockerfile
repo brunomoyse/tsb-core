@@ -4,6 +4,8 @@ FROM node:24.18-slim AS builder
 WORKDIR /usr/src/app
 
 # Build arguments for environment variables
+# White-label brand layer to build (brands/<name>/); defaults to tokyo-sushi.
+ARG NUXT_BRAND=tokyo-sushi
 ARG BASE_URL
 ARG API_BASE_URL
 ARG S3_BUCKET_URL
@@ -23,6 +25,7 @@ ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_AUTH_TOKEN
 
+ENV NUXT_BRAND=${NUXT_BRAND}
 ENV BASE_URL=${BASE_URL}
 ENV API_BASE_URL=${API_BASE_URL}
 ENV S3_BUCKET_URL=${S3_BUCKET_URL}

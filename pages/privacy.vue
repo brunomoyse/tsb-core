@@ -10,10 +10,10 @@
 
         <!-- Company info -->
         <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
-            <p class="font-semibold text-gray-900">Tokyo Sushi Bar &mdash; SRL</p>
-            <p>Rue de la Cath&eacute;drale 59, 4000 Li&egrave;ge, Belgique</p>
-            <p>N&deg; d&rsquo;entreprise : BE0772.499.585 &middot; T&eacute;l : +32 4 222 98 88</p>
-            <p>E-mail : <a href="mailto:tokyosushibar888@gmail.com" class="text-red-600 underline">tokyosushibar888@gmail.com</a></p>
+            <p class="font-semibold text-gray-900">{{ brand.legalName }}</p>
+            <p>{{ fullAddress }}</p>
+            <p>N&deg; d&rsquo;entreprise : {{ brand.vat }} &middot; T&eacute;l : {{ brand.phone }}</p>
+            <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-red-600 underline">{{ brand.email }}</a></p>
         </section>
 
         <!-- Body -->
@@ -23,10 +23,10 @@
             <section>
                 <h2 class="privacy-heading">1. Responsable du traitement</h2>
                 <p>
-                    La SRL Tokyo Sushi Bar (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) est responsable du traitement des
+                    La SRL {{ brand.name }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) est responsable du traitement des
                     donn&eacute;es &agrave; caract&egrave;re personnel collect&eacute;es via le site internet
-                    <strong>tokyosushibarliege.be</strong> (le &laquo;&nbsp;Site&nbsp;&raquo;) et l&rsquo;application
-                    mobile &laquo;&nbsp;Tokyo Sushi Bar&nbsp;&raquo; (l&rsquo;&laquo;&nbsp;Application&nbsp;&raquo;).
+                    <strong>{{ brand.domain }}</strong> (le &laquo;&nbsp;Site&nbsp;&raquo;) et l&rsquo;application
+                    mobile &laquo;&nbsp;{{ brand.name }}&nbsp;&raquo; (l&rsquo;&laquo;&nbsp;Application&nbsp;&raquo;).
                 </p>
             </section>
 
@@ -103,7 +103,7 @@
                 </p>
                 <p class="mt-2">
                     Vous pouvez d&eacute;sactiver les notifications &agrave; tout moment dans les r&eacute;glages de
-                    votre appareil (iOS : R&eacute;glages &gt; Notifications &gt; Tokyo Sushi Bar). Le jeton est
+                    votre appareil (iOS : R&eacute;glages &gt; Notifications &gt; {{ brand.name }}). Le jeton est
                     supprim&eacute; de nos serveurs lors de votre d&eacute;connexion.
                 </p>
             </section>
@@ -174,8 +174,8 @@
                 </ul>
                 <p class="mt-2">
                     Toute demande peut &ecirc;tre adress&eacute;e par e-mail &agrave;
-                    <a href="mailto:tokyosushibar888@gmail.com" class="text-red-600 underline">tokyosushibar888@gmail.com</a>
-                    ou par courrier &agrave;&nbsp;: Tokyo Sushi Bar, Rue de la Cath&eacute;drale 59, 4000 Li&egrave;ge.
+                    <a :href="`mailto:${brand.email}`" class="text-red-600 underline">{{ brand.email }}</a>
+                    ou par courrier &agrave;&nbsp;: {{ brand.name }}, {{ streetCityLine }}.
                 </p>
                 <p class="mt-2">
                     Vous pouvez &eacute;galement introduire une r&eacute;clamation aupr&egrave;s de
@@ -196,7 +196,7 @@
 
         <!-- Footer -->
         <footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
-            <p>Tokyo Sushi Bar &middot; Rue de la Cath&eacute;drale 59 &middot; 4000 Li&egrave;ge, Belgique</p>
+            <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
 </template>
@@ -209,6 +209,12 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const { t } = useI18n()
+const { brand } = useAppConfig()
+
+// "Belgique" is intentionally hardcoded — this French legal page targets a
+// Belgian entity.
+const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
+const fullAddress = `${streetCityLine}, Belgique`
 
 useJsonLd([
     {

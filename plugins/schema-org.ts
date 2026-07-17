@@ -1,8 +1,9 @@
-import { defineNuxtPlugin, useHead, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin, useHead, useRuntimeConfig, useAppConfig } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     const baseUrl = config.public.baseUrl as string
+    const { brand } = useAppConfig()
 
     const schema = {
         '@context': 'https://schema.org',
@@ -15,7 +16,7 @@ export default defineNuxtPlugin(() => {
                 discount: '10%',
                 availableAtOrFrom: {
                     '@type': 'Restaurant',
-                    name: 'Tokyo Sushi Bar',
+                    name: brand.name,
                 },
                 validFrom: '2024-01-01',
                 priceSpecification: {
@@ -31,10 +32,10 @@ export default defineNuxtPlugin(() => {
             {
                 '@type': 'Restaurant',
                 '@id': `${baseUrl}#restaurant`,
-                name: 'Tokyo Sushi Bar',
+                name: brand.name,
                 image: `${baseUrl}/logo.png`,
-                telephone: '+3242229888',
-                email: 'tokyosushibar888@gmail.com',
+                telephone: brand.phone.replace(/\s/gu, ''),
+                email: brand.email,
                 makesOffer: {
                     '@type': 'Offer',
                     name: '10% Pickup Discount',
@@ -43,36 +44,36 @@ export default defineNuxtPlugin(() => {
                 },
                 address: {
                     '@type': 'PostalAddress',
-                    streetAddress: 'Rue de la Cathédrale 59',
-                    addressLocality: 'Liège',
-                    addressRegion: 'Wallonie',
-                    postalCode: '4000',
-                    addressCountry: 'BE',
+                    streetAddress: brand.address.street,
+                    addressLocality: brand.address.city,
+                    addressRegion: brand.address.region,
+                    postalCode: brand.address.postal,
+                    addressCountry: brand.address.country,
                 },
                 geo: {
                     '@type': 'GeoCoordinates',
-                    latitude: 50.64245770697728,
-                    longitude: 5.574703166758179,
+                    latitude: brand.geo.lat,
+                    longitude: brand.geo.lng,
                 },
                 url: baseUrl,
                 sameAs: [
-                    'https://www.instagram.com/tokyo_sushi_bar_liege/',
-                    'https://www.facebook.com/sushiliege',
+                    brand.socials.instagram,
+                    brand.socials.facebook,
                 ],
-                servesCuisine: 'Japanese',
-                priceRange: '€€',
+                servesCuisine: brand.cuisine,
+                priceRange: brand.priceRange,
                 acceptsReservations: true,
                 hasMenu: {
                     '@type': 'Menu',
                     '@id': `${baseUrl}/menu#menu`,
-                    name: 'Tokyo Sushi Bar Menu',
+                    name: `${brand.name} Menu`,
                     description: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
                     inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
                 },
                 aggregateRating: {
                     '@type': 'AggregateRating',
-                    ratingValue: 4.7,
-                    reviewCount: 248,
+                    ratingValue: brand.rating.value,
+                    reviewCount: brand.rating.count,
                     bestRating: 5,
                     worstRating: 1,
                 },

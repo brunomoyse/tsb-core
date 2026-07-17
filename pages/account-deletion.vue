@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-3xl px-6 py-10">
         <!-- Header -->
         <header class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-wide text-red-600">Tokyo Sushi Bar</p>
+            <p class="text-sm font-semibold uppercase tracking-wide text-red-600">{{ brand.name }}</p>
             <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                 {{ t('accountDeletion.title') }}
             </h1>
@@ -59,7 +59,7 @@
 
         <!-- Footer -->
         <footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
-            <p>Tokyo Sushi Bar &middot; Rue de la Cath&eacute;drale 59 &middot; 4000 Li&egrave;ge, Belgique</p>
+            <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
 </template>
@@ -72,8 +72,9 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const { t, tm, rt } = useI18n()
+const { brand } = useAppConfig()
 
-const deletionEmail = 'cloud@nuagemagique.dev'
+const { deletionEmail } = brand
 const mailtoHref = computed(
     () => `mailto:${deletionEmail}?subject=${encodeURIComponent(t('accountDeletion.emailSubject'))}`,
 )

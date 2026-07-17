@@ -3,14 +3,14 @@ definePageMeta({
     sitemap: { priority: 0.7, changefreq: 'monthly' },
 })
 
-const latitude = 50.64245770697728;
-const longitude = 5.574703166758179;
-const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`;
-const googleMapsLink = `https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7`;
-
-// Schema.org structured data
 const config = useRuntimeConfig()
 const { t } = useI18n()
+const { brand } = useAppConfig()
+
+const latitude = brand.geo.lat;
+const longitude = brand.geo.lng;
+const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`;
+const googleMapsLink = brand.mapsUrl;
 
 useJsonLd([
     {
@@ -64,7 +64,7 @@ useSeoMeta({
                     <iframe
                         :src="osmEmbedUrl"
                         class="w-full h-full min-h-[280px] sm:min-h-0"
-                        title="Tokyo Sushi Bar Location"
+                        :title="`${brand.name} Location`"
                         frameborder="0"
                         allowfullscreen
                         loading="lazy"
@@ -108,26 +108,26 @@ useSeoMeta({
 
             <!-- Phone -->
             <div class="bento-phone bento-cell" style="--delay: 4">
-                <a href="tel:+32422298888" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
+                <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                     <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full flex flex-col hover:bg-tsb-four/40 transition-colors duration-300">
                         <h2 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                             <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
                             {{ $t('contact.phoneTitle') }}
                         </h2>
-                        <span class="text-sm text-gray-600 tabular-nums">+32 4 222 98 88</span>
+                        <span class="text-sm text-gray-600 tabular-nums">{{ brand.phone }}</span>
                     </div>
                 </a>
             </div>
 
             <!-- Email -->
             <div class="bento-email bento-cell" style="--delay: 5">
-                <a href="mailto:tokyosushibar888@gmail.com" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
+                <a :href="`mailto:${brand.email}`" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300">
                     <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full flex flex-col hover:bg-tsb-four/40 transition-colors duration-300">
                         <h2 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                             <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                             {{ $t('contact.emailTitle') }}
                         </h2>
-                        <span class="text-sm text-gray-600 break-all">tokyosushibar888@gmail.com</span>
+                        <span class="text-sm text-gray-600 break-all">{{ brand.email }}</span>
                         <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-amber-700">
                             <svg aria-hidden="true" class="w-4 h-4 shrink-0 mt-px" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
                             <span>{{ $t('contact.reservationNotice') }}</span>
@@ -142,7 +142,7 @@ useSeoMeta({
                     <h2 class="font-semibold text-gray-900 text-[15px]">{{ $t('contact.followUs', 'Follow Us') }}</h2>
                     <div class="flex items-center gap-3">
                         <a
-                            href="https://www.instagram.com/tokyo_sushi_bar_liege/"
+                            :href="brand.socials.instagram"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Instagram"
@@ -151,7 +151,7 @@ useSeoMeta({
                             <img src="/icons/instagram-icon.svg" alt="" aria-hidden="true" class="w-5 h-5"/>
                         </a>
                         <a
-                            href="https://www.facebook.com/sushiliege"
+                            :href="brand.socials.facebook"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Facebook"

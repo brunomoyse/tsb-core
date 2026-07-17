@@ -1,7 +1,8 @@
 {
+  "brandName": "Tokyo Sushi Bar",
   "404": {},
   "head": {
-    "title": "Tokyo Sushi Bar"
+    "title": "__BRAND__"
   },
   "common": {
     "cancel": "Cancel",
@@ -51,8 +52,8 @@
   "about": {
     "ourStoryTitle": "Our Story",
     "ourStoryText1": "In 2016, a young couple with a passion for Japanese cuisine opened a small restaurant on Rue de la Régence in Liège, with the support of their parents. Every morning, fresh fish is carefully selected and prepared by hand to guarantee uncompromising quality. Word spread quickly: between dine-in guests and a flood of delivery orders, the small space could no longer keep up.",
-    "ourStoryText2": "At the end of 2024, the restaurant moved to Rue de la Cathédrale into a larger space, just steps from the original location. Today, Tokyo Sushi Bar remains a family affair where every dish is crafted with the same care as on day one.",
-    "ourStoryText3": "In 2026, Tokyo Sushi Bar celebrates its 10th anniversary. A decade of fresh fish, refined recipes, and smiles shared with you. Thank you to everyone who has trusted us since day one, this journey is yours as much as ours.",
+    "ourStoryText2": "At the end of 2024, the restaurant moved to Rue de la Cathédrale into a larger space, just steps from the original location. Today, __BRAND__ remains a family affair where every dish is crafted with the same care as on day one.",
+    "ourStoryText3": "In 2026, __BRAND__ celebrates its 10th anniversary. A decade of fresh fish, refined recipes, and smiles shared with you. Thank you to everyone who has trusted us since day one, this journey is yours as much as ours.",
     "yearsOfPassion": "years of passion",
     "openingHoursLabel": "Opening Hours",
     "contactLink": "Get in touch",
@@ -389,7 +390,7 @@
     "returnHome": "Return to Home",
     "viewOrders": "View My Orders",
     "status": "Status",
-    "pageTitle": "Order Confirmation - Tokyo Sushi Bar",
+    "pageTitle": "Order Confirmation - __BRAND__",
     "liveTracking": "Live tracking, status updates automatically",
     "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88.",
     "notConfirmedYet": "Your order has not been confirmed yet. You can call the restaurant to check:",
@@ -465,46 +466,46 @@
     }
   },
   "schema": {
-    "siteName": "Tokyo Sushi Bar",
+    "siteName": "__BRAND__",
     "siteDescription": "Experience the best flavors of Japan in Liège",
-    "restaurantName": "Tokyo Sushi Bar",
+    "restaurantName": "__BRAND__",
     "cuisine": "Japanese",
     "home": {
-      "title": "Tokyo Sushi Bar - Japanese Restaurant in Liège",
+      "title": "__BRAND__ - Japanese Restaurant in Liège",
       "description": "Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine."
     },
     "menu": {
-      "title": "Menu - Tokyo Sushi Bar",
+      "title": "Menu - __BRAND__",
       "description": "Discover our menu of fresh sushi, sashimi, and authentic Japanese cuisine",
-      "name": "Tokyo Sushi Bar Menu"
+      "name": "__BRAND__ Menu"
     },
     "contact": {
-      "title": "Contact Us - Tokyo Sushi Bar",
+      "title": "Contact Us - __BRAND__",
       "description": "Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium"
     },
     "terms": {
-      "title": "Terms & Conditions - Tokyo Sushi Bar",
-      "description": "Terms and conditions of Tokyo Sushi Bar. Legal information, delivery, payment, and return policy."
+      "title": "Terms & Conditions - __BRAND__",
+      "description": "Terms and conditions of __BRAND__. Legal information, delivery, payment, and return policy."
     },
     "privacy": {
-      "title": "Privacy Policy - Tokyo Sushi Bar",
-      "description": "Tokyo Sushi Bar privacy policy. Data collection, purposes, GDPR rights, and cookies."
+      "title": "Privacy Policy - __BRAND__",
+      "description": "__BRAND__ privacy policy. Data collection, purposes, GDPR rights, and cookies."
     },
     "login": {
-      "title": "Login - Tokyo Sushi Bar",
-      "description": "Log in to your Tokyo Sushi Bar account"
+      "title": "Login - __BRAND__",
+      "description": "Log in to your __BRAND__ account"
     },
     "checkout": {
-      "title": "Checkout - Tokyo Sushi Bar"
+      "title": "Checkout - __BRAND__"
     },
     "myAccount": {
-      "title": "My Account - Tokyo Sushi Bar"
+      "title": "My Account - __BRAND__"
     },
     "myOrders": {
-      "title": "My Orders - Tokyo Sushi Bar"
+      "title": "My Orders - __BRAND__"
     },
     "orderConfirmation": {
-      "title": "Order Confirmation - Tokyo Sushi Bar",
+      "title": "Order Confirmation - __BRAND__",
       "description": "Your order has been confirmed"
     },
     "breadcrumb": {
@@ -516,8 +517,8 @@
       "accountDeletion": "Account deletion"
     },
     "accountDeletion": {
-      "title": "Account Deletion - Tokyo Sushi Bar",
-      "description": "How to request deletion of your Tokyo Sushi Bar account and personal data."
+      "title": "Account Deletion - __BRAND__",
+      "description": "How to request deletion of your __BRAND__ account and personal data."
     }
   },
   "feedback": {
@@ -568,11 +569,11 @@
   "cookies": {},
   "faq": {
     "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to your questions about Tokyo Sushi Bar",
+    "subtitle": "Find answers to your questions about __BRAND__",
     "stillHaveQuestions": "Still have questions?",
     "contactUs": "Contact Us",
-    "schemaTitle": "FAQ - Tokyo Sushi Bar",
-    "schemaDescription": "Frequently asked questions about Tokyo Sushi Bar - delivery, hours, halal options and more",
+    "schemaTitle": "FAQ - __BRAND__",
+    "schemaDescription": "Frequently asked questions about __BRAND__ - delivery, hours, halal options and more",
     "breadcrumb": "FAQ",
     "questions": {
       "delivery": {
@@ -616,7 +617,7 @@
   "accountDeletion": {
     "title": "Account deletion",
     "lastUpdated": "Last updated: 08/06/2026",
-    "intro": "You can delete your Tokyo Sushi Bar account and the personal data associated with it yourself, at any time, directly from the app or this website.",
+    "intro": "You can delete your __BRAND__ account and the personal data associated with it yourself, at any time, directly from the app or this website.",
     "howTitle": "How to delete your account",
     "howBody": "Sign in, open your account page, and select “Delete account”. After you confirm, your account is deleted immediately and you are signed out. There is no waiting period.",
     "fallbackTitle": "Can't sign in?",

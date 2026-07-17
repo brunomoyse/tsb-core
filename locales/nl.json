@@ -1,7 +1,8 @@
 {
+  "brandName": "Tokyo Sushi Bar",
   "404": {},
   "head": {
-    "title": "Tokyo Sushi Bar"
+    "title": "__BRAND__"
   },
   "common": {
     "cancel": "Annuleren",
@@ -50,8 +51,8 @@
   "about": {
     "ourStoryTitle": "Ons Verhaal",
     "ourStoryText1": "In 2016 opende een jong koppel met een passie voor de Japanse keuken een klein restaurant in de Rue de la Régence in Luik, met de steun van hun ouders. Elke ochtend wordt de verse vis zorgvuldig geselecteerd en met de hand bereid om een onberispelijke kwaliteit te garanderen. De mond-tot-mondreclame deed snel zijn werk: tussen de klanten ter plaatse en de leveringsbestellingen was de kleine zaal al snel te klein.",
-    "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft Tokyo Sushi Bar een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
-    "ourStoryText3": "In 2026 viert Tokyo Sushi Bar zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde. Dit avontuur is ook het uwe.",
+    "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft __BRAND__ een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
+    "ourStoryText3": "In 2026 viert __BRAND__ zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde. Dit avontuur is ook het uwe.",
     "yearsOfPassion": "jaar passie",
     "openingHoursLabel": "Openingsuren",
     "contactLink": "Contacteer ons",
@@ -373,7 +374,7 @@
     "returnHome": "Terug naar start",
     "viewOrders": "Mijn bestellingen bekijken",
     "status": "Status",
-    "pageTitle": "Bestelbevestiging - Tokyo Sushi Bar",
+    "pageTitle": "Bestelbevestiging - __BRAND__",
     "liveTracking": "Live tracking, de status wordt automatisch bijgewerkt",
     "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 222 98 88 voor meer informatie.",
     "notConfirmedYet": "Uw bestelling is nog niet bevestigd. U kunt het restaurant bellen om te controleren:",
@@ -442,46 +443,46 @@
     }
   },
   "schema": {
-    "siteName": "Tokyo Sushi Bar",
+    "siteName": "__BRAND__",
     "siteDescription": "Ontdek de beste smaken van Japan in Luik",
-    "restaurantName": "Tokyo Sushi Bar",
+    "restaurantName": "__BRAND__",
     "cuisine": "Japanse",
     "home": {
-      "title": "Tokyo Sushi Bar - Japans Restaurant in Luik",
+      "title": "__BRAND__ - Japans Restaurant in Luik",
       "description": "Ontdek de beste smaken van Japan in Luik. Verse sushi, sashimi en authentieke Japanse keuken."
     },
     "menu": {
-      "title": "Menu - Tokyo Sushi Bar",
+      "title": "Menu - __BRAND__",
       "description": "Ontdek ons menu met verse sushi, sashimi en authentieke Japanse keuken",
-      "name": "Menu Tokyo Sushi Bar"
+      "name": "Menu __BRAND__"
     },
     "contact": {
-      "title": "Contacteer ons - Tokyo Sushi Bar",
+      "title": "Contacteer ons - __BRAND__",
       "description": "Bezoek ons, bel ons of reserveer vandaag nog een tafel! Rue de la Cathédrale 59, Liège, Belgique"
     },
     "terms": {
-      "title": "Algemene Voorwaarden - Tokyo Sushi Bar",
-      "description": "Algemene voorwaarden van Tokyo Sushi Bar. Juridische informatie, levering, betaling en retourbeleid."
+      "title": "Algemene Voorwaarden - __BRAND__",
+      "description": "Algemene voorwaarden van __BRAND__. Juridische informatie, levering, betaling en retourbeleid."
     },
     "login": {
-      "title": "Inloggen - Tokyo Sushi Bar",
-      "description": "Log in op uw Tokyo Sushi Bar-account"
+      "title": "Inloggen - __BRAND__",
+      "description": "Log in op uw __BRAND__-account"
     },
     "checkout": {
-      "title": "Bestelling - Tokyo Sushi Bar"
+      "title": "Bestelling - __BRAND__"
     },
     "myAccount": {
-      "title": "Mijn account - Tokyo Sushi Bar"
+      "title": "Mijn account - __BRAND__"
     },
     "myOrders": {
-      "title": "Mijn bestellingen - Tokyo Sushi Bar"
+      "title": "Mijn bestellingen - __BRAND__"
     },
     "privacy": {
-      "title": "Privacybeleid - Tokyo Sushi Bar",
-      "description": "Privacybeleid van Tokyo Sushi Bar. Verzamelde gegevens, doeleinden, GDPR-rechten en cookies."
+      "title": "Privacybeleid - __BRAND__",
+      "description": "Privacybeleid van __BRAND__. Verzamelde gegevens, doeleinden, GDPR-rechten en cookies."
     },
     "orderConfirmation": {
-      "title": "Bestelbevestiging - Tokyo Sushi Bar",
+      "title": "Bestelbevestiging - __BRAND__",
       "description": "Uw bestelling is bevestigd"
     },
     "breadcrumb": {
@@ -493,8 +494,8 @@
       "accountDeletion": "Account verwijderen"
     },
     "accountDeletion": {
-      "title": "Account verwijderen - Tokyo Sushi Bar",
-      "description": "Hoe u verwijdering van uw Tokyo Sushi Bar-account en persoonsgegevens aanvraagt."
+      "title": "Account verwijderen - __BRAND__",
+      "description": "Hoe u verwijdering van uw __BRAND__-account en persoonsgegevens aanvraagt."
     }
   },
   "feedback": {
@@ -545,11 +546,11 @@
   "cookies": {},
   "faq": {
     "title": "Veelgestelde Vragen",
-    "subtitle": "Vind antwoorden op uw vragen over Tokyo Sushi Bar",
+    "subtitle": "Vind antwoorden op uw vragen over __BRAND__",
     "stillHaveQuestions": "Heeft u nog vragen?",
     "contactUs": "Contacteer ons",
-    "schemaTitle": "FAQ - Tokyo Sushi Bar",
-    "schemaDescription": "Veelgestelde vragen over Tokyo Sushi Bar - levering, openingsuren, halal-opties en meer",
+    "schemaTitle": "FAQ - __BRAND__",
+    "schemaDescription": "Veelgestelde vragen over __BRAND__ - levering, openingsuren, halal-opties en meer",
     "breadcrumb": "FAQ",
     "questions": {
       "delivery": {
@@ -593,7 +594,7 @@
   "accountDeletion": {
     "title": "Account verwijderen",
     "lastUpdated": "Laatst bijgewerkt: 08/06/2026",
-    "intro": "U kunt uw Tokyo Sushi Bar-account en de bijbehorende persoonsgegevens zelf verwijderen, op elk moment, rechtstreeks vanuit de app of deze website.",
+    "intro": "U kunt uw __BRAND__-account en de bijbehorende persoonsgegevens zelf verwijderen, op elk moment, rechtstreeks vanuit de app of deze website.",
     "howTitle": "Uw account verwijderen",
     "howBody": "Meld u aan, open de pagina van uw account en selecteer “Account verwijderen”. Na bevestiging wordt uw account onmiddellijk verwijderd en wordt u afgemeld, zonder wachttijd.",
     "fallbackTitle": "Kunt u niet aanmelden?",

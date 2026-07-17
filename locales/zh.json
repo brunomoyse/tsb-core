@@ -1,7 +1,8 @@
 {
+  "brandName": "Tokyo Sushi Bar",
   "404": {},
   "head": {
-    "title": "Tokyo Sushi Bar"
+    "title": "__BRAND__"
   },
   "common": {
     "cancel": "取消",
@@ -51,8 +52,8 @@
   "about": {
     "ourStoryTitle": "我们的故事",
     "ourStoryText1": "2016年，一对热爱日本料理的年轻夫妇在父母的支持下，于列日Rue de la Régence开了一家小餐厅。每天清晨，新鲜鱼材都经过精心挑选和手工处理，以保证无可挑剔的品质。口碑迅速传开：堂食客人加上络绎不绝的外卖订单，小小的店面很快不够用了。",
-    "ourStoryText2": "2024年底，餐厅搬到了几步之遥的Rue de la Cathédrale，拥有了更大的空间。如今，Tokyo Sushi Bar依然是一家家庭餐厅，每一道菜都保持着第一天的用心。",
-    "ourStoryText3": "2026年，Tokyo Sushi Bar 迎来了十周年。十年间，新鲜的鱼材、不断精进的料理、与您分享的每一个微笑，都是我们最珍贵的记忆。感谢每一位从第一天起就信任我们的朋友，这段旅程，也属于你们。",
+    "ourStoryText2": "2024年底，餐厅搬到了几步之遥的Rue de la Cathédrale，拥有了更大的空间。如今，__BRAND__依然是一家家庭餐厅，每一道菜都保持着第一天的用心。",
+    "ourStoryText3": "2026年，__BRAND__ 迎来了十周年。十年间，新鲜的鱼材、不断精进的料理、与您分享的每一个微笑，都是我们最珍贵的记忆。感谢每一位从第一天起就信任我们的朋友，这段旅程，也属于你们。",
     "yearsOfPassion": "年的热忱",
     "openingHoursLabel": "营业时间",
     "contactLink": "联系我们",
@@ -389,7 +390,7 @@
     "returnHome": "返回首页",
     "viewOrders": "查看我的订单",
     "status": "状态",
-    "pageTitle": "订单确认 - Tokyo Sushi Bar",
+    "pageTitle": "订单确认 - __BRAND__",
     "liveTracking": "实时追踪，状态自动更新",
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
     "notConfirmedYet": "您的订单尚未确认。您可以致电餐厅确认：",
@@ -465,46 +466,46 @@
     }
   },
   "schema": {
-    "siteName": "Tokyo Sushi Bar",
+    "siteName": "__BRAND__",
     "siteDescription": "在列日体验最地道的日本风味",
-    "restaurantName": "Tokyo Sushi Bar",
+    "restaurantName": "__BRAND__",
     "cuisine": "日本料理",
     "home": {
-      "title": "Tokyo Sushi Bar - 列日日本料理餐厅",
+      "title": "__BRAND__ - 列日日本料理餐厅",
       "description": "在列日体验最地道的日本风味。新鲜寿司、生鱼片和正宗日本料理。"
     },
     "menu": {
-      "title": "菜单 - Tokyo Sushi Bar",
+      "title": "菜单 - __BRAND__",
       "description": "探索我们的新鲜寿司、生鱼片和正宗日本料理菜单",
-      "name": "Tokyo Sushi Bar 菜单"
+      "name": "__BRAND__ 菜单"
     },
     "contact": {
-      "title": "联系我们 - Tokyo Sushi Bar",
+      "title": "联系我们 - __BRAND__",
       "description": "找到我们，打电话给我们，或立即预订餐桌！Rue de la Cathédrale 59, 列日, 比利时"
     },
     "terms": {
-      "title": "销售条款 - Tokyo Sushi Bar",
-      "description": "Tokyo Sushi Bar 的销售条款。法律信息、配送、付款和退货政策。"
+      "title": "销售条款 - __BRAND__",
+      "description": "__BRAND__ 的销售条款。法律信息、配送、付款和退货政策。"
     },
     "privacy": {
-      "title": "隐私政策 - Tokyo Sushi Bar",
-      "description": "Tokyo Sushi Bar 隐私政策。数据收集、用途、GDPR 权利和 Cookie。"
+      "title": "隐私政策 - __BRAND__",
+      "description": "__BRAND__ 隐私政策。数据收集、用途、GDPR 权利和 Cookie。"
     },
     "login": {
-      "title": "登录 - Tokyo Sushi Bar",
-      "description": "登录您的 Tokyo Sushi Bar 账户"
+      "title": "登录 - __BRAND__",
+      "description": "登录您的 __BRAND__ 账户"
     },
     "checkout": {
-      "title": "结账 - Tokyo Sushi Bar"
+      "title": "结账 - __BRAND__"
     },
     "myAccount": {
-      "title": "我的账户 - Tokyo Sushi Bar"
+      "title": "我的账户 - __BRAND__"
     },
     "myOrders": {
-      "title": "我的订单 - Tokyo Sushi Bar"
+      "title": "我的订单 - __BRAND__"
     },
     "orderConfirmation": {
-      "title": "订单确认 - Tokyo Sushi Bar",
+      "title": "订单确认 - __BRAND__",
       "description": "您的订单已确认"
     },
     "breadcrumb": {
@@ -516,8 +517,8 @@
       "accountDeletion": "删除账户"
     },
     "accountDeletion": {
-      "title": "删除账户 - Tokyo Sushi Bar",
-      "description": "如何申请删除您的 Tokyo Sushi Bar 账户及个人数据。"
+      "title": "删除账户 - __BRAND__",
+      "description": "如何申请删除您的 __BRAND__ 账户及个人数据。"
     }
   },
   "feedback": {
@@ -568,11 +569,11 @@
   "cookies": {},
   "faq": {
     "title": "常见问题",
-    "subtitle": "找到关于 Tokyo Sushi Bar 的问题答案",
+    "subtitle": "找到关于 __BRAND__ 的问题答案",
     "stillHaveQuestions": "还有其他问题？",
     "contactUs": "联系我们",
-    "schemaTitle": "常见问题 - Tokyo Sushi Bar",
-    "schemaDescription": "关于 Tokyo Sushi Bar 的常见问题 - 配送、营业时间、清真选项等",
+    "schemaTitle": "常见问题 - __BRAND__",
+    "schemaDescription": "关于 __BRAND__ 的常见问题 - 配送、营业时间、清真选项等",
     "breadcrumb": "常见问题",
     "questions": {
       "delivery": {
@@ -616,7 +617,7 @@
   "accountDeletion": {
     "title": "删除账户",
     "lastUpdated": "最后更新：2026/06/08",
-    "intro": "您可以随时自行删除您的 Tokyo Sushi Bar 账户及其相关的个人数据，可直接在应用程序或本网站中操作。",
+    "intro": "您可以随时自行删除您的 __BRAND__ 账户及其相关的个人数据，可直接在应用程序或本网站中操作。",
     "howTitle": "如何删除您的账户",
     "howBody": "登录后，打开您的账户页面，选择「删除账户」。确认后，您的账户将立即被删除，并且您会退出登录，没有等待期。",
     "fallbackTitle": "无法登录？",

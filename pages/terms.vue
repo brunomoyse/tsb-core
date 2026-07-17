@@ -10,10 +10,10 @@
 
         <!-- Company info -->
         <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
-            <p class="font-semibold text-gray-900">Tokyo Sushi Bar &mdash; SRL</p>
-            <p>Rue de la Cathédrale 59, 4000 Liège, Belgique</p>
-            <p>N° d&rsquo;entreprise : BE0772.499.585 &middot; Tél : +32 4 222 98 88</p>
-            <p>Administrateurs : Cheng Yanjie, Xu Sa, Zhu Mengmeng</p>
+            <p class="font-semibold text-gray-900">{{ brand.legalName }}</p>
+            <p>{{ fullAddress }}</p>
+            <p>N° d&rsquo;entreprise : {{ brand.vat }} &middot; Tél : {{ brand.phone }}</p>
+            <p>Administrateurs : {{ brand.administrators.join(', ') }}</p>
         </section>
 
         <!-- Body -->
@@ -23,8 +23,7 @@
             <section>
                 <h2 class="terms-heading">1. Objet</h2>
                 <p>
-                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre la SRL Tokyo Sushi
-                    Bar (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
+                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre la SRL {{ brand.name }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
                     pour la vente de plats japonais en livraison et à emporter. Elles s&rsquo;appliquent à toute
                     commande passée en personne, par téléphone ou via le site internet (le
                     &laquo;&nbsp;Site&nbsp;&raquo;).
@@ -173,8 +172,8 @@
                 </p>
                 <p class="mt-2">
                     Toute demande peut être adressée par e-mail à
-                    <a href="mailto:tokyosushibar888@gmail.com" class="text-red-600 underline">tokyosushibar888@gmail.com</a>
-                    ou par courrier à&nbsp;: Tokyo Sushi Bar, Rue de la Cathédrale 59, 4000 Liège. Le
+                    <a :href="`mailto:${brand.email}`" class="text-red-600 underline">{{ brand.email }}</a>
+                    ou par courrier à&nbsp;: {{ brand.name }}, {{ streetCityLine }}. Le
                     Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
                     données (APD).
                 </p>
@@ -265,7 +264,7 @@
 
         <!-- Footer -->
         <footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
-            <p>Tokyo Sushi Bar &middot; Rue de la Cathédrale 59 &middot; 4000 Liège, Belgique</p>
+            <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
 </template>
@@ -276,6 +275,11 @@ import { nextTick, onMounted } from 'vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const { t } = useI18n()
+const { brand } = useAppConfig()
+
+// "Belgique" is intentionally hardcoded — this French legal page targets a Belgian entity.
+const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
+const fullAddress = `${streetCityLine}, Belgique`
 
 definePageMeta({
     public: true,

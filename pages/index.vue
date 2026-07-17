@@ -9,8 +9,9 @@ definePageMeta({
 const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
+const { brand } = useAppConfig()
 
-const yearsSince = getBrusselsParts().year - 2016
+const yearsSince = getBrusselsParts().year - brand.foundingYear
 
 // Live ordering status for the hero order bar; lazy so the homepage renders without waiting on the config query.
 const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
@@ -127,7 +128,7 @@ useHead({
                     <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
                     <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
                     <img
-                        alt="Tokyo Sushi Bar Restaurant"
+                        :alt="`${brand.name} Restaurant`"
                         class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
                         src="/images/restaurant-illustrated.png"
                         width="1024"
@@ -139,7 +140,7 @@ useHead({
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 text-white">
                     <h1 class="text-3xl sm:text-4xl font-bold drop-shadow-md">
-                        Tokyo Sushi Bar
+                        {{ brand.name }}
                     </h1>
                     <p class="mt-1 sm:mt-2 text-xs sm:text-sm text-white/90 font-semibold drop-shadow-md tracking-[0.25em] uppercase">
                         {{ $t('home.heroTagline') }}
@@ -273,11 +274,11 @@ useHead({
                 </div>
 
                 <div class="max-w-2xl mx-auto">
-                    <!-- Chapter 1: 2016 -->
+                    <!-- Chapter 1: founding year -->
                     <div class="mb-8 sm:mb-10">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-red-200/50" />
-                            <span class="font-channel text-3xl sm:text-4xl text-red-700 leading-none shrink-0">2016</span>
+                            <span class="font-channel text-3xl sm:text-4xl text-red-700 leading-none shrink-0">{{ brand.foundingYear }}</span>
                             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-red-200/50" />
                         </div>
                         <p class="text-gray-600 leading-relaxed text-[15px] text-center">

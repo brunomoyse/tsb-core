@@ -5,7 +5,7 @@
     >
         <!-- Top Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mt-6">
-            <li><Logo :tooltipText="$t('nav.home')" alt="Tokyo Sushi Bar logo" icon="/images/tsb-black-font-100.png" to="/"/></li>
+            <li><Logo :tooltipText="$t('nav.home')" :alt="logoAlt" icon="/images/tsb-black-font-100.png" to="/"/></li>
             <NavItem :tooltipText="$t('nav.menu')" alt="Menu Icon" icon="/icons/menu-icon.svg" to="menu"/>
             <NavItem :tooltipText="$t('nav.contact')" alt="Contact Icon" icon="/icons/contact-icon.svg" to="contact"/>
             <!-- Cart button for tablet (hidden on lg+ where SideCart is visible) -->
@@ -57,6 +57,7 @@ import { useRoute } from 'vue-router'
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const route = useRoute()
+const logoAlt = `${useAppConfig().brand.name} logo`
 const isMenuPage = computed(() => route.path.endsWith('/menu'))
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()

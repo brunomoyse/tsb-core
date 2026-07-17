@@ -52,18 +52,8 @@
     font-family: "Montserrat", sans-serif;
 }
 
-@font-face {
-    font-family: 'Channel';
-    src: url('/fonts/channel.woff2') format('woff2'),
-         url('/fonts/channel.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-html {
-    background-color: #F6F5F2;
-}
+/* The 'Channel' @font-face and the html background-color live in the active
+   brand layer's CSS (brands/<name>/assets/css/brand.css). */
 
 * {
     max-width: 100%;

@@ -40,6 +40,7 @@ jobs:
           docker buildx build . \
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 \
+            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
@@ -71,6 +72,7 @@ jobs:
           docker buildx build . \
             --platform linux/arm64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64 \
+            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
@@ -136,6 +138,7 @@ jobs:
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:production \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }} \
+            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \

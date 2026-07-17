@@ -1,7 +1,8 @@
 {
+  "brandName": "Tokyo Sushi Bar",
   "404": {},
   "head": {
-    "title": "Tokyo Sushi Bar"
+    "title": "__BRAND__"
   },
   "common": {
     "cancel": "Annuler",
@@ -51,8 +52,8 @@
   "about": {
     "ourStoryTitle": "Notre Histoire",
     "ourStoryText1": "En 2016, un jeune couple passionné de cuisine japonaise ouvre un petit restaurant rue de la Régence à Liège, avec le soutien de leurs parents. Chaque matin, le poisson frais est soigneusement sélectionné et préparé à la main pour garantir une qualité irréprochable. Le bouche-à-oreille fait vite son effet : entre les clients sur place et les commandes en livraison, la petite salle ne suffit plus.",
-    "ourStoryText2": "Fin 2024, le restaurant déménage rue de la Cathédrale dans un espace plus grand, à quelques pas de l'adresse d'origine. Aujourd'hui, Tokyo Sushi Bar reste une affaire de famille où chaque plat est préparé avec le même soin qu'au premier jour.",
-    "ourStoryText3": "En 2026, Tokyo Sushi Bar fête ses 10 ans. Une décennie de poisson frais, de recettes peaufinées et de sourires partagés avec vous. Merci à tous ceux qui nous ont fait confiance depuis le premier jour, cette aventure, c'est aussi la vôtre.",
+    "ourStoryText2": "Fin 2024, le restaurant déménage rue de la Cathédrale dans un espace plus grand, à quelques pas de l'adresse d'origine. Aujourd'hui, __BRAND__ reste une affaire de famille où chaque plat est préparé avec le même soin qu'au premier jour.",
+    "ourStoryText3": "En 2026, __BRAND__ fête ses 10 ans. Une décennie de poisson frais, de recettes peaufinées et de sourires partagés avec vous. Merci à tous ceux qui nous ont fait confiance depuis le premier jour, cette aventure, c'est aussi la vôtre.",
     "yearsOfPassion": "ans de passion",
     "openingHoursLabel": "Horaires d'ouverture",
     "contactLink": "Nous contacter",
@@ -389,7 +390,7 @@
     "returnHome": "Retour à l'accueil",
     "viewOrders": "Voir mes commandes",
     "status": "Status",
-    "pageTitle": "Confirmation de commande - Tokyo Sushi Bar",
+    "pageTitle": "Confirmation de commande - __BRAND__",
     "liveTracking": "Suivi en direct, le statut se met à jour automatiquement",
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
     "notConfirmedYet": "Votre commande n'a pas encore été confirmée. Vous pouvez appeler le restaurant pour vérifier :",
@@ -465,46 +466,46 @@
     }
   },
   "schema": {
-    "siteName": "Tokyo Sushi Bar",
+    "siteName": "__BRAND__",
     "siteDescription": "Découvrez les meilleures saveurs du Japon à Liège",
-    "restaurantName": "Tokyo Sushi Bar",
+    "restaurantName": "__BRAND__",
     "cuisine": "Japonaise",
     "home": {
-      "title": "Tokyo Sushi Bar - Restaurant Japonais à Liège",
+      "title": "__BRAND__ - Restaurant Japonais à Liège",
       "description": "Découvrez les meilleures saveurs du Japon à Liège. Sushi frais, sashimi et cuisine japonaise authentique."
     },
     "menu": {
-      "title": "Menu - Tokyo Sushi Bar",
+      "title": "Menu - __BRAND__",
       "description": "Découvrez notre menu de sushi frais, sashimi et cuisine japonaise authentique",
-      "name": "Menu Tokyo Sushi Bar"
+      "name": "Menu __BRAND__"
     },
     "contact": {
-      "title": "Contactez-nous - Tokyo Sushi Bar",
+      "title": "Contactez-nous - __BRAND__",
       "description": "Rendez-nous visite, appelez-nous ou réservez une table dès aujourd'hui ! Rue de la Cathédrale 59, Liège, Belgique"
     },
     "terms": {
-      "title": "Conditions Générales de Vente - Tokyo Sushi Bar",
-      "description": "Conditions générales de vente de Tokyo Sushi Bar. Informations légales, livraison, paiement et politique de retour."
+      "title": "Conditions Générales de Vente - __BRAND__",
+      "description": "Conditions générales de vente de __BRAND__. Informations légales, livraison, paiement et politique de retour."
     },
     "privacy": {
-      "title": "Politique de Confidentialité - Tokyo Sushi Bar",
-      "description": "Politique de confidentialité de Tokyo Sushi Bar. Données collectées, finalités, droits RGPD et cookies."
+      "title": "Politique de Confidentialité - __BRAND__",
+      "description": "Politique de confidentialité de __BRAND__. Données collectées, finalités, droits RGPD et cookies."
     },
     "login": {
-      "title": "Connexion - Tokyo Sushi Bar",
-      "description": "Connectez-vous à votre compte Tokyo Sushi Bar"
+      "title": "Connexion - __BRAND__",
+      "description": "Connectez-vous à votre compte __BRAND__"
     },
     "checkout": {
-      "title": "Commande - Tokyo Sushi Bar"
+      "title": "Commande - __BRAND__"
     },
     "myAccount": {
-      "title": "Mon compte - Tokyo Sushi Bar"
+      "title": "Mon compte - __BRAND__"
     },
     "myOrders": {
-      "title": "Mes commandes - Tokyo Sushi Bar"
+      "title": "Mes commandes - __BRAND__"
     },
     "orderConfirmation": {
-      "title": "Confirmation de commande - Tokyo Sushi Bar",
+      "title": "Confirmation de commande - __BRAND__",
       "description": "Votre commande a été confirmée"
     },
     "breadcrumb": {
@@ -516,8 +517,8 @@
       "accountDeletion": "Suppression du compte"
     },
     "accountDeletion": {
-      "title": "Suppression du compte - Tokyo Sushi Bar",
-      "description": "Comment demander la suppression de votre compte Tokyo Sushi Bar et de vos données personnelles."
+      "title": "Suppression du compte - __BRAND__",
+      "description": "Comment demander la suppression de votre compte __BRAND__ et de vos données personnelles."
     }
   },
   "feedback": {
@@ -568,11 +569,11 @@
   "cookies": {},
   "faq": {
     "title": "Questions Fréquentes",
-    "subtitle": "Trouvez les réponses à vos questions sur Tokyo Sushi Bar",
+    "subtitle": "Trouvez les réponses à vos questions sur __BRAND__",
     "stillHaveQuestions": "Vous avez encore des questions ?",
     "contactUs": "Contactez-nous",
-    "schemaTitle": "FAQ - Tokyo Sushi Bar",
-    "schemaDescription": "Questions fréquentes sur Tokyo Sushi Bar - livraison, horaires, options halal et plus",
+    "schemaTitle": "FAQ - __BRAND__",
+    "schemaDescription": "Questions fréquentes sur __BRAND__ - livraison, horaires, options halal et plus",
     "breadcrumb": "FAQ",
     "questions": {
       "delivery": {
@@ -616,7 +617,7 @@
   "accountDeletion": {
     "title": "Suppression du compte",
     "lastUpdated": "Dernière mise à jour : 08/06/2026",
-    "intro": "Vous pouvez supprimer vous-même votre compte Tokyo Sushi Bar et les données personnelles qui y sont associées, à tout moment, directement depuis l'application ou ce site web.",
+    "intro": "Vous pouvez supprimer vous-même votre compte __BRAND__ et les données personnelles qui y sont associées, à tout moment, directement depuis l'application ou ce site web.",
     "howTitle": "Comment supprimer votre compte",
     "howBody": "Connectez-vous, ouvrez la page de votre compte et sélectionnez « Supprimer le compte ». Après confirmation, votre compte est supprimé immédiatement et vous êtes déconnecté, sans délai d'attente.",
     "fallbackTitle": "Impossible de vous connecter ?",
