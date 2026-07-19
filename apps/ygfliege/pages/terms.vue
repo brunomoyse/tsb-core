@@ -1,0 +1,336 @@
+<template>
+    <div class="mx-auto max-w-3xl px-6 py-10">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                Conditions Générales de Vente
+            </h1>
+            <p class="mt-3 text-sm text-gray-500">Dernière mise à jour : 26/03/2026</p>
+        </header>
+
+        <!-- Company info -->
+        <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
+            <p class="font-semibold text-gray-900">{{ brand.legalName }}</p>
+            <p>{{ fullAddress }}</p>
+            <p>N° d&rsquo;entreprise : {{ brand.vat }} &middot; Tél : {{ brand.phone }}</p>
+            <p>Administrateurs : {{ brand.administrators.join(', ') }}</p>
+        </section>
+
+        <!-- Body -->
+        <div class="space-y-10 text-[15px] leading-relaxed text-gray-700">
+
+            <!-- 1 -->
+            <section>
+                <h2 class="terms-heading">1. Objet</h2>
+                <p>
+                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre la SRL {{ brand.name }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
+                    pour la vente de plats japonais en livraison et à emporter. Elles s&rsquo;appliquent à toute
+                    commande passée en personne, par téléphone ou via le site internet (le
+                    &laquo;&nbsp;Site&nbsp;&raquo;).
+                </p>
+                <p class="mt-2">
+                    En passant commande, le Client reconnaît avoir pris connaissance des présentes CGV et les accepte
+                    sans réserve.
+                </p>
+            </section>
+
+            <!-- 2 -->
+            <section>
+                <h2 class="terms-heading">2. Commandes</h2>
+                <p>
+                    Les commandes sont acceptées pendant les heures d&rsquo;ouverture indiquées sur le Site. Elles
+                    sont traitées dans l&rsquo;ordre de priorité suivant&nbsp;:
+                </p>
+                <ol class="terms-list">
+                    <li>En personne (prioritaire)</li>
+                    <li>Par téléphone</li>
+                    <li>Via le Site (par ordre d&rsquo;arrivée)</li>
+                </ol>
+                <p class="mt-2">
+                    Le Restaurant se réserve le droit de refuser ou d&rsquo;annuler une commande en cas de rupture de
+                    stock, de force majeure ou pour tout motif légitime.
+                </p>
+            </section>
+
+            <!-- 3 -->
+            <section>
+                <h2 class="terms-heading">3. Livraison</h2>
+
+                <h3 class="terms-subheading">Zone et frais</h3>
+                <p>
+                    La livraison est assurée dans un rayon limité autour du Restaurant. Les zones desservies et les
+                    frais de livraison applicables sont indiqués sur le Site lors de la commande.
+                </p>
+
+                <h3 class="terms-subheading">Délais</h3>
+                <p>
+                    Le délai indicatif est d&rsquo;environ 45&nbsp;minutes après acceptation de la commande. Ce délai
+                    peut varier selon le volume de commandes, les conditions de circulation ou d&rsquo;autres aléas.
+                </p>
+
+                <h3 class="terms-subheading">Absence à la livraison</h3>
+                <p>
+                    En cas d&rsquo;absence, la commande est retournée au Restaurant. Le Client peut la récupérer le
+                    jour même. Passé ce délai, la commande est considérée comme perdue et aucun remboursement ne sera
+                    accordé.
+                </p>
+            </section>
+
+            <!-- 4 -->
+            <section>
+                <h2 class="terms-heading">4. À emporter</h2>
+                <p>
+                    Le Client se présente au Restaurant avec son numéro de commande. Une fois la commande acceptée,
+                    elle ne peut plus être annulée ni modifiée. Toute commande non récupérée le jour même est
+                    considérée comme perdue sans remboursement.
+                </p>
+            </section>
+
+            <!-- 5 -->
+            <section>
+                <h2 class="terms-heading">5. Prix et paiement</h2>
+                <p>
+                    Les prix sont exprimés en euros, TVA comprise. Le Restaurant peut les modifier à tout moment&nbsp;;
+                    les commandes sont facturées au tarif en vigueur au moment de leur validation.
+                </p>
+
+            </section>
+
+            <!-- 6 -->
+            <section>
+                <h2 class="terms-heading">6. Rétractation et annulation</h2>
+                <p>
+                    Conformément à l&rsquo;article VI.53, 4° du Code de droit économique belge, aucun droit de
+                    rétractation ne s&rsquo;applique aux produits alimentaires périssables. Une commande acceptée ne
+                    peut être annulée ni modifiée.
+                </p>
+                <p class="mt-2">
+                    En cas de force majeure, le Client peut contacter le Restaurant qui examinera la demande au cas par
+                    cas, sans garantie de remboursement.
+                </p>
+            </section>
+
+            <!-- 7 -->
+            <section>
+                <h2 class="terms-heading">7. Responsabilité</h2>
+                <p>
+                    Le Restaurant garantit la fraîcheur de ses produits. Le Client doit vérifier l&rsquo;état des plats
+                    à la livraison ou au retrait et signaler toute anomalie immédiatement.
+                </p>
+                <p class="mt-2">Le Restaurant ne saurait être tenu responsable&nbsp;:</p>
+                <ul class="terms-list">
+                    <li>d&rsquo;une mauvaise utilisation des produits par le Client,</li>
+                    <li>de retards ou impossibilités de livraison liés à un cas de force majeure,</li>
+                    <li>d&rsquo;informations erronées fournies par le Client (adresse, téléphone, etc.).</li>
+                </ul>
+                <p class="mt-2">
+                    La responsabilité du Restaurant est en tout état de cause limitée au montant de la commande
+                    concernée.
+                </p>
+            </section>
+
+            <!-- 8 -->
+            <section>
+                <h2 class="terms-heading">8. Données personnelles (RGPD)</h2>
+
+                <h3 class="terms-subheading">Données collectées et finalités</h3>
+                <p>
+                    Le Restaurant collecte le nom, l&rsquo;adresse e-mail, l&rsquo;adresse de livraison et, le cas
+                    échéant, les coordonnées de facturation du Client. Ces données sont traitées pour
+                    l&rsquo;exécution des commandes (confirmation, facturation, notification de statut), la
+                    récupération de mot de passe et des analyses statistiques internes.
+                </p>
+
+                <h3 class="terms-subheading">Base légale et conservation</h3>
+                <p>
+                    Le traitement repose sur l&rsquo;exécution du contrat et l&rsquo;intérêt légitime du Restaurant.
+                    Les données de compte sont conservées tant que le compte est actif ou jusqu&rsquo;à demande de
+                    suppression. Les données de facturation sont conservées 7&nbsp;ans conformément aux obligations
+                    comptables belges.
+                </p>
+
+                <h3 class="terms-subheading">Destinataires des données</h3>
+                <p>Les données peuvent être transmises aux prestataires suivants, tous hébergés dans l&rsquo;Union européenne&nbsp;:</p>
+                <ul class="terms-list">
+                    <li><strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne,</li>
+                    <li><strong>Zitadel</strong> (auto-hébergé, Gravelines, France) &mdash; fournisseur d&rsquo;identité et d&rsquo;authentification (protocole OIDC),</li>
+                    <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels (confirmation de commande, vérification de compte),</li>
+                    <li><strong>Umami</strong> (auto-hébergé, France) &mdash; analyse de fréquentation anonyme (sans cookies),</li>
+                    <li><strong>OVH</strong> (France) &mdash; hébergement du Site,</li>
+                    <li><strong>Google</strong> (UE) &mdash; authentification OAuth (uniquement si le Client choisit cette option).</li>
+                </ul>
+                <p class="mt-2">
+                    Aucune donnée n&rsquo;est vendue ni partagée à des fins commerciales avec des tiers.
+                </p>
+
+                <h3 class="terms-subheading">Droits du Client</h3>
+                <p>
+                    Conformément au RGPD (Règlement UE 2016/679), le Client dispose d&rsquo;un droit d&rsquo;accès, de
+                    rectification, d&rsquo;effacement, de limitation, de portabilité et d&rsquo;opposition. Lorsque le
+                    traitement repose sur le consentement (e-mails marketing), le Client peut retirer son
+                    consentement à tout moment sans affecter la licéité du traitement effectué avant ce retrait.
+                </p>
+                <p class="mt-2">
+                    Toute demande peut être adressée par e-mail à
+                    <a :href="`mailto:${brand.email}`" class="text-ygf-orange-600 underline">{{ brand.email }}</a>
+                    ou par courrier à&nbsp;: {{ brand.name }}, {{ streetCityLine }}. Le
+                    Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
+                    données (APD).
+                </p>
+
+                <h3 class="terms-subheading">Décision automatisée</h3>
+                <p>
+                    Le Restaurant n&rsquo;utilise aucun processus de décision automatisée ni de profilage au sens de
+                    l&rsquo;article 22 du RGPD.
+                </p>
+            </section>
+
+            <!-- 9 -->
+            <section id="cookies" class="scroll-mt-24">
+                <h2 class="terms-heading">9. Cookies</h2>
+
+                <h3 class="terms-subheading">Authentification</h3>
+                <p>
+                    Le Site utilise le protocole OpenID Connect (OIDC) pour l&rsquo;authentification. Les jetons
+                    d&rsquo;accès sont stockés dans le <code>sessionStorage</code> du navigateur (mémoire de session)
+                    et ne sont pas transmis sous forme de cookies. Ils sont automatiquement supprimés à la fermeture
+                    du navigateur.
+                </p>
+
+                <h3 class="terms-subheading">Cookies essentiels</h3>
+                <p>
+                    Le Site utilise un seul cookie strictement nécessaire au fonctionnement du service&nbsp;:
+                </p>
+                <ul class="terms-list">
+                    <li>
+                        <strong>Préférence linguistique</strong> (<code>i18n_redirected</code>) &mdash; cookie
+                        mémorisant la langue choisie par le Client.
+                    </li>
+                </ul>
+
+                <h3 class="terms-subheading">Analyse de fréquentation</h3>
+                <p>
+                    Le Site utilise Umami, un outil d&rsquo;analyse auto-hébergé respectueux de la vie privée.
+                    Umami ne dépose aucun cookie et ne collecte aucune donnée personnelle identifiable.
+                    Les données collectées ne sont pas partagées avec des tiers.
+                </p>
+            </section>
+
+            <!-- 10 -->
+            <section>
+                <h2 class="terms-heading">10. Hébergement</h2>
+                <p>
+                    Le Site est hébergé par OVH (OVHcloud), centre de données de Gravelines, France.
+                </p>
+            </section>
+
+            <!-- 11 -->
+            <section>
+                <h2 class="terms-heading">11. Force majeure</h2>
+                <p>
+                    Aucune partie ne peut être tenue responsable d&rsquo;un manquement à ses obligations si celui-ci
+                    résulte d&rsquo;un cas de force majeure&nbsp;: grèves, intempéries, pannes de transport ou
+                    d&rsquo;énergie, épidémies, incendies, blocages des télécommunications, etc.
+                </p>
+            </section>
+
+            <!-- 12 -->
+            <section>
+                <h2 class="terms-heading">12. Modification des CGV</h2>
+                <p>
+                    Le Restaurant peut modifier les présentes CGV à tout moment. La version applicable est celle en
+                    vigueur au moment de la validation de la commande.
+                </p>
+            </section>
+
+            <!-- 13 -->
+            <section>
+                <h2 class="terms-heading">13. Litiges et droit applicable</h2>
+                <p>
+                    Les présentes CGV sont régies par le droit belge. En cas de litige, les tribunaux de Liège sont
+                    compétents, sauf disposition légale impérative contraire.
+                </p>
+            </section>
+
+            <!-- 14 -->
+            <section>
+                <h2 class="terms-heading">14. Acceptation</h2>
+                <p>
+                    Toute commande passée auprès du Restaurant, quel que soit le canal, vaut acceptation pleine et
+                    entière des présentes CGV.
+                </p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
+            <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
+        </footer>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { nextTick, onMounted } from 'vue'
+
+const route = useRoute()
+const config = useRuntimeConfig()
+const { t } = useI18n()
+const { brand } = useAppConfig()
+
+// "Belgique" is intentionally hardcoded — this French legal page targets a Belgian entity.
+const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
+const fullAddress = `${streetCityLine}, Belgique`
+
+definePageMeta({
+    public: true,
+    sitemap: { priority: 0.5, changefreq: 'yearly' },
+})
+
+onMounted(() => {
+    if (route.hash) {
+        nextTick(() => {
+            const el = document.querySelector(route.hash)
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        })
+    }
+})
+
+useJsonLd([
+    {
+        '@type': 'WebPage',
+        name: t('schema.terms.title'),
+        description: t('schema.terms.description'),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('schema.breadcrumb.terms'), item: `${config.public.baseUrl}/terms` },
+    ]),
+], 'page-jsonld')
+
+useSeoMeta({
+    title: t('schema.terms.title'),
+    ogType: 'article',
+    ogTitle: t('schema.terms.title'),
+    description: t('schema.terms.description'),
+    ogDescription: t('schema.terms.description'),
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
+    twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
+})
+</script>
+
+<style scoped>
+.terms-heading {
+    @apply mb-3 text-lg font-semibold text-gray-900;
+}
+
+.terms-subheading {
+    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500;
+}
+
+.terms-list {
+    @apply mt-2 list-disc space-y-1 pl-5;
+}
+</style>

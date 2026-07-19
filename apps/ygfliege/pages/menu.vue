@@ -1,0 +1,832 @@
+<template>
+    <div class="flex">
+        <!-- Main Content -->
+        <div
+            ref="contentContainer"
+            class="w-full sm:w-[calc(100vw-142px)]"
+            :class="hasCartItems
+        ? 'lg:w-[calc(67vw-71px)]'
+        : 'lg:w-[calc(100vw-142px)]'"
+        >
+            <!-- Restaurant Closed Banner -->
+            <div v-if="!isCheckoutAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <div class="min-w-0">
+                    <p class="text-amber-900 text-sm font-semibold">{{ $t('menu.restaurantClosed') }}</p>
+                    <p class="text-amber-800 text-sm mt-0.5">{{ $t('menu.restaurantClosedDetails') }}</p>
+                </div>
+            </div>
+
+            <!-- Sticky Categories Header -->
+            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-ygf-bg top-[80px] sm:top-0">
+                <!-- Search + Filter Section -->
+                <section class="mb-4 px-4 space-y-1.5">
+                    <!-- Search Bar (full-width, labeled) -->
+                    <div class="relative flex items-center rounded-2xl bg-ygf-cream h-[44px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+                            <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
+                        </svg>
+                        <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
+                        <input
+                            id="menuSearch"
+                            ref="searchInputRef"
+                            v-model="searchValue"
+                            type="search"
+                            :placeholder="$t('nav.search')"
+                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
+                        />
+                        <button
+                            type="button"
+                            v-show="searchValue.length > 0"
+                            @click.stop="clearSearch"
+                            :aria-label="$t('nav.search')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Filter Row (compact chips) -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <!-- Halal toggle -->
+                        <button
+                            type="button"
+                            @click="toggleFilter('halal')"
+                            :aria-pressed="activeFilters.has('halal')"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            :class="activeFilters.has('halal')
+                                ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
+                        >
+                            <img
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('halal') ? 'scale-110' : ''"
+                                :src="activeFilters.has('halal')
+                                    ? 'https://api.iconify.design/hugeicons/halal.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/halal.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
+                            {{ $t('menu.halal') }}
+                        </button>
+
+                        <!-- Vegan toggle -->
+                        <button
+                            type="button"
+                            @click="toggleFilter('vegetarian')"
+                            :aria-pressed="activeFilters.has('vegetarian')"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            :class="activeFilters.has('vegetarian')
+                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
+                        >
+                            <img
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('vegetarian') ? 'scale-110' : ''"
+                                :src="activeFilters.has('vegetarian')
+                                    ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
+                            {{ $t('menu.vegetarian') }}
+                        </button>
+
+                        <!-- Spicy toggle -->
+                        <button
+                            type="button"
+                            @click="toggleFilter('spicy')"
+                            :aria-pressed="activeFilters.has('spicy')"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            :class="activeFilters.has('spicy')
+                                ? 'bg-ygf-orange-500 text-white shadow-sm shadow-red-200'
+                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-ygf-orange-50 hover:text-ygf-orange-700 hover:border-ygf-orange-200'"
+                        >
+                            <img
+                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                                :class="activeFilters.has('spicy') ? 'scale-110' : ''"
+                                :src="activeFilters.has('spicy')
+                                    ? 'https://api.iconify.design/hugeicons/fire-02.svg?color=%23ffffff'
+                                    : 'https://api.iconify.design/hugeicons/fire-02.svg?color=%234b5563'"
+                                alt=""
+                                aria-hidden="true"
+                            />
+                            {{ $t('menu.spicy') }}
+                        </button>
+
+                        <!-- Delivery zone chip on desktop -->
+                        <div class="hidden sm:block sm:ml-auto">
+                            <DeliveryZoneChip />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Scroll -->
+                <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
+                    <!-- Left gradient fade -->
+                    <div
+                        class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-ygf-bg to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
+                        :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
+                    >
+                        <svg class="w-4 h-4 text-ygf-orange-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <!-- Scrollable Category Tabs -->
+                    <div
+                        ref="scrollContainer"
+                        @mousedown="startDrag"
+                        @mousemove="onDrag"
+                        @mouseup="stopDrag"
+                        @mouseleave="stopDrag"
+                        :class="[
+                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth snap-x snap-mandatory',
+                          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+                        ]"
+                    >
+                        <CategoryCard
+                            v-for="cat in displayedCategories"
+                            :key="cat.id"
+                            :id="`category-card-${cat.id}`"
+                            :active="activeCategory === cat.id"
+                            :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
+                            class="snap-center"
+                            @select="scrollToCategory"
+                        />
+                    </div>
+
+                    <!-- Right gradient fade -->
+                    <div
+                        class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-ygf-bg to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end pr-1"
+                        :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
+                    >
+                        <svg class="w-4 h-4 text-ygf-orange-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
+            <div v-if="showAllergenNotice" class="mx-4 mb-2 h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
+                <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
+                <span class="flex-1 truncate">
+                    {{ $t('menu.allergenNoticeShort') }}
+                    <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
+                </span>
+                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Skeleton Loading State -->
+            <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+                <div v-for="i in 3" :key="i" class="space-y-4">
+                    <div class="h-6 w-32 bg-gray-200 rounded animate-pulse ml-4"></div>
+                    <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
+                        <div v-for="j in 4" :key="j" class="h-[260px] bg-gray-200 rounded-xl animate-pulse"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Grid -->
+            <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+                <div
+                    v-for="cat in displayedCategories"
+                    :key="cat.id"
+                    :id="`category-${cat.id}`"
+                    class="space-y-4"
+                >
+                    <!-- Category Title with Japanese bracket decoration -->
+                    <div class="flex items-center gap-3 ml-4">
+                        <span class="text-ygf-orange-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
+                        <h2 translate="no" class="font-display font-bold inline-block text-xl font-semibold text-gray-800 tracking-wide">
+                            {{ cat.name }}
+                        </h2>
+                        <span class="text-ygf-orange-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
+                    </div>
+
+                    <!-- Product Cards -->
+                    <div
+                        v-if="cat.products.length"
+                        class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+                    >
+                        <ProductCard
+                            :index="idx"
+                            :product="prod"
+                            :ordering-disabled="!isCartAddAvailable"
+                            class="min-width-[200px] animate-fade-in-up"
+                            :style="{ animationDelay: `${idx * 50}ms` }"
+                            v-for="(prod, idx) in cat.products"
+                            @openProductModal="openModal(prod.id)"
+                            :key="prod.id"
+                        />
+                    </div>
+
+                    <!-- Empty State -->
+                    <div v-else class="text-center text-gray-500 italic">
+                        {{ $t('menu.noProduct') }}
+                    </div>
+                </div>
+
+                <!-- Search No Results -->
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                    <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
+                </div>
+
+                <!-- Filter No Results -->
+                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                    <p class="text-lg">{{ $t('menu.noProduct') }}</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Desktop Cart Sidebar -->
+        <aside
+            v-if="hasCartItems"
+            class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+        >
+            <SideCart :is-ordering-available="isCheckoutAvailable" />
+        </aside>
+
+
+        <ClientOnly>
+            <Transition name="modal-backdrop">
+                <div v-if="route.query.product"
+                     class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+                     @click.self="closeModal">
+                    <Transition name="modal-panel" appear>
+                        <ProductModal
+                            :key="route.query.product"
+                            :product="route.query.product as string"
+                            :ordering-disabled="!isCartAddAvailable"
+                            @close="closeModal"
+                        />
+                    </Transition>
+                </div>
+            </Transition>
+        </ClientOnly>
+    </div>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+    sitemap: { priority: 0.9, changefreq: 'weekly' },
+})
+
+import type { Product, ProductCategory } from '#engine/types'
+import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
+import CategoryCard from '~/components/menu/CategoryCard.vue'
+import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
+import ProductCard from '~/components/menu/ProductCard.vue'
+import { useHaptics } from '#engine/composables/useHaptics'
+import ProductModal from '~/components/menu/ProductModal.vue'
+import SideCart from '~/components/cart/SideCart.vue'
+import { cartItemAddedKey } from '#engine/composables/useEventBuses'
+import gql from 'graphql-tag'
+import { print } from 'graphql'
+import { useCartStore } from '#engine/stores/cart'
+import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
+import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useTracking } from '#engine/composables/useTracking'
+import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+
+const { selection: hapticSelection } = useHaptics()
+const route = useRoute()
+const router = useRouter()
+const { trackEvent } = useTracking()
+const showAllergenNotice = ref(true)
+onMounted(() => {
+    if (localStorage.getItem('allergenNoticeDismissed') === 'true') {
+        showAllergenNotice.value = false
+    }
+})
+const dismissAllergenNotice = () => {
+    showAllergenNotice.value = false
+    localStorage.setItem('allergenNoticeDismissed', 'true')
+}
+
+// Restaurant config
+const { config: restaurantConfig } = await useRestaurantConfig()
+const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
+const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
+const isCheckoutAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
+const isCartAddAvailable = computed(() => isOrderingEnabled.value)
+
+const openModal = (id: string) => {
+    // Add productId to URL query
+    router.push({ query: { product: id } })
+}
+
+const closeModal = () => {
+    // Remove query parameter
+    router.push({ query: {} })
+}
+
+// Lock body scroll when modal is open
+watch(() => route.query.product, (val) => {
+    document.body.style.overflow = val ? 'hidden' : ''
+})
+onBeforeUnmount(() => {
+    document.body.style.overflow = ''
+})
+
+/**
+ * GraphQL Query
+ */
+const PRODUCT_CATEGORIES = gql`
+  query {
+    productCategories {
+      id
+      name
+      order
+      slug
+      products {
+        id
+        name
+        price
+        code
+        slug
+        pieceCount
+        isVisible
+        isAvailable
+        isHalal
+        isLunchOnly
+        isSpicy
+        isVegetarian
+        isDiscountable
+        category { id name slug }
+        choices { id }
+        choiceGroups {
+          id
+          name
+          minSelections
+          maxSelections
+          sortOrder
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Stores & Data Fetch
+ */
+const cartStore = useCartStore()
+// SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
+const isMounted = useMounted()
+const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
+const { data: dataCategories } = await useGqlQuery<{
+    productCategories: ProductCategory[]
+}>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
+
+/**
+ * Live product updates via WebSocket subscription
+ */
+const SUB_PRODUCT_UPDATED = gql`
+    subscription {
+        productUpdated {
+            id
+            isAvailable
+            isVisible
+            price
+            code
+            pieceCount
+            isHalal
+            isLunchOnly
+            isSpicy
+            isVegetarian
+            isDiscountable
+        }
+    }
+`
+const liveProductData = ref<Record<string, Partial<Product>>>({})
+
+const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
+    print(SUB_PRODUCT_UPDATED)
+)
+
+watch(liveProduct, (val) => {
+    if (!val?.productUpdated?.id) return
+    liveProductData.value = {
+        ...liveProductData.value,
+        [val.productUpdated.id]: {
+            ...liveProductData.value[val.productUpdated.id],
+            ...val.productUpdated,
+        },
+    }
+})
+
+/**
+ * Refs & Reactive State
+ */
+const searchValue = ref('')
+const debouncedSearchValue = useDebounce(searchValue, 300)
+const activeCategory = ref<string>('')
+const scrollContainer = ref<HTMLElement | null>(null)
+const isDragging = ref(false)
+const isScrollingToCategory = ref(false)
+const dragStartX = ref(0)
+const scrollStartX = ref(0)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+const stickyHeader = ref<HTMLElement | null>(null)
+
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const clearSearch = () => {
+    searchValue.value = ''
+    searchInputRef.value?.focus()
+}
+
+// Filter state
+const activeFilters = ref<Set<string>>(new Set())
+const toggleFilter = (filter: string) => {
+    hapticSelection()
+    const next = new Set(activeFilters.value)
+    const willEnable = !next.has(filter)
+    if (willEnable) {
+        next.add(filter)
+    } else {
+        next.delete(filter)
+    }
+    activeFilters.value = next
+    trackEvent('dietary_filter_toggled', {
+        filter,
+        enabled: willEnable,
+        active_filters_count: next.size,
+    })
+}
+
+/**
+ * Computed: Categories & Products
+ */
+// Base categories with live updates merged and only visible products, sorted
+const baseCategories = computed(() =>
+    (dataCategories.value?.productCategories ?? [])
+        .map(cat => ({
+            ...cat,
+            products: cat.products
+                .map(p => {
+                    const live = liveProductData.value[p.id]
+                    return live ? { ...p, ...live } as Product : p
+                })
+                .filter(p => p.isVisible)
+        }))
+        .filter(cat => cat.products.length)
+        .toSorted((a, b) => a.order - b.order)
+)
+
+// All products flattened for search
+const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =>
+        cat.products.map(p => ({ ...p, category: cat }))
+    )
+)
+
+// Filtered list based on search query (all words must match)
+const filteredProducts = computed(() => {
+    const q = debouncedSearchValue.value.trim().toLowerCase()
+    if (!q) return allProducts.value
+    const words = q.split(/\s+/u)
+    return allProducts.value.filter(p => {
+        const haystack = [p.name, p.code, p.category.name]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+        return words.every(w => haystack.includes(w))
+    })
+})
+
+// Apply dietary filters (AND logic: product must match ALL active filters)
+const dietaryFiltered = computed(() => {
+    const filters = activeFilters.value
+    if (filters.size === 0) return filteredProducts.value
+    return filteredProducts.value.filter(p => {
+        if (filters.has('halal') && !p.isHalal) return false
+        if (filters.has('vegetarian') && !p.isVegetarian) return false
+        if (filters.has('spicy') && !p.isSpicy) return false
+        return true
+    })
+})
+
+// Categories displayed, grouping filtered products
+const displayedCategories = computed<ProductCategory[]>(() => {
+    const q = debouncedSearchValue.value.trim().toLowerCase()
+    if (!q && activeFilters.value.size === 0) return baseCategories.value
+    const grouped = Map.groupBy(dietaryFiltered.value, prod => prod.category.id)
+    return Array.from(grouped.entries()).map(([, products]) => ({
+        ...products[0]!.category,
+        products,
+    })).toSorted((a, b) => a.order - b.order)
+})
+
+/**
+ * Utility: Update Arrow Visibility
+ */
+const updateScrollButtons = () => {
+    const el = scrollContainer.value!
+    canScrollLeft.value = el.scrollLeft > 0
+    canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
+}
+
+/**
+ * Drag-to-scroll Handlers
+ */
+const startDrag = (e: MouseEvent) => {
+    isDragging.value = true
+    dragStartX.value = e.pageX
+    scrollStartX.value = scrollContainer.value!.scrollLeft
+}
+const onDrag = (e: MouseEvent) => {
+    if (!isDragging.value) return
+    const dx = e.pageX - dragStartX.value
+    scrollContainer.value!.scrollLeft = scrollStartX.value - dx
+    updateScrollButtons()
+}
+const stopDrag = () => {
+    isDragging.value = false
+    updateScrollButtons()
+}
+
+/**
+ * Scroll-to-Category Method
+ */
+const scrollToCategory = (categoryId: string) => {
+    const element = document.getElementById(`category-${categoryId}`)
+    if (!element || !stickyHeader.value) return
+
+    // Suppress observer during programmatic scroll and set active immediately
+    isScrollingToCategory.value = true
+    activeCategory.value = categoryId
+
+    const headerHeight = stickyHeader.value.offsetHeight
+    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
+    const gap = 16
+    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
+    window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
+
+    // Re-enable observer after smooth scroll completes
+    setTimeout(() => { isScrollingToCategory.value = false }, 600)
+}
+
+/**
+ * Watchers
+ */
+// Track search queries
+watch(debouncedSearchValue, (newVal, oldVal) => {
+    const q = newVal.trim()
+    if (q.length > 0) {
+        trackEvent('search_query_entered', { query: q, results_count: filteredProducts.value.length })
+    } else if (oldVal && oldVal.trim().length > 0) {
+        trackEvent('search_cleared')
+    }
+})
+
+// Initialize active category when list changes
+watch(displayedCategories, cats => {
+    if (!activeCategory.value && cats.length) activeCategory.value = cats[0]!.id
+}, { immediate: true })
+
+// Center active card on change
+watch(activeCategory, newVal => {
+    nextTick(() => {
+        if (!scrollContainer.value || !newVal) return
+        const card = document.getElementById(`category-card-${newVal}`)
+        if (!card) return
+
+        const container = scrollContainer.value
+        const scrollPosition = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.offsetWidth / 2)
+        container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
+    })
+})
+
+/**
+ * Schema.org Structured Data
+ */
+const config = useRuntimeConfig()
+const { t } = useI18n()
+
+// Build the Menu graph: Menu -> hasMenuSection[] -> hasMenuItem[]
+const menuSchema = computed(() => {
+    const fallbackImage = {
+        '@type': 'ImageObject',
+        url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+        contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+        thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
+    }
+
+    const sections = new Map<string, { id: string, name: string, items: Record<string, unknown>[] }>()
+    for (const product of allProducts.value) {
+        if (!product.category) continue
+        if (!sections.has(product.category.id)) {
+            sections.set(product.category.id, {
+                id: product.category.id,
+                name: product.category.name,
+                items: [],
+            })
+        }
+        const diets: string[] = []
+        if (product.isHalal) diets.push('https://schema.org/HalalDiet')
+        if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
+
+        sections.get(product.category.id)!.items.push({
+            '@type': 'MenuItem',
+            '@id': `${config.public.baseUrl}/menu#${product.id}`,
+            name: product.name,
+            image: product.slug
+                ? {
+                    '@type': 'ImageObject',
+                    url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
+                    contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
+                    thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
+                }
+                : fallbackImage,
+            offers: {
+                '@type': 'Offer',
+                price: product.price,
+                priceCurrency: 'EUR',
+                availability: product.isAvailable
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+            },
+            ...(diets.length ? { suitableForDiet: diets } : {}),
+        })
+    }
+
+    return {
+        '@type': 'Menu',
+        '@id': `${config.public.baseUrl}/menu#menu`,
+        name: t('schema.menu.name'),
+        description: t('schema.menu.description'),
+        inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
+        hasMenuSection: [...sections.values()].map(section => ({
+            '@type': 'MenuSection',
+            '@id': `${config.public.baseUrl}/menu#section-${section.id}`,
+            name: section.name,
+            hasMenuItem: section.items,
+        })),
+    }
+})
+
+// Breadcrumb schema
+const breadcrumbSchema = computed(() => ({
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: t('schema.breadcrumb.home'),
+            item: config.public.baseUrl
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: t('schema.breadcrumb.menu'),
+            item: `${config.public.baseUrl}/menu`
+        }
+    ]
+}))
+
+watch(allProducts, () => {
+    useJsonLd([
+        {
+            '@type': 'WebPage',
+            name: t('schema.menu.title'),
+            description: t('schema.menu.description'),
+        },
+        breadcrumbSchema.value,
+        menuSchema.value,
+    ], 'page-jsonld')
+}, { immediate: true })
+
+useSeoMeta({
+    title: t('schema.menu.title'),
+    ogType: 'website',
+    ogTitle: t('schema.menu.title'),
+    description: t('schema.menu.description'),
+    ogDescription: t('schema.menu.description'),
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
+    twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
+})
+
+/**
+ * Preserve scroll anchor across the cart sidebar appearing/disappearing.
+ * The grid reflows between ~100vw and ~67vw, so cards jump vertically.
+ * We capture an anchor card's top before the reflow and scroll by the delta.
+ */
+const preserveScrollFor = (cardEl: HTMLElement | null) => {
+    if (!cardEl || window.innerWidth < 1024) return
+    const { productId } = cardEl.dataset
+    if (!productId) return
+    const oldTop = cardEl.getBoundingClientRect().top
+    nextTick(() => {
+        requestAnimationFrame(() => {
+            const newCard = document.querySelector<HTMLElement>(`[data-product-id="${productId}"]`)
+            if (!newCard) return
+            const delta = newCard.getBoundingClientRect().top - oldTop
+            if (Math.abs(delta) > 1) window.scrollBy(0, delta)
+        })
+    })
+}
+
+const findTopVisibleCard = (): HTMLElement | null => {
+    const cards = document.querySelectorAll<HTMLElement>('[data-product-id]')
+    const stickyHeight = stickyHeader.value?.offsetHeight ?? 0
+    for (const card of cards) {
+        const rect = card.getBoundingClientRect()
+        if (rect.bottom > stickyHeight && rect.top < window.innerHeight) return card
+    }
+    return null
+}
+
+const handleCartItemAdded = ({ productId }: { productId: string }) => {
+    if (cartStore.products.length !== 1) return
+    preserveScrollFor(document.querySelector<HTMLElement>(`[data-product-id="${productId}"]`))
+}
+
+watch(() => cartStore.products.length, (newLen, oldLen) => {
+    if (oldLen >= 1 && newLen === 0) preserveScrollFor(findTopVisibleCard())
+})
+
+// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
+useEventBus(cartItemAddedKey).on(handleCartItemAdded)
+
+/**
+ * IntersectionObserver: Scroll Spy
+ */
+let observer: IntersectionObserver | null = null
+
+onMounted(() => {
+    observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !isScrollingToCategory.value) {
+                activeCategory.value = entry.target.id.replace('category-', '')
+            }
+        })
+    }, {
+        threshold: 0.1,
+        rootMargin: '-80px 0px -40% 0px'
+    })
+
+    // Observe each category section
+    const observeSections = () => {
+        observer!.disconnect()
+        nextTick(() => {
+            displayedCategories.value.forEach(cat => {
+                const el = document.getElementById(`category-${cat.id}`)
+                if (el) observer!.observe(el)
+            })
+        })
+    }
+
+    observeSections()
+    watch(displayedCategories, observeSections, { deep: true })
+    updateScrollButtons()
+    scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
+})
+
+onUnmounted(() => {
+    observer?.disconnect()
+    scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
+})
+</script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-backdrop-enter-active,
+.modal-backdrop-leave-active {
+    transition: opacity 0.2s ease-out;
+}
+.modal-backdrop-enter-from,
+.modal-backdrop-leave-to {
+    opacity: 0;
+}
+.modal-panel-enter-active {
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+.modal-panel-leave-active {
+    transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+}
+.modal-panel-enter-from,
+.modal-panel-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+}
+</style>

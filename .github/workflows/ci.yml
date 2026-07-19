@@ -25,8 +25,11 @@ jobs:
         run: npm run lint
 
   build:
-    name: Build
+    name: Build (${{ matrix.app }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tokyosushi, ygfliege]
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1
@@ -46,7 +49,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build -w ${{ matrix.app }}
 
   test:
     name: E2E Tests

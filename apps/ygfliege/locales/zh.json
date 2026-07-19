@@ -1,0 +1,431 @@
+{
+  "brandName": "杨国福麻辣烫 · 列日",
+  "home": {
+    "heroTagline": "麻辣烫 · 草本骨汤 · 列日"
+  },
+  "schema": {
+    "siteDescription": "在列日自选搭配你的麻辣烫 — 草本骨汤现点现煮",
+    "cuisine": "中餐",
+    "home": {
+      "title": "__BRAND__ - 列日麻辣烫",
+      "description": "自选食材，现点现煮的草本骨汤麻辣烫。幸福就在此刻。杨国福麻辣烫列日店。"
+    },
+    "menu": {
+      "description": "探索我们的麻辣烫、招牌汤底、面食和小食菜单"
+    },
+    "contact": {
+      "description": "欢迎光临或来电联系！Rue de la Cathédrale 51, 列日, 比利时"
+    }
+  },
+  "mkt": {
+    "nav": {
+      "home": "首页",
+      "concept": "概念",
+      "menu": "菜单",
+      "about": "关于我们",
+      "contact": "联系"
+    },
+    "lang": {
+      "fr": "Français",
+      "zh": "中文",
+      "en": "English",
+      "nl": "Nederlands"
+    },
+    "hero": {
+      "slogan": "幸福就在此刻",
+      "subtitle": "麻辣烫：选你喜欢的食材，配上我们的草本骨汤，现煮现吃。",
+      "cta": "查看菜单",
+      "bowl_alt": "草本骨汤麻辣烫，新鲜食材"
+    },
+    "broths": {
+      "label": "招牌之选",
+      "title": "我们的招牌汤底",
+      "subtitle": "五种风味，同一个承诺：每天新鲜熬制的汤底。",
+      "vegan_badge": "纯素",
+      "allergens_label": "过敏原",
+      "beef_bone": {
+        "name": "经典草本骨汤",
+        "chinese": "经典草本骨汤",
+        "desc": "自2003年的招牌：牛骨慢炖8小时，融入20多种东方草本。辣度自选，从微辣到特辣。",
+        "spice": "辣度自选：微辣 / 中辣 / 特辣",
+        "allergens": "奶、麸质、芝麻、大豆"
+      },
+      "tomato": {
+        "name": "酸甜番茄汤",
+        "chinese": "酸甜番茄汤",
+        "desc": "新鲜番茄慢火熬制，酸甜可口，温和不辣，100%纯植物。",
+        "spice": "酸甜（不辣）",
+        "allergens": "大豆"
+      },
+      "mala_dry": {
+        "name": "石磨醇香麻辣拌",
+        "chinese": "石磨醇香麻辣拌",
+        "desc": "无汤的例外：食材裹上香浓的芝麻花生酱，醇香微辣，回味无穷。",
+        "spice": "微辣",
+        "allergens": "麸质、芝麻、花生、大豆"
+      },
+      "tom_yum": {
+        "name": "酸辣冬阴功",
+        "chinese": "酸辣冬阴功",
+        "desc": "泰式风味：酸辣鲜香，柠檬草飘香，带你直达东南亚。",
+        "spice": "微辣",
+        "allergens": "鱼、甲壳类、大豆"
+      },
+      "mushroom": {
+        "name": "草本穹顶菌汤",
+        "chinese": "草本穹顶菌汤",
+        "desc": "菌菇与草本熬制的温润汤底，完全不辣。纯粹的温暖慰藉，100%纯植物。",
+        "spice": "不辣",
+        "allergens": "大豆"
+      }
+    },
+    "home": {
+      "steps": {
+        "title": "怎么吃",
+        "subtitle": "四步打造你的完美碗",
+        "step1": {
+          "title": "选",
+          "desc": "在冷藏柜前自由选择你喜欢的新鲜食材。"
+        },
+        "step2": {
+          "title": "称",
+          "desc": "你的碗会被称重，价格一目了然，透明公正。"
+        },
+        "step3": {
+          "title": "告诉我们",
+          "desc": "选择你的汤底和辣度：微辣、中辣还是特辣。"
+        },
+        "step4": {
+          "title": "享用",
+          "desc": "你的碗在你选的汤底中现煮现出，热气腾腾。"
+        }
+      },
+      "video": {
+        "label": "新鲜现煮",
+        "title": "你来搭配，我们现煮",
+        "subtitle": "蔬菜、豆腐、肉、面 — 随心搭配，在你选的汤底里现煮入味，绝不油炸。"
+      },
+      "counters": {
+        "restaurants": "全球门店",
+        "countries": "个国家",
+        "bowls": "亿碗",
+        "years": "年匠心",
+        "since": "始于"
+      },
+      "gallery": {
+        "title": "美食艺术",
+        "items": [
+          "四川麻辣水煮鱼",
+          "蒜香鲜虾意面",
+          "日式番茄锅",
+          "韩式部队锅",
+          "红油鸭血",
+          "低卡麻辣干拌",
+          "番茄炖牛肉锅",
+          "海鲜牛骨锅"
+        ]
+      },
+      "broth_hero": {
+        "label": "东方食养",
+        "translit": "Cǎoběn gǔtāng",
+        "cta": "了解草本骨汤"
+      },
+      "stats": {
+        "slogan": "幸福就在此刻"
+      },
+      "why": {
+        "title": "为什么选杨国福的碗？",
+        "broth": {
+          "title": "草本骨汤",
+          "desc": "每日现熬，醇厚温和，好喝到可以直接喝。"
+        },
+        "fresh": {
+          "title": "新鲜 · 均衡",
+          "desc": "新鲜食材，现煮现出，绝不油炸。"
+        },
+        "custom": {
+          "title": "由你搭配",
+          "desc": "你选你爱，按克计价，合你口味，没有意外。"
+        }
+      }
+    },
+    "cta": {
+      "title": "准备好搭配你的专属碗了吗？",
+      "subtitle": "选你喜欢的，剩下的交给我们。",
+      "button": "查看菜单"
+    },
+    "concept": {
+      "title": "怎么吃",
+      "subtitle": "四步打造你的完美碗",
+      "meta_desc": "了解杨国福麻辣烫的概念：四个简单步骤，打造你的专属麻辣烫。",
+      "step1": {
+        "title": "选",
+        "desc": "在冷藏柜前自由选择你喜欢的新鲜食材。"
+      },
+      "step2": {
+        "title": "称",
+        "desc": "你的碗会被称重，价格一目了然，透明公正。"
+      },
+      "step3": {
+        "title": "告诉我们",
+        "desc": "选择你的汤底和辣度：微辣、中辣还是特辣。"
+      },
+      "step4": {
+        "title": "享用",
+        "desc": "你的碗在你选的汤底中现煮现出，热气腾腾。"
+      },
+      "faq": {
+        "title": "常见问题",
+        "spicy": {
+          "question": "辣吗？",
+          "answer": "辣度由你选择！经典草本骨汤有微辣、中辣、特辣三种辣度。不想吃辣？番茄汤和菌汤完全不辣。冬阴功和麻辣拌则是微辣。"
+        },
+        "what": {
+          "question": "什么是麻辣烫？",
+          "answer": "麻辣烫是中国的个人碗概念：你在柜台选择新鲜食材，我们在草本骨汤中现煮。这是一顿均衡、个性化、温暖的餐食。"
+        },
+        "vegan": {
+          "question": "有素食选项吗？",
+          "answer": "当然有！我们的柜台提供丰富的蔬菜、菌菇、豆制品和面条。你可以搭配一碗纯素餐。详情请咨询我们的汤底信息。"
+        }
+      },
+      "broth_story": {
+        "title": "草本骨汤",
+        "chinese_title": "草本骨汤",
+        "p1": "自2003年以来，杨国福精心研制牛骨草本汤底。这不是普通的汤，而是一碗浓郁温和到可以直接喝的汤底。",
+        "p2": "每天，我们的厨师用新鲜牛骨和精选中草药熬制汤底，延续着二十多年的匠心传承。这就是杨国福麻辣烫的灵魂，也是我们与其他麻辣烫的根本区别。",
+        "p3": "秘密在于中国北方传统烹饪与现代营养学的完美结合。成就了这碗温暖、均衡、回味无穷的汤底。"
+      }
+    },
+    "menu": {
+      "title": "菜单",
+      "subtitle": "随心搭配：新鲜食材，按克计价。",
+      "meta_desc": "杨国福麻辣烫列日店菜单：五种汤底，数十种新鲜食材，3.49€/100克，称重计价。",
+      "broths_title": "我们的汤底",
+      "ingredients_title": "食材选择",
+      "ingredients_subtitle": "全部新鲜，自由搭配：打造属于你的碗。",
+      "pricing_title": "称重计价",
+      "pricing_desc": "在杨国福，没有固定价格：你只为你选择的食材付费。装满你的碗，称重，价格清晰透明。",
+      "pricing_step1": "装碗",
+      "pricing_step2": "称重",
+      "pricing_step3": "付款",
+      "categories": {
+        "all": "全部",
+        "vegetables": "蔬菜",
+        "mushrooms": "菌菇",
+        "meat": "肉类",
+        "seafood": "海鲜",
+        "tofu": "豆制品",
+        "noodles": "面条"
+      },
+      "ingredients": {
+        "bok_choy": "小白菜",
+        "spinach": "菠菜",
+        "lettuce": "生菜",
+        "broccoli": "西兰花",
+        "cabbage": "大白菜",
+        "corn": "玉米",
+        "potato": "土豆",
+        "lotus_root": "莲藕",
+        "enoki": "金针菇",
+        "shiitake": "香菇",
+        "oyster_mushroom": "平菇",
+        "king_oyster": "杏鲍菇",
+        "wood_ear": "木耳",
+        "beef": "牛肉",
+        "lamb": "羊肉",
+        "pork_belly": "五花肉",
+        "meatballs": "肉丸",
+        "shrimp": "虾",
+        "fish_balls": "鱼丸",
+        "squid": "鱿鱼",
+        "crab_sticks": "蟹棒",
+        "firm_tofu": "老豆腐",
+        "silken_tofu": "嫩豆腐",
+        "tofu_skin": "豆皮",
+        "fried_tofu": "炸豆腐",
+        "glass_noodles": "粉丝",
+        "udon": "乌冬面",
+        "rice_noodles": "米线",
+        "instant_noodles": "方便面"
+      },
+      "newcomer": {
+        "label": "第一次来？",
+        "title": "从经典骨汤碗开始",
+        "desc": "不知道从哪开始？拿一个碗，加些蔬菜、豆腐和粉面，再选我们的经典草本骨汤（微辣）。这是认识麻辣烫的最佳方式。"
+      },
+      "veg_note": "素食与纯素：可搭配100%植物性碗：蔬菜、菌菇、豆腐与粉面。",
+      "price_per_100g": "3.49€ / 100克",
+      "price_tagline": "称多少，付多少。",
+      "allergens_note": "每款汤底均标注欧盟14种主要过敏原。如有疑问，请随时询问我们。"
+    },
+    "about": {
+      "title": "关于我们",
+      "subtitle": "从哈尔滨到列日，二十余年的麻辣烫传承。",
+      "meta_desc": "杨国福麻辣烫的故事：2003年从哈尔滨出发，如今遍布全球25+国家7000+门店。",
+      "timeline": {
+        "2003": {
+          "title": "一切始于哈尔滨",
+          "desc": "杨国福在中国东北哈尔滨开设了第一个麻辣烫摊位。他的秘方：用中草药和牛骨熬制的汤底。"
+        },
+        "2007": {
+          "title": "品牌诞生",
+          "desc": "概念逐渐成熟：杨国福麻辣烫注册商标，开始在全国范围内扩张。"
+        },
+        "2017": {
+          "title": "走向世界",
+          "desc": "第一家海外门店开业。国际化征程开启：东南亚、北美、欧洲。"
+        },
+        "2024": {
+          "title": "品牌焕新",
+          "desc": "全新橙色标识，第六代门店设计。杨国福以「东方食养」为愿景，重新定义麻辣烫。"
+        },
+        "liege": {
+          "title": "列日，比利时",
+          "desc": "杨国福来到列日，在现代温馨的环境中，为你呈现最正宗的麻辣烫体验。"
+        }
+      },
+      "storytelling": {
+        "origin": {
+          "title": "起源",
+          "text": "2003年，杨国福在中国东北哈尔滨开设了第一个麻辣烫摊位。他的秘方：用中草药和牛骨熬制的汤底。"
+        },
+        "craft": {
+          "title": "匠心",
+          "text": "每天，我们的厨师用新鲜牛骨和精选中草药熬制汤底。二十多年的匠心传承。"
+        },
+        "global": {
+          "title": "走向世界",
+          "text": "在25个国家拥有7000多家门店，杨国福将麻辣烫从哈尔滨带到列日，始终如一的热情。"
+        }
+      },
+      "world_map": {
+        "title": "全球分布"
+      },
+      "values": {
+        "title": "我们的价值观",
+        "quality": {
+          "title": "品质",
+          "desc": "精选食材，每日新鲜熬制汤底，绝不妥协。"
+        },
+        "freshness": {
+          "title": "新鲜",
+          "desc": "所有食材新鲜可见，你看到的就是你选择的。"
+        },
+        "transparency": {
+          "title": "透明",
+          "desc": "称重计价，明厨亮灶，没有隐藏。"
+        },
+        "happiness": {
+          "title": "幸福",
+          "desc": "幸福就在此刻，这是我们自2003年以来的承诺。"
+        }
+      },
+      "counters": {
+        "restaurants": "全球门店",
+        "countries": "个国家",
+        "years": "年经验"
+      }
+    },
+    "contact": {
+      "title": "联系我们",
+      "subtitle": "欢迎来访或给我们留言。",
+      "meta_desc": "联系杨国福麻辣烫列日店：地址、营业时间、邮箱和社交媒体。",
+      "hours_title": "营业时间",
+      "days": {
+        "mon": "周一",
+        "tue": "周二",
+        "wed": "周三",
+        "thu": "周四",
+        "fri": "周五",
+        "sat": "周六",
+        "sun": "周日"
+      },
+      "hours": "11:30 - 22:00",
+      "form_title": "联系我们",
+      "social_title": "关注我们",
+      "address_title": "地址",
+      "address": "Rue de la Cathédrale 51, 4000 列日",
+      "delivery_title": "外卖",
+      "map_loading": "地图加载中…",
+      "delivery_soon": "敬请期待",
+      "email_intro": "有问题或建议？给我们发邮件，我们会尽快回复。",
+      "phone_title": "电话",
+      "phone_reservation": "预订仅限电话。"
+    },
+    "not_found": {
+      "title": "页面未找到",
+      "message": "看起来你迷路了…… 别担心，一碗热腾腾的麻辣烫在等着你！",
+      "button": "返回首页",
+      "fuzi_alt": "杨国福吉祥物福仔正在享用一碗面"
+    },
+    "footer": {
+      "tagline": "幸福就在此刻",
+      "rights": "版权所有。",
+      "legal": "法律声明",
+      "privacy": "隐私政策",
+      "cookie": {
+        "title": "Cookie 设置",
+        "text": "我们使用 Cookie 来改善您的体验。继续浏览即表示您接受我们的隐私政策。",
+        "accept": "接受",
+        "decline": "拒绝"
+      }
+    },
+    "placeholder": "照片即将上线",
+    "seo": {
+      "home_title": "杨国福麻辣烫 列日",
+      "home_desc": "自由搭配你的草本骨汤碗，新鲜食材，3.49€/100克。幸福就在此刻。杨国福麻辣烫列日店。"
+    },
+    "legal": {
+      "coming": "本页面正在编写中，完整的法律声明即将发布。",
+      "meta_desc": "杨国福麻辣烫列日店法律声明。"
+    },
+    "privacy": {
+      "coming": "本页面正在编写中，完整的隐私政策即将发布。",
+      "meta_desc": "杨国福麻辣烫列日店隐私政策。"
+    }
+  },
+  "faq": {
+    "questions": {
+      "what": {
+        "question": "什么是麻辣烫？",
+        "answer": "麻辣烫是中国的个人碗概念：你在柜台选择新鲜食材，我们在草本骨汤中现煮。这是一顿均衡、个性化、温暖的餐食。"
+      },
+      "spicy": {
+        "question": "辣吗？",
+        "answer": "辣度由你选择！经典草本骨汤有微辣、中辣、特辣三种辣度。不想吃辣？番茄汤和菌汤完全不辣。冬阴功和麻辣拌则是微辣。"
+      },
+      "vegan": {
+        "question": "有素食选项吗？",
+        "answer": "当然有！我们的柜台提供丰富的蔬菜、菌菇、豆制品和面条。你可以搭配一碗纯素餐。详情请咨询我们的汤底信息。"
+      },
+      "hours": {
+        "question": "你们的营业时间是？",
+        "answer": "我们每天营业，周一至周日 11:30–22:00。"
+      },
+      "delivery": {
+        "question": "你们提供外送吗？配送范围是？",
+        "answer": "提供 — 您可以从我们位于列日 Rue de la Cathédrale 51 的餐厅下单外送或自取。配送费按距离计算，结账时自动显示。"
+      },
+      "payment": {
+        "question": "你们接受哪些支付方式？",
+        "answer": "我们接受安全的在线支付（银行卡、Bancontact）以及送达或自取时现金支付。"
+      },
+      "allergens": {
+        "question": "有过敏原信息吗？",
+        "answer": "我们的菜品可能含有<strong>芝麻</strong>、<strong>花生</strong>、<strong>麸质</strong>、<strong>大豆</strong>和<strong>甲壳类</strong>。请在订单备注中注明任何过敏情况，或直接与我们联系了解详情。"
+      }
+    }
+  },
+  "contact": {
+    "address": "Rue de la Cathédrale 51, 列日, 比利时",
+    "closedTuesday": "每天营业"
+  },
+  "menu": {
+    "allergenNoticeLink": "04 286 68 20"
+  },
+  "orderCompleted": {
+    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 286 68 20。",
+    "restaurantPhone": "04 286 68 20"
+  }
+}

@@ -6,6 +6,7 @@ on:
       - main
     tags:
       - 'v*'
+      - 'ygf-v*' # ygfliege production releases (independent cadence)
   workflow_dispatch:
     inputs:
       version:
@@ -38,9 +39,9 @@ jobs:
       - name: Build and Push AMD64 Image
         run: |
           docker buildx build . \
+            --file apps/tokyosushi/Dockerfile \
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 \
-            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
@@ -70,9 +71,9 @@ jobs:
       - name: Build and Push ARM64 Image
         run: |
           docker buildx build . \
+            --file apps/tokyosushi/Dockerfile \
             --platform linux/arm64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64 \
-            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
@@ -114,10 +115,85 @@ jobs:
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
             --fail --max-time 300
 
+# ── ygfliege (second brand) ──────────────────────────────────────────────────
+# Dormant until the YGF_* repo/environment vars are created (no-op otherwise).
+# Test image on push to main; production image on `ygf-v*` tags. No deploy jobs
+# yet — YGF infra (Helm release, DNS cutover) is provisioned separately.
+
+  build_ygfliege:
+    if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
+    name: Build ygfliege Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push ygfliege Image
+        run: |
+          docker buildx build . \
+            --file apps/ygfliege/Dockerfile \
+            --platform linux/amd64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest \
+            --build-arg BASE_URL=${{ vars.YGF_BASE_URL }} \
+            --build-arg API_BASE_URL=${{ vars.YGF_API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ vars.YGF_S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ vars.YGF_GRAPHQL_WS_URL }} \
+            --build-arg ZITADEL_AUTHORITY=${{ vars.YGF_ZITADEL_AUTHORITY }} \
+            --build-arg ZITADEL_CLIENT_ID=${{ vars.YGF_ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
+            --push
+
+  build_production_ygfliege:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ygf-v')
+    name: Build ygfliege Production Image
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push ygfliege Production Image
+        run: |
+          docker buildx build . \
+            --file apps/ygfliege/Dockerfile \
+            --platform linux/amd64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:production \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:${{ github.ref_name }} \
+            --build-arg BASE_URL=${{ vars.YGF_BASE_URL }} \
+            --build-arg API_BASE_URL=${{ vars.YGF_API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ vars.YGF_S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ vars.YGF_GRAPHQL_WS_URL }} \
+            --build-arg ZITADEL_AUTHORITY=${{ vars.YGF_ZITADEL_AUTHORITY }} \
+            --build-arg ZITADEL_CLIENT_ID=${{ vars.YGF_ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
+            --build-arg SENTRY_DSN=${{ vars.YGF_SENTRY_DSN }} \
+            --build-arg SENTRY_ENVIRONMENT=production \
+            --build-arg SENTRY_RELEASE=${{ github.ref_name }} \
+            --build-arg SENTRY_ORG=${{ vars.YGF_SENTRY_ORG }} \
+            --build-arg SENTRY_PROJECT=${{ vars.YGF_SENTRY_PROJECT }} \
+            --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
+            --push
+
 # ── Production release (tag push v*) ────────────────────────────────────────
 
   build_production:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     name: Build Production Image
     runs-on: ubuntu-latest
     environment: production
@@ -135,10 +211,10 @@ jobs:
       - name: Build and Push Production Image
         run: |
           docker buildx build . \
+            --file apps/tokyosushi/Dockerfile \
             --platform linux/amd64 \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:production \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }} \
-            --build-arg NUXT_BRAND=${{ vars.NUXT_BRAND || 'tokyo-sushi' }} \
             --build-arg BASE_URL=${{ vars.BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.S3_BUCKET_URL }} \
@@ -157,7 +233,7 @@ jobs:
             --push
 
   deploy_production:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: build_production
     name: Deploy to Production
     runs-on: ubuntu-latest
