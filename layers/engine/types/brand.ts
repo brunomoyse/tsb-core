@@ -5,10 +5,17 @@
 export interface BrandConfig {
     /** Customer-facing display name, e.g. "Tokyo Sushi Bar". */
     name: string
-    /** Registered legal entity, e.g. "Tokyo Sushi Bar — SRL". */
+    /**
+     * Registered legal entity, e.g. "Tokyo Sushi Bar — SRL". Use the plain
+     * trading name until the legal form is confirmed — never guess "— SRL".
+     */
     legalName: string
-    /** VAT / company registration number. */
-    vat: string
+    /**
+     * VAT / company registration number. Omit until the real number is known:
+     * the legal pages then drop the line rather than publishing a placeholder,
+     * which would be a false company identifier on a public site.
+     */
+    vat?: string
     address: {
         street: string
         city: string
@@ -39,8 +46,8 @@ export interface BrandConfig {
     mapsUrl: string
     /** Year the restaurant opened; drives "X years" copy on the homepage. */
     foundingYear: number
-    /** Legal representatives listed on the terms page. */
-    administrators: string[]
+    /** Legal representatives listed on the terms page. Omit when unconfirmed. */
+    administrators?: string[]
     /** schema.org servesCuisine value, e.g. "Japanese". */
     cuisine: string
     /** schema.org Menu description (one English sentence about the menu). */

@@ -12,8 +12,10 @@
         <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
             <p class="font-semibold text-gray-900">{{ brand.legalName }}</p>
             <p>{{ fullAddress }}</p>
-            <p>N° d&rsquo;entreprise : {{ brand.vat }} &middot; Tél : {{ brand.phone }}</p>
-            <p>Administrateurs : {{ brand.administrators.join(', ') }}</p>
+            <p>
+                <template v-if="brand.vat">N° d&rsquo;entreprise : {{ brand.vat }} &middot; </template>Tél : {{ brand.phone }}
+            </p>
+            <p v-if="brand.administrators?.length">Administrateurs : {{ brand.administrators.join(', ') }}</p>
         </section>
 
         <!-- Body -->

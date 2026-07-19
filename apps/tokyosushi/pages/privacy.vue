@@ -12,7 +12,9 @@
         <section class="mb-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
             <p class="font-semibold text-gray-900">{{ brand.legalName }}</p>
             <p>{{ fullAddress }}</p>
-            <p>N&deg; d&rsquo;entreprise : {{ brand.vat }} &middot; T&eacute;l : {{ brand.phone }}</p>
+            <p>
+                <template v-if="brand.vat">N&deg; d&rsquo;entreprise : {{ brand.vat }} &middot; </template>T&eacute;l : {{ brand.phone }}
+            </p>
             <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-red-600 underline">{{ brand.email }}</a></p>
         </section>
 
