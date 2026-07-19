@@ -36,6 +36,24 @@ export const PRODUCT_PHOTOS: Record<string, ProductPhoto> = {
     'mala-mix-vegetarien': { base: '/images/bowls/mala-dry-mix-top' },
     // Same shot as the menu hero, deliberately: it IS the composer.
     'malatang-sur-mesure': { base: '/images/bowls/beef-bone-top' },
+
+    // ── Awaiting photography ─────────────────────────────────────────────
+    // No official YGF visuals exist for these; they show the logo placeholder
+    // until we shoot our own. To wire one up: run
+    //   node scripts/product-photo.mjs <source-image> <slug>
+    // (generates the avif/webp/png derivatives in public/images/dishes/),
+    // then uncomment its line.
+    // 'raviolis-chinois': { base: '/images/dishes/raviolis-chinois' },
+    // 'rouleaux-de-printemps': { base: '/images/dishes/rouleaux-de-printemps' },
+    // 'salade-concombre': { base: '/images/dishes/salade-concombre' },
+    // 'baozi-porc': { base: '/images/dishes/baozi-porc' },
+    // 'nouilles-boeuf-braise': { base: '/images/dishes/nouilles-boeuf-braise' },
+    // 'nouilles-fruits-de-mer': { base: '/images/dishes/nouilles-fruits-de-mer' },
+    // 'coca-cola': { base: '/images/dishes/coca-cola' },
+    // 'coca-cola-zero': { base: '/images/dishes/coca-cola-zero' },
+    // 'the-glace-litchi': { base: '/images/dishes/the-glace-litchi' },
+    // 'jus-de-prune': { base: '/images/dishes/jus-de-prune' },
+    // 'eau-minerale': { base: '/images/dishes/eau-minerale' },
 }
 
 /** Default widths for mapped assets (avif + webp; 560 also png). */
