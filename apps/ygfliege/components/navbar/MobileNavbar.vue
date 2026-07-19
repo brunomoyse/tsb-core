@@ -56,7 +56,7 @@
                             <ul class="flex flex-col items-center space-y-6 w-full">
                                 <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/logos/logo-white.svg" to="/"
                                       @click="closeMenu"/></li>
-                                <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
+                                <MobileNavItem :label="$t('nav.menu')"
                                                to="/menu"
                                                @click="closeMenu"/>
                                 <!-- Concept and About were reachable only from
@@ -68,15 +68,14 @@
                                 <MobileNavItem :label="$t('mkt.nav.about')"
                                                to="/about"
                                                @click="closeMenu"/>
-                                <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg"
+                                <MobileNavItem :label="$t('nav.contact')"
                                                to="/contact"
                                                @click="closeMenu"/>
                                 <ClientOnly>
-                                    <MobileNavItem v-if="!authStore.user" :label="$t('nav.login')" icon="/icons/login-icon.svg"
+                                    <MobileNavItem v-if="!authStore.user" :label="$t('nav.login')"
                                                    to="/auth/login"
                                                    @click="closeMenu"/>
                                     <MobileNavItem v-if="authStore.user" :label="$t('nav.myAccount')"
-                                                   icon="/icons/account-circle-icon.svg"
                                                    to="/me"
                                                    @click="closeMenu"/>
                                 </ClientOnly>
@@ -94,7 +93,6 @@
                                         :aria-label="$t('nav.callRestaurant')"
                                         class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                                         @click="closeMenu">
-                                         <img alt="" aria-hidden="true" src="/icons/contact-icon.svg" class="w-5 h-5 brightness-0 invert" />
                                          <span class="text-base font-medium">{{ brand.phone.replace(/^\+32\s?/u, '0') }}</span>
                                      </a>
                                  </li>

@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
+// Phosphor icons (same set as the vitrine site) — raw SVGs, tinted via
+// currentColor. Never emojis or hand-drawn paths.
+import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
+import leafIcon from '~/assets/icons/leaf.svg?raw'
+import scalesIcon from '~/assets/icons/scales.svg?raw'
 
 // Marketing homepage ported from the ygfliege.be Vike site (hero, broth
 // selector, broth story, steps, video band, why, gallery, CTA) with the shop's
@@ -170,7 +175,11 @@ useSeoMeta({
                     v-reveal="i + 1"
                     class="bg-white border border-ygf-orange-100 rounded-ygf-card shadow-ygf-sm p-6 text-center"
                 >
-                    <div class="text-3xl mb-3" aria-hidden="true">{{ ['🍲', '🌿', '⚖️'][i] }}</div>
+                    <div
+                        class="w-12 h-12 mx-auto mb-3 text-ygf [&>svg]:w-full [&>svg]:h-full"
+                        aria-hidden="true"
+                        v-html="[bowlSteamIcon, leafIcon, scalesIcon][i]"
+                    />
                     <h3 class="font-display font-bold text-lg text-ygf-black mb-2">{{ $t(`mkt.home.why.${pillar}.title`) }}</h3>
                     <p class="text-sm text-gray-600 leading-relaxed">{{ $t(`mkt.home.why.${pillar}.desc`) }}</p>
                 </article>
