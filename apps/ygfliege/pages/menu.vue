@@ -114,7 +114,7 @@
                         :fallback-width="560"
                         :alt="composerProduct.name"
                         sizes="(min-width: 640px) 260px, 100vw"
-                        img-class="w-full h-full object-cover aspect-[4/3] sm:aspect-auto"
+                        img-class="w-full h-full object-contain sm:object-cover p-3 sm:p-0 aspect-[4/3] sm:aspect-auto"
                     />
                 </article>
 
