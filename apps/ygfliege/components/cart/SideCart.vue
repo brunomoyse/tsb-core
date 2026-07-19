@@ -300,9 +300,9 @@ const itemLabelParts = (item: CartItem) => orderItemLabelParts({
 })
 
 const itemLabelMeta = (item: CartItem): string | undefined => {
-    const parts = itemLabelParts(item)
-    const meta = [parts.code, parts.category].filter(Boolean).join('·')
-    return meta || undefined
+    // Category name only: the internal menu code ("E1") read like debug
+    // output next to the product name.
+    return itemLabelParts(item).category || undefined
 }
 
 const itemLabelName = (item: CartItem): string => itemLabelParts(item).name

@@ -447,9 +447,9 @@ const orderItemParts = (item: OrderItemLike) => orderItemLabelParts({
 })
 
 const orderItemMeta = (item: OrderItemLike): string | undefined => {
-    const parts = orderItemParts(item)
-    const meta = [parts.code, parts.category].filter(Boolean).join('·')
-    return meta || undefined
+    // Category name only: the internal menu code ("E1") read like debug
+    // output next to the product name.
+    return orderItemParts(item).category || undefined
 }
 
 const orderItemName = (item: OrderItemLike): string => orderItemParts(item).name

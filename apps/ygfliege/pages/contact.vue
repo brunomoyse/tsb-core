@@ -140,33 +140,36 @@ useSeoMeta({
             <div class="bento-social bento-cell" style="--delay: 6">
                 <div class="bg-ygf-cream rounded-2xl p-6 sm:p-8 h-full flex items-center justify-between gap-4 flex-wrap">
                     <h2 class="font-semibold text-gray-900 text-[15px]">{{ $t('contact.followUs', 'Follow Us') }}</h2>
-                    <div class="flex items-center gap-3">
+                    <!-- Branded QR tiles from the YGF kit, labeled like the
+                         vitrine: the text names the network, the tile is
+                         decoration (unreadable as an icon alone). -->
+                    <div class="flex items-center gap-3 flex-wrap">
                         <a
                             :href="brand.socials.instagram"
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="Instagram"
-                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                         >
-                            <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-5 h-5"/>
+                            <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
+                            <span class="text-sm font-medium text-gray-900">Instagram</span>
                         </a>
                         <a
                             :href="brand.socials.tiktok"
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="TikTok"
-                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                         >
-                            <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-5 h-5"/>
+                            <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
+                            <span class="text-sm font-medium text-gray-900">TikTok</span>
                         </a>
                         <a
                             :href="brand.socials.rednote"
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="RedNote"
-                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                         >
-                            <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-5 h-5"/>
+                            <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
+                            <span class="text-sm font-medium text-gray-900">RedNote</span>
                         </a>
                     </div>
                 </div>

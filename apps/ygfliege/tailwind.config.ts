@@ -50,6 +50,9 @@ module.exports = {
                     700: '#4D4D4D',
                 },
                 'ygf-orange': {
+                    // Bare `ygf-orange` utilities (ring-ygf-orange, etc.) need
+                    // this DEFAULT; without it they silently emit nothing.
+                    DEFAULT: '#F58220',
                     50: '#FFF7ED',
                     100: '#FFEDD5',
                     200: '#FED7AA',

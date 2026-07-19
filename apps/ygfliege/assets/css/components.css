@@ -274,6 +274,45 @@
         color: var(--ygf-black);
     }
 
+    /* Compact variant for the narrow 2-col product-card grid: at 375px the
+       full-size stepper overflows the card next to the price. Mobile-first —
+       compact below sm, back to full size from sm up. */
+    .stepper--sm {
+        gap: 0;
+        padding: 0;
+    }
+
+    .stepper--sm .stepper-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1rem;
+    }
+
+    .stepper--sm .stepper-value {
+        min-width: 1.375rem;
+        font-size: 0.875rem;
+        padding: 0 0.25rem;
+    }
+
+    @media (min-width: 640px) {
+        .stepper--sm {
+            gap: 0.25rem;
+            padding: 0.1875rem;
+        }
+
+        .stepper--sm .stepper-btn {
+            width: 2rem;
+            height: 2rem;
+            font-size: 1.125rem;
+        }
+
+        .stepper--sm .stepper-value {
+            min-width: 1.75rem;
+            font-size: 1rem;
+            padding: 0;
+        }
+    }
+
     /* ===== SECTION HEADINGS ===== */
     /* Same rhythm as the marketing pages, so shop sections match ygfliege.be. */
     .section-label {

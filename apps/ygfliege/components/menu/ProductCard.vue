@@ -96,7 +96,7 @@
                 <!-- Price and cart controls. The stepper stays visible once the
                      item is in the cart: the inherited control collapsed itself
                      after 4s, which hid the only way to decrement. -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center gap-2 mt-2">
+                <div v-if="product.isAvailable" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
                     <span class="text-ygf-black font-bold text-base tabular-nums">
                       {{ formatPrice(product.price) }}
                     </span>
@@ -113,7 +113,7 @@
                         <img alt="" aria-hidden="true" class="w-5 h-5" src="/icons/shopping-bag-icon.svg"/>
                     </button>
 
-                    <div v-else class="stepper">
+                    <div v-else class="stepper stepper--sm">
                         <button
                             type="button"
                             class="stepper-btn"

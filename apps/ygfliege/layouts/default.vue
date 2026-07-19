@@ -53,19 +53,24 @@
                             <NuxtLinkLocale class="hover:text-white transition-colors" to="/privacy">{{ $t('footer.privacy') }}</NuxtLinkLocale>
                         </nav>
 
-                        <!-- Official YGF-branded social icons (orange squares, from the brand kit) -->
-                        <div class="flex items-center gap-3">
-                            <a :href="brand.socials.instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
-                                <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                        <!-- Branded QR tiles from the YGF kit, labeled like the
+                             vitrine footer: the text names the network, the
+                             tile is decoration (unreadable as an icon alone). -->
+                        <div class="flex flex-col gap-1 text-sm">
+                            <a :href="brand.socials.instagram" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2.5 min-h-11 hover:text-white transition-colors">
+                                <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-9 h-9" loading="lazy" />
+                                <span>Instagram</span>
                             </a>
-                            <a :href="brand.socials.tiktok" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
-                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
-                                <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                            <a :href="brand.socials.tiktok" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2.5 min-h-11 hover:text-white transition-colors">
+                                <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-9 h-9" loading="lazy" />
+                                <span>TikTok</span>
                             </a>
-                            <a :href="brand.socials.rednote" target="_blank" rel="noopener noreferrer" aria-label="RedNote"
-                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
-                                <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                            <a :href="brand.socials.rednote" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2.5 min-h-11 hover:text-white transition-colors">
+                                <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-9 h-9" loading="lazy" />
+                                <span>RedNote</span>
                             </a>
                         </div>
                     </div>
