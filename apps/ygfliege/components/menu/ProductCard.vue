@@ -88,7 +88,7 @@
                     <span class="text-ygf-black/55 text-xs mt-0.5">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
-                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ forcedChoiceGroupLabel(group) }}
+                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ forcedChoiceGroupLabel(group) }}
                       </template>
                     </span>
                 </div>
@@ -147,13 +147,11 @@ import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import { useHaptics } from '#engine/composables/useHaptics'
-import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
 const cartItemAdded = useEventBus(cartItemAddedKey)
 const cartStore = useCartStore();
-const { t } = useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
 const { impact } = useHaptics()
@@ -180,11 +178,20 @@ const forcedChoiceGroups = computed(() =>
         .toSorted((a, b) => a.sortOrder - b.sortOrder),
 );
 
-const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
-    if (product.category?.slug === 'menu-plateau') {
-        return t(group.maxSelections > 1 ? 'menu.soups' : 'menu.soup').toLowerCase();
+/**
+ * Card-subtitle label for a required choice group. Pick-one groups show how
+ * many options there are to choose from — "niveau de piquant (3)" — because
+ * "1 niveau de piquant" read as if the set had a single fixed spice level.
+ * Multi-select groups keep the pick count ("20 ingrédients"). Group names are
+ * DB translations, so option counts are appended rather than pluralised.
+ */
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number; choices?: { id: string }[] }) => {
+    const name = group.name.toLowerCase();
+    if (group.maxSelections === 1) {
+        const options = group.choices?.length ?? 0;
+        return options > 1 ? `${name} (${options})` : name;
     }
-    return group.name.toLowerCase();
+    return `${group.maxSelections} ${name}`;
 };
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));

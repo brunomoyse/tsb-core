@@ -297,6 +297,7 @@ const PRODUCT_CATEGORIES = gql`
           minSelections
           maxSelections
           sortOrder
+          choices { id }
         }
       }
     }
