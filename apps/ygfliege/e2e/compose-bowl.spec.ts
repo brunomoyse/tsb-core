@@ -9,18 +9,24 @@ import { type Locator, type Page, expect, test } from '@playwright/test'
 const openProductModal = async (page: Page, productName: string): Promise<Locator> => {
     await page.goto('/fr/menu')
     const card = page.getByTestId('product-card').filter({ hasText: productName }).first()
-    await expect(card).toBeVisible()
-    // Clicking the card image/body opens the modal for products with choices.
-    await card.locator('.cursor-pointer').first().click()
+    await expect(card).toBeVisible({ timeout: 15_000 })
     const modal = page.getByTestId('product-modal')
-    await expect(modal).toBeVisible()
+    // Clicking the card image/body opens the modal for products with choices.
+    // Retry the click: the SSR page is visible before Vue hydration attaches
+    // listeners, and a pre-hydration click lands on inert DOM.
+    await expect(async () => {
+        await card.locator('.cursor-pointer').first().click()
+        await expect(modal).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
     return modal
 }
 
 const incrementChoice = async (modal: Locator, choiceName: string, times = 1) => {
+    // Exact-text filter: `hasText` is substring/case-insensitive and e.g.
+    // 'Doux' would match the 'Maïs doux' ingredient row before the spice level.
     const row = modal
         .locator('[data-testid^="product-modal-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"])')
-        .filter({ hasText: choiceName })
+        .filter({ has: modal.page().getByText(choiceName, { exact: true }) })
         .first()
     await expect(row).toBeVisible()
     for (let i = 0; i < times; i++) {

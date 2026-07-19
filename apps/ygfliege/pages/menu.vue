@@ -177,7 +177,7 @@
                 <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
                 <span class="flex-1 truncate">
                     {{ $t('menu.allergenNoticeShort') }}
-                    <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
+                    <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
                 </span>
                 <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -300,6 +300,7 @@ import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
 
 const { selection: hapticSelection } = useHaptics()
+const { brand } = useAppConfig()
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()

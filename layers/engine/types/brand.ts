@@ -47,7 +47,13 @@ export interface BrandConfig {
     menuDescription?: string
     /** schema.org priceRange value, e.g. "€€". */
     priceRange: string
-    rating: {
+    /**
+     * Real, publicly verifiable review aggregate. Omit entirely for a brand
+     * with no reviews yet — schema.org then drops aggregateRating rather than
+     * publishing invented numbers, which would be fabricated review data in
+     * search results (a structured-data policy violation).
+     */
+    rating?: {
         value: number
         count: number
     }

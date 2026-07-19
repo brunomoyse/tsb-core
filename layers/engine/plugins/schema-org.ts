@@ -68,13 +68,18 @@ export default defineNuxtPlugin(() => {
                     description: brand.menuDescription || `${brand.name} menu`,
                     inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
                 },
-                aggregateRating: {
-                    '@type': 'AggregateRating',
-                    ratingValue: brand.rating.value,
-                    reviewCount: brand.rating.count,
-                    bestRating: 5,
-                    worstRating: 1,
-                },
+                // Only emitted when the brand has a real review aggregate.
+                ...(brand.rating
+                    ? {
+                        aggregateRating: {
+                            '@type': 'AggregateRating',
+                            ratingValue: brand.rating.value,
+                            reviewCount: brand.rating.count,
+                            bestRating: 5,
+                            worstRating: 1,
+                        },
+                    }
+                    : {}),
                 openingHoursSpecification: [
                     {
                         '@type': 'OpeningHoursSpecification',

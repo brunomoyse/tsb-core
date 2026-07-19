@@ -44,11 +44,11 @@ export const brand: BrandConfig = {
     cuisine: 'Chinese',
     menuDescription: 'Our menu of malatang bowls, signature herbal broths, noodles and starters',
     priceRange: '€€',
-    // TODO(user): update once the restaurant has public review numbers.
-    rating: {
-        value: 4.8,
-        count: 50,
-    },
+    /*
+     * `rating` is intentionally omitted: the Liège restaurant has no public
+     * review aggregate yet, and schema.org aggregateRating must reflect real
+     * reviews. Add it only once there are genuine numbers to report.
+     */
     // TODO(user): confirm account-deletion contact address.
     deletionEmail: 'contact@ygfliege.be',
 }

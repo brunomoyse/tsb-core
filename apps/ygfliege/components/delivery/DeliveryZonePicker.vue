@@ -183,7 +183,8 @@ const canConfirm = computed(() => {
     return Boolean(cartStore.address) && inZone.value
 })
 
-const restaurantAddress = 'Rue de la Cathédrale 59\n4000 Liège'
+const { brand } = useAppConfig()
+const restaurantAddress = `${brand.address.street}\n${brand.address.postal} ${brand.address.city}`
 
 const setMode = (mode: 'DELIVERY' | 'PICKUP') => {
     if (cartStore.collectionOption === mode) return

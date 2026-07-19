@@ -81,12 +81,12 @@
 
                                  <!-- Phone (tap-to-call) -->
                                  <li>
-                                     <a href="tel:042229888"
+                                     <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`"
                                         aria-label="Appeler le restaurant"
                                         class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-ygf-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus-visible:ring-offset-2"
                                         @click="closeMenu">
                                          <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
-                                         <span class="text-sm font-medium">04 222 98 88</span>
+                                         <span class="text-sm font-medium">{{ brand.phone.replace(/^\+32\s?/u, '0') }}</span>
                                      </a>
                                  </li>
                             </ul>
@@ -117,7 +117,8 @@ import { useRoute } from 'vue-router'
 const currentRoute = useRoute();
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoAlt = `${useAppConfig().brand.name} logo`
+const { brand } = useAppConfig()
+const logoAlt = `${brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 
