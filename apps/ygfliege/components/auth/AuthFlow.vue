@@ -16,32 +16,32 @@
             <div class="space-y-3">
                 <button
                     :disabled="loading"
-                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                    class="btn btn-secondary w-full"
                     type="button"
                     @click="loginWithProvider('google')"
                 >
-                    <img alt="" aria-hidden="true" class="w-5 h-5 mr-2" src="/icons/google-icon.svg" >
-                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoGoogle') }}</span>
+                    <img alt="" aria-hidden="true" class="w-5 h-5" src="/icons/google-icon.svg" >
+                    <span>{{ $t('login.ssoGoogle') }}</span>
                 </button>
 
                 <button
                     :disabled="loading"
-                    class="w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-white hover:shadow-sm transition-all duration-300 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                    class="btn btn-secondary w-full"
                     type="button"
                     @click="loginWithProvider('apple')"
                 >
-                    <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="#000" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-                    <span class="text-gray-700 text-sm font-medium">{{ $t('login.ssoApple') }}</span>
+                    <svg aria-hidden="true" class="w-5 h-5" fill="var(--ygf-orange-text)" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                    <span>{{ $t('login.ssoApple') }}</span>
                 </button>
             </div>
 
             <!-- OR Divider -->
             <div class="relative my-6">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300/50" />
+                    <div class="w-full border-t" style="border-color: rgba(242, 123, 32, 0.12)" />
                 </div>
                 <div class="relative text-center">
-                    <span class="bg-white px-3 text-sm text-gray-500 uppercase">
+                    <span class="bg-ygf-cream px-3 text-sm text-ygf-gray-400 uppercase">
                         {{ $t('login.dividerOr') }}
                     </span>
                 </div>
@@ -49,7 +49,7 @@
 
             <!-- Email field: secondary path -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-email">
+                <label class="field-label" for="auth-email">
                     {{ $t('login.email') }}
                 </label>
                 <input
@@ -60,7 +60,7 @@
                     :aria-invalid="emailFormatError ? 'true' : undefined"
                     :aria-describedby="emailFormatError ? 'auth-email-error' : undefined"
                     autocomplete="email"
-                    class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                    class="field"
                     name="email"
                     required
                     type="email"
@@ -69,7 +69,7 @@
                 <p
                     v-if="emailFormatError"
                     id="auth-email-error"
-                    class="mt-1.5 text-xs text-ygf-orange-600"
+                    class="mt-1.5 text-xs text-ygf-error"
                     role="alert"
                 >
                     {{ $t('notify.errors.invalidEmail') }}
@@ -80,7 +80,7 @@
                 v-if="errorMessage"
                 aria-atomic="true"
                 aria-live="assertive"
-                class="text-sm text-ygf-orange-700 bg-ygf-orange-50 border border-ygf-orange-200 rounded-xl px-3.5 py-2.5 animate-shake"
+                class="text-sm text-ygf-error bg-red-50 border border-red-200 rounded-ygf-card px-3.5 py-2.5 animate-shake"
                 data-testid="login-error"
                 role="alert"
             >
@@ -89,7 +89,7 @@
 
             <button
                 :disabled="loading || !!emailFormatError"
-                class="w-full bg-ygf-orange-500 text-white py-2.5 rounded-xl font-medium hover:bg-ygf-orange-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
+                class="btn btn-primary w-full"
                 data-testid="login-submit"
                 type="submit"
             >
@@ -99,12 +99,12 @@
 
         <!-- Step 2: OTP code -->
         <form v-else-if="step === 'code'" class="space-y-4" @submit.prevent="onSubmitCode">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-ygf-gray-600">
                 {{ $t('login.codeSent', { email }) }}
             </p>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="auth-code">
+                <label class="field-label" for="auth-code">
                     {{ $t('login.codeLabel') }}
                 </label>
                 <input
@@ -113,7 +113,7 @@
                     v-model="code"
                     :placeholder="$t('login.codePlaceholder')"
                     autocomplete="one-time-code"
-                    class="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 tracking-[0.5em] text-center text-lg font-mono focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                    class="field text-center text-lg font-mono tracking-[0.5em]"
                     inputmode="numeric"
                     maxlength="6"
                     name="code"
@@ -127,7 +127,7 @@
                 v-if="errorMessage"
                 aria-atomic="true"
                 aria-live="assertive"
-                class="text-sm text-ygf-orange-700 bg-ygf-orange-50 border border-ygf-orange-200 rounded-xl px-3.5 py-2.5 animate-shake"
+                class="text-sm text-ygf-error bg-red-50 border border-red-200 rounded-ygf-card px-3.5 py-2.5 animate-shake"
                 data-testid="login-error"
                 role="alert"
             >
@@ -136,7 +136,7 @@
 
             <button
                 :disabled="loading || code.length < 6"
-                class="w-full bg-ygf-orange-500 text-white py-2.5 rounded-xl font-medium hover:bg-ygf-orange-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
+                class="btn btn-primary w-full"
                 data-testid="login-verify"
                 type="submit"
             >
@@ -145,7 +145,7 @@
 
             <div class="flex items-center justify-between text-sm">
                 <button
-                    class="inline-flex min-h-11 items-center text-gray-500 hover:text-gray-700 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                    class="btn-link"
                     type="button"
                     @click="backToEmail"
                 >
@@ -153,7 +153,7 @@
                 </button>
                 <button
                     :disabled="resendCooldown > 0 || loading"
-                    class="inline-flex min-h-11 items-center text-ygf-orange-500 font-medium hover:text-ygf-orange-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                    class="btn-link"
                     type="button"
                     @click="resendCode"
                 >

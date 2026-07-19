@@ -3,8 +3,8 @@
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
-            <h1 class="text-2xl font-bold text-gray-900">{{ $t('cart.title') }}</h1>
-            <span v-if="cartStore.totalItems > 0" class="text-sm text-gray-400 font-medium">
+            <h1 class="text-2xl font-bold text-ygf-black">{{ $t('cart.title') }}</h1>
+            <span v-if="cartStore.totalItems > 0" class="text-sm text-ygf-gray-400 font-medium">
                 {{ cartStore.totalItems }} {{ cartStore.totalItems === 1 ? $t('cart.item') : $t('cart.items') }}
             </span>
         </div>
@@ -15,14 +15,14 @@
             <div
                 v-for="item in cartStore.products"
                 :key="getItemKey(item)"
-                class="relative overflow-hidden rounded-2xl"
+                class="relative overflow-hidden rounded-[var(--radius-lg)]"
             >
                 <!-- Delete action (revealed on swipe) -->
-                <div class="absolute inset-y-0 right-0 flex items-center bg-ygf-orange-500 rounded-2xl">
+                <div class="absolute inset-y-0 right-0 flex items-center bg-ygf-red rounded-[var(--radius-lg)]">
                     <button
                         type="button"
                         :aria-label="$t('cart.removeItem')"
-                        class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
+                        class="h-full px-6 flex items-center justify-center text-ygf-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
                     >
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,14 +34,14 @@
 
                 <!-- Card content (slides on swipe) -->
                 <div
-                    class="relative bg-white border border-gray-100 px-3 py-2.5 flex items-center gap-3 transition-transform duration-200 ease-out touch-pan-y"
+                    class="card relative px-3 py-2.5 flex items-center gap-3 transition-transform duration-200 ease-out touch-pan-y"
                     :style="{ transform: `translateX(${getSwipeOffset(item)}px)` }"
                     @touchstart="onTouchStart($event, item)"
                     @touchmove="onTouchMove($event, item)"
                     @touchend="onTouchEnd(item)"
                 >
                     <!-- IMAGE — square, rounded, no crop -->
-                    <div class="w-[68px] h-[68px] shrink-0 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                    <div class="w-[68px] h-[68px] shrink-0 rounded-[var(--radius-lg)] bg-ygf-gray-100 flex items-center justify-center overflow-hidden">
                         <picture>
                             <source
                                 :srcset="`${productImageBase(item.product.slug)}.avif`"
@@ -67,51 +67,51 @@
                     <!-- INFO + CONTROLS -->
                     <div class="flex-1 min-w-0">
                         <!-- Row 1: Metadata (small, gray, truncated) -->
-                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-gray-500 truncate leading-tight mb-0.5">
+                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-ygf-gray-400 truncate leading-tight mb-0.5">
                             {{ itemLabelMeta(item) }}
                         </p>
 
                         <!-- Row 2: Product name (bold, wraps up to 2 lines) -->
-                        <p class="text-[15px] font-semibold text-gray-900 leading-tight line-clamp-2 pr-1">
+                        <p class="text-[15px] font-semibold text-ygf-black leading-tight line-clamp-2 pr-1">
                             {{ itemLabelName(item) }}
                         </p>
 
-                        <!-- Row 3: Choice (red) -->
-                        <p v-if="itemChoice(item)" class="text-xs text-ygf-orange-500 mt-0.5 truncate">
+                        <!-- Row 3: Choice (orange text) -->
+                        <p v-if="itemChoice(item)" class="text-xs text-ygf-orange-text mt-0.5 truncate">
                             ({{ itemChoice(item) }})
                         </p>
 
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
-                                <span class="text-[15px] font-bold text-gray-900 tabular-nums">
+                                <span class="text-[15px] font-bold text-ygf-black tabular-nums">
                                     {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                                 </span>
-                                <span v-if="item.quantity > 1" class="text-[11px] text-gray-400 tabular-nums">
+                                <span v-if="item.quantity > 1" class="text-[11px] text-ygf-gray-400 tabular-nums">
                                     {{ item.quantity }} × {{ formatPrice(getItemUnitPrice(item)) }}
                                 </span>
                             </div>
 
                             <div class="flex items-center gap-1">
                                 <!-- Stepper: compact pill -->
-                                <div class="flex items-center gap-0 bg-gray-100 rounded-full">
+                                <div class="stepper">
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                                        class="stepper-btn"
                                         @click="handleDecrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                             <line x1="5" y1="12" x2="19" y2="12"/>
                                         </svg>
                                     </button>
-                                    <span class="w-6 text-center text-sm font-semibold text-gray-800 tabular-nums select-none">
+                                    <span class="stepper-value">
                                         {{ item.quantity }}
                                     </span>
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                                        class="stepper-btn"
                                         @click="handleIncrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -125,7 +125,7 @@
                                 <button
                                     type="button"
                                     :aria-label="$t('cart.removeItem')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-400 hover:text-ygf-orange-500 hover:bg-ygf-orange-50 active:bg-ygf-orange-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-ygf-gray-400 hover:text-ygf-orange-text hover:bg-ygf-orange-bg active:bg-ygf-orange-light transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
                                     @click="handleRemoveItem(item)"
                                 >
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -143,35 +143,35 @@
 
         <!-- ═══ ORDER SUMMARY ═══ -->
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
-            <div class="bg-white rounded-2xl border border-gray-100 px-4 py-3 space-y-1 text-sm">
-                <div v-if="hasBreakdown" class="flex justify-between text-gray-500">
+            <div class="card rounded-[var(--radius-lg)] px-4 py-3 space-y-1 text-sm">
+                <div v-if="hasBreakdown" class="flex justify-between text-ygf-gray-600">
                     <span>{{ $t('cart.subtotal') }}</span>
                     <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-ygf-gray-600">
                     <span>{{ $t('cart.deliveryFee') }}</span>
-                    <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                    <span v-if="!cartStore.address?.distance" class="text-ygf-gray-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-ygf-orange-500 font-medium text-xs">
+                    <span v-else-if="deliveryFee === -1" class="text-ygf-red font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-ygf-orange-100 text-ygf-orange-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFee === 0" class="chip chip-static bg-ygf-orange-bg text-ygf-orange-text text-[11px]">
                         {{ $t('checkout.free') }}
                     </span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-ygf-success">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-ygf-orange-600">
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-ygf-orange-text">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
-                <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
-                    <span class="font-bold text-gray-900">{{ $t('cart.total') }}</span>
-                    <span class="font-bold text-lg text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-ygf-gray-200 text-ygf-black">
+                    <span class="font-bold">{{ $t('cart.total') }}</span>
+                    <span class="font-bold text-lg tabular-nums">{{ formatPrice(displayTotal) }}</span>
                 </div>
             </div>
         </div>
@@ -182,15 +182,15 @@
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
             v-if="cartStore.products.length > 0"
-            class="sticky bottom-0 z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+            class="sticky bottom-0 z-30 bg-ygf-white border-t border-ygf-gray-200 shadow-ygf-md p-4"
         >
             <NuxtLinkLocale
                 to="checkout"
                 :class="[
-                    'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus-visible:ring-offset-2',
+                    'btn flex min-h-11 items-center justify-between w-full active:scale-[0.98] transition-all rounded-[var(--radius-lg)]',
                     isCheckoutAvailable
-                        ? 'bg-ygf-orange-500 hover:bg-ygf-orange-600 text-white'
-                        : 'bg-gray-300 text-gray-500 pointer-events-none'
+                        ? 'btn-primary'
+                        : 'opacity-45 pointer-events-none'
                 ]"
                 :tabindex="isCheckoutAvailable ? 0 : -1"
                 :aria-disabled="!isCheckoutAvailable"
@@ -201,11 +201,11 @@
                         <line x1="3" y1="6" x2="21" y2="6"/>
                         <path d="M16 10a4 4 0 01-8 0"/>
                     </svg>
-                    <span class="font-semibold text-sm uppercase tracking-wide">{{ $t('cart.checkout') }}</span>
+                    <span class="text-sm uppercase tracking-wide">{{ $t('cart.checkout') }}</span>
                 </div>
                 <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
             </NuxtLinkLocale>
-            <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
+            <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-ygf-red">
                 {{ $t('cart.orderingUnavailable') }}
             </p>
             <div class="safe-area-spacer-bottom" />
@@ -213,18 +213,18 @@
 
         <!-- ═══ EMPTY STATE ═══ -->
         <div v-else data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
-            <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-5">
-                <svg class="w-9 h-9 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <div class="w-20 h-20 rounded-full bg-ygf-gray-100 flex items-center justify-center mb-5">
+                <svg class="w-9 h-9 text-ygf-gray-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                     <line x1="3" y1="6" x2="21" y2="6"/>
                     <path d="M16 10a4 4 0 01-8 0"/>
                 </svg>
             </div>
-            <p class="text-lg font-semibold text-gray-800 mb-1">{{ $t('cart.empty') }}</p>
-            <p class="text-sm text-gray-400 text-center mb-6">{{ $t('cart.emptyHint', 'Browse the menu to add your favorites') }}</p>
+            <p class="text-lg font-semibold text-ygf-black mb-1">{{ $t('cart.empty') }}</p>
+            <p class="text-sm text-ygf-gray-400 text-center mb-6">{{ $t('cart.emptyHint', 'Browse the menu to add your favorites') }}</p>
             <NuxtLinkLocale
                 to="/menu"
-                class="inline-flex min-h-11 items-center justify-center px-8 py-3 rounded-2xl bg-gray-900 text-white text-sm font-semibold active:scale-[0.97] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2"
+                class="btn btn-primary rounded-[var(--radius-lg)]"
             >
                 {{ $t('nav.menu') }}
             </NuxtLinkLocale>

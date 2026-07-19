@@ -15,24 +15,24 @@
                 v-if="cartStore.isCartVisible"
                 data-testid="cart-mobile"
                 aria-labelledby="cart-heading"
-                class="fixed bottom-0 inset-x-0 bg-ygf-bg z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
+                class="fixed bottom-0 inset-x-0 bg-ygf-cream z-[60] flex flex-col max-h-[85vh] rounded-t-[var(--radius-lg)] shadow-ygf-lg"
             >
             <!-- Drag Handle -->
             <div class="flex justify-center pt-3 pb-1">
-                <div class="w-10 h-1 rounded-full bg-gray-300" />
+                <div class="w-10 h-1 rounded-full bg-ygf-gray-200" />
             </div>
 
             <!-- HEADER -->
-            <header class="flex items-center justify-between px-4 pb-3 border-b border-gray-200">
-                <h2 id="cart-heading" class="text-xl font-semibold text-gray-800">
+            <header class="flex items-center justify-between px-4 pb-3 border-b border-ygf-gray-200">
+                <h2 id="cart-heading" class="text-xl font-bold text-ygf-black">
                     {{ $t('cart.title') }}
                 </h2>
                 <button
                     :aria-label="$t('cart.closeCart')"
-                    class="p-2 rounded-full hover:bg-gray-100"
+                    class="p-2 rounded-full hover:bg-ygf-orange-bg focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2 transition-colors"
                     @click="cartStore.toggleCartVisibility"
                 >
-                    <svg class="h-6 w-6 text-gray-700" fill="none" stroke="currentColor">
+                    <svg class="h-6 w-6 text-ygf-black" fill="none" stroke="currentColor">
                         <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </button>
@@ -44,11 +44,11 @@
                     v-for="item in cartStore.products"
                     :key="getItemKey(item)"
                     data-testid="cart-item"
-                    class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
+                    class="card grid grid-cols-6 gap-3 p-3 items-center"
                 >
                     <!-- IMAGE -->
                     <picture
-                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-gray-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-ygf-gray-100 rounded-[var(--radius-md)] overflow-hidden cursor-pointer active:scale-95 transition-transform"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >
                         <source
@@ -73,23 +73,23 @@
 
                     <!-- PRODUCT INFO -->
                     <div class="col-span-3 flex flex-col justify-center text-sm min-w-0">
-                        <span v-if="itemLabelMeta(item)" class="text-xs text-gray-400 truncate">
+                        <span v-if="itemLabelMeta(item)" class="text-xs text-ygf-gray-400 truncate">
                             {{ itemLabelMeta(item) }}
                         </span>
-                        <span class="font-medium text-gray-800 leading-snug line-clamp-2">
+                        <span class="font-medium text-ygf-black leading-snug line-clamp-2">
                             {{ itemLabelName(item) }}
                         </span>
-                        <span v-if="itemChoice(item)" class="text-xs text-ygf-orange-600">
+                        <span v-if="itemChoice(item)" class="text-xs text-ygf-orange-text">
                             ({{ itemChoice(item) }})
                         </span>
                         <span
                             v-if="item.product.pieceCount"
-                            class="text-gray-500 text-xs mt-1"
+                            class="text-ygf-gray-400 text-xs mt-1"
                         >
                           {{ item.product.pieceCount }}
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                         </span>
-                        <span class="text-gray-800 font-medium text-xs mt-1">
+                        <span class="text-ygf-black font-medium text-xs mt-1">
                             {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                         </span>
                     </div>
@@ -99,40 +99,32 @@
                         <button
                             data-testid="cart-item-decrement"
                             :aria-label="$t('cart.decreaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
+                            class="p-1 bg-ygf-orange-bg hover:bg-ygf-orange-light rounded-full flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ygf-orange-bg text-ygf-orange-text transition-colors focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
                             :disabled="hasChoices(item)"
                             :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
                             @click="handleDecrementQuantity(item)"
                         >
-                            <img
-                                src="/icons/minus-icon.svg"
-                                alt="Minus icon"
-                                class="h-4 w-4 flex-shrink-0"
-                            />
+                            <span class="text-lg font-bold">−</span>
                         </button>
-                        <span data-testid="cart-item-quantity" class="text-center text-gray-700">{{ item.quantity }}</span>
+                        <span data-testid="cart-item-quantity" class="text-center text-ygf-black font-semibold">{{ item.quantity }}</span>
                         <button
                             data-testid="cart-item-increment"
                             :aria-label="$t('cart.increaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
+                            class="p-1 bg-ygf-orange-bg hover:bg-ygf-orange-light rounded-full flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ygf-orange-bg text-ygf-orange-text transition-colors focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
                             :disabled="hasChoices(item)"
                             :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
                             @click="handleIncrementQuantity(item)"
                         >
-                            <img
-                                src="/icons/plus-icon.svg"
-                                alt="Plus icon"
-                                class="h-4 w-4 flex-shrink-0"
-                            />
+                            <span class="text-lg font-bold">+</span>
                         </button>
                     </div>
-                    <p v-if="hasChoices(item)" class="col-span-6 text-[11px] text-gray-400 italic mt-1">
+                    <p v-if="hasChoices(item)" class="col-span-6 text-[11px] text-ygf-gray-400 italic mt-1">
                         {{ $t('cart.customizedItemHint') }}
                     </p>
                 </li>
 
                 <!-- EMPTY STATE -->
-                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
+                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-ygf-gray-400">
                     <img
                         src="/icons/shopping-bag-icon.svg"
                         alt="Empty cart"
@@ -143,48 +135,48 @@
             </ul>
 
             <!-- FOOTER: TOTAL + CHECKOUT -->
-            <footer v-if="cartStore.products.length" class="p-4 border-t border-gray-200 bg-white rounded-b-none">
+            <footer v-if="cartStore.products.length" class="p-4 border-t border-ygf-gray-200 bg-ygf-white rounded-b-none">
                 <div class="space-y-1.5 text-sm mb-4">
-                    <div v-if="hasBreakdown" class="flex justify-between text-gray-500">
+                    <div v-if="hasBreakdown" class="flex justify-between text-ygf-gray-600">
                         <span>{{ $t('cart.subtotal') }}</span>
                         <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                     </div>
-                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500">
+                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-ygf-gray-600">
                         <span>{{ $t('cart.deliveryFee') }}</span>
-                        <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                        <span v-if="!cartStore.address?.distance" class="text-ygf-gray-400 italic text-xs">
                             {{ $t('cart.deliveryTbd') }}
                         </span>
-                        <span v-else-if="deliveryFee === -1" class="text-ygf-orange-500 font-medium text-xs">
+                        <span v-else-if="deliveryFee === -1" class="text-ygf-red font-medium text-xs">
                             {{ $t('checkout.tooFar') }}
                         </span>
-                        <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-ygf-orange-100 text-ygf-orange-700 text-[11px] font-semibold uppercase tracking-wide">
+                        <span v-else-if="deliveryFee === 0" class="chip chip-static bg-ygf-orange-bg text-ygf-orange-text text-[11px]">
                             {{ $t('checkout.free') }}
                         </span>
                         <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                     </div>
-                    <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                    <div v-if="pickupDiscount > 0" class="flex justify-between text-ygf-success">
                         <span>{{ $t('cart.pickupDiscount') }}</span>
                         <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                     </div>
-                    <div v-if="couponDiscount > 0" class="flex justify-between text-ygf-orange-600">
+                    <div v-if="couponDiscount > 0" class="flex justify-between text-ygf-orange-text">
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                     </div>
-                    <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
-                        <span class="font-medium text-gray-700">{{ $t('cart.total') }}</span>
-                        <span data-testid="cart-total" class="text-lg font-semibold text-gray-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-ygf-gray-200">
+                        <span class="font-medium text-ygf-black">{{ $t('cart.total') }}</span>
+                        <span data-testid="cart-total" class="text-lg font-semibold text-ygf-black tabular-nums">{{ formatPrice(displayTotal) }}</span>
                     </div>
                 </div>
-                <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
+                <div v-if="!isOrderingAvailable" class="text-sm text-ygf-red text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
                 </div>
                 <NuxtLinkLocale
                     to="checkout"
                     :class="[
-                        'block text-center uppercase py-3 rounded-lg transition-all',
+                        'btn block text-center transition-all',
                         isOrderingAvailable
-                            ? 'bg-gray-800 text-white hover:bg-gray-900 active:scale-[0.97]'
-                            : 'bg-gray-300 text-gray-500 pointer-events-none'
+                            ? 'btn-primary'
+                            : 'opacity-45 pointer-events-none'
                     ]"
                     :tabindex="isOrderingAvailable ? 0 : -1"
                     :aria-disabled="!isOrderingAvailable"

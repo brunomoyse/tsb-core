@@ -12,7 +12,7 @@
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="delivery-zone-modal-title"
-                    class="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-lg sm:mx-4 p-6 sm:p-7 max-h-[90vh] overflow-y-auto"
+                    class="relative bg-ygf-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-lg sm:mx-4 p-6 sm:p-7 max-h-[90vh] overflow-y-auto"
                     @click.stop
                 >
                     <!-- Close button -->
@@ -20,25 +20,22 @@
                         type="button"
                         @click="close"
                         :aria-label="$t('common.close')"
-                        class="absolute top-3 right-3 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        class="absolute top-3 right-3 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-ygf-gray-400 hover:text-ygf-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                     >
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
 
-                    <!-- Header with Japanese accent -->
+                    <!-- Header -->
                     <header class="mb-5 pr-10">
-                        <div class="flex items-baseline gap-2">
-                            <h2
-                                id="delivery-zone-modal-title"
-                                class="text-base sm:text-2xl font-semibold text-gray-900 tracking-wide leading-tight"
-                            >
-                                {{ $t('delivery.modal.title') }}
-                            </h2>
-                            <span class="text-ygf-orange-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達</span>
-                        </div>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
+                        <h2
+                            id="delivery-zone-modal-title"
+                            class="text-base sm:text-2xl font-semibold text-ygf-black tracking-wide leading-tight"
+                        >
+                            {{ $t('delivery.modal.title') }}
+                        </h2>
+                        <p class="text-xs sm:text-sm text-ygf-gray-400 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
                     </header>
 
                     <DeliveryZonePicker

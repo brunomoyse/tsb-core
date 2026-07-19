@@ -427,5 +427,23 @@
   "orderCompleted": {
     "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 286 68 20 voor meer informatie.",
     "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Stel je bowl samen",
+    "title": "Jouw bowl op maat",
+    "heroSubtitle": "Kies je bouillon, vul je kom ingrediënt per ingrediënt, bepaal de pittigheid. Vers bereid, speciaal voor jou.",
+    "open": "Mijn bowl samenstellen",
+    "step": "Stap {n}",
+    "chosen": "Gekozen",
+    "selectedCount": "{count}/{max} gekozen",
+    "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten"
+  },
+  "nav": {
+    "primary": "Hoofdnavigatie",
+    "secondary": "Voettekstlinks",
+    "callRestaurant": "Bel het restaurant"
+  },
+  "common": {
+    "clear": "Wissen"
   }
 }

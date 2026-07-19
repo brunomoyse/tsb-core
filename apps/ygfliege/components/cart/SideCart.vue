@@ -3,11 +3,11 @@
         data-testid="side-cart"
         class="
             bg-ygf-cream
-            rounded-l-xl
+            rounded-l-[var(--radius-lg)]
             flex
             flex-col
             divide-y
-            divide-gray-200
+            divide-ygf-gray-200
             max-h-[calc(100vh-32px)]
             overflow-y-auto
             mt-4
@@ -15,17 +15,17 @@
     >
         <!-- Header with Toggle -->
         <header class="px-4 py-5 flex items-center justify-between gap-4">
-            <h2 class="text-xl font-bold text-gray-900">
+            <h2 class="text-xl font-bold text-ygf-black">
                 {{ $t('cart.title') }}
             </h2>
-            <div class="flex gap-1 rounded-full bg-gray-100 p-1">
+            <div class="flex gap-1 rounded-[var(--radius-btn)] bg-ygf-white border border-ygf-gray-200 p-1">
                 <button v-for="option in collectionOptions" :key="option.value"
                         :data-testid="option.value === 'DELIVERY' ? 'cart-option-delivery' : 'cart-option-pickup'"
                         :class="[
-          'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
+          'chip text-sm transition-all',
           cartStore.collectionOption === option.value
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-500 hover:bg-ygf-orange-100/40'
+            ? 'chip-selected'
+            : ''
         ]"
                         @click="handleOrderType(option.value)">
                     <img :alt="option.label" :src="option.icon" class="w-5 h-5"/>
@@ -36,17 +36,17 @@
 
         <!-- Cart Items -->
         <div class="flex-1 overflow-y-auto p-4 space-y-4">
-            <p v-if="cartStore.products.length === 0" class="text-gray-500 text-center py-8">
+            <p v-if="cartStore.products.length === 0" class="text-ygf-gray-400 text-center py-8">
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
                 <div v-for="item in cartStore.products" :key="getItemKey(item)"
                      data-testid="cart-item"
-                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
-                     :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
+                     class="card group relative grid grid-cols-[auto_1fr] gap-4 p-3"
+                     :class="{ 'card-selected': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
                     <div
-                        class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                        class="w-12 h-12 rounded-[var(--radius-md)] overflow-hidden bg-ygf-gray-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
                         @click="openLightbox(item.product?.id, item.product.name)"
                     >
                         <picture>
@@ -73,39 +73,39 @@
                         <!-- Product Info and Price -->
                         <div class="flex justify-between items-start gap-2">
                             <div class="flex flex-col min-w-0 flex-1">
-                                <p v-if="itemLabelMeta(item)" class="text-xs text-gray-400 truncate">
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-ygf-gray-400 truncate">
                                     {{ itemLabelMeta(item) }}
                                 </p>
-                                <h3 class="text-sm font-medium text-gray-900 leading-snug line-clamp-2">
+                                <h3 class="text-sm font-medium text-ygf-black leading-snug line-clamp-2">
                                     {{ itemLabelName(item) }}
                                 </h3>
-                                <span v-if="itemChoice(item)" class="text-xs text-ygf-orange-600">
+                                <span v-if="itemChoice(item)" class="text-xs text-ygf-orange-text">
                                     ({{ itemChoice(item) }})
                                 </span>
-                                <span v-if="item.product.pieceCount" class="text-xs text-gray-500">
+                                <span v-if="item.product.pieceCount" class="text-xs text-ygf-gray-400">
                                     {{ item.product.pieceCount }}
                                     {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                                 </span>
                             </div>
-                            <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
+                            <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start text-ygf-black">
                                 {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                             </span>
                         </div>
 
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
-                            <div class="flex items-center gap-2">
+                            <div class="stepper">
                                 <button data-testid="cart-item-decrement"
-                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-ygf-orange-100/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                                        class="stepper-btn"
                                         :disabled="hasChoices(item)"
                                         :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)">
                                     <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
-                                    -
+                                    −
                                 </button>
-                                <span data-testid="cart-item-quantity" class="text-sm w-6 text-center">{{ item.quantity }}</span>
+                                <span data-testid="cart-item-quantity" class="stepper-value">{{ item.quantity }}</span>
                                 <button data-testid="cart-item-increment"
-                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-ygf-orange-100/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                                        class="stepper-btn"
                                         :disabled="hasChoices(item)"
                                         :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)">
@@ -113,12 +113,12 @@
                                     +
                                 </button>
                             </div>
-                            <button data-testid="cart-item-remove" class="text-xs text-red-600 hover:text-red-700 transition-colors"
+                            <button data-testid="cart-item-remove" class="btn-link text-xs"
                                     @click="handleRemoveFromCart(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>
                         </div>
-                        <p v-if="hasChoices(item)" class="text-[11px] text-gray-400 italic mt-1">
+                        <p v-if="hasChoices(item)" class="text-[11px] text-ygf-gray-400 italic mt-1">
                             {{ $t('cart.customizedItemHint') }}
                         </p>
                     </div>
@@ -130,44 +130,44 @@
         <footer class="p-4 space-y-4 flex-none">
             <!-- Price Breakdown -->
             <div class="space-y-2">
-                <div v-if="hasBreakdown" class="flex justify-between items-center text-sm text-gray-600">
+                <div v-if="hasBreakdown" class="flex justify-between items-center text-sm text-ygf-gray-600">
                     <span>{{ $t('cart.subtotal') }}:</span>
                     <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-gray-600">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-ygf-gray-600">
                     <span>{{ $t('cart.deliveryFee') }}:</span>
-                    <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
+                    <span v-if="!cartStore.address?.distance" class="text-ygf-gray-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-ygf-orange-500 font-medium text-xs">
+                    <span v-else-if="deliveryFee === -1" class="text-ygf-red font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-ygf-orange-100 text-ygf-orange-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFee === 0" class="chip chip-static bg-ygf-orange-bg text-ygf-orange-text text-[11px]">
                         {{ $t('checkout.free') }}
                     </span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="pickupDiscount > 0" class="flex justify-between items-center text-sm text-ygf-success">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-ygf-orange-600">
+                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-ygf-orange-text">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
-                <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
+                <div class="flex justify-between items-center text-lg font-medium border-t border-ygf-gray-200 pt-2 text-ygf-black">
                     <span>{{ $t('cart.total') }}:</span>
                     <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(displayTotal) }}</span>
                 </div>
             </div>
 
             <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
-            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-ygf-orange-600 text-center">
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-ygf-orange-text text-center">
                 {{ $t('cart.minimumDelivery', { amount: 25}) }}
             </div>
 
             <!-- Ordering Unavailable Warning -->
-            <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center">
+            <div v-if="!isOrderingAvailable" class="text-sm text-ygf-red text-center">
                 {{ $t('cart.orderingUnavailable') }}
             </div>
 
@@ -176,10 +176,10 @@
                 to="checkout"
                 data-testid="cart-checkout-link"
                 :class="[
-                    'w-full py-3 rounded-lg font-medium transition-all active:scale-[0.97] text-center block',
+                    'btn block text-center',
                     isMinimumReached && isOrderingAvailable
-                      ? 'bg-ygf-orange-500 text-white hover:bg-ygf-orange-600'
-                      : 'bg-gray-300 text-gray-500 pointer-events-none'
+                      ? 'btn-primary'
+                      : 'opacity-45 pointer-events-none'
                 ]"
                 :tabindex="isMinimumReached && isOrderingAvailable ? 0 : -1"
                 :aria-disabled="!isMinimumReached || !isOrderingAvailable"

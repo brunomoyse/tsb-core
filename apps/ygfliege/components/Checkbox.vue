@@ -2,9 +2,12 @@
     <label class="flex items-center space-x-2 cursor-pointer">
         <input v-model="checked" class="hidden peer" type="checkbox">
         <div
-            class="w-5 h-5 border border-gray-300 rounded-md flex items-center justify-center peer-checked:bg-ygf-orange-500 transition-colors duration-200">
+            class="w-5 h-5 rounded-md flex items-center justify-center transition-colors duration-200"
+            :style="checked
+                ? { 'background-color': 'var(--ygf-orange-on-white)', 'border-color': 'var(--ygf-orange-on-white)', 'border-width': '1px' }
+                : { 'border-color': 'rgba(242, 123, 32, 0.3)', 'border-width': '1px' }">
             <Transition name="check-bounce">
-                <svg v-if="checked" class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                <svg v-if="checked" class="w-4 h-4 text-ygf-white" fill="none" stroke="currentColor"
                      stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>

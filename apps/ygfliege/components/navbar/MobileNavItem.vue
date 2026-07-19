@@ -4,11 +4,13 @@
         <NuxtLinkLocale
             :to="to"
             :aria-label="label"
-            active-class="bg-ygf-orange-100 text-ygf-orange-700"
-            class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-ygf-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus-visible:ring-offset-2"
+            active-class="bg-white/20 font-semibold"
+            class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         >
-            <img :alt="label" :src="icon" class="w-6 h-6"/>
-            <span class="text-sm font-medium">{{ label }}</span>
+            <!-- Icons are brand-orange glyphs; invert them so they read on the
+                 orange overlay. Decorative — the label carries the meaning. -->
+            <img v-if="icon" :src="icon" alt="" aria-hidden="true" class="w-5 h-5 brightness-0 invert"/>
+            <span class="text-base font-medium">{{ label }}</span>
         </NuxtLinkLocale>
     </li>
 </template>

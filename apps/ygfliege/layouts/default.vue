@@ -13,68 +13,67 @@
         </Head>
 
         <Body class="bg-ygf-bg overflow-x-hidden">
-        <NuxtLoadingIndicator color="#DC2626" :height="2" />
+        <NuxtLoadingIndicator color="#F58220" :height="2" />
         <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ygf-orange-500">
             {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-screen flex flex-col">
-            <header>
+            <!-- display:contents — a plain <header> box would be TopNavbar's
+                 containing block, exactly nav-height, so sticky couldn't stick. -->
+            <header class="contents">
                 <MobileNavbar/>
                 <div class="mobile-only h-20"/>
-                <SideNavbar/>
+                <TopNavbar/>
             </header>
 
             <main
                 id="main-content"
-                class="flex-1 bg-ygf-bg px-4 sm:ml-[142px] overflow-x-clip pb-4"
+                class="flex-1 bg-ygf-bg overflow-x-clip pb-4"
             >
                 <slot/>
             </main>
 
-            <footer class="p-4 sm:ml-[142px] text-xs text-gray-600">
-                <!-- Decorative steam-wisp divider (rising malatang steam) -->
-                <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
-                    <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-gray-200" />
-                    <svg class="w-6 h-6 text-ygf-orange-300/60" viewBox="0 0 100 60" fill="none">
-                        <path d="M35 55 C30 45 40 38 35 28 C30 18 40 12 37 5" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/>
-                        <path d="M52 58 C47 48 57 40 52 30 C47 20 57 13 54 6" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6"/>
-                        <path d="M69 55 C64 45 74 38 69 28 C64 18 74 12 71 5" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.35"/>
-                    </svg>
-                    <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-gray-200" />
-                </div>
+            <!-- Black footer with white logo, per GUIDELINES.md §4.5. -->
+            <footer class="bg-ygf-black text-white/70 mt-12">
+                <div class="max-w-7xl mx-auto px-6 py-10 sm:py-12">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
+                        <div class="space-y-3">
+                            <img src="/images/logos/logo-white.svg" :alt="`${brand.name} logo`" width="120" height="40" class="h-10 w-auto" loading="lazy" />
+                            <address class="not-italic text-sm leading-relaxed">
+                                {{ brand.address.street }}<br>
+                                {{ brand.address.postal }} {{ brand.address.city }}<br>
+                                <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`" class="hover:text-white transition-colors">{{ brand.phone }}</a>
+                            </address>
+                        </div>
 
-                <div class="flex flex-wrap items-center justify-center gap-3">
-                    <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/concept">
-                        {{ $t('mkt.nav.concept') }}
-                    </NuxtLinkLocale>
-                    <span class="text-gray-300">|</span>
-                    <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/about">
-                        {{ $t('mkt.nav.about') }}
-                    </NuxtLinkLocale>
-                    <span class="text-gray-300">|</span>
-                    <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/terms">
-                        {{ $t('footer.terms') }}
-                    </NuxtLinkLocale>
-                    <span class="text-gray-300">|</span>
-                    <NuxtLinkLocale class="text-gray-600 hover:text-gray-800 transition-colors" to="/privacy">
-                        {{ $t('footer.privacy') }}
-                    </NuxtLinkLocale>
-                    <span class="text-gray-300">|</span>
-                    <!-- Official YGF-branded social icons (orange squares, from the brand kit) -->
-                    <a :href="brand.socials.instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                        <img src="/images/icons/social-instagram.svg" alt="" class="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" loading="lazy" />
-                    </a>
-                    <a :href="brand.socials.tiktok" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                        <img src="/images/icons/social-tiktok.svg" alt="" class="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" loading="lazy" />
-                    </a>
-                    <a :href="brand.socials.rednote" target="_blank" rel="noopener noreferrer" aria-label="RedNote">
-                        <img src="/images/icons/social-rednote.svg" alt="" class="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" loading="lazy" />
-                    </a>
-                </div>
-                <!-- Restaurant name -->
-                <p class="text-center mt-2 text-[11px] text-gray-400/70 tracking-[0.3em] font-light" aria-hidden="true">{{ brand.name }}</p>
-                <div class="text-center mt-2 text-[10px] text-gray-500">
-                    <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-gray-500 transition-colors">nuagemagique.dev</a>
+                        <nav :aria-label="$t('nav.secondary')" class="flex flex-col gap-2 text-sm">
+                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/concept">{{ $t('mkt.nav.concept') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/about">{{ $t('mkt.nav.about') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/terms">{{ $t('footer.terms') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/privacy">{{ $t('footer.privacy') }}</NuxtLinkLocale>
+                        </nav>
+
+                        <!-- Official YGF-branded social icons (orange squares, from the brand kit) -->
+                        <div class="flex items-center gap-3">
+                            <a :href="brand.socials.instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
+                                <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                            </a>
+                            <a :href="brand.socials.tiktok" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
+                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
+                                <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                            </a>
+                            <a :href="brand.socials.rednote" target="_blank" rel="noopener noreferrer" aria-label="RedNote"
+                               class="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors">
+                                <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-5 h-5" loading="lazy" />
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-white/50">
+                        <p translate="no">{{ brand.name }}</p>
+                        <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">nuagemagique.dev</a>
+                    </div>
                 </div>
             </footer>
         </div>
@@ -108,7 +107,7 @@
 
 <script lang="ts" setup>
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
-import SideNavbar from '~/components/navbar/SideNavbar.vue'
+import TopNavbar from '~/components/navbar/TopNavbar.vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'

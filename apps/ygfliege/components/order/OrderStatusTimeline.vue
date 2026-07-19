@@ -1,7 +1,7 @@
 <template>
     <div class="relative pl-4">
         <!-- Vertical line -->
-        <div class="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-gray-200" />
+        <div class="absolute left-[3px] top-1.5 bottom-1.5 w-px" style="background-color: rgba(242, 123, 32, 0.15)" />
 
         <div
             v-for="(status, index) in statuses"
@@ -13,15 +13,17 @@
             <div class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
                 <div
                     v-if="isCurrent(index)"
-                    class="w-[7px] h-[7px] rounded-full bg-ygf-orange-500 stone-ripple"
+                    class="w-[7px] h-[7px] rounded-full stone-ripple"
+                    style="background-color: var(--ygf-orange-on-white)"
                 />
                 <div
                     v-else-if="isPast(index) || isCompletedLast(index)"
-                    class="w-[7px] h-[7px] rounded-full bg-emerald-500"
+                    class="w-[7px] h-[7px] rounded-full bg-ygf-success"
                 />
                 <div
                     v-else
-                    class="w-[7px] h-[7px] rounded-full border border-gray-300 bg-white"
+                    class="w-[7px] h-[7px] rounded-full bg-ygf-white"
+                    style="border-color: rgba(242, 123, 32, 0.15)"
                 />
             </div>
 
@@ -29,10 +31,10 @@
             <span
                 class="text-sm leading-tight"
                 :class="isCurrent(index)
-                    ? 'font-semibold text-gray-900'
+                    ? 'font-semibold text-ygf-black'
                     : isPast(index) || isCompletedLast(index)
-                        ? 'text-gray-600'
-                        : 'text-gray-300'"
+                        ? 'text-ygf-gray-600'
+                        : 'text-ygf-gray-400'"
             >
                 {{ getStatusTitle(status) }}
             </span>
@@ -84,15 +86,15 @@ const isPast = (index: number) => {
 }
 
 @keyframes ripple {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-    70% { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(242, 123, 32, 0.35); }
+    70% { box-shadow: 0 0 0 5px rgba(242, 123, 32, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(242, 123, 32, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .stone-ripple {
         animation: none;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        box-shadow: 0 0 0 3px rgba(242, 123, 32, 0.15);
     }
 }
 </style>

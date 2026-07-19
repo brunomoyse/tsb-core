@@ -6,11 +6,11 @@
   TODO: confirm final pricing + backend contract before importing.
 -->
 <template>
-    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h2 class="text-lg font-bold text-gray-900">
+    <section class="card p-5">
+        <h2 class="text-lg font-bold text-ygf-black">
             {{ $t('checkout.addExtras', 'Add some extras?') }}
         </h2>
-        <p class="text-sm text-gray-600 mt-1 mb-4">
+        <p class="text-sm text-ygf-gray-400 mt-1 mb-4">
             {{ $t('checkout.extrasDescription', 'Complete your order with some accompaniments') }}
         </p>
 
@@ -20,21 +20,21 @@
                 :key="extra.key"
                 class="flex items-center justify-between gap-3 p-4 border rounded-xl cursor-pointer transition-colors"
                 :class="isSelected(extra.key)
-                    ? 'border-ygf-orange-300 bg-ygf-orange-100'
-                    : 'border-gray-200 bg-white hover:border-gray-300'"
+                    ? 'border-ygf-orange bg-ygf-orange-bg'
+                    : 'border-subtle bg-ygf-white hover:border-ygf-orange'"
             >
                 <span class="flex items-center gap-3 min-w-0">
                     <input
                         type="checkbox"
                         :checked="isSelected(extra.key)"
-                        class="h-5 w-5 text-ygf-orange-500 border-gray-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        class="h-5 w-5 text-ygf-orange-on-white border-subtle rounded shrink-0 focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                         @change="toggle(extra.key)"
                     />
-                    <span :class="['text-sm font-medium truncate', isSelected(extra.key) ? 'text-ygf-orange-700' : 'text-gray-800']">
+                    <span :class="['text-sm font-medium truncate', isSelected(extra.key) ? 'text-ygf-orange-text' : 'text-ygf-black']">
                         {{ extra.label }}
                     </span>
                 </span>
-                <span :class="['text-sm font-semibold shrink-0 tabular-nums', isSelected(extra.key) ? 'text-ygf-orange-700' : 'text-gray-900']">
+                <span :class="['text-sm font-semibold shrink-0 tabular-nums', isSelected(extra.key) ? 'text-ygf-orange-text' : 'text-ygf-black']">
                     +{{ formatPrice(extra.price) }}
                 </span>
             </label>

@@ -1,6 +1,6 @@
 <template>
-    <section id="checkout-payment-extras" tabindex="-1" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 w-full mx-auto space-y-6">
-        <h2 class="text-lg font-bold text-gray-900">
+    <section id="checkout-payment-extras" tabindex="-1" class="card p-5 w-full mx-auto space-y-6">
+        <h2 class="text-lg font-bold text-ygf-black">
             {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
         </h2>
 
@@ -24,7 +24,7 @@
                     @click="setOnlinePayment(true)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-            isOnlinePayment ? 'border-ygf-orange-300 bg-ygf-orange-100' : 'border-gray-200 bg-white'
+            isOnlinePayment ? 'border-ygf-orange bg-ygf-orange-bg' : 'border-subtle bg-ygf-white'
           ]"
                 >
                     <img src="/icons/online-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
@@ -41,7 +41,7 @@
                     @click="setOnlinePayment(false)"
                     :class="[
             'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-            !isOnlinePayment ? 'border-ygf-orange-300 bg-ygf-orange-100' : 'border-gray-200 bg-white'
+            !isOnlinePayment ? 'border-ygf-orange bg-ygf-orange-bg' : 'border-subtle bg-ygf-white'
           ]"
                 >
                     <img src="/icons/cash-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
@@ -57,8 +57,8 @@
                 :class="[
                     'mt-4 rounded-lg border p-4 space-y-3 transition-colors',
                     showCashAckError
-                        ? 'bg-ygf-orange-50 border-ygf-orange-300 ring-2 ring-ygf-orange-300/60'
-                        : cashAcknowledgedModel ? 'bg-gray-50 border-gray-200' : 'bg-amber-50 border-amber-200'
+                        ? 'bg-ygf-orange-bg border-ygf-orange ring-2 ring-ygf-orange/40'
+                        : cashAcknowledgedModel ? 'bg-ygf-gray-100 border-subtle' : 'bg-amber-50 border-amber-200'
                 ]"
             >
                 <div v-if="!cashAcknowledgedModel" class="flex items-start gap-3">
@@ -79,12 +79,12 @@
                         :class="[
                             'mt-0.5 h-5 w-5 rounded shrink-0 focus-visible:ring-2',
                             showCashAckError
-                                ? 'text-ygf-orange-600 border-ygf-orange-500 focus-visible:ring-ygf-orange-400'
-                                : 'text-ygf-orange-500 border-gray-300 focus-visible:ring-ygf-orange-300'
+                                ? 'text-ygf-orange-on-white border-ygf-orange focus-visible:ring-ygf-orange'
+                                : 'text-ygf-orange-on-white border-subtle focus-visible:ring-ygf-orange-300'
                         ]"
                     />
-                    <span v-if="cashAcknowledgedModel" class="inline-flex items-center gap-1.5 text-sm text-gray-700 font-medium">
-                        <svg class="w-4 h-4 text-ygf-orange-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <span v-if="cashAcknowledgedModel" class="inline-flex items-center gap-1.5 text-sm text-ygf-black font-medium">
+                        <svg class="w-4 h-4 text-ygf-orange-on-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $t('checkout.cashAcknowledged') }}
@@ -95,9 +95,9 @@
                 </label>
 
                 <div>
-                    <label for="cash-payment-amount" :class="['block text-sm font-medium mb-1', cashAcknowledgedModel ? 'text-gray-800' : 'text-amber-900']">
+                    <label for="cash-payment-amount" :class="['block text-sm font-medium mb-1', cashAcknowledgedModel ? 'text-ygf-black' : 'text-amber-900']">
                         {{ $t('checkout.cashAmountLabel') }}
-                        <span :class="['text-xs font-normal', cashAcknowledgedModel ? 'text-gray-500' : 'text-amber-700/70']">{{ $t('checkout.optional') }}</span>
+                        <span :class="['text-xs font-normal', cashAcknowledgedModel ? 'text-ygf-gray-400' : 'text-amber-700/70']">{{ $t('checkout.optional') }}</span>
                     </label>
                     <div class="relative">
                         <input
@@ -110,13 +110,13 @@
                             autocomplete="off"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
                             :class="[
-                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-gray-900 placeholder-gray-400 focus-visible:outline-none transition-all duration-300',
+                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-ygf-white text-sm text-ygf-black placeholder-ygf-gray-400 focus-visible:outline-none transition-all duration-normal',
                                 cashAcknowledgedModel
-                                    ? 'border-gray-200 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300'
+                                    ? 'border-subtle focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange'
                                     : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:border-amber-400',
                             ]"
                         />
-                        <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-gray-500' : 'text-amber-700']">€</span>
+                        <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-ygf-gray-400' : 'text-amber-700']">€</span>
                     </div>
                 </div>
             </div>
@@ -129,20 +129,20 @@
             </h3>
             <div class="grid grid-cols-1 gap-4">
                 <!-- Chopsticks Card -->
-                <div class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div class="flex items-center p-4 border border-subtle rounded-lg bg-ygf-gray-100">
                     <input
                         type="checkbox"
                         id="chopsticks"
                         v-model="addChopsticks"
-                        class="mr-4 h-5 w-5 text-ygf-orange-500 border-gray-300 rounded"
+                        class="mr-4 h-5 w-5 text-ygf-orange-on-white border-subtle rounded"
                     />
-                    <label for="chopsticks" class="text-gray-700 font-medium">
+                    <label for="chopsticks" class="text-ygf-black font-medium">
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
                     </label>
                 </div>
                 <!-- Wasabi Card -->
                 <div
-                    class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    class="flex items-center p-4 border border-subtle rounded-lg bg-ygf-gray-100 transition-opacity"
                     :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <input
@@ -150,15 +150,15 @@
                         id="wasabi"
                         v-model="addWasabi"
                         :disabled="isTokyoHotOnlyCart"
-                        class="mr-4 h-5 w-5 text-ygf-orange-500 border-gray-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-5 w-5 text-ygf-orange-on-white border-subtle rounded disabled:cursor-not-allowed"
                     />
-                    <label for="wasabi" class="text-gray-700 font-medium">
+                    <label for="wasabi" class="text-ygf-black font-medium">
                         {{ $t('checkout.addWasabi') }}
                     </label>
                 </div>
                 <!-- Ginger Card -->
                 <div
-                    class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    class="flex items-center p-4 border border-subtle rounded-lg bg-ygf-gray-100 transition-opacity"
                     :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <input
@@ -166,15 +166,15 @@
                         id="ginger"
                         v-model="addGinger"
                         :disabled="isTokyoHotOnlyCart"
-                        class="mr-4 h-5 w-5 text-ygf-orange-500 border-gray-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-5 w-5 text-ygf-orange-on-white border-subtle rounded disabled:cursor-not-allowed"
                     />
-                    <label for="ginger" class="text-gray-700 font-medium">
+                    <label for="ginger" class="text-ygf-black font-medium">
                         {{ $t('checkout.addGinger') }}
                     </label>
                 </div>
                 <!-- Soy Sauce -->
                 <div
-                    class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-opacity"
+                    class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-subtle rounded-lg bg-ygf-gray-100 transition-opacity"
                     :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <div class="flex items-center gap-4 shrink-0">
@@ -183,10 +183,10 @@
                             id="add-sauce"
                             :checked="addSauce"
                             :disabled="isTokyoHotOnlyCart"
-                            class="h-5 w-5 text-ygf-orange-500 border-gray-300 rounded disabled:cursor-not-allowed"
+                            class="h-5 w-5 text-ygf-orange-on-white border-subtle rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
-                        <label for="add-sauce" class="text-gray-700 font-medium">
+                        <label for="add-sauce" class="text-ygf-black font-medium">
                             {{ $t('checkout.addSoySauce') }}
                         </label>
                     </div>
@@ -201,8 +201,8 @@
                             :class="[
                                 'px-3 py-1.5 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
                                 sauce === option.value
-                                    ? 'border-ygf-orange-300 bg-ygf-orange-100 text-ygf-orange-700 font-medium'
-                                    : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                                    ? 'border-ygf-orange bg-ygf-orange-bg text-ygf-orange-text font-medium'
+                                    : 'border-subtle bg-ygf-white text-ygf-gray-400 hover:border-ygf-orange'
                             ]"
                         >
                             {{ option.label }}
@@ -211,7 +211,7 @@
                 </div>
             </div>
             <div v-if="paidExtras.length > 0" class="mt-4">
-                <p class="text-xs font-semibold uppercase tracking-wide text-ygf-orange-700 mb-2">
+                <p class="text-xs font-semibold uppercase tracking-wide text-ygf-orange-text mb-2">
                     {{ $t('checkout.paidExtra', 'Paid extra') }}
                 </p>
                 <div class="flex flex-wrap gap-2">
@@ -223,11 +223,11 @@
                             :aria-pressed="false"
                             :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
                             @click="incrementPaidExtra(extra.code)"
-                            class="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white text-gray-700 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-gray-400"
+                            class="inline-flex items-center gap-2 rounded-full border border-subtle bg-ygf-white text-ygf-gray-400 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-ygf-orange"
                             :class="!extra.isAvailable ? 'opacity-50 cursor-not-allowed' : ''"
                         >
                             <span>{{ extra.label }}</span>
-                            <span class="rounded-full bg-white/80 border border-gray-200 px-2 py-0.5 tabular-nums">
+                            <span class="rounded-full bg-ygf-white/80 border border-subtle px-2 py-0.5 tabular-nums">
                                 +{{ formatPrice(extra.price) }}
                             </span>
                         </button>
@@ -242,13 +242,13 @@
                                 :disabled="!extra.isAvailable || extra.quantity >= MAX_ITEM_QUANTITY"
                                 :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
                                 @click="incrementPaidExtra(extra.code)"
-                                class="inline-flex items-center gap-2 rounded-l-full border border-ygf-orange-300 bg-ygf-orange-100 text-ygf-orange-700 font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex items-center gap-2 rounded-l-full border border-ygf-orange bg-ygf-orange-bg text-ygf-orange-text font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span>{{ extra.label }}</span>
                                 <span
-                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-ygf-orange-500 text-white text-[10px] font-semibold tabular-nums px-1.5"
+                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-ygf-orange-on-white text-white text-[10px] font-semibold tabular-nums px-1.5"
                                 >×{{ extra.quantity }}</span>
-                                <span class="rounded-full bg-white/80 border border-ygf-orange-200 px-2 py-0.5 tabular-nums">
+                                <span class="rounded-full bg-ygf-white/80 border border-ygf-orange/20 px-2 py-0.5 tabular-nums">
                                     +{{ formatPrice(extra.price) }}
                                 </span>
                             </button>
@@ -256,7 +256,7 @@
                                 type="button"
                                 :aria-label="`${extra.label} — ${$t('cart.decreaseQty')}`"
                                 @click="decrementPaidExtra(extra.code)"
-                                class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-ygf-orange-300 bg-ygf-orange-100 text-ygf-orange-700 hover:bg-ygf-orange-100 transition-colors active:scale-[0.97]"
+                                class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-ygf-orange bg-ygf-orange-bg text-ygf-orange-text hover:bg-ygf-orange-bg transition-colors active:scale-[0.97]"
                             >
                                 <span class="text-sm leading-none" aria-hidden="true">−</span>
                             </button>
@@ -270,7 +270,7 @@
         <div class="mb-6">
             <h3 id="order-comment-label" class="font-medium text-lg mb-2">
                 {{ $t('checkout.orderComment', 'Order Comment') }}
-                <span class="text-gray-400 text-sm font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
+                <span class="text-ygf-gray-400 text-sm font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </h3>
             <textarea
                 v-model="orderComment"
@@ -278,13 +278,13 @@
                 aria-describedby="order-comment-counter"
                 rows="3"
                 maxlength="500"
-                class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                class="w-full bg-ygf-white border border-subtle rounded-xl px-3.5 py-2.5 text-sm text-ygf-black placeholder-ygf-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange focus-visible:outline-none transition-all duration-normal"
                 :placeholder="$t('checkout.orderCommentPlaceholder', 'e.g. Allergies or special instructions')"
             ></textarea>
             <p
                 id="order-comment-counter"
                 class="text-xs mt-1 tabular-nums text-right"
-                :class="orderComment.length >= ORDER_COMMENT_MAX ? 'text-ygf-orange-600 font-medium' : 'text-gray-500'"
+                :class="orderComment.length >= ORDER_COMMENT_MAX ? 'text-ygf-orange-text font-medium' : 'text-ygf-gray-400'"
             >
                 {{ orderComment.length }} / {{ ORDER_COMMENT_MAX }}
             </p>
@@ -299,8 +299,8 @@
         <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
             'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
             !loading && isOrderingAvailable && !isCartEmpty
-              ? 'bg-ygf-orange-500 text-white hover:bg-ygf-orange-600'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
+              ? 'bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover'
+              : 'bg-ygf-gray-200 text-ygf-gray-400 cursor-not-allowed pointer-events-none'
           ]" :disabled="loading || !isOrderingAvailable || isCartEmpty">
             <span v-if="loading" class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -5,9 +5,9 @@
              data-testid="product-card"
              :data-product-id="product.id"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="card card-interactive w-full h-full min-h-[260px] flex flex-col">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
-            <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
+            <div class="flex-1 min-h-0 flex justify-center items-center p-3 bg-ygf-orange-50/40 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
                 <div v-if="product.isHalal || product.isVegetarian || product.isSpicy" class="absolute top-1 right-1 z-10 flex flex-col gap-0.5">
                     <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
@@ -35,11 +35,26 @@
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
                 <!-- Shimmer placeholder -->
-                <div v-if="!loaded"
+                <div v-if="!loaded && !brandPhoto"
                      class="absolute inset-0 animate-shimmer rounded-lg"
                      style="background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;"
                 />
-                <picture class="w-full h-full flex justify-center items-center">
+                <!-- Official bowl photography for the malatang sets; other
+                     products keep the dashboard-uploaded S3 image. Cut-outs
+                     sit on the tinted surface; full-frame shots fill the card. -->
+                <MktPicture
+                    v-if="brandPhoto"
+                    :src="brandPhoto.base"
+                    :widths="brandPhoto.widths ?? PRODUCT_PHOTO_WIDTHS"
+                    :fallback-width="brandPhoto.fallbackWidth ?? 560"
+                    :alt="product.name"
+                    sizes="(min-width: 640px) 300px, 45vw"
+                    :img-class="brandPhoto.cover
+                        ? `w-full h-full object-cover rounded-lg ${!product.isAvailable ? 'grayscale' : ''}`
+                        : `object-contain max-h-full ${!product.isAvailable ? 'grayscale' : ''}`"
+                    :class="brandPhoto.cover ? 'absolute inset-3' : undefined"
+                />
+                <picture v-if="!brandPhoto" class="w-full h-full flex justify-center items-center">
                     <source :srcset="`${productImageBaseSrc}.avif`"
                             type="image/avif"/>
                     <source :srcset="`${productImageBaseSrc}.webp`"
@@ -56,21 +71,21 @@
             </div>
 
             <!-- Product Details (fixed size: does not grow) -->
-            <div class="shrink-0 px-2 pb-1">
-                <!-- Text block: fixed height so price always aligns across cards -->
-                <div class="min-h-[76px] flex flex-col items-center">
-                    <span translate="no" class="text-gray-600 font-medium text-xs mb-0.5 truncate">
-                      {{ product.category?.name }}
-                    </span>
+            <div class="shrink-0 px-3 pb-3 pt-1">
+                <!-- Text block: fixed height so price always aligns across cards.
+                     The category name that used to sit above the title is gone —
+                     these cards only ever render inside their own category
+                     section, so it repeated the heading on every tile. -->
+                <div class="min-h-[52px] flex flex-col">
                     <span
                         data-testid="product-name"
                         translate="no"
-                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5"
+                        class="text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
                         :title="product.name"
                     >
                       {{ product.name }}
                     </span>
-                    <span class="text-gray-600 text-xs text-center">
+                    <span class="text-ygf-black/55 text-xs mt-0.5">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
                         {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ forcedChoiceGroupLabel(group) }}
@@ -78,44 +93,44 @@
                     </span>
                 </div>
 
-                <!-- Price and Cart Controls -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center mt-1">
-                    <template v-if="!showControls">
-                        <span class="text-black font-semibold text-sm">
-                          {{ formatPrice(product.price) }}
-                        </span>
-                        <div>
-                            <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
-                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-ygf-orange-100 hover:text-ygf-orange-400 hover:border-ygf-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-                                    type="button"
-                                    :disabled="orderingDisabled"
-                                    @click="addToCart">
-                                <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
-                            </button>
-                            <button v-else
-                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-ygf-orange-100 text-ygf-orange-700 font-semibold border border-ygf-orange-200 hover:bg-ygf-orange-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 transition-all duration-300 cursor-pointer"
-                                 :class="{ 'animate-number-bounce': isQuantityBouncing }"
-                                 @click="showExpandedControls">
-                                {{ cardQuantity }}
-                            </button>
-                        </div>
-                    </template>
-                    <div v-else class="w-full flex justify-between items-center">
-                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-ygf-orange-100 hover:text-ygf-orange-400 hover:border-ygf-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 transition-all duration-300" type="button"
-                                @click="decrement">
-                            <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
-                            -
-                        </button>
-                        <span class="text-sm font-semibold text-ygf-orange-700" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
-                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-ygf-orange-100 hover:text-ygf-orange-400 hover:border-ygf-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed" type="button"
-                                :disabled="cardQuantity >= MAX_ITEM_QUANTITY"
-                                @click="increment">
-                            <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
-                            +
-                        </button>
+                <!-- Price and cart controls. The stepper stays visible once the
+                     item is in the cart: the inherited control collapsed itself
+                     after 4s, which hid the only way to decrement. -->
+                <div v-if="product.isAvailable" class="flex justify-between items-center gap-2 mt-2">
+                    <span class="text-ygf-black font-bold text-base tabular-nums">
+                      {{ formatPrice(product.price) }}
+                    </span>
+
+                    <button
+                        v-if="!isInCart"
+                        :aria-label="$t('cart.addToCart')"
+                        data-testid="product-add-to-cart"
+                        type="button"
+                        class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="orderingDisabled"
+                        @click="addToCart"
+                    >
+                        <img alt="" aria-hidden="true" class="w-5 h-5" src="/icons/shopping-bag-icon.svg"/>
+                    </button>
+
+                    <div v-else class="stepper">
+                        <button
+                            type="button"
+                            class="stepper-btn"
+                            :aria-label="$t('cart.decreaseQty')"
+                            @click="decrement"
+                        >&minus;</button>
+                        <span class="stepper-value text-sm" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
+                        <button
+                            type="button"
+                            class="stepper-btn"
+                            :aria-label="$t('cart.increaseQty')"
+                            :disabled="cardQuantity >= MAX_ITEM_QUANTITY"
+                            @click="increment"
+                        >+</button>
                     </div>
                 </div>
-                <div v-else class="flex justify-center text-sm text-gray-600 mt-1">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="text-sm text-ygf-black/55 mt-2">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>
@@ -124,7 +139,9 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
+import { computed, onMounted, ref, watch } from 'vue'
+import MktPicture from '~/components/mkt/MktPicture.vue'
 import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -155,16 +172,6 @@ const emit = defineEmits<{
     openProductModal: []
 }>()
 
-const showControls = ref(false);
-const timeoutId = ref<NodeJS.Timeout | null>(null);
-
-// Clear timeout when component unmounts
-onUnmounted(() => {
-    if (timeoutId.value) {
-        clearTimeout(timeoutId.value);
-    }
-});
-
 const hasChoices = computed(() => product.choices?.length > 0);
 
 const forcedChoiceGroups = computed(() =>
@@ -181,6 +188,7 @@ const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) 
 };
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
+const brandPhoto = computed(() => productPhoto(product?.slug));
 
 // SSR-safe: cart store hydrates from localStorage post-mount, so render as empty until then.
 const isMounted = useMounted()
@@ -225,38 +233,14 @@ const addToCart = () => {
         productName: product.name,
         productId: product.id,
     });
-
-    showControls.value = true;
-    resetTimeout();
-};
-
-const showExpandedControls = () => {
-    if (hasChoices.value) {
-        emit('openProductModal');
-        return;
-    }
-    // Show the expanded - + UI when the user clicks on the existing quantity
-    showControls.value = true;
-    resetTimeout();
 };
 
 const decrement = () => {
     cartStore.decrementQuantity(product);
-    resetTimeout();
 };
 
 const increment = () => {
     cartStore.incrementQuantity(product);
-    resetTimeout();
-};
-
-const resetTimeout = () => {
-    if (timeoutId.value) {
-        clearTimeout(timeoutId.value);
-    }
-    timeoutId.value = setTimeout(() => {
-        showControls.value = false;
-    }, 4000);
 };
 
 // Define the ref with the correct type (HTMLImageElement)

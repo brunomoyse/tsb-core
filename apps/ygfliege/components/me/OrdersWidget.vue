@@ -3,22 +3,18 @@
 
         <!-- ── Header ── -->
         <div class="px-6 pt-6 sm:px-7 sm:pt-7">
-            <div class="relative overflow-hidden flex items-center justify-between">
-                <h2 class="font-semibold text-gray-900 text-[15px] flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <div class="flex items-center justify-between">
+                <h2 class="font-semibold text-ygf-black text-[15px] flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-ygf-white flex items-center justify-center">
+                        <svg class="w-4 h-4 text-ygf-black" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                         </svg>
                     </div>
                     {{ $t('me.orders.recentTitle') }}
                 </h2>
-                <!-- Kanji watermark -->
-                <span class="absolute bottom-0 right-2 text-8xl leading-none pointer-events-none select-none text-ygf-orange-500/[0.04]"
-                      style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif"
-                      aria-hidden="true">注文</span>
                 <NuxtLinkLocale
                     to="/me/orders"
-                    class="text-xs font-medium text-gray-500 hover:text-ygf-orange-500 transition inline-flex items-center gap-1 group"
+                    class="btn-link text-xs"
                 >
                     {{ $t('me.orders.viewAll') }}
                     <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -31,7 +27,7 @@
             <svg class="w-full h-[6px] mt-4" viewBox="0 0 200 8" preserveAspectRatio="none" fill="none">
                 <path
                     d="M0 4 Q12.5 0 25 4 Q37.5 8 50 4 Q62.5 0 75 4 Q87.5 8 100 4 Q112.5 0 125 4 Q137.5 8 150 4 Q162.5 0 175 4 Q187.5 8 200 4"
-                    stroke="currentColor" stroke-width="0.8" class="text-gray-400/30"
+                    stroke="currentColor" stroke-width="0.8" style="color: rgba(242, 123, 32, 0.12)"
                 />
             </svg>
         </div>
@@ -51,25 +47,27 @@
                     <div
                         v-for="order in activeOrders"
                         :key="order.id"
-                        class="active-card relative bg-white rounded-xl border-l-[3px] border-l-red-400"
+                        class="active-card relative bg-ygf-white rounded-ygf-card border-l-[3px]"
+                        style="border-left-color: var(--ygf-orange-on-white)"
                     >
                         <!-- Card header -->
                         <button
                             type="button"
                             :aria-expanded="isExpanded(order.id)"
                             :aria-label="$t('me.orders.toggleOrder')"
-                            class="relative z-[1] w-full text-left p-4 cursor-pointer hover:bg-gray-50/50 rounded-xl flex items-center gap-3 transition-colors"
+                            class="relative z-[1] w-full text-left p-4 cursor-pointer transition-colors rounded-ygf-card flex items-center gap-3"
+                            :class="{ 'hover:bg-ygf-orange-bg/40': true }"
                             @click="toggleOrder(order.id)"
                         >
                             <!-- Type icon -->
-                            <div class="w-9 h-9 rounded-lg bg-ygf-orange-50 flex items-center justify-center flex-shrink-0">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--ygf-orange-bg)">
                                 <!-- Moped icon for delivery (Tabler Icons) -->
-                                <svg v-if="order.type === 'DELIVERY'" class="w-5 h-5 text-ygf-orange-400" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <svg v-if="order.type === 'DELIVERY'" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color: var(--ygf-orange-on-white)">
                                     <path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
                                     <path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1" />
                                     <path d="M6 9l3 0" />
                                 </svg>
-                                <svg v-else class="w-5 h-5 text-ygf-orange-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color: var(--ygf-orange-on-white)">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                 </svg>
                             </div>
@@ -77,24 +75,24 @@
                             <!-- Info -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-800 whitespace-nowrap">
+                                    <span class="text-sm font-medium text-ygf-black whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-ygf-orange-50 text-ygf-orange-600 whitespace-nowrap shrink-0">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-ygf-orange-400 status-pulse" />
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0" style="background-color: var(--ygf-orange-bg); color: var(--ygf-orange-on-white)">
+                                        <span class="w-1.5 h-1.5 rounded-full status-pulse" style="background-color: var(--ygf-orange-on-white)" />
                                         {{ getStatus(getTrackedOrder(order).status) }}
                                     </span>
                                 </div>
-                                <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
+                                <p class="mt-0.5 text-xs text-ygf-gray-400 tabular-nums" data-allow-mismatch="text">
                                     {{ formatDate(order.createdAt) }}
                                 </p>
                             </div>
 
                             <!-- Price + chevron -->
                             <div class="flex items-center gap-2 ml-1 flex-shrink-0">
-                                <span class="text-sm font-bold text-gray-900 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
+                                <span class="text-sm font-bold text-ygf-black tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 <span class="chevron-icon" :class="{ 'rotate-180': isExpanded(order.id) }">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-ygf-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                     </svg>
                                 </span>
@@ -107,7 +105,7 @@
                             @before-enter="accordionBeforeEnter" @enter="accordionEnter" @after-enter="accordionAfterEnter"
                             @before-leave="accordionBeforeLeave" @leave="accordionLeave" @after-leave="accordionAfterLeave"
                         >
-                            <div v-show="isExpanded(order.id)" class="relative z-[1] px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(255,245,238,0.4), transparent 60%)">
+                            <div v-show="isExpanded(order.id)" class="relative z-[1] px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(242, 123, 32, 0.04), transparent 60%)">
                                 <!-- Vertical timeline -->
                                 <div class="mb-3">
                                     <OrderStatusTimeline :order="getTrackedOrder(order)" />
@@ -116,19 +114,20 @@
                                 <!-- Estimated ready time badge -->
                                 <div
                                     v-if="getTrackedOrder(order).estimatedReadyTime"
-                                    class="mb-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 rounded-lg border border-amber-100/80"
+                                    class="mb-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border"
+                                    style="background-color: var(--ygf-orange-bg); border-color: rgba(242, 123, 32, 0.2)"
                                 >
-                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--ygf-orange-on-white)">
                                         <circle cx="12" cy="12" r="10" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
                                     </svg>
-                                    <span class="text-xs font-medium text-amber-700 tabular-nums">~{{ formatReadyTime(getTrackedOrder(order).estimatedReadyTime!) }}</span>
+                                    <span class="text-xs font-medium tabular-nums" style="color: var(--ygf-orange-on-white)">~{{ formatReadyTime(getTrackedOrder(order).estimatedReadyTime!) }}</span>
                                 </div>
 
                                 <!-- Delivery address -->
-                                <div v-if="order.address" class="mb-3 p-3 bg-gray-50/80 rounded-lg border border-gray-100/80">
-                                    <span class="text-[10px] text-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
-                                    <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
+                                <div v-if="order.address" class="mb-3 p-3 rounded-lg border" style="background-color: var(--ygf-orange-bg); border-color: rgba(242, 123, 32, 0.2)">
+                                    <span class="text-[10px] text-ygf-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <p class="mt-0.5 text-sm text-ygf-black whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
                                 <!-- Receipt items -->
@@ -138,58 +137,49 @@
                                         class="flex items-baseline gap-2 py-1.5"
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
-                                        <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-gray-400 truncate leading-tight">
+                                        <span class="text-ygf-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
+                                        <span class="text-[13px] text-ygf-black flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-ygf-gray-400 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
-                                            <span class="block text-gray-700 leading-tight line-clamp-2">
+                                            <span class="block text-ygf-black leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
+                                            <span v-if="orderItemChoice(item)" class="text-ygf-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
-                                        <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
+                                        <span class="text-xs text-ygf-gray-400 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Total -->
-                                <div class="mt-3 pt-2.5 border-t border-gray-200 flex items-center justify-between">
-                                    <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
-                                    <span class="text-[15px] font-bold text-gray-900 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
+                                <div class="mt-3 pt-2.5 flex items-center justify-between" style="border-top: var(--border-subtle)">
+                                    <span class="text-xs font-medium text-ygf-gray-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
+                                    <span class="text-[15px] font-bold text-ygf-black tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 </div>
                             </div>
                         </transition>
                     </div>
                 </div>
 
-                <!-- ━━ Torii Gate Divider ━━ -->
+                <!-- ━━ Section Divider ━━ -->
                 <div v-if="activeOrders.length && visiblePastOrders.length" class="flex items-center gap-3 my-5">
-                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300/40 to-transparent" />
-                    <svg class="w-5 h-5 text-gray-300/50 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true">
-                        <line x1="6" y1="5" x2="6" y2="18" />
-                        <line x1="14" y1="5" x2="14" y2="18" />
-                        <line x1="3" y1="5" x2="17" y2="5" />
-                        <line x1="5" y1="9" x2="15" y2="9" />
-                    </svg>
-                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300/40 to-transparent" />
+                    <div class="flex-1 h-px" style="background: linear-gradient(to right, transparent, rgba(242, 123, 32, 0.1), transparent)" />
                 </div>
 
                 <!-- ━━ Past Orders ━━ -->
                 <div :class="activeOrders.length ? '' : 'pt-3'" class="space-y-2">
                     <div
                         v-for="order in visiblePastOrders" :key="order.id"
-                        class="past-card relative bg-white rounded-xl border-l-[3px] shadow-sm transition-shadow hover:shadow-md"
+                        class="past-card relative bg-ygf-white rounded-ygf-card shadow-sm transition-shadow hover:shadow-md"
                         :class="orderBorderClass(order.status)"
                     >
-                        <!-- Hanko seal for completed orders (nijuumaru double circle) -->
-                        <div v-if="isOrderSuccess(order.status)" class="hanko-seal" :style="{ transform: hankoRotation(order.id) }" aria-hidden="true">{{ hankoKanji(order.status) }}</div>
-
                         <!-- Card header -->
                         <button
                             type="button"
                             :aria-expanded="isExpanded(order.id)"
                             :aria-label="$t('me.orders.toggleOrder')"
-                            class="w-full text-left p-4 cursor-pointer hover:bg-gray-50/50 rounded-xl flex items-center gap-3 transition-colors"
+                            class="w-full text-left p-4 cursor-pointer rounded-ygf-card flex items-center gap-3 transition-colors"
+                            :class="{ 'hover:bg-ygf-orange-bg/40': true }"
                             @click="toggleOrder(order.id)"
                         >
                             <!-- Type icon -->
@@ -211,26 +201,28 @@
                             <!-- Info -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-700 whitespace-nowrap">
+                                    <span class="text-sm font-medium text-ygf-black whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
                                     <span
-                                        class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                                        class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
                                         :class="statusBadgeClass(order.status)"
+                                        :style="statusBadgeStyle(order.status)"
                                     >
+                                        <span class="w-1.5 h-1.5 rounded-full" style="background-color: currentColor" />
                                         {{ getStatus(order.status) }}
                                     </span>
                                 </div>
-                                <p class="mt-0.5 text-xs text-gray-400 tabular-nums" data-allow-mismatch="text">
+                                <p class="mt-0.5 text-xs text-ygf-gray-400 tabular-nums" data-allow-mismatch="text">
                                     {{ formatDate(order.createdAt) }}
                                 </p>
                             </div>
 
                             <!-- Price + chevron -->
                             <div class="flex items-center gap-2 ml-1 flex-shrink-0">
-                                <span class="text-sm font-semibold text-gray-800 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
+                                <span class="text-sm font-semibold text-ygf-black tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 <span class="chevron-icon" :class="{ 'rotate-180': isExpanded(order.id) }">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-ygf-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                     </svg>
                                 </span>
@@ -243,20 +235,21 @@
                             @before-enter="accordionBeforeEnter" @enter="accordionEnter" @after-enter="accordionAfterEnter"
                             @before-leave="accordionBeforeLeave" @leave="accordionLeave" @after-leave="accordionAfterLeave"
                         >
-                            <div v-show="isExpanded(order.id)" class="px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(255,245,238,0.4), transparent 60%)">
+                            <div v-show="isExpanded(order.id)" class="px-4 pb-4" style="background: radial-gradient(ellipse at 30% 20%, rgba(242, 123, 32, 0.04), transparent 60%)">
                                 <!-- Cancellation reason -->
                                 <div
                                     v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
-                                    class="mb-3 p-3 bg-ygf-orange-50/70 rounded-lg border border-ygf-orange-100/80"
+                                    class="mb-3 p-3 rounded-lg border"
+                                    style="background-color: var(--ygf-orange-bg); border-color: rgba(242, 123, 32, 0.2)"
                                 >
-                                    <span class="text-[10px] text-red-500 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
-                                    <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
+                                    <span class="text-[10px] text-ygf-error uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                                    <p class="mt-0.5 text-sm text-ygf-error">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                                 </div>
 
                                 <!-- Delivery address -->
-                                <div v-if="order.address" class="mb-3 p-3 bg-gray-50/80 rounded-lg border border-gray-100/80">
-                                    <span class="text-[10px] text-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
-                                    <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
+                                <div v-if="order.address" class="mb-3 p-3 rounded-lg border" style="background-color: var(--ygf-orange-bg); border-color: rgba(242, 123, 32, 0.2)">
+                                    <span class="text-[10px] text-ygf-gray-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <p class="mt-0.5 text-sm text-ygf-black whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
                                 <!-- Receipt items -->
@@ -266,31 +259,34 @@
                                         class="flex items-baseline gap-2 py-1.5"
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
-                                        <span class="text-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-gray-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-gray-400 truncate leading-tight">
+                                        <span class="text-ygf-gray-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
+                                        <span class="text-[13px] text-ygf-black flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-ygf-gray-400 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
-                                            <span class="block text-gray-700 leading-tight line-clamp-2">
+                                            <span class="block text-ygf-black leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" class="text-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
+                                            <span v-if="orderItemChoice(item)" class="text-ygf-gray-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
                                         </span>
-                                        <span class="text-xs text-gray-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
+                                        <span class="text-xs text-ygf-gray-400 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Total -->
-                                <div class="mt-3 pt-2.5 border-t border-gray-200 flex items-center justify-between">
-                                    <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
-                                    <span class="text-[15px] font-bold text-gray-900 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
+                                <div class="mt-3 pt-2.5 flex items-center justify-between" style="border-top: var(--border-subtle)">
+                                    <span class="text-xs font-medium text-ygf-gray-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
+                                    <span class="text-[15px] font-bold text-ygf-black tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 </div>
 
                                 <!-- Re-order button -->
                                 <button
                                     v-if="isOrderSuccess(order.status)"
-                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ygf-orange-200 bg-transparent px-4 py-2.5 text-sm font-medium text-ygf-orange-500 transition-all duration-300 hover:border-solid hover:border-ygf-orange-500 hover:bg-ygf-orange-500 hover:text-white"
+                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-ygf-card border-2 border-dashed bg-ygf-white px-4 py-2.5 text-sm font-medium transition-all duration-300"
+                                    style="border-color: rgba(242, 123, 32, 0.3); color: var(--ygf-orange-on-white)"
                                     @click="reorder(order)"
+                                    @mouseenter="$event.target.style.borderStyle = 'solid'; $event.target.style.backgroundColor = 'var(--ygf-orange-on-white)'; $event.target.style.color = 'var(--ygf-white)'"
+                                    @mouseleave="$event.target.style.borderStyle = 'dashed'; $event.target.style.backgroundColor = 'var(--ygf-white)'; $event.target.style.color = 'var(--ygf-orange-on-white)'"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182" />
@@ -301,8 +297,11 @@
                                 <!-- Download Invoice button -->
                                 <button
                                     v-if="isOrderSuccess(order.status)"
-                                    class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-ygf-orange-100/40 focus:outline-none focus:ring-2 focus:ring-ygf-orange-300"
+                                    class="mt-2 w-full flex items-center justify-center gap-2 rounded-ygf-card border bg-ygf-white px-4 py-2 text-sm font-medium text-ygf-gray-600 transition-colors focus:outline-none"
+                                    style="border-color: rgba(242, 123, 32, 0.2); --tw-ring-color: rgba(242, 123, 32, 0.3)"
                                     @click.stop="downloadInvoice(order.id)"
+                                    @mouseenter="$event.target.style.backgroundColor = 'var(--ygf-orange-bg)'"
+                                    @mouseleave="$event.target.style.backgroundColor = 'var(--ygf-white)'"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -310,10 +309,6 @@
                                     {{ $t('me.orders.downloadInvoice') }}
                                 </button>
 
-                                <!-- Arigatou micro-text -->
-                                <span v-if="isOrderSuccess(order.status)" class="block text-right mt-2 text-[10px] text-gray-300 italic select-none pointer-events-none"
-                                      style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif"
-                                      aria-hidden="true">ありがとう</span>
                             </div>
                         </transition>
                     </div>
@@ -322,18 +317,22 @@
                 <!-- Load more -->
                 <button
                     v-if="hasMorePast"
-                    class="group mt-3 w-full rounded-xl border border-dashed border-gray-300 hover:border-ygf-orange-300 bg-white/40 hover:bg-ygf-orange-100/50 py-3 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    class="group mt-3 w-full rounded-ygf-card border border-dashed bg-ygf-white/40 py-3 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    style="border-color: rgba(242, 123, 32, 0.2)"
                     @click="loadMore"
+                    @mouseenter="$event.target.style.borderColor = 'rgba(242, 123, 32, 0.3)'; $event.target.style.backgroundColor = 'var(--ygf-orange-bg)'"
+                    @mouseleave="$event.target.style.borderColor = 'rgba(242, 123, 32, 0.2)'; $event.target.style.backgroundColor = 'var(--ygf-white)/40'"
                 >
-                    <span class="text-xs font-medium text-gray-400 group-hover:text-ygf-orange-500 transition-colors duration-300">
+                    <span class="text-xs font-medium text-ygf-gray-400 transition-colors duration-300" style="">
                         {{ remainingPastCount <= LOAD_STEP
                             ? $t('me.orders.loadMoreLast', { count: remainingPastCount })
                             : $t('me.orders.loadMore', { count: nextPastBatchCount })
                         }}
                     </span>
                     <svg
-                        class="w-3.5 h-3.5 text-gray-300 group-hover:text-ygf-orange-400 transition-all duration-300 group-hover:translate-y-0.5"
+                        class="w-3.5 h-3.5 transition-all duration-300 group-hover:translate-y-0.5"
                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        style="color: var(--ygf-gray-400)"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -343,21 +342,13 @@
             <!-- Empty state -->
             <div v-else class="py-10 text-center">
                 <div class="relative w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                    <!-- Enso (Zen brush circle) -->
-                    <svg class="absolute inset-0 w-full h-full text-gray-200/60" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                        <path d="M40 6 C58 6 72 18 73 36 C74 54 62 70 44 73 C26 76 10 64 7 46 C4 28 14 12 32 8"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
-                    </svg>
-                    <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center">
-                        <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background-color: var(--ygf-orange-bg); border: 2px solid rgba(242, 123, 32, 0.2)">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--ygf-orange-on-white)">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16c0 4.418-3.582 8-8 8s-8-3.582-8-8z" />
-                            <path class="steam steam-1" stroke-linecap="round" d="M9 9c.5-1.5 1-2.5.5-4" opacity="0.4" />
-                            <path class="steam steam-2" stroke-linecap="round" d="M12 8c.5-1.5 1-2.5.5-4" opacity="0.4" />
-                            <path class="steam steam-3" stroke-linecap="round" d="M15 9c.5-1.5 1-2.5.5-4" opacity="0.4" />
                         </svg>
                     </div>
                 </div>
-                <p class="text-sm text-gray-500">{{ $t('me.orders.empty') }}</p>
+                <p class="text-sm text-ygf-gray-600">{{ $t('me.orders.empty') }}</p>
             </div>
 
         </div>
@@ -508,14 +499,14 @@ const isOrderFailed = (status: string) => ['CANCELLED', 'FAILED'].includes(statu
 
 const iconBgClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50'
-    if (isOrderFailed(status)) return 'bg-amber-50'
-    return 'bg-rose-50'
+    if (isOrderFailed(status)) return 'bg-red-50'
+    return 'bg-orange-50'
 }
 
 const iconColorClass = (status: string) => {
-    if (isOrderSuccess(status)) return 'text-emerald-500'
-    if (isOrderFailed(status)) return 'text-amber-500'
-    return 'text-rose-400'
+    if (isOrderSuccess(status)) return 'text-emerald-600'
+    if (isOrderFailed(status)) return 'text-ygf-error'
+    return 'text-orange-400'
 }
 
 const getStatus = (status: string) => {
@@ -535,27 +526,19 @@ const getStatus = (status: string) => {
 
 const orderBorderClass = (status: string) => {
     if (isOrderSuccess(status)) return 'border-l-emerald-500'
-    if (isOrderFailed(status)) return 'border-l-amber-400'
-    return 'border-l-rose-400'
+    if (isOrderFailed(status)) return 'border-l-red-400'
+    return 'border-l-orange-400'
 }
 
 const statusBadgeClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50 text-emerald-700'
-    if (isOrderFailed(status)) return 'bg-amber-50 text-amber-700'
-    return 'bg-rose-50 text-rose-600'
+    if (isOrderFailed(status)) return 'text-ygf-error'
+    return 'text-orange-600'
 }
 
-// ── Hanko seal helpers ──
-
-const hankoKanji = (status: string) => {
-    if (status === 'DELIVERED') return '済'
-    if (status === 'PICKED_UP') return '取'
-    return '済'
-}
-
-const hankoRotation = (orderId: string) => {
-    const deg = orderId.charCodeAt(orderId.length - 1) % 10 - 5
-    return `rotate(${deg}deg)`
+const statusBadgeStyle = (status: string) => {
+    if (isOrderSuccess(status)) return {}
+    return { backgroundColor: 'var(--ygf-orange-bg)' }
 }
 
 // ── Live subscriptions ──

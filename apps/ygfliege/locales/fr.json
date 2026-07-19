@@ -427,5 +427,23 @@
   "orderCompleted": {
     "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 286 68 20 pour plus d'informations.",
     "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Composez votre bol",
+    "title": "Votre bol sur mesure",
+    "heroSubtitle": "Choisissez votre bouillon, remplissez votre bol ingrédient par ingrédient, réglez le piquant. Cuit minute, rien que pour vous.",
+    "open": "Composer mon bol",
+    "step": "Étape {n}",
+    "chosen": "Choisi",
+    "selectedCount": "{count}/{max} sélectionnés",
+    "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
+  },
+  "nav": {
+    "primary": "Navigation principale",
+    "secondary": "Liens de bas de page",
+    "callRestaurant": "Appeler le restaurant"
+  },
+  "common": {
+    "clear": "Effacer"
   }
 }

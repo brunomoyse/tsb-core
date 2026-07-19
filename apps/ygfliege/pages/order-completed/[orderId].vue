@@ -8,29 +8,29 @@
             v-if="paymentProblem"
             class="flex flex-col items-center w-full max-w-md mt-8 sm:mt-12"
         >
-            <div class="flex items-center justify-center w-24 h-24 rounded-full bg-ygf-orange-100">
-                <svg class="w-11 h-11 text-ygf-orange-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <div class="flex items-center justify-center w-24 h-24 rounded-full bg-ygf-orange-bg">
+                <svg class="w-11 h-11 text-ygf-orange-on-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="15" y1="9" x2="9" y2="15" />
                     <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
             </div>
-            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-ygf-black text-center">
                 {{ paymentProblemTitle }}
             </h1>
-            <p class="mt-3 text-gray-600 text-sm sm:text-base text-center max-w-sm">
+            <p class="mt-3 text-ygf-gray-600 text-sm sm:text-base text-center max-w-sm">
                 {{ paymentProblemBody }}
             </p>
             <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
                 <NuxtLinkLocale
                     to="/checkout"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-ygf-orange-500 hover:bg-ygf-orange-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ygf-orange-300 focus:ring-offset-2"
+                    class="btn btn-primary flex-1"
                 >
                     {{ $t('orderCompleted.payment.tryAgain') }}
                 </NuxtLinkLocale>
                 <NuxtLinkLocale
                     to="/menu"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-ygf-orange-100/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                    class="btn btn-secondary flex-1"
                 >
                     {{ $t('orderCompleted.backToMenu', 'Back to menu') }}
                 </NuxtLinkLocale>
@@ -44,30 +44,14 @@
             v-else-if="resolvingPayment"
             class="flex flex-col items-center justify-center w-full max-w-md mt-16 gap-3"
         >
-            <div class="w-8 h-8 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
-            <p class="text-sm text-gray-500">{{ $t('orderCompleted.payment.verifying', 'Verifying your payment…') }}</p>
+            <div class="w-8 h-8 rounded-full animate-spin" style="border: 2px solid rgba(242, 123, 32, 0.12); border-top-color: var(--ygf-orange-on-white)" />
+            <p class="text-sm text-ygf-gray-600">{{ $t('orderCompleted.payment.verifying', 'Verifying your payment…') }}</p>
         </div>
 
         <template v-else>
 
         <!-- Hero: Bag + Title -->
-        <div class="relative flex flex-col items-center w-full max-w-md">
-
-            <!-- Falling cherry blossom petals (decorative) -->
-            <div class="absolute inset-0 -inset-x-16 pointer-events-none overflow-hidden" aria-hidden="true">
-                <span class="oc-petal oc-petal-1" />
-                <span class="oc-petal oc-petal-2" />
-                <span class="oc-petal oc-petal-3" />
-                <span class="oc-petal oc-petal-4" />
-                <span class="oc-petal oc-petal-5" />
-                <span class="oc-petal oc-petal-6" />
-                <span class="oc-petal oc-petal-7" />
-                <span class="oc-petal oc-petal-8" />
-                <span class="oc-petal oc-petal-9" />
-                <span class="oc-petal oc-petal-10" />
-                <span class="oc-petal oc-petal-11" />
-                <span class="oc-petal oc-petal-12" />
-            </div>
+        <div class="flex flex-col items-center w-full max-w-md">
 
             <!-- Fuzi mascot with float animation -->
             <div class="oc-bag-wrapper">
@@ -88,25 +72,22 @@
             <!-- Title -->
             <h1
                 data-testid="order-completed-title"
-                class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center oc-stagger-1"
+                class="mt-5 text-2xl sm:text-3xl font-bold text-ygf-black text-center oc-stagger-1"
             >
                 {{ $t('orderCompleted.title') }}
             </h1>
 
             <!-- Subtitle -->
-            <p class="mt-2 text-gray-500 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
+            <p class="mt-2 text-ygf-gray-600 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
                 {{ $t('orderCompleted.thankYou') }}
                 <br />
                 {{ $t('orderCompleted.orderSuccess') }}
             </p>
 
-            <!-- Japanese thank you -->
-            <p class="mt-2 text-ygf-orange-300/50 text-xs tracking-[0.25em] oc-stagger-2" aria-hidden="true">ありがとうございます</p>
-
             <!-- Estimated time badge -->
             <div
                 v-if="order && order.estimatedReadyTime"
-                class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ygf-orange-100 text-sm font-medium text-ygf-orange-700 oc-stagger-3"
+                class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ygf-orange-bg text-sm font-medium text-ygf-orange-text oc-stagger-3"
             >
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10" />
@@ -126,29 +107,29 @@
 
         <!-- Order details card -->
         <div v-if="order" class="mt-8 w-full max-w-lg oc-stagger-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="card">
 
                 <!-- Items list -->
                 <div data-testid="order-completed-items" class="p-5">
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                    <h3 class="section-label">
                         {{ $t('orderCompleted.items') }}
                     </h3>
                     <div class="space-y-1">
                         <div
                             v-for="(item, index) in order.items"
                             :key="index"
-                            class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-colors hover:bg-ygf-bg"
+                            class="flex items-center justify-between py-2.5 px-3 rounded-ygf-sm transition-colors hover:bg-ygf-orange-bg"
                         >
                             <div class="flex-1 min-w-0 pr-3">
-                                <p class="text-sm font-medium text-gray-900 truncate">
+                                <p class="text-sm font-medium text-ygf-black truncate">
                                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                                        <span v-if="i > 0" class="text-gray-400 font-normal mx-1">·</span>
-                                        <span :class="part.muted ? 'text-gray-400 font-normal' : ''">{{ part.text }}</span>
+                                        <span v-if="i > 0" class="text-ygf-gray-400 font-normal mx-1">·</span>
+                                        <span :class="part.muted ? 'text-ygf-gray-400 font-normal' : ''">{{ part.text }}</span>
                                     </template>
-                                    <span v-if="orderItemChoice(item)" class="text-gray-400 font-normal ml-1">({{ orderItemChoice(item) }})</span>
+                                    <span v-if="orderItemChoice(item)" class="text-ygf-gray-400 font-normal ml-1">({{ orderItemChoice(item) }})</span>
                                 </p>
                             </div>
-                            <span class="text-xs font-semibold text-gray-500 bg-gray-100 rounded-full px-2.5 py-0.5 shrink-0">
+                            <span class="chip chip-static">
                                 x{{ item.quantity }}
                             </span>
                         </div>
@@ -156,17 +137,17 @@
                 </div>
 
                 <!-- Status timeline -->
-                <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" class="border-t border-gray-100 p-5">
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" style="border-top: var(--border-subtle)" class="p-5">
+                    <h3 class="section-label">
                         {{ $t('orderCompleted.status') }}
                     </h3>
                     <OrderStatusTimeline :order="order" />
 
                     <!-- Live tracking hint -->
-                    <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
+                    <div class="mt-4 flex items-center gap-2 text-xs text-ygf-gray-400">
                         <span class="relative flex h-2 w-2 shrink-0">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-ygf-success opacity-75" />
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-ygf-success" />
                         </span>
                         {{ $t('orderCompleted.liveTracking') }}
                     </div>
@@ -174,7 +155,7 @@
                     <!-- Restaurant hasn't confirmed within 5 min — invite to call. -->
                     <div
                         v-if="pendingTooLong"
-                        class="mt-4 flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs text-amber-800"
+                        class="mt-4 flex items-start gap-2 p-3 rounded-ygf-card bg-amber-50 border border-amber-100 text-xs text-amber-800"
                     >
                         <svg
                             class="w-4 h-4 mt-0.5 shrink-0"
@@ -196,15 +177,15 @@
                 </div>
 
                 <!-- Failed / Cancelled -->
-                <div v-else class="border-t border-gray-100 p-5">
-                    <p class="text-sm text-ygf-orange-500 font-medium">
+                <div v-else style="border-top: var(--border-subtle)" class="p-5">
+                    <p class="text-sm text-ygf-orange-text font-medium">
                         {{ $t('orderCompleted.orderCanceled') }}
                     </p>
                     <p
                         v-if="order.cancellationReason && order.cancellationReason !== 'OTHER'"
-                        class="mt-2 text-sm text-gray-600"
+                        class="mt-2 text-sm text-ygf-gray-600"
                     >
-                        <span class="font-medium text-gray-700">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                        <span class="font-medium text-ygf-black">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
                         {{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}
                     </p>
                 </div>
@@ -212,18 +193,18 @@
         </div>
 
         <!-- Error State -->
-        <div v-else-if="orderError" class="mt-8 w-full max-w-lg p-5 rounded-2xl bg-red-50 border border-red-100 oc-stagger-4">
-            <p class="text-sm text-ygf-orange-600">
+        <div v-else-if="orderError" class="mt-8 w-full max-w-lg p-5 rounded-ygf-card bg-red-50 border border-red-100 oc-stagger-4">
+            <p class="text-sm text-ygf-error">
                 {{ $t('orderCompleted.loadError') }}
             </p>
         </div>
 
         <!-- Loading State -->
         <div v-else class="mt-8 w-full max-w-lg oc-stagger-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-5 h-5 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
-                    <p class="text-sm text-gray-500">{{ $t('orderCompleted.loading') }}</p>
+            <div class="card">
+                <div class="flex items-center gap-3 p-6">
+                    <div class="w-5 h-5 rounded-full animate-spin" style="border: 2px solid rgba(242, 123, 32, 0.12); border-top-color: var(--ygf-orange-on-white)" />
+                    <p class="text-sm text-ygf-gray-600">{{ $t('orderCompleted.loading') }}</p>
                 </div>
             </div>
         </div>
@@ -232,13 +213,13 @@
         <div class="mt-6 w-full max-w-lg flex flex-col sm:flex-row gap-3 oc-stagger-5">
             <NuxtLinkLocale
                 to="/me/orders"
-                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-ygf-orange-500 hover:bg-ygf-orange-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ygf-orange-300 focus:ring-offset-2"
+                class="btn btn-primary flex-1"
             >
                 {{ $t('orderCompleted.viewOrders') }}
             </NuxtLinkLocale>
             <NuxtLinkLocale
                 to="/"
-                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-ygf-orange-100/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                class="btn btn-secondary flex-1"
             >
                 {{ $t('orderCompleted.returnHome') }}
             </NuxtLinkLocale>

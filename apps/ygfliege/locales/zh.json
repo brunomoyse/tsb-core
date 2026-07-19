@@ -427,5 +427,23 @@
   "orderCompleted": {
     "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 286 68 20。",
     "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "自选麻辣烫",
+    "title": "您的专属碗",
+    "heroSubtitle": "选择汤底，逐一挑选食材，调节辣度。现煮现做，只为您一人。",
+    "open": "开始自选",
+    "step": "第 {n} 步",
+    "chosen": "已选",
+    "selectedCount": "已选 {count}/{max}",
+    "ingredientsSummary": "{count} 种食材"
+  },
+  "nav": {
+    "primary": "主导航",
+    "secondary": "页脚链接",
+    "callRestaurant": "致电餐厅"
+  },
+  "common": {
+    "clear": "清除"
   }
 }

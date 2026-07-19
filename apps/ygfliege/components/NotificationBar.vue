@@ -7,7 +7,7 @@
         v-if="visible"
     >
         <transition name="slide-up">
-            <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" v-if="visible">
+            <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col border', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" :style="variantStyle" v-if="visible">
                 <div class="flex items-start justify-between gap-4">
                     <span class="flex-1 text-base break-words">
                       {{ message }}
@@ -16,7 +16,7 @@
                     <button
                         v-if="action"
                         type="button"
-                        class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100 active:scale-95 transition"
+                        class="flex-shrink-0 btn btn-secondary px-4 py-1.5 text-sm font-semibold"
                         @click="invokeAction"
                     >
                         {{ action.label }}
@@ -25,7 +25,7 @@
                     <slot v-else-if="persistent || cookieConsent" name="action">
                         <button
                             type="button"
-                            class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
+                            class="flex-shrink-0 btn btn-secondary px-4 py-2 text-sm"
                             @click="close"
                             :aria-label="cookieConsent ? 'Accept cookies' : $t('common.close')"
                         >
@@ -34,7 +34,7 @@
                     </slot>
                 </div>
                 <!-- Progress Bar: Only visible when not persistent and not cookie consent -->
-                <div v-if="!persistent && !cookieConsent" class="w-full mt-2 h-1 bg-gray-300 rounded overflow-hidden">
+                <div v-if="!persistent && !cookieConsent" class="w-full mt-2 h-1 rounded overflow-hidden" :style="{ 'background-color': 'rgba(242, 123, 32, 0.12)' }">
                     <div class="h-full progress-bar" :class="progressBarClass" :style="{ width: progress + '%' }"></div>
                 </div>
             </div>
@@ -68,22 +68,42 @@ let progressInterval: ReturnType<typeof setInterval> | undefined
 const variantClasses = computed(() => {
     switch (variant) {
         case 'success':
-            return 'bg-green-100 border border-green-400 text-green-800'
+            return 'text-ygf-success'
         case 'error':
-            return 'bg-ygf-orange-100 border border-ygf-orange-400 text-ygf-orange-800'
+            return 'text-ygf-error'
         default:
-            return 'bg-white border border-gray-300 text-gray-800'
+            return 'text-ygf-black'
+    }
+})
+
+const variantStyle = computed(() => {
+    switch (variant) {
+        case 'success':
+            return {
+                'background-color': 'rgba(76, 175, 80, 0.08)',
+                'border-color': 'rgba(76, 175, 80, 0.3)',
+            }
+        case 'error':
+            return {
+                'background-color': 'rgba(242, 123, 32, 0.08)',
+                'border-color': 'rgba(242, 123, 32, 0.3)',
+            }
+        default:
+            return {
+                'background-color': 'var(--ygf-white)',
+                'border-color': 'rgba(242, 123, 32, 0.12)',
+            }
     }
 })
 
 const progressBarClass = computed(() => {
     switch (variant) {
         case 'success':
-            return 'bg-gradient-to-r from-green-500 via-green-400 to-green-600'
+            return 'bg-ygf-success'
         case 'error':
-            return 'bg-gradient-to-r from-ygf-orange-500 via-ygf-orange-400 to-ygf-orange-600'
+            return 'bg-ygf-orange-on-white'
         default:
-            return 'bg-gray-600'
+            return 'bg-ygf-gray-600'
     }
 })
 

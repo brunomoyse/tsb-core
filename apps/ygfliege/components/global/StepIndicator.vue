@@ -12,12 +12,12 @@
         >
             <span
                 :class="[
-                    'h-1.5 rounded-full transition-all duration-300',
+                    'h-1.5 rounded-full transition-all duration-normal',
                     index === current
-                        ? 'w-8 bg-ygf-orange-500'
+                        ? 'w-8 bg-ygf-orange-on-white'
                         : index < current
-                            ? 'w-4 bg-ygf-orange-300'
-                            : 'w-4 bg-gray-200'
+                            ? 'w-4 bg-ygf-orange'
+                            : 'w-4 bg-ygf-gray-200'
                 ]"
             />
             <span class="sr-only">{{ label || `Step ${index + 1}` }}</span>

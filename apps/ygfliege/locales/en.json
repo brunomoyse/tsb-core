@@ -427,5 +427,23 @@
   "orderCompleted": {
     "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 286 68 20.",
     "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Build your bowl",
+    "title": "Your custom bowl",
+    "heroSubtitle": "Pick your broth, fill your bowl ingredient by ingredient, set the heat. Cooked to order, just for you.",
+    "open": "Build my bowl",
+    "step": "Step {n}",
+    "chosen": "Chosen",
+    "selectedCount": "{count}/{max} selected",
+    "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients"
+  },
+  "nav": {
+    "primary": "Main navigation",
+    "secondary": "Footer links",
+    "callRestaurant": "Call the restaurant"
+  },
+  "common": {
+    "clear": "Clear"
   }
 }

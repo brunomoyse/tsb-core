@@ -1,17 +1,17 @@
 <template>
     <div class="flex justify-center px-4 pt-6 sm:pt-10 pb-12">
         <div class="w-full max-w-md">
-            <div class="relative bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="card">
                 <div class="absolute top-3 right-3 z-10 flex gap-0.5">
                     <NuxtLink
                         v-for="lang in languages"
                         :key="lang.code"
                         :to="switchLocalePath(lang.code)"
                         :class="[
-                            'inline-flex items-center justify-center min-h-8 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300',
+                            'inline-flex items-center justify-center min-h-8 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2',
                             locale === lang.code
-                                ? 'text-gray-700 font-medium'
-                                : 'text-gray-400 hover:text-gray-500'
+                                ? 'text-ygf-black font-medium'
+                                : 'text-ygf-gray-400 hover:text-ygf-gray-600'
                         ]"
                     >
                         {{ lang.label }}
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="px-7 sm:px-10 py-8 sm:py-10">
-                    <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">
+                    <h1 class="text-2xl font-semibold text-ygf-black text-center mb-4">
                         {{ $t('login.title') }}
                     </h1>
 
@@ -28,7 +28,7 @@
                         v-if="sessionExpired"
                         aria-atomic="true"
                         aria-live="assertive"
-                        class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-4 animate-shake"
+                        class="text-sm text-ygf-error bg-red-50 border border-red-200 rounded-ygf-card px-3.5 py-2.5 mb-4 animate-shake"
                         role="alert"
                     >
                         {{ $t('notify.errors.sessionExpired') }}

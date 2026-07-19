@@ -1,21 +1,20 @@
 <template>
     <section
-        class="max-w-2xl mx-auto mb-8 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 sm:p-8"
+        class="max-w-2xl mx-auto mb-8 card p-6 sm:p-8"
         role="region"
         :aria-labelledby="titleId"
     >
-        <!-- Header with Japanese accent, mirroring the checkout page pattern -->
+        <!-- Header -->
         <header class="mb-6">
-            <div class="flex items-baseline gap-2 mb-2">
+            <div class="mb-2">
                 <h2
                     :id="titleId"
-                    class="text-xl sm:text-2xl font-semibold text-gray-900 tracking-wide"
+                    class="text-xl sm:text-2xl font-semibold text-ygf-black tracking-wide"
                 >
                     {{ $t('delivery.gate.title') }}
                 </h2>
-                <span class="text-ygf-orange-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達エリア</span>
             </div>
-            <p class="text-sm text-gray-600 leading-relaxed">
+            <p class="text-sm text-ygf-gray-400 leading-relaxed">
                 {{ $t('delivery.gate.subtitle') }}
             </p>
         </header>

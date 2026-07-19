@@ -2,7 +2,7 @@
     <form autocomplete="off">
         <!-- ADDRESS FIELD -->
         <div class="relative">
-            <label class="block text-sm text-gray-700 mb-1" for="address">
+            <label class="field-label" for="address">
                 {{ $t('form.address.label') }}
             </label>
             <div class="relative">
@@ -11,7 +11,7 @@
                     ref="addressInput"
                     v-model="addressQuery"
                     :placeholder="$t('form.address.placeholder')"
-                    class="w-full px-3.5 pr-10 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-70"
+                    class="field pr-10"
                     :disabled="Boolean(selectedAddress)"
                     @focus="onAddressFocus"
                     @blur="onAddressBlur"
@@ -19,14 +19,14 @@
                     @input="handleAddressInput"
                 />
                 <div class="absolute top-0 bottom-0 right-2 flex items-center gap-2">
-                    <svg v-if="isLoadingAddress" class="w-5 h-5 text-gray-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg v-if="isLoadingAddress" class="w-5 h-5 animate-spin" :style="{ color: 'var(--ygf-gray-400)' }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                     </svg>
-                    <svg v-if="selectedAddress && !isLoadingAddress" @mousedown.prevent="clearAddress" class="w-5 h-5 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+                    <svg v-if="selectedAddress && !isLoadingAddress" @mousedown.prevent="clearAddress" class="w-5 h-5 cursor-pointer" :style="{ color: 'var(--ygf-gray-600)' }" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
-                    <svg v-if="selectedAddress" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg v-if="selectedAddress" class="w-5 h-5" :style="{ color: 'var(--ygf-success)' }" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                 </div>
@@ -35,27 +35,34 @@
             <ul
                 v-show="isAddressFocused && !selectedAddress && suggestions.length > 0"
                 role="listbox"
-                class="absolute z-10 w-full bg-white border border-gray-200 shadow-md max-h-60 overflow-auto rounded-xl"
+                class="absolute z-10 w-full bg-ygf-white border shadow-md max-h-60 overflow-auto rounded-ygf-card"
+                style="border-color: rgba(242, 123, 32, 0.12)"
                 @mousedown.prevent
             >
                 <li
                     v-for="(suggestion, index) in suggestions"
                     :key="suggestion.placeId"
                     role="option"
-                    class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
-                    :class="{ 'bg-gray-50': highlightedIndex === index }"
+                    class="p-3 cursor-pointer transition-colors duration-200"
+                    :class="{ 'bg-ygf-orange-light': highlightedIndex === index }"
+                    style="border-bottom-color: rgba(242, 123, 32, 0.12)"
+                    :style="{ borderBottomWidth: index < suggestions.length - 1 ? '1px' : '0' }"
                     @mousedown="selectSuggestion(suggestion)"
+                    @mouseenter="highlightedIndex = index"
                 >
-                    <div class="font-medium text-sm text-gray-900">{{ suggestion.mainText }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">{{ suggestion.secondaryText }}</div>
+                    <div class="font-medium text-sm text-ygf-black">{{ suggestion.mainText }}</div>
+                    <div class="text-xs text-ygf-gray-600 mt-0.5">{{ suggestion.secondaryText }}</div>
                 </li>
             </ul>
             <div
                 v-if="!selectedAddress"
-                class="mt-2 flex items-start gap-2 rounded-md border px-3 py-2 text-xs"
+                class="mt-2 flex items-start gap-2 rounded-ygf-card border px-3 py-2 text-xs"
                 :class="showNoMatchHint
-                    ? 'border-amber-300 bg-amber-50 text-amber-800'
-                    : 'border-gray-200 bg-gray-50 text-gray-600'"
+                    ? 'text-ygf-orange-on-white'
+                    : 'text-ygf-gray-600'"
+                :style="showNoMatchHint
+                    ? { 'border-color': 'rgba(242, 123, 32, 0.3)', 'background-color': 'rgba(242, 123, 32, 0.08)' }
+                    : { 'border-color': 'rgba(242, 123, 32, 0.12)' }"
             >
                 <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
@@ -64,7 +71,7 @@
                     <span class="font-semibold">{{ $t('form.address.noMatch') }}</span>
                     <span class="block mt-0.5 opacity-90">
                         {{ $t('form.address.callHint') }}
-                        <a href="tel:+32422298888" class="underline font-medium whitespace-nowrap">+32 4 222 98 88</a>
+                        <a href="tel:+32422298888" class="underline font-medium whitespace-nowrap hover:opacity-80">+32 4 222 98 88</a>
                     </span>
                 </p>
                 <p v-else>

@@ -1,70 +1,71 @@
 <template>
     <form class="space-y-4" :class="{ 'animate-shake': isShaking }" @submit.prevent="handleSubmit">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="firstName">
+            <label class="field-label" for="firstName">
                 {{ $t('form.firstName') }}
             </label>
             <input id="firstName" v-model="firstName"
                    :placeholder="$t('form.firstNamePlaceholder')"
                    autocomplete="given-name"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                   class="field"
                    required type="text"/>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="lastName">
+            <label class="field-label" for="lastName">
                 {{ $t('form.lastName') }}
             </label>
             <input id="lastName" v-model="lastName"
                    :placeholder="$t('form.lastNamePlaceholder')"
                    autocomplete="name"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                   class="field"
                    required type="text"/>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">
+            <label class="field-label" for="email">
                 {{ $t('form.email') }}
             </label>
             <input id="email" v-model="email"
                    :placeholder="$t('form.emailPlaceholder')"
                    autocomplete="email"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                   class="field"
                    required type="email"/>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5" for="phone">
+            <label class="field-label" for="phone">
                 {{ $t('form.phone') }}
             </label>
-            <div class="flex space-x-2">
+            <div class="flex gap-2">
                 <select id="country" v-model="selectedCountry"
-                        class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300">
+                        class="field">
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                         {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
                     </option>
                 </select>
                 <input id="phone" v-model="phoneLocal"
                        :placeholder="$t('form.phonePlaceholder')"
-                       class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                       class="field flex-1"
                        type="tel"/>
             </div>
-            <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
+            <p v-if="phoneError" class="text-sm text-ygf-error mt-1">{{ phoneError }}</p>
         </div>
 
         <AddressAutocomplete v-show="!address" @update:address="(updatedAddress) => address = updatedAddress" />
 
         <div v-if="address" class="mt-2">
-            <div class="p-3 border border-gray-200/80 rounded-xl bg-white/40 backdrop-blur-sm">
+            <div class="card p-3">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <strong class="text-sm text-gray-700">{{ $t('form.address.label') }}</strong>
-                        <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">{{ formatAddress(address) }}</p>
+                        <strong class="text-sm text-ygf-black">{{ $t('form.address.label') }}</strong>
+                        <p class="text-sm text-ygf-gray-600 mt-1 whitespace-pre-line">{{ formatAddress(address) }}</p>
                     </div>
                     <button
                         type="button"
                         @click="removeAddress"
-                        class="ml-3 text-sm text-ygf-orange-600 hover:text-ygf-orange-700 font-medium"
+                        class="ml-3 text-sm font-medium hover:opacity-70 transition-opacity duration-300"
+                        style="color: var(--ygf-orange-on-white)"
                     >
                         {{ $t('common.remove') }}
                     </button>
@@ -74,11 +75,11 @@
 
         <div class="flex gap-2">
             <button type="button" @click="emit('close')"
-                    class="w-1/2 bg-white/60 backdrop-blur-sm text-gray-700 py-2.5 rounded-xl border border-gray-200/80 hover:bg-white transition-all duration-300 text-sm active:scale-[0.97]">
+                    class="btn btn-secondary w-1/2">
                 {{ $t('common.cancel') }}
             </button>
             <button type="submit"
-                    class="w-1/2 bg-ygf-orange-500 text-white py-2.5 rounded-xl font-medium hover:bg-ygf-orange-600 transition-all duration-300 text-sm active:scale-[0.97] shadow-sm hover:shadow-md">
+                    class="btn btn-primary w-1/2">
                 {{ $t('me.profile.update') }}
             </button>
         </div>
@@ -193,9 +194,9 @@ ul {
     padding: 0;
     max-height: 150px;
     overflow-y: auto;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    background: white;
+    border: 1px solid rgba(242, 123, 32, 0.12);
+    border-radius: var(--radius-card);
+    background: var(--ygf-white);
 }
 li {
     padding: 0.5rem;
@@ -203,14 +204,14 @@ li {
     transition: background-color 0.2s;
 }
 li:hover {
-    background-color: #f3f4f6;
+    background-color: rgba(242, 123, 32, 0.06);
 }
 input, select, textarea {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #fca5a5;
-    box-shadow: 0 0 0 3px rgba(252, 165, 165, 0.25);
+    border-color: var(--ygf-orange-on-white);
+    box-shadow: 0 0 0 3px rgba(242, 123, 32, 0.12);
 }
 </style>

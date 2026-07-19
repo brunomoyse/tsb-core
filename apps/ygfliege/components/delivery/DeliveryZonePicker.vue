@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-5">
         <!-- Collection mode toggle (matches homepage switch) -->
-        <div class="flex gap-1 p-1 bg-gray-50 border border-gray-200 rounded-xl" role="radiogroup" :aria-label="$t('delivery.modal.modeLabel')">
+        <div class="flex gap-1 p-1 bg-ygf-gray-100 border border-subtle rounded-xl" role="radiogroup" :aria-label="$t('delivery.modal.modeLabel')">
             <button
                 type="button"
                 role="radio"
@@ -9,7 +9,7 @@
                 @click="setMode('DELIVERY')"
                 :class="[
                     'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-                    cartStore.collectionOption === 'DELIVERY' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    cartStore.collectionOption === 'DELIVERY' ? 'bg-ygf-white text-ygf-black shadow-sm' : 'text-ygf-gray-400 hover:text-ygf-gray-600'
                 ]"
             >
                 <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
@@ -22,7 +22,7 @@
                 @click="setMode('PICKUP')"
                 :class="[
                     'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-                    cartStore.collectionOption === 'PICKUP' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                    cartStore.collectionOption === 'PICKUP' ? 'bg-ygf-white text-ygf-black shadow-sm' : 'text-ygf-gray-400 hover:text-ygf-gray-600'
                 ]"
             >
                 <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
@@ -35,14 +35,14 @@
             <!-- Current address pill (when already set) -->
             <div
                 v-if="cartStore.address && !replaceAddress"
-                class="rounded-2xl border border-gray-100 bg-gray-50 p-4"
+                class="rounded-2xl border border-subtle bg-ygf-gray-100 p-4"
             >
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-1">
+                        <p class="text-xs uppercase tracking-wider text-ygf-gray-400 mb-1">
                             {{ $t('delivery.modal.currentAddress') }}
                         </p>
-                        <p class="text-sm text-gray-800 whitespace-pre-line break-words">
+                        <p class="text-sm text-ygf-black whitespace-pre-line break-words">
                             {{ formatAddress(cartStore.address) }}
                         </p>
                     </div>
@@ -126,7 +126,7 @@
                 v-if="showCancel"
                 type="button"
                 @click="emit('cancel')"
-                class="min-h-11 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+                class="min-h-11 px-4 py-2 rounded-xl bg-ygf-gray-100 hover:bg-ygf-gray-200 text-sm font-medium text-ygf-gray-400 transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-gray-300"
             >
                 {{ $t('common.cancel') }}
             </button>
@@ -135,10 +135,10 @@
                 @click="confirm"
                 :disabled="!canConfirm"
                 :class="[
-                    'min-h-11 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300',
+                    'min-h-11 px-5 py-2 rounded-xl text-sm font-semibold text-ygf-white transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300',
                     canConfirm
-                        ? 'bg-ygf-orange-500 hover:bg-ygf-orange-600 shadow-sm shadow-red-200/60'
-                        : 'bg-gray-300 cursor-not-allowed'
+                        ? 'bg-ygf-orange-on-white hover:bg-ygf-orange-on-white-hover shadow-sm shadow-ygf-orange/20'
+                        : 'bg-ygf-gray-200 cursor-not-allowed'
                 ]"
             >
                 {{ $t('delivery.modal.confirm') }}

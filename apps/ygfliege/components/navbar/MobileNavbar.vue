@@ -54,10 +54,19 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/logos/logo-color.svg" to="/"
+                                <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/logos/logo-white.svg" to="/"
                                       @click="closeMenu"/></li>
                                 <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
                                                to="/menu"
+                                               @click="closeMenu"/>
+                                <!-- Concept and About were reachable only from
+                                     the footer on mobile; the guide asks for the
+                                     same 5–6 destinations as desktop. -->
+                                <MobileNavItem :label="$t('mkt.nav.concept')"
+                                               to="/concept"
+                                               @click="closeMenu"/>
+                                <MobileNavItem :label="$t('mkt.nav.about')"
+                                               to="/about"
                                                @click="closeMenu"/>
                                 <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg"
                                                to="/contact"
@@ -77,16 +86,16 @@
                                                 tooltipText="Change Language"/>
 
                                 <!-- Divider -->
-                                <li class="w-full border-t border-gray-200 my-2"></li>
+                                <li class="w-full border-t border-white/20 my-2"></li>
 
                                  <!-- Phone (tap-to-call) -->
                                  <li>
                                      <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`"
-                                        aria-label="Appeler le restaurant"
-                                        class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-ygf-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus-visible:ring-offset-2"
+                                        :aria-label="$t('nav.callRestaurant')"
+                                        class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                                         @click="closeMenu">
-                                         <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
-                                         <span class="text-sm font-medium">{{ brand.phone.replace(/^\+32\s?/u, '0') }}</span>
+                                         <img alt="" aria-hidden="true" src="/icons/contact-icon.svg" class="w-5 h-5 brightness-0 invert" />
+                                         <span class="text-base font-medium">{{ brand.phone.replace(/^\+32\s?/u, '0') }}</span>
                                      </a>
                                  </li>
                             </ul>
@@ -196,7 +205,11 @@ watch(isMenuOpen, (open) => {
 
 /* Mobile Menu Styles */
 #mobile-menu {
-    background-color: white;
+    /* Full-screen orange overlay with white links, per GUIDELINES.md §4.5.
+       The deeper --ygf-orange-on-white step is used rather than #F58220 so the
+       white link text clears WCAG AA (4.50:1 vs 2.59:1). */
+    background-color: var(--ygf-orange-on-white);
+    color: var(--ygf-white);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;

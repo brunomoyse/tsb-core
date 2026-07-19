@@ -1,15 +1,16 @@
 <template>
     <div class="flex">
         <!-- Main Content -->
+        <!-- Widths are plain fractions now: the old calc()s subtracted the
+             142px side rail that the sticky TopNavbar replaced. -->
         <div
             ref="contentContainer"
-            class="w-full sm:w-[calc(100vw-142px)]"
-            :class="hasCartItems
-        ? 'lg:w-[calc(67vw-71px)]'
-        : 'lg:w-[calc(100vw-142px)]'"
+            class="w-full min-w-0"
+            :class="hasCartItems ? 'lg:w-2/3' : 'lg:w-full'"
         >
             <!-- Restaurant Closed Banner -->
-            <div v-if="!isCheckoutAvailable" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+            <div v-if="!isCheckoutAvailable" class="max-w-7xl mx-auto mt-4 px-4">
+            <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
@@ -18,14 +19,19 @@
                     <p class="text-amber-800 text-sm mt-0.5">{{ $t('menu.restaurantClosedDetails') }}</p>
                 </div>
             </div>
+            </div>
 
-            <!-- Sticky Categories Header -->
-            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-ygf-bg top-[80px] sm:top-0">
-                <!-- Search + Filter Section -->
-                <section class="mb-4 px-4 space-y-1.5">
-                    <!-- Search Bar (full-width, labeled) -->
-                    <div class="relative flex items-center rounded-2xl bg-ygf-cream h-[44px]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+            <!-- Sticky search header. The dietary filter chips and the category
+                 tab strip that used to live here were removed deliberately: the
+                 menu is ~30 products across 6 short sections, so scanning beats
+                 filtering, and a tab nav over so little content is chrome. -->
+            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
+                <!-- Aligned to the same max-w-7xl container as the product grid
+                     so the controls don't stretch full-bleed on wide screens. -->
+                <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3">
+                    <!-- Search Bar (labeled) -->
+                    <div class="relative flex flex-1 sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ygf-orange-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-ygf-black/40 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
                         <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
@@ -35,145 +41,26 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
+                            class="w-full h-full bg-transparent rounded-full pl-11 pr-10 outline-none text-sm text-ygf-black placeholder:text-ygf-black/40"
                         />
                         <button
                             type="button"
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
-                            :aria-label="$t('nav.search')"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            :aria-label="$t('common.clear')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-ygf-black/40 hover:text-ygf-black transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
-
-                    <!-- Filter Row (compact chips) -->
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        <!-- Halal toggle -->
-                        <button
-                            type="button"
-                            @click="toggleFilter('halal')"
-                            :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
-                            :class="activeFilters.has('halal')
-                                ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
-                        >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
-                                :class="activeFilters.has('halal') ? 'scale-110' : ''"
-                                :src="activeFilters.has('halal')
-                                    ? 'https://api.iconify.design/hugeicons/halal.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/halal.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
-                            />
-                            {{ $t('menu.halal') }}
-                        </button>
-
-                        <!-- Vegan toggle -->
-                        <button
-                            type="button"
-                            @click="toggleFilter('vegetarian')"
-                            :aria-pressed="activeFilters.has('vegetarian')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
-                            :class="activeFilters.has('vegetarian')
-                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
-                        >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
-                                :class="activeFilters.has('vegetarian') ? 'scale-110' : ''"
-                                :src="activeFilters.has('vegetarian')
-                                    ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
-                            />
-                            {{ $t('menu.vegetarian') }}
-                        </button>
-
-                        <!-- Spicy toggle -->
-                        <button
-                            type="button"
-                            @click="toggleFilter('spicy')"
-                            :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
-                            :class="activeFilters.has('spicy')
-                                ? 'bg-ygf-orange-500 text-white shadow-sm shadow-red-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-ygf-orange-50 hover:text-ygf-orange-700 hover:border-ygf-orange-200'"
-                        >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
-                                :class="activeFilters.has('spicy') ? 'scale-110' : ''"
-                                :src="activeFilters.has('spicy')
-                                    ? 'https://api.iconify.design/hugeicons/fire-02.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/fire-02.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
-                            />
-                            {{ $t('menu.spicy') }}
-                        </button>
-
-                        <!-- Delivery zone chip on desktop -->
-                        <div class="hidden sm:block sm:ml-auto">
-                            <DeliveryZoneChip />
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Categories Scroll -->
-                <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
-                    <!-- Left gradient fade -->
-                    <div
-                        class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-ygf-bg to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
-                        :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
-                    >
-                        <svg class="w-4 h-4 text-ygf-orange-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-
-                    <!-- Scrollable Category Tabs -->
-                    <div
-                        ref="scrollContainer"
-                        @mousedown="startDrag"
-                        @mousemove="onDrag"
-                        @mouseup="stopDrag"
-                        @mouseleave="stopDrag"
-                        :class="[
-                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth snap-x snap-mandatory',
-                          isDragging ? 'cursor-grabbing' : 'cursor-grab'
-                        ]"
-                    >
-                        <CategoryCard
-                            v-for="cat in displayedCategories"
-                            :key="cat.id"
-                            :id="`category-card-${cat.id}`"
-                            :active="activeCategory === cat.id"
-                            :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
-                            class="snap-center"
-                            @select="scrollToCategory"
-                        />
-                    </div>
-
-                    <!-- Right gradient fade -->
-                    <div
-                        class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-ygf-bg to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end pr-1"
-                        :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
-                    >
-                        <svg class="w-4 h-4 text-ygf-orange-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
                 </section>
             </section>
 
             <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-            <div v-if="showAllergenNotice" class="mx-4 mb-2 h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
+            <div v-if="showAllergenNotice" class="max-w-7xl mx-auto mb-2 px-4">
+            <div class="h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
                 <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
                 <span class="flex-1 truncate">
                     {{ $t('menu.allergenNoticeShort') }}
@@ -185,44 +72,79 @@
                     </svg>
                 </button>
             </div>
+            </div>
 
             <!-- Skeleton Loading State -->
             <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div v-for="i in 3" :key="i" class="space-y-4">
-                    <div class="h-6 w-32 bg-gray-200 rounded animate-pulse ml-4"></div>
+                    <div class="h-6 w-32 bg-ygf-orange-100/60 rounded animate-pulse"></div>
                     <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
-                        <div v-for="j in 4" :key="j" class="h-[260px] bg-gray-200 rounded-xl animate-pulse"></div>
+                        <div v-for="j in 4" :key="j" class="h-[260px] bg-ygf-orange-100/60 rounded-ygf-card animate-pulse"></div>
                     </div>
                 </div>
             </section>
 
             <!-- Products Grid -->
             <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+                <!-- Build-your-own-bowl is the signature experience, so it gets a
+                     full-width entry rather than an equal-weight grid tile. Hidden
+                     while searching or filtering, where the grid is the answer. -->
+                <article
+                    v-if="composerProduct && !searchValue.trim().length"
+                    data-testid="composer-hero"
+                    class="card card-interactive grid sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
+                >
+                    <div class="p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
+                        <span class="section-label">{{ $t('composer.eyebrow') }}</span>
+                        <h2 translate="no" class="section-title text-2xl sm:text-3xl">{{ composerProduct.name }}</h2>
+                        <p class="text-sm text-ygf-black/70 max-w-prose">{{ $t('composer.heroSubtitle') }}</p>
+                        <button
+                            type="button"
+                            data-testid="composer-hero-cta"
+                            class="btn btn-primary mt-2"
+                            :disabled="!isCartAddAvailable || !composerProduct.isAvailable"
+                            @click="openModal(composerProduct.id)"
+                        >
+                            {{ $t('composer.open') }}
+                        </button>
+                    </div>
+                    <MktPicture
+                        src="/images/bowls/beef-bone-top"
+                        :widths="[320, 560, 800]"
+                        :fallback-width="560"
+                        :alt="composerProduct.name"
+                        sizes="(min-width: 640px) 260px, 100vw"
+                        img-class="w-full h-full object-cover aspect-[4/3] sm:aspect-auto"
+                    />
+                </article>
+
                 <div
                     v-for="cat in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
                     class="space-y-4"
                 >
-                    <!-- Category Title with Japanese bracket decoration -->
-                    <div class="flex items-center gap-3 ml-4">
-                        <span class="text-ygf-orange-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
-                        <h2 translate="no" class="font-display font-bold inline-block text-xl font-semibold text-gray-800 tracking-wide">
+                    <!-- Category heading. The 「 」 brackets that used to frame
+                         this were Tokyo Sushi's Japanese motif — wrong for a
+                         Chinese brand. Replaced with the vitrine site's rule +
+                         eyebrow rhythm. -->
+                    <div class="flex items-center gap-4">
+                        <h2 translate="no" class="section-title font-display text-xl sm:text-2xl whitespace-nowrap">
                             {{ cat.name }}
                         </h2>
-                        <span class="text-ygf-orange-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
+                        <span aria-hidden="true" class="h-px flex-1 bg-ygf-orange-200" />
                     </div>
 
                     <!-- Product Cards -->
                     <div
                         v-if="cat.products.length"
-                        class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+                        class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
                     >
                         <ProductCard
                             :index="idx"
                             :product="prod"
                             :ordering-disabled="!isCartAddAvailable"
-                            class="min-width-[200px] animate-fade-in-up"
+                            class="animate-fade-in-up"
                             :style="{ animationDelay: `${idx * 50}ms` }"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
@@ -237,13 +159,8 @@
                 </div>
 
                 <!-- Search No Results -->
-                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-ygf-black/60">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
-                </div>
-
-                <!-- Filter No Results -->
-                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
-                    <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
             </section>
         </div>
@@ -251,7 +168,7 @@
         <!-- Desktop Cart Sidebar -->
         <aside
             v-if="hasCartItems"
-            class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+            class="hidden lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:block lg:w-1/3 lg:pr-4"
         >
             <SideCart :is-ordering-available="isCheckoutAvailable" />
         </aside>
@@ -260,10 +177,20 @@
         <ClientOnly>
             <Transition name="modal-backdrop">
                 <div v-if="route.query.product"
-                     class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+                     class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center sm:p-4 backdrop-blur-sm"
                      @click.self="closeModal">
                     <Transition name="modal-panel" appear>
+                        <!-- Composer products get the full assembly flow; every
+                             fixed set stays on the ordinary product modal. -->
+                        <BowlComposer
+                            v-if="routedProductIsComposer"
+                            :key="route.query.product"
+                            :product="route.query.product as string"
+                            :ordering-disabled="!isCartAddAvailable"
+                            @close="closeModal"
+                        />
                         <ProductModal
+                            v-else
                             :key="route.query.product"
                             :product="route.query.product as string"
                             :ordering-disabled="!isCartAddAvailable"
@@ -282,12 +209,11 @@ definePageMeta({
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
-import CategoryCard from '~/components/menu/CategoryCard.vue'
-import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
-import { useHaptics } from '#engine/composables/useHaptics'
+import BowlComposer from '~/components/menu/BowlComposer.vue'
+import MktPicture from '~/components/mkt/MktPicture.vue'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '~/components/cart/SideCart.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -299,7 +225,6 @@ import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
 
-const { selection: hapticSelection } = useHaptics()
 const { brand } = useAppConfig()
 const route = useRoute()
 const router = useRouter()
@@ -431,14 +356,6 @@ watch(liveProduct, (val) => {
  */
 const searchValue = ref('')
 const debouncedSearchValue = useDebounce(searchValue, 300)
-const activeCategory = ref<string>('')
-const scrollContainer = ref<HTMLElement | null>(null)
-const isDragging = ref(false)
-const isScrollingToCategory = ref(false)
-const dragStartX = ref(0)
-const scrollStartX = ref(0)
-const canScrollLeft = ref(false)
-const canScrollRight = ref(false)
 const stickyHeader = ref<HTMLElement | null>(null)
 
 const searchInputRef = ref<HTMLInputElement | null>(null)
@@ -446,25 +363,6 @@ const searchInputRef = ref<HTMLInputElement | null>(null)
 const clearSearch = () => {
     searchValue.value = ''
     searchInputRef.value?.focus()
-}
-
-// Filter state
-const activeFilters = ref<Set<string>>(new Set())
-const toggleFilter = (filter: string) => {
-    hapticSelection()
-    const next = new Set(activeFilters.value)
-    const willEnable = !next.has(filter)
-    if (willEnable) {
-        next.add(filter)
-    } else {
-        next.delete(filter)
-    }
-    activeFilters.value = next
-    trackEvent('dietary_filter_toggled', {
-        filter,
-        enabled: willEnable,
-        active_filters_count: next.size,
-    })
 }
 
 /**
@@ -492,6 +390,25 @@ const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =
     )
 )
 
+/**
+ * The build-your-own-bowl product, detected by shape rather than by id: any
+ * product with a choice group allowing more than one pick is a composer. The
+ * category query already returns minSelections/maxSelections, so this needs no
+ * extra round trip, and adding a second composer to the menu needs no code
+ * change here.
+ */
+const isComposerProduct = (p: Product) => p.choiceGroups?.some(group => group.maxSelections > 1) ?? false
+
+const composerProduct = computed(() => allProducts.value.find(isComposerProduct) ?? null)
+
+/** Whether the product currently open in the route query is a composer. */
+const routedProductIsComposer = computed(() => {
+    const id = route.query.product
+    if (typeof id !== 'string') return false
+    const p = allProducts.value.find(product => product.id === id)
+    return p ? isComposerProduct(p) : false
+})
+
 // Filtered list based on search query (all words must match)
 const filteredProducts = computed(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
@@ -506,77 +423,16 @@ const filteredProducts = computed(() => {
     })
 })
 
-// Apply dietary filters (AND logic: product must match ALL active filters)
-const dietaryFiltered = computed(() => {
-    const filters = activeFilters.value
-    if (filters.size === 0) return filteredProducts.value
-    return filteredProducts.value.filter(p => {
-        if (filters.has('halal') && !p.isHalal) return false
-        if (filters.has('vegetarian') && !p.isVegetarian) return false
-        if (filters.has('spicy') && !p.isSpicy) return false
-        return true
-    })
-})
-
-// Categories displayed, grouping filtered products
+// Categories displayed, grouping search-filtered products
 const displayedCategories = computed<ProductCategory[]>(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q && activeFilters.value.size === 0) return baseCategories.value
-    const grouped = Map.groupBy(dietaryFiltered.value, prod => prod.category.id)
+    if (!q) return baseCategories.value
+    const grouped = Map.groupBy(filteredProducts.value, prod => prod.category.id)
     return Array.from(grouped.entries()).map(([, products]) => ({
         ...products[0]!.category,
         products,
     })).toSorted((a, b) => a.order - b.order)
 })
-
-/**
- * Utility: Update Arrow Visibility
- */
-const updateScrollButtons = () => {
-    const el = scrollContainer.value!
-    canScrollLeft.value = el.scrollLeft > 0
-    canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
-}
-
-/**
- * Drag-to-scroll Handlers
- */
-const startDrag = (e: MouseEvent) => {
-    isDragging.value = true
-    dragStartX.value = e.pageX
-    scrollStartX.value = scrollContainer.value!.scrollLeft
-}
-const onDrag = (e: MouseEvent) => {
-    if (!isDragging.value) return
-    const dx = e.pageX - dragStartX.value
-    scrollContainer.value!.scrollLeft = scrollStartX.value - dx
-    updateScrollButtons()
-}
-const stopDrag = () => {
-    isDragging.value = false
-    updateScrollButtons()
-}
-
-/**
- * Scroll-to-Category Method
- */
-const scrollToCategory = (categoryId: string) => {
-    const element = document.getElementById(`category-${categoryId}`)
-    if (!element || !stickyHeader.value) return
-
-    // Suppress observer during programmatic scroll and set active immediately
-    isScrollingToCategory.value = true
-    activeCategory.value = categoryId
-
-    const headerHeight = stickyHeader.value.offsetHeight
-    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
-    const gap = 16
-    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
-    window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
-
-    // Re-enable observer after smooth scroll completes
-    setTimeout(() => { isScrollingToCategory.value = false }, 600)
-}
 
 /**
  * Watchers
@@ -589,24 +445,6 @@ watch(debouncedSearchValue, (newVal, oldVal) => {
     } else if (oldVal && oldVal.trim().length > 0) {
         trackEvent('search_cleared')
     }
-})
-
-// Initialize active category when list changes
-watch(displayedCategories, cats => {
-    if (!activeCategory.value && cats.length) activeCategory.value = cats[0]!.id
-}, { immediate: true })
-
-// Center active card on change
-watch(activeCategory, newVal => {
-    nextTick(() => {
-        if (!scrollContainer.value || !newVal) return
-        const card = document.getElementById(`category-card-${newVal}`)
-        if (!card) return
-
-        const container = scrollContainer.value
-        const scrollPosition = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.offsetWidth / 2)
-        container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
-    })
 })
 
 /**
@@ -761,49 +599,9 @@ watch(() => cartStore.products.length, (newLen, oldLen) => {
 // SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
 useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
-/**
- * IntersectionObserver: Scroll Spy
- */
-let observer: IntersectionObserver | null = null
-
-onMounted(() => {
-    observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !isScrollingToCategory.value) {
-                activeCategory.value = entry.target.id.replace('category-', '')
-            }
-        })
-    }, {
-        threshold: 0.1,
-        rootMargin: '-80px 0px -40% 0px'
-    })
-
-    // Observe each category section
-    const observeSections = () => {
-        observer!.disconnect()
-        nextTick(() => {
-            displayedCategories.value.forEach(cat => {
-                const el = document.getElementById(`category-${cat.id}`)
-                if (el) observer!.observe(el)
-            })
-        })
-    }
-
-    observeSections()
-    watch(displayedCategories, observeSections, { deep: true })
-    updateScrollButtons()
-    scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
-})
-
-onUnmounted(() => {
-    observer?.disconnect()
-    scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
-})
 </script>
 
 <style scoped>
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
 
 @keyframes slideDown {

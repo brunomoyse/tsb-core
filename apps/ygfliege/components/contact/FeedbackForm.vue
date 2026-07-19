@@ -135,27 +135,28 @@ function resetForm() {
 </script>
 
 <template>
-    <div class="bg-ygf-cream rounded-2xl p-6 sm:p-8 h-full">
+    <div class="rounded-2xl p-6 sm:p-8 h-full" style="background-color: var(--ygf-white)">
         <!-- Header -->
         <div class="mb-5">
-            <h2 class="font-semibold text-gray-900 mb-1 flex items-center gap-2 text-[15px]">
-                <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+            <h2 class="font-semibold text-ygf-black mb-1 flex items-center gap-2 text-[15px]">
+                <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" :style="{ color: 'var(--ygf-orange-on-white)' }"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
                 {{ $t('feedback.title') }}
             </h2>
-            <p class="text-sm text-gray-500">{{ $t('feedback.subtitle') }}</p>
+            <p class="text-sm text-ygf-gray-600">{{ $t('feedback.subtitle') }}</p>
         </div>
 
         <!-- Success state -->
         <div v-if="submitted" class="text-center py-8">
-            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" :style="{ 'background-color': 'rgba(76, 175, 80, 0.15)' }">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--ygf-success)">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                 </svg>
             </div>
-            <p class="text-sm text-gray-700 leading-relaxed max-w-md mx-auto">{{ $t('feedback.success') }}</p>
+            <p class="text-sm text-ygf-gray-700 leading-relaxed max-w-md mx-auto">{{ $t('feedback.success') }}</p>
             <button
                 type="button"
-                class="mt-4 text-sm font-medium text-ygf-orange-600 hover:text-ygf-orange-700 transition-colors duration-300"
+                class="mt-4 text-sm font-medium transition-opacity duration-300 hover:opacity-70"
+                :style="{ 'color': 'var(--ygf-orange-on-white)' }"
                 @click="resetForm"
             >
                 {{ $t('feedback.sendAnother') }}
@@ -173,43 +174,41 @@ function resetForm() {
             <!-- Name & Email row -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="feedback-name" class="block text-xs font-medium text-gray-600 mb-1.5">{{ $t('feedback.name') }}</label>
+                    <label for="feedback-name" class="block text-xs font-medium text-ygf-gray-600 mb-1.5">{{ $t('feedback.name') }}</label>
                     <input
                         id="feedback-name"
                         v-model="name"
                         type="text"
                         maxlength="100"
                         :placeholder="$t('feedback.namePlaceholder')"
-                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none"
+                        class="field text-sm"
                     />
                 </div>
                 <div>
-                    <label for="feedback-email" class="block text-xs font-medium text-gray-600 mb-1.5">{{ $t('feedback.email') }}</label>
+                    <label for="feedback-email" class="block text-xs font-medium text-ygf-gray-600 mb-1.5">{{ $t('feedback.email') }}</label>
                     <input
                         id="feedback-email"
                         v-model="email"
                         type="email"
                         maxlength="255"
                         :placeholder="$t('feedback.emailPlaceholder')"
-                        class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none"
+                        class="field text-sm"
                     />
                 </div>
             </div>
 
             <!-- Service type pills -->
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-2">{{ $t('feedback.serviceType') }}</label>
+                <label class="block text-xs font-medium text-ygf-gray-600 mb-2">{{ $t('feedback.serviceType') }}</label>
                 <div class="flex flex-wrap gap-2">
                     <button
                         v-for="st in serviceTypes"
                         :key="st"
                         type="button"
-                        :class="[
-                            'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border',
-                            serviceType === st
-                                ? 'bg-ygf-orange-100 text-ygf-orange-700 border-ygf-orange-200'
-                                : 'bg-white border-gray-200 text-gray-600 hover:bg-ygf-orange-100/40'
-                        ]"
+                        class="px-4 py-2 rounded-ygf-card text-sm font-medium transition-all duration-300 border"
+                        :style="serviceType === st
+                            ? { 'background-color': 'rgba(242, 123, 32, 0.12)', 'color': 'var(--ygf-orange-on-white)', 'border-color': 'rgba(242, 123, 32, 0.3)' }
+                            : { 'background-color': 'var(--ygf-white)', 'color': 'var(--ygf-gray-600)', 'border-color': 'rgba(242, 123, 32, 0.12)' }"
                         @click="serviceType = st"
                     >
                         {{ $t(`feedback.serviceTypes.${st}`) }}
@@ -219,18 +218,16 @@ function resetForm() {
 
             <!-- Feedback type pills -->
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-2">{{ $t('feedback.feedbackType') }}</label>
+                <label class="block text-xs font-medium text-ygf-gray-600 mb-2">{{ $t('feedback.feedbackType') }}</label>
                 <div class="flex flex-wrap gap-2">
                     <button
                         v-for="ft in feedbackTypes"
                         :key="ft"
                         type="button"
-                        :class="[
-                            'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border',
-                            feedbackType === ft
-                                ? 'bg-ygf-orange-100 text-ygf-orange-700 border-ygf-orange-200'
-                                : 'bg-white border-gray-200 text-gray-600 hover:bg-ygf-orange-100/40'
-                        ]"
+                        class="px-4 py-2 rounded-ygf-card text-sm font-medium transition-all duration-300 border"
+                        :style="feedbackType === ft
+                            ? { 'background-color': 'rgba(242, 123, 32, 0.12)', 'color': 'var(--ygf-orange-on-white)', 'border-color': 'rgba(242, 123, 32, 0.3)' }
+                            : { 'background-color': 'var(--ygf-white)', 'color': 'var(--ygf-gray-600)', 'border-color': 'rgba(242, 123, 32, 0.12)' }"
                         @click="feedbackType = ft"
                     >
                         {{ $t(`feedback.feedbackTypes.${ft}`) }}
@@ -240,16 +237,16 @@ function resetForm() {
 
             <!-- Message textarea -->
             <div>
-                <label for="feedback-message" class="block text-xs font-medium text-gray-600 mb-1.5">{{ $t('feedback.message') }}</label>
+                <label for="feedback-message" class="block text-xs font-medium text-ygf-gray-600 mb-1.5">{{ $t('feedback.message') }}</label>
                 <textarea
                     id="feedback-message"
                     v-model="message"
                     maxlength="2000"
                     rows="4"
                     :placeholder="$t('feedback.messagePlaceholder')"
-                    class="w-full bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none resize-none"
+                    class="field text-sm resize-none"
                 />
-                <p class="text-xs text-gray-400 text-right mt-1">{{ message.length }} / 2000</p>
+                <p class="text-xs text-ygf-gray-500 text-right mt-1">{{ message.length }} / 2000</p>
             </div>
 
             <!-- Turnstile widget -->
@@ -259,12 +256,8 @@ function resetForm() {
             <button
                 type="submit"
                 :disabled="!canSubmit"
-                :class="[
-                    'w-full sm:w-auto px-8 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300',
-                    canSubmit
-                        ? 'bg-ygf-orange-500 text-white hover:bg-ygf-orange-600 active:scale-[0.98]'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                ]"
+                class="btn w-full sm:w-auto px-8"
+                :class="canSubmit ? 'btn-primary' : 'btn-disabled'"
             >
                 {{ submitting ? $t('feedback.sending') : $t('feedback.submit') }}
             </button>

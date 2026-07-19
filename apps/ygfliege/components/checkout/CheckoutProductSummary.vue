@@ -1,17 +1,17 @@
 <template>
-    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-visible">
+    <section class="card overflow-visible">
         <!-- Header -->
         <div class="px-5 pt-5 pb-3 flex items-baseline justify-between">
-            <h2 class="text-lg font-bold text-gray-900">
+            <h2 class="text-lg font-bold text-ygf-black">
                 {{ $t('checkout.orderSummary', 'Your Order') }}
             </h2>
-            <span class="text-xs text-gray-400 font-medium">
+            <span class="text-xs text-ygf-gray-400 font-medium">
                 {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
             </span>
         </div>
 
         <!-- Empty state -->
-        <div v-if="cartStore.products.length === 0" class="px-5 pb-5 text-gray-400 text-center text-sm">
+        <div v-if="cartStore.products.length === 0" class="px-5 pb-5 text-ygf-gray-400 text-center text-sm">
             {{ $t('checkout.emptyCart', 'Your cart is empty.') }}
         </div>
 
@@ -25,7 +25,7 @@
                 >
                     <!-- Product image -->
                     <div
-                        class="w-14 h-14 shrink-0 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                        class="w-14 h-14 shrink-0 rounded-xl bg-ygf-gray-100 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >
                         <picture>
@@ -54,39 +54,39 @@
                         <!-- Row 1: Name + price -->
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
-                                <p v-if="itemLabelMeta(item)" class="text-xs text-gray-500 truncate leading-tight mb-0.5">
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-ygf-gray-400 truncate leading-tight mb-0.5">
                                     {{ itemLabelMeta(item) }}
                                 </p>
-                                <p class="text-[15px] font-semibold text-gray-900 leading-tight line-clamp-2 pr-1">
+                                <p class="text-[15px] font-semibold text-ygf-black leading-tight line-clamp-2 pr-1">
                                     {{ itemLabelName(item) }}
                                 </p>
-                                <p v-if="itemChoice(item)" class="text-xs text-ygf-orange-500 mt-0.5 truncate">
+                                <p v-if="itemChoice(item)" class="text-xs text-ygf-orange-text mt-0.5 truncate">
                                     ({{ itemChoice(item) }})
                                 </p>
                             </div>
-                            <span class="text-[15px] font-bold text-gray-900 shrink-0 tabular-nums">
+                            <span class="text-[15px] font-bold text-ygf-black shrink-0 tabular-nums">
                                 {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
                             </span>
                         </div>
 
                         <!-- Row 2: Stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5">
-                            <div class="flex items-center gap-0 bg-gray-100 rounded-full">
+                            <div class="stepper">
                                 <button
                                     :aria-label="$t('cart.decreaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors"
+                                    class="stepper-btn"
                                     @click="handleDecrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                         <line x1="5" y1="12" x2="19" y2="12"/>
                                     </svg>
                                 </button>
-                                <span class="w-7 text-center text-sm font-semibold text-gray-800 tabular-nums select-none">
+                                <span class="stepper-value">
                                     {{ item.quantity }}
                                 </span>
                                 <button
                                     :aria-label="$t('cart.increaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-gray-700 active:bg-gray-200 transition-colors"
+                                    class="stepper-btn"
                                     @click="handleIncrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -97,7 +97,7 @@
                             </div>
                             <button
                                 :aria-label="$t('cart.removeItem')"
-                                class="w-11 h-11 flex items-center justify-center rounded-full text-gray-500 hover:text-ygf-orange-500 hover:bg-ygf-orange-50 active:bg-ygf-orange-100 transition-colors"
+                                class="w-11 h-11 flex items-center justify-center rounded-full text-ygf-gray-400 hover:text-ygf-orange-text hover:bg-ygf-orange-bg active:bg-ygf-orange-100 transition-colors"
                                 @click="handleRemoveFromCart(item)"
                             >
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -111,15 +111,15 @@
             </div>
 
             <!-- Divider -->
-            <div class="mx-5 border-t border-gray-100" />
+            <div class="mx-5 border-t border-subtle" />
 
             <!-- Price summary -->
             <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
-                <div class="flex justify-between text-gray-500">
+                <div class="flex justify-between text-ygf-gray-400">
                     <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
                     <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-gray-500 relative">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-ygf-gray-400 relative">
                     <div class="flex items-center gap-1">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
                         <button
@@ -127,7 +127,7 @@
                             type="button"
                             :aria-label="$t('checkout.deliveryFee')"
                             :aria-expanded="showTooltip"
-                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-gray-500 hover:text-gray-700 focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none rounded-full relative"
+                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-ygf-gray-400 hover:text-ygf-gray-600 focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none rounded-full relative"
                             @click.stop="showTooltip = !showTooltip"
                             @mouseenter="showTooltip = true"
                             @mouseleave="showTooltip = false"
@@ -138,37 +138,37 @@
                             <div
                                 v-if="showTooltip"
                                 role="tooltip"
-                                class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-gray-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
+                                class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-ygf-black text-ygf-white text-xs rounded-xl shadow-lg z-[999] whitespace-pre-line leading-relaxed text-left"
                             >
                                 {{ $t('checkout.deliveryFeeInfo') }}
                                 <div class="absolute top-full left-3 -mt-1">
-                                    <div class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800" />
+                                    <div class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-ygf-black" />
                                 </div>
                             </div>
                         </button>
                     </div>
-                    <span v-if="!cartStore.address?.distance" class="text-gray-400 italic">{{ $t('checkout.tbd') }}</span>
-                    <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-ygf-orange-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
-                    <span v-else-if="deliveryFee === -1" class="text-ygf-orange-500 font-medium">{{ $t('checkout.tooFar') }}</span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-ygf-orange-100 text-ygf-orange-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
+                    <span v-if="!cartStore.address?.distance" class="text-ygf-gray-600 italic">{{ $t('checkout.tbd') }}</span>
+                    <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-ygf-orange-text font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
+                    <span v-else-if="deliveryFee === -1" class="text-ygf-orange-text font-medium">{{ $t('checkout.tooFar') }}</span>
+                    <span v-else-if="deliveryFee === 0" class="chip chip-static text-xs">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-ygf-gray-400">
                     <span>{{ $t('checkout.discount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-ygf-orange-600">
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-ygf-orange-text">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.paymentOption === 'ONLINE'" class="flex justify-between text-gray-500">
+                <div v-if="cartStore.paymentOption === 'ONLINE'" class="flex justify-between text-ygf-gray-400">
                     <span>{{ $t('checkout.transactionFee') }}</span>
                     <span class="tabular-nums">{{ formatPrice(TRANSACTION_FEE) }}</span>
                 </div>
                 <!-- Total -->
-                <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-gray-100">
-                    <span class="font-bold text-gray-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="font-bold text-lg text-ygf-orange-600 tabular-nums">{{ formatPrice(finalTotal) }}</span>
+                <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-subtle">
+                    <span class="font-bold text-ygf-black">{{ $t('checkout.total', 'Total:') }}</span>
+                    <span class="font-bold text-lg text-ygf-orange-text tabular-nums">{{ formatPrice(finalTotal) }}</span>
                 </div>
             </div>
         </template>

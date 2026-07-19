@@ -31,6 +31,23 @@ module.exports = {
                     'cream': '#FDF5EC',
                     'wood': '#C49A6C',
                     'red': '#D42B2B',
+                    'white': '#FFFFFF',
+                    'success': '#2E8B57',
+                    'error': '#D32F2F',
+                    // Warm border tint, same value as --border-default.
+                    'border': 'rgba(242, 123, 32, 0.12)',
+                },
+                // Neutral text/surface grays, matching --ygf-gray-* in brand.css
+                // (intermediate steps interpolated).
+                'ygf-gray': {
+                    50: '#FAFAFA',
+                    100: '#F5F5F5',
+                    200: '#E5E5E5',
+                    300: '#D4D4D4',
+                    400: '#999999',
+                    500: '#808080',
+                    600: '#666666',
+                    700: '#4D4D4D',
                 },
                 'ygf-orange': {
                     50: '#FFF7ED',
@@ -43,7 +60,15 @@ module.exports = {
                     700: '#C2570C',
                     800: '#9A3412',
                     900: '#7C2D12',
+                    'bg': '#FFF7ED',
+                    'light': '#FDBA74',
+                    // Accessibility fills/text, same values as brand.css vars.
+                    'on-white': '#C2570C',
+                    'on-white-hover': '#9A3412',
+                    'text': '#9A3412',
                 },
+                // `border-subtle` — faintest warm hairline (--border-subtle).
+                'subtle': 'rgba(242, 123, 32, 0.08)',
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",

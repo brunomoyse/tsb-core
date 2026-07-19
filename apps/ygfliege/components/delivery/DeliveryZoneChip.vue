@@ -110,7 +110,7 @@ const chipAriaLabel = computed(() => `${chipLabel.value} — ${t('delivery.chip.
 const stateClasses = computed(() => {
     switch (state.value) {
         case 'notSet':
-            return 'bg-white text-gray-700 border border-gray-200 hover:bg-ygf-orange-100/40 hover:text-ygf-orange-700 hover:border-ygf-orange-200'
+            return 'bg-ygf-white text-ygf-black border border-subtle hover:bg-ygf-orange-bg hover:text-ygf-orange-text hover:border-ygf-orange'
         case 'inZone':
             return 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
         case 'outOfZone':

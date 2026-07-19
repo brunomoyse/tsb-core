@@ -1,5 +1,5 @@
 <template>
-    <button type="button" class="relative"
+    <button type="button" class="relative focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2 rounded-full"
             @click="handleToggleCart"
     >
         <!-- Cart Icon -->
@@ -9,13 +9,13 @@
 
             <!-- Tooltip positioned below -->
             <span
-                class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+                class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-ygf-black text-ygf-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
                     {{ $t('nav.cart') }}
                 </span>
         </div>
         <!-- Badge for cart count -->
         <div v-if="cartCount > 0"
-             :class="['absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-ygf-orange-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900', animating ? 'animate-bounce' : '']">
+             :class="['absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-ygf-white bg-ygf-orange-on-white border-2 border-ygf-white rounded-full -top-2 -right-2', animating ? 'animate-bounce' : '']">
             {{ cartCount }}
         </div>
         <span class="sr-only">{{ $t('cart.notifications') }}</span>

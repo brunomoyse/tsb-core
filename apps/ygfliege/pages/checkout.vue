@@ -50,25 +50,22 @@
             </div>
         </div>
 
-        <!-- Page Title with Japanese accent -->
-        <div class="flex items-center gap-3 mb-4">
-            <h1 class="text-2xl font-bold">
-                {{ $t('checkout.title', 'Checkout') }}
-            </h1>
-            <span class="text-ygf-orange-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
-        </div>
+        <!-- Page Title -->
+        <h1 class="text-2xl font-bold mb-4">
+            {{ $t('checkout.title', 'Checkout') }}
+        </h1>
 
         <!-- Step Indicator — reflects the current sub-step inside checkout so users
              know which stage they're on (address, sign in, phone, review, payment). -->
         <nav class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6" :aria-label="$t('checkout.stepCheckout')">
-            <NuxtLinkLocale to="/menu" class="text-ygf-orange-600 hover:text-ygf-orange-700 font-medium">
+            <NuxtLinkLocale to="/menu" class="text-ygf-orange-text hover:text-ygf-orange-on-white font-medium">
                 {{ $t('checkout.stepMenu') }}
             </NuxtLinkLocale>
             <template v-for="(step, idx) in visibleSteps" :key="step.key">
-                <span class="text-lg leading-none" :class="idx < currentStepIndex ? 'text-ygf-orange-300' : 'text-gray-300'" aria-hidden="true">〉</span>
+                <span class="text-lg leading-none" :class="idx < currentStepIndex ? 'text-ygf-orange-light' : 'text-ygf-gray-200'" aria-hidden="true">〉</span>
                 <span
                     :class="[
-                        idx === currentStepIndex ? 'font-bold text-gray-900' : idx < currentStepIndex ? 'text-ygf-orange-600' : 'text-gray-400',
+                        idx === currentStepIndex ? 'font-bold text-ygf-black' : idx < currentStepIndex ? 'text-ygf-orange-text' : 'text-ygf-gray-400',
                     ]"
                     :aria-current="idx === currentStepIndex ? 'step' : undefined"
                 >
@@ -89,13 +86,13 @@
             <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
             <div
                 v-if="showStickyBar && cartStore.products.length > 0"
-                class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-gray-200/60 transition-all"
+                class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-ygf-white/95 backdrop-blur-md border-b border-subtle transition-all"
             >
                 <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-500">
+                    <span class="text-ygf-gray-400">
                         {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
                     </span>
-                    <span class="font-bold text-gray-900">{{ formatPrice(cartTotal) }}</span>
+                    <span class="font-bold text-ygf-black">{{ formatPrice(cartTotal) }}</span>
                 </div>
             </div>
 
@@ -106,15 +103,15 @@
                         v-for="n in 3"
                         :key="`skel-${n}`"
                         aria-hidden="true"
-                        class="relative overflow-hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4 animate-shimmer"
+                        class="relative overflow-hidden bg-ygf-white rounded-2xl border border-subtle shadow-sm p-5 space-y-4 animate-shimmer"
                     >
-                        <div class="h-5 w-32 rounded bg-gray-100" />
+                        <div class="h-5 w-32 rounded bg-ygf-gray-100" />
                         <div class="space-y-2">
-                            <div class="h-3 rounded bg-gray-100" />
-                            <div class="h-3 rounded bg-gray-100 w-5/6" />
-                            <div class="h-3 rounded bg-gray-100 w-2/3" />
+                            <div class="h-3 rounded bg-ygf-gray-100" />
+                            <div class="h-3 rounded bg-ygf-gray-100 w-5/6" />
+                            <div class="h-3 rounded bg-ygf-gray-100 w-2/3" />
                         </div>
-                        <div class="h-10 rounded-lg bg-gray-100" />
+                        <div class="h-10 rounded-lg bg-ygf-gray-100" />
                     </div>
                 </template>
                 <template v-else>
@@ -134,7 +131,7 @@
 
             <!-- Fixed Bottom Checkout Button (mobile only) -->
             <div
-                class="fixed left-0 right-0 sm:left-[142px] bottom-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
+                class="fixed left-0 right-0 bottom-0 z-30 lg:hidden bg-ygf-white border-t border-subtle shadow-[0_-2px_10px_rgba(245,130,32,0.06)] p-4"
             >
                 <button
                     type="button"
@@ -144,8 +141,8 @@
                     :class="[
                         'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus-visible:ring-offset-2',
                         !isCheckoutProcessing && isOrderingAvailable && cartStore.products.length > 0
-                            ? 'bg-ygf-orange-500 text-white hover:bg-ygf-orange-600'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
+                            ? 'bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover'
+                            : 'bg-ygf-gray-200 text-ygf-gray-400 cursor-not-allowed pointer-events-none'
                     ]"
                 >
                     <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
@@ -190,18 +187,18 @@
             tabindex="0"
             @click.self="guardedCloseAddressModal"
         >
-            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
+            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-ygf-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
                 <button
                     type="button"
                     @click="guardedCloseAddressModal"
                     :aria-label="$t('common.close')"
-                    class="absolute top-4 right-4 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                    class="absolute top-4 right-4 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-ygf-gray-400 hover:text-ygf-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <h3 id="address-modal-title" class="text-xl font-semibold text-gray-900 text-center mb-6">
+                <h3 id="address-modal-title" class="text-xl font-semibold text-ygf-black text-center mb-6">
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </h3>
                 <AddressAutocomplete @update:address="handleAddressUpdate" />
@@ -209,7 +206,7 @@
                     <button
                         type="button"
                         @click="guardedCloseAddressModal"
-                        class="min-h-11 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+                        class="min-h-11 px-4 py-2 rounded bg-ygf-gray-100 hover:bg-ygf-gray-200 text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-gray-200"
                     >
                         {{ $t('common.cancel', 'Cancel') }}
                     </button>
@@ -217,8 +214,8 @@
                         type="button"
                         @click="confirmAddress"
                         :disabled="!tempAddress"
-                        class="min-h-11 px-4 py-2 rounded text-white text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
-                        :class="!tempAddress ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'"
+                        class="min-h-11 px-4 py-2 rounded text-ygf-white text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        :class="!tempAddress ? 'bg-ygf-gray-400 cursor-not-allowed' : 'bg-ygf-black hover:bg-ygf-wood'"
                     >
                         {{ $t('common.save', 'Save') }}
                     </button>

@@ -27,6 +27,9 @@ export default defineNuxtConfig({
     },
 
     css: [
+        // main.css @imports components.css — the commerce vocabulary needs to
+        // share a PostCSS pass with the @tailwind directives, and every entry
+        // in this array is compiled independently.
         "~/assets/css/main.css",
         // YGF design tokens (--ygf-* custom properties) + page background.
         "~/assets/css/brand.css",

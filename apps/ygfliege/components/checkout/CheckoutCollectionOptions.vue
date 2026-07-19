@@ -1,6 +1,6 @@
 <template>
-    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 w-full mx-auto space-y-6">
-        <h2 class="text-lg font-bold text-gray-900">
+    <section class="card p-5 w-full mx-auto space-y-6">
+        <h2 class="text-lg font-bold text-ygf-black">
             {{ $t('checkout.collection', 'Delivery / Pickup') }}
         </h2>
 
@@ -18,7 +18,7 @@
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
           'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md text-left focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-          cartStore.collectionOption === option.value ? 'border-ygf-orange-300 bg-ygf-orange-100' : 'border-gray-200 bg-white'
+          cartStore.collectionOption === option.value ? 'border-ygf-orange bg-ygf-orange-bg' : 'border-subtle bg-ygf-white'
         ]"
             >
                 <img :src="option.icon" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
@@ -31,7 +31,7 @@
             <label class="font-medium">
                 {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-ygf-orange-400">*</span>
             </label>
-            <div v-if="cartStore.address" class="flex flex-col text-gray-700 bg-gray-50 rounded p-3">
+            <div v-if="cartStore.address" class="flex flex-col text-ygf-black bg-ygf-gray-100 rounded p-3">
                 <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
                     @click="openAddressModal"
@@ -53,25 +53,25 @@
             <button
                 v-else
                 @click="openAddressModal"
-                class="w-full flex flex-col items-center justify-center gap-2 p-6 rounded-lg bg-gray-50 border-2 border-dashed border-gray-300 hover:border-ygf-orange-400 hover:bg-ygf-orange-50 transition-colors cursor-pointer"
+                class="w-full flex flex-col items-center justify-center gap-2 p-6 rounded-lg bg-ygf-gray-100 border-2 border-dashed border-ygf-gray-200 hover:border-ygf-orange hover:bg-ygf-orange-bg transition-colors cursor-pointer"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-ygf-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span class="font-medium text-gray-700">{{ $t('checkout.addAddress', 'Add Address') }}</span>
-                <span class="text-sm text-gray-500">{{ $t('checkout.noAddress', 'No address selected') }}</span>
+                <span class="font-medium text-ygf-black">{{ $t('checkout.addAddress', 'Add Address') }}</span>
+                <span class="text-sm text-ygf-gray-400">{{ $t('checkout.noAddress', 'No address selected') }}</span>
             </button>
 
-            <label for="addressExtra" class="block text-sm text-gray-700 mt-4">
+            <label for="addressExtra" class="block text-sm text-ygf-black mt-4">
                 {{ $t('checkout.addressComment', 'Additional Info for Address') }}
-                <span class="text-gray-400 font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
+                <span class="text-ygf-gray-400 font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </label>
             <textarea
                 id="addressExtra"
                 v-model="addressExtra"
                 rows="3"
-                class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                class="w-full bg-ygf-white border border-subtle rounded-xl px-3.5 py-2.5 text-sm text-ygf-black placeholder-ygf-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange focus-visible:outline-none transition-all duration-normal"
                 :placeholder="$t('checkout.addressCommentPlaceholder', 'e.g. Ring the bell twice')"
             ></textarea>
         </div>
@@ -91,10 +91,10 @@
                 {{ $t('checkout.noRemainingSlotsToday', 'No remaining time slots for today.') }}
             </p>
             <div v-else>
-                <p v-if="!isOpen" class="text-amber-700 text-sm mb-2">
+                <p v-if="!isOpen" class="text-ygf-orange-text text-sm mb-2">
                     {{ $t('checkout.asapUnavailableWhileClosed', 'ASAP is unavailable while closed. Please select a fixed time for today.') }}
                 </p>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-ygf-black mb-2">
                     {{ $t('checkout.preferredTime', 'Preferred Time') }}
                 </label>
 
@@ -102,7 +102,7 @@
                 <select
                     v-model="preferredReadyTime"
                     data-testid="checkout-preferred-time"
-                    class="mt-1 block w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300"
+                    class="mt-1 block w-full bg-ygf-white border border-subtle rounded-xl px-3.5 py-2.5 text-sm text-ygf-black focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange focus-visible:outline-none transition-all duration-normal"
                 >
                     <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
                     <option

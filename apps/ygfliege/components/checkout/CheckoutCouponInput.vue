@@ -5,19 +5,19 @@
         </h3>
 
         <!-- Applied state -->
-        <div v-if="cartStore.couponCode" data-testid="coupon-applied" class="flex items-center justify-between p-3 border border-ygf-orange-200 bg-ygf-orange-100 rounded-lg">
+        <div v-if="cartStore.couponCode" data-testid="coupon-applied" class="flex items-center justify-between p-3 border border-ygf-orange bg-ygf-orange-bg rounded-lg">
             <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-ygf-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-ygf-orange-text" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                <span class="text-sm text-ygf-orange-700 font-medium">
+                <span class="text-sm text-ygf-orange-text font-medium">
                     {{ $t('coupon.applied', { discount: formatPrice(cartStore.couponDiscount) }) }}
                 </span>
             </div>
             <button
                 type="button"
                 data-testid="coupon-remove"
-                class="min-h-11 inline-flex items-center text-sm text-ygf-orange-600 hover:text-ygf-orange-700 font-medium underline underline-offset-2 decoration-ygf-orange-300 hover:decoration-ygf-orange-500"
+                class="min-h-11 inline-flex items-center text-sm text-ygf-orange-text hover:text-ygf-orange-on-white font-medium underline underline-offset-2 decoration-ygf-orange/20 hover:decoration-ygf-orange"
                 @click="removeCoupon"
             >
                 {{ $t('coupon.remove') }}
@@ -32,7 +32,7 @@
                     type="text"
                     data-testid="coupon-input"
                     :aria-label="$t('coupon.title')"
-                    class="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-50"
+                    class="flex-1 bg-ygf-white border border-subtle rounded-xl px-3.5 py-2.5 text-sm text-ygf-black placeholder-ygf-gray-400 focus-visible:ring-2 focus-visible:ring-ygf-orange-300/50 focus-visible:border-ygf-orange focus-visible:outline-none transition-all duration-normal disabled:opacity-50"
                     :placeholder="$t('coupon.placeholder')"
                     :disabled="isValidating"
                     @keyup.enter="applyCoupon"
@@ -40,7 +40,7 @@
                 <button
                     type="button"
                     data-testid="coupon-apply"
-                    class="px-4 py-2 bg-ygf-orange-500 text-white text-sm font-medium rounded-xl hover:bg-ygf-orange-600 transition-all duration-300 ease-out active:scale-[0.97] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    class="px-4 py-2 bg-ygf-orange-on-white text-ygf-white text-sm font-medium rounded-xl hover:bg-ygf-orange-on-white-hover transition-all duration-normal ease-out active:scale-[0.97] disabled:bg-ygf-gray-200 disabled:cursor-not-allowed"
                     :disabled="!couponInput.trim() || isValidating"
                     @click="applyCoupon"
                 >

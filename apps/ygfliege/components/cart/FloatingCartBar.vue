@@ -2,17 +2,17 @@
     <Transition name="slide-up">
         <div
             v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
-            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-ygf-orange-600 shadow-md"
+            class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-ygf-orange-on-white shadow-ygf-md"
             :class="{ 'animate-cart-pulse': isPulsing }"
         >
             <button
                 type="button"
                 data-testid="floating-cart-bar"
-                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-ygf-orange-700"
+                class="w-full min-h-14 text-ygf-white px-4 py-3 flex items-center justify-between transition-all duration-200 ease-out active:scale-[0.985] active:bg-ygf-orange-on-white-hover focus-visible:ring-2 focus-visible:ring-ygf-white focus-visible:ring-offset-2"
                 @click="cartStore.toggleCartVisibility"
             >
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="bg-white text-ygf-orange-600 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
+                    <span class="bg-ygf-white text-ygf-orange-on-white font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
                         {{ cartStore.totalItems }}
                     </span>
                     <span class="text-sm font-semibold truncate">
@@ -27,7 +27,7 @@
                     </svg>
                 </div>
             </button>
-            <div class="safe-area-spacer-bottom bg-ygf-orange-600" />
+            <div class="safe-area-spacer-bottom bg-ygf-orange-on-white" />
         </div>
     </Transition>
 </template>
