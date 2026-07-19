@@ -1,0 +1,119 @@
+<template>
+    <section class="max-w-4xl mx-auto p-6 pt-8 space-y-8">
+        <!-- Header -->
+        <div class="text-center space-y-2">
+            <h1 class="text-4xl font-bold">{{ $t('faq.title') }}</h1>
+            <p class="text-lg text-gray-600">{{ $t('faq.subtitle') }}</p>
+            <!-- Decorative fan motif -->
+            <div class="flex justify-center pt-1" aria-hidden="true">
+                <svg class="w-8 h-5 text-ygf-orange-300/40" viewBox="0 0 40 24" fill="none">
+                    <path d="M20 22 L5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L12 3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L20 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L28 3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M20 22 L35 6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M5 6 Q12 0 20 1 Q28 0 35 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- FAQ Items -->
+        <div class="space-y-4">
+            <details
+                v-for="(faq, index) in faqs"
+                :key="index"
+                class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+            >
+                <summary class="font-semibold text-lg cursor-pointer hover:text-ygf-orange-500 transition-colors">
+                    {{ faq.question }}
+                </summary>
+                <!-- Safe: content sourced from i18n translation files, not user input -->
+                <div class="mt-3 text-gray-700 leading-relaxed" v-html="faq.answer"></div>
+            </details>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="text-center pt-6">
+            <p class="text-gray-600 mb-4">{{ $t('faq.stillHaveQuestions') }}</p>
+            <NuxtLinkLocale
+                to="/contact"
+                class="inline-block bg-ygf-orange-500 text-white py-3 px-6 rounded-md font-semibold hover:bg-ygf-orange-600 transition-colors duration-300"
+            >
+                {{ $t('faq.contactUs') }}
+            </NuxtLinkLocale>
+        </div>
+    </section>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+    sitemap: { priority: 0.6, changefreq: 'monthly' },
+})
+
+const { t } = useI18n()
+const config = useRuntimeConfig()
+
+// FAQ data — YGF malatang questions (what/spicy/vegan reuse the live site's
+// translations; the rest are overridden per-locale in this app's locales/).
+const faqs = computed(() => [
+    {
+        question: t('faq.questions.what.question'),
+        answer: t('faq.questions.what.answer')
+    },
+    {
+        question: t('faq.questions.spicy.question'),
+        answer: t('faq.questions.spicy.answer')
+    },
+    {
+        question: t('faq.questions.vegan.question'),
+        answer: t('faq.questions.vegan.answer')
+    },
+    {
+        question: t('faq.questions.hours.question'),
+        answer: t('faq.questions.hours.answer')
+    },
+    {
+        question: t('faq.questions.delivery.question'),
+        answer: t('faq.questions.delivery.answer')
+    },
+    {
+        question: t('faq.questions.payment.question'),
+        answer: t('faq.questions.payment.answer')
+    },
+    {
+        question: t('faq.questions.allergens.question'),
+        answer: t('faq.questions.allergens.answer')
+    }
+])
+
+useJsonLd([
+    {
+        '@type': 'FAQPage',
+        name: t('faq.schemaTitle'),
+        description: t('faq.schemaDescription'),
+        mainEntity: faqs.value.map((faq: { question: string; answer: string }) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    },
+    breadcrumbList([
+        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
+        { name: t('faq.breadcrumb'), item: `${config.public.baseUrl}/faq` },
+    ]),
+], 'page-jsonld')
+
+useSeoMeta({
+    title: t('faq.schemaTitle'),
+    ogType: 'website',
+    ogTitle: t('faq.schemaTitle'),
+    description: t('faq.schemaDescription'),
+    ogDescription: t('faq.schemaDescription'),
+    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
+    twitterCard: 'summary_large_image',
+    ...useLocaleSeoMeta(),
+})
+</script>

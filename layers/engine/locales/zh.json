@@ -1,0 +1,640 @@
+{
+  "brandName": "Tokyo Sushi Bar",
+  "404": {},
+  "head": {
+    "title": "__BRAND__"
+  },
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "toTop": "返回顶部",
+    "remove": "删除",
+    "close": "关闭",
+    "skipToContent": "跳转到主要内容"
+  },
+  "nav": {
+    "home": "首页",
+    "menu": "菜单",
+    "contact": "联系我们",
+    "login": "登录",
+    "logout": "登出",
+    "myAccount": "我的账户",
+    "search": "搜索",
+    "cart": "购物车",
+    "language": "选择语言",
+    "toggleMenu": "切换菜单"
+  },
+  "home": {
+    "heroTagline": "日本餐厅 · 列日",
+    "orderNow": "立即下单",
+    "schedule": "营业时间",
+    "status": {
+      "open": "营业中",
+      "onsiteOnly": "营业中 · 仅限堂食",
+      "closed": "休息中"
+    }
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "找到我们，打电话给我们，或立即预订餐桌！",
+    "viewLargerMap": "查看更大的地图",
+    "addressTitle": "地址",
+    "address": "Rue de la Cathédrale 59, 列日, 比利时",
+    "phoneTitle": "电话",
+    "emailTitle": "电子邮件",
+    "openingHoursTitle": "营业时间",
+    "followUs": "关注我们",
+    "reservationNotice": "我们不接受通过电子邮件进行的预订。如需预订餐桌，请致电我们。",
+    "weekdays": "周一 - 周五",
+    "weekends": "周六 - 周日",
+    "closedTuesday": "周二休息"
+  },
+  "about": {
+    "ourStoryTitle": "我们的故事",
+    "ourStoryText1": "2016年，一对热爱日本料理的年轻夫妇在父母的支持下，于列日Rue de la Régence开了一家小餐厅。每天清晨，新鲜鱼材都经过精心挑选和手工处理，以保证无可挑剔的品质。口碑迅速传开：堂食客人加上络绎不绝的外卖订单，小小的店面很快不够用了。",
+    "ourStoryText2": "2024年底，餐厅搬到了几步之遥的Rue de la Cathédrale，拥有了更大的空间。如今，__BRAND__依然是一家家庭餐厅，每一道菜都保持着第一天的用心。",
+    "ourStoryText3": "2026年，__BRAND__ 迎来了十周年。十年间，新鲜的鱼材、不断精进的料理、与您分享的每一个微笑，都是我们最珍贵的记忆。感谢每一位从第一天起就信任我们的朋友，这段旅程，也属于你们。",
+    "yearsOfPassion": "年的热忱",
+    "openingHoursLabel": "营业时间",
+    "contactLink": "联系我们",
+    "callUs": "致电我们",
+    "paymentsLabel": "接受的付款方式",
+    "cash": "现金",
+    "infoCards": {
+      "freeDelivery": "免费配送",
+      "freeDeliveryDesc": "满25欧元免费配送，超出范围按距离收取配送费。",
+      "takeawayDiscount": "自取享9折",
+      "takeawayDiscountDesc": "满20欧元自取订单，所有可折扣商品享受10%折扣。",
+      "freshDaily": "每日新鲜",
+      "freshDailyDesc": "我们的鱼每天早上由厨师现场切割，保证无可挑剔的品质。"
+    }
+  },
+  "menu": {
+    "showMore": "查看更多",
+    "showLess": "收起",
+    "pickCategory": "选择类别",
+    "pickFilters": "选择过滤器",
+    "choices": "选择",
+    "noProduct": "没有产品可用",
+    "allergenNotice": "我们的产品可能含有鱼类、贝类和乳糖。请告知我们您的任何过敏情况。",
+    "allergenNoticeShort": "过敏？咨询：",
+    "allergenNoticeLink": "04 222 98 88",
+    "unavailable": "暂时缺货",
+    "noResults": "未找到 \"{query}\" 的结果",
+    "previousCategory": "上一类别",
+    "nextCategory": "下一类别",
+    "halal": "清真",
+    "spicy": "辣",
+    "vegetarian": "素食",
+    "lunchOnly": "仅工作日午餐",
+    "lunchOnlyShort": "午餐",
+    "soup": "汤",
+    "soups": "汤",
+    "pc": "个",
+    "pcs": "个",
+    "addToCart": "添加",
+    "selectChoice": "选择一个选项",
+    "chooseRemaining": "还需选择 {count} 项",
+    "chooseAtLeast": "请至少选择 {count} 项",
+    "removeExcess": "请减少 {count} 项",
+    "price": "价格",
+    "code": "代码",
+    "description": "描述",
+    "discountable": "可折扣",
+    "yes": "是",
+    "no": "否",
+    "pickupDiscountBadge": "自取享9折",
+    "restaurantClosed": "餐厅目前已关闭。",
+    "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。"
+  },
+  "days": {},
+  "login": {
+    "title": "登录",
+    "email": "电子邮件",
+    "emailPlaceholder": "输入您的电子邮件",
+    "sendCode": "继续",
+    "codeSent": "我们已将6位验证码发送至 {email}",
+    "codeLabel": "验证码",
+    "codePlaceholder": "123456",
+    "verify": "验证",
+    "resendCode": "重新发送验证码",
+    "resendCooldown": "{seconds}秒后可重发",
+    "backToEmail": "返回",
+    "dividerOr": "或",
+    "ssoGoogle": "使用 Google 登录",
+    "ssoApple": "使用 Apple 登录",
+    "authenticating": "正在验证...",
+    "callbackError": "验证失败，请重试。",
+    "tryAgain": "重试",
+    "profileTitle": "快完成了，我们该怎么称呼您？",
+    "profileSubtitle": "我们将使用您的名字来个性化您的订单和邮件。",
+    "completeSignup": "完成注册",
+    "stepEmail": "邮箱",
+    "stepCode": "验证码",
+    "stepProfile": "资料",
+    "stepsAriaLabel": "登录进度"
+  },
+  "form": {
+    "firstName": "名字",
+    "firstNamePlaceholder": "请输入您的名字",
+    "lastName": "姓氏",
+    "lastNamePlaceholder": "请输入您的姓氏",
+    "email": "电子邮件",
+    "emailPlaceholder": "请输入您的电子邮件地址",
+    "phone": "电话",
+    "phonePlaceholder": "请输入您的电话号码",
+    "invalidPhone": "电话号码无效",
+    "address": {
+      "label": "地址",
+      "placeholder": "开始输入您的地址…",
+      "noMatch": "未找到地址。",
+      "callHint": "如果找不到您的地址，请随时致电我们：",
+      "houseNumberRequired": "必须填写门牌号。",
+      "example": "示例：Rue de Fragnée 12, Liège"
+    }
+  },
+  "me": {
+    "greeting": "你好",
+    "subtitle": "管理您的个人资料并查看订单。",
+    "orders": {
+      "recentTitle": "最近订单",
+      "viewAll": "查看全部",
+      "backToAccount": "我的账户",
+      "allOrdersTitle": "所有订单",
+      "loadMore": "加载 {count} 条更多",
+      "loadMoreLast": "加载最后 {count} 条",
+      "loading": "加载订单中...",
+      "empty": "没有找到订单",
+      "total": "总计",
+      "toggleOrder": "展开订单详情",
+      "downloadInvoice": "下载发票",
+      "status": {
+        "details": {
+          "title": {
+            "pending": "已下单",
+            "confirmed": "餐厅已确认",
+            "preparing": "正在准备您的订单",
+            "awaitingPickUp": "等待取货",
+            "outForDelivery": "正在派送",
+            "delivered": "已送达",
+            "pickedUp": "已取货"
+          }
+        },
+        "pending": "待处理",
+        "confirmed": "已确认",
+        "preparing": "准备中",
+        "awaitingPickup": "等待自取",
+        "pickedUp": "已自取",
+        "outForDelivery": "配送中",
+        "delivered": "已送达",
+        "cancelled": "已取消",
+        "failed": "失败"
+      }
+    },
+    "profile": {
+      "title": "我的资料",
+      "name": "姓名",
+      "email": "电子邮件",
+      "phone": "电话",
+      "address": "地址",
+      "phoneNumber": "电话号码",
+      "update": "更新资料",
+      "addAddress": "添加地址",
+      "editAddress": "修改地址",
+      "addressUpdateSuccess": "您的地址已成功更新。",
+      "updateSuccess": "您的资料已成功更新。",
+      "deleteAccount": "删除账户",
+      "deleteConfirmTitle": "删除您的账户？",
+      "deleteConfirmBody": "此操作是永久性的，无法撤销。",
+      "deleteActiveOrderWarning": "您有一笔进行中的订单。如果您现在删除账户，将无法再追踪订单或接收更新。餐厅仍会照常备餐。",
+      "deleteAnonymizeNote": "您的账户和个人数据（姓名、电子邮箱、电话号码和已保存的地址）将被永久匿名化，并且您会退出登录。",
+      "deleteOrdersNote": "根据比利时会计法规的要求，您的过往订单将以匿名形式保留在餐厅，不再与您关联。",
+      "deleteConfirmPrompt": "请在下方输入您的电子邮箱以确认：",
+      "deleteConfirmCheckbox": "我理解我的账户和数据将被永久删除。",
+      "deleteConfirmPlaceholder": "输入您的电子邮箱以确认",
+      "deleteConfirmCta": "永久删除",
+      "deleteCancel": "取消",
+      "deleting": "正在删除…",
+      "deleteLearnMore": "了解有关账户删除的更多信息",
+      "deleteSuccess": "您的账户已删除。",
+      "deleteError": "无法删除您的账户，请重试。"
+    },
+    "analytics": {},
+    "verify": {
+      "verified": "已验证"
+    },
+    "notifications": {
+      "title": "邮件通知",
+      "marketingLabel": "营销邮件",
+      "marketingDescription": "接收促销优惠和餐厅新闻。",
+      "orderUpdatesLabel": "订单状态更新",
+      "orderUpdatesDescription": "在当前订单的每个阶段接收电子邮件。",
+      "updateSuccess": "通知偏好已更新。",
+      "updateError": "更新偏好失败。"
+    }
+  },
+  "delivery": {
+    "comingSoon": "即将上线",
+    "chip": {
+      "verify": "检查配送区域",
+      "verifyCompact": "区域",
+      "inZone": "配送 · {km} 公里",
+      "outOfZone": "超出配送范围",
+      "outOfZoneCompact": "超出范围",
+      "pickup": "到店自取",
+      "pickupCompact": "自取",
+      "actionHint": "点击修改"
+    },
+    "modal": {
+      "title": "配送还是自取？",
+      "subtitle": "下单前请确认您的地址。",
+      "modeLabel": "取餐方式",
+      "deliveryTab": "配送",
+      "pickupTab": "自取",
+      "currentAddress": "当前地址",
+      "change": "修改",
+      "distanceOk": "该地址在配送范围内",
+      "distanceTooFar": "该地址超出我们 9 公里的配送范围",
+      "distanceValue": "距离：{km} 公里",
+      "switchToPickup": "改为自取",
+      "confirm": "确认",
+      "pickupLabel": "到店自取",
+      "pickupHint": "请亲自到店取餐。"
+    },
+    "gate": {
+      "title": "继续之前",
+      "subtitle": "先确认我们能否配送到您的地址，以免在结账时出现意外。"
+    }
+  },
+  "cart": {
+    "title": "购物车",
+    "viewCart": "查看购物车",
+    "empty": "您的购物车为空",
+    "delivery": "送货",
+    "pickup": "自取",
+    "subtotal": "小计",
+    "deliveryFee": "运费",
+    "pickupDiscount": "自取优惠",
+    "total": "总计",
+    "minimumDelivery": "最低配送订单金额为 {amount}€",
+    "minimumPickup": "最低自取订单金额为 {amount}€",
+    "checkout": "结账",
+    "removeItem": "移除商品",
+    "decreaseQty": "减少数量",
+    "increaseQty": "增加数量",
+    "customizedItemHint": "已定制：请先移除并通过菜单重新添加进行修改",
+    "closeCart": "关闭购物车",
+    "notifications": "购物车通知",
+    "addToCart": "加入购物车",
+    "item": "件商品",
+    "items": "件商品",
+    "orderingUnavailable": "暂时无法下单",
+    "undo": "撤销",
+    "removedUndo": "已移除「{name}」",
+    "eachSuffix": "每份",
+    "deliveryTbd": "运费将在结账时计算"
+  },
+  "checkout": {
+    "title": "结账",
+    "authStep": {
+      "heading": "就快完成了，请登录以完成下单",
+      "cartSaved": "购物车已保存",
+      "tabLogin": "登录",
+      "tabRegister": "创建账户",
+      "returnToLogin": "邮箱已验证，立即登录"
+    },
+    "phoneCapture": {
+      "title": "电话号码",
+      "description": "我们需要联系您以确认订单。",
+      "saved": "电话号码已保存",
+      "edit": "编辑",
+      "addCountryPrefix": "非比利时号码请添加国家区号（例如 +33）",
+      "requiredBeforeOrder": "请在下单前填写您的电话号码。"
+    },
+    "orderSummary": "您的订单",
+    "emptyCart": "您的购物车为空。",
+    "subtotal": "小计：",
+    "deliveryFee": "配送费：",
+    "deliveryFeeInfo": "配送费按距离计算：\n• 3公里以内：免费\n• 3-4公里：1€\n• 4-5公里：2€\n• 5-6公里：3€\n• 6-7公里：4€\n• 7-8公里：5€\n• 8-9公里：6€",
+    "transactionFee": "交易费：",
+    "total": "总计：",
+    "collection": "取货/配送",
+    "deliveryAddress": "配送地址",
+    "editAddress": "编辑地址",
+    "noAddress": "未选择地址",
+    "addAddress": "添加地址",
+    "addressComment": "地址补充信息",
+    "addressCommentPlaceholder": "例如：请敲门两次",
+    "preferredTime": "首选时间",
+    "asapDelivery": "尽快（预计40-60分钟）",
+    "asapPickup": "尽快",
+    "asapUnavailableWhileClosed": "餐厅关闭时无法选择“尽快”，请选择今天的固定时间。",
+    "noRemainingSlotsToday": "今天已没有可用时间段。",
+    "extrasAndPayment": "附加及付款",
+    "paymentMethod": "付款方式",
+    "online": "在线支付",
+    "cash": "现金",
+    "cashWarning": "请注意：订单确认后，将无法更改付款方式。",
+    "cashAcknowledge": "我已知悉并确认以现金付款。",
+    "cashAcknowledgeMissing": "请确认以现金付款",
+    "cashAcknowledged": "现金支付已确认",
+    "discardAddress": "放弃已输入的地址？",
+    "cashAmountLabel": "您打算用多少钱付款？",
+    "cashAmountPlaceholder": "例如 50",
+    "extras": "附加选项",
+    "addChopsticks": "添加筷子",
+    "addWasabi": "加芥末",
+    "addGinger": "加姜",
+    "addSoySauce": "添加酱油",
+    "sauce": "酱油",
+    "none": "无",
+    "sweet": "甜",
+    "salty": "咸",
+    "both": "两者皆有",
+    "orderComment": "订单备注",
+    "orderCommentPlaceholder": "例如：过敏或特殊说明",
+    "goToPayment": "去支付",
+    "placeOrder": "下单",
+    "processing": "处理中...",
+    "discount": "折扣",
+    "restaurantClosed": "餐厅已关闭",
+    "orderDisabled": "订单已禁用",
+    "free": "免费",
+    "stepMenu": "菜单",
+    "stepCheckout": "结账",
+    "stepAddress": "地址",
+    "stepSignIn": "登录",
+    "stepPhone": "电话",
+    "stepReview": "核对",
+    "stepPayment": "付款",
+    "itemCount": "{count} 件商品",
+    "opensAt": "营业时间：{time}",
+    "tooFar": "超出配送范围（最远9公里）",
+    "notDeliverableArea": "我们不配送到您所在的区域。",
+    "tbd": "待定",
+    "optional": "（选填）",
+    "openingPayment": "正在打开安全支付...",
+    "completeBeforeOrder": "下单前请先完成以下内容：",
+    "completeBeforeOrderCount": "{count} 项内容未完成",
+    "addressDistanceKm": "距离 {distance} 公里",
+    "addExtras": "加点配菜？",
+    "extrasDescription": "为您的订单添加一些配菜",
+    "paidExtra": "付费加购",
+    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。"
+  },
+  "orderCompleted": {
+    "title": "订单完成",
+    "thankYou": "感谢您的购买！",
+    "orderSuccess": "您的订单已成功下达。",
+    "items": "商品",
+    "loading": "正在加载订单详情...",
+    "returnHome": "返回首页",
+    "viewOrders": "查看我的订单",
+    "status": "状态",
+    "pageTitle": "订单确认 - __BRAND__",
+    "liveTracking": "实时追踪，状态自动更新",
+    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
+    "notConfirmedYet": "您的订单尚未确认。您可以致电餐厅确认：",
+    "restaurantPhone": "04 222 98 88",
+    "cancellationReasonLabel": "原因：",
+    "cancellationReasons": {
+      "OUT_OF_STOCK": "缺货",
+      "KITCHEN_CLOSED": "厨房已关闭",
+      "DELIVERY_AREA": "超出配送范围"
+    },
+    "loadError": "加载订单详情失败，请重试。",
+    "backToMenu": "返回菜单",
+    "payment": {
+      "canceledTitle": "支付已取消",
+      "canceledBody": "您已取消支付，订单未提交。购物车已保留，您可以重试。",
+      "failedTitle": "支付失败",
+      "failedBody": "我们无法处理您的支付，未产生任何扣款。购物车已保留，请重试。",
+      "expiredTitle": "支付已过期",
+      "expiredBody": "支付会话在完成前已过期。购物车已保留，您可以重试。",
+      "abandonedTitle": "支付未完成",
+      "abandonedBody": "您在支付完成前离开，订单未提交。购物车已保留，您可以重试。",
+      "tryAgain": "重试",
+      "verifying": "正在验证您的支付…"
+    }
+  },
+  "error": {
+    "homeButton": "返回首页",
+    "menuButton": "查看菜单",
+    "notFound": "哎呀！这个页面似乎已经消失了...",
+    "forbidden": "禁止访问。您没有权限查看此页面。",
+    "serverError": "服务器错误。请稍后再试。",
+    "generic": "出了点问题。请重试.",
+    "title404": "盘中无物",
+    "title403": "此处禁入",
+    "title500": "厨房小状况",
+    "titleGeneric": "筷子打滑了"
+  },
+  "footer": {
+    "terms": "条款",
+    "privacy": "隐私政策"
+  },
+  "notify": {
+    "errors": {
+      "cartEmpty": "您的购物车为空。",
+      "addressRequired": "需要地址。",
+      "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
+      "deliveryAddressExcluded": "我们不配送到您所在的区域。",
+      "invalidCode": "验证码无效或已过期。请重试。",
+      "codeExpired": "验证码已过期。请重新获取。",
+      "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",
+      "orderingUnavailable": "目前无法下单。请稍后再试。",
+      "fixedTimeRequiredWhileClosed": "餐厅关闭时，请选择今天的固定时间段。",
+      "lunchOnlyRequiresLunchSlot": "购物车中的部分商品仅在周一至周五的午餐时段可用。请选择一个午餐时段，或移除这些商品。",
+      "slotExpiredAutoReset": "您选择的时间段已过期，已自动重置。",
+      "slotTooSoon": "所选时间段太近，请选择更晚的时间。",
+      "slotOutsideHours": "所选时间段超出营业时间范围。",
+      "slotNotToday": "时间段必须是今天。",
+      "slotNotAligned": "时间段必须对齐到15分钟间隔。",
+      "orderingClosedToday": "今天暂停接单。",
+      "tooManyRequests": "尝试次数过多。请等待几分钟后再试。",
+      "orderCreationFailed": "订单创建失败，请重试。",
+      "profileUpdateFailed": "个人资料更新失败。",
+      "requestFailed": "请求失败，请重试。",
+      "addressLookupFailed": "地址查询失败，请重试。",
+      "addressMissingHouseNumber": "请选择包含门牌号的完整地址。",
+      "ordersLoadFailed": "无法加载您的订单。",
+      "invoiceDownloadFailed": "发票下载失败。",
+      "sessionExpired": "您的会话已过期，请重新登录。",
+      "oauthFailed": "登录失败，请重试。",
+      "invalidEmail": "请输入有效的邮箱地址。",
+      "networkError": "无法连接到服务器，请检查您的网络后重试。",
+      "serverError": "服务器暂时不可用，请稍后再试。"
+    }
+  },
+  "schema": {
+    "siteName": "__BRAND__",
+    "siteDescription": "在列日体验最地道的日本风味",
+    "restaurantName": "__BRAND__",
+    "cuisine": "日本料理",
+    "home": {
+      "title": "__BRAND__ - 列日日本料理餐厅",
+      "description": "在列日体验最地道的日本风味。新鲜寿司、生鱼片和正宗日本料理。"
+    },
+    "menu": {
+      "title": "菜单 - __BRAND__",
+      "description": "探索我们的新鲜寿司、生鱼片和正宗日本料理菜单",
+      "name": "__BRAND__ 菜单"
+    },
+    "contact": {
+      "title": "联系我们 - __BRAND__",
+      "description": "找到我们，打电话给我们，或立即预订餐桌！Rue de la Cathédrale 59, 列日, 比利时"
+    },
+    "terms": {
+      "title": "销售条款 - __BRAND__",
+      "description": "__BRAND__ 的销售条款。法律信息、配送、付款和退货政策。"
+    },
+    "privacy": {
+      "title": "隐私政策 - __BRAND__",
+      "description": "__BRAND__ 隐私政策。数据收集、用途、GDPR 权利和 Cookie。"
+    },
+    "login": {
+      "title": "登录 - __BRAND__",
+      "description": "登录您的 __BRAND__ 账户"
+    },
+    "checkout": {
+      "title": "结账 - __BRAND__"
+    },
+    "myAccount": {
+      "title": "我的账户 - __BRAND__"
+    },
+    "myOrders": {
+      "title": "我的订单 - __BRAND__"
+    },
+    "orderConfirmation": {
+      "title": "订单确认 - __BRAND__",
+      "description": "您的订单已确认"
+    },
+    "breadcrumb": {
+      "home": "首页",
+      "menu": "菜单",
+      "contact": "联系我们",
+      "terms": "条款",
+      "privacy": "隐私政策",
+      "accountDeletion": "删除账户"
+    },
+    "accountDeletion": {
+      "title": "删除账户 - __BRAND__",
+      "description": "如何申请删除您的 __BRAND__ 账户及个人数据。"
+    }
+  },
+  "feedback": {
+    "title": "分享您的反馈",
+    "subtitle": "帮助我们改善您的体验",
+    "name": "姓名",
+    "namePlaceholder": "您的姓名",
+    "email": "电子邮件",
+    "emailPlaceholder": "您的电子邮件地址",
+    "serviceType": "服务类型",
+    "serviceTypes": {
+      "takeaway": "外带",
+      "dine-in": "堂食",
+      "delivery": "配送"
+    },
+    "feedbackType": "反馈类型",
+    "feedbackTypes": {
+      "improvement": "建议",
+      "complaint": "投诉",
+      "compliment": "表扬"
+    },
+    "message": "留言",
+    "messagePlaceholder": "告诉我们您的体验（至少10个字符）",
+    "submit": "提交反馈",
+    "sending": "发送中...",
+    "success": "感谢您的反馈！我们非常感谢您花时间分享您的想法。",
+    "sendAnother": "再次提交",
+    "errorGeneric": "出了点问题，请重试。",
+    "errorTooManyRequests": "提交次数过多，请等待几分钟后再试。",
+    "errorInvalidInput": "请检查表单字段并重试。",
+    "errorCaptchaFailed": "机器人验证失败。请重试。"
+  },
+  "coupon": {
+    "title": "优惠码",
+    "placeholder": "输入优惠码",
+    "apply": "应用",
+    "remove": "移除",
+    "applied": "优惠码已应用：减 {discount}",
+    "invalid": "无效的优惠码",
+    "discount": "优惠码折扣"
+  },
+  "reorder": {
+    "button": "重新订购",
+    "success": "{count} 件商品已添加到购物车",
+    "partial": "{added} 件已添加，{skipped} 件缺货已跳过",
+    "empty": "没有可重新订购的商品"
+  },
+  "cookies": {},
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "找到关于 __BRAND__ 的问题答案",
+    "stillHaveQuestions": "还有其他问题？",
+    "contactUs": "联系我们",
+    "schemaTitle": "常见问题 - __BRAND__",
+    "schemaDescription": "关于 __BRAND__ 的常见问题 - 配送、营业时间、清真选项等",
+    "breadcrumb": "常见问题",
+    "questions": {
+      "delivery": {
+        "question": "你们提供配送吗？配送范围是什么？",
+        "answer": "是的，我们从位于列日 Rue de la Cathédrale 59 的餐厅提供配送服务。配送费按距离收取：<br><br>• 3公里以内：<strong>免费</strong>（最低25欧元）<br>• 3-4公里：1欧元<br>• 4-5公里：2欧元<br>• 5-6公里：3欧元<br>• 6-7公里：4欧元<br>• 7-8公里：5欧元<br>• 8-9公里：6欧元<br><br>超过9公里不提供配送，除非订单金额达到130欧元或以上。您可以在下单时查看您的地址。"
+      },
+      "hours": {
+        "question": "营业时间是什么时候？",
+        "answer": "我们周一至周五 12:00-14:30 和 18:00-22:30 营业。周六和周日 12:00-15:00 和 18:00-23:00 营业。周二休息。"
+      },
+      "halal": {
+        "question": "你们提供清真食品吗？",
+        "answer": "是的！我们提供清真菜肴，在菜单上用清真图标清楚地标注。我们所有的清真产品都按照伊斯兰标准准备。"
+      },
+      "discount": {
+        "question": "自取订单有折扣吗？",
+        "answer": "有的！选择自取选项时，所有可折扣商品享受 10% 折扣。折扣会在结账时自动应用。"
+      },
+      "payment": {
+        "question": "你们接受什么付款方式？",
+        "answer": "我们接受在线支付（信用卡/借记卡）和配送或自取时的现金支付。在线订单的支付是安全的。"
+      },
+      "allergens": {
+        "question": "你们有过敏原信息吗？",
+        "answer": "我们的产品通常含有<strong>鱼类</strong>、<strong>贝类</strong>和<strong>乳糖</strong>。请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 04 222 98 88 获取有关我们菜肴的详细过敏原信息。"
+      },
+      "invoice": {
+        "question": "如何申请发票？",
+        "answer": "所有发票申请必须在下单当天提出。请致电 <strong>04 222 98 88</strong> 提出申请。"
+      },
+      "freshness": {
+        "question": "你们的鱼新鲜吗？",
+        "answer": "当然！每天早上，新鲜的鱼都会直接送到我们的餐厅，由我们的厨师精心准备。我们保证卓越的新鲜度和质量。"
+      },
+      "parking": {
+        "question": "附近有停车场吗？",
+        "answer": "我们的餐厅位于列日市中心。附近有几个公共停车场：Parking Cathédrale、Parking Opéra 以及街边停车位（付费）。"
+      }
+    }
+  },
+  "accountDeletion": {
+    "title": "删除账户",
+    "lastUpdated": "最后更新：2026/06/08",
+    "intro": "您可以随时自行删除您的 __BRAND__ 账户及其相关的个人数据，可直接在应用程序或本网站中操作。",
+    "howTitle": "如何删除您的账户",
+    "howBody": "登录后，打开您的账户页面，选择「删除账户」。确认后，您的账户将立即被删除，并且您会退出登录，没有等待期。",
+    "fallbackTitle": "无法登录？",
+    "fallbackBody": "如果您无法再访问您的账户，请使用与账户关联的电子邮箱，向我们发送一封主题为「删除账户」的电子邮件。我们将在核实您的身份后将其删除。",
+    "emailSubject": "删除账户",
+    "dataTitle": "将被删除的数据",
+    "dataIntro": "删除您的账户时，以下数据将被永久删除：",
+    "dataItems": [
+      "账户资料：姓、名、电子邮箱、电话号码",
+      "送货地址",
+      "推送通知令牌"
+    ],
+    "retainTitle": "将被保留的数据",
+    "retainBody": "根据比利时会计法规的要求，订单和账单记录将保留 7 年，如我们的隐私政策所述。这些记录将不再与有效账户关联。",
+    "timingTitle": "处理时间",
+    "timingBody": "通过应用程序或网站自助删除是即时的。通过电子邮件发送的申请将在 30 天内处理完成。",
+    "contactBody": "有疑问？请通过上述邮箱地址联系我们。"
+  }
+}

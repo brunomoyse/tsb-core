@@ -1,0 +1,50 @@
+<template>
+    <div class="max-w-md mx-auto">
+        <div class="card">
+            <div class="px-6 sm:px-8 py-7 sm:py-8">
+                <!-- Cart-saved chip -->
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-ygf-gray-100 border border-subtle text-xs text-ygf-gray-400">
+                        <svg class="w-3.5 h-3.5 text-ygf-orange-text" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {{ $t('checkout.authStep.cartSaved') }}
+                        <span v-if="cartStore.products.length > 0" class="text-ygf-gray-400">·</span>
+                        <span v-if="cartStore.products.length > 0" class="tabular-nums">
+                            {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
+                        </span>
+                    </span>
+                </div>
+
+                <h2 class="text-xl font-semibold text-ygf-black text-center mb-6">
+                    {{ $t('checkout.authStep.heading') }}
+                </h2>
+
+                <AuthFlow
+                    mode="inline"
+                    :on-before-redirect="saveReturnTo"
+                    :on-complete="handleComplete"
+                />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import AuthFlow from '~/components/auth/AuthFlow.vue'
+import { useCartStore } from '#engine/stores/cart'
+import { useLocalePath } from '#imports'
+
+const cartStore = useCartStore()
+const localePath = useLocalePath()
+
+// Stash the return URL before any redirect so the OIDC callback lands back on /checkout.
+const saveReturnTo = () => {
+    if (typeof sessionStorage === 'undefined') return
+    sessionStorage.setItem('oidc_return_to', localePath('/checkout'))
+}
+
+const handleComplete = (callbackUrl: string) => {
+    window.location.href = callbackUrl
+}
+</script>

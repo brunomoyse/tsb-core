@@ -1,0 +1,14 @@
+/* Tokyo Sushi Bar brand styling: decorative display font + page background.
+   Lives in the brand layer so each white-label brand ships its own. */
+@font-face {
+    font-family: 'Channel';
+    src: url('/fonts/channel.woff2') format('woff2'),
+         url('/fonts/channel.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+html {
+    background-color: #F6F5F2;
+}

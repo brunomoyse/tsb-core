@@ -1,0 +1,334 @@
+/* Yangguofu Malatang Liège — commerce component vocabulary.
+ *
+ * The buttons, card and section headings are ported from the vitrine site's
+ * design system (../../../../malatang/src/styles/layers/components.css) so the
+ * shop and ygfliege.be read as one brand at cutover. The form field, chip and
+ * quantity stepper have no vitrine equivalent — that site has no forms — so
+ * they are derived from GUIDELINES.md §4.3–4.4: 48px pill CTAs, 12px cards,
+ * warm orange-tinted borders and shadows, 200ms ease.
+ *
+ * Deliberately small. The app is Tailwind-utility-first and stays that way;
+ * only primitives that repeat across dozens of components live here. Layout,
+ * spacing and one-off styling belong in utilities at the call site.
+ *
+ * Tokens (--ygf-*, --shadow-*, --border-*, --radius-*, --ease-out) come from
+ * brand.css, which nuxt.config.ts loads before this file.
+ */
+
+@layer components {
+    /* ===== BUTTONS ===== */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.875rem 2rem;
+        border: 2px solid transparent;
+        border-radius: var(--radius-btn);
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.2;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background-color var(--duration-normal) var(--ease-out),
+                    border-color var(--duration-normal) var(--ease-out),
+                    color var(--duration-normal) var(--ease-out),
+                    opacity var(--duration-normal) var(--ease-out);
+    }
+
+    .btn:disabled,
+    .btn[aria-disabled="true"] {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: var(--ygf-orange-on-white);
+        border-color: var(--ygf-orange-on-white);
+        color: var(--ygf-white);
+    }
+
+    .btn-primary:not(:disabled):hover {
+        background: var(--ygf-orange-on-white-hover);
+        border-color: var(--ygf-orange-on-white-hover);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border-color: var(--ygf-orange);
+        color: var(--ygf-orange-text);
+    }
+
+    .btn-secondary:not(:disabled):hover {
+        background: var(--ygf-orange-on-white);
+        border-color: var(--ygf-orange-on-white);
+        color: var(--ygf-white);
+    }
+
+    /* On orange/photo backgrounds — the guide's inverted CTA. */
+    .btn-white {
+        background: var(--ygf-white);
+        border-color: var(--ygf-white);
+        color: var(--ygf-black);
+    }
+
+    .btn-white:not(:disabled):hover {
+        background: var(--ygf-cream);
+        border-color: var(--ygf-cream);
+    }
+
+    /* Tertiary: underlined orange text, no fill or border. */
+    .btn-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        border: none;
+        background: none;
+        padding: 0;
+        color: var(--ygf-orange-text);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        cursor: pointer;
+        transition: color var(--duration-normal) var(--ease-out);
+    }
+
+    .btn-link:not(:disabled):hover {
+        color: var(--ygf-orange-on-white-hover);
+    }
+
+    /* ===== CARD ===== */
+    .card {
+        background: var(--ygf-white);
+        border: var(--border-subtle);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        transition: transform var(--duration-normal) var(--ease-out),
+                    box-shadow var(--duration-normal) var(--ease-out),
+                    border-color var(--duration-normal) var(--ease-out);
+    }
+
+    /* Lift only where the whole card is a control — opt in with .card-interactive
+       so static cards (order summaries, receipts) don't animate under the cursor. */
+    .card-interactive:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Specificity must beat `.card-interactive:hover` below, or a selected card
+       loses its emphasis the moment the pointer rests on it. */
+    .card.card-selected {
+        border: var(--border-strong);
+        border-color: var(--ygf-orange);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card.card-selected:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* ===== FORM FIELD ===== */
+    .field-label {
+        display: block;
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ygf-black);
+    }
+
+    .field {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: var(--border-default);
+        border-radius: var(--radius-md);
+        background: var(--ygf-white);
+        color: var(--ygf-black);
+        font-size: 1rem;
+        line-height: 1.5;
+        transition: border-color var(--duration-normal) var(--ease-out),
+                    box-shadow var(--duration-normal) var(--ease-out);
+    }
+
+    .field::placeholder {
+        color: var(--ygf-gray-400, #999999);
+    }
+
+    .field:focus {
+        outline: none;
+        border-color: var(--ygf-orange);
+        box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.18);
+    }
+
+    .field[aria-invalid="true"] {
+        border-color: var(--ygf-error);
+    }
+
+    .field[aria-invalid="true"]:focus {
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.18);
+    }
+
+    .field:disabled {
+        background: var(--ygf-cream);
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* ===== CHIP ===== */
+    /* Dietary filters, spice levels, delivery zones — selectable pills. */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.4375rem 0.875rem;
+        border: var(--border-default);
+        border-radius: var(--radius-btn);
+        background: var(--ygf-white);
+        color: var(--ygf-black);
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.2;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background-color var(--duration-normal) var(--ease-out),
+                    border-color var(--duration-normal) var(--ease-out),
+                    color var(--duration-normal) var(--ease-out);
+    }
+
+    /* Unselected hover only. `.chip:hover` outweighs `.chip[aria-pressed]`
+       on specificity, so without these guards hovering a *selected* chip
+       reverted the fill to near-white while the label stayed white — an
+       invisible label. Keep the guards if you add another selected variant. */
+    .chip:not(:disabled):not([aria-pressed="true"]):not([aria-selected="true"]):not(.chip-selected):hover {
+        background: var(--ygf-orange-bg);
+        border-color: var(--ygf-orange-light);
+    }
+
+    .chip[aria-pressed="true"],
+    .chip[aria-selected="true"],
+    .chip-selected {
+        background: var(--ygf-orange-on-white);
+        border-color: var(--ygf-orange-on-white);
+        color: var(--ygf-white);
+    }
+
+    .chip[aria-pressed="true"]:not(:disabled):hover,
+    .chip[aria-selected="true"]:not(:disabled):hover,
+    .chip-selected:not(:disabled):hover {
+        background: var(--ygf-orange-on-white-hover);
+        border-color: var(--ygf-orange-on-white-hover);
+    }
+
+    /* Non-interactive variant for badges (halal, vegan, "nouveau"). */
+    .chip-static {
+        cursor: default;
+        pointer-events: none;
+    }
+
+    /* ===== QUANTITY STEPPER ===== */
+    .stepper {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: var(--border-default);
+        border-radius: var(--radius-btn);
+        background: var(--ygf-white);
+        padding: 0.1875rem;
+    }
+
+    .stepper-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        border-radius: 9999px;
+        background: var(--ygf-orange-bg);
+        color: var(--ygf-orange-text);
+        font-size: 1.125rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: background-color var(--duration-fast) var(--ease-out),
+                    color var(--duration-fast) var(--ease-out);
+    }
+
+    .stepper-btn:not(:disabled):hover {
+        background: var(--ygf-orange-on-white);
+        color: var(--ygf-white);
+    }
+
+    .stepper-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .stepper-value {
+        min-width: 1.75rem;
+        text-align: center;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--ygf-black);
+    }
+
+    /* Compact variant for the narrow 2-col product-card grid: at 375px the
+       full-size stepper overflows the card next to the price. Mobile-first —
+       compact below sm, back to full size from sm up. */
+    .stepper--sm {
+        gap: 0;
+        padding: 0;
+    }
+
+    .stepper--sm .stepper-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1rem;
+    }
+
+    .stepper--sm .stepper-value {
+        min-width: 1.375rem;
+        font-size: 0.875rem;
+        padding: 0 0.25rem;
+    }
+
+    @media (min-width: 640px) {
+        .stepper--sm {
+            gap: 0.25rem;
+            padding: 0.1875rem;
+        }
+
+        .stepper--sm .stepper-btn {
+            width: 2rem;
+            height: 2rem;
+            font-size: 1.125rem;
+        }
+
+        .stepper--sm .stepper-value {
+            min-width: 1.75rem;
+            font-size: 1rem;
+            padding: 0;
+        }
+    }
+
+    /* ===== SECTION HEADINGS ===== */
+    /* Same rhythm as the marketing pages, so shop sections match ygfliege.be. */
+    .section-label {
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--ygf-orange-text);
+    }
+
+    .section-title {
+        font-family: var(--font-chinese), var(--font-sans);
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--ygf-black);
+    }
+}

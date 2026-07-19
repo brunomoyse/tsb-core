@@ -1,0 +1,450 @@
+{
+  "brandName": "Yangguofu Malatang Liège",
+  "home": {
+    "heroTagline": "Malatang · Bouillon aux herbes · Liège"
+  },
+  "schema": {
+    "siteDescription": "Composez votre bol de malatang à Liège — bouillon aux herbes cuit minute",
+    "cuisine": "Chinoise",
+    "home": {
+      "title": "__BRAND__ - Malatang à Liège",
+      "description": "Composez votre bol de bouillon aux herbes, frais et fait pour vous. Le bonheur tient dans un bol. Yangguofu Malatang à Liège."
+    },
+    "menu": {
+      "description": "Découvrez nos bols de malatang, bouillons signature, nouilles et entrées"
+    },
+    "contact": {
+      "description": "Rendez-nous visite ou appelez-nous ! Rue de la Cathédrale 51, Liège, Belgique"
+    }
+  },
+  "mkt": {
+    "nav": {
+      "home": "Accueil",
+      "concept": "Concept",
+      "menu": "Menu",
+      "about": "Notre histoire",
+      "contact": "Contact"
+    },
+    "lang": {
+      "fr": "Français",
+      "zh": "中文",
+      "en": "English",
+      "nl": "Nederlands"
+    },
+    "hero": {
+      "slogan": "Le bonheur tient dans un bol",
+      "subtitle": "Le malatang, c'est votre bol de bouillon aux herbes : vous le composez, on le cuit à la minute, on vous le sert fumant.",
+      "cta": "Découvrir le menu",
+      "bowl_alt": "Bol de malatang au bouillon d'os de bœuf, ingrédients frais en suspension"
+    },
+    "broths": {
+      "label": "Nos signatures",
+      "title": "Nos bouillons signatures",
+      "subtitle": "Cinq saveurs, une seule promesse : des produits frais et un bouillon préparé maison chaque jour.",
+      "vegan_badge": "Vegan",
+      "allergens_label": "Allergènes",
+      "beef_bone": {
+        "name": "Bouillon d'os de bœuf épicé",
+        "chinese": "经典草本骨汤",
+        "desc": "Notre signature depuis 2003 : os de bœuf mijotés 8 heures et plus de 20 herbes orientales. Choisissez votre intensité, du doux au très épicé.",
+        "spice": "Au choix : doux, épicé ou très épicé",
+        "allergens": "Lait, gluten, sésame, soja"
+      },
+      "tomato": {
+        "name": "Bouillon tomate mijoté",
+        "chinese": "酸甜番茄汤",
+        "desc": "Des tomates fraîches longuement mijotées, à la fois acidulées et sucrées. Tout en douceur, et 100 % végétal.",
+        "spice": "Aigre-doux, non épicé",
+        "allergens": "Soja"
+      },
+      "mala_dry": {
+        "name": "Marmite parfumée à la sauce pimentée",
+        "chinese": "石磨醇香麻辣拌",
+        "desc": "L'exception sans bouillon : vos ingrédients enrobés d'une sauce parfumée au sésame et à la cacahuète. Envoûtant, légèrement relevé.",
+        "spice": "Doux épicé",
+        "allergens": "Gluten, sésame, arachide, soja"
+      },
+      "tom_yum": {
+        "name": "Bouillon thaïlandais Tom Yum",
+        "chinese": "酸辣冬阴功",
+        "desc": "L'évasion thaïlandaise : aigre, épicé, parfumé à la citronnelle. Un aller simple pour l'Asie du Sud-Est.",
+        "spice": "Doux épicé",
+        "allergens": "Poisson, crustacés, soja"
+      },
+      "mushroom": {
+        "name": "Bouillon champignons",
+        "chinese": "草本穹顶菌汤",
+        "desc": "Un bouillon doux aux champignons et aux herbes, sans la moindre épice. Le réconfort à l'état pur, et 100 % végétal.",
+        "spice": "Non épicé",
+        "allergens": "Soja"
+      }
+    },
+    "home": {
+      "steps": {
+        "title": "Comment ça marche",
+        "subtitle": "Votre bol parfait en quatre étapes",
+        "step1": {
+          "title": "Choisissez",
+          "desc": "Faites le tour du comptoir réfrigéré et remplissez votre bol avec tout ce qui vous fait envie."
+        },
+        "step2": {
+          "title": "Pesez",
+          "desc": "On pèse votre bol, le prix s'affiche. Transparent, sans mauvaise surprise."
+        },
+        "step3": {
+          "title": "Dites-nous",
+          "desc": "Choisissez votre bouillon et votre niveau de piment : doux, moyen ou bien relevé."
+        },
+        "step4": {
+          "title": "Savourez",
+          "desc": "On cuit votre bol à la minute dans le bouillon choisi, et on vous le sert bien fumant."
+        }
+      },
+      "video": {
+        "label": "Frais, cuit à la minute",
+        "title": "Composez votre bol, on s'occupe de la cuisson",
+        "subtitle": "Légumes, tofu, viandes, nouilles — choisissez ce qui vous fait envie. Cuit minute dans votre bouillon, jamais frit."
+      },
+      "counters": {
+        "restaurants": "restaurants dans le monde",
+        "countries": "pays",
+        "bowls": "milliards de bols servis",
+        "years": "ans de savoir-faire",
+        "since": "depuis"
+      },
+      "gallery": {
+        "title": "L'art de manger",
+        "items": [
+          "Poisson bouilli épicé du Sichuan",
+          "Pâtes aux crevettes et à l'ail",
+          "Marmite tomate à la japonaise",
+          "Marmite coréenne façon « army stew »",
+          "Sang de canard pimenté",
+          "Mélange sec épicé léger",
+          "Marmite de bœuf braisé à la tomate",
+          "Marmite os de bœuf et fruits de mer"
+        ]
+      },
+      "broth_hero": {
+        "label": "Cuisine santé orientale",
+        "translit": "Cǎoběn gǔtāng",
+        "cta": "Découvrir le bouillon aux herbes"
+      },
+      "stats": {
+        "slogan": "幸福就在此刻 · Le bonheur est dans cet instant"
+      },
+      "why": {
+        "title": "Pourquoi un bol Yangguofu ?",
+        "broth": {
+          "title": "Le bouillon aux herbes",
+          "desc": "Mijoté maison chaque jour, si bon qu'on le boit à la cuillère."
+        },
+        "fresh": {
+          "title": "Frais & équilibré",
+          "desc": "Des produits frais, cuits à la minute. Jamais frit."
+        },
+        "custom": {
+          "title": "Composé par vous",
+          "desc": "Vous choisissez tout, pesé au gramme. À votre goût, sans surprise."
+        }
+      }
+    },
+    "cta": {
+      "title": "Prêt à composer votre bol ?",
+      "subtitle": "Choisissez vos ingrédients, on s'occupe du reste.",
+      "button": "Découvrir le menu"
+    },
+    "concept": {
+      "title": "Comment ça marche",
+      "subtitle": "Votre bol parfait en quatre étapes",
+      "meta_desc": "Découvrez le concept Yangguofu Malatang : composez votre bol en 4 étapes toutes simples.",
+      "step1": {
+        "title": "Choisissez",
+        "desc": "Faites le tour du comptoir réfrigéré et remplissez votre bol avec tout ce qui vous fait envie."
+      },
+      "step2": {
+        "title": "Pesez",
+        "desc": "On pèse votre bol, le prix s'affiche. Transparent, sans mauvaise surprise."
+      },
+      "step3": {
+        "title": "Dites-nous",
+        "desc": "Choisissez votre bouillon et votre niveau de piment : doux, moyen ou bien relevé."
+      },
+      "step4": {
+        "title": "Savourez",
+        "desc": "On cuit votre bol à la minute dans le bouillon choisi, et on vous le sert bien fumant."
+      },
+      "faq": {
+        "title": "Questions fréquentes",
+        "spicy": {
+          "question": "C'est épicé ?",
+          "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, épicé ou très épicé. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et la marmite sésame-cacahuète restent légèrement relevés."
+        },
+        "what": {
+          "question": "C'est quoi le malatang ?",
+          "answer": "Le malatang, c'est un bol individuel venu de Chine : vous choisissez vos produits frais au comptoir, et on les cuit à la minute dans un bouillon aux herbes. Un repas équilibré, à votre goût, et qui fait du bien."
+        },
+        "vegan": {
+          "question": "Je suis végétarien ou vegan ?",
+          "answer": "Aucun souci ! Notre comptoir regorge de légumes, de champignons, de tofu et de nouilles. Vous pouvez tout à fait composer un bol 100% végétal. N'hésitez pas à nous demander conseil pour le bouillon."
+        }
+      },
+      "broth_story": {
+        "title": "Le bouillon aux herbes",
+        "chinese_title": "草本骨汤",
+        "p1": "Depuis 2003, Yangguofu peaufine sa recette de bouillon d'os de bœuf infusé aux herbes médicinales chinoises. Rien à voir avec un bouillon ordinaire : il est si doux et si riche qu'on peut le boire tel quel.",
+        "p2": "Chaque jour, nos cuisiniers le préparent à partir d'os frais, d'herbes soigneusement choisies et d'un savoir-faire transmis depuis plus de vingt ans. C'est tout le cœur de Yangguofu, et ce qui nous rend uniques.",
+        "p3": "Le secret ? Un mariage subtil entre la tradition culinaire du nord de la Chine et la nutrition d'aujourd'hui. Résultat : un bouillon équilibré, plein de goût, et qui fait un bien fou."
+      }
+    },
+    "menu": {
+      "categoriesNav": "Catégories",
+      "title": "Notre menu",
+      "subtitle": "Composez votre bol comme vous l'aimez : des produits frais, pesés au gramme près.",
+      "meta_desc": "Le menu Yangguofu Malatang Liège : cinq bouillons et des dizaines de produits frais à 3,49 €/100 g. Au poids, en toute transparence.",
+      "broths_title": "Nos bouillons",
+      "ingredients_title": "Nos ingrédients",
+      "ingredients_subtitle": "Tous frais, tous à composer : faites le bol qui vous ressemble.",
+      "pricing_title": "Le prix au poids",
+      "pricing_desc": "Chez Yangguofu, pas de prix fixe : vous ne payez que ce que vous prenez. Vous remplissez votre bol, on le pèse, le prix s'affiche. Simple, clair et honnête.",
+      "pricing_step1": "Remplissez",
+      "pricing_step2": "Pesez",
+      "pricing_step3": "Payez",
+      "categories": {
+        "all": "Tout",
+        "vegetables": "Légumes",
+        "mushrooms": "Champignons",
+        "meat": "Viandes",
+        "seafood": "Fruits de mer",
+        "tofu": "Tofu",
+        "noodles": "Nouilles"
+      },
+      "ingredients": {
+        "bok_choy": "Pak choï",
+        "spinach": "Épinards",
+        "lettuce": "Laitue",
+        "broccoli": "Brocoli",
+        "cabbage": "Chou chinois",
+        "corn": "Maïs",
+        "potato": "Pomme de terre",
+        "lotus_root": "Racine de lotus",
+        "enoki": "Enoki",
+        "shiitake": "Shiitaké",
+        "oyster_mushroom": "Pleurote",
+        "king_oyster": "Pleurote royal",
+        "wood_ear": "Champignon noir",
+        "beef": "Bœuf",
+        "lamb": "Agneau",
+        "pork_belly": "Poitrine de porc",
+        "meatballs": "Boulettes",
+        "shrimp": "Crevettes",
+        "fish_balls": "Boulettes de poisson",
+        "squid": "Calamars",
+        "crab_sticks": "Surimi",
+        "firm_tofu": "Tofu ferme",
+        "silken_tofu": "Tofu soyeux",
+        "tofu_skin": "Peau de tofu",
+        "fried_tofu": "Tofu frit",
+        "glass_noodles": "Vermicelles",
+        "udon": "Udon",
+        "rice_noodles": "Nouilles de riz",
+        "instant_noodles": "Nouilles instantanées"
+      },
+      "newcomer": {
+        "label": "Première visite ?",
+        "title": "Commencez par un bol classique",
+        "desc": "Vous ne savez pas par où commencer ? Prenez un bol, ajoutez quelques légumes, un peu de tofu et des nouilles, puis choisissez notre bouillon d'os de bœuf aux herbes, en version douce. La meilleure façon de découvrir le malatang."
+      },
+      "veg_note": "Végétarien & vegan : composez un bol 100% végétal avec légumes, champignons, tofu et nouilles.",
+      "price_per_100g": "3,49 € / 100 g",
+      "price_tagline": "Vous ne payez que ce que vous pesez.",
+      "allergens_note": "Les 14 allergènes majeurs (UE) sont indiqués pour chaque bouillon. Une question ? Demandez-nous en caisse."
+    },
+    "about": {
+      "title": "Notre histoire",
+      "subtitle": "De Harbin à Liège, plus de 20 ans de passion pour le malatang.",
+      "meta_desc": "L'histoire de Yangguofu Malatang, de Harbin en 2003 à Liège aujourd'hui. Plus de 7000 restaurants dans 25 pays.",
+      "timeline": {
+        "2003": {
+          "title": "Tout commence à Harbin",
+          "desc": "Yang Guofu ouvre son tout premier stand de malatang à Harbin, dans le nord-est de la Chine. Sa recette secrète : un bouillon d'os de bœuf aux herbes médicinales chinoises."
+        },
+        "2007": {
+          "title": "La marque est née",
+          "desc": "Le concept se structure : Yangguofu Malatang devient une marque déposée et part à la conquête de la Chine."
+        },
+        "2017": {
+          "title": "Le grand saut à l'international",
+          "desc": "Premier restaurant hors de Chine. L'aventure internationale est lancée : Asie du Sud-Est, Amérique du Nord, Europe."
+        },
+        "2024": {
+          "title": "Le renouveau",
+          "desc": "Nouveau logo, nouvelle identité orange, boutiques Gen.6 : Yangguofu se réinvente pour séduire le monde entier, avec la « cuisine santé orientale » comme cap."
+        },
+        "liege": {
+          "title": "Liège, Belgique",
+          "desc": "Yangguofu débarque à Liège pour vous faire découvrir le vrai malatang, dans un cadre moderne et chaleureux."
+        }
+      },
+      "storytelling": {
+        "origin": {
+          "title": "Les origines",
+          "text": "En 2003, Yang Guofu lance son premier stand de malatang à Harbin, dans le nord-est de la Chine. Sa recette secrète : un bouillon d'os de bœuf infusé aux herbes médicinales chinoises."
+        },
+        "craft": {
+          "title": "Le savoir-faire",
+          "text": "Chaque jour, nos cuisiniers préparent le bouillon à partir d'os frais et d'herbes soigneusement choisies. Un savoir-faire transmis depuis plus de vingt ans."
+        },
+        "global": {
+          "title": "Le malatang dans le monde",
+          "text": "Avec plus de 7000 restaurants dans 25 pays, Yangguofu fait voyager le malatang de Harbin à Liège, toujours avec la même passion."
+        }
+      },
+      "world_map": {
+        "title": "Présents dans le monde entier"
+      },
+      "values": {
+        "title": "Nos valeurs",
+        "quality": {
+          "title": "Qualité",
+          "desc": "Des produits triés sur le volet, un bouillon préparé chaque jour. Jamais de compromis."
+        },
+        "freshness": {
+          "title": "Fraîcheur",
+          "desc": "Tout est frais, tout est sous vos yeux : vous voyez ce que vous choisissez."
+        },
+        "transparency": {
+          "title": "Transparence",
+          "desc": "Prix au poids, cuisine ouverte : rien à cacher."
+        },
+        "happiness": {
+          "title": "Bonheur",
+          "desc": "Le bonheur tient dans un bol. C'est notre promesse depuis 2003."
+        }
+      },
+      "counters": {
+        "restaurants": "restaurants dans le monde",
+        "countries": "pays",
+        "years": "ans d'expérience"
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Passez nous voir ou envoyez-nous un petit message.",
+      "meta_desc": "Contactez Yangguofu Malatang Liège : adresse, horaires, email et réseaux sociaux.",
+      "hours_title": "Horaires d'ouverture",
+      "days": {
+        "mon": "Lundi",
+        "tue": "Mardi",
+        "wed": "Mercredi",
+        "thu": "Jeudi",
+        "fri": "Vendredi",
+        "sat": "Samedi",
+        "sun": "Dimanche"
+      },
+      "hours": "11h30 - 22h00",
+      "form_title": "Écrivez-nous",
+      "social_title": "Suivez-nous",
+      "address_title": "Adresse",
+      "address": "Rue de la Cathédrale 51, 4000 Liège",
+      "delivery_title": "Livraison",
+      "map_loading": "Chargement de la carte…",
+      "delivery_soon": "Bientôt disponible",
+      "email_intro": "Une question ou une remarque ? Envoyez-nous un email, on vous répond vite.",
+      "phone_title": "Téléphone",
+      "phone_reservation": "Les réservations se font uniquement par téléphone."
+    },
+    "not_found": {
+      "title": "Page introuvable",
+      "message": "On dirait que vous vous êtes un peu perdu... Pas de panique, un bon bol de malatang vous attend !",
+      "button": "Retour à l'accueil",
+      "fuzi_alt": "Fuzi, la mascotte Yangguofu, savoure un bol de nouilles"
+    },
+    "footer": {
+      "tagline": "Le bonheur tient dans un bol",
+      "rights": "Tous droits réservés.",
+      "legal": "Mentions légales",
+      "privacy": "Politique de confidentialité",
+      "cookie": {
+        "title": "Cookies",
+        "text": "Nous utilisons des cookies pour améliorer votre navigation. En poursuivant, vous acceptez notre politique de confidentialité.",
+        "accept": "Accepter",
+        "decline": "Refuser"
+      }
+    },
+    "placeholder": "Photo à venir",
+    "seo": {
+      "home_title": "Yangguofu Malatang Liège",
+      "home_desc": "Composez votre bol de bouillon aux herbes, frais et fait pour vous, à 3,49 €/100 g. Le bonheur tient dans un bol. Yangguofu Malatang à Liège."
+    },
+    "legal": {
+      "coming": "Cette page est en préparation : nos mentions légales complètes seront publiées ici très bientôt.",
+      "meta_desc": "Mentions légales de Yangguofu Malatang Liège."
+    },
+    "privacy": {
+      "coming": "Cette page est en préparation : notre politique de confidentialité complète sera publiée ici très bientôt.",
+      "meta_desc": "Politique de confidentialité de Yangguofu Malatang Liège."
+    }
+  },
+  "faq": {
+    "questions": {
+      "what": {
+        "question": "C'est quoi le malatang ?",
+        "answer": "Le malatang, c'est un bol individuel venu de Chine : vous choisissez vos produits frais au comptoir, et on les cuit à la minute dans un bouillon aux herbes. Un repas équilibré, à votre goût, et qui fait du bien."
+      },
+      "spicy": {
+        "question": "C'est épicé ?",
+        "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, épicé ou très épicé. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et la marmite sésame-cacahuète restent légèrement relevés."
+      },
+      "vegan": {
+        "question": "Je suis végétarien ou vegan ?",
+        "answer": "Aucun souci ! Notre comptoir regorge de légumes, de champignons, de tofu et de nouilles. Vous pouvez tout à fait composer un bol 100% végétal. N'hésitez pas à nous demander conseil pour le bouillon."
+      },
+      "hours": {
+        "question": "Quels sont vos horaires d'ouverture ?",
+        "answer": "Nous sommes ouverts tous les jours, du lundi au dimanche, de 11h30 à 22h00."
+      },
+      "delivery": {
+        "question": "Livrez-vous ? Quelle est la zone de livraison ?",
+        "answer": "Pour le moment, les commandes sont à emporter uniquement, depuis notre restaurant Rue de la Cathédrale 51 à Liège. La livraison arrive bientôt !"
+      },
+      "payment": {
+        "question": "Quels modes de paiement acceptez-vous ?",
+        "answer": "Nous acceptons le paiement en ligne sécurisé (carte bancaire, Bancontact) et le paiement en espèces à la livraison ou au retrait."
+      },
+      "allergens": {
+        "question": "Avez-vous des informations sur les allergènes ?",
+        "answer": "Nos plats peuvent contenir du <strong>sésame</strong>, des <strong>arachides</strong>, du <strong>gluten</strong>, du <strong>soja</strong> et des <strong>crustacés</strong>. Indiquez toute allergie dans les commentaires de commande ou contactez-nous directement pour des informations détaillées."
+      }
+    }
+  },
+  "contact": {
+    "address": "Rue de la Cathédrale 51, Liège, Belgique",
+    "closedTuesday": "Ouvert 7j/7"
+  },
+  "menu": {
+    "allergenNoticeLink": "04 286 68 20"
+  },
+  "orderCompleted": {
+    "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 286 68 20 pour plus d'informations.",
+    "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Composez votre bol",
+    "title": "Votre bol sur mesure",
+    "heroSubtitle": "Choisissez votre bouillon, remplissez votre bol ingrédient par ingrédient, réglez le piquant. Cuit minute, rien que pour vous.",
+    "open": "Composer mon bol",
+    "stepOf": "Étape {n}/{total}",
+    "chosen": "Choisi",
+    "selectedCount": "{count}/{max} sélectionnés",
+    "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
+  },
+  "nav": {
+    "primary": "Navigation principale",
+    "secondary": "Liens de bas de page",
+    "callRestaurant": "Appeler le restaurant"
+  },
+  "common": {
+    "clear": "Effacer"
+  }
+}

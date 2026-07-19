@@ -1,0 +1,75 @@
+/* Yangguofu Malatang Liège brand tokens — ported from the official guide
+   (malatang GUIDELINES.md / tokens.css). Tailwind utilities cover most usage;
+   these custom properties exist for ported marketing-page CSS and for values
+   utilities can't express (warm borders, eases). */
+:root {
+    /* Primary colors */
+    --ygf-orange: #F58220;
+    --ygf-orange-light: #FDBA74;
+    --ygf-orange-dark: #D96A10;
+    --ygf-orange-bg: #FFF7ED;
+
+    /* Accessibility-corrected variants of the brand orange.
+     *
+     * GUIDELINES.md §4.3 specifies white text on #F58220, but that measures
+     * 2.59:1 against white — below the 4.5:1 WCAG AA minimum the same guide
+     * asks for in §8.4 (Lighthouse Accessibility 100). These two tokens
+     * resolve that conflict without abandoning the palette: both are existing
+     * steps of the official orange scale, not invented colors.
+     *
+     * Use --ygf-orange-on-white for any fill that carries white label text
+     * (buttons, selected chips, badges). Decorative orange — large surfaces,
+     * borders, icons, imagery, hover washes — stays #F58220.
+     */
+    --ygf-orange-on-white: #C2570C;      /* white text: 4.50:1 — AA */
+    --ygf-orange-on-white-hover: #9A3412; /* white text: 7.31:1 */
+    --ygf-orange-text: #9A3412;          /* orange text on cream: 6.88:1 — AA */
+
+    --ygf-black: #1A1A1A;
+    --ygf-white: #FFFFFF;
+    --ygf-cream: #FDF5EC;
+    --ygf-wood: #C49A6C;
+
+    /* Functional colors */
+    --ygf-red: #D42B2B;
+    --ygf-success: #2E8B57;
+    --ygf-error: #D32F2F;
+
+    /* Warm neutrals — the guide's body/secondary text grays. */
+    --ygf-gray-100: #F5F5F5;
+    --ygf-gray-200: #E5E5E5;
+    --ygf-gray-400: #999999;
+    --ygf-gray-600: #666666;
+
+    /* Typography */
+    --font-sans: 'Inter', 'Noto Sans', system-ui, sans-serif;
+    --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --font-serif-chinese: 'Noto Serif SC', serif;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 24px;
+    --radius-btn: 48px;
+
+    /* Warm shadows (never cold gray) */
+    --shadow-sm: 0 2px 8px rgba(242, 123, 32, 0.06);
+    --shadow-md: 0 4px 20px rgba(242, 123, 32, 0.08);
+    --shadow-lg: 0 8px 40px rgba(242, 123, 32, 0.12);
+    --shadow-glow: 0 0 60px rgba(245, 130, 32, 0.08);
+
+    /* Warm borders */
+    --border-subtle: 1px solid rgba(242, 123, 32, 0.08);
+    --border-default: 1px solid rgba(242, 123, 32, 0.12);
+    --border-strong: 1px solid rgba(242, 123, 32, 0.18);
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 500ms;
+}
+
+html {
+    background-color: #FFF7ED;
+}

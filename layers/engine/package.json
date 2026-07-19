@@ -1,0 +1,6 @@
+{
+  "name": "@tsb/engine",
+  "private": true,
+  "type": "module",
+  "description": "Shared, brand-agnostic Nuxt layer (composables, stores, plugins, middleware, server routes, lib, types, utils, i18n plumbing). Extended by each brand app under apps/*."
+}

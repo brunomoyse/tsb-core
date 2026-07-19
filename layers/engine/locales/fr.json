@@ -1,0 +1,640 @@
+{
+  "brandName": "Tokyo Sushi Bar",
+  "404": {},
+  "head": {
+    "title": "__BRAND__"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "toTop": "Haut de page",
+    "remove": "Supprimer",
+    "close": "Fermer",
+    "skipToContent": "Aller au contenu principal"
+  },
+  "nav": {
+    "home": "Accueil",
+    "menu": "Menu",
+    "contact": "Contact",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "myAccount": "Mon compte",
+    "search": "Rechercher...",
+    "cart": "Panier",
+    "language": "Sélectionner la langue",
+    "toggleMenu": "Ouvrir/fermer le menu"
+  },
+  "home": {
+    "heroTagline": "Restaurant japonais · Liège",
+    "orderNow": "Commander",
+    "schedule": "Horaires",
+    "status": {
+      "open": "Ouvert",
+      "onsiteOnly": "Ouvert · sur place",
+      "closed": "Fermé"
+    }
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Rendez-nous visite, appelez-nous ou réservez une table dès aujourd'hui !",
+    "viewLargerMap": "Voir la carte en grand",
+    "addressTitle": "Adresse",
+    "address": "Rue de la Cathédrale 59, Liège, Belgique",
+    "phoneTitle": "Téléphone",
+    "emailTitle": "E-mail",
+    "openingHoursTitle": "Horaires d'ouverture",
+    "followUs": "Suivez-nous",
+    "reservationNotice": "Les réservations par e-mail ne sont pas prises en compte. Pour réserver une table, merci de nous appeler par téléphone.",
+    "weekdays": "Lundi - Vendredi",
+    "weekends": "Samedi - Dimanche",
+    "closedTuesday": "Fermé le mardi"
+  },
+  "about": {
+    "ourStoryTitle": "Notre Histoire",
+    "ourStoryText1": "En 2016, un jeune couple passionné de cuisine japonaise ouvre un petit restaurant rue de la Régence à Liège, avec le soutien de leurs parents. Chaque matin, le poisson frais est soigneusement sélectionné et préparé à la main pour garantir une qualité irréprochable. Le bouche-à-oreille fait vite son effet : entre les clients sur place et les commandes en livraison, la petite salle ne suffit plus.",
+    "ourStoryText2": "Fin 2024, le restaurant déménage rue de la Cathédrale dans un espace plus grand, à quelques pas de l'adresse d'origine. Aujourd'hui, __BRAND__ reste une affaire de famille où chaque plat est préparé avec le même soin qu'au premier jour.",
+    "ourStoryText3": "En 2026, __BRAND__ fête ses 10 ans. Une décennie de poisson frais, de recettes peaufinées et de sourires partagés avec vous. Merci à tous ceux qui nous ont fait confiance depuis le premier jour, cette aventure, c'est aussi la vôtre.",
+    "yearsOfPassion": "ans de passion",
+    "openingHoursLabel": "Horaires d'ouverture",
+    "contactLink": "Nous contacter",
+    "callUs": "Nous appeler",
+    "paymentsLabel": "Modes de paiement acceptés",
+    "cash": "Espèces",
+    "infoCards": {
+      "freeDelivery": "Livraison gratuite",
+      "freeDeliveryDesc": "Gratuite dès 25 €, avec frais de livraison selon la distance au-delà.",
+      "takeawayDiscount": "À emporter -10%",
+      "takeawayDiscountDesc": "10 % de réduction sur les articles remisables dès 20 € pour toute commande à emporter.",
+      "freshDaily": "Frais chaque jour",
+      "freshDailyDesc": "Notre poisson est découpé frais chaque matin par notre chef pour une qualité irréprochable."
+    }
+  },
+  "menu": {
+    "showMore": "Voir plus",
+    "showLess": "Voir moins",
+    "pickCategory": "Choisissez une catégorie",
+    "pickFilters": "Choisissez des filtres",
+    "choices": "choix",
+    "noProduct": "Aucun produit disponible",
+    "allergenNotice": "Nos produits peuvent contenir du poisson, des crustacés et du lactose. Merci de nous informer de toute allergie.",
+    "allergenNoticeShort": "Allergies ? Infos :",
+    "allergenNoticeLink": "04 222 98 88",
+    "unavailable": "Indisponible",
+    "noResults": "Aucun résultat pour \"{query}\"",
+    "previousCategory": "Catégorie précédente",
+    "nextCategory": "Catégorie suivante",
+    "halal": "Halal",
+    "spicy": "Piquant",
+    "vegetarian": "Végétarien",
+    "lunchOnly": "Lunch (lun-ven)",
+    "lunchOnlyShort": "Lunch",
+    "soup": "Soupe",
+    "soups": "Soupes",
+    "pc": "pièce",
+    "pcs": "pièces",
+    "addToCart": "Ajouter",
+    "selectChoice": "Choisir une option",
+    "chooseRemaining": "Encore {count} à sélectionner | Encore {count} à sélectionner",
+    "chooseAtLeast": "Sélectionnez au moins {count} option | Sélectionnez au moins {count} options",
+    "removeExcess": "Retirez {count} sélection | Retirez {count} sélections",
+    "price": "Prix",
+    "code": "Code",
+    "description": "Description",
+    "discountable": "Remise possible",
+    "yes": "Oui",
+    "no": "Non",
+    "pickupDiscountBadge": "10% de remise à emporter",
+    "restaurantClosed": "Le restaurant est actuellement fermé.",
+    "restaurantClosedDetails": "Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
+  },
+  "days": {},
+  "login": {
+    "title": "Connexion",
+    "email": "E-mail",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "sendCode": "Continuer",
+    "codeSent": "Nous avons envoyé un code à 6 chiffres à {email}",
+    "codeLabel": "Code de vérification",
+    "codePlaceholder": "123456",
+    "verify": "Vérifier",
+    "resendCode": "Renvoyer le code",
+    "resendCooldown": "Renvoyer dans {seconds}s",
+    "backToEmail": "Retour",
+    "dividerOr": "ou",
+    "ssoGoogle": "Connexion avec Google",
+    "ssoApple": "Connexion avec Apple",
+    "authenticating": "Authentification en cours...",
+    "callbackError": "L'authentification a échoué. Veuillez réessayer.",
+    "tryAgain": "Réessayer",
+    "profileTitle": "Presque terminé, comment souhaitez-vous être appelé ?",
+    "profileSubtitle": "Nous utiliserons votre prénom pour personnaliser vos commandes et e-mails.",
+    "completeSignup": "Terminer l'inscription",
+    "stepEmail": "E-mail",
+    "stepCode": "Code",
+    "stepProfile": "Profil",
+    "stepsAriaLabel": "Progression de la connexion"
+  },
+  "form": {
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Entrez votre prénom",
+    "lastName": "Nom de famille",
+    "lastNamePlaceholder": "Entrez votre nom",
+    "email": "E-mail",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "phone": "Téléphone",
+    "phonePlaceholder": "Entrez votre numéro de téléphone",
+    "invalidPhone": "Numéro de téléphone invalide",
+    "address": {
+      "label": "Adresse",
+      "placeholder": "Commencez à taper votre adresse…",
+      "noMatch": "Aucune adresse trouvée.",
+      "callHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
+      "houseNumberRequired": "Le numéro de rue est obligatoire.",
+      "example": "Exemple : Rue de Fragnée 12, Liège"
+    }
+  },
+  "me": {
+    "greeting": "Bonjour",
+    "subtitle": "Gérez votre profil et consultez vos commandes.",
+    "orders": {
+      "recentTitle": "Commandes récentes",
+      "viewAll": "Tout voir",
+      "backToAccount": "Mon compte",
+      "allOrdersTitle": "Toutes mes commandes",
+      "loadMore": "Afficher {count} de plus",
+      "loadMoreLast": "Afficher les {count} dernières",
+      "loading": "Chargement des commandes...",
+      "empty": "Aucune commande trouvée",
+      "total": "Total",
+      "toggleOrder": "Détails de la commande",
+      "downloadInvoice": "Télécharger la facture",
+      "status": {
+        "details": {
+          "title": {
+            "pending": "Commande reçue",
+            "confirmed": "Confirmé par le restaurant",
+            "preparing": "Préparation",
+            "awaitingPickUp": "En attente de retrait",
+            "outForDelivery": "En cours de livraison",
+            "delivered": "Livré",
+            "pickedUp": "Retiré"
+          }
+        },
+        "pending": "En attente",
+        "confirmed": "Confirmé",
+        "preparing": "En préparation",
+        "awaitingPickup": "En attente de retrait",
+        "pickedUp": "Retiré",
+        "outForDelivery": "En livraison",
+        "delivered": "Livré",
+        "cancelled": "Annulé",
+        "failed": "Échoué"
+      }
+    },
+    "profile": {
+      "title": "Mon profil",
+      "name": "Nom",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "phoneNumber": "Numéro de téléphone",
+      "update": "Mettre à jour le profil",
+      "addAddress": "Ajouter une adresse",
+      "editAddress": "Modifier l'adresse",
+      "addressUpdateSuccess": "Votre adresse a bien été mise à jour.",
+      "updateSuccess": "Le profil a correctement été mis à jour.",
+      "deleteAccount": "Supprimer le compte",
+      "deleteConfirmTitle": "Supprimer votre compte ?",
+      "deleteConfirmBody": "Cette action est définitive et irréversible.",
+      "deleteActiveOrderWarning": "Vous avez une commande en cours. Si vous supprimez votre compte maintenant, vous ne pourrez plus la suivre ni recevoir de mises à jour. Le restaurant la préparera tout de même.",
+      "deleteAnonymizeNote": "Votre compte et vos données personnelles (nom, e-mail, numéro de téléphone et adresses enregistrées) sont définitivement anonymisés, et vous êtes déconnecté.",
+      "deleteOrdersNote": "Vos commandes passées restent chez le restaurant sous forme anonymisée, comme l'exige la législation comptable belge. Elles ne sont plus liées à vous.",
+      "deleteConfirmPrompt": "Pour confirmer, saisissez votre adresse e-mail ci-dessous :",
+      "deleteConfirmCheckbox": "Je comprends que mon compte et mes données seront définitivement supprimés.",
+      "deleteConfirmPlaceholder": "Saisissez votre e-mail pour confirmer",
+      "deleteConfirmCta": "Supprimer définitivement",
+      "deleteCancel": "Annuler",
+      "deleting": "Suppression…",
+      "deleteLearnMore": "En savoir plus sur la suppression du compte",
+      "deleteSuccess": "Votre compte a été supprimé.",
+      "deleteError": "Nous n'avons pas pu supprimer votre compte. Veuillez réessayer."
+    },
+    "analytics": {},
+    "verify": {
+      "verified": "Vérifié"
+    },
+    "notifications": {
+      "title": "Notifications par e-mail",
+      "marketingLabel": "E-mails marketing",
+      "marketingDescription": "Recevez des offres promotionnelles et des nouvelles du restaurant.",
+      "orderUpdatesLabel": "Suivi de la commande",
+      "orderUpdatesDescription": "Recevez des e-mails à chaque étape de votre commande en cours.",
+      "updateSuccess": "Préférences de notification mises à jour.",
+      "updateError": "Échec de la mise à jour des préférences."
+    }
+  },
+  "delivery": {
+    "comingSoon": "Bientôt disponible",
+    "chip": {
+      "verify": "Vérifier la zone",
+      "verifyCompact": "Vérifier",
+      "inZone": "Livraison · {km} km",
+      "outOfZone": "Hors zone de livraison",
+      "outOfZoneCompact": "Hors zone",
+      "pickup": "Retrait au restaurant",
+      "pickupCompact": "À emporter",
+      "actionHint": "cliquer pour modifier"
+    },
+    "modal": {
+      "title": "Livraison ou retrait ?",
+      "subtitle": "Vérifiez votre zone avant de commander.",
+      "modeLabel": "Mode de retrait",
+      "deliveryTab": "Livraison",
+      "pickupTab": "À emporter",
+      "currentAddress": "Adresse actuelle",
+      "change": "Modifier",
+      "distanceOk": "Nous livrons à cette adresse",
+      "distanceTooFar": "Cette adresse est hors de notre zone de 9 km",
+      "distanceValue": "Distance : {km} km",
+      "switchToPickup": "Passer au retrait",
+      "confirm": "Confirmer",
+      "pickupLabel": "Retrait au restaurant",
+      "pickupHint": "Venez chercher votre commande sur place."
+    },
+    "gate": {
+      "title": "Avant de continuer",
+      "subtitle": "Vérifions d'abord que nous pouvons vous livrer à votre adresse. Cela évite toute mauvaise surprise au paiement."
+    }
+  },
+  "cart": {
+    "title": "Panier",
+    "viewCart": "Voir mon panier",
+    "empty": "Votre panier est vide",
+    "delivery": "Livraison",
+    "pickup": "À emporter",
+    "subtotal": "Sous-total",
+    "deliveryFee": "Frais de livraison",
+    "pickupDiscount": "Remise à emporter",
+    "total": "Total",
+    "minimumDelivery": "Livraison minimum de {amount} €",
+    "minimumPickup": "À emporter minimum de {amount} €",
+    "checkout": "Valider la commande",
+    "removeItem": "Retirer",
+    "decreaseQty": "Diminuer la quantité",
+    "increaseQty": "Augmenter la quantité",
+    "customizedItemHint": "Personnalisé : retirez puis rajoutez depuis le menu pour modifier",
+    "closeCart": "Fermer le panier",
+    "notifications": "Notifications du panier",
+    "addToCart": "Ajouter au panier",
+    "item": "article",
+    "items": "articles",
+    "orderingUnavailable": "Commandes indisponibles",
+    "undo": "Annuler",
+    "removedUndo": "« {name} » retiré",
+    "eachSuffix": "pièce",
+    "deliveryTbd": "Livraison calculée au paiement"
+  },
+  "checkout": {
+    "title": "Commande",
+    "authStep": {
+      "heading": "Plus qu'une étape, connectez-vous pour valider votre commande",
+      "cartSaved": "Votre panier est sauvegardé",
+      "tabLogin": "Connexion",
+      "tabRegister": "Créer un compte",
+      "returnToLogin": "Email confirmé, se connecter maintenant"
+    },
+    "phoneCapture": {
+      "title": "Numéro de téléphone",
+      "description": "Nécessaire pour vous contacter au sujet de votre commande.",
+      "saved": "Numéro enregistré",
+      "edit": "Modifier",
+      "addCountryPrefix": "Pour un numéro non belge, ajoutez l'indicatif du pays (ex. +33)",
+      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
+    },
+    "orderSummary": "Votre commande",
+    "emptyCart": "Votre panier est vide.",
+    "subtotal": "Sous-total :",
+    "deliveryFee": "Frais de livraison :",
+    "deliveryFeeInfo": "Frais de livraison selon la distance :\n• Moins de 3 km : Gratuit\n• 3-4 km : 1€\n• 4-5 km : 2€\n• 5-6 km : 3€\n• 6-7 km : 4€\n• 7-8 km : 5€\n• 8-9 km : 6€",
+    "transactionFee": "Frais de transaction :",
+    "discount": "Remise (à emporter)",
+    "total": "Total :",
+    "collection": "Livraison / Retrait",
+    "deliveryAddress": "Adresse de livraison",
+    "editAddress": "Modifier l'adresse",
+    "noAddress": "Aucune adresse sélectionnée",
+    "addAddress": "Ajouter une adresse",
+    "addressComment": "Informations complémentaires pour l'adresse",
+    "addressCommentPlaceholder": "ex. Sonnez deux fois",
+    "preferredTime": "Heure souhaitée",
+    "asapDelivery": "Dès que possible (40-60 min)",
+    "asapPickup": "Dès que possible",
+    "asapUnavailableWhileClosed": "Le mode « dès que possible » n'est pas disponible pendant la fermeture. Veuillez choisir une heure fixe pour aujourd'hui.",
+    "noRemainingSlotsToday": "Il n'y a plus de créneaux disponibles aujourd'hui.",
+    "extrasAndPayment": "Options & Paiement",
+    "paymentMethod": "Méthode de paiement",
+    "online": "En ligne",
+    "cash": "Espèces",
+    "cashWarning": "Attention : une fois la commande validée, il ne sera plus possible de changer de mode de paiement.",
+    "cashAcknowledge": "J'ai bien compris et je confirme payer en espèces.",
+    "cashAcknowledgeMissing": "Merci de confirmer le paiement en espèces",
+    "cashAcknowledged": "Paiement espèces confirmé",
+    "discardAddress": "Abandonner l'adresse saisie ?",
+    "cashAmountLabel": "Avec combien allez-vous payer ?",
+    "cashAmountPlaceholder": "ex. 50",
+    "extras": "Options",
+    "addChopsticks": "Ajouter des baguettes",
+    "addWasabi": "Ajouter du wasabi",
+    "addGinger": "Ajouter du gingembre",
+    "addSoySauce": "Ajouter de la sauce soja",
+    "sauce": "Sauce soja",
+    "none": "Aucune",
+    "sweet": "Sucrée",
+    "salty": "Salée",
+    "both": "Les deux",
+    "orderComment": "Commentaire de commande",
+    "orderCommentPlaceholder": "ex. Allergies ou instructions particulières",
+    "goToPayment": "Aller au paiement",
+    "placeOrder": "Passer la commande",
+    "processing": "Traitement en cours...",
+    "restaurantClosed": "Le restaurant est actuellement fermé. Veuillez vérifier les horaires d'ouverture.",
+    "orderDisabled": "Les commandes sont actuellement désactivées. Veuillez réessayer plus tard.",
+    "free": "Gratuit",
+    "stepMenu": "Menu",
+    "stepCheckout": "Commande",
+    "stepAddress": "Adresse",
+    "stepSignIn": "Connexion",
+    "stepPhone": "Téléphone",
+    "stepReview": "Vérification",
+    "stepPayment": "Paiement",
+    "itemCount": "{count} article | {count} articles",
+    "opensAt": "Ouverture à {time}",
+    "tooFar": "Trop loin pour la livraison (max 9 km)",
+    "notDeliverableArea": "Nous ne livrons pas dans votre zone.",
+    "tbd": "À déterminer",
+    "optional": "(facultatif)",
+    "openingPayment": "Ouverture du paiement sécurisé...",
+    "completeBeforeOrder": "Merci de compléter avant de valider :",
+    "completeBeforeOrderCount": "{count} élément manquant | {count} éléments manquants",
+    "addressDistanceKm": "{distance} km",
+    "addExtras": "Envie d'un accompagnement ?",
+    "extrasDescription": "Complétez votre commande avec des accompagnements",
+    "paidExtra": "Supplément payant",
+    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier."
+  },
+  "orderCompleted": {
+    "title": "Commande reçue",
+    "thankYou": "Merci pour votre achat !",
+    "orderSuccess": "Votre commande a été passée avec succès.",
+    "items": "Plats",
+    "loading": "Chargement des détails de la commande...",
+    "returnHome": "Retour à l'accueil",
+    "viewOrders": "Voir mes commandes",
+    "status": "Status",
+    "pageTitle": "Confirmation de commande - __BRAND__",
+    "liveTracking": "Suivi en direct, le statut se met à jour automatiquement",
+    "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 222 98 88 pour plus d'informations.",
+    "notConfirmedYet": "Votre commande n'a pas encore été confirmée. Vous pouvez appeler le restaurant pour vérifier :",
+    "restaurantPhone": "04 222 98 88",
+    "cancellationReasonLabel": "Motif :",
+    "cancellationReasons": {
+      "OUT_OF_STOCK": "Rupture de stock",
+      "KITCHEN_CLOSED": "Cuisine fermée",
+      "DELIVERY_AREA": "Hors zone de livraison"
+    },
+    "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer.",
+    "backToMenu": "Retour au menu",
+    "payment": {
+      "canceledTitle": "Paiement annulé",
+      "canceledBody": "Vous avez annulé le paiement, votre commande n’a donc pas été passée. Votre panier est conservé. Vous pouvez réessayer.",
+      "failedTitle": "Paiement échoué",
+      "failedBody": "Nous n’avons pas pu traiter votre paiement et aucun montant n’a été débité. Votre panier est conservé. Veuillez réessayer.",
+      "expiredTitle": "Paiement expiré",
+      "expiredBody": "La session de paiement a expiré avant d’être finalisée. Votre panier est conservé. Vous pouvez réessayer.",
+      "abandonedTitle": "Paiement non finalisé",
+      "abandonedBody": "Vous avez quitté avant la fin du paiement, votre commande n’a donc pas été passée. Votre panier est conservé. Vous pouvez réessayer.",
+      "tryAgain": "Réessayer",
+      "verifying": "Vérification de votre paiement…"
+    }
+  },
+  "error": {
+    "homeButton": "Retour à l'accueil",
+    "menuButton": "Voir le menu",
+    "notFound": "Oups ! Cette page semble avoir disparu...",
+    "forbidden": "Accès interdit. Vous n'avez pas la permission de voir cette page.",
+    "serverError": "Une erreur est survenue. Veuillez réessayer plus tard.",
+    "generic": "Quelque chose s'est mal passé. Veuillez réessayer.",
+    "title404": "Rien dans l'assiette",
+    "title403": "Accès interdit",
+    "title500": "Souci en cuisine",
+    "titleGeneric": "Faux mouvement"
+  },
+  "footer": {
+    "terms": "CGV",
+    "privacy": "Confidentialité"
+  },
+  "notify": {
+    "errors": {
+      "cartEmpty": "Votre panier est vide.",
+      "addressRequired": "Une adresse est requise pour une livraison.",
+      "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
+      "deliveryAddressExcluded": "Nous ne livrons pas dans votre zone.",
+      "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
+      "codeExpired": "Le code a expiré. Demandez-en un nouveau.",
+      "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification.",
+      "orderingUnavailable": "Les commandes ne sont pas disponibles actuellement. Veuillez réessayer plus tard.",
+      "fixedTimeRequiredWhileClosed": "Veuillez choisir un créneau fixe pour aujourd'hui pendant la fermeture.",
+      "lunchOnlyRequiresLunchSlot": "Certains produits du panier ne sont disponibles que sur un créneau lunch (lundi-vendredi). Choisissez un créneau lunch ou retirez ces produits.",
+      "slotExpiredAutoReset": "Votre créneau horaire a expiré. L'heure a été réinitialisée.",
+      "slotTooSoon": "Le créneau sélectionné est trop proche. Veuillez choisir une heure plus tardive.",
+      "slotOutsideHours": "Le créneau sélectionné est en dehors des horaires d'ouverture.",
+      "slotNotToday": "Le créneau doit être pour aujourd'hui.",
+      "slotNotAligned": "Le créneau doit être aligné sur des intervalles de 15 minutes.",
+      "orderingClosedToday": "Les commandes sont fermées aujourd'hui.",
+      "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+      "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
+      "profileUpdateFailed": "La mise à jour du profil a échoué.",
+      "requestFailed": "La requête a échoué. Veuillez réessayer.",
+      "addressLookupFailed": "La recherche d'adresse a échoué. Veuillez réessayer.",
+      "addressMissingHouseNumber": "Veuillez sélectionner une adresse complète avec un numéro de rue.",
+      "ordersLoadFailed": "Impossible de charger vos commandes.",
+      "invoiceDownloadFailed": "Le téléchargement de la facture a échoué.",
+      "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+      "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
+      "networkError": "Connexion impossible. Vérifiez votre réseau et réessayez.",
+      "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants."
+    }
+  },
+  "schema": {
+    "siteName": "__BRAND__",
+    "siteDescription": "Découvrez les meilleures saveurs du Japon à Liège",
+    "restaurantName": "__BRAND__",
+    "cuisine": "Japonaise",
+    "home": {
+      "title": "__BRAND__ - Restaurant Japonais à Liège",
+      "description": "Découvrez les meilleures saveurs du Japon à Liège. Sushi frais, sashimi et cuisine japonaise authentique."
+    },
+    "menu": {
+      "title": "Menu - __BRAND__",
+      "description": "Découvrez notre menu de sushi frais, sashimi et cuisine japonaise authentique",
+      "name": "Menu __BRAND__"
+    },
+    "contact": {
+      "title": "Contactez-nous - __BRAND__",
+      "description": "Rendez-nous visite, appelez-nous ou réservez une table dès aujourd'hui ! Rue de la Cathédrale 59, Liège, Belgique"
+    },
+    "terms": {
+      "title": "Conditions Générales de Vente - __BRAND__",
+      "description": "Conditions générales de vente de __BRAND__. Informations légales, livraison, paiement et politique de retour."
+    },
+    "privacy": {
+      "title": "Politique de Confidentialité - __BRAND__",
+      "description": "Politique de confidentialité de __BRAND__. Données collectées, finalités, droits RGPD et cookies."
+    },
+    "login": {
+      "title": "Connexion - __BRAND__",
+      "description": "Connectez-vous à votre compte __BRAND__"
+    },
+    "checkout": {
+      "title": "Commande - __BRAND__"
+    },
+    "myAccount": {
+      "title": "Mon compte - __BRAND__"
+    },
+    "myOrders": {
+      "title": "Mes commandes - __BRAND__"
+    },
+    "orderConfirmation": {
+      "title": "Confirmation de commande - __BRAND__",
+      "description": "Votre commande a été confirmée"
+    },
+    "breadcrumb": {
+      "home": "Accueil",
+      "menu": "Menu",
+      "contact": "Contact",
+      "terms": "CGV",
+      "privacy": "Confidentialité",
+      "accountDeletion": "Suppression du compte"
+    },
+    "accountDeletion": {
+      "title": "Suppression du compte - __BRAND__",
+      "description": "Comment demander la suppression de votre compte __BRAND__ et de vos données personnelles."
+    }
+  },
+  "feedback": {
+    "title": "Partagez votre avis",
+    "subtitle": "Aidez-nous à améliorer votre expérience",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom",
+    "email": "E-mail",
+    "emailPlaceholder": "Votre adresse e-mail",
+    "serviceType": "Type de service",
+    "serviceTypes": {
+      "takeaway": "À emporter",
+      "dine-in": "Sur place",
+      "delivery": "Livraison"
+    },
+    "feedbackType": "Type de retour",
+    "feedbackTypes": {
+      "improvement": "Suggestion",
+      "complaint": "Réclamation",
+      "compliment": "Compliment"
+    },
+    "message": "Message",
+    "messagePlaceholder": "Parlez-nous de votre expérience (min. 10 caractères)",
+    "submit": "Envoyer",
+    "sending": "Envoi en cours...",
+    "success": "Merci pour votre retour ! Nous apprécions le temps que vous avez pris pour partager votre avis.",
+    "sendAnother": "Envoyer un autre avis",
+    "errorGeneric": "Un problème est survenu. Veuillez réessayer.",
+    "errorTooManyRequests": "Trop de soumissions. Veuillez patienter quelques minutes avant de réessayer.",
+    "errorInvalidInput": "Veuillez vérifier les champs du formulaire et réessayer.",
+    "errorCaptchaFailed": "La vérification anti-robot a échoué. Veuillez réessayer."
+  },
+  "coupon": {
+    "title": "Code promo",
+    "placeholder": "Entrez le code promo",
+    "apply": "Appliquer",
+    "remove": "Retirer",
+    "applied": "Code promo appliqué : -{discount} de réduction",
+    "invalid": "Code promo invalide",
+    "discount": "Réduction code promo"
+  },
+  "reorder": {
+    "button": "Recommander",
+    "success": "{count} articles ajoutés au panier",
+    "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
+    "empty": "Aucun article disponible à recommander"
+  },
+  "cookies": {},
+  "faq": {
+    "title": "Questions Fréquentes",
+    "subtitle": "Trouvez les réponses à vos questions sur __BRAND__",
+    "stillHaveQuestions": "Vous avez encore des questions ?",
+    "contactUs": "Contactez-nous",
+    "schemaTitle": "FAQ - __BRAND__",
+    "schemaDescription": "Questions fréquentes sur __BRAND__ - livraison, horaires, options halal et plus",
+    "breadcrumb": "FAQ",
+    "questions": {
+      "delivery": {
+        "question": "Livrez-vous ? Quelle est la zone de livraison ?",
+        "answer": "Oui, nous livrons depuis notre restaurant situé Rue de la Cathédrale 59, Liège. Les frais de livraison varient selon la distance :<br><br>• Moins de 3 km : <strong>Gratuit</strong> (minimum 25 €)<br>• 3-4 km : 1 €<br>• 4-5 km : 2 €<br>• 5-6 km : 3 €<br>• 6-7 km : 4 €<br>• 7-8 km : 5 €<br>• 8-9 km : 6 €<br><br>Au-delà de 9 km, la livraison n'est pas disponible sauf pour les commandes de 130 € ou plus. Vous pouvez vérifier votre adresse lors du passage de commande."
+      },
+      "hours": {
+        "question": "Quels sont vos horaires d'ouverture ?",
+        "answer": "Nous sommes ouverts du lundi au vendredi de 12h à 14h30 et de 18h à 22h30. Le samedi et dimanche de 12h à 15h et de 18h à 23h. Nous sommes fermés le mardi."
+      },
+      "halal": {
+        "question": "Proposez-vous des options halal ?",
+        "answer": "Oui ! Nous proposons une sélection de plats halal, clairement identifiés sur notre menu avec l'icône Halal. Tous nos produits halal sont préparés selon les normes islamiques."
+      },
+      "discount": {
+        "question": "Y a-t-il une réduction pour les commandes à emporter ?",
+        "answer": "Oui ! Profitez de 10% de réduction sur tous les articles remisables lorsque vous choisissez l'option à emporter. La réduction est automatiquement appliquée lors du paiement."
+      },
+      "payment": {
+        "question": "Quels modes de paiement acceptez-vous ?",
+        "answer": "Nous acceptons le paiement en ligne (carte bancaire) et le paiement en espèces à la livraison ou au retrait. Pour les commandes en ligne, le paiement est sécurisé."
+      },
+      "allergens": {
+        "question": "Avez-vous des informations sur les allergènes ?",
+        "answer": "Nos produits contiennent généralement du <strong>poisson</strong>, des <strong>crustacés</strong> et du <strong>lactose</strong>. Veuillez nous informer de toute allergie ou restriction alimentaire dans les commentaires de commande. Contactez-nous directement au 04 222 98 88 pour des informations détaillées sur les allergènes de nos plats."
+      },
+      "invoice": {
+        "question": "Comment demander une facture ?",
+        "answer": "Toute demande de facture doit être effectuée le jour même de votre commande. Contactez-nous au <strong>04 222 98 88</strong> pour en faire la demande."
+      },
+      "freshness": {
+        "question": "Vos poissons sont-ils frais ?",
+        "answer": "Absolument ! Chaque matin, du poisson frais est livré directement à notre restaurant et soigneusement préparé par notre chef. Nous garantissons une fraîcheur et une qualité exceptionnelles."
+      },
+      "parking": {
+        "question": "Y a-t-il un parking à proximité ?",
+        "answer": "Notre restaurant est situé en centre-ville de Liège. Il y a plusieurs parkings publics à proximité : Parking Cathédrale, Parking Opéra, et des places de stationnement dans la rue (payant)."
+      }
+    }
+  },
+  "accountDeletion": {
+    "title": "Suppression du compte",
+    "lastUpdated": "Dernière mise à jour : 08/06/2026",
+    "intro": "Vous pouvez supprimer vous-même votre compte __BRAND__ et les données personnelles qui y sont associées, à tout moment, directement depuis l'application ou ce site web.",
+    "howTitle": "Comment supprimer votre compte",
+    "howBody": "Connectez-vous, ouvrez la page de votre compte et sélectionnez « Supprimer le compte ». Après confirmation, votre compte est supprimé immédiatement et vous êtes déconnecté, sans délai d'attente.",
+    "fallbackTitle": "Impossible de vous connecter ?",
+    "fallbackBody": "Si vous ne pouvez plus accéder à votre compte, envoyez-nous un e-mail depuis l'adresse qui y est associée, avec pour objet « Suppression du compte ». Nous le supprimerons après vérification de votre identité.",
+    "emailSubject": "Suppression du compte",
+    "dataTitle": "Données supprimées",
+    "dataIntro": "Lors de la suppression de votre compte, les données suivantes sont définitivement supprimées :",
+    "dataItems": [
+      "Profil du compte : nom, prénom, adresse e-mail, numéro de téléphone",
+      "Adresses de livraison",
+      "Jetons de notification push"
+    ],
+    "retainTitle": "Données conservées",
+    "retainBody": "Les données de commande et de facturation sont conservées 7 ans afin de respecter les obligations comptables belges, comme indiqué dans notre politique de confidentialité. Elles ne sont plus associées à un compte actif.",
+    "timingTitle": "Délai de traitement",
+    "timingBody": "La suppression en libre-service depuis l'application ou le site web est immédiate. Les demandes envoyées par e-mail sont traitées dans un délai de 30 jours.",
+    "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
+  }
+}

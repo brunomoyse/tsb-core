@@ -1,0 +1,450 @@
+{
+  "brandName": "Yangguofu Malatang Liège",
+  "home": {
+    "heroTagline": "Malatang · Kruidenbouillon · Luik"
+  },
+  "schema": {
+    "siteDescription": "Stel je eigen malatang-bowl samen in Luik — kruidenbouillon vers bereid",
+    "cuisine": "Chinese",
+    "home": {
+      "title": "__BRAND__ - Malatang in Luik",
+      "description": "Stel je eigen kruidenbouillon-bowl samen, vers en voor jou gemaakt. Geluk in elke bowl. Yangguofu Malatang in Luik."
+    },
+    "menu": {
+      "description": "Ontdek onze malatang-bowls, signature bouillons, noedels en voorgerechten"
+    },
+    "contact": {
+      "description": "Kom langs of bel ons! Rue de la Cathédrale 51, Luik, België"
+    }
+  },
+  "mkt": {
+    "nav": {
+      "home": "Home",
+      "concept": "Concept",
+      "menu": "Menu",
+      "about": "Ons verhaal",
+      "contact": "Contact"
+    },
+    "lang": {
+      "fr": "Français",
+      "zh": "中文",
+      "en": "English",
+      "nl": "Nederlands"
+    },
+    "hero": {
+      "slogan": "Geluk in een kom",
+      "subtitle": "Malatang: jouw kom kruiden-bouillon, door jou samengesteld, vers bereid, dampend geserveerd.",
+      "cta": "Ontdek het menu",
+      "bowl_alt": "Kom malatang met runderbottenbouillon en verse ingrediënten"
+    },
+    "broths": {
+      "label": "Onze signaturen",
+      "title": "Onze kenmerkende bouillons",
+      "subtitle": "Vijf smaken, één belofte: verse ingrediënten, dagelijks bereide bouillon.",
+      "vegan_badge": "Vegan",
+      "allergens_label": "Allergenen",
+      "beef_bone": {
+        "name": "Runderbottenbouillon met kruiden",
+        "chinese": "经典草本骨汤",
+        "desc": "Onze signatuur sinds 2003: runderbotten, 8 uur gestoofd met meer dan 20 oosterse kruiden. Kies je intensiteit, van mild tot extra pittig.",
+        "spice": "Naar keuze: mild, pittig of extra pittig",
+        "allergens": "Melk, gluten, sesam, soja"
+      },
+      "tomato": {
+        "name": "Gestoofde tomatenbouillon",
+        "chinese": "酸甜番茄汤",
+        "desc": "Verse tomaten, langzaam gestoofd: licht zuur en zoet tegelijk. Heerlijk mild, en 100% plantaardig.",
+        "spice": "Zoetzuur, niet pittig",
+        "allergens": "Soja"
+      },
+      "mala_dry": {
+        "name": "Pittige dry mix met sesam-pindasaus",
+        "chinese": "石磨醇香麻辣拌",
+        "desc": "De uitzondering zonder bouillon: je ingrediënten omhuld met een geurige sesam-pindasaus. Verslavend, licht pittig.",
+        "spice": "Licht pittig",
+        "allergens": "Gluten, sesam, pinda's, soja"
+      },
+      "tom_yum": {
+        "name": "Thaise tomyum-bouillon",
+        "chinese": "酸辣冬阴功",
+        "desc": "Een Thaise ontsnapping: zuur, pittig en geurig met citroengras. Een enkeltje Zuidoost-Azië.",
+        "spice": "Licht pittig",
+        "allergens": "Vis, schaaldieren, soja"
+      },
+      "mushroom": {
+        "name": "Paddenstoelenbouillon met kruiden",
+        "chinese": "草本穹顶菌汤",
+        "desc": "Een milde bouillon met paddenstoelen en kruiden, zonder een spoortje pit. Puur comfort, en 100% plantaardig.",
+        "spice": "Niet pittig",
+        "allergens": "Soja"
+      }
+    },
+    "home": {
+      "steps": {
+        "title": "Hoe werkt het",
+        "subtitle": "Vier stappen naar de perfecte kom",
+        "step1": {
+          "title": "Kies",
+          "desc": "Bekijk de gekoelde vitrine en vul je kom met de verse ingrediënten die je lekker vindt."
+        },
+        "step2": {
+          "title": "Weeg",
+          "desc": "Je kom wordt gewogen en de prijs verschijnt. Transparant, zonder verrassingen."
+        },
+        "step3": {
+          "title": "Vertel ons",
+          "desc": "Kies je bouillon en pittig-niveau: mild, medium of heet."
+        },
+        "step4": {
+          "title": "Geniet",
+          "desc": "Je kom wordt vers bereid in de bouillon van je keuze en dampend geserveerd."
+        }
+      },
+      "video": {
+        "label": "Vers, op het moment gegaard",
+        "title": "Stel je kom samen, wij koken hem vers",
+        "subtitle": "Groenten, tofu, vlees, noedels — kies waar je zin in hebt. Vers gegaard in je bouillon, nooit gefrituurd."
+      },
+      "counters": {
+        "restaurants": "restaurants wereldwijd",
+        "countries": "landen",
+        "bowls": "miljard kommen geserveerd",
+        "years": "jaar vakmanschap",
+        "since": "sinds"
+      },
+      "gallery": {
+        "title": "De kunst van het eten",
+        "items": [
+          "Pittige gekookte vis uit Sichuan",
+          "Pasta met knoflookgarnalen",
+          "Tomatenpot op Japanse wijze",
+          "Koreaanse army stew",
+          "Eendenbloed in chilisaus",
+          "Lichte pittige droge mix",
+          "Tomaat-gestoofde rundvleespot",
+          "Zeevruchten- en runderbotpot"
+        ]
+      },
+      "broth_hero": {
+        "label": "Oosterse voedingsleer",
+        "translit": "Cǎoběn gǔtāng",
+        "cta": "Ontdek de kruidenbouillon"
+      },
+      "stats": {
+        "slogan": "幸福就在此刻 · Geluk in dit moment"
+      },
+      "why": {
+        "title": "Waarom een Yangguofu-kom?",
+        "broth": {
+          "title": "De kruidenbouillon",
+          "desc": "Elke dag huisgemaakt gesudderd, zo lekker dat je hem zo opdrinkt."
+        },
+        "fresh": {
+          "title": "Vers & evenwichtig",
+          "desc": "Verse producten, vers bereid. Nooit gefrituurd."
+        },
+        "custom": {
+          "title": "Door jou samengesteld",
+          "desc": "Jij kiest alles, per gram geprijsd. Naar jouw smaak, zonder verrassingen."
+        }
+      }
+    },
+    "cta": {
+      "title": "Klaar om jouw kom samen te stellen?",
+      "subtitle": "Kies je ingrediënten, wij doen de rest.",
+      "button": "Ontdek het menu"
+    },
+    "concept": {
+      "title": "Hoe werkt het",
+      "subtitle": "Vier stappen naar de perfecte kom",
+      "meta_desc": "Ontdek het Yangguofu Malatang concept: stel je kom samen in 4 eenvoudige stappen.",
+      "step1": {
+        "title": "Kies",
+        "desc": "Bekijk de gekoelde vitrine en vul je kom met de verse ingrediënten die je lekker vindt."
+      },
+      "step2": {
+        "title": "Weeg",
+        "desc": "Je kom wordt gewogen en de prijs verschijnt. Transparant, zonder verrassingen."
+      },
+      "step3": {
+        "title": "Vertel ons",
+        "desc": "Kies je bouillon en pittig-niveau: mild, medium of heet."
+      },
+      "step4": {
+        "title": "Geniet",
+        "desc": "Je kom wordt vers bereid in de bouillon van je keuze en dampend geserveerd."
+      },
+      "faq": {
+        "title": "Veelgestelde vragen",
+        "spicy": {
+          "question": "Is het pittig?",
+          "answer": "Jij kiest! Onze runderbottenbouillon bestaat in drie niveaus: mild, pittig of extra pittig. Liever helemaal niet pittig? De tomaten- en paddenstoelenbouillon zijn heerlijk zacht. De tomyum en de sesam-pinda dry mix zijn licht pittig."
+        },
+        "what": {
+          "question": "Wat is malatang?",
+          "answer": "Malatang is een Chinees individueel kom-concept: je kiest verse ingrediënten aan de toonbank, wij koken ze in een kruidenbouillon. Het is een evenwichtige, gepersonaliseerde, troostende maaltijd."
+        },
+        "vegan": {
+          "question": "Ik ben vegetariër/veganist?",
+          "answer": "Absoluut! Onze toonbank biedt veel groenten, paddenstoelen, tofu en noedels. Je kunt een 100% plantaardige kom samenstellen. Vraag ons naar details over onze bouillons."
+        }
+      },
+      "broth_story": {
+        "title": "De kruidenbouillon",
+        "chinese_title": "草本骨汤",
+        "p1": "Sinds 2003 perfectioneert Yangguofu zijn runderbotbouillon met Chinese geneeskrachtige kruiden. Dit is geen gewone bouillon: zo zacht en rijk dat je hem zo kunt drinken.",
+        "p2": "Elke dag bereiden onze koks de bouillon met verse botten, zorgvuldig geselecteerde kruiden en een vakmanschap van meer dan 20 jaar. Het is het hart van de Yangguofu-ervaring, en wat ons onderscheidt van elke andere malatang.",
+        "p3": "Het geheim? Een unieke combinatie van Noord-Chinese culinaire traditie en moderne voedingstechnieken. Het resultaat: een troostende, evenwichtige en diep smaakvolle bouillon."
+      }
+    },
+    "menu": {
+      "categoriesNav": "Categorieën",
+      "title": "Ons menu",
+      "subtitle": "Stel je kom samen naar smaak: verse ingrediënten, per gewicht.",
+      "meta_desc": "Yangguofu Malatang Luik menu: vijf bouillons en tientallen verse ingrediënten voor 3,49 €/100 g. Per gewicht, transparant.",
+      "broths_title": "Onze bouillons",
+      "ingredients_title": "Onze ingrediënten",
+      "ingredients_subtitle": "Allemaal vers, allemaal jouw keuze: stel de kom samen die bij jou past.",
+      "pricing_title": "Betalen per gewicht",
+      "pricing_desc": "Bij Yangguofu is er geen vaste prijs: je betaalt alleen voor wat je pakt. Vul je kom, wij wegen, de prijs is duidelijk. Simpel, transparant, eerlijk.",
+      "pricing_step1": "Vul",
+      "pricing_step2": "Weeg",
+      "pricing_step3": "Betaal",
+      "categories": {
+        "all": "Alles",
+        "vegetables": "Groenten",
+        "mushrooms": "Paddenstoelen",
+        "meat": "Vlees",
+        "seafood": "Zeevruchten",
+        "tofu": "Tofu",
+        "noodles": "Noedels"
+      },
+      "ingredients": {
+        "bok_choy": "Paksoi",
+        "spinach": "Spinazie",
+        "lettuce": "Sla",
+        "broccoli": "Broccoli",
+        "cabbage": "Chinese kool",
+        "corn": "Maïs",
+        "potato": "Aardappel",
+        "lotus_root": "Lotuswortel",
+        "enoki": "Enoki",
+        "shiitake": "Shiitake",
+        "oyster_mushroom": "Oesterzwam",
+        "king_oyster": "Koningsoesterzwam",
+        "wood_ear": "Judas-oor",
+        "beef": "Rundvlees",
+        "lamb": "Lam",
+        "pork_belly": "Buikspek",
+        "meatballs": "Gehaktballen",
+        "shrimp": "Garnalen",
+        "fish_balls": "Visballen",
+        "squid": "Inktvis",
+        "crab_sticks": "Surimi",
+        "firm_tofu": "Stevige tofu",
+        "silken_tofu": "Zijden tofu",
+        "tofu_skin": "Tofuvel",
+        "fried_tofu": "Gebakken tofu",
+        "glass_noodles": "Glasnoedels",
+        "udon": "Udon",
+        "rice_noodles": "Rijstnoedels",
+        "instant_noodles": "Instantnoedels"
+      },
+      "newcomer": {
+        "label": "Eerste keer?",
+        "title": "Begin met een klassieke kom",
+        "desc": "Niet zeker waar te beginnen? Pak een kom, voeg wat groenten, tofu en noedels toe en kies onze runderbottenbouillon met kruiden, in de milde versie. De ideale start in de wereld van malatang."
+      },
+      "veg_note": "Vegetarisch & veganistisch: stel een 100% plantaardige kom samen met groenten, paddenstoelen, tofu en noedels.",
+      "price_per_100g": "3,49 € / 100 g",
+      "price_tagline": "Je betaalt alleen wat je weegt.",
+      "allergens_note": "De 14 belangrijkste allergenen (EU) staan bij elke bouillon vermeld. Vragen? Spreek ons gerust aan."
+    },
+    "about": {
+      "title": "Ons verhaal",
+      "subtitle": "Van Harbin tot Luik, meer dan 20 jaar passie voor malatang.",
+      "meta_desc": "Het verhaal van Yangguofu Malatang, van Harbin in 2003 tot Luik vandaag. 7000+ restaurants in 25+ landen.",
+      "timeline": {
+        "2003": {
+          "title": "Het begon in Harbin",
+          "desc": "Yang Guofu opent zijn eerste malatang-kraam in Harbin, in het noordoosten van China. Zijn geheime recept: een runderbotbouillon met Chinese geneeskrachtige kruiden."
+        },
+        "2007": {
+          "title": "Een merk is geboren",
+          "desc": "Het concept rijpt: Yangguofu Malatang wordt een geregistreerd handelsmerk en begint zijn expansie door heel China."
+        },
+        "2017": {
+          "title": "De wereld in",
+          "desc": "Eerste restaurant buiten China. Het internationale avontuur begint: Zuidoost-Azië, Noord-Amerika, Europa."
+        },
+        "2024": {
+          "title": "De vernieuwing",
+          "desc": "Nieuw oranje logo, Gen.6 winkelconcept. Yangguofu vindt zichzelf opnieuw uit met 'Oosterse Wellness Keuken' als visie."
+        },
+        "liege": {
+          "title": "Luik, België",
+          "desc": "Yangguofu komt naar Luik om je authentieke malatang te laten ontdekken in een moderne, warme sfeer."
+        }
+      },
+      "storytelling": {
+        "origin": {
+          "title": "De oorsprong",
+          "text": "In 2003 lanceerde Yang Guofu zijn eerste malatang-kraam in Harbin, noordoost China. Zijn geheime recept: een runderbotbouillon met Chinese geneeskrachtige kruiden."
+        },
+        "craft": {
+          "title": "Het vakmanschap",
+          "text": "Elke dag bereiden onze koks de bouillon met verse botten en zorgvuldig geselecteerde kruiden. Een vakmanschap van meer dan 20 jaar."
+        },
+        "global": {
+          "title": "Wereldwijde malatang",
+          "text": "Met meer dan 7000 restaurants in 25 landen brengt Yangguofu malatang van Harbin tot Luik, overal met dezelfde passie."
+        }
+      },
+      "world_map": {
+        "title": "Wereldwijde aanwezigheid"
+      },
+      "values": {
+        "title": "Onze waarden",
+        "quality": {
+          "title": "Kwaliteit",
+          "desc": "Geselecteerde ingrediënten, dagelijks vers bereide bouillon. Nooit compromissen."
+        },
+        "freshness": {
+          "title": "Versheid",
+          "desc": "Alles is vers, alles is zichtbaar: je ziet wat je kiest."
+        },
+        "transparency": {
+          "title": "Transparantie",
+          "desc": "Betalen per gewicht, open keuken: niets is verborgen."
+        },
+        "happiness": {
+          "title": "Geluk",
+          "desc": "Geluk in een kom. Dat is onze belofte sinds 2003."
+        }
+      },
+      "counters": {
+        "restaurants": "restaurants wereldwijd",
+        "countries": "landen",
+        "years": "jaar ervaring"
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Kom langs of stuur ons een bericht.",
+      "meta_desc": "Contacteer Yangguofu Malatang Luik: adres, openingsuren, e-mail en sociale media.",
+      "hours_title": "Openingstijden",
+      "days": {
+        "mon": "Maandag",
+        "tue": "Dinsdag",
+        "wed": "Woensdag",
+        "thu": "Donderdag",
+        "fri": "Vrijdag",
+        "sat": "Zaterdag",
+        "sun": "Zondag"
+      },
+      "hours": "11:30 - 22:00",
+      "form_title": "Schrijf ons",
+      "social_title": "Volg ons",
+      "address_title": "Adres",
+      "address": "Rue de la Cathédrale 51, 4000 Luik",
+      "delivery_title": "Levering",
+      "map_loading": "Kaart laden…",
+      "delivery_soon": "Binnenkort beschikbaar",
+      "email_intro": "Een vraag of een opmerking? Stuur ons een e-mail, we antwoorden snel.",
+      "phone_title": "Telefoon",
+      "phone_reservation": "Reserveren kan uitsluitend telefonisch."
+    },
+    "not_found": {
+      "title": "Pagina niet gevonden",
+      "message": "Het lijkt erop dat je verdwaald bent... Maar geen zorgen, een dampende kom malatang wacht op je!",
+      "button": "Terug naar home",
+      "fuzi_alt": "Fuzi, de Yangguofu-mascotte, geniet van een kom noedels"
+    },
+    "footer": {
+      "tagline": "Geluk in een kom",
+      "rights": "Alle rechten voorbehouden.",
+      "legal": "Juridische kennisgeving",
+      "privacy": "Privacybeleid",
+      "cookie": {
+        "title": "Cookies",
+        "text": "We gebruiken cookies om je ervaring te verbeteren. Door verder te gaan accepteer je ons privacybeleid.",
+        "accept": "Accepteren",
+        "decline": "Weigeren"
+      }
+    },
+    "placeholder": "Foto binnenkort beschikbaar",
+    "seo": {
+      "home_title": "Yangguofu Malatang Luik",
+      "home_desc": "Stel je eigen kruidenbouillon-kom samen met verse ingrediënten, voor 3,49 €/100 g. Geluk in een kom. Yangguofu Malatang in Luik."
+    },
+    "legal": {
+      "coming": "Deze pagina is in voorbereiding: onze volledige wettelijke vermeldingen verschijnen hier binnenkort.",
+      "meta_desc": "Wettelijke vermeldingen van Yangguofu Malatang Luik."
+    },
+    "privacy": {
+      "coming": "Deze pagina is in voorbereiding: ons volledige privacybeleid verschijnt hier binnenkort.",
+      "meta_desc": "Privacybeleid van Yangguofu Malatang Luik."
+    }
+  },
+  "faq": {
+    "questions": {
+      "what": {
+        "question": "Wat is malatang?",
+        "answer": "Malatang is een Chinees individueel kom-concept: je kiest verse ingrediënten aan de toonbank, wij koken ze in een kruidenbouillon. Het is een evenwichtige, gepersonaliseerde, troostende maaltijd."
+      },
+      "spicy": {
+        "question": "Is het pittig?",
+        "answer": "Jij kiest! Onze runderbottenbouillon bestaat in drie niveaus: mild, pittig of extra pittig. Liever helemaal niet pittig? De tomaten- en paddenstoelenbouillon zijn heerlijk zacht. De tomyum en de sesam-pinda dry mix zijn licht pittig."
+      },
+      "vegan": {
+        "question": "Ik ben vegetariër/veganist?",
+        "answer": "Absoluut! Onze toonbank biedt veel groenten, paddenstoelen, tofu en noedels. Je kunt een 100% plantaardige kom samenstellen. Vraag ons naar details over onze bouillons."
+      },
+      "hours": {
+        "question": "Wat zijn jullie openingsuren?",
+        "answer": "We zijn elke dag open, van maandag tot zondag, van 11u30 tot 22u00."
+      },
+      "delivery": {
+        "question": "Leveren jullie? Wat is de leveringszone?",
+        "answer": "Voorlopig zijn bestellingen enkel om af te halen, bij ons restaurant, Rue de la Cathédrale 51 in Luik. Levering komt er binnenkort aan!"
+      },
+      "payment": {
+        "question": "Welke betaalmethoden accepteren jullie?",
+        "answer": "We accepteren veilige onlinebetaling (bankkaart, Bancontact) en contante betaling bij levering of afhaling."
+      },
+      "allergens": {
+        "question": "Hebben jullie allergenen-informatie?",
+        "answer": "Onze gerechten kunnen <strong>sesam</strong>, <strong>pinda's</strong>, <strong>gluten</strong>, <strong>soja</strong> en <strong>schaaldieren</strong> bevatten. Vermeld elke allergie in de opmerkingen bij je bestelling of neem rechtstreeks contact met ons op."
+      }
+    }
+  },
+  "contact": {
+    "address": "Rue de la Cathédrale 51, Luik, België",
+    "closedTuesday": "Elke dag open"
+  },
+  "menu": {
+    "allergenNoticeLink": "04 286 68 20"
+  },
+  "orderCompleted": {
+    "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 286 68 20 voor meer informatie.",
+    "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Stel je bowl samen",
+    "title": "Jouw bowl op maat",
+    "heroSubtitle": "Kies je bouillon, vul je kom ingrediënt per ingrediënt, bepaal de pittigheid. Vers bereid, speciaal voor jou.",
+    "open": "Mijn bowl samenstellen",
+    "stepOf": "Stap {n}/{total}",
+    "chosen": "Gekozen",
+    "selectedCount": "{count}/{max} gekozen",
+    "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten"
+  },
+  "nav": {
+    "primary": "Hoofdnavigatie",
+    "secondary": "Voettekstlinks",
+    "callRestaurant": "Bel het restaurant"
+  },
+  "common": {
+    "clear": "Wissen"
+  }
+}

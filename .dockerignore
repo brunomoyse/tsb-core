@@ -1,7 +1,12 @@
-node_modules
-dist
+# Build context is the monorepo root. Keep it lean: everything the Dockerfile
+# needs is COPYed explicitly (package manifests, layers/, apps/tokyosushi/).
+**/node_modules
+**/.output
+**/.nuxt
+**/dist
 .git
 .gitignore
-Dockerfile
-*.md
-.env
+**/.env
+**/playwright-report
+**/test-results
+**/*.md

@@ -1,0 +1,450 @@
+{
+  "brandName": "Yangguofu Malatang Liège",
+  "home": {
+    "heroTagline": "Malatang · Herbal broth · Liège"
+  },
+  "schema": {
+    "siteDescription": "Build your own malatang bowl in Liège — herbal broth cooked to order",
+    "cuisine": "Chinese",
+    "home": {
+      "title": "__BRAND__ - Malatang in Liège",
+      "description": "Build your own herbal-broth bowl, fresh and made for you. Happiness in every bowl. Yangguofu Malatang in Liège."
+    },
+    "menu": {
+      "description": "Discover our malatang bowls, signature broths, noodles and starters"
+    },
+    "contact": {
+      "description": "Visit us or give us a call! Rue de la Cathédrale 51, Liège, Belgium"
+    }
+  },
+  "mkt": {
+    "nav": {
+      "home": "Home",
+      "concept": "Concept",
+      "menu": "Menu",
+      "about": "Our Story",
+      "contact": "Contact"
+    },
+    "lang": {
+      "fr": "Français",
+      "zh": "中文",
+      "en": "English",
+      "nl": "Nederlands"
+    },
+    "hero": {
+      "slogan": "Happiness in every bowl",
+      "subtitle": "Malatang: your herbal broth bowl, built by you, cooked to order, served steaming hot.",
+      "cta": "Discover the menu",
+      "bowl_alt": "Malatang bowl with beef bone broth and fresh ingredients"
+    },
+    "broths": {
+      "label": "Our signatures",
+      "title": "Our signature broths",
+      "subtitle": "Five flavours, one promise: fresh ingredients, broth prepared daily.",
+      "vegan_badge": "Vegan",
+      "allergens_label": "Allergens",
+      "beef_bone": {
+        "name": "Classic Herbal Beef Bone Broth",
+        "chinese": "经典草本骨汤",
+        "desc": "Our signature since 2003: beef bones simmered for 8 hours with more than 20 oriental herbs. Pick your heat, from mild to extra spicy.",
+        "spice": "Your choice: mild, spicy or extra spicy",
+        "allergens": "Milk, gluten, sesame, soy"
+      },
+      "tomato": {
+        "name": "Sweet & Sour Tomato Broth",
+        "chinese": "酸甜番茄汤",
+        "desc": "Fresh tomatoes slow-simmered, tangy and sweet at once. Gentle on the palate, and 100% plant-based.",
+        "spice": "Sweet & sour, not spicy",
+        "allergens": "Soy"
+      },
+      "mala_dry": {
+        "name": "Peanut Butter Spicy Dry Mix",
+        "chinese": "石磨醇香麻辣拌",
+        "desc": "The broth-free exception: your ingredients coated in a fragrant sesame-peanut sauce. Addictive, gently spicy.",
+        "spice": "Mildly spicy",
+        "allergens": "Gluten, sesame, peanut, soy"
+      },
+      "tom_yum": {
+        "name": "Thai Tom Yum Broth",
+        "chinese": "酸辣冬阴功",
+        "desc": "A Thai escape: sour, spicy, fragrant with lemongrass. A one-way ticket to Southeast Asia.",
+        "spice": "Mildly spicy",
+        "allergens": "Fish, crustaceans, soy"
+      },
+      "mushroom": {
+        "name": "Herbal Mushroom Broth",
+        "chinese": "草本穹顶菌汤",
+        "desc": "A gentle broth of mushrooms and herbs, without a hint of spice. Pure comfort, and 100% plant-based.",
+        "spice": "Not spicy",
+        "allergens": "Soy"
+      }
+    },
+    "home": {
+      "steps": {
+        "title": "How it works",
+        "subtitle": "Four steps to the perfect bowl",
+        "step1": {
+          "title": "Choose",
+          "desc": "Browse the chilled counter and fill your bowl with the fresh ingredients you love."
+        },
+        "step2": {
+          "title": "Weigh",
+          "desc": "Your bowl is weighed and the price appears. Transparent, no surprises."
+        },
+        "step3": {
+          "title": "Tell us",
+          "desc": "Pick your broth and spice level: mild, medium, or hot."
+        },
+        "step4": {
+          "title": "Enjoy",
+          "desc": "Your bowl is cooked to order in your chosen broth and served steaming hot."
+        }
+      },
+      "video": {
+        "label": "Fresh, cooked to order",
+        "title": "You build your bowl, we cook it fresh",
+        "subtitle": "Veg, tofu, meat, noodles — pick whatever you fancy. Cooked to the minute in your broth, never fried."
+      },
+      "counters": {
+        "restaurants": "restaurants worldwide",
+        "countries": "countries",
+        "bowls": "billion bowls served",
+        "years": "years of craft",
+        "since": "since"
+      },
+      "gallery": {
+        "title": "The art of eating",
+        "items": [
+          "Sichuan spicy boiled fish",
+          "Garlic prawn pasta",
+          "Japanese-style tomato pot",
+          "Korean army stew",
+          "Duck blood in chili sauce",
+          "Light spicy dry mix",
+          "Tomato braised beef pot",
+          "Seafood & beef-bone pot"
+        ]
+      },
+      "broth_hero": {
+        "label": "Oriental food-nourishment",
+        "translit": "Cǎoběn gǔtāng",
+        "cta": "Discover the herbal broth"
+      },
+      "stats": {
+        "slogan": "幸福就在此刻 · Happiness in this very moment"
+      },
+      "why": {
+        "title": "Why a Yangguofu bowl?",
+        "broth": {
+          "title": "The herbal broth",
+          "desc": "Simmered in-house every day, so good you drink it by the spoonful."
+        },
+        "fresh": {
+          "title": "Fresh & balanced",
+          "desc": "Fresh produce, cooked to order. Never fried."
+        },
+        "custom": {
+          "title": "Built by you",
+          "desc": "You choose everything, priced by the gram. Your taste, no surprises."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to build your bowl?",
+      "subtitle": "Pick your ingredients, we'll handle the rest.",
+      "button": "Discover the menu"
+    },
+    "concept": {
+      "title": "How it works",
+      "subtitle": "Four steps to the perfect bowl",
+      "meta_desc": "Discover the Yangguofu Malatang concept: build your bowl in 4 simple steps.",
+      "step1": {
+        "title": "Choose",
+        "desc": "Browse the chilled counter and fill your bowl with the fresh ingredients you love."
+      },
+      "step2": {
+        "title": "Weigh",
+        "desc": "Your bowl is weighed and the price appears. Transparent, no surprises."
+      },
+      "step3": {
+        "title": "Tell us",
+        "desc": "Pick your broth and spice level: mild, medium, or hot."
+      },
+      "step4": {
+        "title": "Enjoy",
+        "desc": "Your bowl is cooked to order in your chosen broth and served steaming hot."
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "spicy": {
+          "question": "Is it spicy?",
+          "answer": "You choose! Our beef bone broth comes in three heat levels: mild, spicy or extra spicy. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut dry mix are mildly spicy."
+        },
+        "what": {
+          "question": "What is malatang?",
+          "answer": "Malatang is a Chinese individual bowl concept: you pick your fresh ingredients at the counter, we cook them in a herbal broth. It's a balanced, personalised, comforting meal."
+        },
+        "vegan": {
+          "question": "I'm vegetarian/vegan?",
+          "answer": "Absolutely! Our counter offers many vegetables, mushrooms, tofu and noodles. You can build a 100% plant-based bowl. Ask us for details about our broths."
+        }
+      },
+      "broth_story": {
+        "title": "The herbal broth",
+        "chinese_title": "草本骨汤",
+        "p1": "Since 2003, Yangguofu has perfected its beef bone broth infused with Chinese medicinal herbs. This is no ordinary broth: it's so smooth and rich it can be drunk on its own.",
+        "p2": "Every day, our chefs prepare the broth from fresh bones, carefully selected herbs, and a know-how passed down for over 20 years. It's the heart of the Yangguofu experience, and what sets us apart from any other malatang.",
+        "p3": "The secret? A unique marriage between Northern Chinese culinary tradition and modern nutritional techniques. The result: a comforting, balanced, and deeply flavourful broth."
+      }
+    },
+    "menu": {
+      "categoriesNav": "Categories",
+      "title": "Our menu",
+      "subtitle": "Build your bowl to your taste: fresh ingredients, priced by weight.",
+      "meta_desc": "Yangguofu Malatang Liège menu: five broths and dozens of fresh ingredients at €3.49/100 g. By weight, transparent.",
+      "broths_title": "Our broths",
+      "ingredients_title": "Our ingredients",
+      "ingredients_subtitle": "All fresh, all your choice: build the bowl that's you.",
+      "pricing_title": "Pay by weight",
+      "pricing_desc": "At Yangguofu, there's no fixed price: you only pay for what you pick. Fill your bowl, we weigh it, the price is clear. Simple, transparent, fair.",
+      "pricing_step1": "Fill up",
+      "pricing_step2": "Weigh",
+      "pricing_step3": "Pay",
+      "categories": {
+        "all": "All",
+        "vegetables": "Vegetables",
+        "mushrooms": "Mushrooms",
+        "meat": "Meat",
+        "seafood": "Seafood",
+        "tofu": "Tofu",
+        "noodles": "Noodles"
+      },
+      "ingredients": {
+        "bok_choy": "Bok choy",
+        "spinach": "Spinach",
+        "lettuce": "Lettuce",
+        "broccoli": "Broccoli",
+        "cabbage": "Chinese cabbage",
+        "corn": "Corn",
+        "potato": "Potato",
+        "lotus_root": "Lotus root",
+        "enoki": "Enoki",
+        "shiitake": "Shiitake",
+        "oyster_mushroom": "Oyster mushroom",
+        "king_oyster": "King oyster",
+        "wood_ear": "Wood ear",
+        "beef": "Beef",
+        "lamb": "Lamb",
+        "pork_belly": "Pork belly",
+        "meatballs": "Meatballs",
+        "shrimp": "Shrimp",
+        "fish_balls": "Fish balls",
+        "squid": "Squid",
+        "crab_sticks": "Crab sticks",
+        "firm_tofu": "Firm tofu",
+        "silken_tofu": "Silken tofu",
+        "tofu_skin": "Tofu skin",
+        "fried_tofu": "Fried tofu",
+        "glass_noodles": "Glass noodles",
+        "udon": "Udon",
+        "rice_noodles": "Rice noodles",
+        "instant_noodles": "Instant noodles"
+      },
+      "newcomer": {
+        "label": "First time?",
+        "title": "Start with a classic bowl",
+        "desc": "Not sure where to begin? Grab a bowl, add a few vegetables, some tofu and noodles, then pick our herbal beef bone broth in its mild version. It's the perfect way into the world of malatang."
+      },
+      "veg_note": "Vegetarian & vegan: build a 100% plant-based bowl with vegetables, mushrooms, tofu and noodles.",
+      "price_per_100g": "€3.49 / 100 g",
+      "price_tagline": "You only pay for what you weigh.",
+      "allergens_note": "The 14 major (EU) allergens are listed for each broth. Questions? Just ask us at the counter."
+    },
+    "about": {
+      "title": "Our story",
+      "subtitle": "From Harbin to Liège, over 20 years of malatang passion.",
+      "meta_desc": "The story of Yangguofu Malatang, from Harbin in 2003 to Liège today. 7000+ restaurants in 25+ countries.",
+      "timeline": {
+        "2003": {
+          "title": "It all started in Harbin",
+          "desc": "Yang Guofu opens his first malatang stall in Harbin, northeast China. His secret recipe: a beef bone broth infused with Chinese medicinal herbs."
+        },
+        "2007": {
+          "title": "A brand is born",
+          "desc": "The concept matures: Yangguofu Malatang becomes a registered trademark and begins its expansion across China."
+        },
+        "2017": {
+          "title": "Going global",
+          "desc": "First restaurant outside China. The international adventure begins: Southeast Asia, North America, Europe."
+        },
+        "2024": {
+          "title": "The rebrand",
+          "desc": "New orange identity, Gen.6 store concept. Yangguofu reinvents itself with 'Oriental Wellness Cuisine' as its vision."
+        },
+        "liege": {
+          "title": "Liège, Belgium",
+          "desc": "Yangguofu arrives in Liège to bring you authentic malatang in a modern, warm setting."
+        }
+      },
+      "storytelling": {
+        "origin": {
+          "title": "The origins",
+          "text": "In 2003, Yang Guofu launched his first malatang stall in Harbin, northeast China. His secret recipe: a beef bone broth infused with Chinese medicinal herbs."
+        },
+        "craft": {
+          "title": "The craftsmanship",
+          "text": "Every day, our chefs prepare the broth from fresh bones and carefully selected herbs. A know-how passed down for over 20 years."
+        },
+        "global": {
+          "title": "Global malatang",
+          "text": "With over 7000 restaurants in 25 countries, Yangguofu brings malatang from Harbin to Liège, with the same passion everywhere."
+        }
+      },
+      "world_map": {
+        "title": "Global presence"
+      },
+      "values": {
+        "title": "Our values",
+        "quality": {
+          "title": "Quality",
+          "desc": "Selected ingredients, broth prepared fresh daily. Never any compromise."
+        },
+        "freshness": {
+          "title": "Freshness",
+          "desc": "Everything is fresh, everything is visible: you see what you choose."
+        },
+        "transparency": {
+          "title": "Transparency",
+          "desc": "Pay by weight, open kitchen: nothing is hidden."
+        },
+        "happiness": {
+          "title": "Happiness",
+          "desc": "Happiness in every bowl. That's been our promise since 2003."
+        }
+      },
+      "counters": {
+        "restaurants": "restaurants worldwide",
+        "countries": "countries",
+        "years": "years of experience"
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Come visit us or drop us a message.",
+      "meta_desc": "Contact Yangguofu Malatang Liège: address, opening hours, email and social media.",
+      "hours_title": "Opening hours",
+      "days": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      },
+      "hours": "11:30 AM - 10:00 PM",
+      "form_title": "Write to us",
+      "social_title": "Follow us",
+      "address_title": "Address",
+      "address": "Rue de la Cathédrale 51, 4000 Liège",
+      "delivery_title": "Delivery",
+      "map_loading": "Loading map…",
+      "delivery_soon": "Coming soon",
+      "email_intro": "A question or a comment? Drop us an email and we'll get back to you quickly.",
+      "phone_title": "Phone",
+      "phone_reservation": "Reservations are taken by phone only."
+    },
+    "not_found": {
+      "title": "Page not found",
+      "message": "Looks like you got lost... But don't worry, a steaming bowl of malatang is waiting for you!",
+      "button": "Back to home",
+      "fuzi_alt": "Fuzi, the Yangguofu mascot, enjoying a bowl of noodles"
+    },
+    "footer": {
+      "tagline": "Happiness in every bowl",
+      "rights": "All rights reserved.",
+      "legal": "Legal notice",
+      "privacy": "Privacy policy",
+      "cookie": {
+        "title": "Cookies",
+        "text": "We use cookies to improve your experience. By continuing, you accept our privacy policy.",
+        "accept": "Accept",
+        "decline": "Decline"
+      }
+    },
+    "placeholder": "Photo coming soon",
+    "seo": {
+      "home_title": "Yangguofu Malatang Liège",
+      "home_desc": "Build your own herbal broth bowl with fresh ingredients, at €3.49/100 g. Happiness in every bowl. Yangguofu Malatang in Liège."
+    },
+    "legal": {
+      "coming": "This page is in the works: our full legal notice will be published here very soon.",
+      "meta_desc": "Legal notice of Yangguofu Malatang Liège."
+    },
+    "privacy": {
+      "coming": "This page is in the works: our full privacy policy will be published here very soon.",
+      "meta_desc": "Privacy policy of Yangguofu Malatang Liège."
+    }
+  },
+  "faq": {
+    "questions": {
+      "what": {
+        "question": "What is malatang?",
+        "answer": "Malatang is a Chinese individual bowl concept: you pick your fresh ingredients at the counter, we cook them in a herbal broth. It's a balanced, personalised, comforting meal."
+      },
+      "spicy": {
+        "question": "Is it spicy?",
+        "answer": "You choose! Our beef bone broth comes in three heat levels: mild, spicy or extra spicy. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut dry mix are mildly spicy."
+      },
+      "vegan": {
+        "question": "I'm vegetarian/vegan?",
+        "answer": "Absolutely! Our counter offers many vegetables, mushrooms, tofu and noodles. You can build a 100% plant-based bowl. Ask us for details about our broths."
+      },
+      "hours": {
+        "question": "What are your opening hours?",
+        "answer": "We are open every day, Monday to Sunday, from 11:30 AM to 10:00 PM."
+      },
+      "delivery": {
+        "question": "Do you deliver? What is the delivery area?",
+        "answer": "For now, orders are takeaway only, from our restaurant at Rue de la Cathédrale 51, Liège. Delivery is coming soon!"
+      },
+      "payment": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept secure online payment (bank card, Bancontact) and cash on delivery or pickup."
+      },
+      "allergens": {
+        "question": "Do you have allergen information?",
+        "answer": "Our dishes may contain <strong>sesame</strong>, <strong>peanuts</strong>, <strong>gluten</strong>, <strong>soy</strong> and <strong>shellfish</strong>. Please mention any allergy in your order comments or contact us directly for detailed information."
+      }
+    }
+  },
+  "contact": {
+    "address": "Rue de la Cathédrale 51, Liège, Belgium",
+    "closedTuesday": "Open 7 days a week"
+  },
+  "menu": {
+    "allergenNoticeLink": "04 286 68 20"
+  },
+  "orderCompleted": {
+    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 286 68 20.",
+    "restaurantPhone": "04 286 68 20"
+  },
+  "composer": {
+    "eyebrow": "Build your bowl",
+    "title": "Your custom bowl",
+    "heroSubtitle": "Pick your broth, fill your bowl ingredient by ingredient, set the heat. Cooked to order, just for you.",
+    "open": "Build my bowl",
+    "stepOf": "Step {n}/{total}",
+    "chosen": "Chosen",
+    "selectedCount": "{count}/{max} selected",
+    "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients"
+  },
+  "nav": {
+    "primary": "Main navigation",
+    "secondary": "Footer links",
+    "callRestaurant": "Call the restaurant"
+  },
+  "common": {
+    "clear": "Clear"
+  }
+}
