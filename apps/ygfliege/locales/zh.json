@@ -198,6 +198,7 @@
       }
     },
     "menu": {
+      "categoriesNav": "分类",
       "title": "菜单",
       "subtitle": "随心搭配：新鲜食材，按克计价。",
       "meta_desc": "杨国福麻辣烫列日店菜单：五种汤底，数十种新鲜食材，3.49€/100克，称重计价。",
@@ -433,7 +434,7 @@
     "title": "您的专属碗",
     "heroSubtitle": "选择汤底，逐一挑选食材，调节辣度。现煮现做，只为您一人。",
     "open": "开始自选",
-    "step": "第 {n} 步",
+    "stepOf": "第 {n}/{total} 步",
     "chosen": "已选",
     "selectedCount": "已选 {count}/{max}",
     "ingredientsSummary": "{count} 种食材"

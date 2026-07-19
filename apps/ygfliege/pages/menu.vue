@@ -56,6 +56,29 @@
                         </button>
                     </div>
                 </section>
+
+                <!-- Mobile-only category jump-nav. On desktop 3–4 sections fit
+                     per screen and scanning beats chrome; at 375px the page is
+                     ~10k px tall and needs a way to jump. -->
+                <nav
+                    v-if="displayedCategories.length > 1"
+                    :aria-label="$t('menu.categoriesNav')"
+                    class="sm:hidden max-w-7xl mx-auto px-4 pb-3"
+                >
+                    <div ref="chipRowRef" class="flex gap-2 overflow-x-auto no-scrollbar">
+                        <button
+                            v-for="cat in displayedCategories"
+                            :key="cat.id"
+                            type="button"
+                            translate="no"
+                            class="chip shrink-0"
+                            :class="{ 'chip-selected': activeCategoryId === cat.id }"
+                            :aria-current="activeCategoryId === cat.id ? 'true' : undefined"
+                            :data-chip-category="cat.id"
+                            @click="scrollToCategory(cat.id)"
+                        >{{ cat.name }}</button>
+                    </div>
+                </nav>
             </section>
 
             <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
@@ -122,7 +145,7 @@
                     v-for="cat in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
-                    class="space-y-4"
+                    class="space-y-4 scroll-mt-52 sm:scroll-mt-36"
                 >
                     <!-- Category heading. The 「 」 brackets that used to frame
                          this were Tokyo Sushi's Japanese motif — wrong for a
@@ -424,16 +447,26 @@ const filteredProducts = computed(() => {
     })
 })
 
-// Categories displayed, grouping search-filtered products
+// Categories displayed, grouping search-filtered products. Composer products
+// are excluded from the grid: the hero banner is their single entry point, and
+// a card would show the bare base price (2,50 €) as if it were the full price.
 const displayedCategories = computed<ProductCategory[]>(() => {
     const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q) return baseCategories.value
-    const grouped = Map.groupBy(filteredProducts.value, prod => prod.category.id)
+    if (!q) {
+        return baseCategories.value
+            .map(cat => ({ ...cat, products: cat.products.filter(p => !isComposerProduct(p)) }))
+            .filter(cat => cat.products.length)
+    }
+    const grouped = Map.groupBy(filteredProducts.value.filter(p => !isComposerProduct(p)), prod => prod.category.id)
     return Array.from(grouped.entries()).map(([, products]) => ({
         ...products[0]!.category,
         products,
     })).toSorted((a, b) => a.order - b.order)
 })
+
+// Mobile category chip nav (scrollspy + jump); ids follow search filtering.
+const categorySectionIds = computed(() => displayedCategories.value.map(cat => cat.id))
+const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(categorySectionIds)
 
 /**
  * Watchers

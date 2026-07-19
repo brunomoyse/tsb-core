@@ -198,6 +198,7 @@
       }
     },
     "menu": {
+      "categoriesNav": "Categorieën",
       "title": "Ons menu",
       "subtitle": "Stel je kom samen naar smaak: verse ingrediënten, per gewicht.",
       "meta_desc": "Yangguofu Malatang Luik menu: vijf bouillons en tientallen verse ingrediënten voor 3,49 €/100 g. Per gewicht, transparant.",
@@ -433,7 +434,7 @@
     "title": "Jouw bowl op maat",
     "heroSubtitle": "Kies je bouillon, vul je kom ingrediënt per ingrediënt, bepaal de pittigheid. Vers bereid, speciaal voor jou.",
     "open": "Mijn bowl samenstellen",
-    "step": "Stap {n}",
+    "stepOf": "Stap {n}/{total}",
     "chosen": "Gekozen",
     "selectedCount": "{count}/{max} gekozen",
     "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten"

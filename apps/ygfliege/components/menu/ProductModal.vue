@@ -112,7 +112,7 @@
             >
                 <div class="flex items-baseline justify-between gap-4 flex-wrap">
                     <div>
-                        <span v-if="choiceGroups.length > 1" class="section-label">{{ $t('composer.step', { n: index + 1 }) }}</span>
+                        <span v-if="choiceGroups.length > 1" class="section-label">{{ $t('composer.stepOf', { n: index + 1, total: choiceGroups.length }) }}</span>
                         <h3 :id="`product-modal-group-${group.id}`" translate="no" class="section-title text-lg">
                             {{ group.name }}
                         </h3>

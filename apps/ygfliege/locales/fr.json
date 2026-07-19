@@ -198,6 +198,7 @@
       }
     },
     "menu": {
+      "categoriesNav": "Catégories",
       "title": "Notre menu",
       "subtitle": "Composez votre bol comme vous l'aimez : des produits frais, pesés au gramme près.",
       "meta_desc": "Le menu Yangguofu Malatang Liège : cinq bouillons et des dizaines de produits frais à 3,49 €/100 g. Au poids, en toute transparence.",
@@ -433,7 +434,7 @@
     "title": "Votre bol sur mesure",
     "heroSubtitle": "Choisissez votre bouillon, remplissez votre bol ingrédient par ingrédient, réglez le piquant. Cuit minute, rien que pour vous.",
     "open": "Composer mon bol",
-    "step": "Étape {n}",
+    "stepOf": "Étape {n}/{total}",
     "chosen": "Choisi",
     "selectedCount": "{count}/{max} sélectionnés",
     "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"

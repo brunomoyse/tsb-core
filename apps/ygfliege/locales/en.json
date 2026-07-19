@@ -198,6 +198,7 @@
       }
     },
     "menu": {
+      "categoriesNav": "Categories",
       "title": "Our menu",
       "subtitle": "Build your bowl to your taste: fresh ingredients, priced by weight.",
       "meta_desc": "Yangguofu Malatang Liège menu: five broths and dozens of fresh ingredients at €3.49/100 g. By weight, transparent.",
@@ -433,7 +434,7 @@
     "title": "Your custom bowl",
     "heroSubtitle": "Pick your broth, fill your bowl ingredient by ingredient, set the heat. Cooked to order, just for you.",
     "open": "Build my bowl",
-    "step": "Step {n}",
+    "stepOf": "Step {n}/{total}",
     "chosen": "Chosen",
     "selectedCount": "{count}/{max} selected",
     "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients"

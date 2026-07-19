@@ -39,7 +39,7 @@
             >
                 <div class="flex items-baseline justify-between gap-4 flex-wrap">
                     <div>
-                        <span class="section-label">{{ $t('composer.step', { n: index + 1 }) }}</span>
+                        <span class="section-label">{{ $t('composer.stepOf', { n: index + 1, total: choiceGroups.length }) }}</span>
                         <h3 :id="`bowl-composer-group-${group.id}`" class="section-title text-lg sm:text-xl">
                             {{ group.name }}
                         </h3>
@@ -103,7 +103,9 @@
                     @click="addToCart"
                 >
                     <span>{{ $t('menu.addToCart') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
+                    <!-- Price only once the bowl is valid: before that, lineTotal
+                         is just the 2,50 € base and reads as the full price. -->
+                    <span v-if="canAddToCart" class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
                 </button>
             </div>
         </footer>
