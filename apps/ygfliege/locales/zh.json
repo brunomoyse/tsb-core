@@ -405,7 +405,7 @@
       },
       "delivery": {
         "question": "你们提供外送吗？配送范围是？",
-        "answer": "提供 — 您可以从我们位于列日 Rue de la Cathédrale 51 的餐厅下单外送或自取。配送费按距离计算，结账时自动显示。"
+        "answer": "目前仅支持自取，取餐地址为列日 Rue de la Cathédrale 51。外送服务即将上线！"
       },
       "payment": {
         "question": "你们接受哪些支付方式？",

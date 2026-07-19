@@ -226,6 +226,7 @@
     }
   },
   "delivery": {
+    "comingSoon": "Binnenkort beschikbaar",
     "chip": {
       "verify": "Zone controleren",
       "verifyCompact": "Zone",

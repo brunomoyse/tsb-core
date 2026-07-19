@@ -6,14 +6,19 @@
                 type="button"
                 role="radio"
                 :aria-checked="cartStore.collectionOption === 'DELIVERY'"
+                :disabled="!deliveryEnabled"
                 @click="setMode('DELIVERY')"
                 :class="[
-                    'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-                    cartStore.collectionOption === 'DELIVERY' ? 'bg-ygf-white text-ygf-black shadow-sm' : 'text-ygf-gray-400 hover:text-ygf-gray-600'
+                    'flex-1 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
+                    !deliveryEnabled ? 'text-ygf-gray-400 cursor-not-allowed opacity-70'
+                        : cartStore.collectionOption === 'DELIVERY' ? 'bg-ygf-white text-ygf-black shadow-sm' : 'text-ygf-gray-400 hover:text-ygf-gray-600'
                 ]"
             >
                 <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
                 {{ $t('delivery.modal.deliveryTab') }}
+                <span v-if="!deliveryEnabled" class="basis-full text-center text-[11px] font-normal text-ygf-orange-text">
+                    {{ $t('delivery.comingSoon') }}
+                </span>
             </button>
             <button
                 type="button"
@@ -185,8 +190,10 @@ const canConfirm = computed(() => {
 
 const { brand } = useAppConfig()
 const restaurantAddress = `${brand.address.street}\n${brand.address.postal} ${brand.address.city}`
+const deliveryEnabled = brand.deliveryEnabled !== false
 
 const setMode = (mode: 'DELIVERY' | 'PICKUP') => {
+    if (mode === 'DELIVERY' && !deliveryEnabled) return
     if (cartStore.collectionOption === mode) return
     trackEvent('collection_option_changed', { option: mode, source: 'delivery_zone_picker' })
     cartStore.collectionOption = mode

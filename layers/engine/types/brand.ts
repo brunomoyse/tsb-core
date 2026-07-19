@@ -55,6 +55,12 @@ export interface BrandConfig {
     /** schema.org priceRange value, e.g. "€€". */
     priceRange: string
     /**
+     * Whether home delivery is offered. Defaults to true when omitted. Set
+     * false for a takeaway-only launch: the brand's UI disables the delivery
+     * toggles ("available soon") and the cart is kept on PICKUP.
+     */
+    deliveryEnabled?: boolean
+    /**
      * Real, publicly verifiable review aggregate. Omit entirely for a brand
      * with no reviews yet — schema.org then drops aggregateRating rather than
      * publishing invented numbers, which would be fabricated review data in

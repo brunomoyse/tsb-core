@@ -15,14 +15,19 @@
                 :aria-checked="cartStore.collectionOption === option.value"
                 :tabindex="cartStore.collectionOption === option.value ? 0 : -1"
                 :data-testid="option.value === 'DELIVERY' ? 'checkout-option-delivery' : 'checkout-option-pickup'"
+                :disabled="option.disabled"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
-          'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md text-left focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
-          cartStore.collectionOption === option.value ? 'border-ygf-orange bg-ygf-orange-bg' : 'border-subtle bg-ygf-white'
+          'flex-1 border rounded-lg p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ygf-orange-300 focus:outline-none',
+          option.disabled ? 'cursor-not-allowed border-subtle bg-ygf-gray-100 opacity-60'
+              : cartStore.collectionOption === option.value ? 'cursor-pointer hover:shadow-md border-ygf-orange bg-ygf-orange-bg' : 'cursor-pointer hover:shadow-md border-subtle bg-ygf-white'
         ]"
             >
-                <img :src="option.icon" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
+                <img :src="option.icon" alt="" aria-hidden="true" class="w-10 h-10 mb-2" :class="option.disabled ? 'grayscale' : ''" />
                 <span class="font-semibold">{{ option.label }}</span>
+                <span v-if="option.disabled" class="mt-1 text-xs font-medium text-ygf-orange-text">
+                    {{ $t('delivery.comingSoon') }}
+                </span>
             </button>
         </div>
 
@@ -162,12 +167,15 @@ const { trackEvent } = useTracking()
 // Use backend ordering status when available
 const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
-// Delivery/Pickup options
+// Delivery/Pickup options. Takeaway-only launch: delivery stays visible but
+// disabled ("available soon") while brand.deliveryEnabled is false.
+const deliveryEnabled = useAppConfig().brand.deliveryEnabled !== false
 const collectionOptions = [
-    { value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg' },
-    { value: 'PICKUP',   label: t('cart.pickup'),   icon: '/icons/shopping-bag-icon.svg' }
+    { value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled },
+    { value: 'PICKUP',   label: t('cart.pickup'),   icon: '/icons/shopping-bag-icon.svg', disabled: false }
 ]
 const setDeliveryOption = (v: 'DELIVERY' | 'PICKUP') => {
+    if (v === 'DELIVERY' && !deliveryEnabled) return
     trackEvent('collection_option_changed', { option: v })
     cartStore.collectionOption = v
 }

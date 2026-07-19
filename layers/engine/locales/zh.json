@@ -234,6 +234,7 @@
     }
   },
   "delivery": {
+    "comingSoon": "即将上线",
     "chip": {
       "verify": "检查配送区域",
       "verifyCompact": "区域",

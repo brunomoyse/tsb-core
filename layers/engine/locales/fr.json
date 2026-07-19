@@ -234,6 +234,7 @@
     }
   },
   "delivery": {
+    "comingSoon": "Bientôt disponible",
     "chip": {
       "verify": "Vérifier la zone",
       "verifyCompact": "Vérifier",

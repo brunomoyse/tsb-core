@@ -44,6 +44,10 @@ export const brand: BrandConfig = {
     // Brand founded 2003 in Harbin by Yang Guofu; Liège franchise opened 2026.
     foundingYear: 2003,
     cuisine: 'Chinese',
+    // Takeaway-only at launch: delivery toggles show "available soon" and the
+    // cart is forced to PICKUP (plugins/pickup-only.ts). Flip to true (or
+    // remove) when delivery starts.
+    deliveryEnabled: false,
     menuDescription: 'Our menu of malatang bowls, signature herbal broths, noodles and starters',
     priceRange: '€€',
     /*

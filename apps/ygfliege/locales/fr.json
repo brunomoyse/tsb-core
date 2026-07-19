@@ -405,7 +405,7 @@
       },
       "delivery": {
         "question": "Livrez-vous ? Quelle est la zone de livraison ?",
-        "answer": "Oui — vous pouvez commander en livraison ou à emporter depuis notre restaurant Rue de la Cathédrale 51 à Liège. Les frais de livraison dépendent de la distance et sont calculés automatiquement lors du passage de commande."
+        "answer": "Pour le moment, les commandes sont à emporter uniquement, depuis notre restaurant Rue de la Cathédrale 51 à Liège. La livraison arrive bientôt !"
       },
       "payment": {
         "question": "Quels modes de paiement acceptez-vous ?",

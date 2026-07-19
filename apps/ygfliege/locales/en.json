@@ -405,7 +405,7 @@
       },
       "delivery": {
         "question": "Do you deliver? What is the delivery area?",
-        "answer": "Yes — you can order for delivery or pickup from our restaurant at Rue de la Cathédrale 51, Liège. Delivery fees depend on distance and are calculated automatically at checkout."
+        "answer": "For now, orders are takeaway only, from our restaurant at Rue de la Cathédrale 51, Liège. Delivery is coming soon!"
       },
       "payment": {
         "question": "What payment methods do you accept?",

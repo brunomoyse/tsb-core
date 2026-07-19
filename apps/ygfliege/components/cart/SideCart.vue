@@ -21,8 +21,12 @@
             <div class="flex gap-1 rounded-[var(--radius-btn)] bg-ygf-white border border-ygf-gray-200 p-1">
                 <button v-for="option in collectionOptions" :key="option.value"
                         :data-testid="option.value === 'DELIVERY' ? 'cart-option-delivery' : 'cart-option-pickup'"
+                        :disabled="option.disabled"
+                        :title="option.disabled ? `${option.label} — ${$t('delivery.comingSoon')}` : option.label"
+                        :aria-label="option.disabled ? `${option.label} — ${$t('delivery.comingSoon')}` : option.label"
                         :class="[
           'chip text-sm transition-all',
+          option.disabled ? 'opacity-40 cursor-not-allowed' : '',
           cartStore.collectionOption === option.value
             ? 'chip-selected'
             : ''
@@ -193,7 +197,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { onUnmounted, ref, useAppConfig, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -274,13 +278,16 @@ onUnmounted(() => {
     if (highlightTimeout) clearTimeout(highlightTimeout)
 })
 
-// Delivery options setup
+// Delivery options setup. Takeaway-only launch: delivery stays visible but
+// disabled ("available soon") while brand.deliveryEnabled is false.
+const deliveryEnabled = useAppConfig().brand.deliveryEnabled !== false
 const collectionOptions = [
-    {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg'},
-    {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg'}
+    {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled},
+    {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg', disabled: false}
 ];
 
 const handleOrderType = (option: string) => {
+    if (option === 'DELIVERY' && !deliveryEnabled) return
     const from = cartStore.collectionOption
     cartStore.collectionOption = option as 'DELIVERY' | 'PICKUP';
     trackEvent('cart_collection_option_changed', { from, to: option })
