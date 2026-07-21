@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@nuxtjs/sitemap": "^8.0.15",
+    "@nuxtjs/sitemap": "^8.3.0",
     "@pinia/nuxt": "^1.0.1",
     "@sentry/nuxt": "^10.67.0",
     "@vueuse/core": "^14.3.0",
