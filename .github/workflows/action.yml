@@ -117,12 +117,13 @@ jobs:
 
 # ── ygfliege (second brand) ──────────────────────────────────────────────────
 # Dormant until the YGF_* repo/environment vars are created (no-op otherwise).
-# Test image on push to main; production image on `ygf-v*` tags. No deploy jobs
-# yet — YGF infra (Helm release, DNS cutover) is provisioned separately.
+# Test image on push to main; production image on `ygf-v*` tags.
+# The test image is multi-arch: the home server (asahi) is arm64, so an
+# amd64-only image would not start there.
 
-  build_ygfliege:
+  build_ygfliege_amd64:
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
-    name: Build ygfliege Image
+    name: Build ygfliege AMD64 Image
     runs-on: ubuntu-latest
 
     steps:
@@ -135,12 +136,12 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      - name: Build and Push ygfliege Image
+      - name: Build and Push ygfliege AMD64 Image
         run: |
           docker buildx build . \
             --file apps/ygfliege/Dockerfile \
             --platform linux/amd64 \
-            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest-amd64 \
             --build-arg BASE_URL=${{ vars.YGF_BASE_URL }} \
             --build-arg API_BASE_URL=${{ vars.YGF_API_BASE_URL }} \
             --build-arg S3_BUCKET_URL=${{ vars.YGF_S3_BUCKET_URL }} \
@@ -149,7 +150,70 @@ jobs:
             --build-arg ZITADEL_CLIENT_ID=${{ vars.YGF_ZITADEL_CLIENT_ID }} \
             --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.YGF_TURNSTILE_SITE_KEY }} \
             --push
+
+  build_ygfliege_arm64:
+    if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
+    name: Build ygfliege ARM64 Image
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push ygfliege ARM64 Image
+        run: |
+          docker buildx build . \
+            --file apps/ygfliege/Dockerfile \
+            --platform linux/arm64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest-arm64 \
+            --build-arg BASE_URL=${{ vars.YGF_BASE_URL }} \
+            --build-arg API_BASE_URL=${{ vars.YGF_API_BASE_URL }} \
+            --build-arg S3_BUCKET_URL=${{ vars.YGF_S3_BUCKET_URL }} \
+            --build-arg GRAPHQL_WS_URL=${{ vars.YGF_GRAPHQL_WS_URL }} \
+            --build-arg ZITADEL_AUTHORITY=${{ vars.YGF_ZITADEL_AUTHORITY }} \
+            --build-arg ZITADEL_CLIENT_ID=${{ vars.YGF_ZITADEL_CLIENT_ID }} \
+            --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
+            --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.YGF_TURNSTILE_SITE_KEY }} \
+            --push
+
+  create_manifest_ygfliege:
+    if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
+    name: Create ygfliege Multi-Architecture Manifest
+    runs-on: ubuntu-latest
+    needs: [build_ygfliege_amd64, build_ygfliege_arm64]
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Create and Push Manifest
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest \
+            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest-amd64 \
+            ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege:latest-arm64
+
+  deploy_test_ygfliege:
+    if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
+    needs: create_manifest_ygfliege
+    name: Deploy ygfliege to Home Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger deploy webhook
+        run: |
+          curl -X POST ${{ vars.YGF_DEPLOY_WEBHOOK_URL }} \
+            -H "X-Deploy-Token: ${{ secrets.YGF_DEPLOY_TOKEN }}" \
+            --fail --max-time 300
 
   build_production_ygfliege:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ygf-v')
@@ -182,6 +246,7 @@ jobs:
             --build-arg ZITADEL_CLIENT_ID=${{ vars.YGF_ZITADEL_CLIENT_ID }} \
             --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
+            --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.YGF_TURNSTILE_SITE_KEY }} \
             --build-arg SENTRY_DSN=${{ vars.YGF_SENTRY_DSN }} \
             --build-arg SENTRY_ENVIRONMENT=production \
             --build-arg SENTRY_RELEASE=${{ github.ref_name }} \
