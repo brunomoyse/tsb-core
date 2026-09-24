@@ -1,7 +1,7 @@
 # Build context = monorepo root (…/tsb-core), NOT this app dir, so the shared
 # engine layer (layers/engine) is available to the build. In CI:
 #   docker buildx build . --file apps/tokyosushi/Dockerfile ...
-FROM node:24.18-slim AS builder
+FROM node:24.21-slim AS builder
 
 WORKDIR /usr/src/app
 
@@ -57,7 +57,7 @@ COPY apps/tokyosushi ./apps/tokyosushi
 RUN npm run build -w tokyosushi
 
 # ---------- Runtime ----------
-FROM node:24.18-alpine3.23
+FROM node:24.21-alpine3.24
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 

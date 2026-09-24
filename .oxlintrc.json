@@ -29,7 +29,8 @@
     "init-declarations": "off",
     "no-continue": "off",
     "no-await-in-loop": "off",
-    "unicorn/no-nested-ternary": "off"
+    "unicorn/no-nested-ternary": "off",
+    "one-var": "off"
   },
   "env": {
     "browser": true
