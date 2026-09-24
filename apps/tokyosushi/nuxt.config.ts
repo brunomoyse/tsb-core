@@ -85,11 +85,11 @@ export default defineNuxtConfig({
      * is the CI-only source-map upload token.
      */
     sentry: {
-        sourceMapsUploadOptions: {
-            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN),
-            org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
-            project: process.env.SENTRY_PROJECT || 'tsb-core',
-            authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
+        project: process.env.SENTRY_PROJECT || 'tsb-core',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        sourcemaps: {
+            disable: !process.env.SENTRY_AUTH_TOKEN,
         },
     },
 

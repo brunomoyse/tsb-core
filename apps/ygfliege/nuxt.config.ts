@@ -86,11 +86,11 @@ export default defineNuxtConfig({
      * org/project defaults here.
      */
     sentry: {
-        sourceMapsUploadOptions: {
-            enabled: Boolean(process.env.SENTRY_AUTH_TOKEN),
-            org: process.env.SENTRY_ORG || 'yangguofu-malatang-liege',
-            project: process.env.SENTRY_PROJECT || 'ygfliege-core',
-            authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG || 'yangguofu-malatang-liege',
+        project: process.env.SENTRY_PROJECT || 'ygfliege-core',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        sourcemaps: {
+            disable: !process.env.SENTRY_AUTH_TOKEN,
         },
     },
 
