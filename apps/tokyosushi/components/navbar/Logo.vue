@@ -3,7 +3,7 @@
         <NuxtLinkLocale
             :to="to"
             :aria-label="ariaLabel || alt"
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
         >
             <!-- Container with overflow-visible -->
             <div

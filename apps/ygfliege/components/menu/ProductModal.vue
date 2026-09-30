@@ -78,15 +78,15 @@
                     <!-- Dietary badges -->
                     <div v-if="p.isHalal || p.isVegetarian || p.isSpicy || p.isLunchOnly || p.isDiscountable" class="flex gap-2 flex-wrap">
                         <span v-if="p.isHalal" class="chip chip-static !bg-blue-50 !border-blue-200 !text-blue-800">
-                            <img src="https://api.iconify.design/hugeicons/halal.svg?color=%231e40af" alt="" aria-hidden="true" class="w-3.5 h-3.5" />
+                            <DietIcon kind="halal" class="w-3.5 h-3.5" />
                             {{ $t('menu.halal') }}
                         </span>
                         <span v-if="p.isVegetarian" class="chip chip-static !bg-emerald-50 !border-emerald-200 !text-emerald-800">
-                            <img src="https://api.iconify.design/hugeicons/leaf-01.svg?color=%23065f46" alt="" aria-hidden="true" class="w-3.5 h-3.5" />
+                            <DietIcon kind="vegetarian" class="w-3.5 h-3.5" />
                             {{ $t('menu.vegetarian') }}
                         </span>
                         <span v-if="p.isSpicy" class="chip chip-static !bg-ygf-orange-50 !border-ygf-orange-200 !text-ygf-orange-800">
-                            <img src="https://api.iconify.design/hugeicons/fire-02.svg?color=%239a3412" alt="" aria-hidden="true" class="w-3.5 h-3.5" />
+                            <DietIcon kind="spicy" class="w-3.5 h-3.5" />
                             {{ $t('menu.spicy') }}
                         </span>
                         <span v-if="p.isLunchOnly" class="chip chip-static !bg-ygf-orange-50 !border-ygf-orange-200 !text-ygf-orange-800">
@@ -176,7 +176,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'

@@ -21,6 +21,8 @@ html {
     --primary-hover: 0 73.7% 41.8%;      /* red-700 */
     --primary-soft: 0 100% 96.9%;        /* tsb-four */
     --ring: 0 93.5% 81.8%;               /* red-300 */
+    /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
+    --side-rail-width: 142px;
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 100%;
 

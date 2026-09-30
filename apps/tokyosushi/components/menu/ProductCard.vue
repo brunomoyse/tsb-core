@@ -5,7 +5,7 @@
              data-testid="product-card"
              :data-product-id="product.id"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
@@ -15,7 +15,7 @@
                     <DietBadge v-if="product.isSpicy" kind="spicy" />
                 </div>
                 <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
-                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-tsb-four text-red-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
+                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-tsb-four text-primary-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
                 <!-- Shimmer placeholder -->
@@ -43,7 +43,7 @@
             <div class="shrink-0 px-2 pb-1">
                 <!-- Text block: fixed height so price always aligns across cards -->
                 <div class="min-h-[76px] flex flex-col items-center">
-                    <span translate="no" class="text-gray-600 font-medium text-xs mb-0.5 truncate">
+                    <span translate="no" class="text-neutral-600 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
                     <!-- The name is the keyboard-reachable way into the details modal. -->
@@ -58,7 +58,7 @@
                     >
                       {{ product.name }}
                     </button>
-                    <span class="text-gray-600 text-xs text-center">
+                    <span class="text-neutral-600 text-xs text-center">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
                         {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ forcedChoiceGroupLabel(group) }}
@@ -74,14 +74,14 @@
                         </span>
                         <div>
                             <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
-                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-400 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="orderingDisabled"
                                     @click="addToCart">
                                 <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
                             <button v-else
-                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-red-700 font-semibold border border-red-200 hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 cursor-pointer"
+                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 cursor-pointer"
                                  type="button"
                                  :aria-label="`${$t('nav.cart')}: ${cardQuantity}`"
                                  :class="{ 'animate-number-bounce': isQuantityBouncing }"
@@ -100,7 +100,7 @@
                         @increment="increment"
                     />
                 </div>
-                <div v-else class="flex justify-center text-sm text-gray-600 mt-1">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="flex justify-center text-sm text-neutral-600 mt-1">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>

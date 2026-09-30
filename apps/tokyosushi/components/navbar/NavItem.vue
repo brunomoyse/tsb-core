@@ -11,7 +11,7 @@
             <!-- Container with dynamic colors based on active route -->
             <div :class="[
                 'relative group w-[50px] h-[50px] flex items-center justify-center rounded-full hover:shadow-md transition-all duration-300 ease-out overflow-visible',
-                isActive ? 'bg-tsb-four text-primary-hover' : 'bg-white text-gray-900',
+                isActive ? 'bg-tsb-four text-primary-hover' : 'bg-white text-neutral-900',
             ]">
                 <NavIcon :src="icon" class="h-6 w-6" />
 

@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-center px-4 pt-6 sm:pt-10 pb-12">
         <div class="w-full max-w-md">
-            <div class="relative bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="card relative">
                 <div class="absolute top-2 right-2 z-10">
                     <LanguagePicker />
                 </div>
@@ -35,7 +35,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta } from '#imports'
-import AuthFlow from '~/components/auth/AuthFlow.vue'
+import AuthFlow from '#engine/components/auth/AuthFlow.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { useI18n } from 'vue-i18n'
 

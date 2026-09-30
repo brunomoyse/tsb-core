@@ -1,4 +1,5 @@
 import animate from 'tailwindcss-animate'
+import colors from 'tailwindcss/colors'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -34,14 +35,20 @@ module.exports = {
                 ring: "hsl(var(--ring) / <alpha-value>)",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
-                // Brand accent. Values live in assets/css/brand.css so each
-                // brand app sets its own; use these instead of red-* literals.
+                // Theme contract shared with every brand app (the engine layer's
+                // components only use these names, never a literal hue):
+                //   primary-50..900  brand accent scale (red here)
+                //   neutral-50..900  text/surface/border neutrals (gray here)
+                //   tsb-one..four    page, container, decorative, selected
+                // red-* stays reserved for errors and destructive actions.
                 primary: {
+                    ...colors.red,
                     DEFAULT: "hsl(var(--primary) / <alpha-value>)",
                     foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
                     hover: "hsl(var(--primary-hover) / <alpha-value>)",
                     soft: "hsl(var(--primary-soft) / <alpha-value>)",
                 },
+                neutral: colors.gray,
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
                     foreground: "hsl(var(--secondary-foreground))",

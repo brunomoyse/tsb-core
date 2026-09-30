@@ -1,0 +1,118 @@
+<template>
+    <div class="mb-6">
+        <h3 class="font-medium mb-2">
+            {{ $t('coupon.title') }}
+        </h3>
+
+        <!-- Applied state -->
+        <div v-if="cartStore.couponCode" data-testid="coupon-applied" class="flex items-center justify-between p-3 border border-primary-200 bg-tsb-four rounded-lg">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm text-primary-700 font-medium">
+                    {{ $t('coupon.applied', { discount: formatPrice(cartStore.couponDiscount) }) }}
+                </span>
+            </div>
+            <button
+                type="button"
+                data-testid="coupon-remove"
+                class="min-h-11 inline-flex items-center text-sm text-primary-600 hover:text-primary-700 font-medium underline underline-offset-2 decoration-primary-300 hover:decoration-primary-500"
+                @click="removeCoupon"
+            >
+                {{ $t('coupon.remove') }}
+            </button>
+        </div>
+
+        <!-- Input state -->
+        <div v-else>
+            <div class="flex gap-2">
+                <input
+                    v-model="couponInput"
+                    type="text"
+                    data-testid="coupon-input"
+                    :aria-label="$t('coupon.title')"
+                    class="field flex-1 text-sm disabled:opacity-50"
+                    :placeholder="$t('coupon.placeholder')"
+                    :disabled="isValidating"
+                    @keyup.enter="applyCoupon"
+                />
+                <UiButton
+                    data-testid="coupon-apply"
+                    :disabled="!couponInput.trim()"
+                    :loading="isValidating"
+                    @click="applyCoupon"
+                >
+                    {{ $t('coupon.apply') }}
+                </UiButton>
+            </div>
+            <p v-if="errorMessage" role="alert" data-testid="coupon-error" class="text-sm text-red-600 mt-1">
+                {{ errorMessage }}
+            </p>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import type { CouponValidation } from '#engine/types'
+import { formatPrice } from '#engine/lib/price'
+import gql from 'graphql-tag'
+import { ref } from 'vue'
+import { useCartStore } from '#engine/stores/cart'
+import { useGqlMutation } from '#imports'
+import { useI18n } from 'vue-i18n'
+
+
+
+const cartStore = useCartStore()
+const { t } = useI18n()
+
+const couponInput = ref('')
+const errorMessage = ref('')
+const isValidating = ref(false)
+
+const VALIDATE_COUPON = gql`
+    query ValidateCoupon($code: String!, $orderAmount: String!) {
+        validateCoupon(code: $code, orderAmount: $orderAmount) {
+            valid
+            discountAmount
+            errorMessage
+        }
+    }
+`
+
+const { mutate: validateCoupon } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
+
+const applyCoupon = async () => {
+    const code = couponInput.value.trim()
+    if (!code) return
+
+    isValidating.value = true
+    errorMessage.value = ''
+
+    try {
+        const orderAmount = cartStore.totalPrice.toFixed(2)
+        const res = await validateCoupon({ code, orderAmount })
+        const validation = res.validateCoupon
+
+        if (validation.valid) {
+            cartStore.couponCode = code
+            cartStore.couponDiscount = Number(validation.discountAmount)
+            couponInput.value = ''
+        } else {
+            errorMessage.value = validation.errorMessage || t('coupon.invalid')
+        }
+    } catch {
+        errorMessage.value = t('coupon.invalid')
+    } finally {
+        isValidating.value = false
+    }
+}
+
+const removeCoupon = () => {
+    cartStore.couponCode = null
+    cartStore.couponDiscount = 0
+    couponInput.value = ''
+    errorMessage.value = ''
+}
+</script>

@@ -1,5 +1,5 @@
 <template>
-    <nav class="sm:hidden bg-white text-gray-700 fixed z-50 h-20 w-full">
+    <nav class="sm:hidden bg-white text-neutral-700 fixed z-50 h-20 w-full">
         <div class="relative px-4 flex items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center shrink-0">
@@ -36,7 +36,7 @@
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >
@@ -71,7 +71,7 @@
                             </ClientOnly>
 
                             <!-- Divider -->
-                            <li class="w-full border-t border-gray-300/60 my-2"></li>
+                            <li class="w-full border-t border-neutral-300/60 my-2"></li>
 
                             <!-- Phone (tap-to-call) -->
                             <li>
@@ -96,8 +96,8 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, ref, watch } from '#imports'
-import CartButton from '~/components/cart/CartButton.vue'
-const DeliveryZoneChip = defineAsyncComponent(() => import('~/components/delivery/DeliveryZoneChip.vue'))
+import CartButton from '#engine/components/cart/CartButton.vue'
+const DeliveryZoneChip = defineAsyncComponent(() => import('#engine/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
 import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'

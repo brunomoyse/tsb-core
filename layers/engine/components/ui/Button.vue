@@ -9,11 +9,10 @@
         :tabindex="tag !== 'button' && inactive ? -1 : undefined"
         :aria-busy="loading || undefined"
         :class="[
-            'inline-flex items-center justify-center gap-2 rounded-xl text-center font-semibold select-none transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            SIZES[size],
+            'btn focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             VARIANTS[variant],
+            SIZES[size],
             block ? 'w-full' : '',
-            inactive ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.97]',
             inactive && tag !== 'button' ? 'pointer-events-none' : '',
         ]"
     >
@@ -29,21 +28,22 @@
 import { computed, resolveComponent } from 'vue'
 
 /*
- * The one call-to-action button. Colors come from the brand tokens
- * (--primary, --primary-hover, --primary-soft, --ring in the app's brand.css),
- * so each brand app inherits its own accent. Renders a locale-aware link when
- * `to` is set, a plain anchor when `href` is set, a <button> otherwise.
+ * The one call-to-action button. It only emits the `.btn` vocabulary; each
+ * brand app styles those classes (shape, size, accent) in its own CSS, so
+ * the same markup renders as that brand's button. Renders a locale-aware
+ * link when `to` is set, a plain anchor when `href` is set, a <button>
+ * otherwise.
  */
 const SIZES = {
-    sm: 'min-h-9 px-3 text-xs',
-    md: 'min-h-11 px-5 py-2 text-sm',
-    lg: 'min-h-12 px-6 py-3 text-sm',
+    sm: 'btn-sm',
+    md: '',
+    lg: 'btn-lg',
 } as const
 
 const VARIANTS = {
-    primary: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover',
-    secondary: 'border border-gray-200 bg-white text-gray-700 hover:bg-primary-soft/40',
-    ghost: 'text-gray-700 hover:bg-gray-100',
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
 } as const
 
 const {

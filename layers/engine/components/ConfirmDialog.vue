@@ -14,8 +14,8 @@
                     class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
                     @keydown.esc.stop="emit('cancel')"
                 >
-                    <h2 :id="titleId" class="text-center text-lg font-semibold text-gray-900">{{ title }}</h2>
-                    <p v-if="message" class="mt-2 text-center text-sm text-gray-600">{{ message }}</p>
+                    <h2 :id="titleId" class="text-center text-lg font-semibold text-neutral-900">{{ title }}</h2>
+                    <p v-if="message" class="mt-2 text-center text-sm text-neutral-600">{{ message }}</p>
                     <div class="mt-6 flex gap-3">
                         <UiButton variant="secondary" class="flex-1" @click="emit('cancel')">
                             {{ cancelLabel || $t('common.cancel') }}

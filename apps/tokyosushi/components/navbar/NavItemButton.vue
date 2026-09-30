@@ -6,7 +6,7 @@
             :aria-label="tooltipText"
             @click="$emit('click')"
         >
-            <div class="relative group w-[50px] h-[50px] flex items-center justify-center rounded-full bg-white text-gray-900 hover:shadow-md transition-shadow overflow-visible">
+            <div class="relative group w-[50px] h-[50px] flex items-center justify-center rounded-full bg-white text-neutral-900 hover:shadow-md transition-shadow overflow-visible">
                 <NavIcon :src="icon" class="h-6 w-6" />
 
                 <!-- Badge -->
