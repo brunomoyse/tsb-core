@@ -212,12 +212,9 @@
             </div>
             <p class="text-lg font-semibold text-neutral-800 mb-1">{{ $t('cart.empty') }}</p>
             <p class="text-sm text-neutral-400 text-center mb-6">{{ $t('cart.emptyHint', 'Browse the menu to add your favorites') }}</p>
-            <NuxtLinkLocale
-                to="/menu"
-                class="inline-flex min-h-11 items-center justify-center px-8 py-3 rounded-2xl bg-neutral-900 text-white text-sm font-semibold active:scale-[0.97] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2"
-            >
+            <UiButton to="/menu" size="lg">
                 {{ $t('nav.menu') }}
-            </NuxtLinkLocale>
+            </UiButton>
         </div>
 
     </div>
