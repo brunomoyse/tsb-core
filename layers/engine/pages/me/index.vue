@@ -460,13 +460,13 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyMarketing"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
                                 :class="notifyMarketing ? 'bg-primary-400' : 'bg-neutral-200'"
                                 @click="toggleNotifyMarketing"
                             >
                                 <span
                                     class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                    :class="notifyMarketing ? 'translate-x-6' : 'translate-x-1'"
+                                    :class="notifyMarketing ? 'translate-x-[22px]' : 'translate-x-0.5'"
                                 />
                             </button>
                             <span class="text-sm text-neutral-700">{{ t('me.notifications.marketingLabel') }}</span>
@@ -481,13 +481,13 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyOrderUpdates"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
                                 :class="notifyOrderUpdates ? 'bg-primary-400' : 'bg-neutral-200'"
                                 @click="toggleNotifyOrderUpdates"
                             >
                                 <span
                                     class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                                    :class="notifyOrderUpdates ? 'translate-x-6' : 'translate-x-1'"
+                                    :class="notifyOrderUpdates ? 'translate-x-[22px]' : 'translate-x-0.5'"
                                 />
                             </button>
                             <span class="text-sm text-neutral-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
