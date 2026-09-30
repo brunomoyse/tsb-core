@@ -10,7 +10,12 @@
     "toTop": "Back to top",
     "remove": "Remove",
     "close": "Close",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "accept": "Accept",
+    "acceptCookies": "Accept cookies",
+    "step": "Step {n}",
+    "discard": "Discard",
+    "keepEditing": "Keep editing"
   },
   "nav": {
     "home": "Home",
@@ -22,7 +27,12 @@
     "search": "Search...",
     "cart": "Cart",
     "language": "Select Language",
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "sidebar": "Main navigation",
+    "callRestaurant": "Call the restaurant",
+    "searchLabel": "Search the menu",
+    "clearSearch": "Clear search",
+    "currentLanguage": "Language: {language}"
   },
   "home": {
     "heroTagline": "Japanese restaurant · Liège",
@@ -105,7 +115,12 @@
     "no": "No",
     "pickupDiscountBadge": "10% off on pickup",
     "restaurantClosed": "The restaurant is currently closed.",
-    "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable."
+    "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable.",
+    "choice": "Choice",
+    "required": "Required",
+    "addWithPrice": "Add · {price}",
+    "updateWithPrice": "Update · {price}",
+    "viewDetails": "View details for {name}"
   },
   "days": {},
   "login": {
@@ -292,7 +307,9 @@
     "undo": "Undo",
     "removedUndo": "“{name}” removed",
     "eachSuffix": "each",
-    "deliveryTbd": "Delivery calculated at checkout"
+    "deliveryTbd": "Delivery calculated at checkout",
+    "editItem": "Edit",
+    "pickupDiscountShort": "-10%"
   },
   "checkout": {
     "title": "Checkout",

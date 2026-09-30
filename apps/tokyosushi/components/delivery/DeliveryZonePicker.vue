@@ -130,19 +130,9 @@
             >
                 {{ $t('common.cancel') }}
             </button>
-            <button
-                type="button"
-                @click="confirm"
-                :disabled="!canConfirm"
-                :class="[
-                    'min-h-11 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
-                    canConfirm
-                        ? 'bg-red-500 hover:bg-red-600 shadow-sm shadow-red-200/60'
-                        : 'bg-gray-300 cursor-not-allowed'
-                ]"
-            >
+            <UiButton :disabled="!canConfirm" @click="confirm">
                 {{ $t('delivery.modal.confirm') }}
-            </button>
+            </UiButton>
         </div>
     </div>
 </template>

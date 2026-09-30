@@ -7,16 +7,16 @@
         v-if="visible"
     >
         <transition name="slide-up">
-            <div :class="['rounded-2xl shadow-xl px-6 py-3 flex flex-col', variantClasses, variant === 'success' ? 'animate-glow-pulse' : '']" v-if="visible">
-                <div class="flex items-start justify-between gap-4">
-                    <span class="flex-1 text-base break-words">
+            <div :class="['rounded-2xl shadow-xl px-5 py-3 flex flex-col', variantClasses]" v-if="visible">
+                <div class="flex items-center justify-between gap-4">
+                    <span class="flex-1 text-sm font-medium break-words">
                       {{ message }}
                     </span>
                     <!-- Custom action button (e.g. Undo) takes precedence -->
                     <button
                         v-if="action"
                         type="button"
-                        class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100 active:scale-95 transition"
+                        class="flex-shrink-0 min-h-9 bg-white text-gray-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         @click="invokeAction"
                     >
                         {{ action.label }}
@@ -25,16 +25,16 @@
                     <slot v-else-if="persistent || cookieConsent" name="action">
                         <button
                             type="button"
-                            class="flex-shrink-0 bg-white text-gray-800 border border-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition"
+                            class="flex-shrink-0 min-h-9 bg-white text-gray-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             @click="close"
-                            :aria-label="cookieConsent ? 'Accept cookies' : $t('common.close')"
+                            :aria-label="cookieConsent ? $t('common.acceptCookies') : $t('common.close')"
                         >
-                            {{ cookieConsent ? 'Accept' : 'Close' }}
+                            {{ cookieConsent ? $t('common.accept') : $t('common.close') }}
                         </button>
                     </slot>
                 </div>
                 <!-- Progress Bar: Only visible when not persistent and not cookie consent -->
-                <div v-if="!persistent && !cookieConsent" class="w-full mt-2 h-1 bg-gray-300 rounded overflow-hidden">
+                <div v-if="!persistent && !cookieConsent" class="w-full mt-2 h-0.5 bg-white/20 rounded overflow-hidden">
                     <div class="h-full progress-bar" :class="progressBarClass" :style="{ width: progress + '%' }"></div>
                 </div>
             </div>
@@ -48,7 +48,7 @@ import { useHaptics } from '#engine/composables/useHaptics'
 
 const { notification: hapticNotification } = useHaptics()
 
-const { message, persistent = false, duration = 10000, cookieConsent = false, variant = 'neutral', action } = defineProps<{
+const { message, persistent = false, duration = 4500, cookieConsent = false, variant = 'neutral', action } = defineProps<{
     message: string
     persistent?: boolean
     duration?: number
@@ -64,28 +64,13 @@ const visible = ref(false)
 const progress = ref(100)
 let progressInterval: ReturnType<typeof setInterval> | undefined
 
-// Compute CSS classes based on the variant prop
-const variantClasses = computed(() => {
-    switch (variant) {
-        case 'success':
-            return 'bg-green-100 border border-green-400 text-green-800'
-        case 'error':
-            return 'bg-red-100 border border-red-400 text-red-800'
-        default:
-            return 'bg-white border border-gray-300 text-gray-800'
-    }
-})
+// Same palette as the mobile app's toast: dark neutral for info and success
+// (green stays reserved), red only for errors.
+const variantClasses = computed(() =>
+    variant === 'error' ? 'bg-red-700 text-white' : 'bg-gray-900 text-white',
+)
 
-const progressBarClass = computed(() => {
-    switch (variant) {
-        case 'success':
-            return 'bg-gradient-to-r from-green-500 via-green-400 to-green-600'
-        case 'error':
-            return 'bg-gradient-to-r from-red-500 via-red-400 to-red-600'
-        default:
-            return 'bg-gray-600'
-    }
-})
+const progressBarClass = 'bg-white/70'
 
 const liveRole = computed(() => (variant === 'error' ? 'alert' : 'status'))
 const livePoliteness = computed(() => (variant === 'error' ? 'assertive' : 'polite'))

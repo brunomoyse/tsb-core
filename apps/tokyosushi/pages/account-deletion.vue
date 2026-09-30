@@ -3,9 +3,9 @@
         <!-- Header -->
         <header class="mb-10 text-center">
             <p class="text-sm font-semibold uppercase tracking-wide text-red-600">{{ brand.name }}</p>
-            <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            <PageTitle class="mt-1">
                 {{ t('accountDeletion.title') }}
-            </h1>
+            </PageTitle>
             <p class="mt-3 text-sm text-gray-500">{{ t('accountDeletion.lastUpdated') }}</p>
         </header>
 

@@ -1,34 +1,18 @@
 <template>
-    <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }" class="h-full">
+    <div :class="{ 'grayscale': !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
              ref="cardRef"
              data-testid="product-card"
              :data-product-id="product.id"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->
                 <div v-if="product.isHalal || product.isVegetarian || product.isSpicy" class="absolute top-1 right-1 z-10 flex flex-col gap-0.5">
-                    <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
-                        <img
-                            src="https://api.iconify.design/hugeicons/halal.svg?color=%231d4ed8"
-                            alt=""
-                            aria-hidden="true"
-                            class="w-3 h-3"
-                        />
-                    </div>
-                    <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
-                        <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
-                            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                        </svg>
-                    </div>
-                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-red-50 text-red-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
-                        <svg aria-hidden="true" class="w-3 h-3" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
-                            <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
-                        </svg>
-                    </div>
+                    <DietBadge v-if="product.isHalal" kind="halal" />
+                    <DietBadge v-if="product.isVegetarian" kind="vegetarian" />
+                    <DietBadge v-if="product.isSpicy" kind="spicy" />
                 </div>
                 <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
                 <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-tsb-four text-red-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
@@ -62,14 +46,18 @@
                     <span translate="no" class="text-gray-600 font-medium text-xs mb-0.5 truncate">
                       {{ product.category?.name }}
                     </span>
-                    <span
+                    <!-- The name is the keyboard-reachable way into the details modal. -->
+                    <button
+                        type="button"
                         data-testid="product-name"
                         translate="no"
-                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5"
+                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors duration-300"
                         :title="product.name"
+                        :aria-label="$t('menu.viewDetails', { name: product.name })"
+                        @click="emit('openProductModal')"
                     >
                       {{ product.name }}
-                    </span>
+                    </button>
                     <span class="text-gray-600 text-xs text-center">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
@@ -86,34 +74,31 @@
                         </span>
                         <div>
                             <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
-                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="orderingDisabled"
                                     @click="addToCart">
-                                <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
+                                <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
                             <button v-else
-                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-red-700 font-semibold border border-red-200 hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 cursor-pointer"
+                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-red-700 font-semibold border border-red-200 hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 cursor-pointer"
+                                 type="button"
+                                 :aria-label="`${$t('nav.cart')}: ${cardQuantity}`"
                                  :class="{ 'animate-number-bounce': isQuantityBouncing }"
                                  @click="showExpandedControls">
                                 {{ cardQuantity }}
                             </button>
                         </div>
                     </template>
-                    <div v-else class="w-full flex justify-between items-center">
-                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300" type="button"
-                                @click="decrement">
-                            <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
-                            -
-                        </button>
-                        <span class="text-sm font-semibold text-red-700" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
-                        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-tsb-four hover:text-red-400 hover:border-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed" type="button"
-                                :disabled="cardQuantity >= MAX_ITEM_QUANTITY"
-                                @click="increment">
-                            <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
-                            +
-                        </button>
-                    </div>
+                    <QuantityStepper
+                        v-else
+                        class="w-full"
+                        :value="cardQuantity"
+                        :bounce="isQuantityBouncing"
+                        :inc-disabled="cardQuantity >= MAX_ITEM_QUANTITY"
+                        @decrement="decrement"
+                        @increment="increment"
+                    />
                 </div>
                 <div v-else class="flex justify-center text-sm text-gray-600 mt-1">{{ $t('menu.unavailable') }}</div>
             </div>

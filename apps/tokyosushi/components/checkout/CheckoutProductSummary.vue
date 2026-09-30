@@ -149,15 +149,15 @@
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-gray-400 italic">{{ $t('checkout.tbd') }}</span>
                     <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-red-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium">{{ $t('checkout.tooFar') }}</span>
+                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium">{{ $t('checkout.tooFar') }}</span>
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('checkout.discount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-red-600">
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>

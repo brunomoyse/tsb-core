@@ -1,24 +1,25 @@
 <template>
-    <button type="button" class="relative"
+    <button type="button" class="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            :aria-label="cartCount > 0 ? `${$t('nav.cart')}: ${cartCount}` : $t('nav.cart')"
             @click="handleToggleCart"
     >
         <!-- Cart Icon -->
         <div
-            class="flex items-center justify-center w-10 h-10 rounded-full">
-            <img alt="Cart Icon" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
+            class="flex items-center justify-center w-11 h-11 rounded-full">
+            <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
 
             <!-- Tooltip positioned below -->
             <span
-                class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+                class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 pointer-events-none">
                     {{ $t('nav.cart') }}
                 </span>
         </div>
         <!-- Badge for cart count -->
         <div v-if="cartCount > 0"
-             :class="['absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900', animating ? 'animate-bounce' : '']">
+             aria-hidden="true"
+             :class="['absolute inline-flex items-center justify-center min-w-6 h-6 px-1 text-xs font-bold text-primary-foreground bg-primary border-2 border-white rounded-full -top-1.5 -right-1.5', animating ? 'animate-bounce' : '']">
             {{ cartCount }}
         </div>
-        <span class="sr-only">{{ $t('cart.notifications') }}</span>
     </button>
 </template>
 

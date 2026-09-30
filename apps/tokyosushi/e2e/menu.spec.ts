@@ -85,13 +85,17 @@ test.describe('Menu browsing', () => {
     await expect(page.locator(SEL.productModal)).toBeVisible({ timeout: 15_000 })
 
     /*
-     * At 0 selections the button must be disabled — this is the real gating
-     * invariant. We previously also asserted "still disabled after clicking
-     * the first +", but that only holds for products with min > 1 in the
-     * group; for the most common 1/1 group the click satisfies the only
-     * requirement and the button correctly becomes enabled.
+     * At 0 selections the add button stays clickable but must not add: the
+     * click flags the first incomplete group and the modal stays open. This
+     * is the real gating invariant. (The button is only disabled when
+     * ordering itself is unavailable, in which case there is nothing to click.)
      */
-    await expect(page.locator(SEL.productModalAddToCart)).toBeDisabled()
+    const addButton = page.locator(SEL.productModalAddToCart)
+    if (await addButton.isEnabled()) {
+      await addButton.click()
+      await expect(page.locator('[data-testid="product-modal-group"][data-invalid="true"]').first()).toBeVisible()
+      await expect(page.locator(SEL.productModal)).toBeVisible()
+    }
 
     await page.keyboard.press('Escape')
   })

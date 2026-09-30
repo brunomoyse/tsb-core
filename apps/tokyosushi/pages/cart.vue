@@ -3,7 +3,7 @@
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
-            <h1 class="text-2xl font-bold text-gray-900">{{ $t('cart.title') }}</h1>
+            <PageTitle>{{ $t('cart.title') }}</PageTitle>
             <span v-if="cartStore.totalItems > 0" class="text-sm text-gray-400 font-medium">
                 {{ cartStore.totalItems }} {{ cartStore.totalItems === 1 ? $t('cart.item') : $t('cart.items') }}
             </span>
@@ -153,7 +153,7 @@
                     <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
@@ -161,11 +161,11 @@
                     </span>
                     <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-gray-500">
+                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-red-600">
+                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
@@ -184,27 +184,17 @@
             v-if="cartStore.products.length > 0"
             class="sticky bottom-0 z-30 bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
-            <NuxtLinkLocale
-                to="checkout"
-                :class="[
-                    'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
-                    isCheckoutAvailable
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
-                        : 'bg-gray-300 text-gray-500 pointer-events-none'
-                ]"
-                :tabindex="isCheckoutAvailable ? 0 : -1"
-                :aria-disabled="!isCheckoutAvailable"
-            >
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!isCheckoutAvailable">
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                         <line x1="3" y1="6" x2="21" y2="6"/>
                         <path d="M16 10a4 4 0 01-8 0"/>
                     </svg>
-                    <span class="font-semibold text-sm uppercase tracking-wide">{{ $t('cart.checkout') }}</span>
-                </div>
+                    {{ $t('cart.checkout') }}
+                </span>
                 <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
-            </NuxtLinkLocale>
+            </UiButton>
             <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
             </p>

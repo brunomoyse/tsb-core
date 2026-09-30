@@ -37,21 +37,14 @@
                     :disabled="isValidating"
                     @keyup.enter="applyCoupon"
                 />
-                <button
-                    type="button"
+                <UiButton
                     data-testid="coupon-apply"
-                    class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-all duration-300 ease-out active:scale-[0.97] disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    :disabled="!couponInput.trim() || isValidating"
+                    :disabled="!couponInput.trim()"
+                    :loading="isValidating"
                     @click="applyCoupon"
                 >
-                    <span v-if="isValidating" class="inline-flex items-center gap-1">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                    </span>
-                    <span v-else>{{ $t('coupon.apply') }}</span>
-                </button>
+                    {{ $t('coupon.apply') }}
+                </UiButton>
             </div>
             <p v-if="errorMessage" role="alert" data-testid="coupon-error" class="text-sm text-red-600 mt-1">
                 {{ errorMessage }}

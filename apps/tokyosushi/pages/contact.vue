@@ -41,7 +41,7 @@ useSeoMeta({
 
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8 bento-cell" style="--delay: 0">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $t('contact.title') }}</h1>
+            <PageTitle>{{ $t('contact.title') }}</PageTitle>
             <p class="mt-2 text-sm sm:text-base text-gray-500 font-light">{{ $t('contact.subtitle') }}</p>
             <!-- Decorative noren curtain lines -->
             <div class="flex justify-center items-end gap-1.5 mt-3" aria-hidden="true">

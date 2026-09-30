@@ -54,13 +54,13 @@
             {{ errorMessage }}
         </div>
 
-        <button
+        <UiButton
+            block
             :disabled="loading || !firstName.trim() || !lastName.trim()"
-            class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
             type="submit"
         >
             {{ $t('login.completeSignup') }}
-        </button>
+        </UiButton>
     </form>
 </template>
 

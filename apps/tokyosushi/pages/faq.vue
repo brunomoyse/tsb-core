@@ -2,7 +2,7 @@
     <section class="max-w-4xl mx-auto p-6 pt-8 space-y-8">
         <!-- Header -->
         <div class="text-center space-y-2">
-            <h1 class="text-4xl font-bold">{{ $t('faq.title') }}</h1>
+            <PageTitle>{{ $t('faq.title') }}</PageTitle>
             <p class="text-lg text-gray-600">{{ $t('faq.subtitle') }}</p>
             <!-- Decorative fan motif -->
             <div class="flex justify-center pt-1" aria-hidden="true">
@@ -35,12 +35,9 @@
         <!-- Contact CTA -->
         <div class="text-center pt-6">
             <p class="text-gray-600 mb-4">{{ $t('faq.stillHaveQuestions') }}</p>
-            <NuxtLinkLocale
-                to="/contact"
-                class="inline-block bg-red-500 text-white py-3 px-6 rounded-md font-semibold hover:bg-red-600 transition-colors duration-300"
-            >
+            <UiButton to="/contact" size="lg">
                 {{ $t('faq.contactUs') }}
-            </NuxtLinkLocale>
+            </UiButton>
         </div>
     </section>
 </template>

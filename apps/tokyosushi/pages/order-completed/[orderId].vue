@@ -15,19 +15,16 @@
                     <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
             </div>
-            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+            <PageTitle class="mt-5 text-center">
                 {{ paymentProblemTitle }}
-            </h1>
+            </PageTitle>
             <p class="mt-3 text-gray-600 text-sm sm:text-base text-center max-w-sm">
                 {{ paymentProblemBody }}
             </p>
             <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
-                <NuxtLinkLocale
-                    to="/checkout"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-                >
+                <UiButton to="/checkout" size="lg" class="flex-1">
                     {{ $t('orderCompleted.payment.tryAgain') }}
-                </NuxtLinkLocale>
+                </UiButton>
                 <NuxtLinkLocale
                     to="/menu"
                     class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
@@ -230,12 +227,9 @@
 
         <!-- Actions -->
         <div class="mt-6 w-full max-w-lg flex flex-col sm:flex-row gap-3 oc-stagger-5">
-            <NuxtLinkLocale
-                to="/me/orders"
-                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-            >
+            <UiButton to="/me/orders" size="lg" class="flex-1">
                 {{ $t('orderCompleted.viewOrders') }}
-            </NuxtLinkLocale>
+            </UiButton>
             <NuxtLinkLocale
                 to="/"
                 class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"

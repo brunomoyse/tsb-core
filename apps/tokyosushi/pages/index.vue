@@ -213,13 +213,10 @@ useHead({
             </div>
 
             <!-- Primary CTA -->
-            <NuxtLinkLocale
-                to="/menu"
-                class="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] shadow-sm focus-visible:ring-2 focus-visible:ring-red-300 focus:outline-none"
-            >
+            <UiButton to="/menu" size="lg" block>
                 {{ $t('home.orderNow') }}
                 <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-            </NuxtLinkLocale>
+            </UiButton>
             </div>
         </div>
 

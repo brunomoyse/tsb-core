@@ -10,7 +10,12 @@
     "toTop": "Haut de page",
     "remove": "Supprimer",
     "close": "Fermer",
-    "skipToContent": "Aller au contenu principal"
+    "skipToContent": "Aller au contenu principal",
+    "accept": "Accepter",
+    "acceptCookies": "Accepter les cookies",
+    "step": "Étape {n}",
+    "discard": "Abandonner",
+    "keepEditing": "Continuer"
   },
   "nav": {
     "home": "Accueil",
@@ -22,7 +27,12 @@
     "search": "Rechercher...",
     "cart": "Panier",
     "language": "Sélectionner la langue",
-    "toggleMenu": "Ouvrir/fermer le menu"
+    "toggleMenu": "Ouvrir/fermer le menu",
+    "sidebar": "Navigation principale",
+    "callRestaurant": "Appeler le restaurant",
+    "searchLabel": "Rechercher un plat",
+    "clearSearch": "Effacer la recherche",
+    "currentLanguage": "Langue : {language}"
   },
   "home": {
     "heroTagline": "Restaurant japonais · Liège",
@@ -105,7 +115,12 @@
     "no": "Non",
     "pickupDiscountBadge": "10% de remise à emporter",
     "restaurantClosed": "Le restaurant est actuellement fermé.",
-    "restaurantClosedDetails": "Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles."
+    "restaurantClosedDetails": "Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles.",
+    "choice": "Choix",
+    "required": "Obligatoire",
+    "addWithPrice": "Ajouter · {price}",
+    "updateWithPrice": "Mettre à jour · {price}",
+    "viewDetails": "Voir le détail de {name}"
   },
   "days": {},
   "login": {
@@ -292,7 +307,9 @@
     "undo": "Annuler",
     "removedUndo": "« {name} » retiré",
     "eachSuffix": "pièce",
-    "deliveryTbd": "Livraison calculée au paiement"
+    "deliveryTbd": "Livraison calculée au paiement",
+    "editItem": "Modifier",
+    "pickupDiscountShort": "-10 %"
   },
   "checkout": {
     "title": "Commande",

@@ -28,8 +28,9 @@
                     {{ $t('cart.title') }}
                 </h2>
                 <button
+                    type="button"
                     :aria-label="$t('cart.closeCart')"
-                    class="p-2 rounded-full hover:bg-gray-100"
+                    class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     @click="cartStore.toggleCartVisibility"
                 >
                     <svg class="h-6 w-6 text-gray-700" fill="none" stroke="currentColor">
@@ -44,7 +45,7 @@
                     v-for="item in cartStore.products"
                     :key="getItemKey(item)"
                     data-testid="cart-item"
-                    class="grid grid-cols-6 gap-3 bg-white rounded-lg shadow p-3 items-center"
+                    class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-gray-100 shadow-sm p-3 items-center"
                 >
                     <!-- IMAGE -->
                     <picture
@@ -95,47 +96,36 @@
                     </div>
 
                     <!-- QTY CONTROLS -->
-                    <div class="col-span-2 grid grid-cols-3 items-center justify-items-center">
-                        <button
-                            data-testid="cart-item-decrement"
-                            :aria-label="$t('cart.decreaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
-                            :disabled="hasChoices(item)"
-                            :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
-                            @click="handleDecrementQuantity(item)"
-                        >
-                            <img
-                                src="/icons/minus-icon.svg"
-                                alt="Minus icon"
-                                class="h-4 w-4 flex-shrink-0"
-                            />
-                        </button>
-                        <span data-testid="cart-item-quantity" class="text-center text-gray-700">{{ item.quantity }}</span>
-                        <button
-                            data-testid="cart-item-increment"
-                            :aria-label="$t('cart.increaseQty')"
-                            class="p-1 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center justify-center h-10 w-10 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
-                            :disabled="hasChoices(item)"
-                            :title="hasChoices(item) ? $t('cart.customizedItemHint') : undefined"
-                            @click="handleIncrementQuantity(item)"
-                        >
-                            <img
-                                src="/icons/plus-icon.svg"
-                                alt="Plus icon"
-                                class="h-4 w-4 flex-shrink-0"
-                            />
+                    <!-- Customized lines carry per-line selections, so they are edited in the modal -->
+                    <div v-if="hasChoices(item)" class="col-span-2 flex flex-col items-end gap-1">
+                        <span data-testid="cart-item-quantity" class="text-sm font-semibold tabular-nums text-primary-hover">×{{ item.quantity }}</span>
+                        <UiButton variant="secondary" size="sm" data-testid="cart-item-edit" @click="editItem(item)">
+                            {{ $t('cart.editItem') }}
+                        </UiButton>
+                        <button type="button" data-testid="cart-item-remove"
+                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-gray-500 hover:text-red-600 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                @click="removeWithUndo(item)">
+                            {{ $t('cart.removeItem') }}
                         </button>
                     </div>
-                    <p v-if="hasChoices(item)" class="col-span-6 text-[11px] text-gray-400 italic mt-1">
-                        {{ $t('cart.customizedItemHint') }}
-                    </p>
+                    <QuantityStepper
+                        v-else
+                        class="col-span-2 justify-self-end"
+                        :value="item.quantity"
+                        :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
+                        dec-testid="cart-item-decrement"
+                        inc-testid="cart-item-increment"
+                        value-testid="cart-item-quantity"
+                        @decrement="handleDecrementQuantity(item)"
+                        @increment="handleIncrementQuantity(item)"
+                    />
                 </li>
 
                 <!-- EMPTY STATE -->
                 <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
                     <img
                         src="/icons/shopping-bag-icon.svg"
-                        alt="Empty cart"
+                        alt=""
                         class="h-12 w-12 mb-4 flex-shrink-0"
                     />
                     <p>{{ $t('cart.empty') }}</p>
@@ -154,7 +144,7 @@
                         <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
                             {{ $t('cart.deliveryTbd') }}
                         </span>
-                        <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                        <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
                             {{ $t('checkout.tooFar') }}
                         </span>
                         <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
@@ -166,7 +156,7 @@
                         <span>{{ $t('cart.pickupDiscount') }}</span>
                         <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                     </div>
-                    <div v-if="couponDiscount > 0" class="flex justify-between text-red-600">
+                    <div v-if="couponDiscount > 0" class="flex justify-between text-green-600">
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                     </div>
@@ -178,20 +168,15 @@
                 <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
                 </div>
-                <NuxtLinkLocale
-                    to="checkout"
-                    :class="[
-                        'block text-center uppercase py-3 rounded-lg transition-all',
-                        isOrderingAvailable
-                            ? 'bg-gray-800 text-white hover:bg-gray-900 active:scale-[0.97]'
-                            : 'bg-gray-300 text-gray-500 pointer-events-none'
-                    ]"
-                    :tabindex="isOrderingAvailable ? 0 : -1"
-                    :aria-disabled="!isOrderingAvailable"
+                <UiButton
+                    to="/checkout"
+                    size="lg"
+                    block
+                    :disabled="!isOrderingAvailable"
                     @click="cartStore.toggleCartVisibility"
                 >
                     {{ $t('cart.checkout') }}
-                </NuxtLinkLocale>
+                </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </footer>
             </aside>
@@ -208,7 +193,8 @@ import type { CartItem } from '#engine/types'
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
-import { useCartStore } from '#engine/stores/cart'
+import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useTracking } from '#engine/composables/useTracking'
@@ -219,6 +205,7 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
+const { removeWithUndo, editItem } = useCartItemActions()
 const {
     getItemUnitPrice,
     subtotal,

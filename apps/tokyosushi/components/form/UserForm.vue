@@ -73,14 +73,12 @@
         </div>
 
         <div class="flex gap-2">
-            <button type="button" @click="emit('close')"
-                    class="w-1/2 bg-white/60 backdrop-blur-sm text-gray-700 py-2.5 rounded-xl border border-gray-200/80 hover:bg-white transition-all duration-300 text-sm active:scale-[0.97]">
+            <UiButton variant="secondary" class="flex-1" @click="emit('close')">
                 {{ $t('common.cancel') }}
-            </button>
-            <button type="submit"
-                    class="w-1/2 bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 text-sm active:scale-[0.97] shadow-sm hover:shadow-md">
+            </UiButton>
+            <UiButton type="submit" class="flex-1">
                 {{ $t('me.profile.update') }}
-            </button>
+            </UiButton>
         </div>
     </form>
 </template>

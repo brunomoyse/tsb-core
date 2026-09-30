@@ -17,7 +17,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <p class="text-red-700 font-medium text-sm">
-                {{ $t('cart.minimumDelivery', { amount: 25 }) }}
+                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
             </p>
         </div>
 
@@ -52,9 +52,9 @@
 
         <!-- Page Title with Japanese accent -->
         <div class="flex items-center gap-3 mb-4">
-            <h1 class="text-2xl font-bold">
+            <PageTitle>
                 {{ $t('checkout.title', 'Checkout') }}
-            </h1>
+            </PageTitle>
             <span class="text-red-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
         </div>
 
@@ -136,33 +136,26 @@
             <div
                 class="fixed left-0 right-0 sm:left-[142px] bottom-0 z-30 lg:hidden bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
             >
-                <button
-                    type="button"
+                <UiButton
                     data-testid="checkout-place-order"
+                    size="lg"
+                    block
+                    class="justify-between"
+                    :disabled="!isOrderingAvailable || cartStore.products.length === 0"
+                    :loading="isCheckoutProcessing"
                     @click="handleCheckout"
-                    :disabled="isCheckoutProcessing || !isOrderingAvailable || cartStore.products.length === 0"
-                    :class="[
-                        'flex min-h-11 items-center justify-between w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2',
-                        !isCheckoutProcessing && isOrderingAvailable && cartStore.products.length > 0
-                            ? 'bg-red-500 text-white hover:bg-red-600'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
-                    ]"
                 >
-                    <span v-if="isCheckoutProcessing" class="inline-flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                        {{ $t('checkout.processing') }}
+                    <span>
+                        <template v-if="isCheckoutProcessing">{{ $t('checkout.processing') }}</template>
+                        <template v-else>
+                            {{ cartStore.paymentOption === 'ONLINE'
+                                ? $t('checkout.goToPayment')
+                                : $t('checkout.placeOrder')
+                            }}
+                        </template>
                     </span>
-                    <span v-else class="font-semibold text-sm uppercase tracking-wide">
-                        {{ cartStore.paymentOption === 'ONLINE'
-                            ? $t('checkout.goToPayment')
-                            : $t('checkout.placeOrder')
-                        }}
-                    </span>
-                    <span class="font-bold text-base">{{ formatPrice(cartTotal) }}</span>
-                </button>
+                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatPrice(cartTotal) }}</span>
+                </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </div>
         </template>
@@ -190,7 +183,7 @@
             tabindex="0"
             @click.self="guardedCloseAddressModal"
         >
-            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-lg shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
+            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
                 <button
                     type="button"
                     @click="guardedCloseAddressModal"
@@ -206,26 +199,27 @@
                 </h3>
                 <AddressAutocomplete @update:address="handleAddressUpdate" />
                 <div class="mt-6 flex justify-end gap-2">
-                    <button
-                        type="button"
-                        @click="guardedCloseAddressModal"
-                        class="min-h-11 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
-                    >
+                    <UiButton variant="secondary" @click="guardedCloseAddressModal">
                         {{ $t('common.cancel', 'Cancel') }}
-                    </button>
-                    <button
-                        type="button"
-                        @click="confirmAddress"
-                        :disabled="!tempAddress"
-                        class="min-h-11 px-4 py-2 rounded text-white text-sm transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                        :class="!tempAddress ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'"
-                    >
+                    </UiButton>
+                    <UiButton :disabled="!tempAddress" @click="confirmAddress">
                         {{ $t('common.save', 'Save') }}
-                    </button>
+                    </UiButton>
                 </div>
                 <div class="safe-area-spacer-bottom sm:hidden" />
             </div>
         </div>
+
+        <!-- Discard-address confirmation (v-if on the component: see the Teleport note above) -->
+        <ConfirmDialog
+            v-if="showDiscardAddressConfirm"
+            open
+            :title="$t('checkout.discardAddress')"
+            :confirm-label="$t('common.discard')"
+            :cancel-label="$t('common.keepEditing')"
+            @confirm="discardAddress"
+            @cancel="showDiscardAddressConfirm = false"
+        />
     </div>
 </template>
 
@@ -247,7 +241,7 @@ import { formatPrice } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { roundToNearest10Cents } from '#engine/utils/money'
 import gql from 'graphql-tag'
-import { useCartTotals } from '#engine/composables/useCartTotals'
+import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
@@ -423,7 +417,7 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
 
     // Map known backend error strings to translated messages
     if (raw.includes('minimum order amount for delivery'))
-        return t('checkout.minimumDelivery', { amount: 25 })
+        return t('checkout.minimumDelivery', { amount: DELIVERY_MINIMUM })
     if (raw.includes('ordering is currently unavailable'))
         return t('notify.errors.orderingUnavailable')
     if (raw.includes('not eligible for delivery'))
@@ -461,13 +455,18 @@ const closeAddressModal = () => {
 }
 
 // Guarded close: warn before discarding a typed-but-unconfirmed address.
+const showDiscardAddressConfirm = ref(false)
 const guardedCloseAddressModal = () => {
     const typedSomething = Boolean(tempAddress.value)
     const differsFromSaved = tempAddress.value?.id !== cartStore.address?.id
     if (typedSomething && differsFromSaved) {
-        if (!import.meta.client) return
-        if (!window.confirm(t('checkout.discardAddress'))) return
+        showDiscardAddressConfirm.value = true
+        return
     }
+    closeAddressModal()
+}
+const discardAddress = () => {
+    showDiscardAddressConfirm.value = false
     closeAddressModal()
 }
 
@@ -562,7 +561,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
 
     if (!isMinimumReached.value) {
         errors.push({
-            message: t('cart.minimumDelivery', { amount: 25 }),
+            message: t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }),
             targetId: 'checkout-minimum-order-banner',
             event: 'checkout_error_minimum_not_reached',
         })

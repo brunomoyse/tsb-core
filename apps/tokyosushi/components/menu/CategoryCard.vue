@@ -10,7 +10,7 @@
         @click="handleClick"
         :data-id="category.id"
     >
-        {{ displayName }}
+        {{ category.name }}
         <!-- Red accent bar clipped by rounded corners -->
         <span
             class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-red-400 transition-all duration-300 ease-out origin-center"
@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import type { ProductCategory } from '#engine/types'
-import { computed } from 'vue'
 
 const {
     category,
@@ -37,10 +36,4 @@ const emit = defineEmits<{
 const handleClick = () => {
     emit('select', category.id);
 };
-
-const displayName = computed(() =>
-    category.name.toLowerCase().includes('bento')
-        ? 'Bento'
-        : category.name
-);
 </script>

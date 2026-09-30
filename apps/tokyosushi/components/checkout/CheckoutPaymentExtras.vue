@@ -292,30 +292,27 @@
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
         <div v-if="!isMinimumReached" class="text-sm text-red-600 text-center">
-            {{ $t('cart.minimumDelivery', { amount: 25}) }}
+            {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
         </div>
 
         <!-- Checkout Button (desktop only) -->
-        <button data-testid="checkout-place-order" @click="debouncedCheckout" :class="[
-            'hidden lg:block w-full pt-2 pb-3 rounded-lg font-medium transition-all active:scale-[0.97]',
-            !loading && isOrderingAvailable && !isCartEmpty
-              ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none'
-          ]" :disabled="loading || !isOrderingAvailable || isCartEmpty">
-            <span v-if="loading" class="inline-flex items-center gap-2">
-                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                </svg>
-                {{ $t('checkout.processing', 'Processing...') }}
-            </span>
-            <span v-else>
+        <UiButton
+            data-testid="checkout-place-order"
+            size="lg"
+            block
+            class="hidden lg:inline-flex"
+            :disabled="!isOrderingAvailable || isCartEmpty"
+            :loading="loading"
+            @click="debouncedCheckout"
+        >
+            <template v-if="loading">{{ $t('checkout.processing', 'Processing...') }}</template>
+            <template v-else>
                 {{ isOnlinePayment
                     ? $t('checkout.goToPayment', 'Go to Payment')
                     : $t('checkout.placeOrder', 'Place Order')
                 }}
-            </span>
-        </button>
+            </template>
+        </UiButton>
     </section>
 </template>
 
@@ -324,6 +321,7 @@ import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
+import { DELIVERY_MINIMUM } from '#engine/composables/useCartTotals'
 import { formatPrice } from '#engine/lib/price'
 import { useDebounceFn } from '@vueuse/core'
 import { useGqlQuery } from '#imports'

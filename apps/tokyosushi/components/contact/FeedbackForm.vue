@@ -256,18 +256,14 @@ function resetForm() {
             <div v-if="turnstileSiteKey" ref="turnstileContainer" />
 
             <!-- Submit button -->
-            <button
+            <UiButton
                 type="submit"
+                class="w-full sm:w-auto"
                 :disabled="!canSubmit"
-                :class="[
-                    'w-full sm:w-auto px-8 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300',
-                    canSubmit
-                        ? 'bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                ]"
+                :loading="submitting"
             >
                 {{ submitting ? $t('feedback.sending') : $t('feedback.submit') }}
-            </button>
+            </UiButton>
         </form>
     </div>
 </template>

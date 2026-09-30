@@ -13,14 +13,14 @@
         </Head>
 
         <Body class="bg-tsb-one overflow-x-hidden">
-        <NuxtLoadingIndicator color="#DC2626" :height="2" />
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+        <NuxtLoadingIndicator color="hsl(var(--primary))" :height="2" />
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary">
             {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-screen flex flex-col">
             <header>
                 <MobileNavbar/>
-                <div class="mobile-only h-20"/>
+                <div class="sm:hidden h-20"/>
                 <SideNavbar/>
             </header>
 

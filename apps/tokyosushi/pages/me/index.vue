@@ -345,9 +345,9 @@ const updateNotificationPref = async (
 
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8 bento-cell" style="--delay: 0">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
+            <PageTitle>
                 {{ authStore.user?.firstName ? `${t('me.greeting')}, ${authStore.user.firstName}` : t('schema.myAccount.title') }}
-            </h1>
+            </PageTitle>
             <p class="mt-2 text-sm sm:text-base text-gray-500 font-light">{{ t('me.subtitle') }}</p>
             <!-- Japanese greeting: ようこそ (welcome) -->
             <p class="mt-1 text-xs text-red-300/40 tracking-[0.25em]" aria-hidden="true">ようこそ</p>
@@ -619,22 +619,12 @@ const updateNotificationPref = async (
                         </NuxtLinkLocale>
                     </p>
                     <div class="flex gap-3">
-                        <button
-                            type="button"
-                            :disabled="deleting"
-                            class="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
-                            @click="closeDeleteModal"
-                        >
+                        <UiButton variant="secondary" class="flex-1" :disabled="deleting" @click="closeDeleteModal">
                             {{ t('me.profile.deleteCancel') }}
-                        </button>
-                        <button
-                            type="button"
-                            :disabled="deleting || !canDelete"
-                            class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-white hover:bg-red-700 transition-colors font-medium disabled:cursor-not-allowed disabled:opacity-50"
-                            @click="handleDeleteAccount"
-                        >
+                        </UiButton>
+                        <UiButton class="flex-1" :disabled="!canDelete" :loading="deleting" @click="handleDeleteAccount">
                             {{ deleting ? t('me.profile.deleting') : t('me.profile.deleteConfirmCta') }}
-                        </button>
+                        </UiButton>
                     </div>
                 </div>
             </div>
@@ -671,21 +661,12 @@ const updateNotificationPref = async (
                     <AddressAutocomplete @update:address="(addr) => pendingAddress = addr" />
 
                     <div class="flex gap-3 pt-6">
-                        <button
-                            type="button"
-                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
-                            @click="closeAddressModal"
-                        >
+                        <UiButton variant="secondary" class="flex-1" @click="closeAddressModal">
                             {{ t('common.cancel') }}
-                        </button>
-                        <button
-                            type="button"
-                            :disabled="!pendingAddress?.id || addressLoading"
-                            class="flex-1 min-h-11 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-                            @click="submitAddressUpdate"
-                        >
+                        </UiButton>
+                        <UiButton class="flex-1" :disabled="!pendingAddress?.id" :loading="addressLoading" @click="submitAddressUpdate">
                             {{ t('common.save') }}
-                        </button>
+                        </UiButton>
                     </div>
                 </div>
             </div>

@@ -324,9 +324,9 @@ const getStatusColorClass = (status: string) => {
                 </svg>
                 {{ $t('me.orders.backToAccount') }}
             </NuxtLinkLocale>
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
+            <PageTitle>
                 {{ $t('me.orders.allOrdersTitle') }}
-            </h1>
+            </PageTitle>
         </div>
 
         <!-- Loading State -->
@@ -446,14 +446,14 @@ const getStatusColorClass = (status: string) => {
                         </div>
 
                         <!-- Re-order Button -->
-                        <button
+                        <UiButton
                             v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
-                            type="button"
-                            class="mt-3 w-full min-h-11 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            block
+                            class="mt-3"
                             @click="reorder(order)"
                         >
                             {{ $t('reorder.button') }}
-                        </button>
+                        </UiButton>
 
                         <!-- Download Invoice Button -->
                         <button

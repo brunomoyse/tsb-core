@@ -87,14 +87,14 @@
                 <p>{{ errorMessage }}</p>
             </div>
 
-            <button
+            <UiButton
+                block
                 :disabled="loading || !!emailFormatError"
-                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
                 data-testid="login-submit"
                 type="submit"
             >
                 {{ $t('login.sendCode') }}
-            </button>
+            </UiButton>
         </form>
 
         <!-- Step 2: OTP code -->
@@ -134,14 +134,14 @@
                 {{ errorMessage }}
             </div>
 
-            <button
+            <UiButton
+                block
                 :disabled="loading || code.length < 6"
-                class="w-full bg-red-500 text-white py-2.5 rounded-xl font-medium hover:bg-red-600 transition-all duration-300 active:scale-[0.97] shadow-sm hover:shadow-md disabled:opacity-50"
                 data-testid="login-verify"
                 type="submit"
             >
                 {{ $t('login.verify') }}
-            </button>
+            </UiButton>
 
             <div class="flex items-center justify-between text-sm">
                 <button

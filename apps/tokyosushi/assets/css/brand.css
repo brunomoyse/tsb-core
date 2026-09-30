@@ -12,3 +12,18 @@
 html {
     background-color: #F6F5F2;
 }
+
+/* Brand accent tokens (HSL channels), consumed as primary / primary-hover /
+   primary-soft / ring in Tailwind and by the shared engine components. */
+:root {
+    --primary: 0 72.2% 50.6%;            /* red-600 */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 0 73.7% 41.8%;      /* red-700 */
+    --primary-soft: 0 100% 96.9%;        /* tsb-four */
+    --ring: 0 93.5% 81.8%;               /* red-300 */
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --radius-control: 0.75rem;           /* buttons, inputs, cards */
+    --radius-container: 1rem;            /* modals, panels */
+}

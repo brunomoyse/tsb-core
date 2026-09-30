@@ -21,15 +21,18 @@
             <div class="flex gap-1 rounded-full bg-gray-100 p-1">
                 <button v-for="option in collectionOptions" :key="option.value"
                         :data-testid="option.value === 'DELIVERY' ? 'cart-option-delivery' : 'cart-option-pickup'"
+                        type="button"
+                        :aria-pressed="cartStore.collectionOption === option.value"
                         :class="[
-          'flex items-center space-x-1 px-3 py-1 text-sm rounded-full transition-colors',
+          'flex min-h-9 items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           cartStore.collectionOption === option.value
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-500 hover:bg-tsb-four/40'
         ]"
                         @click="handleOrderType(option.value)">
-                    <img :alt="option.label" :src="option.icon" class="w-5 h-5"/>
-                    <span v-if="cartStore.collectionOption === option.value">{{ option.label }}</span>
+                    <img alt="" :src="option.icon" class="w-4 h-4"/>
+                    <span>{{ option.label }}</span>
+                    <span v-if="option.value === 'PICKUP'" class="rounded-full bg-tsb-four px-1.5 py-0.5 text-[10px] font-semibold text-primary-hover">{{ $t('cart.pickupDiscountShort') }}</span>
                 </button>
             </div>
         </header>
@@ -42,7 +45,7 @@
             <div v-else class="space-y-4">
                 <div v-for="item in cartStore.products" :key="getItemKey(item)"
                      data-testid="cart-item"
-                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-lg"
+                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
                     <div
@@ -94,33 +97,30 @@
 
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
-                            <div class="flex items-center gap-2">
-                                <button data-testid="cart-item-decrement"
-                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                                        :disabled="hasChoices(item)"
-                                        :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
-                                        @click="handleDecrementQuantity(item)">
-                                    <span class="sr-only">{{ $t('cart.decreaseQty') }}</span>
-                                    -
-                                </button>
-                                <span data-testid="cart-item-quantity" class="text-sm w-6 text-center">{{ item.quantity }}</span>
-                                <button data-testid="cart-item-increment"
-                                        class="w-9 h-9 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-tsb-four/40 text-gray-700 transition-all duration-300 ease-out disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                                        :disabled="hasChoices(item)"
-                                        :title="hasChoices(item) ? t('cart.customizedItemHint') : undefined"
-                                        @click="handleIncrementQuantity(item)">
-                                    <span class="sr-only">{{ $t('cart.increaseQty') }}</span>
-                                    +
-                                </button>
+                            <!-- Customized lines carry per-line selections, so they are edited in the modal -->
+                            <div v-if="hasChoices(item)" class="flex items-center gap-2">
+                                <span data-testid="cart-item-quantity" class="min-w-6 text-center text-sm font-semibold tabular-nums text-primary-hover">×{{ item.quantity }}</span>
+                                <UiButton variant="secondary" size="sm" data-testid="cart-item-edit" @click="editItem(item)">
+                                    {{ $t('cart.editItem') }}
+                                </UiButton>
                             </div>
-                            <button data-testid="cart-item-remove" class="text-xs text-red-600 hover:text-red-700 transition-colors"
-                                    @click="handleRemoveFromCart(item)">
+                            <QuantityStepper
+                                v-else
+                                size="sm"
+                                :value="item.quantity"
+                                :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
+                                dec-testid="cart-item-decrement"
+                                inc-testid="cart-item-increment"
+                                value-testid="cart-item-quantity"
+                                @decrement="handleDecrementQuantity(item)"
+                                @increment="handleIncrementQuantity(item)"
+                            />
+                            <button type="button" data-testid="cart-item-remove"
+                                    class="min-h-9 rounded-lg px-2 text-xs font-medium text-gray-500 hover:text-red-600 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    @click="removeWithUndo(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>
                         </div>
-                        <p v-if="hasChoices(item)" class="text-[11px] text-gray-400 italic mt-1">
-                            {{ $t('cart.customizedItemHint') }}
-                        </p>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                     <span v-if="!cartStore.address?.distance" class="text-gray-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-500 font-medium text-xs">
+                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
                     <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-red-700 text-[11px] font-semibold uppercase tracking-wide">
@@ -151,7 +151,7 @@
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
                 </div>
-                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-red-600">
+                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
@@ -163,7 +163,7 @@
 
             <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center">
-                {{ $t('cart.minimumDelivery', { amount: 25}) }}
+                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
             </div>
 
             <!-- Ordering Unavailable Warning -->
@@ -172,20 +172,15 @@
             </div>
 
             <!-- Checkout Button -->
-            <NuxtLinkLocale
-                to="checkout"
+            <UiButton
+                to="/checkout"
+                size="lg"
+                block
                 data-testid="cart-checkout-link"
-                :class="[
-                    'w-full py-3 rounded-lg font-medium transition-all active:scale-[0.97] text-center block',
-                    isMinimumReached && isOrderingAvailable
-                      ? 'bg-red-500 text-white hover:bg-red-600'
-                      : 'bg-gray-300 text-gray-500 pointer-events-none'
-                ]"
-                :tabindex="isMinimumReached && isOrderingAvailable ? 0 : -1"
-                :aria-disabled="!isMinimumReached || !isOrderingAvailable"
+                :disabled="!isMinimumReached || !isOrderingAvailable"
             >
                 {{ $t('cart.checkout') }}
-            </NuxtLinkLocale>
+            </UiButton>
         </footer>
     </aside>
     <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
@@ -199,8 +194,9 @@ import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-lin
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
-import { useCartStore } from '#engine/stores/cart'
-import { useCartTotals } from '#engine/composables/useCartTotals'
+import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
+import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
@@ -214,6 +210,7 @@ const cartStore = useCartStore();
 const { impact } = useHaptics()
 const {t} = useI18n()
 const { trackEvent } = useTracking()
+const { removeWithUndo, editItem } = useCartItemActions()
 const {
     getItemUnitPrice,
     subtotal,
@@ -334,14 +331,6 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
         selections: cartItem.selectedChoices,
     });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-};
-
-const handleRemoveFromCart = (cartItem: CartItem): void => {
-    trackEvent('product_removed_from_cart', { product_id: cartItem.product.id, product_name: cartItem.product.name })
-    cartStore.removeFromCart(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-    });
 };
 
 </script>

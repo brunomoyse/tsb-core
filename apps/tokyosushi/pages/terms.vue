@@ -2,9 +2,9 @@
     <div class="mx-auto max-w-3xl px-6 py-10">
         <!-- Header -->
         <header class="mb-10 text-center">
-            <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            <PageTitle>
                 Conditions Générales de Vente
-            </h1>
+            </PageTitle>
             <p class="mt-3 text-sm text-gray-500">Dernière mise à jour : 26/03/2026</p>
         </header>
 

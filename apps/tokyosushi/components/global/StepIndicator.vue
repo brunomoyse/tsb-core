@@ -20,7 +20,7 @@
                             : 'w-4 bg-gray-200'
                 ]"
             />
-            <span class="sr-only">{{ label || `Step ${index + 1}` }}</span>
+            <span class="sr-only">{{ label || $t('common.step', { n: index + 1 }) }}</span>
         </li>
     </ol>
 </template>
