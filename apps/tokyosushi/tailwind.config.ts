@@ -1,4 +1,5 @@
 import animate from 'tailwindcss-animate'
+import colors from 'tailwindcss/colors'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -18,15 +19,8 @@ module.exports = {
             // Brand theme tokens (tsb-* palette + `channel` display font). A
             // second brand app redefines these hex values / display font; the
             // tsb-* class names stay stable across brands.
-            backgroundColor: {
-                'tsb': {
-                    'one': { DEFAULT: '#F6F5F2' },
-                    'two': { DEFAULT: '#F0EBE3' },
-                    'three': { DEFAULT: '#F2A9BD' },
-                    'four': { DEFAULT: '#FFEFEF' },
-                },
-            },
             fontFamily: {
+                sans: ['Montserrat', 'Arial', 'Helvetica', 'sans-serif'],
                 channel: ['Channel', 'sans-serif'],
             },
             colors: {
@@ -38,13 +32,23 @@ module.exports = {
                 },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
+                ring: "hsl(var(--ring) / <alpha-value>)",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
+                // Theme contract shared with every brand app (the engine layer's
+                // components only use these names, never a literal hue):
+                //   primary-50..900  brand accent scale (red here)
+                //   neutral-50..900  text/surface/border neutrals (gray here)
+                //   tsb-one..four    page, container, decorative, selected
+                // red-* stays reserved for errors and destructive actions.
                 primary: {
-                    DEFAULT: "hsl(var(--primary))",
-                    foreground: "hsl(var(--primary-foreground))",
+                    ...colors.red,
+                    DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+                    foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
+                    hover: "hsl(var(--primary-hover) / <alpha-value>)",
+                    soft: "hsl(var(--primary-soft) / <alpha-value>)",
                 },
+                neutral: colors.gray,
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
                     foreground: "hsl(var(--secondary-foreground))",
@@ -74,6 +78,10 @@ module.exports = {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+                // The two radii for comparable surfaces: controls and cards
+                // (xl), containers and modals (2xl). Overridable per brand.
+                xl: "var(--radius-control, 0.75rem)",
+                "2xl": "var(--radius-container, 1rem)",
             },
             keyframes: {
                 "accordion-down": {

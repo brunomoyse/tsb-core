@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts" setup>
-import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
+import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'

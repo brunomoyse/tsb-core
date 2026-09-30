@@ -38,8 +38,10 @@ const scanDirs = ['components', 'composables', 'layouts', 'pages', 'middleware']
 // Absolute dirs to walk: this app's SSR-path dirs + the engine's.
 const scanTargets = [
     ...scanDirs.map(d => join(root, d)),
+    join(engineRoot, 'components'),
     join(engineRoot, 'composables'),
     join(engineRoot, 'middleware'),
+    join(engineRoot, 'pages'),
 ]
 const exts = new Set(['.vue', '.ts'])
 

@@ -3,16 +3,17 @@
             <button
                 @click="emit('close')"
                 :aria-label="$t('common.close')"
-                class="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors"
+                type="button"
+                class="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
 
             <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Image Section -->
-                <div class="relative h-44 lg:h-96 bg-gray-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.id, p.name)">
+                <div class="relative h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.id, p.name)">
                     <picture class="w-full h-full flex justify-center items-center p-4">
                         <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif"/>
                         <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp"/>
@@ -30,47 +31,23 @@
                 <!-- Details Section -->
                 <div class="space-y-6">
                     <div class="flex items-center flex-col">
-                        <p translate="no" class="text-lg text-gray-600 mb-2">{{ p.category.name }}</p>
-                        <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-gray-900">{{ p.name }}</h2>
+                        <p translate="no" class="text-lg text-neutral-600 mb-2">{{ p.category.name }}</p>
+                        <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-neutral-900">{{ p.name }}</h2>
                     </div>
 
                     <!-- Price & Badges -->
                     <div class="flex items-baseline gap-3 flex-wrap">
-                        <span class="text-2xl font-bold text-gray-900">{{ formatPrice(displayPrice) }}</span>
-                        <span v-if="p.pieceCount" class="text-sm text-gray-600">
+                        <span class="text-2xl font-bold text-neutral-900">{{ formatPrice(displayPrice) }}</span>
+                        <span v-if="p.pieceCount" class="text-sm text-neutral-600">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
                     </div>
 
                     <div class="flex gap-2 flex-wrap">
-                        <span v-if="p.isHalal" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full inline-flex items-center gap-1.5">
-                            <img
-                                src="https://api.iconify.design/hugeicons/halal.svg?color=%231e40af"
-                                alt=""
-                                aria-hidden="true"
-                                class="w-3.5 h-3.5"
-                            />
-                            {{ $t('menu.halal') }}
-                        </span>
-                        <span v-if="p.isVegetarian" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full inline-flex items-center gap-1.5">
-                            <img
-                                src="https://api.iconify.design/hugeicons/leaf-01.svg?color=%23065f46"
-                                alt=""
-                                aria-hidden="true"
-                                class="w-3.5 h-3.5"
-                            />
-                            {{ $t('menu.vegetarian') }}
-                        </span>
-                        <span v-if="p.isSpicy" class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full inline-flex items-center gap-1.5">
-                            <img
-                                src="https://api.iconify.design/hugeicons/fire-02.svg?color=%23991b1b"
-                                alt=""
-                                aria-hidden="true"
-                                class="w-3.5 h-3.5"
-                            />
-                            {{ $t('menu.spicy') }}
-                        </span>
-                        <span v-if="p.isLunchOnly" class="px-3 py-1 bg-tsb-four text-red-700 text-sm rounded-full inline-flex items-center gap-1.5">
+                        <DietBadge v-if="p.isHalal" kind="halal" variant="pill" />
+                        <DietBadge v-if="p.isVegetarian" kind="vegetarian" variant="pill" />
+                        <DietBadge v-if="p.isSpicy" kind="spicy" variant="pill" />
+                        <span v-if="p.isLunchOnly" class="px-3 py-1 bg-tsb-four text-primary-700 text-sm rounded-full inline-flex items-center gap-1.5">
                             {{ $t('menu.lunchOnly') }}
                         </span>
                         <span v-if="p.isDiscountable" class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200">
@@ -80,37 +57,43 @@
 
                     <!-- Description -->
                     <div class="prose prose-sm" v-if="p.description">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-2">
                             {{ $t('menu.description') }}
                         </h3>
-                        <p class="text-gray-600 text-sm">{{ p.description }}</p>
+                        <p class="text-neutral-600 text-sm">{{ p.description }}</p>
                     </div>
 
                     <!-- Choice Selection -->
                     <div v-if="hasChoices" class="space-y-3 border-t pt-4">
-                        <h3 class="text-sm font-semibold text-gray-700">{{ $t('menu.selectChoice') }}</h3>
+                        <h3 class="text-sm font-semibold text-neutral-700">{{ $t('menu.selectChoice') }}</h3>
                         <div class="space-y-3">
                             <div
                                 v-for="group in choiceGroups"
                                 :key="group.id"
-                                class="rounded-lg border p-3 transition-colors"
-                                :class="isGroupSatisfied(group) ? 'border-gray-200' : 'border-red-300 bg-red-50/30'"
+                                :ref="(el) => setGroupRef(group.id, el)"
+                                data-testid="product-modal-group"
+                                :data-invalid="isGroupFlagged(group)"
+                                class="rounded-xl border p-3 transition-colors"
+                                :class="[
+                                    isGroupFlagged(group) ? 'border-red-300 bg-red-50/30' : 'border-neutral-200',
+                                    shakingGroupId === group.id ? 'animate-shake' : '',
+                                ]"
                             >
                                 <div class="flex items-center justify-between mb-2 gap-3">
                                     <div class="min-w-0">
-                                        <span class="text-sm font-medium text-gray-900">{{ choiceGroupDisplayName(group) }}</span>
+                                        <span class="text-sm font-medium text-neutral-900">{{ choiceGroupDisplayName(group) }}</span>
                                         <p
-                                            v-if="!isGroupSatisfied(group)"
+                                            v-if="isGroupFlagged(group)"
                                             class="text-xs text-red-600 mt-0.5"
                                         >
                                             {{ groupHint(group) }}
                                         </p>
                                     </div>
                                     <span
-                                        class="text-xs font-semibold whitespace-nowrap"
-                                        :class="isGroupSatisfied(group) ? 'text-emerald-600' : 'text-red-600'"
+                                        class="rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap tabular-nums"
+                                        :class="groupTagClass(group)"
                                     >
-                                        {{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ groupTargetMax(group) }}
+                                        <template v-if="group.minSelections > 0">{{ $t('menu.required') }} · </template>{{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ groupTargetMax(group) }}
                                     </span>
                                 </div>
                                 <div class="space-y-2">
@@ -118,31 +101,22 @@
                                         v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
                                         :key="choice.id"
                                         :data-testid="'product-modal-choice-' + choice.id"
-                                        class="flex items-center gap-3 p-2.5 rounded-lg border border-gray-200"
+                                        class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
                                     >
-                                        <span class="flex-1 text-sm text-gray-900">{{ choice.name }}</span>
-                                        <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-gray-500">
+                                        <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
+                                        <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
                                             {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
                                         </span>
-                                        <div class="flex items-center gap-1 bg-gray-100 rounded-full">
-                                            <button
-                                                type="button"
-                                                :data-testid="`product-modal-choice-dec-${choice.id}`"
-                                                class="w-8 h-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
-                                                :aria-label="$t('cart.decreaseQty')"
-                                                :disabled="!(selectedChoiceQuantities[choice.id] > 0)"
-                                                @click="decrementChoice(choice)"
-                                            >−</button>
-                                            <span class="w-6 text-center text-xs font-semibold">{{ selectedChoiceQuantities[choice.id] ?? 0 }}</span>
-                                            <button
-                                                type="button"
-                                                :data-testid="`product-modal-choice-inc-${choice.id}`"
-                                                class="w-8 h-8 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
-                                                :aria-label="$t('cart.increaseQty')"
-                                                :disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= groupTargetMax(group)"
-                                                @click="incrementChoice(choice)"
-                                            >+</button>
-                                        </div>
+                                        <QuantityStepper
+                                            size="sm"
+                                            :value="selectedChoiceQuantities[choice.id] ?? 0"
+                                            :dec-disabled="!(selectedChoiceQuantities[choice.id] > 0)"
+                                            :inc-disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= groupTargetMax(group)"
+                                            :dec-testid="`product-modal-choice-dec-${choice.id}`"
+                                            :inc-testid="`product-modal-choice-inc-${choice.id}`"
+                                            @decrement="decrementChoice(choice)"
+                                            @increment="incrementChoice(choice)"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -150,37 +124,25 @@
                     </div>
 
                     <!-- Cart Controls -->
-                    <div class="space-y-4 border-t pt-4">
+                    <div class="border-t pt-4">
                         <div class="flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="flex items-center gap-2 border rounded-lg p-1">
-                                    <button
-                                        @click="quantity > 1 ? quantity-- : null"
-                                        :aria-label="$t('cart.decreaseQty')"
-                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
-                                        :disabled="quantity === 1"
-                                    >−</button>
-                                    <span
-                                        class="w-12 text-center border-0 focus:ring-0"
-                                    >{{quantity}}</span>
-                                    <button
-                                        @click="quantity < maxQuantity ? quantity++ : null"
-                                        :aria-label="$t('cart.increaseQty')"
-                                        class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-600 transition-all active:scale-[0.97]"
-                                        :disabled="quantity === maxQuantity"
-                                    >+</button>
-                                </div>
-                            </div>
+                            <QuantityStepper
+                                :value="quantity"
+                                :dec-disabled="quantity === 1"
+                                :inc-disabled="quantity === maxQuantity"
+                                @decrement="quantity > 1 ? quantity-- : null"
+                                @increment="quantity < maxQuantity ? quantity++ : null"
+                            />
 
-                            <button
-                                @click="addToCart"
+                            <UiButton
+                                size="lg"
+                                class="flex-1"
                                 data-testid="product-modal-add-to-cart"
-                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-sm md:font-medium transition-all active:scale-[0.97]"
-                                :class="{ 'opacity-50 cursor-not-allowed': !canAddToCart }"
-                                :disabled="!canAddToCart"
+                                :disabled="!canOrder"
+                                @click="addToCart"
                             >
-                                {{ $t('menu.addToCart') }}
-                            </button>
+                                {{ $t(editItem ? 'menu.updateWithPrice' : 'menu.addWithPrice', { price: formatPrice(lineTotal) }) }}
+                            </UiButton>
                         </div>
                     </div>
                 </div>
@@ -193,13 +155,14 @@
 <script setup lang="ts">
 import * as productImage from '#engine/utils/productImage'
 import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '#engine/types'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { type ComponentPublicInstance, computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -243,9 +206,16 @@ const openLightbox = (id: string, name: string) => {
     lightboxRef.value?.open()
 }
 
-const quantity = ref(1)
+// Set when the modal was opened from a customized cart line ("Edit"): prefill
+// from that line and replace it on confirm instead of adding a second one.
+const cartItemEdit = useCartItemEdit()
+const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value : null
+
+const quantity = ref(editItem?.quantity ?? 1)
 const maxQuantity = 99
-const selectedChoiceQuantities = ref<Record<string, number>>({})
+const selectedChoiceQuantities = ref<Record<string, number>>(
+    Object.fromEntries((editItem?.selectedChoices ?? []).map((selection) => [selection.choiceId, selection.quantity])),
+)
 
 const PRODUCT_QUERY = gql`
   query Product($id: ID!) {
@@ -312,7 +282,7 @@ const choiceGroups = computed(() => {
             minSelections: 1,
             maxSelections: 1,
             sortOrder: 0,
-            name: 'Choice',
+            name: t('menu.choice'),
             choices: p.choices.toSorted((a, b) => a.sortOrder - b.sortOrder),
         }]
     }
@@ -377,24 +347,43 @@ const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
     return group.name
 }
 
-const canAddToCart = computed(() => {
-    if (orderingDisabled) return false
-    if (!p?.isAvailable) return false
-    if (choiceGroups.value.length === 0) return true
+// Same line total the cart shows: unit price (with modifiers) times quantity.
+const lineTotal = computed(() => Number(displayPrice.value) * quantity.value)
 
-    const counts = selectedQuantitiesByGroup.value
-    for (const group of choiceGroups.value) {
-        const selected = counts[group.id] ?? 0
-        if (selected < groupTargetMin(group) || selected > groupTargetMax(group)) {
-            return false
-        }
-    }
-    return true
-})
+// The button stays clickable while choices are missing so a click can point at
+// the group that still needs a selection; it is only disabled when ordering is.
+const canOrder = computed(() => !orderingDisabled && Boolean(p?.isAvailable))
 
 const isGroupSatisfied = (group: ProductChoiceGroup) => {
     const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
     return selected >= groupTargetMin(group) && selected <= groupTargetMax(group)
+}
+
+// Groups open neutral; the error treatment only appears after an add attempt.
+const showGroupErrors = ref(false)
+const shakingGroupId = ref<string | null>(null)
+let shakeTimeout: ReturnType<typeof setTimeout> | null = null
+const groupElements = new Map<string, HTMLElement>()
+
+const setGroupRef = (groupId: string, el: Element | ComponentPublicInstance | null) => {
+    if (el instanceof HTMLElement) groupElements.set(groupId, el)
+    else groupElements.delete(groupId)
+}
+
+const isGroupFlagged = (group: ProductChoiceGroup) => showGroupErrors.value && !isGroupSatisfied(group)
+
+const groupTagClass = (group: ProductChoiceGroup) => {
+    if (isGroupFlagged(group)) return 'bg-red-100 text-red-700'
+    if (group.minSelections > 0 && isGroupSatisfied(group)) return 'bg-emerald-50 text-emerald-700'
+    return 'bg-neutral-100 text-neutral-600'
+}
+
+const flagFirstIncompleteGroup = (group: ProductChoiceGroup) => {
+    showGroupErrors.value = true
+    groupElements.get(group.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    shakingGroupId.value = group.id
+    if (shakeTimeout) clearTimeout(shakeTimeout)
+    shakeTimeout = setTimeout(() => { shakingGroupId.value = null }, 400)
 }
 
 const groupHint = (group: ProductChoiceGroup) => {
@@ -444,7 +433,11 @@ onMounted(() => {
         if (e.key === 'Escape') emit('close')
     }
     document.addEventListener('keydown', handleEscape)
-    onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+    onUnmounted(() => {
+        document.removeEventListener('keydown', handleEscape)
+        if (shakeTimeout) clearTimeout(shakeTimeout)
+        cartItemEdit.value = null
+    })
 
     // Track product view
     if (p) {
@@ -459,8 +452,20 @@ onMounted(() => {
 })
 
 const addToCart = () => {
-    if (!p || !canAddToCart.value) return
+    if (!p || !canOrder.value) return
 
+    const incompleteGroup = choiceGroups.value.find((group) => !isGroupSatisfied(group))
+    if (incompleteGroup) {
+        flagFirstIncompleteGroup(incompleteGroup)
+        return
+    }
+
+    if (editItem) {
+        cartStore.removeFromCart(editItem.product, {
+            choice: editItem.selectedChoice,
+            selections: editItem.selectedChoices,
+        })
+    }
     cartStore.addProduct(p, quantity.value, {
         choice: selectedChoice.value,
         selections: selectionList.value,

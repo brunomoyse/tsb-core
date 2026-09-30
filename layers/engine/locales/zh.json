@@ -10,7 +10,12 @@
     "toTop": "返回顶部",
     "remove": "删除",
     "close": "关闭",
-    "skipToContent": "跳转到主要内容"
+    "skipToContent": "跳转到主要内容",
+    "accept": "接受",
+    "acceptCookies": "接受 Cookie",
+    "step": "第 {n} 步",
+    "discard": "放弃",
+    "keepEditing": "继续编辑"
   },
   "nav": {
     "home": "首页",
@@ -22,7 +27,12 @@
     "search": "搜索",
     "cart": "购物车",
     "language": "选择语言",
-    "toggleMenu": "切换菜单"
+    "toggleMenu": "切换菜单",
+    "sidebar": "主导航",
+    "callRestaurant": "致电餐厅",
+    "searchLabel": "搜索菜单",
+    "clearSearch": "清除搜索",
+    "currentLanguage": "语言：{language}"
   },
   "home": {
     "heroTagline": "日本餐厅 · 列日",
@@ -105,7 +115,12 @@
     "no": "否",
     "pickupDiscountBadge": "自取享9折",
     "restaurantClosed": "餐厅目前已关闭。",
-    "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。"
+    "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。",
+    "choice": "选项",
+    "required": "必选",
+    "addWithPrice": "添加 · {price}",
+    "updateWithPrice": "更新 · {price}",
+    "viewDetails": "查看 {name} 详情"
   },
   "days": {},
   "login": {
@@ -292,7 +307,9 @@
     "undo": "撤销",
     "removedUndo": "已移除「{name}」",
     "eachSuffix": "每份",
-    "deliveryTbd": "运费将在结账时计算"
+    "deliveryTbd": "运费将在结账时计算",
+    "editItem": "修改",
+    "pickupDiscountShort": "-10%"
   },
   "checkout": {
     "title": "结账",

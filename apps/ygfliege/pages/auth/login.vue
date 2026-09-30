@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta, useSwitchLocalePath } from '#imports'
-import AuthFlow from '~/components/auth/AuthFlow.vue'
+import AuthFlow from '#engine/components/auth/AuthFlow.vue'
 import { useI18n } from 'vue-i18n'
 
 definePageMeta({ public: true })

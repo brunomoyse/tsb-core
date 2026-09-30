@@ -1,27 +1,15 @@
 <template>
     <div class="flex justify-center px-4 pt-6 sm:pt-10 pb-12">
         <div class="w-full max-w-md">
-            <div class="relative bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div class="absolute top-3 right-3 z-10 flex gap-0.5">
-                    <NuxtLink
-                        v-for="lang in languages"
-                        :key="lang.code"
-                        :to="switchLocalePath(lang.code)"
-                        :class="[
-                            'inline-flex items-center justify-center min-h-8 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300',
-                            locale === lang.code
-                                ? 'text-gray-700 font-medium'
-                                : 'text-gray-400 hover:text-gray-500'
-                        ]"
-                    >
-                        {{ lang.label }}
-                    </NuxtLink>
+            <div class="card relative">
+                <div class="absolute top-2 right-2 z-10">
+                    <LanguagePicker />
                 </div>
 
-                <div class="px-7 sm:px-10 py-8 sm:py-10">
-                    <h1 class="text-2xl font-semibold text-gray-900 text-center mb-4">
+                <div class="px-7 sm:px-10 pt-14 pb-8 sm:pb-10">
+                    <PageTitle class="text-center mb-4">
                         {{ $t('login.title') }}
-                    </h1>
+                    </PageTitle>
 
                     <!-- Session expired notice -->
                     <p
@@ -46,22 +34,15 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta, useSwitchLocalePath } from '#imports'
-import AuthFlow from '~/components/auth/AuthFlow.vue'
+import { definePageMeta, navigateTo, useLocalePath, useRoute, useSeoMeta } from '#imports'
+import AuthFlow from '#engine/components/auth/AuthFlow.vue'
+import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { useI18n } from 'vue-i18n'
 
 definePageMeta({ public: true })
 
-const { t, locale } = useI18n()
-const switchLocalePath = useSwitchLocalePath()
+const { t } = useI18n()
 const route = useRoute()
-
-const languages = [
-    { code: 'fr', label: 'FR' },
-    { code: 'en', label: 'EN' },
-    { code: 'nl', label: 'NL' },
-    { code: 'zh', label: '中文' },
-]
 
 const sessionExpired = ref(false)
 const authRequestId = computed(

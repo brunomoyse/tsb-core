@@ -72,4 +72,23 @@ export interface BrandConfig {
     }
     /** Email address handling account-deletion requests. */
     deletionEmail: string
+    /**
+     * Show the internal menu code ("E1") next to the category on cart and
+     * order lines. Defaults to false: on a menu without printed codes it
+     * reads like debug output.
+     */
+    showProductCode?: boolean
+    /**
+     * Decorative Japanese accents (kanji watermarks, hanko seal, torii
+     * divider, falling petals) in the shared shop components. Off by default.
+     */
+    japaneseAccents?: boolean
+    /** Illustration on the order-completed page (paths under /public, no extension for the avif/webp pair). */
+    orderCompletedImage?: {
+        avif: string
+        webp: string
+        fallback: string
+    }
+    /** Keys under `faq.questions` to list on the FAQ page, in order. */
+    faqQuestions?: string[]
 }

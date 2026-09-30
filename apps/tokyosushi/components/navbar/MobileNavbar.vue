@@ -1,5 +1,5 @@
 <template>
-    <nav class="mobile-only bg-white text-gray-700 fixed z-50 h-20 w-full">
+    <nav class="sm:hidden bg-white text-neutral-700 fixed z-50 h-20 w-full">
         <div class="relative px-4 flex items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center shrink-0">
@@ -24,10 +24,9 @@
 
             <!-- Right part -->
             <div class="flex items-center ml-auto shrink-0">
-                <!-- Cart icon -->
+                <!-- Cart icon: on the menu, and on any page once the cart has items -->
                 <div>
-                    <CartButton v-if="isMounted && typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && cartStore.totalItems === 0"
-                                class="lg:hidden"/>
+                    <CartButton v-if="showCartButton" class="lg:hidden"/>
                 </div>
 
                 <!-- Hamburger Menu -->
@@ -37,7 +36,7 @@
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-lg border border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >
@@ -46,54 +45,47 @@
                         <span></span>
                     </button>
 
-                    <!-- Mobile Sidebar Menu -->
+                    <!-- Mobile Sidebar Menu (same entries as the desktop sidebar) -->
                     <div id="mobile-menu"
                          :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
-                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto">
+                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto bg-tsb-two">
 
-                        <!-- Top Section -->
-                        <div class="flex flex-col items-center space-y-6 mt-4">
-                            <ul class="flex flex-col items-center space-y-6 w-full">
-                                <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/tsb-black-font-100.png" to="/"
-                                      @click="closeMenu"/></li>
-                                <MobileNavItem :label="$t('nav.menu')" icon="/icons/menu-icon.svg"
-                                               to="/menu"
-                                               @click="closeMenu"/>
-                                <MobileNavItem :label="$t('nav.contact')" icon="/icons/contact-icon.svg"
-                                               to="/contact"
-                                               @click="closeMenu"/>
-                                <ClientOnly>
-                                    <MobileNavItem v-if="!authStore.user" :label="$t('nav.login')" icon="/icons/login-icon.svg"
-                                                   to="/auth/login"
-                                                   @click="closeMenu"/>
-                                    <MobileNavItem v-if="authStore.user" :label="$t('nav.myAccount')"
-                                                   icon="/icons/account-circle-icon.svg"
-                                                   to="/me"
-                                                   @click="closeMenu"/>
-                                </ClientOnly>
+                        <ul class="flex flex-col items-center space-y-4 w-full mt-4">
+                            <MobileNavItem
+                                v-for="item in visibleNavItems('main', false)"
+                                :key="item.key"
+                                :label="$t(item.labelKey)"
+                                :icon="item.icon"
+                                :to="item.to"
+                                @click="closeMenu"
+                            />
+                            <ClientOnly>
+                                <MobileNavItem
+                                    v-for="item in visibleNavItems('account', Boolean(authStore.user))"
+                                    :key="item.key"
+                                    :label="$t(item.labelKey)"
+                                    :icon="item.icon"
+                                    :to="item.to"
+                                    @click="closeMenu"
+                                />
+                            </ClientOnly>
 
-                                <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
-                                                class="justify-center" icon="/icons/translate-icon.svg"
-                                                tooltipText="Change Language"/>
+                            <!-- Divider -->
+                            <li class="w-full border-t border-neutral-300/60 my-2"></li>
 
-                                <!-- Divider -->
-                                <li class="w-full border-t border-gray-200 my-2"></li>
+                            <!-- Phone (tap-to-call) -->
+                            <li>
+                                <a :href="phoneHref"
+                                   :aria-label="$t('nav.callRestaurant')"
+                                   class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                   @click="closeMenu">
+                                    <NavIcon src="/icons/contact-icon.svg" class="w-5 h-5" />
+                                    <span class="text-sm font-medium">{{ phoneLabel }}</span>
+                                </a>
+                            </li>
 
-                                 <!-- Phone (tap-to-call) -->
-                                 <li>
-                                     <a href="tel:042229888"
-                                        aria-label="Appeler le restaurant"
-                                        class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2"
-                                        @click="closeMenu">
-                                         <img alt="Phone" src="/icons/contact-icon.svg" class="w-5 h-5" />
-                                         <span class="text-sm font-medium">04 222 98 88</span>
-                                     </a>
-                                 </li>
-                            </ul>
-                        </div>
-
-                        <!-- Bottom Section -->
-                        <ul class="flex flex-col items-center space-y-6 mt-auto pb-6 w-full"></ul>
+                            <li><LanguagePicker placement="top-center" /></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -104,15 +96,19 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, ref, watch } from '#imports'
-import CartButton from '~/components/cart/CartButton.vue'
-const DeliveryZoneChip = defineAsyncComponent(() => import('~/components/delivery/DeliveryZoneChip.vue'))
+import CartButton from '#engine/components/cart/CartButton.vue'
+const DeliveryZoneChip = defineAsyncComponent(() => import('#engine/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
 import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
+import NavIcon from './NavIcon.vue'
+import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
+import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useCartStore } from '#engine/stores/cart'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
+import { visibleNavItems } from './navItems'
 
 const currentRoute = useRoute();
 const authStore = useAuthStore()
@@ -120,6 +116,15 @@ const cartStore = useCartStore()
 const logoAlt = `${useAppConfig().brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
+const { phoneHref, phoneLabel } = useBrandPhone()
+
+const routeName = computed(() => (typeof currentRoute.name === 'string' ? currentRoute.name : ''))
+// Hidden on cart/checkout, which already show the cart.
+const showCartButton = computed(() =>
+    isMounted.value
+    && !/^(?:cart|checkout)/u.test(routeName.value)
+    && (routeName.value.startsWith('menu') || cartStore.totalItems > 0),
+)
 
 const isMenuOpen = ref(false)
 
@@ -195,7 +200,6 @@ watch(isMenuOpen, (open) => {
 
 /* Mobile Menu Styles */
 #mobile-menu {
-    background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;

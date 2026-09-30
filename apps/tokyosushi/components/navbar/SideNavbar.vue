@@ -1,19 +1,23 @@
 <template>
     <nav
-        aria-label="Sidebar Navigation"
+        :aria-label="$t('nav.sidebar')"
         class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100vh-4rem)] fixed left-8 top-8 z-40"
     >
         <!-- Top Navigation Items -->
         <ul class="flex flex-col items-center space-y-6 mt-6">
             <li><Logo :tooltipText="$t('nav.home')" :alt="logoAlt" icon="/images/tsb-black-font-100.png" to="/"/></li>
-            <NavItem :tooltipText="$t('nav.menu')" alt="Menu Icon" icon="/icons/menu-icon.svg" to="menu"/>
-            <NavItem :tooltipText="$t('nav.contact')" alt="Contact Icon" icon="/icons/contact-icon.svg" to="contact"/>
+            <NavItem
+                v-for="item in visibleNavItems('main', false)"
+                :key="item.key"
+                :tooltipText="$t(item.labelKey)"
+                :icon="item.icon"
+                :to="item.to"
+            />
             <!-- Cart button for tablet (hidden on lg+ where SideCart is visible) -->
             <NavItemButton
-                v-if="isMounted && cartStore.totalItems > 0 && isMenuPage"
+                v-if="isMounted && cartStore.totalItems > 0 && !isCartFlowPage"
                 class="lg:hidden"
                 :tooltipText="$t('nav.cart')"
-                alt="Cart Icon"
                 icon="/icons/shopping-bag-icon.svg"
                 :badge="cartStore.totalItems"
                 @click="cartStore.toggleCartVisibility()"
@@ -24,21 +28,23 @@
         <ul class="flex flex-col items-center space-y-6 mb-6">
             <!-- Decorative wave accent -->
             <li aria-hidden="true" class="pb-1">
-                <svg class="w-8 h-4 text-red-300/30" viewBox="0 0 40 16" fill="none">
+                <svg class="w-8 h-4 text-primary-300/30" viewBox="0 0 40 16" fill="none">
                     <path d="M0 12 C10 12 10 4 20 4 C30 4 30 12 40 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
                 </svg>
             </li>
+            <!-- Phone (tap-to-call), same entry as the mobile menu -->
+            <NavItem :tooltipText="phoneLabel" :ariaLabel="$t('nav.callRestaurant')" icon="/icons/contact-icon.svg" :href="phoneHref" class="hidden [@media(min-height:800px)]:block" />
             <ClientOnly>
-                <NavItem v-if="!authStore.user" :tooltipText="$t('nav.login')" alt="Login Icon" icon="/icons/login-icon.svg"
-                         to="auth-login"/>
-                <NavItem v-if="authStore.user" :tooltipText="$t('nav.myAccount')" alt="My account Icon" icon="/icons/account-circle-icon.svg"
-                         to="me"/>
-                <NavItem v-if="authStore.user" :tooltipText="$t('nav.logout')" alt="Logout Icon" icon="/icons/logout-icon.svg"
-                         to="auth-logout"/>
+                <NavItem
+                    v-for="item in visibleNavItems('account', Boolean(authStore.user))"
+                    :key="item.key"
+                    :tooltipText="$t(item.labelKey)"
+                    :icon="item.icon"
+                    :to="item.to"
+                />
             </ClientOnly>
             <!-- Language picker -->
-            <LanguagePicker :tooltipText="$t('nav.language')" alt="Choose language Icon"
-                            icon="/icons/translate-icon.svg"/>
+            <li><LanguagePicker variant="rail" /></li>
         </ul>
     </nav>
 </template>
@@ -50,15 +56,19 @@ import NavItem from './NavItem.vue'
 import NavItemButton from './NavItemButton.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
+import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useCartStore } from '#engine/stores/cart'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
+import { visibleNavItems } from './navItems'
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const route = useRoute()
 const logoAlt = `${useAppConfig().brand.name} logo`
-const isMenuPage = computed(() => route.path.endsWith('/menu'))
+const { phoneHref, phoneLabel } = useBrandPhone()
+// The cart and checkout pages already show the cart; no shortcut there.
+const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 </script>

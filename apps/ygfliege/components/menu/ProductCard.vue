@@ -11,12 +11,7 @@
                 <!-- Dietary badges -->
                 <div v-if="product.isHalal || product.isVegetarian || product.isSpicy" class="absolute top-1 right-1 z-10 flex flex-col gap-0.5">
                     <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
-                        <img
-                            src="https://api.iconify.design/hugeicons/halal.svg?color=%231d4ed8"
-                            alt=""
-                            aria-hidden="true"
-                            class="w-3 h-3"
-                        />
+                        <DietIcon kind="halal" class="w-3 h-3" />
                     </div>
                     <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

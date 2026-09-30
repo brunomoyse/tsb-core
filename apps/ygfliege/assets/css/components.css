@@ -79,6 +79,21 @@
         border-color: var(--ygf-cream);
     }
 
+    /* Size and ghost variants emitted by the engine's <UiButton>. */
+    .btn-sm {
+        padding: 0.5rem 1.125rem;
+        font-size: 0.8125rem;
+    }
+
+    .btn-ghost {
+        background: transparent;
+        color: var(--ygf-black);
+    }
+
+    .btn-ghost:not(:disabled):hover {
+        background: var(--ygf-orange-bg);
+    }
+
     /* Tertiary: underlined orange text, no fill or border. */
     .btn-link {
         display: inline-flex;

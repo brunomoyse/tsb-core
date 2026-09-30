@@ -25,10 +25,10 @@
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
                     <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
-                        <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
+                        <label class="sr-only" for="menuSearch">{{ $t('nav.searchLabel') }}</label>
                         <input
                             id="menuSearch"
                             ref="searchInputRef"
@@ -41,8 +41,8 @@
                             type="button"
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
-                            :aria-label="$t('nav.search')"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                            :aria-label="$t('nav.clearSearch')"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -57,19 +57,15 @@
                             type="button"
                             @click="toggleFilter('halal')"
                             :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
                         >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                            <DietIcon
+                                kind="halal"
+                                class="w-3.5 h-3.5 transition-transform duration-200"
                                 :class="activeFilters.has('halal') ? 'scale-110' : ''"
-                                :src="activeFilters.has('halal')
-                                    ? 'https://api.iconify.design/hugeicons/halal.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/halal.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
                             />
                             {{ $t('menu.halal') }}
                         </button>
@@ -79,19 +75,15 @@
                             type="button"
                             @click="toggleFilter('vegetarian')"
                             :aria-pressed="activeFilters.has('vegetarian')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                             :class="activeFilters.has('vegetarian')
                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                            <DietIcon
+                                kind="vegetarian"
+                                class="w-3.5 h-3.5 transition-transform duration-200"
                                 :class="activeFilters.has('vegetarian') ? 'scale-110' : ''"
-                                :src="activeFilters.has('vegetarian')
-                                    ? 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/leaf-01.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
                             />
                             {{ $t('menu.vegetarian') }}
                         </button>
@@ -101,19 +93,15 @@
                             type="button"
                             @click="toggleFilter('spicy')"
                             :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
                         >
-                            <img
-                                class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                            <DietIcon
+                                kind="spicy"
+                                class="w-3.5 h-3.5 transition-transform duration-200"
                                 :class="activeFilters.has('spicy') ? 'scale-110' : ''"
-                                :src="activeFilters.has('spicy')
-                                    ? 'https://api.iconify.design/hugeicons/fire-02.svg?color=%23ffffff'
-                                    : 'https://api.iconify.design/hugeicons/fire-02.svg?color=%234b5563'"
-                                alt=""
-                                aria-hidden="true"
                             />
                             {{ $t('menu.spicy') }}
                         </button>
@@ -132,7 +120,7 @@
                         class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
                         :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
                     >
-                        <svg class="w-4 h-4 text-red-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="w-4 h-4 text-primary-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
@@ -165,7 +153,7 @@
                         class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-end pr-1"
                         :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
                     >
-                        <svg class="w-4 h-4 text-red-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="w-4 h-4 text-primary-700/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
@@ -177,7 +165,7 @@
                 <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
                 <span class="flex-1 truncate">
                     {{ $t('menu.allergenNoticeShort') }}
-                    <a href="tel:042229888" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
+                    <a :href="phoneHref" class="underline font-medium text-amber-900">{{ phoneLabel }}</a>
                 </span>
                 <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -189,9 +177,9 @@
             <!-- Skeleton Loading State -->
             <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div v-for="i in 3" :key="i" class="space-y-4">
-                    <div class="h-6 w-32 bg-gray-200 rounded animate-pulse ml-4"></div>
+                    <div class="h-6 w-32 bg-neutral-200 rounded animate-pulse ml-4"></div>
                     <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
-                        <div v-for="j in 4" :key="j" class="h-[260px] bg-gray-200 rounded-xl animate-pulse"></div>
+                        <div v-for="j in 4" :key="j" class="h-[260px] bg-neutral-200 rounded-xl animate-pulse"></div>
                     </div>
                 </div>
             </section>
@@ -206,17 +194,17 @@
                 >
                     <!-- Category Title with Japanese bracket decoration -->
                     <div class="flex items-center gap-3 ml-4">
-                        <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
-                        <h2 translate="no" class="font-channel inline-block text-xl font-semibold text-gray-800 tracking-wide">
+                        <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true">「</span>
+                        <h2 translate="no" class="font-channel inline-block text-xl font-semibold text-neutral-800 tracking-wide">
                             {{ cat.name }}
                         </h2>
-                        <span class="text-red-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
+                        <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true">」</span>
                     </div>
 
                     <!-- Product Cards -->
                     <div
                         v-if="cat.products.length"
-                        class="grid grid-cols-2 gap-5 justify-center sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+                        class="grid grid-cols-2 gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                     >
                         <ProductCard
                             :index="idx"
@@ -231,18 +219,18 @@
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="text-center text-gray-500 italic">
+                    <div v-else class="text-center text-neutral-500 italic">
                         {{ $t('menu.noProduct') }}
                     </div>
                 </div>
 
                 <!-- Search No Results -->
-                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
                 </div>
 
                 <!-- Filter No Results -->
-                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-gray-500">
+                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
                     <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
             </section>
@@ -285,17 +273,18 @@ import type { Product, ProductCategory } from '#engine/types'
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
-import DeliveryZoneChip from '~/components/delivery/DeliveryZoneChip.vue'
+import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import { useHaptics } from '#engine/composables/useHaptics'
 import ProductModal from '~/components/menu/ProductModal.vue'
-import SideCart from '~/components/cart/SideCart.vue'
+import SideCart from '#engine/components/cart/SideCart.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
 import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
 
@@ -303,6 +292,7 @@ const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
 const router = useRouter()
 const { trackEvent } = useTracking()
+const { phoneHref, phoneLabel } = useBrandPhone()
 const showAllergenNotice = ref(true)
 onMounted(() => {
     if (localStorage.getItem('allergenNoticeDismissed') === 'true') {

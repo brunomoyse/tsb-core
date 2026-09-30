@@ -72,14 +72,48 @@ module.exports = {
                 },
                 // `border-subtle` — faintest warm hairline (--border-subtle).
                 'subtle': 'rgba(242, 123, 32, 0.08)',
+                // Theme contract shared with every brand app: the engine layer's
+                // components only use these names (primary-N accent scale,
+                // neutral-N neutrals, tsb-one..four surfaces) and each brand
+                // maps them. red-* stays reserved for errors.
+                'neutral': {
+                    50: '#FAFAFA',
+                    100: '#F5F5F5',
+                    200: '#E5E5E5',
+                    300: '#D4D4D4',
+                    400: '#999999',
+                    500: '#666666',
+                    600: '#666666',
+                    700: '#1A1A1A',
+                    800: '#1A1A1A',
+                    900: '#1A1A1A',
+                },
+                'tsb': {
+                    'one': { DEFAULT: '#FFF7ED' },   // page background
+                    'two': { DEFAULT: '#FDF5EC' },   // container surface (cream)
+                    'three': { DEFAULT: '#FDBA74' }, // decorative
+                    'four': { DEFAULT: '#FFEDD5' },  // selected / active
+                },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 primary: {
+                    50: '#FFF7ED',
+                    100: '#FFEDD5',
+                    200: '#FED7AA',
+                    300: '#FDBA74',
+                    400: '#FB923C',
+                    500: '#F58220',
+                    600: '#D96A10',
+                    700: '#C2570C',
+                    800: '#9A3412',
+                    900: '#7C2D12',
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
+                    hover: '#9A3412',
+                    soft: '#FFEDD5',
                 },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
@@ -104,6 +138,22 @@ module.exports = {
                 card: {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
+                },
+            },
+            // Contract overrides where the raw orange scale fails contrast: solid
+            // fills and text use the AA-safe "on-white" oranges (see brand.css),
+            // and neutral hairlines stay warm-tinted per the guide.
+            backgroundColor: {
+                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412' },
+            },
+            textColor: {
+                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412', 800: '#9A3412' },
+            },
+            borderColor: {
+                neutral: {
+                    100: 'rgba(242, 123, 32, 0.08)',
+                    200: 'rgba(242, 123, 32, 0.12)',
+                    300: 'rgba(242, 123, 32, 0.18)',
                 },
             },
             fontFamily: {

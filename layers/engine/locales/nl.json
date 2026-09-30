@@ -10,7 +10,12 @@
     "toTop": "Naar boven",
     "remove": "Verwijderen",
     "close": "Sluiten",
-    "skipToContent": "Ga naar de hoofdinhoud"
+    "skipToContent": "Ga naar de hoofdinhoud",
+    "accept": "Accepteren",
+    "acceptCookies": "Cookies accepteren",
+    "step": "Stap {n}",
+    "discard": "Verwerpen",
+    "keepEditing": "Verder bewerken"
   },
   "nav": {
     "home": "Home",
@@ -22,7 +27,12 @@
     "search": "Zoeken...",
     "cart": "Winkelwagen",
     "language": "Taal selecteren",
-    "toggleMenu": "Menu openen/sluiten"
+    "toggleMenu": "Menu openen/sluiten",
+    "sidebar": "Hoofdnavigatie",
+    "callRestaurant": "Bel het restaurant",
+    "searchLabel": "Zoek in het menu",
+    "clearSearch": "Zoekopdracht wissen",
+    "currentLanguage": "Taal: {language}"
   },
   "home": {
     "heroTagline": "Japans restaurant · Luik",
@@ -97,7 +107,12 @@
     "no": "Nee",
     "pickupDiscountBadge": "10% korting bij afhalen",
     "restaurantClosed": "Het restaurant is momenteel gesloten.",
-    "restaurantClosedDetails": "U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar."
+    "restaurantClosedDetails": "U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar.",
+    "choice": "Keuze",
+    "required": "Verplicht",
+    "addWithPrice": "Toevoegen · {price}",
+    "updateWithPrice": "Bijwerken · {price}",
+    "viewDetails": "Details van {name} bekijken"
   },
   "days": {},
   "login": {
@@ -279,7 +294,9 @@
     "addToCart": "Toevoegen aan winkelwagen",
     "item": "artikel",
     "items": "artikelen",
-    "orderingUnavailable": "Bestellen niet beschikbaar"
+    "orderingUnavailable": "Bestellen niet beschikbaar",
+    "editItem": "Wijzigen",
+    "pickupDiscountShort": "-10%"
   },
   "checkout": {
     "title": "Bestelling",

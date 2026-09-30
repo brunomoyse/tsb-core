@@ -10,7 +10,7 @@ Customer-facing webshop for Tokyo Sushi Bar.
 - Tailwind CSS 4
 - Pinia with persisted state
 - GraphQL (queries/mutations/subscriptions)
-- `@nuxtjs/i18n` (fr default, en, zh)
+- `@nuxtjs/i18n` (fr default, en, nl, zh)
 - OIDC (Zitadel)
 
 ## Main features

@@ -15,7 +15,9 @@ import { useCartStore } from '@/stores/cart'
 
 const PICKUP_DISCOUNT_THRESHOLD = 20
 const PICKUP_DISCOUNT_RATE = 0.1
-const DELIVERY_MIN = 25
+// Minimum subtotal for a delivery order, in euros. Exported so every warning
+// message renders the same amount the totals enforce.
+export const DELIVERY_MINIMUM = 25
 
 export interface CartTotals {
     getItemUnitPrice: (item: CartItem) => number
@@ -78,7 +80,7 @@ export function useCartTotals(): CartTotals {
     )
 
     const isMinimumReached = computed(() =>
-        cartStore.collectionOption === 'DELIVERY' ? subtotal.value >= DELIVERY_MIN : true,
+        cartStore.collectionOption === 'DELIVERY' ? subtotal.value >= DELIVERY_MINIMUM : true,
     )
 
     return {

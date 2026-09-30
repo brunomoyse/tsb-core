@@ -36,4 +36,7 @@ export const brand: BrandConfig = {
         count: 248,
     },
     deletionEmail: 'cloud@nuagemagique.dev',
+    showProductCode: true,
+    japaneseAccents: true,
+    faqQuestions: ['delivery', 'hours', 'halal', 'discount', 'payment', 'allergens', 'invoice', 'freshness', 'parking'],
 }

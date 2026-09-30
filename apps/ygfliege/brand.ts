@@ -56,4 +56,10 @@ export const brand: BrandConfig = {
      * reviews. Add it only once there are genuine numbers to report.
      */
     deletionEmail: 'ygfliege@gmail.com',
+    orderCompletedImage: {
+        avif: '/images/mascot/fuzi-noodles-400.avif',
+        webp: '/images/mascot/fuzi-noodles-400.webp',
+        fallback: '/images/mascot/fuzi-noodles-700.png',
+    },
+    faqQuestions: ['what', 'spicy', 'vegan', 'hours', 'delivery', 'payment', 'allergens'],
 }
