@@ -44,7 +44,7 @@
                 />
             </ClientOnly>
             <!-- Language picker -->
-            <li><LanguagePicker variant="rail" /></li>
+            <li><LanguagePicker variant="rail" placement="right" /></li>
         </ul>
     </nav>
 </template>

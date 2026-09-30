@@ -14,7 +14,7 @@
          "
     >
         <!-- Header with Toggle -->
-        <header class="px-4 py-5 flex items-center justify-between gap-4">
+        <header class="px-4 py-5 flex flex-wrap items-center justify-between gap-x-2 gap-y-3">
             <h2 class="text-xl font-bold text-neutral-900">
                 {{ $t('cart.title') }}
             </h2>
@@ -26,16 +26,16 @@
                         :disabled="option.disabled"
                         :title="option.disabled ? `${option.label}: ${$t('delivery.comingSoon')}` : undefined"
                         :class="[
-          'flex min-h-9 items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          'flex min-h-9 items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           option.disabled ? 'cursor-not-allowed opacity-40' : '',
           cartStore.collectionOption === option.value
             ? 'bg-white text-neutral-900 shadow-sm'
             : 'text-neutral-500 hover:bg-tsb-four/40'
         ]"
                         @click="handleOrderType(option.value)">
-                    <img alt="" :src="option.icon" class="w-4 h-4"/>
+                    <img alt="" :src="option.icon" class="w-4 h-4 shrink-0"/>
                     <span>{{ option.label }}</span>
-                    <span v-if="option.value === 'PICKUP'" class="rounded-full bg-tsb-four px-1.5 py-0.5 text-[10px] font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort') }}</span>
+                    <span v-if="option.value === 'PICKUP'" class="rounded-full bg-tsb-four px-1 py-0.5 text-[10px] font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort') }}</span>
                 </button>
             </div>
         </header>
