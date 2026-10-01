@@ -67,11 +67,11 @@ E2E tests require:
 ## Docker
 
 ```bash
-docker build -t tsb-core .
+docker build -t tsb-core --build-arg APP=tokyosushi .   # APP = the app under apps/ (tokyosushi or ygfliege)
 docker run --name tsb-core --env-file .env -p 3000:3000 tsb-core
 ```
 
-The Dockerfile is multi-stage with a healthcheck and supports multi-arch builds.
+One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a healthcheck and supports multi-arch builds.
 
 ## Deployment
 

@@ -1,7 +1,11 @@
-# Build context = monorepo root (…/tsb-core), NOT this app dir, so the shared
-# engine layer (layers/engine) is available to the build. In CI:
-#   docker buildx build . --file apps/tokyosushi/Dockerfile ...
+# One Dockerfile for every brand app. Build context = monorepo root (…/tsb-core),
+# so the shared engine layer (layers/engine) is available to the build. In CI:
+#   docker buildx build . --file Dockerfile --build-arg APP=tokyosushi ...
+#   docker buildx build . --file Dockerfile --build-arg APP=ygfliege ...
 FROM node:24.21-slim AS builder
+
+# Which app under apps/ to build (npm workspace name = directory name).
+ARG APP=tokyosushi
 
 WORKDIR /usr/src/app
 
@@ -44,20 +48,22 @@ ENV BASE_URL=${BASE_URL} \
 # Copy workspace manifests first for dependency-install layer caching.
 COPY package.json package-lock.json ./
 COPY layers/engine/package.json ./layers/engine/package.json
-COPY apps/tokyosushi/package.json ./apps/tokyosushi/package.json
+COPY apps/${APP}/package.json ./apps/${APP}/package.json
 
 # Install the whole workspace (hoisted to the root node_modules).
 RUN npm ci --prefer-offline --no-audit
 
 # Copy the shared engine layer + this brand app.
 COPY layers ./layers
-COPY apps/tokyosushi ./apps/tokyosushi
+COPY apps/${APP} ./apps/${APP}
 
 # Build only this app (pulls in the engine layer via `extends`).
-RUN npm run build -w tokyosushi
+RUN npm run build -w ${APP}
 
 # ---------- Runtime ----------
 FROM node:24.21-alpine3.24
+
+ARG APP=tokyosushi
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
@@ -68,7 +74,7 @@ ENV NITRO_PRESET=node-server
 
 # Nitro's node-server output is self-contained (bundles its own
 # .output/server/node_modules), so no runtime `npm install` is needed.
-COPY --from=builder /usr/src/app/apps/tokyosushi/.output ./.output
+COPY --from=builder /usr/src/app/apps/${APP}/.output ./.output
 
 USER appuser
 
