@@ -123,36 +123,78 @@
         </div>
 
         <!-- Extras (brand.orderExtras) -->
-        <div v-if="orderExtras.available.length > 0" class="mb-6">
+        <div v-if="hasOfferedExtras" class="mb-6">
             <h3 class="font-medium text-lg mb-4">
                 {{ $t('checkout.extras', 'Extras') }}
             </h3>
             <div class="grid grid-cols-1 gap-4">
-                <!-- On/off extras, in the brand's display order -->
+                <!-- Chopsticks Card -->
+                <div v-if="isOffered('chopsticks')" class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                    <input
+                        type="checkbox"
+                        id="chopsticks"
+                        data-testid="order-extra-chopsticks"
+                        v-model="addChopsticks"
+                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded"
+                    />
+                    <label for="chopsticks" class="text-neutral-700 font-medium">
+                        {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
+                    </label>
+                </div>
+                <!-- Cutlery Card -->
+                <div v-if="isOffered('cutlery')" class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                    <input
+                        type="checkbox"
+                        id="cutlery"
+                        data-testid="order-extra-cutlery"
+                        v-model="addCutlery"
+                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded"
+                    />
+                    <label for="cutlery" class="text-neutral-700 font-medium">
+                        {{ $t('checkout.addCutlery') }}
+                    </label>
+                </div>
+                <!-- Wasabi Card -->
                 <div
-                    v-for="extra in toggleExtras"
-                    :key="extra.key"
+                    v-if="isOffered('wasabi')"
                     class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
-                    :class="extra.condiment && isCondimentFree ? 'opacity-60 cursor-not-allowed' : ''"
+                    :class="isLocked('wasabi') ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <input
                         type="checkbox"
-                        :id="extra.key"
-                        :data-testid="`order-extra-${extra.key}`"
-                        :checked="hasExtra(extra.key)"
-                        :disabled="extra.condiment && isCondimentFree"
+                        id="wasabi"
+                        data-testid="order-extra-wasabi"
+                        v-model="addWasabi"
+                        :disabled="isLocked('wasabi')"
                         class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
-                        @change="setExtra(extra.key, ($event.target as HTMLInputElement).checked)"
                     />
-                    <label :for="extra.key" class="text-neutral-700 font-medium">
-                        {{ $t(extra.labelKey) }}
+                    <label for="wasabi" class="text-neutral-700 font-medium">
+                        {{ $t('checkout.addWasabi') }}
+                    </label>
+                </div>
+                <!-- Ginger Card -->
+                <div
+                    v-if="isOffered('ginger')"
+                    class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
+                    :class="isLocked('ginger') ? 'opacity-60 cursor-not-allowed' : ''"
+                >
+                    <input
+                        type="checkbox"
+                        id="ginger"
+                        data-testid="order-extra-ginger"
+                        v-model="addGinger"
+                        :disabled="isLocked('ginger')"
+                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
+                    />
+                    <label for="ginger" class="text-neutral-700 font-medium">
+                        {{ $t('checkout.addGinger') }}
                     </label>
                 </div>
                 <!-- Soy Sauce -->
                 <div
-                    v-if="offers('sauce')"
+                    v-if="isOffered('sauce')"
                     class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
-                    :class="isCondimentFree ? 'opacity-60 cursor-not-allowed' : ''"
+                    :class="isLocked('sauce') ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <div class="flex items-center gap-4 shrink-0">
                         <input
@@ -160,7 +202,7 @@
                             id="add-sauce"
                             data-testid="order-extra-sauce"
                             :checked="addSauce"
-                            :disabled="isCondimentFree"
+                            :disabled="isLocked('sauce')"
                             class="h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
@@ -301,11 +343,10 @@ import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { DELIVERY_MINIMUM } from '#engine/composables/useCartTotals'
 import { formatPrice } from '#engine/lib/price'
-import { CONDIMENTS, DEFAULT_SAUCE_OPTION, isCondimentFreeCart, resolveOrderExtras } from '#engine/lib/orderExtras'
-import type { OrderExtraKey } from '#engine/types/brand'
 import { useDebounceFn } from '@vueuse/core'
-import { useAppConfig, useGqlQuery } from '#imports'
+import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { isMinimumReached = false, loading = false, isOrderingAvailable = true, cashAcknowledged = false, cashAckError = false } = defineProps<{
@@ -322,29 +363,11 @@ const showCashAckError = computed(() => cashAckError && !cashAcknowledged)
 const cartStore = useCartStore()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWasabi, addGinger, addSauce, sauce, sauceOptions, syncLockedExtras } = useOrderExtras()
 
 const ORDER_COMMENT_MAX = 500
 
 const PAID_EXTRA_PRICE_MAX = 1
-
-const orderExtras = resolveOrderExtras(useAppConfig().brand.orderExtras)
-const offers = (key: OrderExtraKey) => orderExtras.available.includes(key)
-
-// Condiments (wasabi, ginger, sauce) are locked off when the cart only holds
-// items from the brand's condiment-free categories.
-const isCondimentFree = computed(() => isCondimentFreeCart(cartStore.products, orderExtras.condimentFreeCategories))
-
-const TOGGLE_LABELS: Record<Exclude<OrderExtraKey, 'sauce'>, string> = {
-    chopsticks: 'checkout.addChopsticks',
-    cutlery: 'checkout.addCutlery',
-    wasabi: 'checkout.addWasabi',
-    ginger: 'checkout.addGinger',
-}
-
-// Sauce has its own card (it carries an option), everything else is a plain toggle.
-const toggleExtras = orderExtras.available
-    .filter((key): key is Exclude<OrderExtraKey, 'sauce'> => key !== 'sauce')
-    .map((key) => ({ key, labelKey: TOGGLE_LABELS[key], condiment: CONDIMENTS.includes(key) }))
 
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
@@ -464,16 +487,7 @@ const cashPaymentAmount = computed({
     },
 })
 
-const sauceTypeOptions = computed(() => [
-    { value: 'sweet', label: t('checkout.sweet') },
-    { value: 'salty', label: t('checkout.salty') },
-    { value: 'both', label: t('checkout.both') },
-])
-
-const addSauce = computed({
-    get: () => sauce.value !== 'none',
-    set: (value: boolean) => { sauce.value = value ? DEFAULT_SAUCE_OPTION : 'none' },
-})
+const sauceTypeOptions = computed(() => sauceOptions.map((value) => ({ value, label: t(`checkout.${value}`) })))
 
 const setOnlinePayment = (value: boolean) => {
     trackEvent('payment_method_selected', { method: value ? 'ONLINE' : 'CASH' })
@@ -513,50 +527,7 @@ watch(isOnlinePayment, (online, prev) => {
 })
 
 
-const hasExtra = (name: string) => cartStore.orderExtra?.some(o => o.name === name) ?? false
-
-const setExtra = (name: string, value: boolean) => {
-    if (!cartStore.orderExtra) cartStore.orderExtra = []
-    const idx = cartStore.orderExtra.findIndex(o => o.name === name)
-    if (value && idx === -1) cartStore.orderExtra.push({ name })
-    else if (!value && idx !== -1) cartStore.orderExtra.splice(idx, 1)
-}
-
-const sauce = computed<string>({
-    get() {
-        const item = cartStore.orderExtra?.find(o => o.name === 'sauce')
-        return item?.options?.[0] ?? 'none'
-    },
-    set(val: string) {
-        if (!cartStore.orderExtra) cartStore.orderExtra = []
-        const idx = cartStore.orderExtra.findIndex(o => o.name === 'sauce')
-
-        if (val === 'none') {
-            if (idx !== -1) cartStore.orderExtra.splice(idx, 1)
-            return
-        }
-
-        const payload = { name: 'sauce', options: [val] }
-        if (idx === -1) {
-            cartStore.orderExtra.push(payload)
-        } else {
-            cartStore.orderExtra[idx]!.options = payload.options
-        }
-    }
-})
-
-watch(isCondimentFree, (locked, prev) => {
-    if (locked) {
-        for (const key of CONDIMENTS) setExtra(key, false)
-    } else if (prev === true && cartStore.products.length > 0) {
-        // Back to a normal cart: restore the brand's preselected condiments.
-        for (const key of CONDIMENTS) {
-            if (!offers(key) || !orderExtras.preselected.includes(key)) continue
-            if (key === 'sauce') sauce.value = DEFAULT_SAUCE_OPTION
-            else setExtra(key, true)
-        }
-    }
-}, { immediate: true })
+syncLockedExtras()
 
 // Computed binding for order comment
 const orderComment = computed({

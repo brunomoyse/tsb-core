@@ -62,8 +62,9 @@ export const brand: BrandConfig = {
         fallback: '/images/mascot/fuzi-noodles-700.png',
     },
     faqQuestions: ['what', 'spicy', 'vegan', 'hours', 'delivery', 'payment', 'allergens'],
-    // Nothing pre-ticked: takeaway customers opt in to what they need.
-    orderExtras: {
-        available: ['chopsticks', 'cutlery'],
-    },
+    // Malatang takeaway: chopsticks and cutlery, not pre-ticked. No wasabi, ginger or soy sauce.
+    orderExtras: [
+        { name: 'chopsticks', preselected: false },
+        { name: 'cutlery', preselected: false },
+    ],
 }
