@@ -229,7 +229,8 @@ function cleanPersistedLine(value: unknown, max: number): PersistedLine | null {
 /**
  * A line of the v0 / v1 shape (the whole Product per line) in the in-memory form, or null when it
  * cannot be recovered. v0 carried only a single `selectedChoice` (and no `selectedChoices`): it
- * becomes a selection scaled to the line quantity, as selection quantities are line-wide.
+ * becomes a selection scaled to the line quantity, as selection quantities are line-wide (when its
+ * group is unknown it stays the legacy single choice instead).
  */
 function cleanLegacyLine(value: unknown, max: number): CartItem | null {
     if (!isRecord(value) || !isRecord(value.product) || !nonEmpty(value.product.id)) return null
@@ -247,9 +248,10 @@ function cleanLegacyLine(value: unknown, max: number): CartItem | null {
         const cleaned = cleanSelections(value.selectedChoices)
         if (cleaned === null) return null
         selections = cleaned
-    } else if (selectedChoice) {
-        selections = [{ groupId: text(selectedChoice.choiceGroupId), choiceId: selectedChoice.id, quantity }]
+    } else if (selectedChoice && nonEmpty(selectedChoice.choiceGroupId)) {
+        selections = [{ groupId: selectedChoice.choiceGroupId, choiceId: selectedChoice.id, quantity }]
     } else {
+        // No selections, or a legacy choice that never knew its group: a selection with an empty groupId would be refused by the server, so the line keeps the legacy single `selectedChoice` (the order payload sends it as `choiceId`).
         selections = []
     }
     return { product: product as unknown as Product, quantity, selectedChoices: selections, selectedChoice }

@@ -182,10 +182,25 @@ export const useCartStore = defineStore("cart", {
             const pricing = quotedSnapshotPricing(item.product, quoteLine)
             if (!pricing) return
             const modifierOf = new Map(pricing.choices.map((choice) => [choice.id, choice.priceModifier]))
+            const known = new Set(item.product.choices.map((choice: ProductChoice) => choice.id))
+            // Choices the quote priced that the snapshot lacked (no name: the cart labels skip them).
+            const added = pricing.choices
+                .filter((choice) => !known.has(choice.id))
+                .map((choice): ProductChoice => ({
+                    id: choice.id,
+                    productId: item.product.id,
+                    choiceGroupId: choice.groupId ?? '',
+                    priceModifier: choice.priceModifier,
+                    sortOrder: 0,
+                    name: '',
+                }))
             item.product = {
                 ...item.product,
                 price: pricing.price,
-                choices: item.product.choices.map((choice: ProductChoice) => ({ ...choice, priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier })),
+                choices: [
+                    ...item.product.choices.map((choice: ProductChoice) => ({ ...choice, priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier })),
+                    ...added,
+                ],
             }
             if (item.selectedChoice) {
                 item.selectedChoice = item.product.choices.find((choice: ProductChoice) => choice.id === item.selectedChoice?.id) ?? item.selectedChoice

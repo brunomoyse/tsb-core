@@ -11,6 +11,7 @@ import {
 } from './cartPersistence.ts'
 import assert from 'node:assert/strict'
 import { lineTotalCents } from './pricing.ts'
+import { orderItemPayload } from './orderPayload.ts'
 import { test } from 'node:test'
 
 const MAX = 99
@@ -140,6 +141,24 @@ test('v0: no selectedChoices at all, only the single selectedChoice, and a euro 
   assert.equal(state.couponDiscountCents, 350)
   assert.ok(!('couponDiscount' in state))
   assert.equal(state.couponCode, 'OLD')
+})
+
+test('v0: a legacy choice without a group stays the legacy single choice (no selection with an empty groupId)', () => {
+  const [, , noodle] = wholeProduct().choices
+  const { choiceGroupId: _group, ...groupless } = noodle
+  const v0 = { products: [{ product: wholeProduct(), quantity: 2, selectedChoice: groupless }], collectionOption: 'PICKUP' }
+  const { state, dropped } = migratePersistedCart(v0, MAX)
+  assert.equal(dropped, 0)
+  const [line] = state.products
+  assert.deepEqual(line.selectedChoices, [])
+  assert.equal(line.selectedChoice?.id, 'noodle')
+  // It is priced from the single choice and ordered as `choiceId`.
+  assert.equal(lineTotalCents(line), 2 * 1000 + 2 * 50)
+  assert.deepEqual(orderItemPayload(line), { productId: 'bowl', quantity: 2, choiceId: 'noodle' })
+  // And it survives a save / load round trip.
+  const again = parsePersistedCart(serializeCartState(state), MAX).state.products.at(0)
+  assert.deepEqual(again.selectedChoices, [])
+  assert.equal(again.selectedChoice?.id, 'noodle')
 })
 
 test('the coupon amount: cents win when valid, garbage becomes 0, and no code means no discount', () => {

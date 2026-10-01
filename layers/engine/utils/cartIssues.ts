@@ -87,13 +87,17 @@ export function describeLineIssues(
 
 export interface SnapshotPricing {
     price: string
-    choices: { id: string; priceModifier: string }[]
+    /** Every choice the snapshot should carry: its own (repriced) and the ones the quote priced that it was missing. */
+    choices: { id: string; priceModifier: string; groupId?: string }[]
 }
 
 /**
  * The prices the stored snapshot takes when the customer accepts the quote: the product's current
  * price and the current price modifier of each choice the quote priced. Only the PRICES move; names
- * and everything else of the snapshot stay. Null when the quote has no price for the product.
+ * and everything else of the snapshot stay. A selected choice the snapshot does not have (an old
+ * cart whose snapshot lacked it) is added from the quote (id, group, modifier; no name), otherwise the
+ * client could never price it and PRICE_CHANGED would come back after every acceptance. Null when the
+ * quote has no price for the product.
  */
 export function quotedSnapshotPricing(
     product: { choices: { id: string; priceModifier: string }[] },
@@ -101,11 +105,18 @@ export function quotedSnapshotPricing(
 ): SnapshotPricing | null {
     if (quoteLine.productPrice === null) return null
     const modifierOf = new Map(quoteLine.selections.map((selection) => [selection.choiceId, selection.priceModifier]))
+    const known = new Set(product.choices.map((choice) => choice.id))
+    const missing = quoteLine.selections
+        .filter((selection, index, all) => !known.has(selection.choiceId) && all.findIndex((other) => other.choiceId === selection.choiceId) === index)
+        .map((selection) => ({ id: selection.choiceId, priceModifier: selection.priceModifier, groupId: selection.groupId }))
     return {
         price: quoteLine.productPrice,
-        choices: product.choices.map((choice) => ({
-            id: choice.id,
-            priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier,
-        })),
+        choices: [
+            ...product.choices.map((choice) => ({
+                id: choice.id,
+                priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier,
+            })),
+            ...missing,
+        ],
     }
 }

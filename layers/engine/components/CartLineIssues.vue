@@ -36,6 +36,7 @@ import { formatCents } from '#engine/lib/price'
 import { lineTotalCents } from '#engine/utils/pricing'
 import { quoteLineByKey } from '#engine/utils/orderQuote'
 import { toCents } from '#engine/utils/money'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useQuoteStore } from '#engine/stores/quote'
@@ -76,9 +77,9 @@ const message = (view: LineIssueView): string =>
 const label = (action: LineIssueAction): string =>
     t(action === 'remove' ? 'cart.removeItem' : action === 'accept-price' ? 'cart.issues.acceptPrice' : 'cart.issues.chooseSlot')
 
-const removeLine = () => {
-    cartStore.removeFromCart(item.product, { choice: item.selectedChoice, selections: item.selectedChoices, quantity: item.quantity })
-}
+// Like every other surface: removed with an Undo toast (restoring it just flags the line again).
+const { removeLine: removeCartLine } = useCartRemoval()
+const removeLine = () => removeCartLine(item)
 
 const chooseSlot = async () => {
     const picker = import.meta.client ? document.getElementById(SLOT_PICKER_ID) : null

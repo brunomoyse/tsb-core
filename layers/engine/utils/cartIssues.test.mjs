@@ -68,3 +68,19 @@ test('accepting a price: the product price and the modifiers of its choices move
   // No price from the server (the product is gone): nothing to accept.
   assert.equal(quotedSnapshotPricing(product, { productPrice: null, selections: [] }), null)
 })
+
+test('accepting a price adds the selected choices the snapshot lacked, so the price stops changing', () => {
+  const product = { choices: [{ id: 'broth-b', priceModifier: '1.50', name: 'Spicy' }] }
+  const pricing = quotedSnapshotPricing(product, {
+    productPrice: '11.00',
+    selections: [
+      { groupId: 'g1', choiceId: 'broth-b', quantity: 1, priceModifier: '2.00' },
+      { groupId: 'g2', choiceId: 'egg', quantity: 1, priceModifier: '0.80' }, // Missing from the snapshot
+      { groupId: 'g2', choiceId: 'egg', quantity: 1, priceModifier: '0.80' }, // Listed twice: added once
+    ],
+  })
+  assert.deepEqual(pricing.choices, [
+    { id: 'broth-b', priceModifier: '2.00' },
+    { id: 'egg', priceModifier: '0.80', groupId: 'g2' },
+  ])
+})
