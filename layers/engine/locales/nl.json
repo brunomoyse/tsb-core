@@ -169,7 +169,11 @@
       "noMatch": "Geen adres gevonden.",
       "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
       "houseNumberRequired": "Huisnummer is verplicht.",
-      "example": "Voorbeeld: Rue de Fragnée 12, Liège"
+      "example": "Voorbeeld: Rue de Fragnée 12, Liège",
+      "clear": "Adres wissen",
+      "suggestions": "1 suggestie beschikbaar | {count} suggesties beschikbaar",
+      "selected": "Adres geselecteerd: {address}",
+      "cleared": "Adres gewist"
     },
     "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)"
   },

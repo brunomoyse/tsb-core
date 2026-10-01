@@ -169,7 +169,11 @@
       "noMatch": "未找到地址。",
       "callHint": "如果找不到您的地址，请随时致电我们：",
       "houseNumberRequired": "必须填写门牌号。",
-      "example": "示例：Rue de Fragnée 12, Liège"
+      "example": "示例：Rue de Fragnée 12, Liège",
+      "clear": "清除地址",
+      "suggestions": "有 {count} 条地址建议可选",
+      "selected": "已选择地址：{address}",
+      "cleared": "地址已清除"
     },
     "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
   },

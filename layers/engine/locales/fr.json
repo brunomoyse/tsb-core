@@ -169,7 +169,11 @@
       "noMatch": "Aucune adresse trouvée.",
       "callHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
       "houseNumberRequired": "Le numéro de rue est obligatoire.",
-      "example": "Exemple : Rue de Fragnée 12, Liège"
+      "example": "Exemple : Rue de Fragnée 12, Liège",
+      "clear": "Effacer l'adresse",
+      "suggestions": "1 suggestion disponible | {count} suggestions disponibles",
+      "selected": "Adresse sélectionnée : {address}",
+      "cleared": "Adresse effacée"
     },
     "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)"
   },
