@@ -158,7 +158,7 @@
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
-                <div v-if="onlineFee > 0" class="flex justify-between items-center text-sm text-gray-600">
+                <div v-if="onlineFee > 0" class="flex justify-between items-center text-sm text-neutral-600">
                     <span>{{ $t('cart.onlineFee') }}:</span>
                     <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
                 </div>

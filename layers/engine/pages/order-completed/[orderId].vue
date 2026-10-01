@@ -49,10 +49,10 @@
                     <polyline points="12 6 12 12 16 14" />
                 </svg>
             </div>
-            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+            <h1 class="mt-5 text-2xl sm:text-3xl font-bold text-neutral-900 text-center">
                 {{ $t('orderCompleted.payment.awaitingConfirmationTitle') }}
             </h1>
-            <p class="mt-3 text-gray-600 text-sm sm:text-base text-center max-w-sm">
+            <p class="mt-3 text-neutral-600 text-sm sm:text-base text-center max-w-sm">
                 {{ $t('orderCompleted.payment.awaitingConfirmationBody', { phone: brand.phone }) }}
             </p>
             <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
@@ -64,7 +64,7 @@
                 </a>
                 <NuxtLinkLocale
                     to="/menu"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2"
                 >
                     {{ $t('orderCompleted.backToMenu', 'Back to menu') }}
                 </NuxtLinkLocale>

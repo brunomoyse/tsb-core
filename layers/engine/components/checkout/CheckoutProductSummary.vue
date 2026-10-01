@@ -69,7 +69,7 @@
                             </span>
                         </div>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-gray-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
 
                         <!-- Row 2: Stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5">

@@ -13,33 +13,6 @@ const oidcUser: Ref<OidcUser | null> = ref(null)
  */
 let silentRenewPromise: Promise<OidcUser | null> | null = null
 
-/*
- * Distinguishes "this visitor never had a session" (a guest) from "they had one
- * and it could not be renewed". Both look identical to getAccessToken() (null)
- * once the stale user is wiped, but the WebSocket client must treat them
- * differently: a guest keeps reconnecting without a token, whereas an expired
- * session must not hammer the server with an invalid token until the user signs
- * in again (see useGqlSubscription retryWait).
- */
-let sessionExpired = false
-const sessionWaiters: (() => void)[] = []
-
-function markSessionActive() {
-    sessionExpired = false
-    sessionWaiters.splice(0).forEach((resolve) => { resolve() })
-}
-
-/** True when a session existed and failed to renew; cleared on the next sign-in. */
-function hasSessionExpired(): boolean {
-    return sessionExpired
-}
-
-/** Resolves the next time a user session is loaded (sign-in or successful renewal). */
-function waitForSession(): Promise<void> {
-    if (!sessionExpired) return Promise.resolve()
-    return new Promise<void>((resolve) => { sessionWaiters.push(resolve) })
-}
-
 /**
  * Provides OIDC Authorization Code + PKCE flow via oidc-client-ts.
  */
@@ -68,7 +41,7 @@ export function useOidc() {
             stateStore: new WebStorageStateStore({ store: localStorage }),
         })
 
-        userManager.events.addUserLoaded((user) => { oidcUser.value = user; markSessionActive() })
+        userManager.events.addUserLoaded((user) => { oidcUser.value = user })
         userManager.events.addUserUnloaded(() => { oidcUser.value = null })
 
         userManager.events.addAccessTokenExpired(async () => {
@@ -125,7 +98,6 @@ export function useOidc() {
         const mgr = getUserManager()
         const user = await mgr.signinRedirectCallback()
         oidcUser.value = user
-        markSessionActive()
         return user
     }
 
@@ -164,7 +136,6 @@ export function useOidc() {
         try {
             const user = await mgr.signinSilent()
             oidcUser.value = user
-            markSessionActive()
             return user
         } catch {
             /*
@@ -173,7 +144,6 @@ export function useOidc() {
              */
             try { await mgr.removeUser() } catch { /* Best-effort cleanup */ }
             oidcUser.value = null
-            sessionExpired = true
             return null
         }
     }
@@ -222,7 +192,5 @@ export function useOidc() {
         isAuthenticated,
         getUser,
         removeUser,
-        hasSessionExpired,
-        waitForSession,
     }
 }

@@ -50,18 +50,28 @@ const disposeClient = () => {
     wsClientPromise = null
 }
 
+/*
+ * Gap recovery: events emitted while the socket was down are lost. Run every subscriber's
+ * onReconnect (typically a refetch of the underlying query). Callers coalesce their own refetch.
+ */
+const notifyReconnected = () => {
+    Array.from(subscribers).forEach((s) => {
+        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch(() => {})
+    })
+}
+
 const recycleClient = () => {
     disposeClient()
     // Snapshot in case a restart callback mutates the set.
     Array.from(subscribers).forEach((s) => {
         s.restart()
-        /*
-         * GraphQL subscriptions don't replay history — events emitted during the
-         * disconnect window are lost. Callers that need gap recovery pass an
-         * onReconnect callback that refetches the underlying query.
-         */
-        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch(() => {})
     })
+    /*
+     * GraphQL subscriptions don't replay history — events emitted during the
+     * disconnect window are lost. Callers that need gap recovery pass an
+     * onReconnect callback that refetches the underlying query.
+     */
+    notifyReconnected()
 }
 
 const handleOffline = () => {
@@ -139,7 +149,7 @@ const getWsClient = (): Promise<Client> => {
             import('~/composables/useOidc'),
         ]).then(([{ createClient }, { useOidc }]) => {
             const cfg = useRuntimeConfig()
-            const { getAccessToken, hasSessionExpired, waitForSession } = useOidc()
+            const { getAccessToken } = useOidc()
 
             /*
              * Track the underlying WebSocket so the ping/pong timeout
@@ -163,7 +173,17 @@ const getWsClient = (): Promise<Client> => {
                  */
                 keepAlive: 12_000,
                 on: {
-                    connected: (socket) => { activeSocket = socket as WebSocket },
+                    connected: (socket, _payload, wasRetry) => {
+                        activeSocket = socket as WebSocket
+                        /*
+                         * The socket was re-established by graphql-ws itself (network blip, server
+                         * restart, pong timeout), which re-subscribed: the events of the gap are
+                         * lost, so give every subscriber its gap-recovery callback too. The
+                         * first connection of a client is not a reconnect, and recycleClient()
+                         * (which creates a NEW client) notifies on its own.
+                         */
+                        if (wasRetry) notifyReconnected()
+                    },
                     closed: () => {
                         if (pongTimer) { clearTimeout(pongTimer); pongTimer = null }
                         activeSocket = null
@@ -186,19 +206,16 @@ const getWsClient = (): Promise<Client> => {
                     },
                 },
                 retryAttempts: Infinity,
+                /*
+                 * Plain exponential backoff, also after a session that failed to renew:
+                 * getAccessToken() then returns null (the stale user was wiped) and the
+                 * socket reconnects anonymously, which keeps the public feeds (open/closed,
+                 * availability) alive. Authenticated subscriptions simply fail as
+                 * unauthorized on their own; the backoff keeps that from becoming a tight loop.
+                 */
                 retryWait: async (retries) => {
                     const delay = Math.min(1000 * 2 ** retries, 30_000)
                     await new Promise<void>(resolve => { setTimeout(resolve, delay) })
-                    /*
-                     * Only stop when a session EXISTED and failed to renew: retrying
-                     * with an invalid token would just spam the server. Park until the
-                     * user signs in again (waitForSession resolves on the next loaded
-                     * session) instead of hanging forever. Guests never had a session,
-                     * so they keep backing off and reconnect without a token — which is
-                     * what keeps the public open/closed + availability feeds alive.
-                     */
-                    const token = await getAccessToken()
-                    if (!token && hasSessionExpired()) await waitForSession()
                 },
             })
             wsClient = client

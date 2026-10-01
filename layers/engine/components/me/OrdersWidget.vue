@@ -368,6 +368,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
+import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
 import type { Order } from '#engine/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
@@ -378,7 +379,6 @@ import { print } from 'graphql/index'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
-import { useOrderTracking } from '#engine/composables/useOrderTracking'
 import { useReorder } from '#engine/composables/useReorder'
 
 const { showProductCode = false, japaneseAccents = false } = useAppConfig().brand
@@ -456,10 +456,21 @@ const {
     toggleOrder,
     isExpanded,
     getStatus,
-    isOrderCompleted,
     isOrderSuccess,
     isOrderFailed,
-} = useOrderTracking({ orders, refetch: refetchOrders, autoExpandActive: true })
+} = useOrderTracking({
+    orders,
+    refetch: refetchOrders,
+    autoExpandActive: true,
+    // A ?followOrder id that is a past order beyond the first page must be rendered before it is scrolled to.
+    // `index` is the order's position in `orders`; the past list shows only the completed ones.
+    revealOrder: (index) => {
+        const list = orders.value ?? []
+        if (!list[index] || !isOrderCompleted(list[index].status)) return
+        const pastIndex = list.slice(0, index).filter((o) => isOrderCompleted(o.status)).length
+        if (pastIndex >= visibleCount.value) visibleCount.value = pastIndex + 1
+    },
+})
 
 interface OrderItemLike {
     product: { code: string | null; name: string; category?: { name: string } | null }

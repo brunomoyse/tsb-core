@@ -81,7 +81,7 @@
                             ({{ itemChoice(item) }})
                         </p>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-gray-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
 
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
