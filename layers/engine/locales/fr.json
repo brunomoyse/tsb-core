@@ -312,7 +312,19 @@
     "pickupDiscountShort": "-10 %",
     "onlineFee": "Frais de paiement en ligne",
     "addForDelivery": "Ajoutez encore {amount} pour la livraison.",
-    "quoteUpdating": "Mise à jour des prix…"
+    "quoteUpdating": "Mise à jour des prix…",
+    "removedUnavailable": "Certains articles de votre panier ne sont plus disponibles et ont été retirés.",
+    "issues": {
+      "notFound": "Cet article n'est plus au menu.",
+      "unavailable": "Cet article est actuellement indisponible.",
+      "priceChanged": "Prix mis à jour : {from} → {to}",
+      "acceptPrice": "Accepter le nouveau prix",
+      "lunchOnly": "Disponible uniquement sur un créneau lunch (lundi-vendredi).",
+      "chooseSlot": "Choisir un créneau",
+      "selectionInvalid": "Une option choisie n'est plus valable. Retirez cet article puis recomposez-le depuis le menu.",
+      "invalidQuantity": "La quantité de cet article n'est pas valable.",
+      "generic": "Cet article ne peut pas être commandé tel quel."
+    }
   },
   "checkout": {
     "title": "Commande",

@@ -1,13 +1,19 @@
 // Stores: cart.ts
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
-import { lineSignature, matchesLine, mergeIntoLine, migratePersistedLines, rescaleSelections, sortSelections } from '#engine/utils/cartLines'
-import { lineTotalCents, toCents } from '#engine/utils/pricing'
+import { lineSignature, matchesLine, mergeIntoLine, rescaleSelections, sortSelections } from '#engine/utils/cartLines'
+import { parsePersistedCart, serializeCartState } from '#engine/utils/cartPersistence'
 import type { OrderExtraConfig } from '#engine/types/brand'
+import type { QuoteLine } from '#engine/utils/orderQuote'
 import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
+import { lineTotalCents } from '#engine/utils/pricing'
+import { quotedSnapshotPricing } from '#engine/utils/cartIssues'
 
 export const MAX_ITEM_QUANTITY = 99
+
+// What the last deserialization dropped; handed to the store by afterHydrate (the serializer cannot reach the store).
+let pendingDropped = 0
 
 interface ItemSelectionInput {
     choice?: ProductChoice | null;
@@ -68,6 +74,7 @@ export const defaultOrderExtra = (extra: OrderExtraConfig): { name: string; opti
 const defaultState = (): CartState => ({
     products: [],
     isCartVisible: false,
+    droppedOnHydrate: 0,
     collectionOption: 'DELIVERY',
     couponCode: null,
     couponDiscountCents: 0,
@@ -166,6 +173,25 @@ export const useCartStore = defineStore("cart", {
             );
         },
 
+        /**
+         * The customer accepts the new price of a line (PRICE_CHANGED): the stored snapshot takes the
+         * product's current price and the current modifiers of its choices. The line gets a new
+         * `product` object, so the menu's own product is not touched.
+         */
+        acceptQuotedPrice(item: CartItem, quoteLine: QuoteLine): void {
+            const pricing = quotedSnapshotPricing(item.product, quoteLine)
+            if (!pricing) return
+            const modifierOf = new Map(pricing.choices.map((choice) => [choice.id, choice.priceModifier]))
+            item.product = {
+                ...item.product,
+                price: pricing.price,
+                choices: item.product.choices.map((choice: ProductChoice) => ({ ...choice, priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier })),
+            }
+            if (item.selectedChoice) {
+                item.selectedChoice = item.product.choices.find((choice: ProductChoice) => choice.id === item.selectedChoice?.id) ?? item.selectedChoice
+            }
+        },
+
         resetState(): void {
             this.$patch(defaultState());
         },
@@ -197,51 +223,46 @@ export const useCartStore = defineStore("cart", {
             },
         },
         /*
+         * Versioned and slim (audit PR 2.4, see utils/cartPersistence.ts): a line is stored as
+         * { productId, quantity, selections } plus the smallest snapshot that renders it before the API
+         * answers; the server quote re-prices it. Older shapes (the whole Product per line, the euro
+         * `couponDiscount`) are migrated here, and lines that cannot be recovered are dropped and counted
+         * for the one-time notice (`droppedOnHydrate`, afterHydrate).
+         */
+        serializer: {
+            serialize: (state) => serializeCartState(state as Parameters<typeof serializeCartState>[0]),
+            deserialize: (value) => {
+                const { state, dropped } = parsePersistedCart(value, MAX_ITEM_QUANTITY)
+                pendingDropped = dropped
+                return state
+            },
+        },
+        /*
          * `isCartVisible` is transient UI state. Persisting it caused users to
          * land on /menu with an empty drawer but `isCartVisible: true` still in
          * localStorage, hiding the FloatingCartBar (its v-if depends on
          * `!isCartVisible`) and leaving no visible way to open the cart.
+         * `droppedOnHydrate` is the hydration report, also transient.
          */
-        omit: ['isCartVisible'],
+        omit: ['isCartVisible', 'droppedOnHydrate'],
         afterHydrate: (ctx) => {
-            const store = ctx.store as {
-                products: CartItem[];
+            const store = ctx.store as unknown as {
                 isCartVisible: boolean;
+                droppedOnHydrate: number;
                 orderExtra: CartState['orderExtra'];
-                couponDiscountCents: number;
+                $persist?: () => void;
             };
             store.isCartVisible = false;
-            /*
-             * Carts persisted before the engine went integer-cents stored the coupon discount as a
-             * euro number (`couponDiscount: 3.5`). Convert it once and drop the old key. The key lives
-             * in `$state` (what gets persisted), so delete it there or it would come back.
-             */
-            const persisted = ctx.store.$state as unknown as { couponDiscount?: unknown };
-            if (typeof persisted.couponDiscount === 'number' && persisted.couponDiscount > 0) {
-                store.couponDiscountCents = toCents(persisted.couponDiscount)
-            }
-            delete persisted.couponDiscount
-            if (!Number.isInteger(store.couponDiscountCents) || store.couponDiscountCents < 0) store.couponDiscountCents = 0
             // Drop extras this brand doesn't offer (old carts, or entries removed from the UI).
             if (Array.isArray(store.orderExtra)) {
                 const offered = new Set(brand.orderExtras.map((extra) => extra.name))
                 store.orderExtra = store.orderExtra.filter((extra) => offered.has(extra.name))
             }
-            for (const item of store.products) {
-                if (item.quantity > MAX_ITEM_QUANTITY) item.quantity = MAX_ITEM_QUANTITY;
-                if (item.quantity < 1) item.quantity = 1;
-                if (!Array.isArray(item.selectedChoices)) {
-                    item.selectedChoices = item.selectedChoice
-                        ? [{
-                            groupId: item.selectedChoice.choiceGroupId,
-                            choiceId: item.selectedChoice.id,
-                            quantity: item.quantity,
-                        }]
-                        : []
-                }
-            }
-            // Carts persisted by older builds: legacy choices stored per unit, duplicate lines.
-            store.products = migratePersistedLines(store.products, MAX_ITEM_QUANTITY)
+            // The migration report of the deserializer: shown once by the cart-notices plugin.
+            store.droppedOnHydrate = pendingDropped
+            pendingDropped = 0
+            // Write the migrated shape back now: the plugin only persists on the next change, so an old cart would otherwise be migrated (and its lost lines announced) again on every visit.
+            store.$persist?.()
         },
     },
 });

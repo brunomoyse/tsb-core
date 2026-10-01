@@ -98,6 +98,9 @@
                             </span>
                         </div>
 
+                        <!-- What the server quote says about this line, with the way out -->
+                        <CartLineIssues :item="item" :line-key="lineKeys[lineIndex]" />
+
                         <!-- Quantity Controls and Remove -->
                         <div class="flex items-center justify-between mt-auto">
                             <!-- Customized lines carry per-line selections, so they are edited in the modal -->
@@ -201,6 +204,7 @@ import * as productImage from '#engine/utils/productImage'
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'

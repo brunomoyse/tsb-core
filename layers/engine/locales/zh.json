@@ -312,7 +312,19 @@
     "pickupDiscountShort": "-10%",
     "onlineFee": "在线支付手续费",
     "addForDelivery": "再添加 {amount} 即可配送。",
-    "quoteUpdating": "正在更新价格…"
+    "quoteUpdating": "正在更新价格…",
+    "removedUnavailable": "购物车中的部分商品已不再提供，已被移除。",
+    "issues": {
+      "notFound": "该商品已不在菜单上。",
+      "unavailable": "该商品暂时无法提供。",
+      "priceChanged": "价格已更新：{from} → {to}",
+      "acceptPrice": "接受新价格",
+      "lunchOnly": "仅限工作日（周一至周五）午餐时段。",
+      "chooseSlot": "选择时间段",
+      "selectionInvalid": "您选择的某个选项已失效。请移除该商品，并从菜单重新选择。",
+      "invalidQuantity": "该商品的数量无效。",
+      "generic": "该商品无法按当前状态下单。"
+    }
   },
   "checkout": {
     "title": "结账",

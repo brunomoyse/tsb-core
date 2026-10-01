@@ -70,6 +70,8 @@
                         </div>
 
                         <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <!-- What the server quote says about this line, with the way out -->
+                        <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
                         <!-- Row 2: Stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5">
@@ -187,6 +189,7 @@ import * as productImage from '#engine/utils/productImage'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { isExcludedPostcode } from '#engine/lib/delivery'

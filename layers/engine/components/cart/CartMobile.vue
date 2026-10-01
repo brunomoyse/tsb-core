@@ -119,6 +119,8 @@
                         @decrement="handleDecrementQuantity(item)"
                         @increment="handleIncrementQuantity(item)"
                     />
+                    <!-- What the server quote says about this line, with the way out -->
+                    <CartLineIssues class="col-span-6" :item="item" :line-key="lineKeys[lineIndex]" />
                 </li>
 
                 <!-- EMPTY STATE -->
@@ -203,6 +205,7 @@ import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'

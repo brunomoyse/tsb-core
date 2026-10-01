@@ -106,6 +106,7 @@
                 <!-- Open: ASAP + slots; Closed: fixed slots only -->
                 <select
                     v-model="preferredReadyTime"
+                    id="checkout-preferred-time"
                     data-testid="checkout-preferred-time"
                     class="field mt-1 block text-sm"
                 >

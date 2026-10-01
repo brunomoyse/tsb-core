@@ -312,7 +312,19 @@
     "pickupDiscountShort": "-10%",
     "onlineFee": "Online payment fee",
     "addForDelivery": "Add {amount} more to qualify for delivery.",
-    "quoteUpdating": "Updating prices…"
+    "quoteUpdating": "Updating prices…",
+    "removedUnavailable": "Some items in your cart are no longer available and were removed.",
+    "issues": {
+      "notFound": "This item is no longer on the menu.",
+      "unavailable": "This item is currently unavailable.",
+      "priceChanged": "Price updated: {from} → {to}",
+      "acceptPrice": "Accept new price",
+      "lunchOnly": "Only available for a weekday lunch slot (Mon–Fri).",
+      "chooseSlot": "Choose a time slot",
+      "selectionInvalid": "An option you chose is no longer valid. Remove this item and build it again from the menu.",
+      "invalidQuantity": "The quantity of this item is not valid.",
+      "generic": "This item can't be ordered as it is."
+    }
   },
   "checkout": {
     "title": "Checkout",

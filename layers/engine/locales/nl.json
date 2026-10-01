@@ -312,7 +312,19 @@
     "deliveryTbd": "Levering wordt berekend bij het afrekenen",
     "onlineFee": "Kosten online betaling",
     "addForDelivery": "Voeg nog {amount} toe om te laten leveren.",
-    "quoteUpdating": "Prijzen worden bijgewerkt…"
+    "quoteUpdating": "Prijzen worden bijgewerkt…",
+    "removedUnavailable": "Sommige artikelen in je winkelmand zijn niet meer beschikbaar en werden verwijderd.",
+    "issues": {
+      "notFound": "Dit artikel staat niet meer op het menu.",
+      "unavailable": "Dit artikel is momenteel niet beschikbaar.",
+      "priceChanged": "Prijs bijgewerkt: {from} → {to}",
+      "acceptPrice": "Nieuwe prijs accepteren",
+      "lunchOnly": "Alleen beschikbaar op een lunchmoment (maandag-vrijdag).",
+      "chooseSlot": "Kies een tijdslot",
+      "selectionInvalid": "Een gekozen optie is niet meer geldig. Verwijder dit artikel en stel het opnieuw samen via het menu.",
+      "invalidQuantity": "De hoeveelheid van dit artikel is niet geldig.",
+      "generic": "Dit artikel kan niet zo besteld worden."
+    }
   },
   "checkout": {
     "title": "Bestelling",

@@ -82,6 +82,8 @@
                         </p>
 
                         <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <!-- What the server quote says about this line, with the way out -->
+                        <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
@@ -242,6 +244,7 @@ import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'

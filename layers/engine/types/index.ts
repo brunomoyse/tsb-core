@@ -81,6 +81,8 @@ export interface CartState {
     /** What the applied coupon takes off, in integer cents (0 without a coupon). */
     couponDiscountCents: number;
     isCartVisible: boolean;
+    /** Transient (never persisted): how many lines of the saved cart could not be recovered at hydration; the notice plugin tells the customer once. */
+    droppedOnHydrate: number;
     orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;
     /** The order the cart was just checked out for; only that order's confirmation may clear the cart. */

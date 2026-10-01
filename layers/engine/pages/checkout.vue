@@ -235,7 +235,7 @@ definePageMeta({ public: true, pageTransition: false })
 
 import type { Address, CreateOrderRequest, Order } from '#engine/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
-import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
+import { computed, navigateTo, nextTick, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath, useRoute } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
@@ -730,6 +730,14 @@ const handleCheckout = async () => {
         if (!createdOrder) isCheckoutProcessing.value = false
     }
 }
+
+// Arriving from a cart line that needs a lunch slot ("Choose a time slot"): bring the picker into view once the page has rendered it.
+const route = useRoute()
+watch(restaurantConfigPending, async (pending) => {
+    if (pending || route.hash !== '#checkout-preferred-time') return
+    await nextTick()
+    scrollToValidationTarget('checkout-preferred-time')
+}, { immediate: true })
 
 // Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.
 watch(
