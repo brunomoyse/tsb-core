@@ -9,9 +9,10 @@
  *    for the `tel:` link;
  *  - locale strings use the `__PHONE__` token, which i18n.config.ts replaces with brand.phone.
  *
- * Flagged: a literal `tel:+…` / `tel:0…` or a `+32` number in any .vue file, and a
- * Belgian-formatted number (`+32 4 222 98 88`, `04 222 98 88`) in any locale file. A `tel:`
- * link built from user data (`tel:${…}`) is fine.
+ * Flagged: a literal `tel:+…` / `tel:0…` or a `+32` number in any .vue or .ts file, and a
+ * Belgian-formatted number (`+32 4 222 98 88`, `04 222 98 88`) in any locale or .ts file. A
+ * `tel:` link built from user data (`tel:${…}`) is fine. The only files allowed to hold a
+ * number are the per-app `brand.ts` and the `phone.ts` helper (whose doc comments cite examples).
  */
 
 import { readdir, readFile } from 'node:fs/promises'
@@ -20,9 +21,11 @@ import { fileURLToPath } from 'node:url'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const roots = [join(repoRoot, 'layers/engine'), join(repoRoot, 'apps')]
-const skipDirs = new Set(['node_modules', '.nuxt', '.output', '.data', 'e2e'])
+const skipDirs = new Set(['node_modules', '.nuxt', '.output', '.data'])
+// Repo-relative paths allowed to contain phone numbers.
+const allowedFiles = [/^apps\/[^/]+\/brand\.ts$/u, /^layers\/engine\/utils\/phone\.ts$/u]
 
-const vueLiteral = /tel:[+0]|\+32\s?\d/u
+const telLiteral = /tel:[+0]|\+32\s?\d/u
 // Spaced national or international form; unspaced digit runs would also match SVG path data.
 const localeNumber = /(?<![\w.-])(?:\+32 ?|0)\d{1,2} \d{3} \d{2} \d{2}(?!\d)/u
 
@@ -42,11 +45,15 @@ for (const root of roots) {
     for await (const file of walk(root)) {
         const ext = extname(file)
         const isLocale = ext === '.json' && file.includes(`${join('locales', '')}`)
-        if (ext !== '.vue' && !isLocale) continue
+        const isCode = ext === '.vue' || ext === '.ts'
+        if (!isCode && !isLocale) continue
+        const rel = relative(repoRoot, file)
+        if (allowedFiles.some(re => re.test(rel))) continue
         const lines = (await readFile(file, 'utf8')).split('\n')
         lines.forEach((text, i) => {
-            if ((ext === '.vue' ? vueLiteral : localeNumber).test(text)) {
-                problems.push(`${relative(repoRoot, file)}:${i + 1}  ${text.trim().slice(0, 120)}`)
+            const hit = (isCode && (telLiteral.test(text) || localeNumber.test(text))) || (isLocale && localeNumber.test(text))
+            if (hit) {
+                problems.push(`${rel}:${i + 1}  ${text.trim().slice(0, 120)}`)
             }
         })
     }
