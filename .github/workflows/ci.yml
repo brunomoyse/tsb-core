@@ -21,8 +21,49 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run oxlint
+      - name: Run oxlint, SSR-safety and locale-parity checks
         run: npm run lint
+
+      - name: Run engine unit tests
+        run: node --test layers/engine/utils/*.test.mjs
+
+  typecheck:
+    name: Typecheck (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    # Non-blocking for now: the codebase has never been type-checked, so the
+    # baseline is not zero (about 232 errors in tokyosushi and 280 in ygfliege,
+    # counted as "error TS" lines at the time of writing). Ratchet plan: fix the
+    # errors during Phase 1-2, lower the number below with each PR, and drop
+    # `continue-on-error` once an app reaches zero. Do not let the count grow.
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [tokyosushi, ygfliege]
+    env:
+      BASE_URL: https://localhost
+      API_BASE_URL: https://localhost/api/v1
+      S3_BUCKET_URL: https://localhost
+      GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: apps/${{ matrix.app }}
+        shell: bash
+        run: |
+          npx nuxi typecheck 2>&1 | tee typecheck.log
+          echo "::notice title=typecheck baseline::$(grep -c 'error TS' typecheck.log) TypeScript errors (baseline: tokyosushi 232, ygfliege 280)"
 
   build:
     name: Build (${{ matrix.app }})
