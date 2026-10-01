@@ -10,6 +10,8 @@
     "toTop": "Back to top",
     "remove": "Remove",
     "close": "Close",
+    "image": "Image",
+    "viewPhoto": "View photo of {name}",
     "skipToContent": "Skip to main content",
     "accept": "Accept",
     "acceptCookies": "Accept cookies",

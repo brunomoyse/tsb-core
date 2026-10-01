@@ -57,7 +57,7 @@
                     <button
                         type="button"
                         class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        :aria-label="item.product.name"
+                        :aria-label="$t('common.viewPhoto', { name: item.product.name })"
                         aria-haspopup="dialog"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >

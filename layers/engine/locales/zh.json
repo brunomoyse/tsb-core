@@ -10,6 +10,8 @@
     "toTop": "返回顶部",
     "remove": "删除",
     "close": "关闭",
+    "image": "图片",
+    "viewPhoto": "查看{name}的照片",
     "skipToContent": "跳转到主要内容",
     "accept": "接受",
     "acceptCookies": "接受 Cookie",

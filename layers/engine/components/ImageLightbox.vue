@@ -6,7 +6,7 @@
                 ref="overlayRef"
                 role="dialog"
                 aria-modal="true"
-                :aria-label="alt || $t('common.close')"
+                :aria-label="alt || $t('common.image')"
                 class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
                 @click.self="close"
             >

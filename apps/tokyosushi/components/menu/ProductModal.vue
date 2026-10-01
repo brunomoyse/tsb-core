@@ -16,7 +16,7 @@
                 <button
                     type="button"
                     class="relative block w-full h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    :aria-label="p.name"
+                    :aria-label="$t('common.viewPhoto', { name: p.name })"
                     aria-haspopup="dialog"
                     @click="openLightbox(p.id, p.name)"
                 >
