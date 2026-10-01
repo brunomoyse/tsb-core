@@ -350,6 +350,7 @@
       "edit": "Wijzigen",
       "addCountryPrefix": "Voor een niet-Belgisch nummer, voeg het landnummer toe (bijv. +33)",
       "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt.",
+      "unsaved": "Sla uw telefoonnummer op of corrigeer het voordat u bestelt.",
       "editAria": "Telefoonnummer wijzigen"
     },
     "orderSummary": "Uw bestelling",

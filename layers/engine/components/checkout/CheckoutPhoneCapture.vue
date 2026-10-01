@@ -38,6 +38,7 @@
             <div class="flex items-stretch gap-2">
                 <div class="relative flex-1 min-w-0">
                     <input
+                        id="checkout-phone-input"
                         ref="phoneInputRef"
                         v-model="phoneLocal"
                         type="tel"

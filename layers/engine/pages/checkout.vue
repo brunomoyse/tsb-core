@@ -254,7 +254,7 @@ definePageMeta({ public: true, pageTransition: false })
 
 import type { Address, CreateOrderRequest, Order } from '#engine/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
-import { computed, navigateTo, nextTick, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath, useRoute } from '#imports'
+import { computed, navigateTo, nextTick, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath, useRoute, useState } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
@@ -276,7 +276,8 @@ import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
-import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
+import { usePhoneCapture } from '#engine/composables/usePhoneCapture'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
 import { useCheckoutQuoteGuard } from '#engine/composables/useCheckoutQuoteGuard'
@@ -332,7 +333,7 @@ const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restauran
 const needsDeliveryGate = computed(() =>
     !authStore.user
     && cartStore.collectionOption === 'DELIVERY'
-    && (!cartStore.address || !isDeliverable(cartStore.address.distance ?? 0, cartStore.address.postcode)),
+    && (!cartStore.address || deliveryZoneStatus(cartStore.address) !== 'ok'),
 )
 
 const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
@@ -526,10 +527,16 @@ onMounted(() => {
     })
 })
 
+// Same draft state as the phone card (CheckoutPhoneCapture): lets Pay save a number that was typed but not saved.
+const phoneCapture = usePhoneCapture()
+
 const cashAcknowledged = ref(false)
+// Set by an order attempt so the cash-amount field says "less than the total" even if it was never left (see CheckoutPaymentExtras).
+const cashTouched = useState('checkout-cash-touched', () => false)
 watch(() => cartStore.paymentOption, (value) => {
     if (value === 'ONLINE') {
         cashAcknowledged.value = false
+        cashTouched.value = false
         cartStore.cashPaymentAmount = null
     }
 })
@@ -574,7 +581,14 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    if (!authStore.user?.phoneNumber) {
+    if (phoneCapture.hasUnsavedInput.value) {
+        // Typed but not saved (Pay commits it first, so this is an invalid number or a failed save): the field shows why.
+        errors.push({
+            message: t('checkout.phoneCapture.unsaved'),
+            targetId: 'checkout-phone-input',
+            event: 'checkout_error_phone_unsaved',
+        })
+    } else if (!authStore.user?.phoneNumber) {
         errors.push({
             message: t('checkout.phoneCapture.requiredBeforeOrder'),
             targetId: 'checkout-phone-capture',
@@ -606,13 +620,14 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    if (cartStore.collectionOption === 'DELIVERY' && isExcludedPostcode(cartStore.address?.postcode)) {
+    const zone = cartStore.collectionOption === 'DELIVERY' && cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'
+    if (zone === 'excluded') {
         errors.push({
             message: t('notify.errors.deliveryAddressExcluded'),
             targetId: 'checkout-delivery-address',
             event: 'checkout_error_address_excluded',
         })
-    } else if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= DELIVERY_ZONE_METERS) {
+    } else if (zone === 'tooFar') {
         errors.push({
             message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
             targetId: 'checkout-delivery-address',
@@ -695,6 +710,10 @@ const handleCheckout = async () => {
             return
         }
 
+        // A phone number typed but not saved yet is saved now, so the order carries the number on screen. When it is not valid, the field keeps its error and the summary below points at it.
+        await phoneCapture.commitPending()
+
+        if (cartStore.paymentOption === 'CASH') cashTouched.value = true
         const validationErrors = getCheckoutValidationErrors()
         submitErrors.value = validationErrors
         if (validationErrors.length > 0) {
@@ -796,6 +815,7 @@ watch(
         cartStore.address?.id,
         cartStore.address?.distance,
         authStore.user?.phoneNumber,
+        phoneCapture.hasUnsavedInput.value,
         cartStore.paymentOption,
         cashAcknowledged.value,
         cartStore.cashPaymentAmount,

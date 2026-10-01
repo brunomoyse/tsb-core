@@ -350,6 +350,7 @@
       "edit": "编辑",
       "addCountryPrefix": "非比利时号码请添加国家区号（例如 +33）",
       "requiredBeforeOrder": "请在下单前填写您的电话号码。",
+      "unsaved": "下单前请先保存或更正您的手机号码。",
       "editAria": "修改电话号码"
     },
     "orderSummary": "您的订单",

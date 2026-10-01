@@ -350,6 +350,7 @@
       "edit": "Edit",
       "addCountryPrefix": "For a non-Belgian number, add the country code (e.g. +33)",
       "requiredBeforeOrder": "Please add your phone number before placing the order.",
+      "unsaved": "Save or fix your phone number before placing the order.",
       "editAria": "Edit phone number"
     },
     "orderSummary": "Your Order",

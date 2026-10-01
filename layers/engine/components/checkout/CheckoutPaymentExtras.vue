@@ -109,7 +109,8 @@
                             pattern="[0-9]*([.,][0-9]{0,2})?"
                             autocomplete="off"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
-                            :aria-invalid="cashState.kind === 'short' ? 'true' : undefined"
+                            @blur="cashTouched = true"
+                            :aria-invalid="showCashShort ? 'true' : undefined"
                             :aria-describedby="cashHintId"
                             :class="[
                                 'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-400 focus-visible:outline-none transition-all duration-300',
@@ -121,10 +122,10 @@
                         <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-500' : 'text-amber-700']">€</span>
                     </div>
                     <p
-                        v-if="cashState.kind === 'short'"
+                        v-if="showCashShort"
                         id="cash-amount-hint"
                         data-testid="cash-amount-short"
-                        role="alert"
+                        aria-live="polite"
                         class="mt-1.5 text-xs font-medium text-ygf-orange-text"
                     >
                         {{ $t('checkout.cashAmountTooLow', { total: formatCents(payableCents) }) }}
@@ -370,7 +371,7 @@ import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
-import { useGqlQuery } from '#imports'
+import { useGqlQuery, useState } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { useTracking } from '#engine/composables/useTracking'
@@ -516,7 +517,10 @@ const cashPaymentAmount = computed({
 
 // An amount below the total is refused by the checkout; above it, the change due is shown (audit M25).
 const cashState = computed(() => evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value))
-const cashHintId = computed(() => (cashState.value.kind === 'short' || cashState.value.kind === 'change' ? 'cash-amount-hint' : undefined))
+// "Less than the total" is only said once the customer is done typing (blur) or has tried to order (the checkout sets the flag): not on every digit.
+const cashTouched = useState('checkout-cash-touched', () => false)
+const showCashShort = computed(() => cashState.value.kind === 'short' && cashTouched.value)
+const cashHintId = computed(() => (showCashShort.value || cashState.value.kind === 'change' ? 'cash-amount-hint' : undefined))
 
 const sauceTypeOptions = computed(() => sauceOptions.map((value) => ({ value, label: t(`checkout.${value}`) })))
 

@@ -350,6 +350,7 @@
       "edit": "Modifier",
       "addCountryPrefix": "Pour un numéro non belge, ajoutez l'indicatif du pays (ex. +33)",
       "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander.",
+      "unsaved": "Enregistrez ou corrigez votre numéro de téléphone avant de commander.",
       "editAria": "Modifier le numéro de téléphone"
     },
     "orderSummary": "Votre commande",

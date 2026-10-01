@@ -40,10 +40,16 @@ export interface SeedOrderInput {
   paymentStatus?: string
   /** Backdates `created_at` (minutes ago); default = now. */
   createdMinutesAgo?: number
+  /**
+   * Adds one 25,00 € `order_product` row (any existing product), so the receipt's subtotal is the items and
+   * the stored total is consistent with them (25,00 cash, 25,30 online with its 0,30 € fee). Without it the
+   * order has no items and the receipt shows the stored total only.
+   */
+  withItem?: boolean
 }
 
 /*
- * Inserts a PICKUP order (no items, no address) flagged `is_test` (so it never reaches the
+ * Inserts a PICKUP order (no items unless `withItem`, no address) flagged `is_test` (so it never reaches the
  * kitchen, revenue figures or customer mailings if cleanup fails) plus, for online orders, its
  * mollie_payments row — exactly the rows the Mollie webhook would have left
  * behind. Returns the order id. Columns follow tsb-service/migrations; keep in
@@ -51,10 +57,19 @@ export interface SeedOrderInput {
  */
 export function seedOrder(input: SeedOrderInput): string {
   const id = randomUUID()
+  const fee = input.online ? 0.3 : 0
+  const total = input.withItem ? (25 + fee).toFixed(2) : '25.00'
   psql(
     `INSERT INTO orders (id, user_id, order_status, order_type, is_online_payment, total_price, takeaway_discount, coupon_discount, transaction_fee, language, is_test, created_at) `
-    + `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, 25.00, 0, 0, ${input.online ? '0.30' : '0'}, 'fr', TRUE, NOW() - INTERVAL '${Math.trunc(input.createdMinutesAgo ?? 0)} minutes')`,
+    + `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, ${total}, 0, 0, ${fee.toFixed(2)}, 'fr', TRUE, NOW() - INTERVAL '${Math.trunc(input.createdMinutesAgo ?? 0)} minutes')`,
   )
+  if (input.withItem) {
+    // Table `order_product` (singular). `vat_rate_applied` is NOT NULL since 20260425120000; the id defaults.
+    psql(
+      `INSERT INTO order_product (order_id, product_id, unit_price, quantity, total_price, vat_rate_applied) `
+      + `SELECT '${id}', id, 12.50, 2, 25.00, 6.00 FROM products ORDER BY created_at LIMIT 1`,
+    )
+  }
   if (input.online) {
     psql(
       `INSERT INTO mollie_payments (mollie_payment_id, status, order_id, amount, method, mode) `
