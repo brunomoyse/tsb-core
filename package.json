@@ -11,7 +11,7 @@
     "build": "npm run build -w tokyosushi",
     "generate": "npm run generate -w tokyosushi",
     "preview": "npm run preview -w tokyosushi",
-    "lint": "oxlint && node apps/tokyosushi/scripts/check-ssr-safety.mjs",
+    "lint": "oxlint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs",
     "test:e2e": "npm run test:e2e -w tokyosushi"
   },
   "dependencies": {

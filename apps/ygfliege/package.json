@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "oxlint .",
+    "lint": "oxlint . && node ../../scripts/check-ssr-safety.mjs && node ../../scripts/check-engine-boundaries.mjs",
     "test:e2e": "playwright test"
   }
 }

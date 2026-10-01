@@ -17,6 +17,7 @@
                  Google is white with a #747775 outline and the multicolour G,
                  Apple is solid black with the white Apple mark. -->
             <div class="space-y-3">
+                <!-- theme-ok: Google sign-in branding guidelines -->
                 <button
                     :disabled="loading"
                     class="w-full min-h-11 inline-flex items-center justify-center gap-3 rounded-xl border border-[#747775] bg-white px-4 text-sm font-medium text-[#1F1F1F] transition-colors duration-300 hover:bg-[#F8FAFD] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -27,6 +28,7 @@
                     <span>{{ $t('login.ssoGoogle') }}</span>
                 </button>
 
+                <!-- theme-ok: Sign in with Apple branding guidelines -->
                 <button
                     :disabled="loading"
                     class="w-full min-h-11 inline-flex items-center justify-center gap-3 rounded-xl border border-black bg-black px-4 text-sm font-medium text-white transition-colors duration-300 hover:bg-[#1D1D1F] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"

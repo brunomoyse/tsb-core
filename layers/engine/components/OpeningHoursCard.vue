@@ -8,12 +8,12 @@
             <div>
                 <dt class="text-xs uppercase tracking-wide text-neutral-700">{{ $t('contact.weekdays') }}</dt>
                 <dd v-if="weekdaysHours" class="mt-0.5 text-neutral-900 tabular-nums whitespace-nowrap">{{ weekdaysHours }}</dd>
-                <dd v-else class="mt-0.5 h-4 w-40 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
+                <dd v-else class="mt-0.5 h-4 w-40 max-w-full rounded animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-neutral-200 from-25% via-neutral-100 via-50% to-neutral-200 to-75%" aria-hidden="true" />
             </div>
             <div>
                 <dt class="text-xs uppercase tracking-wide text-neutral-700">{{ $t('contact.weekends') }}</dt>
                 <dd v-if="weekendsHours" class="mt-0.5 text-neutral-900 tabular-nums whitespace-nowrap">{{ weekendsHours }}</dd>
-                <dd v-else class="mt-0.5 h-4 w-32 max-w-full rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
+                <dd v-else class="mt-0.5 h-4 w-32 max-w-full rounded animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-neutral-200 from-25% via-neutral-100 via-50% to-neutral-200 to-75%" aria-hidden="true" />
             </div>
         </dl>
         <p class="text-primary-700 text-xs pt-3">{{ $t('contact.closedTuesday') }}</p>

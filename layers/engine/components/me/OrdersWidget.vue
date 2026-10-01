@@ -512,13 +512,13 @@ const isOrderFailed = (status: string) => ['CANCELLED', 'FAILED'].includes(statu
 const iconBgClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50'
     if (isOrderFailed(status)) return 'bg-amber-50'
-    return 'bg-rose-50'
+    return 'bg-primary-50'
 }
 
 const iconColorClass = (status: string) => {
     if (isOrderSuccess(status)) return 'text-emerald-500'
     if (isOrderFailed(status)) return 'text-amber-500'
-    return 'text-rose-400'
+    return 'text-primary-400'
 }
 
 const getStatus = (status: string) => {
@@ -539,13 +539,13 @@ const getStatus = (status: string) => {
 const orderBorderClass = (status: string) => {
     if (isOrderSuccess(status)) return 'border-l-emerald-500'
     if (isOrderFailed(status)) return 'border-l-amber-400'
-    return 'border-l-rose-400'
+    return 'border-l-primary-400'
 }
 
 const statusBadgeClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50 text-emerald-700'
     if (isOrderFailed(status)) return 'bg-amber-50 text-amber-700'
-    return 'bg-rose-50 text-rose-600'
+    return 'bg-primary-50 text-primary-600'
 }
 
 // ── Hanko seal helpers ──

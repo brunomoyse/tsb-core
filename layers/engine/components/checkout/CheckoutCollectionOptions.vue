@@ -87,7 +87,7 @@
         <!-- Preferred Time / Status -->
         <div class="mt-4">
             <!-- Ordering disabled -->
-            <p v-if="isOrderingDisabled" class="text-orange-600 font-semibold">
+            <p v-if="isOrderingDisabled" class="text-amber-700 font-semibold">
                 {{ $t('checkout.orderDisabled', 'Ordering is temporarily disabled.') }}
             </p>
 
