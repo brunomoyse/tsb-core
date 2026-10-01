@@ -164,7 +164,7 @@
                 </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span data-testid="cart-total" class="tabular-nums">{{ formatCents(payableCents) }}</span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span data-testid="cart-total" class="tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
             </div>
 
@@ -202,6 +202,7 @@ import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
@@ -212,6 +213,7 @@ import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { showProductCode = false, deliveryEnabled = true } = useAppConfig().brand
@@ -238,6 +240,8 @@ const {
     hasBreakdown,
     isMinimumReached,
 } = useCartTotals()
+// Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
+useOrderQuote()
 
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')

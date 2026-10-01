@@ -52,10 +52,23 @@ export class GqlError extends Error {
         return this.errors.some((entry) => entry.extensions?.code === code)
     }
 
-    /** A failed HTTP request / dropped connection, wrapped so callers only ever deal with GqlError. */
+    /**
+     * A failed HTTP request / dropped connection, wrapped so callers only ever deal with GqlError.
+     * A non-2xx response that still carries a GraphQL `errors` body (gqlgen answers a query that
+     * fails validation with HTTP 422, for instance) keeps those errors, so their `extensions.code`
+     * (GRAPHQL_VALIDATION_FAILED...) stays readable.
+     */
     static fromTransport(err: unknown, operationName: string | null = null): GqlError {
-        const raw = err as { status?: number; statusCode?: number; message?: string } | null
+        const raw = err as { status?: number; statusCode?: number; message?: string; data?: { errors?: unknown } } | null
         const status = raw?.status ?? raw?.statusCode ?? null
+        const bodyErrors = Array.isArray(raw?.data?.errors) ? (raw.data.errors as unknown[]) : []
+        const entries = bodyErrors.flatMap((entry): GqlErrorEntry[] => {
+            const candidate = entry as Partial<GqlErrorEntry> | null
+            return candidate && typeof candidate.message === 'string'
+                ? [{ message: candidate.message, ...(candidate.path ? { path: candidate.path } : {}), ...(candidate.extensions ? { extensions: candidate.extensions } : {}) }]
+                : []
+        })
+        if (entries.length > 0) return new GqlError(entries, { operationName, status, cause: err })
         const code = status ? GQL_HTTP_ERROR : GQL_NETWORK_ERROR
         const message = raw?.message ?? 'Request failed'
         return new GqlError([{ message, extensions: { code } }], { operationName, status, cause: err })

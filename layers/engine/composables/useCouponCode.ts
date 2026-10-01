@@ -43,6 +43,13 @@ const isMissingErrorCodeField = (err: unknown): boolean => {
 /**
  * Applying / removing a promo code on the cart. `apply` returns null on success, else the
  * translated reason the code was refused (never the backend's English text).
+ *
+ * This is the explicit "apply" action only. Once a code is on the cart, `useOrderQuote` re-checks it
+ * with every quote (it follows the basket, and is removed with a message when it stops applying).
+ *
+ * A code the server REFUSES comes back as `valid: false` with an `errorCode` (shown as that reason).
+ * A request that FAILED (offline, server error) throws and is shown as such: it never says "invalid
+ * code" about a code that was not even checked.
  */
 export function useCouponCode() {
     const cartStore = useCartStore()
@@ -79,7 +86,8 @@ export function useCouponCode() {
         } catch (err: unknown) {
             reportError(err, 'coupon.validate')
             const described = describeGqlError(err)
-            return t(described?.key ?? 'coupon.invalid', described?.params ?? {})
+            // Not a refusal of the code: the request itself failed, so the generic "try again", not "invalid code".
+            return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
         }
     }
 

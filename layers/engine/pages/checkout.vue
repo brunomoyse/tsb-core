@@ -50,6 +50,9 @@
             </div>
         </div>
 
+        <!-- What stops the order according to the server quote (ordering off, slot gone, coupon no longer applies, flagged lines) -->
+        <QuoteIssuesNotice />
+
         <!-- Page Title (Japanese accent is per brand) -->
         <div class="flex items-center gap-3 mb-4">
             <PageTitle>
@@ -141,7 +144,7 @@
                     size="lg"
                     block
                     class="justify-between"
-                    :disabled="!isOrderingAvailable || cartStore.products.length === 0"
+                    :disabled="!isOrderingAvailable || cartStore.products.length === 0 || isOrderBlocked"
                     :loading="isCheckoutProcessing"
                     @click="handleCheckout"
                 >
@@ -154,7 +157,10 @@
                             }}
                         </template>
                     </span>
-                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
+                    <span class="flex flex-col items-end leading-tight">
+                        <span class="ml-auto font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
+                        <span v-if="isQuotePending" class="text-[10px] font-normal opacity-80" data-testid="checkout-quote-updating">{{ $t('cart.quoteUpdating') }}</span>
+                    </span>
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </div>
@@ -237,6 +243,8 @@ import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionO
 import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
+import QuoteIssuesNotice from '#engine/components/QuoteIssuesNotice.vue'
+import { buildCreateOrderInput } from '#engine/utils/orderPayload'
 import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
@@ -250,6 +258,7 @@ import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -265,7 +274,11 @@ const notifications = useNotificationsStore()
 const {
     payableCents,
     isMinimumReached,
+    isOrderBlocked,
+    isQuotePending,
 } = useCartTotals()
+// Keeps the server quote of this cart up to date: its totals replace the client's maths below, and its issues block the pay button.
+useOrderQuote()
 const localePath = useLocalePath()
 const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
@@ -585,6 +598,18 @@ const handleCheckout = async () => {
             return
         }
 
+        // The pay button is disabled in this state; this covers Enter keys and double taps. Nothing is sent
+        // While the server has not priced the cart, or while it reports something that would fail the order.
+        if (isOrderBlocked.value) {
+            notifications.notify({
+                message: t(isQuotePending.value ? 'cart.quoteUpdating' : 'checkout.quoteLineIssues'),
+                persistent: false,
+                duration: 3000,
+                variant: 'warning',
+            })
+            return
+        }
+
         if (!isOrderingCurrentlyOpen.value && !cartStore.preferredReadyTime) {
             notifications.notify({
                 message: t('notify.errors.fixedTimeRequiredWhileClosed'),
@@ -646,40 +671,8 @@ const handleCheckout = async () => {
             return
         }
 
-        // Send ASAP as null. Fixed slots are already RFC3339 values.
-        const { preferredReadyTime: selectedPreferredReadyTime } = cartStore
-        let preferredReadyTime = null
-        if (selectedPreferredReadyTime) {
-            preferredReadyTime = selectedPreferredReadyTime
-        }
-
-        const cashAmount = cartStore.paymentOption === 'CASH'
-            ? (String(cartStore.cashPaymentAmount ?? '').trim() || null)
-            : null
-
-        const orderData: CreateOrderRequest = {
-            orderType: cartStore.collectionOption,
-            isOnlinePayment: cartStore.paymentOption === 'ONLINE',
-            addressPlaceId: (cartStore.collectionOption === 'DELIVERY')
-                ? (cartStore.address?.id ?? null)
-                : null,
-            addressExtra: cartStore.addressExtra,
-            couponCode: cartStore.couponCode,
-            orderNote: cartStore.orderNote?.trim() || null,
-            orderExtra: cartStore.orderExtra,
-            items: cartStore.products.map((item) => {
-                const hasSelections = (item.selectedChoices?.length ?? 0) > 0
-                return {
-                    productId: item.product.id,
-                    quantity: item.quantity,
-                    ...(hasSelections
-                        ? { selections: item.selectedChoices }
-                        : (item.selectedChoice ? { choiceId: item.selectedChoice.id } : {})),
-                }
-            }),
-            preferredReadyTime,
-            cashPaymentAmount: cashAmount,
-        }
+        // The same builder the quote uses (#engine/utils/orderPayload): the order is exactly what was priced.
+        const orderData: CreateOrderRequest = buildCreateOrderInput(cartStore)
 
         try {
             const res : { createOrder: Order } = await mutationCreateOrder({

@@ -311,7 +311,8 @@
     "editItem": "Modifier",
     "pickupDiscountShort": "-10 %",
     "onlineFee": "Frais de paiement en ligne",
-    "addForDelivery": "Ajoutez encore {amount} pour la livraison."
+    "addForDelivery": "Ajoutez encore {amount} pour la livraison.",
+    "quoteUpdating": "Mise à jour des prix…"
   },
   "checkout": {
     "title": "Commande",
@@ -400,7 +401,9 @@
     "addExtras": "Envie d'un accompagnement ?",
     "extrasDescription": "Complétez votre commande avec des accompagnements",
     "paidExtra": "Supplément payant",
-    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier."
+    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier.",
+    "quoteIssuesTitle": "Votre commande ne peut pas encore être payée",
+    "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande."
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -495,7 +498,8 @@
       "couponMinOrderNotMet": "Ce code promo demande un montant de commande plus élevé.",
       "couponAlreadyActive": "Vous avez déjà une commande en cours qui utilise un code promo. Réessayez une fois celle-ci terminée.",
       "cashAmountInvalid": "Le montant en espèces indiqué n'est pas valide.",
-      "paymentFailed": "Le paiement n'a pas pu être initialisé. Veuillez réessayer."
+      "paymentFailed": "Le paiement n'a pas pu être initialisé. Veuillez réessayer.",
+      "priceChanged": "Le prix d'un article de votre panier a changé. Vérifiez votre panier et confirmez le nouveau prix."
     }
   },
   "schema": {
@@ -591,7 +595,8 @@
     "remove": "Retirer",
     "applied": "Code promo appliqué : -{discount} de réduction",
     "invalid": "Code promo invalide",
-    "discount": "Réduction code promo"
+    "discount": "Réduction code promo",
+    "removedNoLongerApplies": "Le code promo {code} a été retiré : {reason}"
   },
   "reorder": {
     "button": "Recommander",

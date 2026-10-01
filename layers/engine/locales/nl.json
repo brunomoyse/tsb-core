@@ -311,7 +311,8 @@
     "eachSuffix": "per stuk",
     "deliveryTbd": "Levering wordt berekend bij het afrekenen",
     "onlineFee": "Kosten online betaling",
-    "addForDelivery": "Voeg nog {amount} toe om te laten leveren."
+    "addForDelivery": "Voeg nog {amount} toe om te laten leveren.",
+    "quoteUpdating": "Prijzen worden bijgewerkt…"
   },
   "checkout": {
     "title": "Bestelling",
@@ -400,7 +401,9 @@
     "addExtras": "Zin in extra's?",
     "extrasDescription": "Maak uw bestelling compleet met bijgerechten",
     "paidExtra": "Betaalde extra",
-    "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd."
+    "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd.",
+    "quoteIssuesTitle": "Je bestelling kan nog niet worden betaald",
+    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling."
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
@@ -495,7 +498,8 @@
       "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
       "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
       "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
-      "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw."
+      "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
+      "priceChanged": "De prijs van een artikel in je winkelmand is gewijzigd. Controleer je winkelmand en bevestig de nieuwe prijs."
     }
   },
   "schema": {
@@ -591,7 +595,8 @@
     "remove": "Verwijderen",
     "applied": "Promocode toegepast: -{discount} korting",
     "invalid": "Ongeldige promocode",
-    "discount": "Korting promocode"
+    "discount": "Korting promocode",
+    "removedNoLongerApplies": "Promocode {code} is verwijderd: {reason}"
   },
   "reorder": {
     "button": "Opnieuw bestellen",

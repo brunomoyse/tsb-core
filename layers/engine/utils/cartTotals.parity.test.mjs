@@ -12,8 +12,10 @@
  *       L305-L321 delivery: distance >= 9000 or excluded postcode → rejected; fee tier; total += fee
  *       L344-L356 pickup && total >= 20: Σ(discountable line total × 0.10) → RoundToNearest10Cents
  *       L382-L388 totalDiscount > total → both scaled by total/totalDiscount, snapped to 0,10 €
- *   internal/modules/order/infrastructure/repository.go Save (L44-L69)
- *       total_price = RoundToNearest10Cents(Σ lines + fee − discounts + transaction fee (0.30 online))
+ *   internal/modules/order/domain/pricing.go          OrderTotal (what repository.go Save stores)
+ *       total_price = RoundToNearest10Cents(max(Σ lines + fee − discounts, 0) + transaction fee (0.30 online))
+ *       The max(…, 0) clamp is audit PR 2.2: before it a coupon covering a basket that is not a
+ *       multiple of 10 cents stored −0,05 / −0,10 €.
  *   pkg/money/rounding.go                              RoundToNearest10Cents
  *   internal/modules/order/domain/order.go L42         TransactionFee = 0.30
  *   internal/api/graphql/resolver/mappers.go L418      deliveryFeeFromDistance
@@ -148,14 +150,16 @@ function backendCreateOrder(cart) {
     couponDiscount = roundToNearest10Cents(sub(total, takeawayDiscount))
   }
 
-  // The repository's Save (repository.go)
-  let computed = dec(0)
-  for (const item of lines) computed = add(computed, item.lineTotal)
-  computed = add(computed, fee)
-  const discounts = add(takeawayDiscount, couponDiscount)
-  if (cmp(discounts, dec(0)) > 0) computed = sub(computed, discounts)
-  if (cart.online) computed = add(computed, TRANSACTION_FEE)
-  return { totalPrice: roundToNearest10Cents(computed), takeawayDiscount, couponDiscount, fee }
+  // The domain.OrderTotal function (pricing.go), which the repository's Save stores as total_price
+  let goods = dec(0)
+  for (const item of lines) goods = add(goods, item.lineTotal)
+  goods = add(goods, fee)
+  goods = sub(goods, add(takeawayDiscount, couponDiscount))
+  // Would the total have gone negative before the clamp? (the bug the clamp fixes)
+  const wasNegative = goods.coef < 0n
+  if (wasNegative) goods = dec(0)
+  if (cart.online) goods = add(goods, TRANSACTION_FEE)
+  return { totalPrice: roundToNearest10Cents(goods), takeawayDiscount, couponDiscount, fee, wasNegative }
 }
 
 // Go: Coupon.CalculateDiscount(orderAmount = total incl. delivery fee, as passed by CreateOrder)
@@ -283,18 +287,12 @@ test('10,000 random carts: the engine total equals the backend total_price', () 
     const coupon = grantedCouponCents(cart, backend)
     const engine = computeCartTotals(engineInput(cart, coupon))
 
+    // Exact parity, including the carts where a coupon snapped up to 0,10 € overshoots the basket:
+    // The backend now clamps the goods part at 0 before adding the online fee, like the engine.
     const expectedCents = centsOf(backend.totalPrice)
-    /*
-     * The one deliberate difference: when a coupon that covers the basket is snapped up to 0,10 €
-     * on a basket that is not a multiple of 10 cents, the backend stores a total of −0,10 € / −0,05 €
-     * (cash, no fee). The web never shows a negative amount and floors at 0.
-     */
-    if (expectedCents < 0) {
-      assert.strictEqual(engine.payableCents, 0, `cart ${n}: negative backend total must floor at 0`)
-      clamped++
-    } else {
-      assert.strictEqual(engine.payableCents, expectedCents, `cart ${n}: ${JSON.stringify(cart)}`)
-    }
+    assert.ok(expectedCents >= 0, `cart ${n}: the backend total is never negative`)
+    assert.strictEqual(engine.payableCents, expectedCents, `cart ${n}: ${JSON.stringify(cart)}`)
+    if (backend.wasNegative) clamped++
     assert.strictEqual(engine.pickupDiscountCents, cart.type === 'PICKUP' ? centsOf(probeTakeaway(cart)) : 0,
       `cart ${n}: pickup discount`)
     if (engine.pickupDiscountCents > 0) pickupDiscounts++
@@ -309,7 +307,8 @@ test('10,000 random carts: the engine total equals the backend total_price', () 
   assert.ok(withCoupon > 1000, 'coupons not exercised')
   assert.ok(pickupDiscounts > 1000, 'pickup discounts not exercised')
   assert.ok(scaled > 20, `discount scaling not exercised (${scaled})`)
-  console.log(`parity: ${compared} compared, ${rejected} rejected, ${withCoupon} with coupon, ${scaled} scaled, ${clamped} negative-total clamps`)
+  assert.ok(clamped > 0, 'the negative-total clamp is not exercised')
+  console.log(`parity: ${compared} compared, ${rejected} rejected, ${withCoupon} with coupon, ${scaled} scaled, ${clamped} carts clamped at 0`)
 })
 
 // The pickup discount alone, as the backend computes it before any scaling (L344-L356).

@@ -311,7 +311,8 @@
     "editItem": "Edit",
     "pickupDiscountShort": "-10%",
     "onlineFee": "Online payment fee",
-    "addForDelivery": "Add {amount} more to qualify for delivery."
+    "addForDelivery": "Add {amount} more to qualify for delivery.",
+    "quoteUpdating": "Updating prices…"
   },
   "checkout": {
     "title": "Checkout",
@@ -400,7 +401,9 @@
     "addExtras": "Add some extras?",
     "extrasDescription": "Complete your order with some accompaniments",
     "paidExtra": "Paid extra",
-    "paidExtrasNotice": "These extras are billed as products and added to your cart."
+    "paidExtrasNotice": "These extras are billed as products and added to your cart.",
+    "quoteIssuesTitle": "Your order can't be paid yet",
+    "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order."
   },
   "orderCompleted": {
     "title": "Order Completed",
@@ -495,7 +498,8 @@
       "couponMinOrderNotMet": "This promo code requires a higher order amount.",
       "couponAlreadyActive": "You already have an open order that uses a promo code. Try again once it is complete.",
       "cashAmountInvalid": "The cash amount you entered is not valid.",
-      "paymentFailed": "The payment could not be started. Please try again."
+      "paymentFailed": "The payment could not be started. Please try again.",
+      "priceChanged": "The price of an item in your cart has changed. Check your cart and confirm the new price."
     }
   },
   "schema": {
@@ -591,7 +595,8 @@
     "remove": "Remove",
     "applied": "Coupon applied: -{discount} off",
     "invalid": "Invalid promo code",
-    "discount": "Coupon discount"
+    "discount": "Coupon discount",
+    "removedNoLongerApplies": "Promo code {code} was removed: {reason}"
   },
   "reorder": {
     "button": "Re-order",

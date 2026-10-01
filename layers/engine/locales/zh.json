@@ -311,7 +311,8 @@
     "editItem": "修改",
     "pickupDiscountShort": "-10%",
     "onlineFee": "在线支付手续费",
-    "addForDelivery": "再添加 {amount} 即可配送。"
+    "addForDelivery": "再添加 {amount} 即可配送。",
+    "quoteUpdating": "正在更新价格…"
   },
   "checkout": {
     "title": "结账",
@@ -400,7 +401,9 @@
     "addExtras": "加点配菜？",
     "extrasDescription": "为您的订单添加一些配菜",
     "paidExtra": "付费加购",
-    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。"
+    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。",
+    "quoteIssuesTitle": "您的订单暂时无法付款",
+    "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。"
   },
   "orderCompleted": {
     "title": "订单完成",
@@ -495,7 +498,8 @@
       "couponMinOrderNotMet": "此优惠码需要更高的订单金额。",
       "couponAlreadyActive": "您已有一笔使用优惠码的进行中订单，请在其完成后再试。",
       "cashAmountInvalid": "填写的现金金额无效。",
-      "paymentFailed": "无法发起支付，请重试。"
+      "paymentFailed": "无法发起支付，请重试。",
+      "priceChanged": "购物车中某件商品的价格已变动。请检查购物车并确认新价格。"
     }
   },
   "schema": {
@@ -591,7 +595,8 @@
     "remove": "移除",
     "applied": "优惠码已应用：减 {discount}",
     "invalid": "无效的优惠码",
-    "discount": "优惠码折扣"
+    "discount": "优惠码折扣",
+    "removedNoLongerApplies": "优惠码 {code} 已移除：{reason}"
   },
   "reorder": {
     "button": "重新订购",

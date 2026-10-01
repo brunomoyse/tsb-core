@@ -181,7 +181,7 @@
                 </div>
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-                    <span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
             </div>
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
@@ -242,6 +242,7 @@ import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useCartStore } from '#engine/stores/cart'
@@ -249,6 +250,7 @@ import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
@@ -281,6 +283,8 @@ const {
     amountToDeliveryMinimumCents,
     switchToPickup,
 } = useCartTotals()
+// Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
+useOrderQuote()
 const isCheckoutAvailable = computed(() => {
     const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
     const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false

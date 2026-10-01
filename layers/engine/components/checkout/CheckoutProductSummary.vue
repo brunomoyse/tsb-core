@@ -174,7 +174,7 @@
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatCents(payableCents) }}</span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
             </div>
         </template>
@@ -188,6 +188,7 @@ import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { isExcludedPostcode } from '#engine/lib/delivery'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'

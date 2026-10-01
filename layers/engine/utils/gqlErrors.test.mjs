@@ -5,6 +5,7 @@ import {
   GQL_ERROR_KEYS,
   GQL_KNOWN_CODES,
   describeCouponRefusal,
+  describeErrorCode,
   describeGqlError,
 } from './gqlErrors.ts'
 import {
@@ -89,6 +90,27 @@ test('parameters of the backend flow into the message', () => {
   })
   assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET')).params, { amount: 25 })
   assert.deepEqual(describeGqlError(response('DELIVERY_OUT_OF_ZONE')).params, { distance: 9 })
+})
+
+test('a bare code (an issue of a quote) is described like the error that carries it', () => {
+  assert.deepEqual(describeErrorCode('DELIVERY_MINIMUM_NOT_MET', { minimum: '30' }), { key: 'cart.minimumDelivery', params: { amount: 30 } })
+  assert.deepEqual(describeErrorCode('PRICE_CHANGED'), { key: 'notify.errors.priceChanged' })
+  assert.deepEqual(describeErrorCode('LUNCH_SLOT_REQUIRED'), { key: 'notify.errors.lunchOnlyRequiresLunchSlot' })
+  assert.equal(describeErrorCode('SOMETHING_NEW'), null)
+})
+
+test('a non-2xx response that still carries GraphQL errors keeps their codes', () => {
+  const fetchError = Object.assign(new Error('[POST] 422'), {
+    status: 422,
+    data: { errors: [{ message: 'Cannot query field', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }, { message: 'second' }, 'garbage'] },
+  })
+  const err = GqlError.fromTransport(fetchError, 'Q')
+  assert.equal(err.code, 'GRAPHQL_VALIDATION_FAILED')
+  assert.equal(err.status, 422)
+  assert.equal(err.errors.length, 2)
+  assert.ok(err.cause === fetchError)
+  // No GraphQL body: still the transport error it was.
+  assert.equal(GqlError.fromTransport(Object.assign(new Error('x'), { status: 502, data: { error: 'bad gateway' } })).code, 'HTTP_ERROR')
 })
 
 test('an unknown code or a non GqlError has no specific message (the caller shows its generic one)', () => {

@@ -166,7 +166,7 @@
                     </div>
                     <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                         <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
-                        <span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span>
+                        <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                     </div>
                 </div>
                 <!-- Delivery minimum (delivery only — pickup has no minimum) -->
@@ -203,12 +203,14 @@ import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { showProductCode = false } = useAppConfig().brand
@@ -233,6 +235,8 @@ const {
     amountToDeliveryMinimumCents,
     switchToPickup,
 } = useCartTotals()
+// Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
+useOrderQuote({ active: () => cartStore.isCartVisible })
 
 const lightboxRef = ref<{ open: () => void } | null>(null)
 const lightboxSrc = ref('')

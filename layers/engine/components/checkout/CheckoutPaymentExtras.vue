@@ -321,7 +321,7 @@
             size="lg"
             block
             class="hidden lg:inline-flex"
-            :disabled="!isOrderingAvailable || isCartEmpty"
+            :disabled="!isOrderingAvailable || isCartEmpty || isOrderBlocked"
             :loading="loading"
             @click="debouncedCheckout"
         >
@@ -333,6 +333,9 @@
                 }}
             </template>
         </UiButton>
+        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-ygf-gray-400 mt-1">
+            {{ $t('cart.quoteUpdating') }}
+        </p>
     </section>
 </template>
 
@@ -344,6 +347,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
 import { formatCents } from '#engine/lib/price'
+import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -362,6 +366,8 @@ const { isMinimumReached = false, loading = false, isOrderingAvailable = true, c
 const showCashAckError = computed(() => cashAckError && !cashAcknowledged)
 
 const cartStore = useCartStore()
+// The pay button waits for the server quote and stays disabled while it reports something that would fail the order.
+const { isOrderBlocked, isQuotePending } = useCartTotals()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWasabi, addGinger, addSauce, sauce, sauceOptions, syncLockedExtras } = useOrderExtras()

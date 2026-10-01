@@ -49,6 +49,7 @@ const CODE_TABLE: Record<string, Describe> = {
     INVALID_QUANTITY: key('notify.errors.invalidQuantity'),
     SELECTION_INVALID: key('notify.errors.selectionInvalid'),
     INVALID_PRICE: key('notify.errors.orderCreationFailed'),
+    PRICE_CHANGED: key('notify.errors.priceChanged'),
 
     // Delivery
     DELIVERY_MINIMUM_NOT_MET: (ext) => ({
@@ -149,8 +150,16 @@ export function describeGqlError(raw: unknown): GqlErrorDescriptor | null {
     }
 
     const code = err.code ?? legacyCodeOf(err.message)
-    const describe = code ? CODE_TABLE[code] : undefined
-    return describe ? describe(err.extensions) : null
+    return code ? describeErrorCode(code, err.extensions) : null
+}
+
+/**
+ * The translated message for a bare backend code, e.g. one of the issues of a `quoteOrder` answer
+ * (`extensions` carries its parameters: `{ minimum: '25' }`). Null for a code the table does not know.
+ */
+export function describeErrorCode(code: string, extensions: Record<string, unknown> = {}): GqlErrorDescriptor | null {
+    const describe = CODE_TABLE[code]
+    return describe ? describe(extensions) : null
 }
 
 export interface CouponValidationResult {
