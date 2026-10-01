@@ -89,11 +89,11 @@
 
                                  <!-- Phone (tap-to-call) -->
                                  <li>
-                                     <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`"
+                                     <a :href="telHref(brand.phone)"
                                         :aria-label="$t('nav.callRestaurant')"
                                         class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                                         @click="closeMenu">
-                                         <span class="text-base font-medium">{{ brand.phone.replace(/^\+32\s?/u, '0') }}</span>
+                                         <span class="text-base font-medium">{{ nationalPhone(brand.phone) }}</span>
                                      </a>
                                  </li>
                             </ul>
@@ -117,6 +117,7 @@ import LanguagePicker from './LanguagePicker.vue'
 import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '#engine/stores/auth'
+import { nationalPhone, telHref } from '#engine/utils/phone'
 import { useCartStore } from '#engine/stores/cart'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'

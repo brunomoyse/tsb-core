@@ -88,7 +88,6 @@
     "noProduct": "没有产品可用",
     "allergenNotice": "我们的产品可能含有鱼类、贝类和乳糖。请告知我们您的任何过敏情况。",
     "allergenNoticeShort": "过敏？咨询：",
-    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "暂时缺货",
     "noResults": "未找到 \"{query}\" 的结果",
     "previousCategory": "上一类别",
@@ -414,9 +413,8 @@
     "liveTracking": "实时追踪，状态自动更新",
     "estimatedDeliveredTime": "预计送达时间：",
     "estimatedReadyTime": "预计取餐时间：",
-    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 222 98 88。",
+    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：__PHONE__。",
     "notConfirmedYet": "您的订单尚未确认。您可以致电餐厅确认：",
-    "restaurantPhone": "04 222 98 88",
     "cancellationReasonLabel": "原因：",
     "cancellationReasons": {
       "OUT_OF_STOCK": "缺货",
@@ -620,11 +618,11 @@
       },
       "allergens": {
         "question": "你们有过敏原信息吗？",
-        "answer": "我们的产品通常含有<strong>鱼类</strong>、<strong>贝类</strong>和<strong>乳糖</strong>。请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 04 222 98 88 获取有关我们菜肴的详细过敏原信息。"
+        "answer": "我们的产品通常含有<strong>鱼类</strong>、<strong>贝类</strong>和<strong>乳糖</strong>。请在订单备注中告知我们任何过敏或饮食限制。直接联系我们 __PHONE__ 获取有关我们菜肴的详细过敏原信息。"
       },
       "invoice": {
         "question": "如何申请发票？",
-        "answer": "所有发票申请必须在下单当天提出。请致电 <strong>04 222 98 88</strong> 提出申请。"
+        "answer": "所有发票申请必须在下单当天提出。请致电 <strong>__PHONE__</strong> 提出申请。"
       },
       "freshness": {
         "question": "你们的鱼新鲜吗？",

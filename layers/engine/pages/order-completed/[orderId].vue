@@ -187,7 +187,7 @@
                         </svg>
                         <p>
                             {{ $t('orderCompleted.notConfirmedYet') }}
-                            <a :href="phoneHref" class="font-semibold underline">{{ $t('orderCompleted.restaurantPhone') }}</a>
+                            <a :href="phoneHref" class="font-semibold underline">{{ phoneLabel }}</a>
                         </p>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ const heroImage = orderCompletedImage ?? {
     webp: '/images/tsb-takeaway-bag.webp',
     fallback: '/images/tsb-takeaway-bag.png',
 }
-const { phoneHref } = useBrandPhone()
+const { phoneHref, phoneLabel } = useBrandPhone()
 
 definePageMeta({ public: false })
 

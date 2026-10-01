@@ -3,6 +3,7 @@ import en from './locales/en.json'
 import fr from './locales/fr.json'
 import nl from './locales/nl.json'
 import zh from './locales/zh.json'
+import { brand as brandConfig } from '#brand/brand'
 // The extending brand app's locale overrides (resolved via the #brand alias,
 // which each app points at its own root). Each brand supplies at least `brandName`.
 import brandEn from '#brand/locales/en.json'
@@ -26,10 +27,11 @@ function deepMerge(base: Messages, override: Messages): Messages {
     return out
 }
 
-// Replace the `__BRAND__` token in every string with the resolved brand name,
-// so base locale strings stay brand-neutral while rendering the active brand.
+// Replace the `__BRAND__` and `__PHONE__` tokens in every string with the active
+// brand's name and phone number (brand.ts). Base locale strings stay
+// Brand-neutral while rendering the active brand.
 function applyBrand(node: unknown, brandName: string): unknown {
-    if (typeof node === 'string') return node.replaceAll('__BRAND__', brandName)
+    if (typeof node === 'string') return node.replaceAll('__BRAND__', brandName).replaceAll('__PHONE__', brandConfig.phone)
     if (Array.isArray(node)) return node.map((n) => applyBrand(n, brandName))
     if (node && typeof node === 'object') {
         const out: Messages = {}

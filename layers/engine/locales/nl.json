@@ -88,7 +88,6 @@
     "noProduct": "Geen producten beschikbaar",
     "allergenNotice": "Onze producten kunnen vis, schaaldieren en lactose bevatten. Gelieve ons te informeren over eventuele allergieën.",
     "allergenNoticeShort": "Allergieën? Info:",
-    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Niet beschikbaar",
     "noResults": "Geen resultaten voor \"{query}\"",
     "previousCategory": "Vorige categorie",
@@ -414,9 +413,8 @@
     "liveTracking": "Live tracking, de status wordt automatisch bijgewerkt",
     "estimatedDeliveredTime": "Geschatte leveringstijd:",
     "estimatedReadyTime": "Geschatte afhaaltijd:",
-    "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via 04 222 98 88 voor meer informatie.",
+    "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via __PHONE__ voor meer informatie.",
     "notConfirmedYet": "Uw bestelling is nog niet bevestigd. U kunt het restaurant bellen om te controleren:",
-    "restaurantPhone": "04 222 98 88",
     "cancellationReasonLabel": "Reden:",
     "cancellationReasons": {
       "OUT_OF_STOCK": "Uitverkocht",
@@ -620,11 +618,11 @@
       },
       "allergens": {
         "question": "Hebben jullie informatie over allergenen?",
-        "answer": "Onze producten bevatten doorgaans <strong>vis</strong>, <strong>schaaldieren</strong> en <strong>lactose</strong>. Gelieve ons te informeren over eventuele allergieën of dieetbeperkingen in de opmerkingen bij uw bestelling. Neem rechtstreeks contact met ons op via 04 222 98 88 voor gedetailleerde informatie over allergenen in onze gerechten."
+        "answer": "Onze producten bevatten doorgaans <strong>vis</strong>, <strong>schaaldieren</strong> en <strong>lactose</strong>. Gelieve ons te informeren over eventuele allergieën of dieetbeperkingen in de opmerkingen bij uw bestelling. Neem rechtstreeks contact met ons op via __PHONE__ voor gedetailleerde informatie over allergenen in onze gerechten."
       },
       "invoice": {
         "question": "Hoe vraag ik een factuur aan?",
-        "answer": "Elke aanvraag voor een factuur moet op dezelfde dag als uw bestelling worden gedaan. Neem contact met ons op via <strong>04 222 98 88</strong> om een factuur aan te vragen."
+        "answer": "Elke aanvraag voor een factuur moet op dezelfde dag als uw bestelling worden gedaan. Neem contact met ons op via <strong>__PHONE__</strong> om een factuur aan te vragen."
       },
       "freshness": {
         "question": "Is de vis vers?",

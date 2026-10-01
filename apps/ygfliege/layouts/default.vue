@@ -42,7 +42,7 @@
                             <address class="not-italic text-sm leading-relaxed">
                                 {{ brand.address.street }}<br>
                                 {{ brand.address.postal }} {{ brand.address.city }}<br>
-                                <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`" class="hover:text-white transition-colors">{{ brand.phone }}</a>
+                                <a :href="telHref(brand.phone)" class="hover:text-white transition-colors">{{ brand.phone }}</a>
                             </address>
                         </div>
 
@@ -114,6 +114,7 @@
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import TopNavbar from '~/components/navbar/TopNavbar.vue'
 import { computed } from 'vue'
+import { telHref } from '#engine/utils/phone'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'

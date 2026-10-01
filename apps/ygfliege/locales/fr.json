@@ -422,13 +422,6 @@
     "address": "Rue de la Cathédrale 51, Liège, Belgique",
     "closedTuesday": "Ouvert 7j/7"
   },
-  "menu": {
-    "allergenNoticeLink": "04 286 68 20"
-  },
-  "orderCompleted": {
-    "orderCanceled": "Votre commande a été annulée. Veuillez contacter le restaurant au 04 286 68 20 pour plus d'informations.",
-    "restaurantPhone": "04 286 68 20"
-  },
   "composer": {
     "eyebrow": "Composez votre bol",
     "title": "Votre bol sur mesure",

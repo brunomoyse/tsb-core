@@ -88,7 +88,6 @@
     "noProduct": "No products available",
     "allergenNotice": "Our products may contain fish, shellfish and lactose. Please inform us of any allergies.",
     "allergenNoticeShort": "Allergies? Info:",
-    "allergenNoticeLink": "04 222 98 88",
     "unavailable": "Unavailable",
     "noResults": "No results for \"{query}\"",
     "previousCategory": "Previous category",
@@ -414,9 +413,8 @@
     "liveTracking": "Live tracking, status updates automatically",
     "estimatedDeliveredTime": "Estimated delivered time:",
     "estimatedReadyTime": "Estimated ready time:",
-    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 222 98 88.",
+    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at __PHONE__.",
     "notConfirmedYet": "Your order has not been confirmed yet. You can call the restaurant to check:",
-    "restaurantPhone": "04 222 98 88",
     "cancellationReasonLabel": "Reason:",
     "cancellationReasons": {
       "OUT_OF_STOCK": "Out of stock",
@@ -620,11 +618,11 @@
       },
       "allergens": {
         "question": "Do you have allergen information?",
-        "answer": "Our products generally contain <strong>fish</strong>, <strong>shellfish</strong> and <strong>lactose</strong>. Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at 04 222 98 88 for detailed allergen information about our dishes."
+        "answer": "Our products generally contain <strong>fish</strong>, <strong>shellfish</strong> and <strong>lactose</strong>. Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at __PHONE__ for detailed allergen information about our dishes."
       },
       "invoice": {
         "question": "How do I request an invoice?",
-        "answer": "All invoice requests must be made on the same day as your order. Contact us at <strong>04 222 98 88</strong> to make your request."
+        "answer": "All invoice requests must be made on the same day as your order. Contact us at <strong>__PHONE__</strong> to make your request."
       },
       "freshness": {
         "question": "Is your fish fresh?",
