@@ -139,7 +139,7 @@ const getWsClient = (): Promise<Client> => {
             import('~/composables/useOidc'),
         ]).then(([{ createClient }, { useOidc }]) => {
             const cfg = useRuntimeConfig()
-            const { getAccessToken } = useOidc()
+            const { getAccessToken, hasSessionExpired, waitForSession } = useOidc()
 
             /*
              * Track the underlying WebSocket so the ping/pong timeout
@@ -189,9 +189,16 @@ const getWsClient = (): Promise<Client> => {
                 retryWait: async (retries) => {
                     const delay = Math.min(1000 * 2 ** retries, 30_000)
                     await new Promise<void>(resolve => { setTimeout(resolve, delay) })
-                    // If no valid token after refresh attempt, stop retrying
+                    /*
+                     * Only stop when a session EXISTED and failed to renew: retrying
+                     * with an invalid token would just spam the server. Park until the
+                     * user signs in again (waitForSession resolves on the next loaded
+                     * session) instead of hanging forever. Guests never had a session,
+                     * so they keep backing off and reconnect without a token — which is
+                     * what keeps the public open/closed + availability feeds alive.
+                     */
                     const token = await getAccessToken()
-                    if (!token) await new Promise<void>(() => {})
+                    if (!token && hasSessionExpired()) await waitForSession()
                 },
             })
             wsClient = client

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue"
-import { useGqlQuery, useGqlSubscription, useNuxtApp } from "#imports"
+import { computed, ref, watch } from "vue"
 import type { Order } from "#engine/types"
 import { formatAddress } from "#engine/utils/utils"
 import { formatDateTime } from "#engine/utils/datetime"
@@ -9,16 +8,17 @@ import gql from 'graphql-tag'
 const { showProductCode = false } = useAppConfig().brand
 import { orderItemLabelParts } from "#engine/utils/orderItemLabel"
 import { print } from "graphql/index"
+import { useGqlQuery } from "#imports"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "#engine/composables/useInvoiceDownload"
 import { useNotificationsStore } from "#engine/stores/notifications"
+import { useOrderTracking } from "#engine/composables/useOrderTracking"
 import { useReorder } from "#engine/composables/useReorder"
 
 
 
 definePageMeta({ public: false })
 
-const { $gqlFetch } = useNuxtApp()
 const notifications = useNotificationsStore()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
@@ -81,7 +81,8 @@ const LOAD_STEP = 5
 const visibleCount = ref(10)
 
 const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
-const orders = computed(() => dataOrders.value?.myOrders ?? [])
+// Stays null until loaded (loading state instead of a flash of "no orders"); a failed load shows the empty state.
+const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? (ordersError.value ? [] : null))
 
 interface OrderItemLike {
     product: { code: string | null; name: string; category?: { name: string } | null }
@@ -109,149 +110,41 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
         choiceName: item.choice?.name,
     }).choice
 
-if (ordersError.value) {
+// The query is client-only, so the error only appears after setup — watch it instead of checking once.
+watch(ordersError, (err) => {
+    if (!err) return
     notifications.notify({
         message: t('notify.errors.ordersLoadFailed'),
         persistent: false,
         duration: 5000,
         variant: 'error',
     })
-}
-const visibleOrders = computed(() => orders.value.slice(0, visibleCount.value))
-const remainingCount = computed(() => orders.value.length - visibleCount.value)
+}, { immediate: true })
+
+/* Live tracking (subscriptions, reconnect refetch, polling fallback, ?followOrder)
+   is driven by watchers over the loaded orders: the query is client-only, so the
+   list is still empty at setup/onMounted on a hard load. */
+const {
+    trackedOrders,
+    getTrackedOrder,
+    toggleOrder,
+    isExpanded,
+    getStatus,
+    isOrderCompleted,
+} = useOrderTracking({
+    orders,
+    refetch: refetchOrders,
+    // A followed order beyond the first page must be rendered before it is expanded/scrolled to.
+    revealOrder: (index) => { if (index >= visibleCount.value) visibleCount.value = index + 1 },
+})
+
+const visibleOrders = computed(() => (trackedOrders.value ?? []).slice(0, visibleCount.value))
+const remainingCount = computed(() => (orders.value?.length ?? 0) - visibleCount.value)
 const hasMore = computed(() => remainingCount.value > 0)
 const nextBatchCount = computed(() => Math.min(LOAD_STEP, remainingCount.value))
 
 const loadMore = () => {
     visibleCount.value += LOAD_STEP
-}
-
-const expandedOrders = ref(new Set<string>())
-
-// Live updates map
-const liveOrderData = ref<Record<string, Partial<Order>>>({})
-
-// Subscription management — subscribe to all active (non-terminated) orders
-const subscriptionStops = new Map<string, () => void>()
-
-const SUB_ORDER_UPDATES = gql`
-    subscription ($orderId: ID!) {
-        myOrderUpdated(orderId: $orderId) {
-            id
-            status
-            updatedAt
-            estimatedReadyTime
-            cancellationReason
-            payment { status }
-        }
-    }
-`
-
-const subscribeToOrder = (orderId: string) => {
-    if (subscriptionStops.has(orderId)) return
-
-    const { data: liveUpdate, stop } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
-        print(SUB_ORDER_UPDATES),
-        { orderId },
-        { onReconnect: () => { refetchOrders() } },
-    )
-
-    subscriptionStops.set(orderId, stop)
-
-    watch(liveUpdate, (val) => {
-        if (val?.myOrderUpdated) {
-            liveOrderData.value[orderId] = {
-                ...liveOrderData.value[orderId],
-                ...val.myOrderUpdated
-            }
-            // Auto-unsubscribe when order reaches a terminal status
-            if (isOrderCompleted(val.myOrderUpdated.status ?? '')) {
-                unsubscribeFromOrder(orderId)
-            }
-        }
-    })
-}
-
-const unsubscribeFromOrder = (orderId: string) => {
-    const stopFn = subscriptionStops.get(orderId)
-    if (stopFn) {
-        stopFn()
-        subscriptionStops.delete(orderId)
-    }
-}
-
-// Polling fallback for when WebSocket subscriptions fail (mobile Safari, CORS, etc.)
-let pollTimer: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-    // Subscribe to all active (non-terminated) orders for live updates
-    const activeOrders = orders.value.filter(o => !isOrderCompleted(o.status))
-    activeOrders.forEach(o => subscribeToOrder(o.id))
-
-    // Start polling fallback if there are active orders
-    if (activeOrders.length > 0) {
-        pollTimer = setInterval(async () => {
-            try {
-                const fresh = await $gqlFetch<{ myOrders: Order[] }>(print(MY_ORDERS))
-                if (fresh?.myOrders && dataOrders.value) {
-                    for (const freshOrder of fresh.myOrders) {
-                        const current = orders.value.find(o => o.id === freshOrder.id)
-                        if (current && current.status !== freshOrder.status) {
-                            liveOrderData.value[freshOrder.id] = {
-                                ...liveOrderData.value[freshOrder.id],
-                                ...freshOrder,
-                            }
-                        }
-                    }
-                    // Stop polling if no more active orders
-                    if (!fresh.myOrders.some(o => !isOrderCompleted(o.status)) && pollTimer) {
-                        clearInterval(pollTimer)
-                        pollTimer = null
-                    }
-                }
-            } catch { /* Polling errors are non-critical */ }
-        }, 30_000)
-    }
-})
-
-onUnmounted(() => {
-    subscriptionStops.forEach((stopFn) => stopFn())
-    subscriptionStops.clear()
-    if (pollTimer) {
-        clearInterval(pollTimer)
-        pollTimer = null
-    }
-})
-
-const getTrackedOrder = (order: Order): Order => {
-    const live = liveOrderData.value[order.id]
-    return live ? { ...order, ...live } as Order : order
-}
-
-const toggleOrder = (orderId: string) => {
-    if (expandedOrders.value.has(orderId)) {
-        expandedOrders.value.delete(orderId)
-    } else {
-        expandedOrders.value.add(orderId)
-    }
-}
-
-const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
-const isOrderCompleted = (status: string) => ['DELIVERED','PICKED_UP','CANCELLED','FAILED'].includes(status)
-
-const getStatus = (status: string) => {
-    const map: Record<string, string> = {
-        PENDING: t('me.orders.status.pending'),
-        CONFIRMED: t('me.orders.status.confirmed'),
-        PREPARING: t('me.orders.status.preparing'),
-        AWAITING_PICK_UP: t('me.orders.status.awaitingPickup'),
-        OUT_FOR_DELIVERY: t('me.orders.status.outForDelivery'),
-        PICKED_UP: t('me.orders.status.pickedUp'),
-        DELIVERED: t('me.orders.status.delivered'),
-        CANCELLED: t('me.orders.status.cancelled'),
-        FAILED: t('me.orders.status.failed'),
-    }
-    return map[status] || ''
 }
 
 // Accordion transition hooks (JS-driven for smooth height animation)
@@ -342,6 +235,7 @@ const getStatusColorClass = (status: string) => {
         <div v-else-if="orders?.length" class="space-y-3">
             <div
                 v-for="(order, idx) in visibleOrders"
+                :id="`order-card-${order.id}`"
                 :key="order.id"
                 class="bg-tsb-two rounded-2xl transition-all bento-cell"
                 :style="{ '--delay': idx + 1 }"
