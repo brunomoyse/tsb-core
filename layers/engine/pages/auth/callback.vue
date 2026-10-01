@@ -49,7 +49,7 @@ onMounted(async () => {
             if (import.meta.dev) console.log('User profile loaded, navigating...')
         } catch (e) {
             // Token exchange succeeded but processCallback failed (e.g. silent renew error).
-            // The OIDC token is valid in sessionStorage — navigate to menu as fallback.
+            // The OIDC tokens are already stored (localStorage) — navigate to menu as fallback.
             if (import.meta.dev) console.warn('processCallback failed, falling back to menu:', e)
             const localePath = useLocalePath()
             navigateTo(localePath('menu'))

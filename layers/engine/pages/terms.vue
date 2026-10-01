@@ -5,7 +5,7 @@
             <PageTitle>
                 Conditions Générales de Vente
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">Dernière mise à jour : 26/03/2026</p>
+            <p class="mt-3 text-sm text-neutral-500">Dernière mise à jour : 01/10/2026</p>
         </header>
 
         <!-- Company info -->
@@ -194,9 +194,9 @@
                 <h3 class="terms-subheading">Authentification</h3>
                 <p>
                     Le Site utilise le protocole OpenID Connect (OIDC) pour l&rsquo;authentification. Les jetons
-                    d&rsquo;accès sont stockés dans le <code>sessionStorage</code> du navigateur (mémoire de session)
-                    et ne sont pas transmis sous forme de cookies. Ils sont automatiquement supprimés à la fermeture
-                    du navigateur.
+                    de connexion sont stockés dans le <code>localStorage</code> du navigateur et ne sont pas transmis
+                    sous forme de cookies. Ils y restent, y compris après la fermeture du navigateur, jusqu&rsquo;à
+                    votre déconnexion ou jusqu&rsquo;à l&rsquo;expiration de votre session.
                 </p>
 
                 <h3 class="terms-subheading">Cookies essentiels</h3>

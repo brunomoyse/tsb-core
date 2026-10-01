@@ -38,9 +38,9 @@ const RESTAURANT_STATUS = print(gql`
 `)
 
 /**
- * Shared post-auth callback logic used by both:
- * - pages/auth/callback.vue (web OIDC redirect)
- * - plugins/capacitor.client.ts (deep link from system browser)
+ * Shared post-auth callback logic, used by each app's pages/auth/callback.vue
+ * (web OIDC redirect). The OIDC tokens are already stored in localStorage by
+ * oidc-client-ts at this point; this restores the user, the return path and the cart flow.
  */
 export function useAuthCallback() {
     const authStore = useAuthStore()

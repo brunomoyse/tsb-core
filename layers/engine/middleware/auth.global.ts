@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // Public pages skip auth check
     if (to.meta.public !== false) return
 
-    // SSR: skip auth check — OIDC tokens live in sessionStorage (client-only).
+    // SSR: skip auth check — OIDC tokens live in localStorage (client-only).
     // Client-side middleware handles authentication after hydration.
     if (import.meta.server) return
 
