@@ -18,9 +18,9 @@
  *  - `*.addEventListener(...)`
  *  - `*.subscribe(...)`
  *
- * Scope: components/, composables/, layouts/, pages/, middleware/ — code that runs in the SSR
- * render path. The server/ directory is excluded; Nitro handlers run per request and don't share
- * state in this way.
+ * Scope: components/, composables/, layouts/, pages/, middleware/, plugins/ of the engine layer
+ * and of every app under apps/ — code that runs in the SSR render path. The server/ directory is
+ * excluded; Nitro handlers run per request and don't share state in this way.
  */
 
 import { readdir, readFile } from 'node:fs/promises'
@@ -28,21 +28,16 @@ import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseSync } from 'oxc-parser'
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-// Monorepo root (…/tsb-core) — used for tidy relative paths in output.
-const repoRoot = resolve(root, '../..')
-// Shared engine layer: its composables/ + middleware/ also run in the SSR render
-// path, so they must be scanned too (they moved out of the app in Jul 2026).
-const engineRoot = resolve(repoRoot, 'layers/engine')
-const scanDirs = ['components', 'composables', 'layouts', 'pages', 'middleware']
-// Absolute dirs to walk: this app's SSR-path dirs + the engine's.
-const scanTargets = [
-    ...scanDirs.map(d => join(root, d)),
-    join(engineRoot, 'components'),
-    join(engineRoot, 'composables'),
-    join(engineRoot, 'middleware'),
-    join(engineRoot, 'pages'),
-]
+// Monorepo root (…/tsb-core): the engine layer and every brand app under apps/.
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const scanDirs = ['components', 'composables', 'layouts', 'pages', 'middleware', 'plugins']
+// Absolute dirs to walk: the shared engine layer + every brand app, so a leak
+// in one brand's code fails lint just like one in the engine.
+const appRoots = (await readdir(join(repoRoot, 'apps'), { withFileTypes: true }))
+    .filter(e => e.isDirectory())
+    .map(e => join(repoRoot, 'apps', e.name))
+const scanTargets = [join(repoRoot, 'layers/engine'), ...appRoots]
+    .flatMap(base => scanDirs.map(d => join(base, d)))
 const exts = new Set(['.vue', '.ts'])
 
 const flaggedMethods = new Set(['on', 'addEventListener', 'subscribe'])
