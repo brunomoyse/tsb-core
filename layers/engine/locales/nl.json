@@ -309,7 +309,9 @@
     "undo": "Ongedaan maken",
     "removedUndo": "“{name}” verwijderd",
     "eachSuffix": "per stuk",
-    "deliveryTbd": "Levering wordt berekend bij het afrekenen"
+    "deliveryTbd": "Levering wordt berekend bij het afrekenen",
+    "onlineFee": "Kosten online betaling",
+    "addForDelivery": "Voeg nog {amount} toe om te laten leveren."
   },
   "checkout": {
     "title": "Bestelling",

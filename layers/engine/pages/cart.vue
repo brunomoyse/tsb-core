@@ -169,10 +169,21 @@
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
+                <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                    <span>{{ $t('cart.onlineFee') }}</span>
+                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                </div>
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-                    <span class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </div>
+            </div>
+            <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
+                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                    {{ $t('delivery.modal.switchToPickup') }}
+                </button>
             </div>
         </div>
 
@@ -184,7 +195,7 @@
             v-if="cartStore.products.length > 0"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
-            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!isCheckoutAvailable">
+            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -193,7 +204,7 @@
                     </svg>
                     {{ $t('cart.checkout') }}
                 </span>
-                <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                <span class="font-bold text-base tabular-nums">{{ formatPrice(payableTotal) }}</span>
             </UiButton>
             <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
@@ -256,14 +267,20 @@ const {
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
     hasBreakdown,
+    isMinimumReached,
+    amountToDeliveryMinimum,
+    switchToPickup,
 } = useCartTotals()
 const isCheckoutAvailable = computed(() => {
     const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
     const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
     return orderingEnabled && isOrderingCurrentlyOpen
 })
+// The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.
+const canCheckout = computed(() => isCheckoutAvailable.value && isMinimumReached.value)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))

@@ -95,7 +95,7 @@
                     <span class="text-neutral-500">
                         {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
                     </span>
-                    <span class="font-bold text-neutral-900">{{ formatPrice(cartTotal) }}</span>
+                    <span class="font-bold text-neutral-900">{{ formatPrice(payableTotal) }}</span>
                 </div>
             </div>
 
@@ -154,7 +154,7 @@
                             }}
                         </template>
                     </span>
-                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatPrice(cartTotal) }}</span>
+                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </div>
@@ -240,9 +240,9 @@ import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary
 import { formatPrice } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { roundToNearest10Cents } from '#engine/utils/money'
+import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import gql from 'graphql-tag'
-import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
+import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
@@ -257,9 +257,9 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { applyDefaults } = useOrderExtras()
 const notifications = useNotificationsStore()
+// The payable total is the amount Mollie is asked for (goods − discounts + delivery + online fee): the pay bar, the summary and the analytics payloads all use it.
 const {
-    subtotal,
-    pickupDiscount,
+    payableTotal,
     isMinimumReached,
 } = useCartTotals()
 const localePath = useLocalePath()
@@ -500,7 +500,7 @@ onMounted(() => {
 
     trackEvent('checkout_page_loaded', {
         total_items: cartStore.totalItems,
-        total_price: cartTotal.value,
+        total_price: payableTotal.value,
         collection_option: cartStore.collectionOption,
         has_address: Boolean(cartStore.address),
         is_authenticated: Boolean(authStore.user),
@@ -725,9 +725,9 @@ const handleCheckout = async () => {
                 order_id: order?.id,
                 order_type: cartStore.collectionOption,
                 is_online_payment: cartStore.paymentOption === 'ONLINE',
-                total_price: cartTotal.value,
+                total_price: payableTotal.value,
                 items_count: cartStore.totalItems,
-                revenue: order?.totalPrice ?? cartTotal.value,
+                revenue: order?.totalPrice ?? payableTotal.value,
                 currency: 'EUR',
             })
 
@@ -767,9 +767,6 @@ const handleCheckout = async () => {
         if (!createdOrder) isCheckoutProcessing.value = false
     }
 }
-const cartTotal = computed(() =>
-    roundToNearest10Cents(Math.max(subtotal.value - pickupDiscount.value - cartStore.couponDiscount, 0)),
-)
 
 // Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.
 watch(
@@ -781,7 +778,7 @@ watch(
         authStore.user?.phoneNumber,
         cartStore.paymentOption,
         cashAcknowledged.value,
-        cartTotal.value,
+        payableTotal.value,
     ],
     () => {
         if (submitErrors.value.length === 0) return

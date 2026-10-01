@@ -37,3 +37,18 @@ export function roundToNearest10Cents(eur: number): number {
   if (rounded === 0) return 0
   return (sign * rounded) / 100
 }
+
+/**
+ * Integer-cents twin of `roundToNearest10Cents`: same rule, no float round trip.
+ * Use it when the amount is already in cents (see `computePayableCents`).
+ */
+export function roundCentsToNearest10(cents: number): number {
+  if (!Number.isFinite(cents)) return cents
+
+  const sign = cents < 0 ? -1 : 1
+  const abs = Math.round(Math.abs(cents))
+  const last = abs % 10
+  const rounded = last === 0 ? abs : last <= 4 ? abs - last : abs + (10 - last)
+
+  return rounded === 0 ? 0 : sign * rounded
+}

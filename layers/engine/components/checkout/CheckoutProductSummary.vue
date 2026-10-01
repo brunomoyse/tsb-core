@@ -161,14 +161,14 @@
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
-                <div v-if="cartStore.paymentOption === 'ONLINE'" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
                     <span>{{ $t('checkout.transactionFee') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(TRANSACTION_FEE) }}</span>
+                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
                 </div>
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatPrice(finalTotal) }}</span>
+                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </div>
             </div>
         </template>
@@ -178,14 +178,12 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
-import { TRANSACTION_FEE } from '#engine/lib/fees'
 import { isExcludedPostcode } from '#engine/lib/delivery'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
-import { roundToNearest10Cents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -201,6 +199,8 @@ const {
     subtotal,
     pickupDiscount,
     deliveryFee,
+    onlineFee,
+    payableTotal,
 } = useCartTotals()
 const showTooltip = ref(false)
 const tooltipButtonRef = ref<HTMLElement | null>(null)
@@ -286,14 +286,6 @@ const itemChoice = (item: CartItem): string | undefined =>
             productName: item.product.name,
             choiceName: item.selectedChoice?.name,
         }).choice
-
-const finalTotal: ComputedRef<number> = computed(() => {
-    const fee = cartStore.collectionOption === 'DELIVERY' ? Math.max(deliveryFee.value, 0) : 0
-    const txFee = cartStore.paymentOption === 'ONLINE' ? TRANSACTION_FEE : 0
-    return roundToNearest10Cents(
-        subtotal.value + fee - pickupDiscount.value - cartStore.couponDiscount + txFee,
-    )
-})
 
 const handleIncrementQuantity = (item: CartItem) => {
     cartStore.incrementQuantity(item.product, {

@@ -309,7 +309,9 @@
     "eachSuffix": "each",
     "deliveryTbd": "Delivery calculated at checkout",
     "editItem": "Edit",
-    "pickupDiscountShort": "-10%"
+    "pickupDiscountShort": "-10%",
+    "onlineFee": "Online payment fee",
+    "addForDelivery": "Add {amount} more to qualify for delivery."
   },
   "checkout": {
     "title": "Checkout",

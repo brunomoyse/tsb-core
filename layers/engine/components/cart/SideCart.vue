@@ -158,15 +158,22 @@
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
+                <div v-if="onlineFee > 0" class="flex justify-between items-center text-sm text-gray-600">
+                    <span>{{ $t('cart.onlineFee') }}:</span>
+                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </div>
             </div>
 
-            <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
+            <!-- Delivery minimum (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-primary-600 text-center">
-                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 rounded-lg" @click="switchToPickup">
+                    {{ $t('delivery.modal.switchToPickup') }}
+                </button>
             </div>
 
             <!-- Ordering Unavailable Warning -->
@@ -198,7 +205,8 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
-import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
+import { useCartTotals } from '#engine/composables/useCartTotals'
+import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -222,7 +230,10 @@ const {
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
+    amountToDeliveryMinimum,
+    switchToPickup,
     hasBreakdown,
     isMinimumReached,
 } = useCartTotals()

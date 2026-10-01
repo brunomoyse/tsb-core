@@ -160,10 +160,21 @@
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                     </div>
+                    <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                        <span>{{ $t('cart.onlineFee') }}</span>
+                        <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                    </div>
                     <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                         <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
-                        <span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                        <span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatPrice(payableTotal) }}</span>
                     </div>
+                </div>
+                <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mb-3">
+                    <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                        {{ $t('delivery.modal.switchToPickup') }}
+                    </button>
                 </div>
                 <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
@@ -172,7 +183,7 @@
                     to="/checkout"
                     size="lg"
                     block
-                    :disabled="!isOrderingAvailable"
+                    :disabled="!isOrderingAvailable || !isMinimumReached"
                     @click="cartStore.toggleCartVisibility"
                 >
                     {{ $t('cart.checkout') }}
@@ -214,8 +225,12 @@ const {
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
     hasBreakdown,
+    isMinimumReached,
+    amountToDeliveryMinimum,
+    switchToPickup,
 } = useCartTotals()
 
 const lightboxRef = ref<{ open: () => void } | null>(null)
