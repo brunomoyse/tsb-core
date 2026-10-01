@@ -1,6 +1,5 @@
 <template>
-    <button type="button" data-testid="cart-button" :aria-label="label" :aria-expanded="cartStore.isCartVisible" aria-controls="cart-mobile" class="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            :aria-label="cartCount > 0 ? `${$t('nav.cart')}: ${cartCount}` : $t('nav.cart')"
+    <button type="button" data-testid="cart-button" :aria-label="label" :aria-expanded="cartStore.isCartVisible" :aria-controls="cartStore.isCartVisible ? 'cart-mobile' : undefined" class="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             @click="handleToggleCart"
     >
         <!-- Cart Icon -->

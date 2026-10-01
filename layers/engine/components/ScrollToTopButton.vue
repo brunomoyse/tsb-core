@@ -49,7 +49,7 @@ onUnmounted(() => {
 <style scoped>
 /* Above the fixed bottom bar when there is one (its height is published by useBottomBarOffset), else above the safe area. */
 .scroll-top-btn {
-    bottom: calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem);
+    bottom: min(calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem), calc(100dvh - 8rem));
 }
 
 .fade-up-enter-active,

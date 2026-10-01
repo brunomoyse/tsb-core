@@ -21,7 +21,7 @@
                 icon="/icons/shopping-bag-icon.svg"
                 :badge="cartStore.totalItems"
                 :expanded="cartStore.isCartVisible"
-                controls="cart-mobile"
+                :controls="cartStore.isCartVisible ? 'cart-mobile' : undefined"
                 @click="cartStore.toggleCartVisibility()"
             />
             <!-- Desktop has no drawer: the menu page shows the SideCart, every other page links to /cart. -->

@@ -71,6 +71,7 @@
             <LazyCartFloatingCartBar v-if="isMenuPage" />
         </ClientOnly>
         <ClientOnly>
+            <ToastAnnouncer />
             <LazyNotificationBar
                 v-if="notifications.current"
                 :key="notifications.seq"

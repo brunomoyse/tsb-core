@@ -305,7 +305,6 @@
     "increaseQty": "Aantal verhogen",
     "customizedItemHint": "Aangepast: verwijder en voeg opnieuw toe via het menu om te wijzigen",
     "closeCart": "Winkelwagen sluiten",
-    "notifications": "Meldingen winkelwagen",
     "addToCart": "Toevoegen aan winkelwagen",
     "item": "artikel",
     "items": "artikelen",
@@ -319,7 +318,7 @@
     "onlineFee": "Kosten online betaling",
     "addForDelivery": "Voeg nog {amount} toe om te laten leveren.",
     "quoteUpdating": "Prijzen worden bijgewerkt…",
-    "removedUnavailable": "Sommige artikelen in je winkelmand zijn niet meer beschikbaar en werden verwijderd.",
+    "removedUnavailable": "Sommige artikelen in je winkelwagen zijn niet meer beschikbaar en werden verwijderd.",
     "issues": {
       "notFound": "Dit artikel staat niet meer op het menu.",
       "unavailable": "Dit artikel is momenteel niet beschikbaar.",
@@ -529,15 +528,15 @@
       "invalidEmail": "Voer een geldig e-mailadres in.",
       "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
       "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw.",
-      "orderTooManyItems": "Uw winkelmand bevat te veel verschillende producten (maximaal 50).",
-      "productNotFound": "Een product in uw winkelmand is niet meer beschikbaar. Verwijder het en probeer opnieuw.",
+      "orderTooManyItems": "Uw winkelwagen bevat te veel verschillende producten (maximaal 50).",
+      "productNotFound": "Een product in uw winkelwagen is niet meer beschikbaar. Verwijder het en probeer opnieuw.",
       "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
-      "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelmand en probeer opnieuw.",
+      "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelwagen en probeer opnieuw.",
       "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
       "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
       "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
       "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
-      "priceChanged": "De prijs van een artikel in je winkelmand is gewijzigd. Controleer je winkelmand en bevestig de nieuwe prijs."
+      "priceChanged": "De prijs van een artikel in je winkelwagen is gewijzigd. Controleer je winkelwagen en bevestig de nieuwe prijs."
     }
   },
   "schema": {
@@ -646,10 +645,10 @@
       "unavailable": "niet beschikbaar",
       "choices": "keuzes gewijzigd, stel het opnieuw samen via het menu"
     },
-    "confirmTitle": "Uw huidige winkelmand vervangen?",
-    "confirmBody": "Uw winkelmand bevat al artikelen. Vervang ze door deze bestelling of voeg deze bestelling eraan toe.",
+    "confirmTitle": "Uw huidige winkelwagen vervangen?",
+    "confirmBody": "Uw winkelwagen bevat al artikelen. Vervang ze door deze bestelling of voeg deze bestelling eraan toe.",
     "replace": "Vervangen",
-    "add": "Toevoegen aan winkelmand"
+    "add": "Toevoegen aan winkelwagen"
   },
   "cookies": {
     "accept": "Accepteren",

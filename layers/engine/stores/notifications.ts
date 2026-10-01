@@ -1,5 +1,6 @@
 import type { Notification, NotifyPayload } from '@/types'
 import { advanceToast, enqueueToast, hasToastGroup } from '#engine/utils/toastQueue'
+import { createToastTimer } from '#engine/utils/toastTimer'
 import { defineStore } from 'pinia'
 
 interface NotificationsState {
@@ -12,20 +13,15 @@ interface NotificationsState {
 }
 
 /*
- * The expiry timer of the toast on screen. Module scope, client only: a setTimeout handle is not
- * serialisable state (audit L4) and must never reach the Pinia state or the SSR payload.
- * `remaining` is what is left of the duration while the timer is paused (hover / focus on the toast).
+ * The expiry clock of the toast on screen (see utils/toastTimer.ts). Module scope, client only: a setTimeout
+ * handle is not serialisable state (audit L4) and must never reach the Pinia state or the SSR payload.
+ * It pauses while the toast is hovered or focused, and that pause survives a replacement or a restart.
  */
-let timer: ReturnType<typeof setTimeout> | null = null
-let startedAt = 0
-let remaining = 0
-let paused = false
-
-const MIN_RESUME_MS = 1000
-
-const clearTimer = (): void => {
-    if (timer) clearTimeout(timer)
-    timer = null
+let clock: ReturnType<typeof createToastTimer> | null = null
+let expire: (() => void) | null = null
+const getClock = (dismiss: () => void) => {
+    expire = dismiss
+    return (clock ??= createToastTimer(() => expire?.()))
 }
 
 let nextId = 1
@@ -64,8 +60,7 @@ export const useNotificationsStore = defineStore('notifications', {
 
         /** Closes the toast on screen (closed, expired or its action ran); the next one takes its place. */
         dismiss(): void {
-            clearTimer()
-            paused = false
+            clock?.stop()
             const next = advanceToast({ current: this.current, queue: this.queue })
             this.queue = next.queue
             if (next.current) this.show(next.current)
@@ -74,18 +69,21 @@ export const useNotificationsStore = defineStore('notifications', {
 
         /** Hover or focus on the toast: the clock stops, so a toast being read (or an Undo being reached) does not vanish. */
         pause(): void {
-            if (!timer) return
-            remaining -= Date.now() - startedAt
-            clearTimer()
-            paused = true
+            clock?.pause()
         },
 
         /** The pointer and the focus left the toast: the rest of its time runs. */
         resume(): void {
-            if (!paused) return
-            paused = false
-            if (!this.current || this.current.persistent) return
-            this.armTimer(Math.max(remaining, MIN_RESUME_MS))
+            if (!this.current || this.current.persistent) {
+                clock?.stop()
+                return
+            }
+            clock?.resume()
+        },
+
+        /** True while the clock is stopped because the toast is being read (or held after a replacement). */
+        isPaused(): boolean {
+            return clock?.paused ?? false
         },
 
         /** True while a toast of this group is showing or waiting. */
@@ -96,16 +94,14 @@ export const useNotificationsStore = defineStore('notifications', {
         show(toast: Notification): void {
             this.current = toast
             this.seq += 1
-            paused = false
             this.armTimer()
         },
 
-        armTimer(ms?: number): void {
-            clearTimer()
-            if (!import.meta.client || !this.current || this.current.persistent) return
-            remaining = ms ?? this.current.duration
-            startedAt = Date.now()
-            timer = setTimeout(() => this.dismiss(), remaining)
+        armTimer(): void {
+            if (!import.meta.client || !this.current) return
+            const timer = getClock(() => this.dismiss())
+            if (this.current.persistent) timer.hold()
+            else timer.start(this.current.duration)
         },
     },
 })

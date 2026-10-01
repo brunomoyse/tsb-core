@@ -1,8 +1,6 @@
 <template>
     <div
-        :role="liveRole"
-        :aria-live="livePoliteness"
-        aria-atomic="true"
+        ref="rootRef"
         class="notification-bar fixed left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
         v-if="visible"
         @mouseenter="hovered = true"
@@ -61,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useNotificationsStore } from '#engine/stores/notifications'
 
@@ -80,8 +78,12 @@ const emit = defineEmits<{
     close: []
 }>()
 const visible = ref(false)
+const rootRef = ref<HTMLElement | null>(null)
 
 /*
+ * Announcing the toast to screen readers is ToastAnnouncer's job (a live region that is always mounted);
+ * this component is only the visual toast, with its Undo / close buttons.
+ *
  * The expiry timer lives in the notifications store (module scope); this component only tells it
  * when the toast is being read: the clock stops while the pointer is over the toast or focus is
  * inside it (an Undo that is being reached for must not vanish), and runs on again after.
@@ -108,9 +110,6 @@ const variantClasses = computed(() =>
 
 const progressBarClass = 'bg-white/70'
 
-const liveRole = computed(() => (variant === 'error' ? 'alert' : 'status'))
-const livePoliteness = computed(() => (variant === 'error' ? 'assertive' : 'polite'))
-
 const close = () => {
     visible.value = false
     if (cookieConsent) {
@@ -124,7 +123,7 @@ const invokeAction = () => {
     close()
 }
 
-onMounted(() => {
+onMounted(async () => {
     // For cookie consent, only show if not already accepted.
     if (cookieConsent && !localStorage.getItem('cookiesAccepted')) {
         visible.value = true
@@ -133,6 +132,13 @@ onMounted(() => {
         visible.value = true
         if (variant === 'error') hapticNotification('Error')
         else if (variant === 'success') hapticNotification('Success')
+        // A toast that replaced the one being read starts with its clock held (the pause outlives the replacement). If the pointer or focus is on this new toast, it keeps the hold; if not, the clock runs.
+        await nextTick()
+        if (!notifications.isPaused()) return
+        const root = rootRef.value
+        if (root?.matches(':hover')) hovered.value = true
+        else if (root?.matches(':focus-within')) focused.value = true
+        else notifications.resume()
     }
 })
 </script>
@@ -155,7 +161,8 @@ onMounted(() => {
 
 .notification-bar {
     /* Above the fixed bottom bars (their height is published by useBottomBarOffset), else above the safe area */
-    bottom: calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem);
+    /* The offset is capped (an open cart drawer is taller than most screens would allow) so the toast never leaves the viewport */
+    bottom: min(calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem), calc(100dvh - 8rem));
 }
 
 .progress-bar {

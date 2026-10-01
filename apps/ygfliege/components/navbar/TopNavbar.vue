@@ -51,7 +51,7 @@
                         data-testid="cart-button"
                         :aria-label="cartLabel"
                         :aria-expanded="cartStore.isCartVisible"
-                        aria-controls="cart-mobile"
+                        :aria-controls="cartStore.isCartVisible ? 'cart-mobile' : undefined"
                         @click="cartStore.toggleCartVisibility()"
                     >
                         <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-4 h-4" />
