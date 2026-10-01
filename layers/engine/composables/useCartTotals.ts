@@ -1,10 +1,9 @@
 import { type ComputedRef, computed } from 'vue'
 import { DELIVERY_MINIMUM, TRANSACTION_FEE } from '#engine/lib/fees'
-import { amountToMinimumCents, computePayableCents } from '#engine/utils/payable'
+import { amountToMinimumCents, computePayableCents, pickupDiscountCents } from '#engine/utils/payable'
 import { deliveryFeeForDistance, isExcludedPostcode } from '~/lib/delivery'
 import { exactUnitPrice, lineTotal, lineTotalCents, toCents } from '#engine/utils/pricing'
 import type { CartItem } from '@/types'
-import { roundToNearest10Cents } from '~/utils/money'
 import { useCartStore } from '@/stores/cart'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -17,9 +16,6 @@ import { useTracking } from '#engine/composables/useTracking'
  * payableTotal — the amount Mollie is asked for — is rounded once after summing everything,
  * including the delivery fee and the online payment fee.
  */
-
-const PICKUP_DISCOUNT_THRESHOLD = 20
-const PICKUP_DISCOUNT_RATE = 0.1
 
 export interface CartTotals {
     /** Line amount: base × qty + Σ(modifier × selection qty). See #engine/utils/pricing. */
@@ -50,13 +46,14 @@ export function useCartTotals(): CartTotals {
         cartStore.products.reduce((cents, item) => cents + lineTotalCents(item), 0) / 100,
     )
 
+    // Integer cents, same rule as the backend (see pickupDiscountCents).
     const pickupDiscount = computed(() => {
-        if (cartStore.collectionOption !== 'PICKUP' || subtotal.value < PICKUP_DISCOUNT_THRESHOLD) return 0
-        const raw = cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + lineTotal(item) * PICKUP_DISCOUNT_RATE
-                : acc, 0)
-        return roundToNearest10Cents(raw)
+        if (cartStore.collectionOption !== 'PICKUP') return 0
+        const lines = cartStore.products.map((item) => ({
+            totalCents: lineTotalCents(item),
+            isDiscountable: Boolean(item.product.isDiscountable),
+        }))
+        return pickupDiscountCents(lines, lines.reduce((cents, line) => cents + line.totalCents, 0)) / 100
     })
 
     const deliveryFee = computed(() => {

@@ -38,3 +38,23 @@ export function computePayableCents(input: PayableInput): number {
 export function amountToMinimumCents(subtotalCents: number, minimumCents: number): number {
     return Math.max(minimumCents - subtotalCents, 0)
 }
+
+/** Pickup discount threshold: the whole basket (all lines, discountable or not) must reach 20 €. */
+export const PICKUP_DISCOUNT_THRESHOLD_CENTS = 2000
+
+/**
+ * The takeaway discount in integer cents, exactly like the backend (`resolver/order.go`,
+ * CreateOrder): pickup only, basket subtotal >= 20 €, then 10 % of the line totals of the
+ * DISCOUNTABLE products only, the sum rounded to the cent (half up, as decimal.Round(0)) and then
+ * snapped to 0,10 € (`pkg/money.RoundToNearest10Cents`). All in integers: the float version
+ * (160.45 € × 0.1 = 16.045000000000002 → 16.00) disagreed with the backend's exact 16.10 €.
+ */
+export function pickupDiscountCents(
+    lines: { totalCents: number; isDiscountable: boolean }[],
+    subtotalCents: number,
+): number {
+    if (subtotalCents < PICKUP_DISCOUNT_THRESHOLD_CENTS) return 0
+    const discountableCents = lines.reduce((sum, line) => (line.isDiscountable ? sum + line.totalCents : sum), 0)
+    // 10 % of an integer number of cents is a tenth of a cent at worst: round half up to the cent.
+    return roundCentsToNearest10(Math.floor((discountableCents + 5) / 10))
+}

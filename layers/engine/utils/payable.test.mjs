@@ -2,7 +2,7 @@
 // (CreateOrder) and `internal/api/graphql/resolver/order.go` (discount clamp).
 // Run: `node --test layers/engine/utils/payable.test.mjs`.
 
-import { amountToMinimumCents, computePayableCents } from './payable.ts'
+import { amountToMinimumCents, computePayableCents, pickupDiscountCents } from './payable.ts'
 import assert from 'node:assert/strict'
 import { roundCentsToNearest10 } from './money.ts'
 import { test } from 'node:test'
@@ -83,4 +83,34 @@ test('amountToMinimumCents', () => {
   assert.strictEqual(amountToMinimumCents(1800, 2500), 700)
   assert.strictEqual(amountToMinimumCents(2500, 2500), 0)
   assert.strictEqual(amountToMinimumCents(4000, 2500), 0)
+})
+
+test('pickupDiscountCents: below 20 € there is no discount, from 20 € it is 10 % rounded to 0,10 €', () => {
+  const line = (totalCents, isDiscountable = true) => ({ totalCents, isDiscountable })
+  assert.strictEqual(pickupDiscountCents([line(1995)], 1995), 0)
+  assert.strictEqual(pickupDiscountCents([line(2000)], 2000), 200)
+  assert.strictEqual(pickupDiscountCents([line(5000)], 5000), 500)
+  assert.strictEqual(pickupDiscountCents([], 0), 0)
+})
+
+test('pickupDiscountCents: only discountable lines count, but the threshold uses the whole basket', () => {
+  const line = (totalCents, isDiscountable) => ({ totalCents, isDiscountable })
+  // 15 € discountable + 10 € not: basket 25 € reaches the threshold, discount = 10 % of 15 € = 1,50 €
+  assert.strictEqual(pickupDiscountCents([line(1500, true), line(1000, false)], 2500), 150)
+  // Discountable part alone is under 20 € but the basket is over: still discounted.
+  assert.strictEqual(pickupDiscountCents([line(1000, true), line(1500, false)], 2500), 100)
+  // Basket under 20 €: nothing, whatever is discountable.
+  assert.strictEqual(pickupDiscountCents([line(1900, true)], 1900), 0)
+})
+
+test('pickupDiscountCents: 160,45 € gives 16,10 € like the backend (the float maths gave 16,00 €)', () => {
+  assert.strictEqual(pickupDiscountCents([{ totalCents: 16045, isDiscountable: true }], 16045), 1610)
+  // The same basket split over several lines (the backend sums 10 % of each line exactly).
+  assert.strictEqual(pickupDiscountCents([
+    { totalCents: 8000, isDiscountable: true },
+    { totalCents: 8045, isDiscountable: true },
+  ], 16045), 1610)
+  // 10 % of 24,42 € = 2,442 € -> 2,44 -> 2,40 ; 24,45 € -> 2,445 -> 2,45 (half up) -> 2,50 (tie to the restaurant).
+  assert.strictEqual(pickupDiscountCents([{ totalCents: 2442, isDiscountable: true }], 2442), 240)
+  assert.strictEqual(pickupDiscountCents([{ totalCents: 2445, isDiscountable: true }], 2445), 250)
 })
