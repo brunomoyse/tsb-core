@@ -515,6 +515,7 @@
       "slotNotAligned": "Time slots must be aligned to 15-minute intervals.",
       "orderingClosedToday": "Ordering is closed today.",
       "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again.",
+      "couponCheckFailed": "We could not check your coupon. Please try again.",
       "orderCreationFailed": "Order creation failed. Please try again.",
       "profileUpdateFailed": "Profile update failed.",
       "requestFailed": "Request failed. Please try again.",

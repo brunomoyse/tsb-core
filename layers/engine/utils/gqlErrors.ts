@@ -68,12 +68,16 @@ const CODE_TABLE: Record<string, Describe> = {
     COUPON_RATE_LIMITED: key('notify.errors.tooManyRequests'),
     COUPON_ALREADY_ACTIVE: key('notify.errors.couponAlreadyActive'),
     COUPON_RESERVE_FAILED: key('notify.errors.orderCreationFailed'),
+    COUPON_CHECK_FAILED: key('notify.errors.couponCheckFailed'),
 
     // Payment and persistence
     CASH_AMOUNT_INVALID: key('notify.errors.cashAmountInvalid'),
     ORDER_CREATE_FAILED: key('notify.errors.orderCreationFailed'),
     PAYMENT_FAILED: key('notify.errors.paymentFailed'),
     INVALID_AMOUNT: key('notify.errors.requestFailed'),
+
+    // Throttling of the API itself (the quote cycle treats it as a transient failure and falls back to the client's totals)
+    RATE_LIMITED: key('notify.errors.tooManyRequests'),
 
     // Produced by the transport (plugins/gqlFetch.ts)
     [GQL_NETWORK_ERROR]: key('notify.errors.networkError'),

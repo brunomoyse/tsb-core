@@ -515,6 +515,7 @@
       "slotNotAligned": "Le créneau doit être aligné sur des intervalles de 15 minutes.",
       "orderingClosedToday": "Les commandes sont fermées aujourd'hui.",
       "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+      "couponCheckFailed": "Nous n'avons pas pu vérifier votre code promo. Veuillez réessayer.",
       "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
       "profileUpdateFailed": "La mise à jour du profil a échoué.",
       "requestFailed": "La requête a échoué. Veuillez réessayer.",

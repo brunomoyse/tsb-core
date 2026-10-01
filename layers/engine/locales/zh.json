@@ -515,6 +515,7 @@
       "slotNotAligned": "时间段必须对齐到15分钟间隔。",
       "orderingClosedToday": "今天暂停接单。",
       "tooManyRequests": "尝试次数过多。请等待几分钟后再试。",
+      "couponCheckFailed": "无法验证您的优惠码，请重试。",
       "orderCreationFailed": "订单创建失败，请重试。",
       "profileUpdateFailed": "个人资料更新失败。",
       "requestFailed": "请求失败，请重试。",

@@ -515,6 +515,7 @@
       "slotNotAligned": "Het tijdslot moet op een interval van 15 minuten vallen.",
       "orderingClosedToday": "Bestellingen zijn vandaag gesloten.",
       "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
+      "couponCheckFailed": "We konden uw kortingscode niet controleren. Probeer het opnieuw.",
       "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
       "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
       "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",

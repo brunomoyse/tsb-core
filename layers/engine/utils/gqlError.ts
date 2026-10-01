@@ -107,9 +107,19 @@ export function toGqlError(err: unknown, operationName: string | null = null): E
 export const operationNameOf = (query: string): string | null =>
     /\b(?:query|mutation|subscription)\s+(?<name>\w+)/u.exec(query)?.groups?.name ?? null
 
-/** An aborted request is control flow (a refresh cancelled the previous call), not a failure. */
-export const isAbortError = (err: unknown): boolean =>
-    Boolean(err) && typeof err === 'object' && (err as { name?: string }).name === 'AbortError'
+/**
+ * An aborted request is control flow (a refresh cancelled the previous call), not a failure.
+ * ofetch wraps the browser's AbortError in a FetchError (and the transport in a GqlError), so the
+ * cause chain is read too.
+ */
+export const isAbortError = (err: unknown): boolean => {
+    let current: unknown = err
+    for (let depth = 0; depth < 3 && current && typeof current === 'object'; depth++) {
+        if ((current as { name?: string }).name === 'AbortError') return true
+        current = (current as { cause?: unknown }).cause
+    }
+    return false
+}
 
 /*
  * Codes that mean "our fault" (the backend flags the same ones as unexpected): reported to Sentry.

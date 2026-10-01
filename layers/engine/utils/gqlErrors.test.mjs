@@ -179,6 +179,28 @@ test('what Sentry gets: our faults only, never the customer’s input, offline o
   assert.equal(isReportableError(abort), false)
 })
 
+test('an abort wrapped by ofetch (FetchError -> cause AbortError) or by the transport is still an abort', () => {
+  const abort = Object.assign(new Error('aborted'), { name: 'AbortError' })
+  const fetchError = Object.assign(new Error('[POST] "/graphql": <no response> aborted'), { name: 'FetchError', cause: abort })
+  assert.equal(isAbortError(fetchError), true)
+  assert.equal(isReportableError(fetchError), false)
+  assert.equal(isAbortError(GqlError.fromTransport(fetchError)), true, 'GqlError -> FetchError -> AbortError')
+  assert.equal(isAbortError(Object.assign(new Error('x'), { cause: new Error('y') })), false)
+  assert.equal(isAbortError(new Error('x')), false)
+  assert.equal(isAbortError(null), false)
+  // A cyclic cause chain terminates.
+  const loop = new Error('loop')
+  loop.cause = loop
+  assert.equal(isAbortError(loop), false)
+})
+
+test('RATE_LIMITED and COUPON_CHECK_FAILED have messages; the throttle is not an error to report', () => {
+  assert.equal(describeGqlError(response('RATE_LIMITED')).key, 'notify.errors.tooManyRequests')
+  assert.equal(describeGqlError(response('COUPON_CHECK_FAILED')).key, 'notify.errors.couponCheckFailed')
+  assert.equal(describeCouponRefusal({ valid: false, errorCode: 'COUPON_CHECK_FAILED' }).key, 'notify.errors.couponCheckFailed')
+  assert.equal(isReportableError(response('RATE_LIMITED')), false)
+})
+
 // ---------------------------------------------------------------------------------------------
 // Locales: every key the table can produce exists in all four languages.
 // ---------------------------------------------------------------------------------------------
