@@ -87,10 +87,10 @@
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
-                                    {{ formatPrice(getItemLineTotal(item)) }}
+                                    {{ formatCents(getItemLineTotalCents(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1 && getItemExactUnitPrice(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
-                                    {{ item.quantity }} × {{ formatPrice(getItemExactUnitPrice(item)!) }}
+                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                    {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                                 </span>
                             </div>
 
@@ -152,41 +152,41 @@
             <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
                 <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
                     <span>{{ $t('cart.subtotal') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
                     <span>{{ $t('cart.deliveryFee') }}</span>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
                         {{ $t('checkout.free') }}
                     </span>
-                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
-                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
-                    <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
                     <span>{{ $t('cart.onlineFee') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                    <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-                    <span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(payableTotal) }}</span>
+                    <span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span>
                 </div>
             </div>
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
-                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
                 <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
                     {{ $t('delivery.modal.switchToPickup') }}
                 </button>
@@ -210,7 +210,7 @@
                     </svg>
                     {{ $t('cart.checkout') }}
                 </span>
-                <span class="font-bold text-base tabular-nums">{{ formatPrice(payableTotal) }}</span>
+                <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
             </UiButton>
             <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
@@ -242,7 +242,7 @@ import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -268,17 +268,17 @@ const productImageBase = (slug?: string | null) => productImage.productImageBase
 const itemImageElements = ref<HTMLImageElement[]>([])
 const { config: restaurantConfig } = await useRestaurantConfig()
 const {
-    getItemLineTotal,
-    getItemExactUnitPrice,
-    subtotal,
-    pickupDiscount,
-    deliveryFee,
-    couponDiscount,
-    onlineFee,
-    payableTotal,
+    getItemLineTotalCents,
+    getItemExactUnitCents,
+    subtotalCents,
+    pickupDiscountCents,
+    deliveryFeeCents,
+    couponDiscountCents,
+    onlineFeeCents,
+    payableCents,
     hasBreakdown,
     isMinimumReached,
-    amountToDeliveryMinimum,
+    amountToDeliveryMinimumCents,
     switchToPickup,
 } = useCartTotals()
 const isCheckoutAvailable = computed(() => {

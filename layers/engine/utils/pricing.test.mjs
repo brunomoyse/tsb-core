@@ -1,7 +1,7 @@
 // Parity check with `tsb-service/internal/modules/order/domain/pricing_test.go` (TestPriceLine).
 // Run: `node --test layers/engine/utils/pricing.test.mjs`. Same cases, same expected results.
 
-import { exactUnitPrice, lineTotal, priceLine, toCents, unitPrice } from './pricing.ts'
+import { exactUnitPriceCents, lineTotalCents as itemLineTotalCents, unitPriceCents as itemUnitPriceCents, priceLine, toCents } from './pricing.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -70,14 +70,14 @@ const asItem = (c, legacy = false) => {
 for (const c of cases) {
   test(`cart item helpers: ${c.name}`, () => {
     const item = asItem(c)
-    assert.strictEqual(lineTotal(item), Number(c.lineTotal))
-    assert.strictEqual(unitPrice(item), Number(c.unit))
+    assert.strictEqual(itemLineTotalCents(item), toCents(c.lineTotal))
+    assert.strictEqual(itemUnitPriceCents(item), toCents(c.unit))
   })
 }
 
 test('legacy selectedChoice (no selections) prices like a selection scaled to the line qty', () => {
   const c = cases.find((x) => x.name === 'legacy single choice, qty 3')
-  assert.strictEqual(lineTotal(asItem(c, true)), Number(c.lineTotal))
+  assert.strictEqual(itemLineTotalCents(asItem(c, true)), toCents(c.lineTotal))
 })
 
 test('two bowls with a 1.50 broth cost base × 2 + 3.00', () => {
@@ -86,13 +86,13 @@ test('two bowls with a 1.50 broth cost base × 2 + 3.00', () => {
     product: { price: '12.00', choices: [{ id: 'broth', priceModifier: '1.50' }] },
     selectedChoices: [{ choiceId: 'broth', quantity: 2 }],
   }
-  assert.strictEqual(lineTotal(item), 27)
+  assert.strictEqual(itemLineTotalCents(item), 2700)
 })
 
-test('exactUnitPrice is null when the unit price would not multiply back', () => {
+test('exactUnitPriceCents is null when the unit price would not multiply back', () => {
   const [, , exact] = cases
-  assert.strictEqual(exactUnitPrice(asItem(exact)), 13.5)
-  assert.strictEqual(exactUnitPrice(asItem(cases[6])), null)
+  assert.strictEqual(exactUnitPriceCents(asItem(exact)), 1350)
+  assert.strictEqual(exactUnitPriceCents(asItem(cases[6])), null)
 })
 
 test('summing line totals in cents is exact (no float drift)', () => {

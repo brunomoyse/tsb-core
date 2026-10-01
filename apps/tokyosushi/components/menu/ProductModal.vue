@@ -37,7 +37,7 @@
 
                     <!-- Price & Badges -->
                     <div class="flex items-baseline gap-3 flex-wrap">
-                        <span class="text-2xl font-bold text-neutral-900">{{ formatPrice(displayPrice) }}</span>
+                        <span class="text-2xl font-bold text-neutral-900">{{ formatCents(displayPriceCents) }}</span>
                         <span v-if="p.pieceCount" class="text-sm text-neutral-600">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
@@ -104,8 +104,8 @@
                                         class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
                                     >
                                         <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
-                                        <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
-                                            {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
+                                        <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
+                                            {{ toCents(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
                                         </span>
                                         <QuantityStepper
                                             size="sm"
@@ -156,15 +156,16 @@
 import * as productImage from '#engine/utils/productImage'
 import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '#engine/types'
 import { type ComponentPublicInstance, computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { formatCents, formatPrice } from '#engine/lib/price'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
 import { priceCartLine } from '#engine/utils/pricing'
 import { print } from 'graphql'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
+import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -331,9 +332,9 @@ const selectionList = computed((): ProductChoiceSelection[] => {
 })
 
 // Headline price of one unit; line pricing is shared with the cart (see #engine/utils/pricing).
-const displayPrice = computed(() => {
+const displayPriceCents = computed(() => {
     if (!p) return 0
-    return priceCartLine({ quantity: quantity.value, product: p, selectedChoices: selectionList.value }).unitPriceCents / 100
+    return priceCartLine({ quantity: quantity.value, product: p, selectedChoices: selectionList.value }).unitPriceCents
 })
 
 const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value

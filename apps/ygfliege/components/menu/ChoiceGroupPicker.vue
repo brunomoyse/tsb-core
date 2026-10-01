@@ -22,7 +22,7 @@
             <span class="block px-3 py-3 space-y-1">
                 <span class="flex items-center justify-between gap-2">
                     <span translate="no" class="text-sm font-semibold text-ygf-black">{{ choice.name }}</span>
-                    <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-ygf-orange-800 whitespace-nowrap">
+                    <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-ygf-orange-800 whitespace-nowrap">
                         {{ modifierLabel(choice) }}
                     </span>
                 </span>
@@ -59,7 +59,7 @@
             @click="api.selectExclusive(choice)"
         >
             <span translate="no">{{ choice.name }}</span>
-            <span v-if="Number(choice.priceModifier) !== 0" class="text-xs opacity-80">
+            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs opacity-80">
                 {{ modifierLabel(choice) }}
             </span>
         </button>
@@ -77,7 +77,7 @@
                 : 'border-ygf-orange-100 bg-white'"
         >
             <span translate="no" class="flex-1 text-sm text-ygf-black">{{ choice.name }}</span>
-            <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-ygf-black/50 whitespace-nowrap">
+            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-ygf-black/50 whitespace-nowrap">
                 {{ modifierLabel(choice) }}
             </span>
             <div class="stepper shrink-0">
@@ -109,6 +109,7 @@ import { BROTHS, brothPhotoSlugs } from '~/data/broths'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { computed } from 'vue'
 import { formatPrice } from '#engine/lib/price'
+import { toCents } from '#engine/utils/money'
 import type { ProductChoicesApi } from '~/composables/useProductChoices'
 
 /**
@@ -138,7 +139,7 @@ const sorted = computed(() =>
 const photoSlugs = computed(() => (isMulti.value ? null : brothPhotoSlugs(group.choices)))
 
 const modifierLabel = (choice: ProductChoice) =>
-    `${Number(choice.priceModifier) > 0 ? '+' : ''}${formatPrice(choice.priceModifier)}`
+    `${toCents(choice.priceModifier) > 0 ? '+' : ''}${formatPrice(choice.priceModifier)}`
 
 /** Chili count for a photo-card choice (0 = none, 1 = mild, 3 = pick-your-heat). */
 const spiceLevelOf = (choice: ProductChoice): number => {

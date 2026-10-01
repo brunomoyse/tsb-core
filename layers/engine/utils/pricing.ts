@@ -11,11 +11,14 @@
  * again (it used to be, which charged 2 bowls with a 1.50 broth 6.00 of
  * surcharge instead of 3.00 — audit finding M2).
  *
- * All arithmetic is in integer cents; euro-valued helpers only divide by 100 at
- * the very end, so summing lines never accumulates float error.
+ * All arithmetic is in integer cents; callers sum cents and format once at display time
+ * (`formatCents`), so summing lines never accumulates float error.
  */
 
-type MoneyLike = string | number | null | undefined
+import { type MoneyLike, toCents } from './money.ts'
+
+// `toCents` lives in money.ts; re-exported because pricing is where most callers look for it.
+export { toCents }
 
 /** A selection with its price modifier. `quantity` is the TOTAL on the line, not per unit. */
 export interface PricedSelection {
@@ -33,12 +36,6 @@ export interface PriceableLine {
     selectedChoices?: { choiceId: string; quantity: number }[] | null
     /** Legacy single choice, only used when `selectedChoices` is empty. */
     selectedChoice?: { priceModifier: MoneyLike } | null
-}
-
-/** "12.5" / 12.5 → 1250. Missing or non-numeric values count as 0. */
-export function toCents(value: MoneyLike): number {
-    const n = Number(value ?? 0)
-    return Number.isFinite(n) ? Math.round(n * 100) : 0
 }
 
 export interface PricedLine {
@@ -82,20 +79,17 @@ export const priceCartLine = (item: PriceableLine): PricedLine =>
 /** Line amount in cents — sum these, divide once. */
 export const lineTotalCents = (item: PriceableLine): number => priceCartLine(item).lineTotalCents
 
-/** Line amount in euros: base × qty + Σ(modifier × selection qty). */
-export const lineTotal = (item: PriceableLine): number => lineTotalCents(item) / 100
-
 /**
- * Average price of one unit of the line (lineTotal / qty, rounded to the cent).
- * Fine for a "price" headline; use `lineTotal` for anything that must add up.
+ * Average price of one unit of the line (lineTotal / qty, rounded to the cent), in cents.
+ * Fine for a "price" headline; use `lineTotalCents` for anything that must add up.
  */
-export const unitPrice = (item: PriceableLine): number => priceCartLine(item).unitPriceCents / 100
+export const unitPriceCents = (item: PriceableLine): number => priceCartLine(item).unitPriceCents
 
 /**
- * Per-unit price only when it multiplies back to the line total exactly, else
+ * Per-unit price in cents only when it multiplies back to the line total exactly, else
  * null. Use it for "2 × €13.50" sub-lines, which must never contradict the total.
  */
-export const exactUnitPrice = (item: PriceableLine): number | null => {
+export const exactUnitPriceCents = (item: PriceableLine): number | null => {
     const { lineTotalCents: total } = priceCartLine(item)
-    return item.quantity > 0 && total % item.quantity === 0 ? total / item.quantity / 100 : null
+    return item.quantity > 0 && total % item.quantity === 0 ? total / item.quantity : null
 }

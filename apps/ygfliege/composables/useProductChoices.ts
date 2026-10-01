@@ -103,11 +103,11 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         return priceCartLine({ quantity: quantity.value, product, selectedChoices: selectionList.value })
     })
 
-    /** What the line costs: the amount charged for the whole line, in euros. */
-    const lineTotal = computed(() => pricedLine.value.lineTotalCents / 100)
+    /** What the line costs: the amount charged for the whole line, in cents. */
+    const lineTotalCents = computed(() => pricedLine.value.lineTotalCents)
 
-    /** Headline price of one unit (lineTotal / qty, rounded to the cent). */
-    const displayPrice = computed(() => pricedLine.value.unitPriceCents / 100)
+    /** Headline price of one unit (lineTotal / qty, rounded to the cent), in cents. */
+    const displayPriceCents = computed(() => pricedLine.value.unitPriceCents)
 
     const isGroupSatisfied = (group: ProductChoiceGroup) => {
         const selected = selectedCountIn(group)
@@ -221,8 +221,8 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         quantityOf,
         selectionList,
         selectedChoice,
-        displayPrice,
-        lineTotal,
+        displayPriceCents,
+        lineTotalCents,
         isGroupSatisfied,
         allGroupsSatisfied,
         groupHint,

@@ -248,7 +248,7 @@
                         >
                             <span>{{ extra.label }}</span>
                             <span class="rounded-full bg-white/80 border border-neutral-200 px-2 py-0.5 tabular-nums">
-                                +{{ formatPrice(extra.price) }}
+                                +{{ formatCents(extra.priceCents) }}
                             </span>
                         </button>
                         <div
@@ -269,7 +269,7 @@
                                     class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-500 text-white text-[10px] font-semibold tabular-nums px-1.5"
                                 >×{{ extra.quantity }}</span>
                                 <span class="rounded-full bg-white/80 border border-primary-200 px-2 py-0.5 tabular-nums">
-                                    +{{ formatPrice(extra.price) }}
+                                    +{{ formatCents(extra.priceCents) }}
                                 </span>
                             </button>
                             <button
@@ -312,7 +312,7 @@
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
         <div v-if="!isMinimumReached" class="text-sm text-primary-600 text-center">
-            {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+            {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
         </div>
 
         <!-- Checkout Button (desktop only) -->
@@ -339,10 +339,11 @@
 <script lang="ts" setup>
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
+import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { DELIVERY_MINIMUM } from '#engine/lib/fees'
-import { formatPrice } from '#engine/lib/price'
+import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
+import { formatCents } from '#engine/lib/price'
 import { useDebounceFn } from '@vueuse/core'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -367,7 +368,7 @@ const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWas
 
 const ORDER_COMMENT_MAX = 500
 
-const PAID_EXTRA_PRICE_MAX = 1
+const PAID_EXTRA_PRICE_MAX_CENTS = 100
 
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
@@ -444,23 +445,22 @@ const paidExtras = computed(() => {
     const products = accompagnementCategory.value?.products ?? []
     return products
         .filter((p) => {
-            const price = Number(p.price)
+            const priceCents = toCents(p.price)
             return (
                 p.isVisible &&
                 p.code !== null &&
-                Number.isFinite(price) &&
-                price > 0 &&
-                price <= PAID_EXTRA_PRICE_MAX
+                priceCents > 0 &&
+                priceCents <= PAID_EXTRA_PRICE_MAX_CENTS
             )
         })
         .map((p) => ({
             code: p.code as string,
             label: p.name,
-            price: Number(p.price),
+            priceCents: toCents(p.price),
             isAvailable: p.isAvailable,
             quantity: paidExtraQuantity(p.code as string),
         }))
-        .sort((a, b) => a.price - b.price || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
+        .sort((a, b) => a.priceCents - b.priceCents || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
 })
 
 const emit = defineEmits<{

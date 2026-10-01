@@ -25,6 +25,7 @@
 
 <script lang="ts" setup>
 import {computed, nextTick, ref, watch} from 'vue';
+import {centsToEuros} from '#engine/utils/money';
 import {useCartStore} from '#engine/stores/cart';
 import {useTracking} from '#engine/composables/useTracking';
 
@@ -32,7 +33,7 @@ const { trackEvent } = useTracking()
 
 const handleToggleCart = () => {
     if (!cartStore.isCartVisible) {
-        trackEvent('cart_viewed', { total_items: cartStore.totalItems, total_price: cartStore.totalPrice })
+        trackEvent('cart_viewed', { total_items: cartStore.totalItems, total_price: centsToEuros(cartStore.subtotalCents) })
     }
     cartStore.toggleCartVisibility();
 }

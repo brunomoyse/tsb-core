@@ -2,10 +2,10 @@
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
 import { lineSignature, matchesLine, mergeIntoLine, migratePersistedLines, rescaleSelections, sortSelections } from '#engine/utils/cartLines'
+import { lineTotalCents, toCents } from '#engine/utils/pricing'
 import type { OrderExtraConfig } from '#engine/types/brand'
 import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
-import { lineTotalCents } from '#engine/utils/pricing'
 
 export const MAX_ITEM_QUANTITY = 99
 
@@ -70,7 +70,7 @@ const defaultState = (): CartState => ({
     isCartVisible: false,
     collectionOption: 'DELIVERY',
     couponCode: null,
-    couponDiscount: 0,
+    couponDiscountCents: 0,
     paymentOption: 'ONLINE',
     cashPaymentAmount: null,
     address: null,
@@ -90,9 +90,9 @@ export const useCartStore = defineStore("cart", {
             return state.products.reduce((total, item) => total + item.quantity, 0);
         },
 
-        // Summed in cents, divided once. Line pricing lives in #engine/utils/pricing.
-        totalPrice(state): number {
-            return state.products.reduce((cents, item) => cents + lineTotalCents(item), 0) / 100;
+        // Σ line totals in integer cents. Line pricing lives in #engine/utils/pricing.
+        subtotalCents(state): number {
+            return state.products.reduce((cents, item) => cents + lineTotalCents(item), 0);
         },
 
     },
@@ -208,8 +208,20 @@ export const useCartStore = defineStore("cart", {
                 products: CartItem[];
                 isCartVisible: boolean;
                 orderExtra: CartState['orderExtra'];
+                couponDiscountCents: number;
             };
             store.isCartVisible = false;
+            /*
+             * Carts persisted before the engine went integer-cents stored the coupon discount as a
+             * euro number (`couponDiscount: 3.5`). Convert it once and drop the old key. The key lives
+             * in `$state` (what gets persisted), so delete it there or it would come back.
+             */
+            const persisted = ctx.store.$state as unknown as { couponDiscount?: unknown };
+            if (typeof persisted.couponDiscount === 'number' && persisted.couponDiscount > 0) {
+                store.couponDiscountCents = toCents(persisted.couponDiscount)
+            }
+            delete persisted.couponDiscount
+            if (!Number.isInteger(store.couponDiscountCents) || store.couponDiscountCents < 0) store.couponDiscountCents = 0
             // Drop extras this brand doesn't offer (old carts, or entries removed from the UI).
             if (Array.isArray(store.orderExtra)) {
                 const offered = new Set(brand.orderExtras.map((extra) => extra.name))

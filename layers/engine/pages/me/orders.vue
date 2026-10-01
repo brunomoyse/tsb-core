@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue"
 import type { Order } from "#engine/types"
 import { formatAddress } from "#engine/utils/utils"
 import { formatDateTime } from "#engine/utils/datetime"
+import { formatPrice } from "#engine/lib/price"
 import gql from 'graphql-tag'
 
 const { showProductCode = false } = useAppConfig().brand
@@ -267,7 +268,7 @@ const getStatusColorClass = (status: string) => {
                     </div>
                     <div class="flex items-center gap-2 ml-3 shrink-0">
                         <span class="text-sm font-semibold text-neutral-700 tabular-nums whitespace-nowrap">
-                            {{ new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(parseFloat(order.totalPrice)) }}
+                            {{ formatPrice(order.totalPrice) }}
                         </span>
                         <span
                             :class="{ 'rotate-180': isExpanded(order.id) }"
@@ -328,7 +329,7 @@ const getStatusColorClass = (status: string) => {
                                 </p>
                                 <div class="flex items-center gap-2 ml-3 flex-shrink-0">
                                     <span class="text-xs font-medium text-neutral-500 tabular-nums">x{{ item.quantity }}</span>
-                                    <span class="text-xs text-neutral-400 tabular-nums">{{ new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(parseFloat(item.totalPrice)) }}</span>
+                                    <span class="text-xs text-neutral-400 tabular-nums">{{ formatPrice(item.totalPrice) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -337,7 +338,7 @@ const getStatusColorClass = (status: string) => {
                         <div class="mt-4 pt-3 border-t border-neutral-200/60 flex items-center justify-between">
                             <span class="text-xs text-neutral-500">{{ $t('me.orders.total') }}</span>
                             <span class="text-sm font-semibold text-neutral-900 tabular-nums">
-                                {{ new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(parseFloat(order.totalPrice)) }}
+                                {{ formatPrice(order.totalPrice) }}
                             </span>
                         </div>
 

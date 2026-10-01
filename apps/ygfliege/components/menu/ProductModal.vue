@@ -69,7 +69,7 @@
                 <div class="space-y-4 min-w-0">
                     <!-- Price + portion -->
                     <div class="flex items-baseline gap-3 flex-wrap">
-                        <span class="text-2xl font-bold text-ygf-black tabular-nums">{{ formatPrice(displayPrice) }}</span>
+                        <span class="text-2xl font-bold text-ygf-black tabular-nums">{{ formatCents(displayPriceCents) }}</span>
                         <span v-if="p.pieceCount" class="text-sm text-ygf-black/60">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
@@ -160,7 +160,7 @@
                     @click="addToCart"
                 >
                     <span>{{ $t('menu.addToCart') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
                 </button>
             </div>
         </footer>
@@ -179,7 +179,7 @@ import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
@@ -302,8 +302,8 @@ const {
     choiceGroups,
     selectionList,
     selectedChoice,
-    displayPrice,
-    lineTotal,
+    displayPriceCents,
+    lineTotalCents,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,

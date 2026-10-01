@@ -105,7 +105,7 @@
                     <span>{{ $t('menu.addToCart') }}</span>
                     <!-- Price only once the bowl is valid: before that, lineTotal
                          is just the 2,50 € base and reads as the full price. -->
-                    <span v-if="canAddToCart" class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
+                    <span v-if="canAddToCart" class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
                 </button>
             </div>
         </footer>
@@ -117,7 +117,7 @@ import type { Product } from '#engine/types'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
@@ -204,8 +204,8 @@ const {
     quantityOf,
     selectionList,
     selectedChoice,
-    displayPrice,
-    lineTotal,
+    displayPriceCents,
+    lineTotalCents,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,

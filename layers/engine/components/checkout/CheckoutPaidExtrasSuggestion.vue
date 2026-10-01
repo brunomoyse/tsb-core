@@ -36,7 +36,7 @@
                     </span>
                 </span>
                 <span :class="['text-sm font-semibold shrink-0 tabular-nums', isSelected(extra.code) ? 'text-primary-700' : 'text-neutral-900']">
-                    +{{ formatPrice(extra.price) }}
+                    +{{ formatCents(extra.priceCents) }}
                 </span>
             </label>
         </div>
@@ -46,16 +46,17 @@
 <script lang="ts" setup>
 import type { Product, ProductCategory } from '#engine/types'
 import { computed } from 'vue'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
+import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useGqlQuery } from '#imports'
 
 const cartStore = useCartStore()
 
 const PAID_EXTRA_DEFS = [
-    { code: 'K45', label: 'Wasabi', fallbackPrice: 0.8 },
-    { code: 'K42', label: 'Sauce soja salée', fallbackPrice: 1 },
-    { code: 'K43', label: 'Sauce soja sucrée', fallbackPrice: 1 },
+    { code: 'K45', label: 'Wasabi', fallbackPriceCents: 80 },
+    { code: 'K42', label: 'Sauce soja salée', fallbackPriceCents: 100 },
+    { code: 'K43', label: 'Sauce soja sucrée', fallbackPriceCents: 100 },
 ] as const
 
 const EXTRA_PRODUCTS_QUERY = `
@@ -115,7 +116,7 @@ const paidExtras = computed(() => PAID_EXTRA_DEFS.map((item) => {
     return {
         code: item.code,
         label: product?.name || item.label,
-        price: Number(product?.price ?? item.fallbackPrice),
+        priceCents: product ? toCents(product.price) : item.fallbackPriceCents,
     }
 }))
 

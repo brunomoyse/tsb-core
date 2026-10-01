@@ -94,7 +94,7 @@
                                 </span>
                             </div>
                             <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
-                                {{ formatPrice(getItemLineTotal(item)) }}
+                                {{ formatCents(getItemLineTotalCents(item)) }}
                             </span>
                         </div>
 
@@ -135,42 +135,42 @@
             <div class="space-y-2">
                 <div v-if="hasBreakdown" class="flex justify-between items-center text-sm text-neutral-600">
                     <span>{{ $t('cart.subtotal') }}:</span>
-                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-neutral-600">
                     <span>{{ $t('cart.deliveryFee') }}:</span>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs">
                         {{ $t('checkout.tooFar') }}
                     </span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
                         {{ $t('checkout.free') }}
                     </span>
-                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
-                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="couponDiscount > 0" class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="couponDiscountCents > 0" class="flex justify-between items-center text-sm text-green-600">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
-                    <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFee > 0" class="flex justify-between items-center text-sm text-neutral-600">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between items-center text-sm text-neutral-600">
                     <span>{{ $t('cart.onlineFee') }}:</span>
-                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                    <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(payableTotal) }}</span>
+                    <span data-testid="cart-total" class="tabular-nums">{{ formatCents(payableCents) }}</span>
                 </div>
             </div>
 
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-primary-600 text-center">
-                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
                 <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 rounded-lg" @click="switchToPickup">
                     {{ $t('delivery.modal.switchToPickup') }}
                 </button>
@@ -203,7 +203,7 @@ import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -226,14 +226,14 @@ const {t} = useI18n()
 const { trackEvent } = useTracking()
 const { removeWithUndo, editItem } = useCartItemActions()
 const {
-    getItemLineTotal,
-    subtotal,
-    pickupDiscount,
-    deliveryFee,
-    couponDiscount,
-    onlineFee,
-    payableTotal,
-    amountToDeliveryMinimum,
+    getItemLineTotalCents,
+    subtotalCents,
+    pickupDiscountCents,
+    deliveryFeeCents,
+    couponDiscountCents,
+    onlineFeeCents,
+    payableCents,
+    amountToDeliveryMinimumCents,
     switchToPickup,
     hasBreakdown,
     isMinimumReached,

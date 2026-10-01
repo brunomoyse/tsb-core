@@ -75,7 +75,8 @@ export interface CartState {
     cashPaymentAmount: string | null;
     collectionOption: OrderType;
     couponCode: string | null;
-    couponDiscount: number;
+    /** What the applied coupon takes off, in integer cents (0 without a coupon). */
+    couponDiscountCents: number;
     isCartVisible: boolean;
     orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;

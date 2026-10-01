@@ -17,7 +17,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <p class="text-primary-700 font-medium text-sm">
-                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+                {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
             </p>
         </div>
 
@@ -95,7 +95,7 @@
                     <span class="text-neutral-500">
                         {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
                     </span>
-                    <span class="font-bold text-neutral-900">{{ formatPrice(payableTotal) }}</span>
+                    <span class="font-bold text-neutral-900">{{ formatCents(payableCents) }}</span>
                 </div>
             </div>
 
@@ -154,7 +154,7 @@
                             }}
                         </template>
                     </span>
-                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatPrice(payableTotal) }}</span>
+                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </div>
@@ -237,10 +237,11 @@ import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionO
 import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { DELIVERY_MINIMUM } from '#engine/lib/fees'
+import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
+import { centsToEuros } from '#engine/utils/money'
 import gql from 'graphql-tag'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -259,7 +260,7 @@ const { applyDefaults } = useOrderExtras()
 const notifications = useNotificationsStore()
 // The payable total is the amount Mollie is asked for (goods − discounts + delivery + online fee): the pay bar, the summary and the analytics payloads all use it.
 const {
-    payableTotal,
+    payableCents,
     isMinimumReached,
 } = useCartTotals()
 const localePath = useLocalePath()
@@ -421,7 +422,7 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
 
     // Map known backend error strings to translated messages
     if (raw.includes('minimum order amount for delivery'))
-        return t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM })
+        return t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) })
     if (raw.includes('ordering is currently unavailable'))
         return t('notify.errors.orderingUnavailable')
     if (raw.includes('not eligible for delivery'))
@@ -500,7 +501,7 @@ onMounted(() => {
 
     trackEvent('checkout_page_loaded', {
         total_items: cartStore.totalItems,
-        total_price: payableTotal.value,
+        total_price: centsToEuros(payableCents.value),
         collection_option: cartStore.collectionOption,
         has_address: Boolean(cartStore.address),
         is_authenticated: Boolean(authStore.user),
@@ -549,7 +550,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
 
     if (!isMinimumReached.value) {
         errors.push({
-            message: t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }),
+            message: t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }),
             targetId: 'checkout-minimum-order-banner',
             event: 'checkout_error_minimum_not_reached',
         })
@@ -727,9 +728,9 @@ const handleCheckout = async () => {
                 order_id: order?.id,
                 order_type: cartStore.collectionOption,
                 is_online_payment: cartStore.paymentOption === 'ONLINE',
-                total_price: payableTotal.value,
+                total_price: centsToEuros(payableCents.value),
                 items_count: cartStore.totalItems,
-                revenue: order?.totalPrice ?? payableTotal.value,
+                revenue: order?.totalPrice ?? centsToEuros(payableCents.value),
                 currency: 'EUR',
             })
 
@@ -780,7 +781,7 @@ watch(
         authStore.user?.phoneNumber,
         cartStore.paymentOption,
         cashAcknowledged.value,
-        payableTotal.value,
+        payableCents.value,
     ],
     () => {
         if (submitErrors.value.length === 0) return

@@ -49,7 +49,7 @@ const seededCart = (pendingOrderId: string | null) => JSON.stringify({
   }],
   collectionOption: 'PICKUP',
   couponCode: null,
-  couponDiscount: 0,
+  couponDiscountCents: 0,
   paymentOption: 'ONLINE',
   cashPaymentAmount: null,
   address: null,

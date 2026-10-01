@@ -11,7 +11,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
                 <span class="text-sm text-primary-700 font-medium">
-                    {{ $t('coupon.applied', { discount: formatPrice(cartStore.couponDiscount) }) }}
+                    {{ $t('coupon.applied', { discount: formatCents(cartStore.couponDiscountCents) }) }}
                 </span>
             </div>
             <button
@@ -54,8 +54,9 @@
 </template>
 
 <script lang="ts" setup>
+import { centsToDecimalString, toCents } from '#engine/utils/money'
 import type { CouponValidation } from '#engine/types'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { ref } from 'vue'
 import { useCartStore } from '#engine/stores/cart'
@@ -91,13 +92,13 @@ const applyCoupon = async () => {
     errorMessage.value = ''
 
     try {
-        const orderAmount = cartStore.totalPrice.toFixed(2)
+        const orderAmount = centsToDecimalString(cartStore.subtotalCents)
         const res = await validateCoupon({ code, orderAmount })
         const validation = res.validateCoupon
 
         if (validation.valid) {
             cartStore.couponCode = code
-            cartStore.couponDiscount = Number(validation.discountAmount)
+            cartStore.couponDiscountCents = toCents(validation.discountAmount)
             couponInput.value = ''
         } else {
             errorMessage.value = validation.errorMessage || t('coupon.invalid')
@@ -111,7 +112,7 @@ const applyCoupon = async () => {
 
 const removeCoupon = () => {
     cartStore.couponCode = null
-    cartStore.couponDiscount = 0
+    cartStore.couponDiscountCents = 0
     couponInput.value = ''
     errorMessage.value = ''
 }

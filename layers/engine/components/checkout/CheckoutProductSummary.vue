@@ -65,7 +65,7 @@
                                 </p>
                             </div>
                             <span class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums">
-                                {{ formatPrice(getItemLineTotal(item)) }}
+                                {{ formatCents(getItemLineTotalCents(item)) }}
                             </span>
                         </div>
 
@@ -123,7 +123,7 @@
             <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
                 <div class="flex justify-between text-neutral-500">
                     <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500 relative">
                     <div class="flex items-center gap-1">
@@ -155,26 +155,26 @@
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic">{{ $t('checkout.tbd') }}</span>
                     <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-primary-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium">{{ $t('checkout.tooFar') }}</span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
-                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium">{{ $t('checkout.tooFar') }}</span>
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
+                    <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('checkout.discount') }}</span>
-                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
-                    <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
                     <span>{{ $t('checkout.transactionFee') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                    <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatPrice(payableTotal) }}</span>
+                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatCents(payableCents) }}</span>
                 </div>
             </div>
         </template>
@@ -189,7 +189,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { isExcludedPostcode } from '#engine/lib/delivery'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -202,12 +202,12 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { impact: hapticImpact } = useHaptics()
 const {
-    getItemLineTotal,
-    subtotal,
-    pickupDiscount,
-    deliveryFee,
-    onlineFee,
-    payableTotal,
+    getItemLineTotalCents,
+    subtotalCents,
+    pickupDiscountCents,
+    deliveryFeeCents,
+    onlineFeeCents,
+    payableCents,
 } = useCartTotals()
 const showTooltip = ref(false)
 const tooltipButtonRef = ref<HTMLElement | null>(null)
