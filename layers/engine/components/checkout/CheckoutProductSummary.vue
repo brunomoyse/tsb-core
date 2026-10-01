@@ -65,7 +65,7 @@
                                 </p>
                             </div>
                             <span class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums">
-                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                {{ formatPrice(getItemLineTotal(item)) }}
                             </span>
                         </div>
 
@@ -197,7 +197,7 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { impact: hapticImpact } = useHaptics()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
     subtotal,
     pickupDiscount,
     deliveryFee,

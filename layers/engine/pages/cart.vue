@@ -85,10 +85,10 @@
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
-                                    {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                    {{ formatPrice(getItemLineTotal(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1" class="text-[11px] text-neutral-400 tabular-nums">
-                                    {{ item.quantity }} × {{ formatPrice(getItemUnitPrice(item)) }}
+                                <span v-if="item.quantity > 1 && getItemExactUnitPrice(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                    {{ item.quantity }} × {{ formatPrice(getItemExactUnitPrice(item)!) }}
                                 </span>
                             </div>
 
@@ -250,7 +250,8 @@ const productImageBase = (slug?: string | null) => productImage.productImageBase
 const itemImageElements = ref<HTMLImageElement[]>([])
 const { config: restaurantConfig } = await useRestaurantConfig()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
+    getItemExactUnitPrice,
     subtotal,
     pickupDiscount,
     deliveryFee,

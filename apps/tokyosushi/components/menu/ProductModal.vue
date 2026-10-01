@@ -161,6 +161,7 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { priceCartLine } from '#engine/utils/pricing'
 import { print } from 'graphql'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { useCartStore } from '#engine/stores/cart'
@@ -295,17 +296,6 @@ const selectedChoice = computed((): ProductChoice | null => {
     return p.choices.find((choice) => choice.id === selection.choiceId) ?? null
 })
 
-const displayPrice = computed(() => {
-    if (!p) return '0'
-    const base = Number(p.price)
-    const modifier = Object.entries(selectedChoiceQuantities.value).reduce((sum, [choiceId, selectedQty]) => {
-        const choice = p.choices?.find((c) => c.id === choiceId)
-        if (!choice || selectedQty <= 0) return sum
-        return sum + Number(choice.priceModifier) * selectedQty
-    }, 0)
-    return String(base + modifier)
-})
-
 const selectedQuantitiesByGroup = computed(() => {
     const currentProduct = p
     const byGroup: Record<string, number> = {}
@@ -337,6 +327,12 @@ const selectionList = computed((): ProductChoiceSelection[] => {
             }
         })
         .filter((item): item is ProductChoiceSelection => Boolean(item))
+})
+
+// Headline price of one unit; line pricing is shared with the cart (see #engine/utils/pricing).
+const displayPrice = computed(() => {
+    if (!p) return 0
+    return priceCartLine({ quantity: quantity.value, product: p, selectedChoices: selectionList.value }).unitPriceCents / 100
 })
 
 const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value

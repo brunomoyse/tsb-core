@@ -94,7 +94,7 @@
                                 </span>
                             </div>
                             <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
-                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                {{ formatPrice(getItemLineTotal(item)) }}
                             </span>
                         </div>
 
@@ -217,7 +217,7 @@ const {t} = useI18n()
 const { trackEvent } = useTracking()
 const { removeWithUndo, editItem } = useCartItemActions()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
     subtotal,
     pickupDiscount,
     deliveryFee,

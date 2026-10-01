@@ -302,12 +302,11 @@ const {
     selectionList,
     selectedChoice,
     displayPrice,
+    lineTotal,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,
 } = choicesApi
-
-const lineTotal = computed(() => String(Number(displayPrice.value) * quantity.value))
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false

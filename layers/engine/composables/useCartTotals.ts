@@ -1,6 +1,7 @@
 import { type ComputedRef, computed } from 'vue'
 import type { CartItem } from '@/types'
 import { deliveryFeeForDistance, isExcludedPostcode } from '~/lib/delivery'
+import { exactUnitPrice, lineTotal, lineTotalCents } from '#engine/utils/pricing'
 import { roundToNearest10Cents } from '~/utils/money'
 import { useCartStore } from '@/stores/cart'
 
@@ -20,7 +21,10 @@ const PICKUP_DISCOUNT_RATE = 0.1
 export const DELIVERY_MINIMUM = 25
 
 export interface CartTotals {
-    getItemUnitPrice: (item: CartItem) => number
+    /** Line amount: base × qty + Σ(modifier × selection qty). See #engine/utils/pricing. */
+    getItemLineTotal: (item: CartItem) => number
+    /** Per-unit price, only when it multiplies back to the line total exactly (else null). */
+    getItemExactUnitPrice: (item: CartItem) => number | null
     subtotal: ComputedRef<number>
     pickupDiscount: ComputedRef<number>
     deliveryFee: ComputedRef<number>
@@ -33,28 +37,15 @@ export interface CartTotals {
 export function useCartTotals(): CartTotals {
     const cartStore = useCartStore()
 
-    const getItemUnitPrice = (item: CartItem): number => {
-        const base = Number(item.product.price)
-        const selections = item.selectedChoices ?? []
-        if (selections.length > 0) {
-            const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
-            return base + selections.reduce((sum, selection) => {
-                const choice = choiceMap.get(selection.choiceId)
-                return choice ? sum + Number(choice.priceModifier) * selection.quantity : sum
-            }, 0)
-        }
-        return base + (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
-    }
-
     const subtotal = computed(() =>
-        cartStore.products.reduce((acc, item) => acc + getItemUnitPrice(item) * item.quantity, 0),
+        cartStore.products.reduce((cents, item) => cents + lineTotalCents(item), 0) / 100,
     )
 
     const pickupDiscount = computed(() => {
         if (cartStore.collectionOption !== 'PICKUP' || subtotal.value < PICKUP_DISCOUNT_THRESHOLD) return 0
         const raw = cartStore.products.reduce((acc, item) =>
             item.product.isDiscountable
-                ? acc + getItemUnitPrice(item) * item.quantity * PICKUP_DISCOUNT_RATE
+                ? acc + lineTotal(item) * PICKUP_DISCOUNT_RATE
                 : acc, 0)
         return roundToNearest10Cents(raw)
     })
@@ -84,7 +75,8 @@ export function useCartTotals(): CartTotals {
     )
 
     return {
-        getItemUnitPrice,
+        getItemLineTotal: lineTotal,
+        getItemExactUnitPrice: exactUnitPrice,
         subtotal,
         pickupDiscount,
         deliveryFee,

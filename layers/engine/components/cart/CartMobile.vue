@@ -91,7 +91,7 @@
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                         </span>
                         <span class="text-neutral-800 font-medium text-xs mt-1">
-                            {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                            {{ formatPrice(getItemLineTotal(item)) }}
                         </span>
                     </div>
 
@@ -209,7 +209,7 @@ const { impact } = useHaptics()
 const { trackEvent } = useTracking();
 const { removeWithUndo, editItem } = useCartItemActions()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
     subtotal,
     pickupDiscount,
     deliveryFee,

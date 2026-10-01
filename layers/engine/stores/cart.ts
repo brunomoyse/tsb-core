@@ -4,6 +4,7 @@ import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelectio
 import type { OrderExtraConfig } from '#engine/types/brand'
 import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
+import { lineTotalCents } from '#engine/utils/pricing'
 
 export const MAX_ITEM_QUANTITY = 99
 
@@ -39,19 +40,6 @@ const selectionSignature = (selections: ProductChoiceSelection[]): string =>
 const matchesCartItem = (item: CartItem, productId: string, signature: string): boolean =>
     item.product.id === productId && selectionSignature(item.selectedChoices ?? []) === signature
 
-const selectionModifierTotal = (product: Product, selections: ProductChoiceSelection[] = [], fallbackChoice?: ProductChoice | null): number => {
-    if (selections.length > 0) {
-        const choiceMap = new Map((product.choices ?? []).map((choice) => [choice.id, choice]))
-        return selections.reduce((sum, selection) => {
-            const choice = choiceMap.get(selection.choiceId)
-            if (!choice) return sum
-            return sum + Number(choice.priceModifier) * selection.quantity
-        }, 0)
-    }
-
-    return fallbackChoice ? Number(fallbackChoice.priceModifier) : 0
-}
-
 /** The `orderExtra` entry for an extra in its pre-selected form (e.g. soy sauce -> `both`). */
 export const defaultOrderExtra = (extra: OrderExtraConfig): { name: string; options?: string[] } =>
     extra.options?.length
@@ -83,15 +71,9 @@ export const useCartStore = defineStore("cart", {
             return state.products.reduce((total, item) => total + item.quantity, 0);
         },
 
+        // Summed in cents, divided once. Line pricing lives in #engine/utils/pricing.
         totalPrice(state): number {
-            return state.products.reduce(
-                (total, item) => {
-                    const unitPrice = Number(item.product.price) +
-                        selectionModifierTotal(item.product, item.selectedChoices ?? [], item.selectedChoice);
-                    return total + unitPrice * item.quantity;
-                },
-                0
-            );
+            return state.products.reduce((cents, item) => cents + lineTotalCents(item), 0) / 100;
         },
 
     },
