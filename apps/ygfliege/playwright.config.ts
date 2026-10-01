@@ -12,7 +12,8 @@ import type { BrandOptions } from '../../layers/engine/e2e/support/test'
  *
  * global-setup forces ordering open for the run (the seeded hours are 11:30 to
  * 22:00, outside which add-to-cart stays disabled); global-teardown restores it.
- * Logged-in engine specs skip unless YGF_E2E_USER_EMAIL is set (see global-setup).
+ * Login runs against YGF's own Zitadel app (project "Yangguofu Malatang Liège" on the
+ * test instance). Logged-in engine specs skip unless YGF_E2E_USER_EMAIL is set (see global-setup).
  */
 const engineDir = '../../layers/engine/e2e'
 const desktop = { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } }
@@ -30,7 +31,9 @@ export default defineConfig<BrandOptions>({
   use: {
     baseURL: 'http://localhost:3001',
     brand: 'ygfliege',
-    loginAvailable: Boolean(process.env.YGF_E2E_USER_EMAIL),
+    loginAvailable: true,
+    // The YGF web app has its own loginV2 baseUri (http://localhost:3001/fr/auth/).
+    loginOrigin: 'http://localhost:3001',
     e2eUserEmail: process.env.YGF_E2E_USER_EMAIL,
     locale: 'fr-BE',
     extraHTTPHeaders: {

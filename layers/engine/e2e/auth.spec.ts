@@ -1,5 +1,6 @@
 import { expect, test } from './support/test'
 import { SEL } from './support/selectors'
+import { waitForLoginPage } from './support/auth-flow'
 import { waitForOtpFromZitadel } from './support/zitadel-otp'
 
 /*
@@ -25,7 +26,7 @@ test.beforeEach(async ({ context, loginAvailable }) => {
 })
 
 test.describe('Authentication flows (OTP)', () => {
-  test('Login via OTP code redirects to menu', async ({ page, e2eUserEmail }) => {
+  test('Login via OTP code redirects to menu', async ({ page, e2eUserEmail, loginOrigin }) => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
@@ -33,10 +34,7 @@ test.describe('Authentication flows (OTP)', () => {
 
     await page.goto('/fr/auth/login')
 
-    /* App bounces through Zitadel for an authRequestID, then returns. */
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-      timeout: 30_000,
-    })
+    await waitForLoginPage(page, loginOrigin)
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
@@ -58,15 +56,13 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page.locator(SEL.productCard).first()).toBeVisible()
   })
 
-  test('Invalid OTP code shows error', async ({ page, e2eUserEmail }) => {
+  test('Invalid OTP code shows error', async ({ page, e2eUserEmail, loginOrigin }) => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
 
     await page.goto('/fr/auth/login')
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-      timeout: 30_000,
-    })
+    await waitForLoginPage(page, loginOrigin)
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
@@ -87,11 +83,9 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page).toHaveURL(/\/auth\/login/u)
   })
 
-  test('Login page shows SSO buttons and email form', async ({ page }) => {
+  test('Login page shows SSO buttons and email form', async ({ page, loginOrigin }) => {
     await page.goto('/fr/auth/login')
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-      timeout: 30_000,
-    })
+    await waitForLoginPage(page, loginOrigin)
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     await expect(page.getByRole('button', { name: /google/iu })).toBeVisible()
@@ -99,15 +93,13 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page.locator(SEL.loginSubmit)).toBeVisible()
   })
 
-  test('Resend code button is disabled during cooldown', async ({ page, e2eUserEmail }) => {
+  test('Resend code button is disabled during cooldown', async ({ page, e2eUserEmail, loginOrigin }) => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
 
     await page.goto('/fr/auth/login')
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-      timeout: 30_000,
-    })
+    await waitForLoginPage(page, loginOrigin)
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*

@@ -24,6 +24,8 @@ export default defineConfig<BrandOptions>({
     baseURL: 'http://localhost:3000',
     brand: 'tokyosushi',
     loginAvailable: true,
+    // The TSB web app uses the test instance's default login UI.
+    loginOrigin: 'https://tsb.brunomoyse.be',
     e2eUserEmail: process.env.E2E_USER_EMAIL,
     locale: 'fr-BE',
     extraHTTPHeaders: {

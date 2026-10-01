@@ -20,6 +20,12 @@ export interface BrandOptions {
    * through Zitadel skip instead of failing or, worse, snapshotting an error page.
    */
   loginAvailable: boolean
+  /*
+   * Origin that must serve /auth/login after the Zitadel round-trip: the OIDC app's loginV2
+   * baseUri, or the instance default when the app has none (one tokyosushi app serves several
+   * origins, so its local runs log in on the test site).
+   */
+  loginOrigin: string | undefined
   /* OTP test user for this brand; undefined skips specs that log in through the UI. */
   e2eUserEmail: string | undefined
 }
@@ -46,6 +52,7 @@ function loadAuthState(configFile: string | undefined): CapturedOidcState | null
 export const test = base.extend<BrandOptions & { authenticatedPage: Page }>({
   brand: ['tokyosushi', { option: true }],
   loginAvailable: [true, { option: true }],
+  loginOrigin: [undefined, { option: true }],
   e2eUserEmail: [undefined, { option: true }],
   authenticatedPage: async ({ page, context }, use, testInfo) => {
     const state = loadAuthState(testInfo.config.configFile)

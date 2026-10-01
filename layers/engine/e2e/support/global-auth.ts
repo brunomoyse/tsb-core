@@ -18,12 +18,13 @@ export async function captureAuthState(config: FullConfig, email: string | undef
   }
 
   const baseURL = config.projects[0]?.use?.baseURL ?? 'http://localhost:3000'
+  const loginOrigin = (config.projects[0]?.use as { loginOrigin?: string } | undefined)?.loginOrigin
 
   const browser = await chromium.launch()
   try {
     const ctx = await browser.newContext({ baseURL, locale: 'fr-BE' })
     const page = await ctx.newPage()
-    const state = await loginViaOtpAndCaptureState(page, baseURL, email)
+    const state = await loginViaOtpAndCaptureState(page, baseURL, email, loginOrigin)
     writeFileSync(authStateFile(config.configFile), JSON.stringify(state))
     console.log(`${label}: captured OIDC state for ${email} (${state.entries.length} localStorage entries)`)
   } catch (e) {

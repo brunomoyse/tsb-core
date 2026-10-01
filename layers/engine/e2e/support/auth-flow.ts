@@ -7,8 +7,25 @@
  * gives every downstream test a valid session without the email-poll latency.
  */
 
-import type { Page } from '@playwright/test'
+import { type Page, expect } from '@playwright/test'
 import { waitForOtpFromZitadel } from './zitadel-otp'
+
+/*
+ * /auth/login bounces through Zitadel for an authRequest, and Zitadel sends
+ * the browser to the login UI configured for the OIDC app (or the instance
+ * default). Wait for that round-trip, then check it landed on THIS brand's
+ * login page: an app without its own login UI silently falls back to the
+ * instance default, i.e. another brand's site, and tests would pass there.
+ */
+export async function waitForLoginPage(page: Page, loginOrigin: string | undefined): Promise<void> {
+    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
+        timeout: 30_000,
+    })
+    if (loginOrigin) {
+        expect(new URL(page.url()).origin, 'login UI is served by another origin (check the Zitadel app loginV2 baseUri)')
+            .toBe(new URL(loginOrigin).origin)
+    }
+}
 
 export interface CapturedOidcState {
     /* Each entry is a key/value pair from localStorage matching `oidc.*`. */
@@ -24,6 +41,7 @@ export async function loginViaOtpAndCaptureState(
     page: Page,
     baseURL: string,
     email: string,
+    loginOrigin: string | undefined,
 ): Promise<CapturedOidcState> {
     /*
      * Capture the cutoff before triggering the OTP so the event-store poll
@@ -38,9 +56,7 @@ export async function loginViaOtpAndCaptureState(
      * obtain an authRequestID, then returns with `?authRequest=...` in the
      * URL. Wait for that round-trip to finish so the email form is wired up.
      */
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-        timeout: 30_000,
-    })
+    await waitForLoginPage(page, loginOrigin)
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
      * The form is `@submit.prevent="onSubmitEmail"` but if Playwright clicks

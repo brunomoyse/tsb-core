@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from './support/test'
+import { waitForLoginPage } from './support/auth-flow'
 import { waitForNuxtHydration } from './support/hydration'
 
 /*
@@ -117,14 +118,12 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
     await snap(page, 'terms')
   })
 
-  test('login (AuthFlow)', async ({ page, loginAvailable }) => {
+  test('login (AuthFlow)', async ({ page, loginAvailable, loginOrigin }) => {
     test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally')
     await page.goto('/fr/auth/login')
-    // The form renders before the Zitadel authRequest bounce, so wait for the round-trip to
-    // land back here; otherwise the screenshot can catch Zitadel's page instead.
-    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
-      timeout: 30_000,
-    })
+    // The form renders before the Zitadel authRequest bounce; wait for the round-trip so the
+    // screenshot is this brand's login page, not Zitadel's or another brand's.
+    await waitForLoginPage(page, loginOrigin)
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     await snap(page, 'login')
   })
