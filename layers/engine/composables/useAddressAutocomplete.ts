@@ -96,6 +96,12 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
     // Only the latest search may write its results (a slow answer to an older query must not overwrite a newer one).
     let searchSeq = 0
 
+    // A search still waiting in the debounce must not fire after the choice (or the clear): it would reopen suggestions for stale text.
+    const cancelPendingSearch = (): void => {
+        if (debounceTimer) clearTimeout(debounceTimer)
+        debounceTimer = null
+    }
+
     onBeforeUnmount(() => {
         if (debounceTimer) clearTimeout(debounceTimer)
         if (blurTimer) clearTimeout(blurTimer)
@@ -132,7 +138,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
     const onInput = (): void => {
         highlightedIndex.value = -1
         isDismissed.value = false
-        if (debounceTimer) clearTimeout(debounceTimer)
+        cancelPendingSearch()
 
         debounceTimer = setTimeout(async () => {
             const query = addressQuery.value.trim()
@@ -173,6 +179,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
 
     const selectSuggestion = async (suggestion: AddressSuggestion): Promise<void> => {
         if (isLoadingAddress.value) return
+        cancelPendingSearch()
         isLoadingAddress.value = true
         try {
             const data: { resolveAddress: Address } = await $gqlFetch(
@@ -264,6 +271,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
         isDismissed.value = false
         highlightedIndex.value = -1
         hasSearched.value = false
+        cancelPendingSearch()
         searchSeq++
         statusMessage.value = t('form.address.cleared')
         regenerateSessionToken()
