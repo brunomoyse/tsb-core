@@ -1,7 +1,7 @@
 <template>
     <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
-        <!-- Restaurant Closed Banner -->
-        <div v-if="!isOrderingAvailable" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+        <!-- Restaurant Closed Banner: only for a loaded config that says nothing can be ordered -->
+        <div v-if="isOrderingClosed" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
@@ -10,6 +10,24 @@
                 <span v-if="nextOpeningTime" class="block text-sm mt-1 font-normal">{{ $t('checkout.opensAt', { time: nextOpeningTime }) }}</span>
             </p>
         </div>
+
+        <!-- Closed right now, but a slot today can still be booked -->
+        <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="checkout-preorder-banner" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-amber-800 font-medium">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
+        </div>
+
+        <!-- The opening hours could not be loaded: not "closed", an error with Retry -->
+        <LoadError
+            v-else-if="configLoadFailed"
+            :message="$t('ordering.loadFailed')"
+            :busy="restaurantConfigPending"
+            data-testid="checkout-config-error"
+            class="mb-6 rounded-lg p-4 bg-amber-50 border border-amber-200 text-amber-800"
+            @retry="retryConfig()"
+        />
 
         <!-- Minimum Order Warning Banner -->
         <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-primary-50 border border-primary-200 p-4 flex items-center gap-3">
@@ -104,7 +122,7 @@
 
             <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
             <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                <template v-if="restaurantConfigPending">
+                <template v-if="restaurantConfigPending && !restaurantConfig">
                     <div
                         v-for="n in 3"
                         :key="`skel-${n}`"
@@ -120,7 +138,7 @@
                         <div class="h-10 rounded-lg bg-neutral-100" />
                     </div>
                 </template>
-                <template v-else>
+                <template v-else-if="!configLoadFailed">
                     <CheckoutProductSummary />
                     <CheckoutCollectionOptions
                         @open-address-modal="openAddressModal"
@@ -166,13 +184,13 @@
             </div>
         </template>
 
-        <!-- Payment Redirect Overlay — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
+        <!-- Payment Redirect Overlay (z-[110]: above the toasts, which sit at z-[100]) — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
         <Teleport v-if="isRedirectingToPayment" to="body">
             <div
                 role="status"
                 aria-live="polite"
                 aria-atomic="true"
-                class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
+                class="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
             >
                 <svg class="animate-spin h-8 w-8 text-primary-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -259,7 +277,8 @@ import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import LoadError from '#engine/components/LoadError.vue'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
@@ -284,10 +303,19 @@ const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
 // Check restaurant ordering status. Lazy so the checkout page can render a skeleton while the initial query resolves on slow client hydration.
-const { config: restaurantConfig, pending: restaurantConfigPending } = await useRestaurantConfig({ lazy: true })
+// The one ordering gate (engine, utils/orderingAvailability.ts): open, or closed with a slot still bookable today (a pre-order). The closed banner only shows for a loaded config; a failed load shows its own error with Retry.
+const {
+    config: restaurantConfig,
+    pending: restaurantConfigPending,
+    isAvailable: isOrderingAvailable,
+    isClosed: isOrderingClosed,
+    isPreorderOnly,
+    preorderTime,
+    loadFailed: configLoadFailed,
+    retry: retryConfig,
+} = await useOrderingAvailability({ lazy: true })
+// Open right now (ASAP is possible); while closed an order needs a fixed slot.
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
-const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
-const isOrderingAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
 
 // Pre-auth delivery zone gate: block anonymous users from hitting login/register
 // Until we know their address is deliverable. Preserves the cart either way.
@@ -588,7 +616,7 @@ const handleCheckout = async () => {
     let createdOrder = false
 
     try {
-        if (!isOrderingEnabled.value) {
+        if (!isOrderingAvailable.value) {
             notifications.notify({
                 message: t('notify.errors.orderingUnavailable'),
                 persistent: false,

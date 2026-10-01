@@ -40,11 +40,21 @@
         <div class="px-6 pb-6 sm:px-7 sm:pb-7">
 
             <!-- Loading shimmer -->
-            <div v-if="orders === null" class="space-y-3 pt-3">
+            <div v-if="orders === null && !ordersFailed" class="space-y-3 pt-3">
                 <div v-for="i in 3" :key="i" class="h-[68px] rounded-xl bg-white/50 animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.6) 50%, transparent 75%)" />
             </div>
 
-            <template v-else-if="orders.length">
+            <!-- The load failed: an error with Retry, never a skeleton that does not end or a false "no orders" -->
+            <LoadError
+                v-else-if="ordersFailed"
+                :message="$t('notify.errors.ordersLoadFailed')"
+                :busy="ordersPending"
+                data-testid="orders-widget-load-error"
+                class="mt-3 rounded-xl p-4 bg-red-50 border border-red-200 text-red-800"
+                @retry="refetchOrders()"
+            />
+
+            <template v-else-if="orders?.length">
 
                 <!-- ━━ Active Orders ━━ -->
                 <div v-if="activeOrders.length" class="pt-3 space-y-3">
@@ -369,6 +379,7 @@
 import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
 import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
+import LoadError from '#engine/components/LoadError.vue'
 import type { Order } from '#engine/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
@@ -443,8 +454,10 @@ const MY_ORDERS = gql`
   }
 `
 
-const { data: dataOrders, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+const { data: dataOrders, error: ordersError, pending: ordersPending, refresh: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+// Null means loading, or failed (see ordersFailed): the empty state is only for a list that loaded and is empty.
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
+const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))
 
 /* Live tracking (subscriptions, reconnect refetch, polling fallback, auto-expand
    of active orders, ?followOrder) is driven by watchers over the loaded orders:

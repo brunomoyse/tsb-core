@@ -1,5 +1,5 @@
 <template>
-    <span v-if="pending" data-testid="quote-updating" role="status" class="text-xs font-normal text-gray-400 whitespace-nowrap">
+    <span v-if="pending" data-testid="quote-updating" role="status" class="text-xs font-normal text-neutral-400 whitespace-nowrap">
         {{ $t('cart.quoteUpdating') }}
     </span>
 </template>

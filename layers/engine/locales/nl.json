@@ -15,7 +15,8 @@
     "acceptCookies": "Cookies accepteren",
     "step": "Stap {n}",
     "discard": "Verwerpen",
-    "keepEditing": "Verder bewerken"
+    "keepEditing": "Verder bewerken",
+    "retry": "Opnieuw proberen"
   },
   "nav": {
     "home": "Home",
@@ -119,7 +120,9 @@
     "required": "Verplicht",
     "addWithPrice": "Toevoegen · {price}",
     "updateWithPrice": "Bijwerken · {price}",
-    "viewDetails": "Details van {name} bekijken"
+    "viewDetails": "Details van {name} bekijken",
+    "loadFailed": "We konden het menu niet laden.",
+    "productLoadFailed": "We konden dit product niet laden."
   },
   "days": {},
   "login": {
@@ -685,5 +688,9 @@
     "timingTitle": "Verwerkingstijd",
     "timingBody": "Zelf verwijderen via de app of website is onmiddellijk. Verzoeken die per e-mail worden verzonden, worden binnen 30 dagen verwerkt.",
     "contactBody": "Vragen? Neem contact met ons op via het bovenstaande adres."
+  },
+  "ordering": {
+    "closedPreorder": "We zijn momenteel gesloten — bestel nu voor {time}.",
+    "loadFailed": "We konden niet controleren of bestellen mogelijk is."
   }
 }

@@ -40,7 +40,7 @@ export interface RestaurantTimeSlot {
     isLunchOnlyAllowed: boolean
 }
 
-interface RestaurantConfig {
+export interface RestaurantConfig {
     orderingEnabled: boolean
     openingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null>
     orderingHours: Record<string, { open: string; close: string; dinnerOpen?: string; dinnerClose?: string } | null> | null
@@ -96,12 +96,13 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
         {},
         { immediate: true, cache: false, ...(options.lazy ? { lazy: true } : {}) }
     )
-    const { data, refresh, pending } = asyncData
+    const { data, refresh, pending, error } = asyncData
     dataRef = data as unknown as Ref<ConfigResponse | null>
 
     return {
         config: data,
         refresh,
         pending,
+        error,
     }
 }

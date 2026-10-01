@@ -148,6 +148,15 @@
                 </div>
             </div>
 
+            <!-- The product could not be loaded (or no longer exists): say so instead of an empty dialog -->
+            <LoadError
+                v-else
+                :message="$t('menu.productLoadFailed')"
+                data-testid="product-modal-load-error"
+                class="mt-8 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-800"
+                @retry="emit('retry')"
+            />
+
             <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
         </div>
 </template>
@@ -159,6 +168,7 @@ import { type ComponentPublicInstance, computed, onMounted, onUnmounted, ref, wa
 import { formatCents, formatPrice } from '#engine/lib/price'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
@@ -191,6 +201,7 @@ const {
 
 const emit = defineEmits<{
     close: []
+    retry: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)

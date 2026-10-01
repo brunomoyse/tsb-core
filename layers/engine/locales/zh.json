@@ -15,7 +15,8 @@
     "acceptCookies": "接受 Cookie",
     "step": "第 {n} 步",
     "discard": "放弃",
-    "keepEditing": "继续编辑"
+    "keepEditing": "继续编辑",
+    "retry": "重试"
   },
   "nav": {
     "home": "首页",
@@ -119,7 +120,9 @@
     "required": "必选",
     "addWithPrice": "添加 · {price}",
     "updateWithPrice": "更新 · {price}",
-    "viewDetails": "查看 {name} 详情"
+    "viewDetails": "查看 {name} 详情",
+    "loadFailed": "无法加载菜单。",
+    "productLoadFailed": "无法加载该商品。"
   },
   "days": {},
   "login": {
@@ -685,5 +688,9 @@
     "timingTitle": "处理时间",
     "timingBody": "通过应用程序或网站自助删除是即时的。通过电子邮件发送的申请将在 30 天内处理完成。",
     "contactBody": "有疑问？请通过上述邮箱地址联系我们。"
+  },
+  "ordering": {
+    "closedPreorder": "我们目前已打烊——现在下单，可预订 {time} 的餐点。",
+    "loadFailed": "无法确认当前是否可以下单。"
   }
 }

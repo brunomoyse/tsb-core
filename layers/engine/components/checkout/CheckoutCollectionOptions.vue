@@ -130,6 +130,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import { DELIVERY_ZONE_METERS, isExcludedPostcode } from '#engine/lib/delivery'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
+import { bookableSlots } from '#engine/utils/orderingAvailability'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
@@ -229,12 +230,10 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-// Filter out slots that are in the past or within the preparation buffer.
-const availableFixedSlots = computed<RestaurantTimeSlot[]>(() => {
-    const prepMs = (preparationMinutes ?? 30) * 60_000
-    const cutoff = new Date(now.value.getTime() + prepMs)
-    return (availableSlotsToday ?? []).filter(slot => new Date(slot.value) > cutoff)
-})
+// Filter out slots that are in the past or within the preparation buffer (the same cut-off the checkout gate applies, see utils/orderingAvailability.ts).
+const availableFixedSlots = computed<RestaurantTimeSlot[]>(() =>
+    bookableSlots(availableSlotsToday, preparationMinutes, now.value.getTime()) as RestaurantTimeSlot[],
+)
 
 // Selected preferred time binding
 const preferredReadyTime = computed<string>({

@@ -130,9 +130,19 @@
             </section>
         </div>
 
+        <!-- The product could not be loaded (or no longer exists): say so instead of an empty dialog -->
+        <div v-else class="flex-1 px-5 py-8 sm:px-8">
+            <LoadError
+                :message="$t('menu.productLoadFailed')"
+                data-testid="product-modal-load-error"
+                class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
+                @retry="emit('retry')"
+            />
+        </div>
+
         <!-- Footer rail -->
-        <footer class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
-            <p v-if="p && !p.isAvailable" class="text-sm text-ygf-black/60 mb-3">{{ $t('menu.unavailable') }}</p>
+        <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
+            <p v-if="!p.isAvailable" class="text-sm text-ygf-black/60 mb-3">{{ $t('menu.unavailable') }}</p>
             <div class="flex items-center gap-3 sm:gap-4">
                 <div class="stepper shrink-0">
                     <button
@@ -177,6 +187,7 @@ import { useGqlQuery, useRuntimeConfig } from '#imports'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import LoadError from '#engine/components/LoadError.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
@@ -214,6 +225,7 @@ const {
 
 const emit = defineEmits<{
     close: []
+    retry: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)

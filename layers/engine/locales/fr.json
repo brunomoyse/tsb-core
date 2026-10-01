@@ -15,7 +15,8 @@
     "acceptCookies": "Accepter les cookies",
     "step": "Étape {n}",
     "discard": "Abandonner",
-    "keepEditing": "Continuer"
+    "keepEditing": "Continuer",
+    "retry": "Réessayer"
   },
   "nav": {
     "home": "Accueil",
@@ -119,7 +120,9 @@
     "required": "Obligatoire",
     "addWithPrice": "Ajouter · {price}",
     "updateWithPrice": "Mettre à jour · {price}",
-    "viewDetails": "Voir le détail de {name}"
+    "viewDetails": "Voir le détail de {name}",
+    "loadFailed": "Impossible de charger le menu.",
+    "productLoadFailed": "Impossible de charger ce produit."
   },
   "days": {},
   "login": {
@@ -685,5 +688,9 @@
     "timingTitle": "Délai de traitement",
     "timingBody": "La suppression en libre-service depuis l'application ou le site web est immédiate. Les demandes envoyées par e-mail sont traitées dans un délai de 30 jours.",
     "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
+  },
+  "ordering": {
+    "closedPreorder": "Nous sommes fermés pour le moment — commandez dès maintenant pour {time}.",
+    "loadFailed": "Impossible de vérifier si les commandes sont ouvertes."
   }
 }

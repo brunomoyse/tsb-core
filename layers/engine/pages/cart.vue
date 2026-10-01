@@ -214,8 +214,11 @@
                 </span>
                 <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
             </UiButton>
-            <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
+            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
+            </p>
+            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-700">
+                {{ $t('ordering.closedPreorder', { time: firstSlotLabel }) }}
             </p>
             <div class="safe-area-spacer-bottom" />
         </div>
@@ -254,7 +257,7 @@ import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -271,7 +274,8 @@ const { t } = useI18n()
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
-const { config: restaurantConfig } = await useRestaurantConfig()
+// Blocking: the page renders with the config loaded (or failed). The checkout link is only disabled once the config says nothing can be ordered, never because it is missing; checkout shows the load error with its Retry.
+const { isClosed, isPreorderOnly, firstSlotLabel } = await useOrderingAvailability()
 const {
     getItemLineTotalCents,
     getItemExactUnitCents,
@@ -288,13 +292,8 @@ const {
 } = useCartTotals()
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
 useOrderQuote()
-const isCheckoutAvailable = computed(() => {
-    const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
-    const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
-    return orderingEnabled && isOrderingCurrentlyOpen
-})
 // The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.
-const canCheckout = computed(() => isCheckoutAvailable.value && isMinimumReached.value)
+const canCheckout = computed(() => !isClosed.value && isMinimumReached.value)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))

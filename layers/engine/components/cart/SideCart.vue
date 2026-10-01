@@ -183,6 +183,9 @@
             <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center">
                 {{ $t('cart.orderingUnavailable') }}
             </div>
+            <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-700 text-center">
+                {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
+            </div>
 
             <!-- Checkout Button -->
             <UiButton
@@ -223,7 +226,7 @@ import { useTracking } from '#engine/composables/useTracking'
 const { showProductCode = false, deliveryEnabled = true } = useAppConfig().brand
 
 
-const { isOrderingAvailable = true } = defineProps<{ isOrderingAvailable?: boolean }>()
+const { isOrderingAvailable = true, preorderTime = null } = defineProps<{ isOrderingAvailable?: boolean; preorderTime?: string | null }>()
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();

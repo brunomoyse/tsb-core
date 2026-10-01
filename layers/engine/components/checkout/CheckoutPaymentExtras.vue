@@ -333,7 +333,7 @@
                 }}
             </template>
         </UiButton>
-        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-ygf-gray-400 mt-1">
+        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-neutral-400 mt-1">
             {{ $t('cart.quoteUpdating') }}
         </p>
     </section>

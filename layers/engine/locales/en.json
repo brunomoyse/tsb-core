@@ -15,7 +15,8 @@
     "acceptCookies": "Accept cookies",
     "step": "Step {n}",
     "discard": "Discard",
-    "keepEditing": "Keep editing"
+    "keepEditing": "Keep editing",
+    "retry": "Try again"
   },
   "nav": {
     "home": "Home",
@@ -119,7 +120,9 @@
     "required": "Required",
     "addWithPrice": "Add · {price}",
     "updateWithPrice": "Update · {price}",
-    "viewDetails": "View details for {name}"
+    "viewDetails": "View details for {name}",
+    "loadFailed": "We couldn't load the menu.",
+    "productLoadFailed": "We couldn't load this product."
   },
   "days": {},
   "login": {
@@ -685,5 +688,9 @@
     "timingTitle": "Processing time",
     "timingBody": "Self-service deletion from the app or website is immediate. Requests sent by email are processed within 30 days.",
     "contactBody": "Questions? Contact us at the address above."
+  },
+  "ordering": {
+    "closedPreorder": "We're closed right now — order now for {time}.",
+    "loadFailed": "We couldn't check whether ordering is open."
   }
 }

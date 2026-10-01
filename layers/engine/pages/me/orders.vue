@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
+import LoadError from "#engine/components/LoadError.vue"
 import type { Order } from "#engine/types"
 import { formatAddress } from "#engine/utils/utils"
 import { formatDateTime } from "#engine/utils/datetime"
@@ -12,7 +13,6 @@ import { print } from "graphql/index"
 import { useGqlQuery } from "#imports"
 import { useI18n } from "vue-i18n"
 import { useInvoiceDownload } from "#engine/composables/useInvoiceDownload"
-import { useNotificationsStore } from "#engine/stores/notifications"
 import { useOrderTracking } from "#engine/composables/useOrderTracking"
 import { useReorder } from "#engine/composables/useReorder"
 
@@ -20,7 +20,6 @@ import { useReorder } from "#engine/composables/useReorder"
 
 definePageMeta({ public: false })
 
-const notifications = useNotificationsStore()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
@@ -81,9 +80,10 @@ const MY_ORDERS = gql`
 const LOAD_STEP = 5
 const visibleCount = ref(10)
 
-const { data: dataOrders, error: ordersError, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
-// Stays null until loaded (loading state instead of a flash of "no orders"); a failed load shows the empty state.
-const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? (ordersError.value ? [] : null))
+const { data: dataOrders, error: ordersError, pending: ordersPending, refresh: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+// Stays null until loaded: a loading state, or the error state with Retry when the load failed. Never "no orders" before there is an answer.
+const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
+const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))
 
 interface OrderItemLike {
     product: { code: string | null; name: string; category?: { name: string } | null }
@@ -110,17 +110,6 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
         productName: item.product.name,
         choiceName: item.choice?.name,
     }).choice
-
-// The query is client-only, so the error only appears after setup — watch it instead of checking once.
-watch(ordersError, (err) => {
-    if (!err) return
-    notifications.notify({
-        message: t('notify.errors.ordersLoadFailed'),
-        persistent: false,
-        duration: 5000,
-        variant: 'error',
-    })
-}, { immediate: true })
 
 /* Live tracking (subscriptions, reconnect refetch, polling fallback, ?followOrder)
    is driven by watchers over the loaded orders: the query is client-only, so the
@@ -226,10 +215,21 @@ const getStatusColorClass = (status: string) => {
         </div>
 
         <!-- Loading State -->
-        <div v-if="orders === null" class="bento-cell" style="--delay: 1">
+        <div v-if="orders === null && !ordersFailed" class="bento-cell" style="--delay: 1">
             <div class="bg-tsb-two rounded-2xl p-8 text-center text-neutral-500 text-sm">
                 {{ $t('me.orders.loading') }}
             </div>
+        </div>
+
+        <!-- Error State: the load failed, which is not the same as having no orders -->
+        <div v-else-if="ordersFailed" class="bento-cell" style="--delay: 1">
+            <LoadError
+                :message="$t('notify.errors.ordersLoadFailed')"
+                :busy="ordersPending"
+                data-testid="orders-load-error"
+                class="rounded-2xl p-6 bg-red-50 border border-red-200 text-red-800"
+                @retry="refetchOrders()"
+            />
         </div>
 
         <!-- Orders List -->
