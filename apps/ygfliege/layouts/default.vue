@@ -100,6 +100,10 @@
         </ClientOnly>
 
         <ClientOnly>
+            <LazyReorderDialog primary-class="bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover focus-visible:ring-ygf-orange-300" secondary-class="bg-ygf-gray-100 text-ygf-gray-400 hover:bg-ygf-gray-200 focus-visible:ring-ygf-gray-300" />
+        </ClientOnly>
+
+        <ClientOnly>
             <LazyScrollToTopButton class="sm:hidden"/>
         </ClientOnly>
 

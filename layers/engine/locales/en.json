@@ -619,8 +619,17 @@
   "reorder": {
     "button": "Re-order",
     "success": "{count} items added to cart",
-    "partial": "{added} items added, {skipped} unavailable items skipped",
-    "empty": "No available items to re-order"
+    "partial": "{added} items added. Not added: {names}",
+    "empty": "No available items to re-order",
+    "emptyWithNames": "Nothing could be re-ordered: {names}",
+    "reason": {
+      "unavailable": "unavailable",
+      "choices": "choices changed, please build it again from the menu"
+    },
+    "confirmTitle": "Replace your current cart?",
+    "confirmBody": "Your cart already has items. Replace it with this order, or add this order to it.",
+    "replace": "Replace",
+    "add": "Add to cart"
   },
   "cookies": {
     "accept": "Accept",

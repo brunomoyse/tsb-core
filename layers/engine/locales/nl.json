@@ -619,8 +619,17 @@
   "reorder": {
     "button": "Opnieuw bestellen",
     "success": "{count} artikelen toegevoegd aan winkelwagen",
-    "partial": "{added} artikelen toegevoegd, {skipped} niet-beschikbare artikelen overgeslagen",
-    "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
+    "partial": "{added} artikelen toegevoegd. Niet toegevoegd: {names}",
+    "empty": "Geen beschikbare artikelen om opnieuw te bestellen",
+    "emptyWithNames": "Er kon niets opnieuw besteld worden: {names}",
+    "reason": {
+      "unavailable": "niet beschikbaar",
+      "choices": "keuzes gewijzigd, stel het opnieuw samen via het menu"
+    },
+    "confirmTitle": "Uw huidige winkelmand vervangen?",
+    "confirmBody": "Uw winkelmand bevat al artikelen. Vervang ze door deze bestelling of voeg deze bestelling eraan toe.",
+    "replace": "Vervangen",
+    "add": "Toevoegen aan winkelmand"
   },
   "cookies": {
     "accept": "Accepteren",

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { orderItemChoiceText, orderItemLabelParts } from "#engine/utils/orderItemLabel"
 import LoadError from "#engine/components/LoadError.vue"
+import { ORDER_ITEMS_SELECTION } from "#engine/lib/orderDocuments"
 import type { Order } from "#engine/types"
 import { formatAddress } from "#engine/utils/utils"
 import { formatDateTime } from "#engine/utils/datetime"
@@ -8,7 +10,6 @@ import { formatPrice } from "#engine/lib/price"
 import gql from 'graphql-tag'
 
 const { showProductCode = false } = useAppConfig().brand
-import { orderItemLabelParts } from "#engine/utils/orderItemLabel"
 import { print } from "graphql/index"
 import { useGqlQuery } from "#imports"
 import { useI18n } from "vue-i18n"
@@ -62,17 +63,7 @@ const MY_ORDERS = gql`
         lastName
       }
       payment { status }
-      items {
-        unitPrice
-        quantity
-        totalPrice
-        product {
-          id name code slug price pieceCount isAvailable isDiscountable isHalal isLunchOnly isSpicy isVegetarian isVisible
-          category { id name order }
-          choices { id productId priceModifier sortOrder name }
-        }
-        choice { id productId priceModifier sortOrder name }
-      }
+      ${ORDER_ITEMS_SELECTION}
     }
   }
 `
@@ -86,8 +77,9 @@ const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null
 const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))
 
 interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null }
+    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
     choice?: { name: string } | null
+    selections?: { choiceId: string; quantity: number }[] | null
 }
 
 const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
@@ -103,13 +95,7 @@ const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean 
     return segments
 }
 
-const orderItemChoice = (item: OrderItemLike): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.choice?.name,
-    }).choice
+const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
 
 /* Live tracking (subscriptions, reconnect refetch, polling fallback, ?followOrder)
    is driven by watchers over the loaded orders: the query is client-only, so the
@@ -325,7 +311,7 @@ const getStatusColorClass = (status: string) => {
                                         <span v-if="i > 0" class="text-neutral-400 mx-1">·</span>
                                         <span :class="part.muted ? 'text-neutral-400' : ''">{{ part.text }}</span>
                                     </template>
-                                    <span v-if="orderItemChoice(item)" class="text-neutral-400 ml-1">({{ orderItemChoice(item) }})</span>
+                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 leading-snug">{{ orderItemChoice(item) }}</span>
                                 </p>
                                 <div class="flex items-center gap-2 ml-3 flex-shrink-0">
                                     <span class="text-xs font-medium text-neutral-500 tabular-nums">x{{ item.quantity }}</span>

@@ -157,7 +157,10 @@ export interface Order {
     couponCode: string | null;
     createdAt: string;
     deliveryFee: string | null;
+    /** Pickup discount + coupon discount (the API does not split them). */
     discountAmount: string;
+    /** The online-payment fee; null/"0" for cash. */
+    transactionFee?: string | null;
     estimatedReadyTime: string | null;
     id: string;
     isOnlinePayment: boolean;
@@ -177,6 +180,13 @@ export interface Order {
     payment: MolliePayment | null;
 }
 
+/**
+ * One selected choice of an order line; `quantity` is LINE-WIDE (already scaled by the line quantity).
+ * The API's `OrderItemSelection.choice` / `.group` are NOT queried: the backend mapper never fills them
+ * and both are non-null, so asking for them fails the whole order. Names come from `product.choices`.
+ */
+export type OrderItemSelection = ProductChoiceSelection
+
 export interface OrderProduct {
     quantity: number;
     totalPrice: string;
@@ -184,6 +194,7 @@ export interface OrderProduct {
 
     product: Product;
     choice: ProductChoice | null;
+    selections?: OrderItemSelection[] | null;
 }
 
 export interface MolliePayment {

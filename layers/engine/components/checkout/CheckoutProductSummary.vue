@@ -156,8 +156,10 @@
                         </button>
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic">{{ $t('checkout.tbd') }}</span>
-                    <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-primary-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
-                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium">{{ $t('checkout.tooFar') }}</span>
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                        {{ $t(deliveryUnavailableKey) }}
+                        <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
+                    </span>
                     <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
@@ -192,7 +194,6 @@ import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
-import { isExcludedPostcode } from '#engine/lib/delivery'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
@@ -211,6 +212,8 @@ const {
     subtotalCents,
     pickupDiscountCents,
     deliveryFeeCents,
+    deliveryUnavailableKey,
+    switchToPickup,
     onlineFeeCents,
     payableCents,
 } = useCartTotals()

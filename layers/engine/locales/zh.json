@@ -619,8 +619,17 @@
   "reorder": {
     "button": "重新订购",
     "success": "{count} 件商品已添加到购物车",
-    "partial": "{added} 件已添加，{skipped} 件缺货已跳过",
-    "empty": "没有可重新订购的商品"
+    "partial": "已添加 {added} 件商品。未添加：{names}",
+    "empty": "没有可重新订购的商品",
+    "emptyWithNames": "无法再次下单：{names}",
+    "reason": {
+      "unavailable": "暂不供应",
+      "choices": "选项已变更，请从菜单重新选择"
+    },
+    "confirmTitle": "替换当前购物车？",
+    "confirmBody": "您的购物车中已有商品。可用此订单替换，或将此订单加入购物车。",
+    "replace": "替换",
+    "add": "加入购物车"
   },
   "cookies": {
     "accept": "接受",

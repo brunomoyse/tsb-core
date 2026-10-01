@@ -14,6 +14,18 @@ export const isExcludedPostcode = (postcode?: string | null): boolean =>
 export const isDeliverable = (distance: number, postcode?: string | null): boolean =>
     distance < DELIVERY_ZONE_METERS && !isExcludedPostcode(postcode)
 
+export type DeliveryZoneStatus = 'ok' | 'tooFar' | 'excluded'
+
+/**
+ * Why (or whether) an address can be delivered to. `excluded` wins over `tooFar` so the customer is told the
+ * more specific reason. Every surface (picker, chip, checkout gate) goes through this, never through the
+ * distance alone.
+ */
+export const deliveryZoneStatus = (address: { distance?: number | null, postcode?: string | null }): DeliveryZoneStatus => {
+    if (isExcludedPostcode(address.postcode)) return 'excluded'
+    return isDeliverable(address.distance ?? 0, address.postcode) ? 'ok' : 'tooFar'
+}
+
 /** Sentinel of `deliveryFeeCentsForDistance`: the distance is outside the delivery zone. */
 export const OUT_OF_ZONE = -1
 

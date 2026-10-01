@@ -180,7 +180,7 @@
                                         <span v-if="i > 0" class="text-neutral-400 font-normal mx-1">·</span>
                                         <span :class="part.muted ? 'text-neutral-400 font-normal' : ''">{{ part.text }}</span>
                                     </template>
-                                    <span v-if="orderItemChoice(item)" class="text-neutral-400 font-normal ml-1">({{ orderItemChoice(item) }})</span>
+                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 font-normal leading-snug">{{ orderItemChoice(item) }}</span>
                                 </p>
                             </div>
                             <span class="text-xs font-semibold text-neutral-500 bg-neutral-100 rounded-full px-2.5 py-0.5 shrink-0">
@@ -274,8 +274,9 @@
 import { computed, watch } from 'vue'
 import { definePageMeta, ref, useRoute } from '#imports'
 import { formatDate, formatTime, isSameBrusselsDay } from '#engine/utils/datetime'
+import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+
 import { useNow } from '@vueuse/core'
 import { useOrderCompleted } from '#engine/composables/useOrderCompleted'
 import { useTracking } from '#engine/composables/useTracking'
@@ -317,8 +318,9 @@ const {
 } = useOrderCompleted(orderId)
 
 interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null }
+    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
     choice?: { name: string } | null
+    selections?: { choiceId: string; quantity: number }[] | null
 }
 
 const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
@@ -334,13 +336,7 @@ const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean 
     return segments
 }
 
-const orderItemChoice = (item: OrderItemLike): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.choice?.name,
-    }).choice
+const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()

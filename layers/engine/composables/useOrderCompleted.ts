@@ -1,6 +1,7 @@
 import { type PaymentOutcome, isPaymentProblem, outcomeFromPaymentStatus } from '#engine/lib/paymentOutcome'
 import { computed, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { useAsyncData, useCartStore, useGqlSubscription, useNuxtApp } from '#imports'
+import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
@@ -60,17 +61,7 @@ export const ORDER_COMPLETED_QUERY = print(gql`
             payment {
                 status
             }
-            items {
-                unitPrice
-                quantity
-                totalPrice
-                product {
-                    id name code slug price pieceCount isAvailable isDiscountable isHalal isLunchOnly isSpicy isVegetarian isVisible
-                    category { id name order }
-                    choices { id productId priceModifier sortOrder name }
-                }
-                choice { id productId priceModifier sortOrder name }
-            }
+            ${ORDER_ITEMS_SELECTION}
         }
     }
 `)

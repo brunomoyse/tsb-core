@@ -157,7 +157,7 @@
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" class="text-neutral-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
+                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
                                         </span>
                                         <span class="text-xs text-neutral-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
@@ -285,7 +285,7 @@
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" class="text-neutral-400 text-xs ml-0.5">({{ orderItemChoice(item) }})</span>
+                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
                                         </span>
                                         <span class="text-xs text-neutral-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
@@ -379,13 +379,14 @@
 import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
 import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
+import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import LoadError from '#engine/components/LoadError.vue'
+import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { print } from 'graphql/index'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -439,17 +440,7 @@ const MY_ORDERS = gql`
         lastName
       }
       payment { status }
-      items {
-        unitPrice
-        quantity
-        totalPrice
-        product {
-          id name code slug price pieceCount isAvailable isDiscountable isHalal isLunchOnly isSpicy isVegetarian isVisible
-          category { id name order }
-          choices { id productId priceModifier sortOrder name }
-        }
-        choice { id productId priceModifier sortOrder name }
-      }
+      ${ORDER_ITEMS_SELECTION}
     }
   }
 `
@@ -486,8 +477,9 @@ const {
 })
 
 interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null }
+    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
     choice?: { name: string } | null
+    selections?: { choiceId: string; quantity: number }[] | null
 }
 
 const orderItemParts = (item: OrderItemLike) => orderItemLabelParts({
@@ -505,13 +497,7 @@ const orderItemMeta = (item: OrderItemLike): string | undefined => {
 
 const orderItemName = (item: OrderItemLike): string => orderItemParts(item).name
 
-const orderItemChoice = (item: OrderItemLike): string | undefined =>
-    orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.choice?.name,
-    }).choice
+const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
 
 // ── Active / Past split ──
 

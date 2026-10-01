@@ -3,6 +3,7 @@ import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
 import { isQuoteBlocking, isQuoteUsableForTotals, totalsFromQuote } from '#engine/utils/orderQuote'
 import type { CartItem } from '@/types'
 import { computeCartTotals } from '#engine/utils/cartTotals'
+import { isExcludedPostcode } from '#engine/lib/delivery'
 import { useCartStore } from '@/stores/cart'
 import { useQuoteStore } from '#engine/stores/quote'
 import { useTracking } from '#engine/composables/useTracking'
@@ -36,6 +37,8 @@ export interface CartTotals {
     pickupDiscountCents: ComputedRef<number>
     /** 0 for pickup / unknown address, -1 (OUT_OF_ZONE) when the address cannot be delivered to. */
     deliveryFeeCents: ComputedRef<number>
+    /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far). */
+    deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
     couponDiscountCents: ComputedRef<number>
     /** 30 cents when the selected payment option is ONLINE, else 0. */
     onlineFeeCents: ComputedRef<number>
@@ -86,6 +89,7 @@ export function useCartTotals(): CartTotals {
         subtotalCents: computed(() => totals.value.subtotalCents),
         pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
         deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
+        deliveryUnavailableKey: computed(() => isExcludedPostcode(cartStore.address?.postcode) ? 'checkout.notDeliverableArea' : 'checkout.tooFar'),
         couponDiscountCents: computed(() => totals.value.couponDiscountCents),
         onlineFeeCents: computed(() => totals.value.onlineFeeCents),
         payableCents: computed(() => totals.value.payableCents),

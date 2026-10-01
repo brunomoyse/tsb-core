@@ -619,8 +619,17 @@
   "reorder": {
     "button": "Recommander",
     "success": "{count} articles ajoutés au panier",
-    "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
-    "empty": "Aucun article disponible à recommander"
+    "partial": "{added} articles ajoutés. Non ajoutés : {names}",
+    "empty": "Aucun article disponible à recommander",
+    "emptyWithNames": "Rien n'a pu être recommandé : {names}",
+    "reason": {
+      "unavailable": "indisponible",
+      "choices": "choix modifiés, à recomposer depuis le menu"
+    },
+    "confirmTitle": "Remplacer votre panier actuel ?",
+    "confirmBody": "Votre panier contient déjà des articles. Remplacez-le par cette commande ou ajoutez-y cette commande.",
+    "replace": "Remplacer",
+    "add": "Ajouter au panier"
   },
   "cookies": {
     "accept": "Accepter",
