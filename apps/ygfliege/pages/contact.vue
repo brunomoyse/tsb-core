@@ -1,10 +1,11 @@
 <script setup>
 import { telHref } from '#engine/utils/phone'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.7, changefreq: 'monthly' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
@@ -20,8 +21,8 @@ useJsonLd([
         description: t('schema.contact.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.contact'), item: `${config.public.baseUrl}/contact` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.contact'), item: localizedUrl('/contact') },
     ]),
 ], 'page-jsonld')
 
@@ -31,8 +32,6 @@ useSeoMeta({
     ogTitle: t('schema.contact.title'),
     description: t('schema.contact.description'),
     ogDescription: t('schema.contact.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>

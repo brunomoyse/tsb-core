@@ -65,12 +65,13 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     public: true,
     sitemap: { priority: 0.5, changefreq: 'yearly' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t, tm, rt } = useI18n()
 const { brand } = useAppConfig()
 
@@ -91,8 +92,8 @@ useJsonLd([
         description: t('schema.accountDeletion.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.accountDeletion'), item: `${config.public.baseUrl}/account-deletion` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.accountDeletion'), item: localizedUrl('/account-deletion') },
     ]),
 ], 'page-jsonld')
 
@@ -102,8 +103,6 @@ useSeoMeta({
     ogTitle: t('schema.accountDeletion.title'),
     description: t('schema.accountDeletion.description'),
     ogDescription: t('schema.accountDeletion.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>

@@ -296,6 +296,8 @@
 </template>
 
 <script setup lang="ts">
+import { breadcrumbList, useJsonLd } from '#engine/composables/useJsonLd'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.9, changefreq: 'weekly' },
 })
@@ -319,7 +321,9 @@ import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
-import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { buildMenuSchema } from '#engine/utils/menuSchema'
+import { inLanguageTag } from '#engine/utils/seoDefaults'
+import { searchFromQuery } from '#engine/utils/menuSearch'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 
 const { selection: hapticSelection } = useHaptics()
@@ -456,7 +460,8 @@ watch(liveProduct, (val) => {
 /**
  * Refs & Reactive State
  */
-const searchValue = ref('')
+// A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
+const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
 const activeCategory = ref<string>('')
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -563,7 +568,9 @@ const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value
  * Utility: Update Arrow Visibility
  */
 const updateScrollButtons = () => {
-    const el = scrollContainer.value!
+    // The strip is not rendered while a search is active, which includes a menu opened with ?q=.
+    const el = scrollContainer.value
+    if (!el) return
     canScrollLeft.value = el.scrollLeft > 0
     canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
 }
@@ -572,14 +579,15 @@ const updateScrollButtons = () => {
  * Drag-to-scroll Handlers
  */
 const startDrag = (e: MouseEvent) => {
+    if (!scrollContainer.value) return
     isDragging.value = true
     dragStartX.value = e.pageX
-    scrollStartX.value = scrollContainer.value!.scrollLeft
+    scrollStartX.value = scrollContainer.value.scrollLeft
 }
 const onDrag = (e: MouseEvent) => {
-    if (!isDragging.value) return
+    if (!isDragging.value || !scrollContainer.value) return
     const dx = e.pageX - dragStartX.value
-    scrollContainer.value!.scrollLeft = scrollStartX.value - dx
+    scrollContainer.value.scrollLeft = scrollStartX.value - dx
     updateScrollButtons()
 }
 const stopDrag = () => {
@@ -643,98 +651,32 @@ watch(activeCategory, newVal => {
  * Schema.org Structured Data
  */
 const config = useRuntimeConfig()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
-// Build the Menu graph: Menu -> hasMenuSection[] -> hasMenuItem[]
-const menuSchema = computed(() => {
-    const fallbackImage = {
-        '@type': 'ImageObject',
-        url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-    }
-
-    const sections = new Map<string, { id: string, name: string, items: Record<string, unknown>[] }>()
-    for (const product of allProducts.value) {
-        if (!product.category) continue
-        if (!sections.has(product.category.id)) {
-            sections.set(product.category.id, {
-                id: product.category.id,
-                name: product.category.name,
-                items: [],
-            })
-        }
-        const diets: string[] = []
-        if (product.isHalal) diets.push('https://schema.org/HalalDiet')
-        if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
-
-        sections.get(product.category.id)!.items.push({
-            '@type': 'MenuItem',
-            '@id': `${config.public.baseUrl}/menu#${product.id}`,
-            name: product.name,
-            image: product.slug
-                ? {
-                    '@type': 'ImageObject',
-                    url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                    contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
-                    thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                }
-                : fallbackImage,
-            offers: {
-                '@type': 'Offer',
-                price: product.price,
-                priceCurrency: 'EUR',
-                availability: product.isAvailable
-                    ? 'https://schema.org/InStock'
-                    : 'https://schema.org/OutOfStock',
-            },
-            ...(diets.length ? { suitableForDiet: diets } : {}),
-        })
-    }
-
-    return {
-        '@type': 'Menu',
-        '@id': `${config.public.baseUrl}/menu#menu`,
-        name: t('schema.menu.name'),
-        description: t('schema.menu.description'),
-        inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
-        hasMenuSection: [...sections.values()].map(section => ({
-            '@type': 'MenuSection',
-            '@id': `${config.public.baseUrl}/menu#section-${section.id}`,
-            name: section.name,
-            hasMenuItem: section.items,
-        })),
-    }
-})
-
-// Breadcrumb schema
-const breadcrumbSchema = computed(() => ({
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-        {
-            '@type': 'ListItem',
-            position: 1,
-            name: t('schema.breadcrumb.home'),
-            item: config.public.baseUrl
-        },
-        {
-            '@type': 'ListItem',
-            position: 2,
-            name: t('schema.breadcrumb.menu'),
-            item: `${config.public.baseUrl}/menu`
-        }
-    ]
-}))
+const localizedUrl = useLocalizedUrl()
 
 watch(allProducts, () => {
+    // Inside the watcher: the language is the current one when the menu (re)loads after a language switch.
+    const menuUrl = localizedUrl('/menu')
     useJsonLd([
         {
             '@type': 'WebPage',
             name: t('schema.menu.title'),
             description: t('schema.menu.description'),
         },
-        breadcrumbSchema.value,
-        menuSchema.value,
+        breadcrumbList([
+            { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+            { name: t('schema.breadcrumb.menu'), item: menuUrl },
+        ]),
+        buildMenuSchema({
+            products: allProducts.value,
+            menuUrl,
+            baseUrl: config.public.baseUrl as string,
+            s3BaseUrl: config.public.s3bucketUrl as string,
+            name: t('schema.menu.name'),
+            description: t('schema.menu.description'),
+            inLanguage: inLanguageTag(locale.value),
+        }),
     ], 'page-jsonld')
 }, { immediate: true })
 
@@ -744,8 +686,6 @@ useSeoMeta({
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 

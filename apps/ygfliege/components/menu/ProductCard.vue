@@ -43,6 +43,7 @@
                     :src="brandPhoto.base"
                     :widths="brandPhoto.widths ?? PRODUCT_PHOTO_WIDTHS"
                     :fallback-width="brandPhoto.fallbackWidth ?? 560"
+                    :fallback-height="brandPhoto.fallbackHeight ?? brandPhoto.fallbackWidth ?? 560"
                     :alt="product.name"
                     sizes="(min-width: 640px) 300px, 45vw"
                     :img-class="brandPhoto.cover

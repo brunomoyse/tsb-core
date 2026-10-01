@@ -22,6 +22,17 @@ export interface OrderExtraConfig {
     unavailableWhenCartOnlyIn?: string[]
 }
 
+/** One day of opening hours, "HH:MM" in the restaurant's time zone; the dinner pair is for a split day. */
+export interface BrandDayHours {
+    open: string
+    close: string
+    dinnerOpen?: string
+    dinnerClose?: string
+}
+
+/** Keyed by monday..sunday (what restaurantConfig.openingHours uses); null or absent means closed. */
+export type BrandOpeningHours = Partial<Record<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday', BrandDayHours | null>>
+
 export interface BrandConfig {
     /** Customer-facing display name, e.g. "Tokyo Sushi Bar". */
     name: string
@@ -68,8 +79,18 @@ export interface BrandConfig {
     foundingYear: number
     /** Legal representatives listed on the terms page. Omit when unconfirmed. */
     administrators?: string[]
-    /** schema.org servesCuisine value, e.g. "Japanese". */
-    cuisine: string
+    /** schema.org servesCuisine value(s), e.g. ["Japanese", "Sushi"]. */
+    cuisine: string | string[]
+    /** Whether the restaurant takes table bookings (by phone): the schema.org acceptsReservations. */
+    acceptsReservations: boolean
+    /**
+     * Opening hours published in the schema.org Restaurant JSON-LD when the live restaurantConfig is not available
+     * (the API is down while the page renders). The live hours always win: this is only the fallback, so keep it
+     * in line with what the restaurant has configured.
+     */
+    openingHours?: BrandOpeningHours
+    /** Logo as a path under public/ (square, at least 112x112 px): the schema.org `logo`. */
+    logo: string
     /** schema.org Menu description (one English sentence about the menu). */
     menuDescription?: string
     /** schema.org priceRange value, e.g. "€€". */

@@ -10,6 +10,7 @@
                 :src="`/images/steps/step-${step.num}`"
                 :widths="[400, 800]"
                 :fallback-width="400"
+                :fallback-height="792"
                 :alt="$t(`${keyPrefix}.step${step.num}.title`)"
                 sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 92vw"
                 img-class="w-full aspect-square object-cover"

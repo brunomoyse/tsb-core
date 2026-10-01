@@ -8,6 +8,7 @@
                     :src="`/images/broths/${active.slug}`"
                     :widths="[480, 800, 1200]"
                     :fallback-width="800"
+                    :fallback-height="600"
                     :alt="$t(`mkt.broths.${active.key}.name`)"
                     sizes="(min-width: 1024px) 44vw, 92vw"
                     img-class="w-full rounded-ygf-lg shadow-ygf-lg aspect-[4/3] object-cover"

@@ -10,9 +10,9 @@ const { t } = useI18n()
 const config = useRuntimeConfig()
 
 const STORYTELLING = [
-    { key: 'origin', reverse: false, image: '/images/about/origin' },
-    { key: 'craft', reverse: true, image: '/images/about/craftsmanship' },
-    { key: 'global', reverse: false, image: '/images/about/now-global' },
+    { key: 'origin', reverse: false, image: '/images/about/origin', imageHeight: 800 },
+    { key: 'craft', reverse: true, image: '/images/about/craftsmanship', imageHeight: 792 },
+    { key: 'global', reverse: false, image: '/images/about/now-global', imageHeight: 800 },
 ] as const
 
 const TIMELINE = [
@@ -42,8 +42,14 @@ useSeoMeta({
     ogTitle: `${t('mkt.about.title')} - ${t('brandName')}`,
     description: t('mkt.about.subtitle'),
     ogDescription: t('mkt.about.subtitle'),
+    // The one page with its own image (800x800, 277 KB): the share-card defaults say 1200x630 and the brand name.
     ogImage: `${config.public.baseUrl}/images/about/origin-800.png`,
-    twitterCard: 'summary_large_image',
+    ogImageWidth: 800,
+    ogImageHeight: 800,
+    ogImageType: 'image/png',
+    ogImageAlt: t('mkt.about.storytelling.origin.title'),
+    twitterImage: `${config.public.baseUrl}/images/about/origin-800.png`,
+    twitterImageAlt: t('mkt.about.storytelling.origin.title'),
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -71,6 +77,7 @@ useSeoMeta({
                         :src="block.image"
                         :widths="[480, 800, 1200]"
                         :fallback-width="800"
+                        :fallback-height="block.imageHeight"
                         :alt="$t(`mkt.about.storytelling.${block.key}.title`)"
                         sizes="(min-width: 1024px) 48vw, 92vw"
                         img-class="w-full rounded-ygf-lg shadow-ygf-md"
@@ -105,6 +112,7 @@ useSeoMeta({
                                 src="/images/mascot/fuzi-wave"
                                 :widths="[300, 600]"
                                 :fallback-width="600"
+                                :fallback-height="852"
                                 alt=""
                                 sizes="120px"
                                 img-class="w-full"

@@ -273,9 +273,10 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted } from 'vue'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 
 const route = useRoute()
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
@@ -306,8 +307,8 @@ useJsonLd([
         description: t('schema.terms.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.terms'), item: `${config.public.baseUrl}/terms` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.terms'), item: localizedUrl('/terms') },
     ]),
 ], 'page-jsonld')
 
@@ -317,8 +318,6 @@ useSeoMeta({
     ogTitle: t('schema.terms.title'),
     description: t('schema.terms.description'),
     ogDescription: t('schema.terms.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>

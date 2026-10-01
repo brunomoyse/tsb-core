@@ -45,16 +45,16 @@
                     <div class="w-[68px] h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden">
                         <picture>
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.avif`"
+                                :srcset="itemImage(item.product).avif"
                                 type="image/avif"
                             />
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.webp`"
+                                :srcset="itemImage(item.product).webp"
                                 type="image/webp"
                             />
                             <img
                                 ref="itemImageElements"
-                                :src="`${productImageBase(item.product.slug)}.png`"
+                                :src="itemImage(item.product).png"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-1"
                                 width="68"
@@ -248,6 +248,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
+import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '#brand/data/productPhotos'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
@@ -282,7 +283,20 @@ useSeoMeta({
     robots: 'noindex,nofollow',
 })
 const { handleProductImageError } = productImage
-const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const productImageBase = (id?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, id)
+/*
+ * The same image as every other surface: the official photo of a mapped product (smallest size, the PNG fallback),
+ * otherwise the dashboard upload keyed by product id (audit PR 3.8, P9: this used the slug, so it never found one).
+ */
+const itemImage = (product: { id: string, slug?: string | null }) => {
+    const photo = productPhoto(product.slug)
+    if (photo) {
+        const small = Math.min(...(photo.widths ?? PRODUCT_PHOTO_WIDTHS))
+        return { avif: `${photo.base}-${small}.avif`, webp: `${photo.base}-${small}.webp`, png: `${photo.base}-${photo.fallbackWidth ?? 560}.png` }
+    }
+    const base = productImageBase(product.id)
+    return { avif: `${base}.avif`, webp: `${base}.webp`, png: `${base}.png` }
+}
 const itemImageElements = ref<HTMLImageElement[]>([])
 // Publishes the checkout bar's height so the toasts float above it.
 const checkoutBarRef = ref<HTMLElement | null>(null)

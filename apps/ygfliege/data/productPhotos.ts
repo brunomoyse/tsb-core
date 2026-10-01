@@ -20,6 +20,8 @@ export interface ProductPhoto {
     widths?: number[]
     /** Width that has the .png fallback, when not 560. */
     fallbackWidth?: number
+    /** Height of that .png fallback, when it is not square (every mapped asset is today). */
+    fallbackHeight?: number
 }
 
 export const PRODUCT_PHOTOS: Record<string, ProductPhoto> = {
@@ -61,3 +63,16 @@ export const PRODUCT_PHOTO_WIDTHS = [320, 560, 800]
 
 export const productPhoto = (slug?: string | null): ProductPhoto | undefined =>
     slug ? PRODUCT_PHOTOS[slug] : undefined
+
+/**
+ * Site-relative URLs of a mapped product's photo for structured data: the PNG fallback and the largest WebP.
+ * Same assets as the cards, so a crawler finds files that exist.
+ */
+export const productPhotoUrls = (slug?: string | null): { png: string; webp: string } | undefined => {
+    const photo = productPhoto(slug)
+    if (!photo) return undefined
+    return {
+        png: `${photo.base}-${photo.fallbackWidth ?? 560}.png`,
+        webp: `${photo.base}-${Math.max(...(photo.widths ?? PRODUCT_PHOTO_WIDTHS))}.webp`,
+    }
+}

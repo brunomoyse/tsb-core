@@ -15,6 +15,7 @@
                 :src="`/images/broths/${photoSlugs[choice.id]}`"
                 :widths="[480, 800]"
                 :fallback-width="800"
+                :fallback-height="600"
                 :alt="choice.name"
                 sizes="(min-width: 1024px) 260px, 45vw"
                 img-class="w-full aspect-[4/3] object-cover"

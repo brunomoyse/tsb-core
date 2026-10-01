@@ -7,7 +7,7 @@ definePageMeta({
     sitemap: { priority: 1, changefreq: 'daily' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
 const { brand } = useAppConfig()
@@ -67,14 +67,14 @@ const firstFoldClass = computed(() => {
 useJsonLd([
     {
         '@type': 'WebSite',
-        url: config.public.baseUrl,
+        url: localizedUrl(),
         name: t('schema.siteName'),
         description: t('schema.siteDescription'),
         potentialAction: {
             '@type': 'SearchAction',
             target: {
                 '@type': 'EntryPoint',
-                urlTemplate: `${config.public.baseUrl}/menu?q={search_term_string}`,
+                urlTemplate: `${localizedUrl('/menu')}?q={search_term_string}`,
             },
             'query-input': 'required name=search_term_string',
         },
@@ -92,8 +92,6 @@ useSeoMeta({
     ogTitle: t('schema.home.title'),
     description: t('schema.home.description'),
     ogDescription: t('schema.home.description'),
-    ogImage: `${config.public.baseUrl}/images/restaurant-illustrated.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 

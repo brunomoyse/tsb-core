@@ -16,7 +16,6 @@ definePageMeta({
 })
 
 const { t, locale } = useI18n()
-const config = useRuntimeConfig()
 const { brand } = useAppConfig()
 
 // Live ordering status for the hero; lazy so the page renders without waiting
@@ -52,8 +51,6 @@ useSeoMeta({
     ogTitle: t('mkt.seo.home_title'),
     description: t('mkt.seo.home_desc'),
     ogDescription: t('mkt.seo.home_desc'),
-    ogImage: `${config.public.baseUrl}/images/hero/bowl-creative-1000.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -105,14 +102,21 @@ useSeoMeta({
                         <span class="steam-wisp" style="left: 50%; animation-delay: 1.1s" />
                         <span class="steam-wisp" style="left: 58%; animation-delay: 2.2s" />
                     </div>
+                    <!--
+                        The width is on the <picture> (it is a flex item, so a percentage width on the image alone resolved
+                        to 0 until the file arrived and the hero jumped: audit PR 3.8, P4). `sizes` is what that box really
+                        measures: 72vw up to 448px below lg; 38vw up to the 532px column above (the 1400w file is never needed).
+                    -->
                     <MktPicture
                         src="/images/hero/bowl-creative"
                         :widths="[640, 1000, 1400]"
                         :fallback-width="1000"
+                        :fallback-height="1299"
                         :alt="$t('mkt.hero.bowl_alt')"
-                        sizes="(min-width: 1024px) 38vw, 72vw"
+                        sizes="(min-width: 1024px) min(38vw, 532px), min(72vw, 448px)"
                         eager
-                        img-class="w-full max-w-md lg:max-w-xl drop-shadow-2xl"
+                        class="block w-[72vw] max-w-md lg:w-[38vw] lg:max-w-xl"
+                        img-class="w-full drop-shadow-2xl"
                     />
                 </div>
             </div>
@@ -136,6 +140,7 @@ useSeoMeta({
                         src="/images/about/herbs-grid"
                         :widths="[640, 1080, 1600]"
                         :fallback-width="1080"
+                        :fallback-height="720"
                         :alt="$t('mkt.concept.broth_story.title')"
                         sizes="(min-width: 1024px) 48vw, 92vw"
                         img-class="w-full rounded-ygf-lg shadow-ygf-lg"

@@ -7,7 +7,6 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const config = useRuntimeConfig()
 
 const FAQ_ITEMS = ['spicy', 'what', 'vegan'] as const
 
@@ -17,8 +16,6 @@ useSeoMeta({
     ogTitle: `${t('mkt.concept.title')} - ${t('brandName')}`,
     description: t('mkt.concept.subtitle'),
     ogDescription: t('mkt.concept.subtitle'),
-    ogImage: `${config.public.baseUrl}/images/about/herbs-grid-1080.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -42,6 +39,7 @@ useSeoMeta({
                         src="/images/about/herbs-grid"
                         :widths="[640, 1080, 1600]"
                         :fallback-width="1080"
+                        :fallback-height="720"
                         :alt="$t('mkt.concept.broth_story.title')"
                         sizes="(min-width: 1024px) 48vw, 92vw"
                         img-class="w-full rounded-ygf-lg shadow-ygf-lg"

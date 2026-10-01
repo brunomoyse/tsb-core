@@ -164,8 +164,10 @@
                         src="/images/bowls/beef-bone-top"
                         :widths="[320, 560, 800]"
                         :fallback-width="560"
+                        :fallback-height="560"
                         :alt="composerProduct.name"
                         sizes="(min-width: 640px) 260px, 100vw"
+                        eager
                         img-class="w-full h-full object-contain sm:object-cover p-3 sm:p-0 aspect-[4/3] sm:aspect-auto"
                     />
                 </article>
@@ -261,6 +263,8 @@
 </template>
 
 <script setup lang="ts">
+import { breadcrumbList, useJsonLd } from '#engine/composables/useJsonLd'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.9, changefreq: 'weekly' },
 })
@@ -282,7 +286,10 @@ import LoadError from '#engine/components/LoadError.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
-import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { buildMenuSchema } from '#engine/utils/menuSchema'
+import { inLanguageTag } from '#engine/utils/seoDefaults'
+import { searchFromQuery } from '#engine/utils/menuSearch'
+import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
 
@@ -420,7 +427,8 @@ watch(liveProduct, (val) => {
 /**
  * Refs & Reactive State
  */
-const searchValue = ref('')
+// A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
+const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
 const stickyHeader = ref<HTMLElement | null>(null)
 
@@ -530,98 +538,33 @@ watch(debouncedSearchValue, (newVal, oldVal) => {
  * Schema.org Structured Data
  */
 const config = useRuntimeConfig()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
-// Build the Menu graph: Menu -> hasMenuSection[] -> hasMenuItem[]
-const menuSchema = computed(() => {
-    const fallbackImage = {
-        '@type': 'ImageObject',
-        url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-    }
-
-    const sections = new Map<string, { id: string, name: string, items: Record<string, unknown>[] }>()
-    for (const product of allProducts.value) {
-        if (!product.category) continue
-        if (!sections.has(product.category.id)) {
-            sections.set(product.category.id, {
-                id: product.category.id,
-                name: product.category.name,
-                items: [],
-            })
-        }
-        const diets: string[] = []
-        if (product.isHalal) diets.push('https://schema.org/HalalDiet')
-        if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
-
-        sections.get(product.category.id)!.items.push({
-            '@type': 'MenuItem',
-            '@id': `${config.public.baseUrl}/menu#${product.id}`,
-            name: product.name,
-            image: product.slug
-                ? {
-                    '@type': 'ImageObject',
-                    url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                    contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
-                    thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                }
-                : fallbackImage,
-            offers: {
-                '@type': 'Offer',
-                price: product.price,
-                priceCurrency: 'EUR',
-                availability: product.isAvailable
-                    ? 'https://schema.org/InStock'
-                    : 'https://schema.org/OutOfStock',
-            },
-            ...(diets.length ? { suitableForDiet: diets } : {}),
-        })
-    }
-
-    return {
-        '@type': 'Menu',
-        '@id': `${config.public.baseUrl}/menu#menu`,
-        name: t('schema.menu.name'),
-        description: t('schema.menu.description'),
-        inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
-        hasMenuSection: [...sections.values()].map(section => ({
-            '@type': 'MenuSection',
-            '@id': `${config.public.baseUrl}/menu#section-${section.id}`,
-            name: section.name,
-            hasMenuItem: section.items,
-        })),
-    }
-})
-
-// Breadcrumb schema
-const breadcrumbSchema = computed(() => ({
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-        {
-            '@type': 'ListItem',
-            position: 1,
-            name: t('schema.breadcrumb.home'),
-            item: config.public.baseUrl
-        },
-        {
-            '@type': 'ListItem',
-            position: 2,
-            name: t('schema.breadcrumb.menu'),
-            item: `${config.public.baseUrl}/menu`
-        }
-    ]
-}))
+const localizedUrl = useLocalizedUrl()
 
 watch(allProducts, () => {
+    // Inside the watcher: the language is the current one when the menu (re)loads after a language switch.
+    const menuUrl = localizedUrl('/menu')
     useJsonLd([
         {
             '@type': 'WebPage',
             name: t('schema.menu.title'),
             description: t('schema.menu.description'),
         },
-        breadcrumbSchema.value,
-        menuSchema.value,
+        breadcrumbList([
+            { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+            { name: t('schema.breadcrumb.menu'), item: menuUrl },
+        ]),
+        buildMenuSchema({
+            products: allProducts.value,
+            menuUrl,
+            baseUrl: config.public.baseUrl as string,
+            s3BaseUrl: config.public.s3bucketUrl as string,
+            name: t('schema.menu.name'),
+            description: t('schema.menu.description'),
+            inLanguage: inLanguageTag(locale.value),
+            photoFor: productPhotoUrls,
+        }),
     ], 'page-jsonld')
 }, { immediate: true })
 
@@ -631,8 +574,6 @@ useSeoMeta({
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 

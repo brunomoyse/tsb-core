@@ -108,6 +108,7 @@ import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
+import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
 
 useHead({
@@ -129,7 +130,10 @@ const { brand } = useAppConfig()
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
 // Closed is only true once the config has loaded and says nothing can be ordered: while it loads (or if it failed) the drawer's checkout link stays enabled and checkout explains.
-const { isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
+const { config: restaurantConfig, isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
+
+// The restaurant's JSON-LD (hours from the live config), on every page.
+useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)
 
 const head = useLocaleHead()
 const notifications = useNotificationsStore()
