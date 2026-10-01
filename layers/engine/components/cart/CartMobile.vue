@@ -13,6 +13,8 @@
         <Transition name="slide-up">
             <aside
                 v-if="cartStore.isCartVisible"
+                id="cart-mobile"
+                ref="panelRef"
                 data-testid="cart-mobile"
                 aria-labelledby="cart-heading"
                 class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
@@ -214,6 +216,8 @@ import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
@@ -225,6 +229,9 @@ const { isOrderingAvailable = true, preorderTime = null } = defineProps<{ isOrde
 
 const config = useRuntimeConfig();
 const cartStore = useCartStore();
+// The open drawer is a bottom bar too: the toasts (Undo) float above it instead of covering its checkout button.
+const panelRef = ref<HTMLElement | null>(null)
+useBottomBarOffset(panelRef)
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
 const { removeWithUndo, editItem } = useCartItemActions()
@@ -314,15 +321,8 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
-const handleDecrementQuantity = (cartItem: CartItem): void => {
-    impact('Light')
-    cartStore.decrementQuantity(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-        quantity: cartItem.quantity,
-    });
-    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-};
+// The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
+const { decrementLine: handleDecrementQuantity } = useCartRemoval()
 </script>
 
 <style scoped>

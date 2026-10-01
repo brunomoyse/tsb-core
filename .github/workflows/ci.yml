@@ -40,9 +40,9 @@ jobs:
       matrix:
         include:
           - app: tokyosushi
-            baseline: 207
+            baseline: 199
           - app: ygfliege
-            baseline: 254
+            baseline: 246
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1

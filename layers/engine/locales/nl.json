@@ -327,7 +327,10 @@
       "selectionInvalid": "Een gekozen optie is niet meer geldig. Verwijder dit artikel en stel het opnieuw samen via het menu.",
       "invalidQuantity": "De hoeveelheid van dit artikel is niet geldig.",
       "generic": "Dit artikel kan niet zo besteld worden."
-    }
+    },
+    "removedManyUndo": "{count} artikelen verwijderd",
+    "removeNamed": "\"{name}\" uit de winkelwagen verwijderen",
+    "buttonLabel": "Winkelwagen, {count} artikel | Winkelwagen, {count} artikelen"
   },
   "checkout": {
     "title": "Bestelling",
@@ -619,7 +622,10 @@
     "partial": "{added} artikelen toegevoegd, {skipped} niet-beschikbare artikelen overgeslagen",
     "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accepteren",
+    "acceptAria": "Cookies accepteren"
+  },
   "faq": {
     "title": "Veelgestelde Vragen",
     "subtitle": "Vind antwoorden op uw vragen over __BRAND__",

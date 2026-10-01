@@ -195,6 +195,7 @@ import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { isExcludedPostcode } from '#engine/lib/delivery'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -305,21 +306,6 @@ const handleIncrementQuantity = (item: CartItem) => {
     hapticImpact('Light')
 }
 
-const handleDecrementQuantity = (item: CartItem) => {
-    cartStore.decrementQuantity(item.product, {
-        choice: item.selectedChoice,
-        selections: item.selectedChoices,
-        quantity: item.quantity,
-    })
-    hapticImpact('Light')
-}
-
-const handleRemoveFromCart = (item: CartItem) => {
-    cartStore.removeFromCart(item.product, {
-        choice: item.selectedChoice,
-        selections: item.selectedChoices,
-        quantity: item.quantity,
-    })
-    hapticImpact('Medium')
-}
+// The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
+const { removeLine: handleRemoveFromCart, decrementLine: handleDecrementQuantity } = useCartRemoval()
 </script>

@@ -24,10 +24,9 @@
 
             <!-- Right part -->
             <div class="flex items-center ml-auto shrink-0">
-                <!-- Cart icon -->
+                <!-- Cart icon with its count, on every page once the cart has items (it opens the cart drawer) -->
                 <div>
-                    <CartButton v-if="isMounted && typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu') && cartStore.totalItems === 0"
-                                class="lg:hidden"/>
+                    <CartButton v-if="isMounted && cartStore.totalItems > 0" class="lg:hidden"/>
                 </div>
 
                 <!-- Hamburger Menu -->

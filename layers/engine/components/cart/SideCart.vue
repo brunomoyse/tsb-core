@@ -214,6 +214,7 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
@@ -352,14 +353,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
 
-const handleDecrementQuantity = (cartItem: CartItem): void => {
-    impact('Light')
-    cartStore.decrementQuantity(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-        quantity: cartItem.quantity,
-    });
-    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-};
+// The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
+const { decrementLine: handleDecrementQuantity } = useCartRemoval()
 
 </script>

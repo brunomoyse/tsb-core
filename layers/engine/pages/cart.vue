@@ -21,7 +21,7 @@
                 <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
                     <button
                         type="button"
-                        :aria-label="$t('cart.removeItem')"
+                        :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                         class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
                     >
@@ -132,7 +132,7 @@
                                 <!-- Explicit remove -->
                                 <button
                                     type="button"
-                                    :aria-label="$t('cart.removeItem')"
+                                    :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-400 hover:text-primary-500 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                                     @click="handleRemoveItem(item)"
                                 >
@@ -201,6 +201,7 @@
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
             v-if="cartStore.products.length > 0"
+            ref="checkoutBarRef"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
             <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
@@ -244,18 +245,19 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
+import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRuntimeConfig } from '#imports'
@@ -267,13 +269,15 @@ definePageMeta({ public: true })
 
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
-const notifications = useNotificationsStore()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
+// Publishes the checkout bar's height so the toasts float above it.
+const checkoutBarRef = ref<HTMLElement | null>(null)
+useBottomBarOffset(checkoutBarRef)
 // Blocking: the page renders with the config loaded (or failed). The checkout link is only disabled once the config says nothing can be ordered, never because it is missing; checkout shows the load error with its Retry.
 const { isClosed, isPreorderOnly, firstSlotLabel } = await useOrderingAvailability()
 const {
@@ -338,38 +342,8 @@ const itemChoice = (item: CartItem): string | undefined =>
             choiceName: item.selectedChoice?.name,
         }).choice
 
-// ── Cart mutations with undo support
-const restoreItem = (item: {
-    product: CartItem['product'];
-    choice: ProductChoice | null;
-    selections: ProductChoiceSelection[];
-    quantity: number;
-}): void => {
-    cartStore.addProduct(item.product, item.quantity, {
-        choice: item.choice,
-        selections: item.selections,
-    })
-    hapticImpact('Light')
-    trackEvent('product_removal_undone', { product_id: item.product.id, quantity: item.quantity })
-}
-
-const emitRemoveUndoToast = (item: CartItem): void => {
-    const { product, selectedChoice, selectedChoices, quantity } = item
-    notifications.notify({
-        message: t('cart.removedUndo', { name: product.name }),
-        duration: 4000,
-        variant: 'neutral',
-        action: {
-            label: t('cart.undo'),
-            handler: () => restoreItem({
-                product,
-                choice: selectedChoice,
-                selections: selectedChoices,
-                quantity,
-            }),
-        },
-    })
-}
+// ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
+const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval()
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
@@ -379,33 +353,6 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     })
     hapticImpact('Light')
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-}
-
-const handleDecrementQuantity = (cartItem: CartItem): void => {
-    if (cartItem.quantity === 1) {
-        // Route decrement-to-zero through the remove-with-undo path
-        handleRemoveItem(cartItem)
-        return
-    }
-    cartStore.decrementQuantity(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-        quantity: cartItem.quantity,
-    })
-    hapticImpact('Light')
-    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-}
-
-const handleRemoveItem = (cartItem: CartItem): void => {
-    // Snapshot before removal so undo can restore the exact quantity
-    emitRemoveUndoToast(cartItem)
-    cartStore.removeFromCart(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-        quantity: cartItem.quantity,
-    })
-    hapticImpact('Medium')
-    trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
 }
 
 // ── Swipe-to-delete state

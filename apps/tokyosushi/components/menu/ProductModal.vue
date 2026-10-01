@@ -125,6 +125,7 @@
 
                     <!-- Cart Controls -->
                     <div class="border-t pt-4">
+                        <p v-if="!p.isAvailable" data-testid="product-modal-unavailable" class="text-sm text-gray-600">{{ $t('menu.unavailable') }}</p>
                         <div class="flex items-center justify-between gap-4">
                             <QuantityStepper
                                 :value="quantity"

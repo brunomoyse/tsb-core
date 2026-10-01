@@ -103,14 +103,18 @@ export interface NotifyPayload {
     duration?: number;
     variant?: string;
     action?: NotificationAction;
+    /** A toast of the same group replaces the one showing (or waiting) instead of queueing behind it. */
+    group?: string;
 }
 
 export interface Notification {
+    id: number;
     message: string;
     persistent: boolean;
     duration: number;
     variant: string;
     action?: NotificationAction;
+    group?: string;
 }
 
 export interface LoginResponse {

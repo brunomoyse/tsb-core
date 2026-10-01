@@ -24,7 +24,7 @@
 
             <!-- Right part -->
             <div class="flex items-center ml-auto shrink-0">
-                <!-- Cart icon: on the menu, and on any page once the cart has items -->
+                <!-- Cart icon: on the menu, and on any page once the cart has items with its count, on every page once the cart has items (it opens the cart drawer) -->
                 <div>
                     <CartButton v-if="showCartButton" class="lg:hidden"/>
                 </div>

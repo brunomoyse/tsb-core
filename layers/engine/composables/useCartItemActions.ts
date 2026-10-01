@@ -1,39 +1,21 @@
 import { navigateTo, useCartStore, useLocalePath } from '#imports'
 import type { CartItem } from '~/types'
 import { useCartItemEdit } from './useCartItemEdit'
-import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '~/stores/notifications'
+import { useCartRemoval } from './useCartRemoval'
 import { useTracking } from './useTracking'
 
 /*
- * Cart line actions shared by every cart surface: removal with an Undo toast,
+ * Cart line actions shared by every cart surface: removal with an Undo toast (useCartRemoval),
  * and "Edit" for customized lines (reopens the product modal prefilled).
  */
 export function useCartItemActions() {
     const cartStore = useCartStore()
     const localePath = useLocalePath()
-    const { t } = useI18n()
-    const notifications = useNotificationsStore()
     const { trackEvent } = useTracking()
     const cartItemEdit = useCartItemEdit()
 
-    const removeWithUndo = (item: CartItem): void => {
-        const { product, selectedChoice, selectedChoices, quantity } = item
-        trackEvent('product_removed_from_cart', { product_id: product.id, product_name: product.name })
-        cartStore.removeFromCart(product, { choice: selectedChoice, selections: selectedChoices })
-        notifications.notify({
-            message: t('cart.removedUndo', { name: product.name }),
-            duration: 4000,
-            variant: 'neutral',
-            action: {
-                label: t('cart.undo'),
-                handler: () => {
-                    cartStore.addProduct(product, quantity, { choice: selectedChoice, selections: selectedChoices })
-                    trackEvent('product_removal_undone', { product_id: product.id, quantity })
-                },
-            },
-        })
-    }
+    // One removal flow for every surface: the line goes, and a merged "removed, Undo" toast can restore it.
+    const { removeLine: removeWithUndo } = useCartRemoval()
 
     const editItem = async (item: CartItem): Promise<void> => {
         cartItemEdit.value = { ...item }

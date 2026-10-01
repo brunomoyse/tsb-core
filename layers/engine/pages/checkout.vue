@@ -155,6 +155,7 @@
 
             <!-- Fixed Bottom Checkout Button (mobile only) -->
             <div
+                ref="payBarRef"
                 class="fixed left-0 right-0 sm:left-[var(--side-rail-width,0px)] bottom-0 z-30 lg:hidden bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
             >
                 <UiButton
@@ -276,6 +277,7 @@ import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
@@ -303,6 +305,10 @@ const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
 // Check restaurant ordering status. Lazy so the checkout page can render a skeleton while the initial query resolves on slow client hydration.
+// The mobile pay bar publishes its height so the toasts float above it instead of covering the button.
+const payBarRef = ref<HTMLElement | null>(null)
+useBottomBarOffset(payBarRef)
+
 // The one ordering gate (engine, utils/orderingAvailability.ts): open, or closed with a slot still bookable today (a pre-order). The closed banner only shows for a loaded config; a failed load shows its own error with Retry.
 const {
     config: restaurantConfig,

@@ -327,7 +327,10 @@
       "selectionInvalid": "您选择的某个选项已失效。请移除该商品，并从菜单重新选择。",
       "invalidQuantity": "该商品的数量无效。",
       "generic": "该商品无法按当前状态下单。"
-    }
+    },
+    "removedManyUndo": "已移除 {count} 件商品",
+    "removeNamed": "从购物车中移除“{name}”",
+    "buttonLabel": "购物车，{count} 件商品"
   },
   "checkout": {
     "title": "结账",
@@ -619,7 +622,10 @@
     "partial": "{added} 件已添加，{skipped} 件缺货已跳过",
     "empty": "没有可重新订购的商品"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "接受",
+    "acceptAria": "接受 Cookie"
+  },
   "faq": {
     "title": "常见问题",
     "subtitle": "找到关于 __BRAND__ 的问题答案",

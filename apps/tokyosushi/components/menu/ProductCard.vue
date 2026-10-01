@@ -1,5 +1,6 @@
 <template>
-    <div :class="{ 'grayscale': !product.isAvailable }" class="h-full">
+    <!-- An unavailable product stays openable (details, allergens): only the add control is gone, see below. -->
+    <div :class="{ grayscale: !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
              ref="cardRef"
              data-testid="product-card"
@@ -114,6 +115,7 @@ import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
@@ -121,6 +123,7 @@ import { useTracking } from '#engine/composables/useTracking'
 
 const cartItemAdded = useEventBus(cartItemAddedKey)
 const cartStore = useCartStore();
+const { decrementProduct } = useCartRemoval()
 const { t } = useI18n()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
@@ -226,7 +229,8 @@ const showExpandedControls = () => {
 };
 
 const decrement = () => {
-    cartStore.decrementQuantity(product);
+    // The last unit is a removal like on every other cart surface: it offers Undo.
+    decrementProduct(product);
     resetTimeout();
 };
 

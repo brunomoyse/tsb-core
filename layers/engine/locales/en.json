@@ -327,7 +327,10 @@
       "selectionInvalid": "An option you chose is no longer valid. Remove this item and build it again from the menu.",
       "invalidQuantity": "The quantity of this item is not valid.",
       "generic": "This item can't be ordered as it is."
-    }
+    },
+    "removedManyUndo": "{count} items removed",
+    "removeNamed": "Remove \"{name}\" from the cart",
+    "buttonLabel": "Cart, {count} item | Cart, {count} items"
   },
   "checkout": {
     "title": "Checkout",
@@ -619,7 +622,10 @@
     "partial": "{added} items added, {skipped} unavailable items skipped",
     "empty": "No available items to re-order"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accept",
+    "acceptAria": "Accept cookies"
+  },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to your questions about __BRAND__",

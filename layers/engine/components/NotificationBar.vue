@@ -3,13 +3,18 @@
         :role="liveRole"
         :aria-live="livePoliteness"
         aria-atomic="true"
-        class="notification-bar fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
+        class="notification-bar fixed left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
         v-if="visible"
+        @mouseenter="hovered = true"
+        @mouseleave="hovered = false"
+        @focusin="focused = true"
+        @focusout="onFocusOut"
+        @keydown.esc="close"
     >
         <transition name="slide-up">
             <div :class="['rounded-2xl shadow-xl px-5 py-3 flex flex-col', variantClasses]" v-if="visible">
-                <div class="flex items-center justify-between gap-4">
-                    <span class="flex-1 text-sm font-medium break-words">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="flex-1 text-sm font-medium break-words py-1">
                       {{ message }}
                     </span>
                     <!-- Custom action button (e.g. Undo) takes precedence -->
@@ -21,21 +26,34 @@
                     >
                         {{ action.label }}
                     </button>
-                    <!-- Default action button for persistent notifications or cookie consent -->
-                    <slot v-else-if="persistent || cookieConsent" name="action">
+                    <!-- Cookie consent: an explicit accept, never a close (closing is not consent) -->
+                    <slot v-else-if="cookieConsent" name="action">
                         <button
                             type="button"
                             class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             @click="close"
-                            :aria-label="cookieConsent ? $t('common.acceptCookies') : $t('common.close')"
+                            :aria-label="$t('cookies.acceptAria')"
                         >
-                            {{ cookieConsent ? $t('common.accept') : $t('common.close') }}
+                            {{ $t('cookies.accept') }}
                         </button>
                     </slot>
+                    <!-- Every other toast can be closed -->
+                    <button
+                        v-if="!cookieConsent"
+                        type="button"
+                        data-testid="notification-close"
+                        :aria-label="$t('common.close')"
+                        class="-mr-3 -my-1.5 inline-flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center rounded-full opacity-70 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
+                        @click="close"
+                    >
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <path d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                <!-- Progress Bar: Only visible when not persistent and not cookie consent -->
+                <!-- Progress bar: a CSS animation over the toast's duration; it stops while the toast is hovered or focused, like its timer -->
                 <div v-if="!persistent && !cookieConsent" class="w-full mt-2 h-0.5 bg-white/20 rounded overflow-hidden">
-                    <div class="h-full progress-bar" :class="progressBarClass" :style="{ width: progress + '%' }"></div>
+                    <div class="h-full progress-bar" :class="progressBarClass" :style="{ animationDuration: duration + 'ms', animationPlayState: paused ? 'paused' : 'running' }"></div>
                 </div>
             </div>
         </transition>
@@ -43,8 +61,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 const { notification: hapticNotification } = useHaptics()
 
@@ -61,8 +80,25 @@ const emit = defineEmits<{
     close: []
 }>()
 const visible = ref(false)
-const progress = ref(100)
-let progressInterval: ReturnType<typeof setInterval> | undefined
+
+/*
+ * The expiry timer lives in the notifications store (module scope); this component only tells it
+ * when the toast is being read: the clock stops while the pointer is over the toast or focus is
+ * inside it (an Undo that is being reached for must not vanish), and runs on again after.
+ */
+const notifications = useNotificationsStore()
+const hovered = ref(false)
+const focused = ref(false)
+const paused = computed(() => hovered.value || focused.value)
+watch(paused, (isPaused) => {
+    if (isPaused) notifications.pause()
+    else notifications.resume()
+})
+const onFocusOut = (event: FocusEvent) => {
+    const root = event.currentTarget as HTMLElement | null
+    // Focus moving between the buttons of the same toast is not leaving it.
+    if (!root?.contains(event.relatedTarget as Node | null)) focused.value = false
+}
 
 // Same palette as the mobile app's toast: dark neutral for info and success
 // (green stays reserved), red only for errors.
@@ -81,7 +117,6 @@ const close = () => {
         localStorage.setItem('cookiesAccepted', 'true')
     }
     emit('close')
-    if (progressInterval) clearInterval(progressInterval)
 }
 
 const invokeAction = () => {
@@ -98,19 +133,6 @@ onMounted(() => {
         visible.value = true
         if (variant === 'error') hapticNotification('Error')
         else if (variant === 'success') hapticNotification('Success')
-        if (!persistent) {
-            // Start the progress bar countdown.
-            const startTime = Date.now()
-            progress.value = 100
-            progressInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime
-                progress.value = Math.max(100 * (1 - elapsed / duration), 0)
-                if (elapsed >= duration) {
-                    clearInterval(progressInterval)
-                    close()
-                }
-            }, 50)
-        }
     }
 })
 </script>
@@ -131,7 +153,18 @@ onMounted(() => {
     opacity: 1;
 }
 
+.notification-bar {
+    /* Above the fixed bottom bars (their height is published by useBottomBarOffset), else above the safe area */
+    bottom: calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem);
+}
+
 .progress-bar {
-    transition: width 0.1s linear;
+    width: 100%;
+    animation: toast-progress linear forwards;
+}
+
+@keyframes toast-progress {
+    from { width: 100%; }
+    to { width: 0; }
 }
 </style>

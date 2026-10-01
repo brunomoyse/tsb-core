@@ -327,7 +327,10 @@
       "selectionInvalid": "Une option choisie n'est plus valable. Retirez cet article puis recomposez-le depuis le menu.",
       "invalidQuantity": "La quantité de cet article n'est pas valable.",
       "generic": "Cet article ne peut pas être commandé tel quel."
-    }
+    },
+    "removedManyUndo": "{count} articles retirés",
+    "removeNamed": "Retirer « {name} » du panier",
+    "buttonLabel": "Panier, {count} article | Panier, {count} articles"
   },
   "checkout": {
     "title": "Commande",
@@ -619,7 +622,10 @@
     "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
     "empty": "Aucun article disponible à recommander"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accepter",
+    "acceptAria": "Accepter les cookies"
+  },
   "faq": {
     "title": "Questions Fréquentes",
     "subtitle": "Trouvez les réponses à vos questions sur __BRAND__",

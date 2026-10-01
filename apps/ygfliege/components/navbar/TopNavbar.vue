@@ -42,18 +42,32 @@
                      than on the menu page's search row. -->
                 <DeliveryZoneChip class="hidden md:inline-flex" />
 
-                <!-- Cart: tablet only; lg+ shows the persistent SideCart instead. -->
+                <!-- Cart, on every page once the cart has items. Tablet: opens the cart drawer. -->
                 <ClientOnly>
                     <button
-                        v-if="isMounted && cartStore.totalItems > 0 && isMenuPage"
+                        v-if="isMounted && cartStore.totalItems > 0"
                         type="button"
                         class="lg:hidden chip"
-                        :aria-label="$t('nav.cart')"
+                        data-testid="cart-button"
+                        :aria-label="cartLabel"
+                        :aria-expanded="cartStore.isCartVisible"
+                        aria-controls="cart-mobile"
                         @click="cartStore.toggleCartVisibility()"
                     >
                         <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-4 h-4" />
-                        <span class="tabular-nums">{{ cartStore.totalItems }}</span>
+                        <span class="tabular-nums" aria-hidden="true">{{ cartStore.totalItems }}</span>
                     </button>
+                    <!-- Desktop has no drawer: the menu page shows the SideCart, every other page links to /cart. -->
+                    <NuxtLinkLocale
+                        v-if="isMounted && cartStore.totalItems > 0 && !isMenuPage"
+                        to="/cart"
+                        class="hidden lg:inline-flex chip"
+                        data-testid="cart-link"
+                        :aria-label="cartLabel"
+                    >
+                        <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-4 h-4" />
+                        <span class="tabular-nums" aria-hidden="true">{{ cartStore.totalItems }}</span>
+                    </NuxtLinkLocale>
                 </ClientOnly>
 
                 <!-- LanguagePicker's root element is an <li>, so it needs a
@@ -105,6 +119,8 @@ const logoAlt = `${useAppConfig().brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 const isMenuPage = computed(() => route.path.endsWith('/menu'))
+// "Cart, 3 items": the count is part of the accessible name.
+const cartLabel = computed(() => t('cart.buttonLabel', { count: cartStore.totalItems }, cartStore.totalItems))
 
 const navItems = computed(() => [
     { to: 'menu', label: t('nav.menu') },
