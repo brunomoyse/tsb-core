@@ -17,7 +17,7 @@
             <button
                 type="button"
                 data-testid="coupon-remove"
-                class="min-h-11 inline-flex items-center text-sm text-primary-600 hover:text-primary-700 font-medium underline underline-offset-2 decoration-primary-300 hover:decoration-primary-500"
+                class="min-h-11 inline-flex items-center text-sm text-primary-700 hover:text-primary-800 font-medium underline underline-offset-2 decoration-primary-300 hover:decoration-primary-500"
                 @click="removeCoupon"
             >
                 {{ $t('coupon.remove') }}
@@ -46,7 +46,7 @@
                     {{ $t('coupon.apply') }}
                 </UiButton>
             </div>
-            <p v-if="errorMessage" role="alert" data-testid="coupon-error" class="text-sm text-red-600 mt-1">
+            <p v-if="errorMessage" role="alert" data-testid="coupon-error" class="text-sm text-red-700 mt-1">
                 {{ errorMessage }}
             </p>
         </div>

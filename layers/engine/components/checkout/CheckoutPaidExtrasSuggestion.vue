@@ -6,7 +6,7 @@
         <p class="text-sm text-neutral-600 mt-1 mb-4">
             {{ $t('checkout.extrasDescription', 'Complete your order with some accompaniments') }}
         </p>
-        <p class="text-xs text-primary-700 bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-4 inline-flex items-center gap-2">
+        <p class="text-xs text-ygf-orange-text bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-4 inline-flex items-center gap-2">
             <span class="font-semibold uppercase tracking-wide">{{ $t('checkout.paidExtra', 'Paid extra') }}</span>
             <span>{{ $t('checkout.paidExtrasNotice', 'These extras are billed as products and added to your cart.') }}</span>
         </p>
@@ -18,7 +18,7 @@
                 class="flex items-center justify-between gap-3 p-4 border rounded-xl transition-colors"
                 :class="[
                     isSelected(extra.code)
-                        ? 'border-primary-300 bg-tsb-four'
+                        ? 'border-primary bg-tsb-four'
                         : 'border-neutral-200 bg-white hover:border-neutral-300',
                     !isAvailable(extra.code) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
                 ]"
@@ -28,7 +28,7 @@
                         type="checkbox"
                         :checked="isSelected(extra.code)"
                         :disabled="!isAvailable(extra.code)"
-                        class="h-5 w-5 text-primary-500 border-neutral-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-primary-300"
+                        class="h-5 w-5 text-primary-700 border-neutral-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @change="toggle(extra.code)"
                     />
                     <span :class="['text-sm font-medium truncate', isSelected(extra.code) ? 'text-primary-700' : 'text-neutral-800']">

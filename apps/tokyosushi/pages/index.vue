@@ -171,14 +171,14 @@ useHead({
                     <span v-if="orderingStatus === 'loading'" class="h-4 w-28 rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
                     <span v-else class="text-sm font-semibold text-neutral-900 truncate">
                         {{ $t(`home.status.${orderingStatus}`, { time: preorderTime ?? '' }) }}
-                        <span v-if="orderingStatus === 'closed' && nextOpeningTime" class="font-normal text-neutral-500">
+                        <span v-if="orderingStatus === 'closed' && nextOpeningTime" class="font-normal text-neutral-600">
                             · {{ $t('checkout.opensAt', { time: nextOpeningTime }) }}
                         </span>
                     </span>
                 </div>
                 <button
                     type="button"
-                    class="shrink-0 min-h-11 inline-flex items-center text-xs font-medium text-neutral-500 hover:text-neutral-700 underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-500 focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none rounded-md px-1 -mr-1"
+                    class="shrink-0 min-h-11 inline-flex items-center text-xs font-medium text-neutral-600 hover:text-neutral-700 underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-md px-1 -mr-1"
                     @click="scrollToOpeningHours"
                 >
                     {{ $t('home.schedule') }}
@@ -193,8 +193,8 @@ useHead({
                     :aria-checked="collection === 'DELIVERY'"
                     @click="collection = 'DELIVERY'"
                     :class="[
-                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none',
-                        collection === 'DELIVERY' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+                        collection === 'DELIVERY' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-600 hover:text-neutral-700'
                     ]"
                 >
                     <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
@@ -206,8 +206,8 @@ useHead({
                     :aria-checked="collection === 'PICKUP'"
                     @click="collection = 'PICKUP'"
                     :class="[
-                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none',
-                        collection === 'PICKUP' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                        'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+                        collection === 'PICKUP' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-600 hover:text-neutral-700'
                     ]"
                 >
                     <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
@@ -334,7 +334,7 @@ useHead({
                 <a
                     :href="phoneHref"
                     :aria-label="`${$t('about.callUs')} ${brand.phone}`"
-                    class="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white border border-neutral-200 text-sm font-medium text-neutral-900 hover:bg-tsb-four/40 hover:border-neutral-300 transition focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none mb-3"
+                    class="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white border border-neutral-200 text-sm font-medium text-neutral-900 hover:bg-tsb-four/40 hover:border-neutral-300 transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none mb-3"
                 >
                     <svg aria-hidden="true" class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
                     <span class="tabular-nums">{{ brand.phone }}</span>
@@ -355,13 +355,13 @@ useHead({
         <div class="pt-4 pb-2 flex flex-col items-center gap-3">
             <div class="flex items-center gap-3 w-full max-w-xs">
                 <div class="h-px flex-1 bg-neutral-200" />
-                <span class="text-neutral-400 text-[10px] tracking-[0.25em] uppercase whitespace-nowrap">{{ $t('about.paymentsLabel') }}</span>
+                <span class="text-neutral-600 text-[10px] tracking-[0.25em] uppercase whitespace-nowrap">{{ $t('about.paymentsLabel') }}</span>
                 <div class="h-px flex-1 bg-neutral-200" />
             </div>
             <div class="flex items-center flex-wrap justify-center gap-2.5">
                 <!-- Visa -->
                 <div role="img" aria-label="Visa" class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center">
-                    <span class="font-black italic text-[11px] text-neutral-500 tracking-tight leading-none">VISA</span>
+                    <span class="font-black italic text-[11px] text-neutral-600 tracking-tight leading-none">VISA</span>
                 </div>
                 <!-- Mastercard -->
                 <div role="img" aria-label="Mastercard" class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center gap-0.5">
@@ -381,7 +381,7 @@ useHead({
                 <!-- Cash -->
                 <div role="img" aria-label="Cash" class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center gap-1">
                     <svg class="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25A2.25 2.25 0 014.5 6h15a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0119.5 18h-15a2.25 2.25 0 01-2.25-2.25v-7.5zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <span class="text-[11px] text-neutral-500 font-medium leading-none">{{ $t('about.cash') }}</span>
+                    <span class="text-[11px] text-neutral-600 font-medium leading-none">{{ $t('about.cash') }}</span>
                 </div>
             </div>
         </div>

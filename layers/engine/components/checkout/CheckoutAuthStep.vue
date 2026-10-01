@@ -5,11 +5,11 @@
                 <!-- Cart-saved chip -->
                 <div class="flex items-center justify-center gap-2 mb-4">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-50 border border-neutral-200 text-xs text-neutral-600">
-                        <svg class="w-3.5 h-3.5 text-primary-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 text-primary-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                         </svg>
                         {{ $t('checkout.authStep.cartSaved') }}
-                        <span v-if="cartStore.products.length > 0" class="text-neutral-400">·</span>
+                        <span v-if="cartStore.products.length > 0" class="text-neutral-600">·</span>
                         <span v-if="cartStore.products.length > 0" class="tabular-nums">
                             {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
                         </span>

@@ -13,7 +13,7 @@
             <div class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center">
                 <div
                     v-if="isCurrent(index)"
-                    class="w-[7px] h-[7px] rounded-full bg-primary-500 stone-ripple"
+                    class="w-[7px] h-[7px] rounded-full bg-primary-600 stone-ripple"
                 />
                 <div
                     v-else-if="isPast(index) || isCompletedLast(index)"
@@ -32,7 +32,7 @@
                     ? 'font-semibold text-neutral-900'
                     : isPast(index) || isCompletedLast(index)
                         ? 'text-neutral-600'
-                        : 'text-neutral-300'"
+                        : 'text-neutral-600'"
             >
                 {{ getStatusTitle(status) }}
             </span>

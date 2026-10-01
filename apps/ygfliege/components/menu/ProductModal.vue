@@ -19,7 +19,7 @@
             <button
                 type="button"
                 :aria-label="$t('common.close')"
-                class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-ygf-black/60 hover:text-ygf-black hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange"
+                class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-neutral-600 hover:text-ygf-black hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @click="emit('close')"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -34,7 +34,7 @@
                 <!-- Product photo (click to enlarge) -->
                 <button
                     type="button"
-                    class="relative block w-44 sm:w-full mx-auto sm:mx-0 aspect-square bg-ygf-orange-50/40 rounded-ygf-card overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+                    class="relative block w-44 sm:w-full mx-auto sm:mx-0 aspect-square bg-ygf-orange-50/40 rounded-ygf-card overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     :aria-label="p.name"
                     @click="openLightbox(p.id, p.name)"
                 >
@@ -70,7 +70,7 @@
                     <!-- Price + portion -->
                     <div class="flex items-baseline gap-3 flex-wrap">
                         <span class="text-2xl font-bold text-ygf-black tabular-nums">{{ formatCents(displayPriceCents) }}</span>
-                        <span v-if="p.pieceCount" class="text-sm text-ygf-black/60">
+                        <span v-if="p.pieceCount" class="text-sm text-neutral-600">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
                     </div>
@@ -119,7 +119,7 @@
                     </div>
                     <p
                         class="text-sm font-semibold"
-                        :class="isGroupSatisfied(group) ? 'text-ygf-success' : 'text-ygf-orange-600'"
+                        :class="isGroupSatisfied(group) ? 'text-ygf-success-dark' : 'text-ygf-orange-text'"
                     >
                         <template v-if="!isGroupSatisfied(group)">{{ groupHint(group) }}</template>
                         <template v-else>{{ $t('composer.chosen') }}</template>
@@ -142,7 +142,7 @@
 
         <!-- Footer rail -->
         <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
-            <p v-if="!p.isAvailable" class="text-sm text-ygf-black/60 mb-3">{{ $t('menu.unavailable') }}</p>
+            <p v-if="!p.isAvailable" class="text-sm text-neutral-600 mb-3">{{ $t('menu.unavailable') }}</p>
             <div class="flex items-center gap-3 sm:gap-4">
                 <div class="stepper shrink-0">
                     <button

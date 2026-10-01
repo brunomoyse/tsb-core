@@ -4,7 +4,7 @@
                 @click="emit('close')"
                 :aria-label="$t('common.close')"
                 type="button"
-                class="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                class="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -84,7 +84,7 @@
                                         <span class="text-sm font-medium text-neutral-900">{{ choiceGroupDisplayName(group) }}</span>
                                         <p
                                             v-if="isGroupFlagged(group)"
-                                            class="text-xs text-red-600 mt-0.5"
+                                            class="text-xs text-red-700 mt-0.5"
                                         >
                                             {{ groupHint(group) }}
                                         </p>
@@ -104,7 +104,7 @@
                                         class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
                                     >
                                         <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
-                                        <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
+                                        <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-600">
                                             {{ toCents(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
                                         </span>
                                         <QuantityStepper

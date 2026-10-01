@@ -6,7 +6,7 @@
         class="relative overflow-hidden shrink-0 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
         :class="active
             ? 'bg-tsb-four text-primary-900/80 font-semibold'
-            : 'text-neutral-400 font-medium hover:bg-tsb-four/40 hover:text-neutral-500'"
+            : 'text-neutral-600 font-medium hover:bg-tsb-four/40 hover:text-neutral-700'"
         @click="handleClick"
         :data-id="category.id"
     >

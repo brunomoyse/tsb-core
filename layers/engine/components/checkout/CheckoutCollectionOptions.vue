@@ -18,14 +18,14 @@
                 :disabled="option.disabled"
                 @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
                 :class="[
-          'flex-1 border rounded-lg p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none',
+          'flex-1 border rounded-lg p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
           option.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md',
-          cartStore.collectionOption === option.value ? 'border-primary-300 bg-tsb-four' : 'border-neutral-200 bg-white'
+          cartStore.collectionOption === option.value ? 'border-primary bg-tsb-four' : 'border-neutral-200 bg-white'
         ]"
             >
                 <img :src="option.icon" alt="" aria-hidden="true" class="w-10 h-10 mb-2" :class="option.disabled ? 'grayscale' : ''" />
                 <span class="font-semibold">{{ option.label }}</span>
-                <span v-if="option.disabled" class="mt-1 text-xs font-medium text-neutral-500">
+                <span v-if="option.disabled" class="mt-1 text-xs font-medium text-neutral-600">
                     {{ $t('delivery.comingSoon') }}
                 </span>
             </button>
@@ -34,23 +34,23 @@
         <!-- Address Section (if DELIVERY) -->
         <div id="checkout-delivery-address" tabindex="-1" v-if="cartStore.collectionOption === 'DELIVERY'" class="flex flex-col gap-2">
             <label class="font-medium">
-                {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-primary-400">*</span>
+                {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-primary-700">*</span>
             </label>
             <div v-if="cartStore.address" class="flex flex-col text-neutral-700 bg-neutral-50 rounded p-3">
                 <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
                     @click="openAddressModal"
-                    class="min-h-11 inline-flex items-center self-start mt-2 px-3 -ml-3 text-sm font-medium text-primary-600 hover:text-primary-700 rounded-md focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none transition-colors"
+                    class="min-h-11 inline-flex items-center self-start mt-2 px-3 -ml-3 text-sm font-medium text-ygf-orange-text hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-ygf-orange-text font-medium">
                     {{ $t('checkout.notDeliverableArea') }}
                 </p>
-                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-ygf-orange-text font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
-                <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-500">
+                <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-600">
                     {{ $t('checkout.addressDistanceKm', { distance: (cartStore.address.distance / 1000).toFixed(1) }) }}
                 </p>
             </div>
@@ -65,12 +65,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span class="font-medium text-neutral-700">{{ $t('checkout.addAddress', 'Add Address') }}</span>
-                <span class="text-sm text-neutral-500">{{ $t('checkout.noAddress', 'No address selected') }}</span>
+                <span class="text-sm text-neutral-600">{{ $t('checkout.noAddress', 'No address selected') }}</span>
             </button>
 
             <label for="addressExtra" class="block text-sm text-neutral-700 mt-4">
                 {{ $t('checkout.addressComment', 'Additional Info for Address') }}
-                <span class="text-neutral-400 font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
+                <span class="text-neutral-600 font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </label>
             <textarea
                 id="addressExtra"
@@ -87,16 +87,16 @@
         <!-- Preferred Time / Status -->
         <div class="mt-4">
             <!-- Ordering disabled -->
-            <p v-if="isOrderingDisabled" class="text-amber-700 font-semibold">
+            <p v-if="isOrderingDisabled" class="text-amber-800 font-semibold">
                 {{ $t('checkout.orderDisabled', 'Ordering is temporarily disabled.') }}
             </p>
 
             <!-- Restaurant closed and no same-day slots -->
-            <p v-else-if="!isOpen && availableFixedSlots.length === 0" class="text-primary-600 font-semibold">
+            <p v-else-if="!isOpen && availableFixedSlots.length === 0" class="text-ygf-orange-text font-semibold">
                 {{ $t('checkout.noRemainingSlotsToday', 'No remaining time slots for today.') }}
             </p>
             <div v-else>
-                <p v-if="!isOpen" class="text-amber-700 text-sm mb-2">
+                <p v-if="!isOpen" class="text-amber-800 text-sm mb-2">
                     {{ $t('checkout.asapUnavailableWhileClosed', 'ASAP is unavailable while closed. Please select a fixed time for today.') }}
                 </p>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">

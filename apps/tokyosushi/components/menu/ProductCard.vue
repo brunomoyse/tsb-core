@@ -52,7 +52,7 @@
                         type="button"
                         data-testid="product-name"
                         translate="no"
-                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors duration-300"
+                        class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
                         :title="product.name"
                         :aria-label="$t('menu.viewDetails', { name: product.name })"
                         @click="emit('openProductModal')"
@@ -75,14 +75,14 @@
                         </span>
                         <div>
                             <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
-                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-400 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="orderingDisabled"
                                     @click="addToCart">
                                 <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
                             <button v-else
-                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 cursor-pointer"
+                                 class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer"
                                  type="button"
                                  :aria-label="`${$t('nav.cart')}: ${cardQuantity}`"
                                  :class="{ 'animate-number-bounce': isQuantityBouncing }"

@@ -23,8 +23,8 @@
                     data-testid="payment-online"
                     @click="setOnlinePayment(true)"
                     :class="[
-            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none',
-            isOnlinePayment ? 'border-primary-300 bg-tsb-four' : 'border-neutral-200 bg-white'
+            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+            isOnlinePayment ? 'border-primary bg-tsb-four' : 'border-neutral-200 bg-white'
           ]"
                 >
                     <img src="/icons/online-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
@@ -40,8 +40,8 @@
                     data-testid="payment-cash"
                     @click="setOnlinePayment(false)"
                     :class="[
-            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none',
-            !isOnlinePayment ? 'border-primary-300 bg-tsb-four' : 'border-neutral-200 bg-white'
+            'cursor-pointer flex-1 border rounded-lg p-4 flex flex-col items-center transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+            !isOnlinePayment ? 'border-primary bg-tsb-four' : 'border-neutral-200 bg-white'
           ]"
                 >
                     <img src="/icons/cash-payment-icon.svg" alt="" aria-hidden="true" class="w-10 h-10 mb-2" />
@@ -57,12 +57,12 @@
                 :class="[
                     'mt-4 rounded-lg border p-4 space-y-3 transition-colors',
                     showCashAckError
-                        ? 'bg-primary-50 border-primary-300 ring-2 ring-primary-300/60'
+                        ? 'bg-primary-50 border-primary-600 ring-2 ring-primary-600/50'
                         : cashAcknowledgedModel ? 'bg-neutral-50 border-neutral-200' : 'bg-amber-50 border-amber-200'
                 ]"
             >
                 <div v-if="!cashAcknowledgedModel" class="flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                     <p class="text-sm text-amber-800">
@@ -79,8 +79,8 @@
                         :class="[
                             'mt-0.5 h-5 w-5 rounded shrink-0 focus-visible:ring-2',
                             showCashAckError
-                                ? 'text-primary-600 border-primary-500 focus-visible:ring-primary-400'
-                                : 'text-primary-500 border-neutral-300 focus-visible:ring-primary-300'
+                                ? 'text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
+                                : 'text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2'
                         ]"
                     />
                     <span v-if="cashAcknowledgedModel" class="inline-flex items-center gap-1.5 text-sm text-neutral-700 font-medium">
@@ -97,7 +97,7 @@
                 <div>
                     <label for="cash-payment-amount" :class="['block text-sm font-medium mb-1', cashAcknowledgedModel ? 'text-neutral-800' : 'text-amber-900']">
                         {{ $t('checkout.cashAmountLabel') }}
-                        <span :class="['text-xs font-normal', cashAcknowledgedModel ? 'text-neutral-500' : 'text-amber-700/70']">{{ $t('checkout.optional') }}</span>
+                        <span :class="['text-xs font-normal', cashAcknowledgedModel ? 'text-neutral-600' : 'text-amber-800']">{{ $t('checkout.optional') }}</span>
                     </label>
                     <div class="relative">
                         <input
@@ -113,13 +113,13 @@
                             :aria-invalid="showCashShort ? 'true' : undefined"
                             :aria-describedby="cashHintId"
                             :class="[
-                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-400 focus-visible:outline-none transition-all duration-300',
+                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-600 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
-                                    ? 'border-neutral-200 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300'
+                                    ? 'border-neutral-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring'
                                     : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:border-amber-400',
                             ]"
                         />
-                        <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-500' : 'text-amber-700']">€</span>
+                        <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-600' : 'text-amber-800']">€</span>
                     </div>
                     <p
                         v-if="showCashShort"
@@ -135,7 +135,7 @@
                         id="cash-amount-hint"
                         data-testid="cash-amount-change"
                         role="status"
-                        class="mt-1.5 text-xs font-medium text-ygf-success"
+                        class="mt-1.5 text-xs font-medium text-ygf-success-dark"
                     >
                         {{ $t('checkout.cashChangeDue', { amount: formatCents(cashState.changeCents) }) }}
                     </p>
@@ -156,7 +156,7 @@
                         id="chopsticks"
                         data-testid="order-extra-chopsticks"
                         v-model="addChopsticks"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded"
+                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
                     />
                     <label for="chopsticks" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
@@ -169,7 +169,7 @@
                         id="cutlery"
                         data-testid="order-extra-cutlery"
                         v-model="addCutlery"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded"
+                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
                     />
                     <label for="cutlery" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addCutlery') }}
@@ -187,7 +187,7 @@
                         data-testid="order-extra-wasabi"
                         v-model="addWasabi"
                         :disabled="isLocked('wasabi')"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="wasabi" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addWasabi') }}
@@ -205,7 +205,7 @@
                         data-testid="order-extra-ginger"
                         v-model="addGinger"
                         :disabled="isLocked('ginger')"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="ginger" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addGinger') }}
@@ -224,7 +224,7 @@
                             data-testid="order-extra-sauce"
                             :checked="addSauce"
                             :disabled="isLocked('sauce')"
-                            class="h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
+                            class="h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
                         <label for="add-sauce" class="text-neutral-700 font-medium">
@@ -242,7 +242,7 @@
                             :class="[
                                 'px-3 py-1.5 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
                                 sauce === option.value
-                                    ? 'border-primary-300 bg-tsb-four text-primary-700 font-medium'
+                                    ? 'border-primary bg-tsb-four text-primary-700 font-medium'
                                     : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400'
                             ]"
                         >
@@ -287,7 +287,7 @@
                             >
                                 <span>{{ extra.label }}</span>
                                 <span
-                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-500 text-white text-[10px] font-semibold tabular-nums px-1.5"
+                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-600 text-white text-[10px] font-semibold tabular-nums px-1.5"
                                 >×{{ extra.quantity }}</span>
                                 <span class="rounded-full bg-white/80 border border-primary-200 px-2 py-0.5 tabular-nums">
                                     +{{ formatCents(extra.priceCents) }}
@@ -311,7 +311,7 @@
         <div class="mb-6">
             <h3 id="order-comment-label" class="font-medium text-lg mb-2">
                 {{ $t('checkout.orderComment', 'Order Comment') }}
-                <span class="text-neutral-400 text-sm font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
+                <span class="text-neutral-600 text-sm font-normal">{{ $t('checkout.optional', '(optional)') }}</span>
             </h3>
             <textarea
                 v-model="orderComment"
@@ -325,14 +325,14 @@
             <p
                 id="order-comment-counter"
                 class="text-xs mt-1 tabular-nums text-right"
-                :class="orderComment.length >= ORDER_COMMENT_MAX ? 'text-primary-600 font-medium' : 'text-neutral-500'"
+                :class="orderComment.length >= ORDER_COMMENT_MAX ? 'text-primary-700 font-medium' : 'text-neutral-600'"
             >
                 {{ orderComment.length }} / {{ ORDER_COMMENT_MAX }}
             </p>
         </div>
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
-        <div v-if="!isMinimumReached" class="text-sm text-primary-600 text-center">
+        <div v-if="!isMinimumReached" class="text-sm text-ygf-orange-text text-center">
             {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
         </div>
 
@@ -354,7 +354,7 @@
                 }}
             </template>
         </UiButton>
-        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-neutral-400 mt-1">
+        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-neutral-600 mt-1">
             {{ $t('cart.quoteUpdating') }}
         </p>
     </section>

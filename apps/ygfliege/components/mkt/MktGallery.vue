@@ -5,7 +5,7 @@
                 v-for="(slug, i) in GALLERY_SLUGS"
                 :key="slug"
                 v-reveal="(i % 4) + 1"
-                class="group rounded-ygf-card overflow-hidden shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                class="group rounded-ygf-card overflow-hidden shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 :aria-label="$t(`mkt.home.gallery.items.${i}`)"
                 @click="openIndex = i"
             >

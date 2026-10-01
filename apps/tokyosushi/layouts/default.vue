@@ -14,7 +14,7 @@
 
         <Body class="bg-tsb-one overflow-x-hidden">
         <NuxtLoadingIndicator color="hsl(var(--primary))" :height="2" />
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-neutral-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-neutral-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-screen flex flex-col">
@@ -60,9 +60,9 @@
                     </a>
                 </div>
                 <!-- Restaurant name -->
-                <p class="text-center mt-2 text-[11px] text-neutral-400/70 tracking-[0.3em] font-light" aria-hidden="true">{{ brand.name }}</p>
-                <div class="text-center mt-2 text-[10px] text-neutral-500">
-                    <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-500 transition-colors">nuagemagique.dev</a>
+                <p class="text-center mt-2 text-[11px] text-neutral-600 tracking-[0.3em] font-light" aria-hidden="true">{{ brand.name }}</p>
+                <div class="text-center mt-2 text-[10px] text-neutral-600">
+                    <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-700 transition-colors">nuagemagique.dev</a>
                 </div>
             </footer>
         </div>
@@ -85,7 +85,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-300" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-400" />
+            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-400" />
         </ClientOnly>
 
         <ClientOnly>

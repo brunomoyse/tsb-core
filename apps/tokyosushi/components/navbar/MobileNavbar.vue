@@ -36,7 +36,7 @@
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >

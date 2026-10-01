@@ -14,20 +14,20 @@
                     <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
                         <DietIcon kind="halal" class="w-3 h-3" />
                     </div>
-                    <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
+                    <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
                             <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
                         </svg>
                     </div>
-                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-ygf-orange-50 text-ygf-orange-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
+                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-ygf-orange-50 text-ygf-orange-text" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
                             <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
                         </svg>
                     </div>
                 </div>
                 <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
-                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
+                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
                 <!-- Shimmer placeholder -->
@@ -81,7 +81,7 @@
                     >
                       {{ product.name }}
                     </span>
-                    <span class="text-ygf-black/55 text-xs mt-0.5">
+                    <span class="text-neutral-600 text-xs mt-0.5">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
                         {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ forcedChoiceGroupLabel(group) }}
@@ -102,7 +102,7 @@
                         :aria-label="$t('cart.addToCart')"
                         data-testid="product-add-to-cart"
                         type="button"
-                        class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                        class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                         :disabled="orderingDisabled"
                         @click="addToCart"
                     >
@@ -131,7 +131,7 @@
                         >+</button>
                     </div>
                 </div>
-                <div v-else class="text-sm text-ygf-black/55 mt-2">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="text-sm text-neutral-600 mt-2">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>

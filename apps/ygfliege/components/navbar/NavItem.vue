@@ -3,12 +3,12 @@
         <NuxtLinkLocale
             :to="to"
             :aria-label="tooltipText || alt"
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
             <!-- Container with dynamic colors based on active route -->
             <div :class="[
                 'relative group w-[50px] h-[50px] flex items-center justify-center rounded-full hover:shadow-md transition-shadow overflow-visible',
-                isActive ? 'bg-ygf-orange-100 text-ygf-orange-700' : 'bg-white',
+                isActive ? 'bg-ygf-orange-100 text-ygf-orange-text' : 'bg-white',
             ]">
                 <!-- Icon with dynamic color -->
                 <img :alt="alt" :class="['h-6 w-6 select-none', isActive ? '' : '']" :src="icon"

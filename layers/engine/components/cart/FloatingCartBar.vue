@@ -13,7 +13,7 @@
                 @click="cartStore.toggleCartVisibility"
             >
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="bg-white text-primary-600 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
+                    <span class="bg-white text-primary-700 font-bold rounded-full w-7 h-7 flex items-center justify-center text-sm shrink-0">
                         {{ cartStore.totalItems }}
                     </span>
                     <span class="text-sm font-semibold truncate">

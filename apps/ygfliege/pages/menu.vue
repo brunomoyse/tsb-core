@@ -11,7 +11,7 @@
             <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
             <div v-if="isClosed" data-testid="menu-restaurant-closed" class="max-w-7xl mx-auto mt-4 px-4">
                 <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                     <div class="min-w-0">
@@ -22,7 +22,7 @@
             </div>
             <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="menu-preorder-banner" class="max-w-7xl mx-auto mt-4 px-4">
                 <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p class="text-amber-900 text-sm font-semibold">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
@@ -46,8 +46,8 @@
                      so the controls don't stretch full-bleed on wide screens. -->
                 <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3">
                     <!-- Search Bar (labeled) -->
-                    <div class="relative flex flex-1 sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ygf-orange-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-ygf-black/40 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
+                    <div class="relative flex flex-1 sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-600 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
                         <label class="sr-only" for="menuSearch">{{ $t('nav.search') }}</label>
@@ -57,14 +57,14 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            class="w-full h-full bg-transparent rounded-full pl-11 pr-10 outline-none text-sm text-ygf-black placeholder:text-ygf-black/40"
+                            class="w-full h-full bg-transparent rounded-full pl-11 pr-10 outline-none text-sm text-ygf-black placeholder:text-neutral-600"
                         />
                         <button
                             type="button"
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
                             :aria-label="$t('common.clear')"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-ygf-black/40 hover:text-ygf-black transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-ygf-black transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -203,18 +203,18 @@
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="text-center text-gray-500 italic">
+                    <div v-else class="text-center text-neutral-600 italic">
                         {{ $t('menu.noProduct') }}
                     </div>
                 </div>
 
                 <!-- The menu loaded and is truly empty -->
-                <div v-if="!baseCategories.length" class="text-center py-12 text-ygf-black/60">
+                <div v-if="!baseCategories.length" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
 
                 <!-- Search No Results -->
-                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-ygf-black/60">
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
                 </div>
             </section>

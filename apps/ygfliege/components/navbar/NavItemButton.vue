@@ -2,7 +2,7 @@
     <li>
         <button
             type="button"
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             :aria-label="tooltipText || alt"
             @click="$emit('click')"
         >
@@ -12,7 +12,7 @@
                 <!-- Badge -->
                 <span
                     v-if="badge && badge > 0"
-                    class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-ygf-orange-500 rounded-full"
+                    class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-primary-600 rounded-full"
                 >
                     {{ badge }}
                 </span>

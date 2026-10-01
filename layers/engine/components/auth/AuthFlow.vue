@@ -20,7 +20,7 @@
                 <!-- theme-ok: Google sign-in branding guidelines -->
                 <button
                     :disabled="loading"
-                    class="w-full min-h-11 inline-flex items-center justify-center gap-3 rounded-xl border border-[#747775] bg-white px-4 text-sm font-medium text-[#1F1F1F] transition-colors duration-300 hover:bg-[#F8FAFD] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    class="w-full min-h-11 inline-flex items-center justify-center gap-3 rounded-xl border border-[#747775] bg-white px-4 text-sm font-medium text-[#1F1F1F] transition-colors duration-300 hover:bg-[#F8FAFD] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     type="button"
                     @click="loginWithProvider('google')"
                 >
@@ -46,7 +46,7 @@
                     <div class="w-full border-t border-neutral-300/50" />
                 </div>
                 <div class="relative text-center">
-                    <span class="bg-white px-3 text-sm text-neutral-500 uppercase">
+                    <span class="bg-white px-3 text-sm text-neutral-600 uppercase">
                         {{ $t('login.dividerOr') }}
                     </span>
                 </div>
@@ -74,7 +74,7 @@
                 <p
                     v-if="emailFormatError"
                     id="auth-email-error"
-                    class="mt-1.5 text-xs text-red-600"
+                    class="mt-1.5 text-xs text-red-700"
                     role="alert"
                 >
                     {{ $t('notify.errors.invalidEmail') }}
@@ -150,7 +150,7 @@
 
             <div class="flex items-center justify-between text-sm">
                 <button
-                    class="inline-flex min-h-11 items-center text-neutral-500 hover:text-neutral-700 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                    class="inline-flex min-h-11 items-center text-neutral-600 hover:text-neutral-700 transition-colors duration-300 rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     type="button"
                     @click="backToEmail"
                 >
@@ -158,7 +158,7 @@
                 </button>
                 <button
                     :disabled="resendCooldown > 0 || loading"
-                    class="inline-flex min-h-11 items-center text-primary-500 font-medium hover:text-primary-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                    class="inline-flex min-h-11 items-center text-primary-700 font-medium hover:text-primary-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     type="button"
                     @click="resendCode"
                 >

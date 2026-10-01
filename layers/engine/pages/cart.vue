@@ -4,7 +4,7 @@
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
             <PageTitle>{{ $t('cart.title') }}</PageTitle>
-            <span v-if="cartStore.totalItems > 0" class="text-sm text-neutral-400 font-medium">
+            <span v-if="cartStore.totalItems > 0" class="text-sm text-neutral-600 font-medium">
                 {{ cartStore.totalItems }} {{ cartStore.totalItems === 1 ? $t('cart.item') : $t('cart.items') }}
             </span>
         </div>
@@ -67,7 +67,7 @@
                     <!-- INFO + CONTROLS -->
                     <div class="flex-1 min-w-0">
                         <!-- Row 1: Metadata (small, gray, truncated) -->
-                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-neutral-500 truncate leading-tight mb-0.5">
+                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-neutral-600 truncate leading-tight mb-0.5">
                             {{ itemLabelMeta(item) }}
                         </p>
 
@@ -77,11 +77,11 @@
                         </p>
 
                         <!-- Row 3: Choice (red) -->
-                        <p v-if="itemChoice(item)" class="text-xs text-primary-500 mt-0.5 truncate">
+                        <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 truncate">
                             ({{ itemChoice(item) }})
                         </p>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
                         <!-- What the server quote says about this line, with the way out -->
                         <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
@@ -91,7 +91,7 @@
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
                                     {{ formatCents(getItemLineTotalCents(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-600 tabular-nums">
                                     {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                                 </span>
                             </div>
@@ -102,7 +102,7 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)"
@@ -117,7 +117,7 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)"
@@ -133,7 +133,7 @@
                                 <button
                                     type="button"
                                     :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-400 hover:text-primary-500 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="handleRemoveItem(item)"
                                 >
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -152,16 +152,16 @@
         <!-- ═══ ORDER SUMMARY ═══ -->
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
             <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
-                <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
+                <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.subtotal') }}</span>
                     <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.deliveryFee') }}</span>
-                    <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
+                    <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
@@ -170,15 +170,15 @@
                     </span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
                     <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.onlineFee') }}</span>
                     <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
@@ -188,9 +188,9 @@
                 </div>
             </div>
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
-            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-700 text-center mt-3">
                 <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
-                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg" @click="switchToPickup">
                     {{ $t('delivery.modal.switchToPickup') }}
                 </button>
             </div>
@@ -216,10 +216,10 @@
                 </span>
                 <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
             </UiButton>
-            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-600">
+            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-800">
                 {{ $t('cart.orderingUnavailable') }}
             </p>
-            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-700">
+            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-800">
                 {{ $t('ordering.closedPreorder', { time: firstSlotLabel }) }}
             </p>
             <div class="safe-area-spacer-bottom" />
@@ -235,7 +235,7 @@
                 </svg>
             </div>
             <p class="text-lg font-semibold text-neutral-800 mb-1">{{ $t('cart.empty') }}</p>
-            <p class="text-sm text-neutral-400 text-center mb-6">{{ $t('cart.emptyHint') }}</p>
+            <p class="text-sm text-neutral-600 text-center mb-6">{{ $t('cart.emptyHint') }}</p>
             <UiButton to="/menu" size="lg">
                 {{ $t('nav.menu') }}
             </UiButton>

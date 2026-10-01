@@ -33,6 +33,9 @@ module.exports = {
                     'red': '#D42B2B',
                     'white': '#FFFFFF',
                     'success': '#2E8B57',
+                    // Success text/fill that passes AA: 5.33:1 on white, 4.65+ on the
+                    // orange tints; #2E8B57 is 4.25 on white.
+                    'success-dark': '#1F7A4A',
                     'error': '#D32F2F',
                     // Warm border tint, same value as --border-default.
                     'border': 'rgba(242, 123, 32, 0.12)',
@@ -96,7 +99,7 @@ module.exports = {
                 },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
+                ring: "hsl(var(--ring) / <alpha-value>)",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 primary: {
@@ -110,7 +113,10 @@ module.exports = {
                     700: '#C2570C',
                     800: '#9A3412',
                     900: '#7C2D12',
-                    DEFAULT: "hsl(var(--primary))",
+                    // Bare `primary` (bg-primary, border-primary, ring-primary) is the
+                    // AA-safe orange: white on #F58220 is 2.59:1. The brand orange
+                    // stays `ygf` / --ygf-orange (decor).
+                    DEFAULT: '#C2570C',   // --ygf-orange-on-white
                     foreground: "hsl(var(--primary-foreground))",
                     hover: '#9A3412',
                     soft: '#FFEDD5',

@@ -14,7 +14,7 @@
 
         <Body class="bg-ygf-bg overflow-x-hidden">
         <NuxtLoadingIndicator color="#F58220" :height="2" />
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ygf-orange-500">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-screen flex flex-col">
@@ -101,7 +101,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <LazyReorderDialog primary-class="bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover focus-visible:ring-ygf-orange-300" secondary-class="bg-ygf-gray-100 text-ygf-gray-600 hover:bg-ygf-gray-200 focus-visible:ring-ygf-gray-300" />
+            <LazyReorderDialog primary-class="bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-ygf-gray-100 text-ygf-gray-600 hover:bg-ygf-gray-200 focus-visible:ring-ygf-gray-300" />
         </ClientOnly>
 
         <ClientOnly>

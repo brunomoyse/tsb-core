@@ -19,7 +19,7 @@
                     <button
                         v-if="action"
                         type="button"
-                        class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @click="invokeAction"
                     >
                         {{ action.label }}
@@ -28,7 +28,7 @@
                     <slot v-else-if="cookieConsent" name="action">
                         <button
                             type="button"
-                            class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             @click="close"
                             :aria-label="$t('cookies.acceptAria')"
                         >

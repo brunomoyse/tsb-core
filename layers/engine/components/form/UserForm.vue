@@ -7,7 +7,7 @@
             <input id="firstName" v-model="firstName"
                    :placeholder="$t('form.firstNamePlaceholder')"
                    autocomplete="given-name"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-400 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
         </div>
 
@@ -18,7 +18,7 @@
             <input id="lastName" v-model="lastName"
                    :placeholder="$t('form.lastNamePlaceholder')"
                    autocomplete="name"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-400 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
         </div>
 
@@ -29,7 +29,7 @@
             <input id="email" v-model="email"
                    :placeholder="$t('form.emailPlaceholder')"
                    autocomplete="email"
-                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-400 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300"
+                   class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                    required type="email"/>
         </div>
 
@@ -39,17 +39,17 @@
             </label>
             <div class="flex space-x-2">
                 <select id="country" v-model="selectedCountry"
-                        class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300">
+                        class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300">
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                         {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
                     </option>
                 </select>
                 <input id="phone" v-model="phoneLocal"
                        :placeholder="$t('form.phonePlaceholder')"
-                       class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-400 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300"
+                       class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                        type="tel"/>
             </div>
-            <p v-if="phoneError" class="text-sm text-red-500 mt-1">{{ phoneError }}</p>
+            <p v-if="phoneError" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
         </div>
 
         <AddressAutocomplete v-show="!address" @update:address="(updatedAddress) => address = updatedAddress" />
@@ -64,7 +64,7 @@
                     <button
                         type="button"
                         @click="removeAddress"
-                        class="ml-3 text-sm text-red-600 hover:text-red-700 font-medium"
+                        class="ml-3 text-sm text-red-700 hover:text-red-800 font-medium"
                     >
                         {{ $t('common.remove') }}
                     </button>
@@ -209,9 +209,7 @@ li:hover {
 input, select, textarea {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: theme('colors.primary.300');
-    box-shadow: 0 0 0 3px theme('colors.primary.300 / 25%');
-}
+/* Focus styling lives on the fields themselves (the `field` primitive and
+   focus-visible:ring-ring utilities). A scoped `input:focus` box-shadow here
+   outranked the ring and replaced it with a pale glow below 3:1 (audit A10). */
 </style>

@@ -10,7 +10,7 @@
         >
             <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
             <div v-if="isClosed" data-testid="menu-restaurant-closed" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <div class="min-w-0">
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="menu-preorder-banner" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p class="text-amber-900 text-sm font-semibold">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
@@ -37,7 +37,7 @@
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
-                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px]">
+                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-tsb-one">
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
@@ -55,7 +55,7 @@
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
                             :aria-label="$t('nav.clearSearch')"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-600 hover:text-neutral-700 transition-colors rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -70,7 +70,7 @@
                             type="button"
                             @click="toggleFilter('halal')"
                             :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
@@ -88,9 +88,9 @@
                             type="button"
                             @click="toggleFilter('vegetarian')"
                             :aria-pressed="activeFilters.has('vegetarian')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('vegetarian')
-                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
+                                ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
                             <DietIcon
@@ -106,10 +106,10 @@
                             type="button"
                             @click="toggleFilter('spicy')"
                             :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
-                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-800 hover:border-red-200'"
                         >
                             <DietIcon
                                 kind="spicy"
@@ -243,7 +243,7 @@
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="text-center text-neutral-500 italic">
+                    <div v-else class="text-center text-neutral-600 italic">
                         {{ $t('menu.noProduct') }}
                     </div>
                 </div>
@@ -254,12 +254,12 @@
                 </div>
 
                 <!-- Search No Results -->
-                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
                 </div>
 
                 <!-- Filter No Results -->
-                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
+                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
             </section>

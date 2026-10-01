@@ -74,7 +74,7 @@
     }
 
     .btn-primary {
-        @apply bg-primary text-primary-foreground shadow-sm;
+        @apply bg-primary-600 text-primary-foreground shadow-sm;
     }
 
     .btn-primary:not(:disabled):not([aria-disabled="true"]):hover {
@@ -98,7 +98,7 @@
     }
 
     .btn-link {
-        @apply inline-flex min-h-11 items-center gap-1.5 rounded-md px-1 text-sm font-medium text-primary-600 transition-colors duration-300;
+        @apply inline-flex min-h-11 items-center gap-1.5 rounded-md px-1 text-sm font-medium text-primary-700 transition-colors duration-300;
     }
 
     .btn-link:not(:disabled):hover {
@@ -114,7 +114,7 @@
     }
 
     .field {
-        @apply block w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-neutral-900 transition-all duration-300 placeholder:text-neutral-400;
+        @apply block w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-neutral-900 transition-all duration-300 placeholder:text-neutral-600;
     }
 
     .field:focus-visible {
@@ -130,7 +130,7 @@
     }
 
     .stepper-btn:not(:disabled):hover {
-        @apply border-primary-200 bg-tsb-four text-primary-600;
+        @apply border-primary-200 bg-tsb-four text-primary-700;
     }
 
     .stepper-btn:disabled {

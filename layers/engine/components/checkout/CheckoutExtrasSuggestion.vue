@@ -20,14 +20,14 @@
                 :key="extra.key"
                 class="flex items-center justify-between gap-3 p-4 border rounded-xl cursor-pointer transition-colors"
                 :class="isSelected(extra.key)
-                    ? 'border-primary-300 bg-tsb-four'
+                    ? 'border-primary bg-tsb-four'
                     : 'border-neutral-200 bg-white hover:border-neutral-300'"
             >
                 <span class="flex items-center gap-3 min-w-0">
                     <input
                         type="checkbox"
                         :checked="isSelected(extra.key)"
-                        class="h-5 w-5 text-primary-500 border-neutral-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-primary-300"
+                        class="h-5 w-5 text-primary-700 border-neutral-300 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @change="toggle(extra.key)"
                     />
                     <span :class="['text-sm font-medium truncate', isSelected(extra.key) ? 'text-primary-700' : 'text-neutral-800']">

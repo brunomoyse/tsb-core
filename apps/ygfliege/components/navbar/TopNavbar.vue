@@ -8,7 +8,7 @@
             <NuxtLinkLocale
                 to="/"
                 :aria-label="$t('nav.home')"
-                class="shrink-0 inline-flex items-center rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+                class="shrink-0 inline-flex items-center rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
                 <img src="/images/logos/logo-color.svg" :alt="logoAlt" width="44" height="44" class="h-11 w-11" />
             </NuxtLinkLocale>
@@ -20,7 +20,7 @@
                     <NuxtLinkLocale
                         :to="item.to"
                         :aria-current="isActive(item.to) ? 'page' : undefined"
-                        class="relative inline-flex items-center h-16 px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-inset"
+                        class="relative inline-flex items-center h-16 px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-inset"
                         :class="isActive(item.to) ? 'text-ygf-orange-800' : 'text-ygf-black/70 hover:text-ygf-black'"
                     >
                         {{ item.label }}
@@ -84,7 +84,7 @@
                         v-else
                         to="me"
                         :aria-label="$t('nav.myAccount')"
-                        class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white border border-ygf-orange-100 hover:bg-ygf-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+                        class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white border border-ygf-orange-100 hover:bg-ygf-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         <img src="/icons/account-circle-icon.svg" alt="" aria-hidden="true" class="w-5 h-5" />
                     </NuxtLinkLocale>

@@ -102,7 +102,7 @@ textarea {
            default border matches --border-default in brand.css. */
         --border: 29.3 91.2% 91.2%;
         --input: 29.3 91.2% 91.2%;
-        --ring: 27.6 91.4% 54.3%;
+        --ring: 24.7 88.3% 40.4%;           /* #C2570C: focus ring >= 3:1 on white and the orange tints (WCAG 1.4.11); the brand orange stays --primary */
 
         --radius: 0.75rem;                  /* 12px cards, per the guide */
     }

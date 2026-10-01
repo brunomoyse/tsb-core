@@ -97,7 +97,7 @@ useSeoMeta({
                             class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white"
                             :class="entry.key === 'liege' ? 'bg-ygf shadow-ygf-glow' : 'bg-ygf-orange-300'"
                         />
-                        <div class="font-display font-black text-2xl text-ygf">{{ entry.year }}</div>
+                        <div class="font-display font-black text-2xl text-ygf-orange-text">{{ entry.year }}</div>
                         <h3 class="font-semibold text-ygf-black mt-1">{{ $t(`mkt.about.timeline.${entry.key}.title`) }}</h3>
                         <p class="text-sm text-gray-600 leading-relaxed mt-1">{{ $t(`mkt.about.timeline.${entry.key}.desc`) }}</p>
                         <div v-if="entry.key === 'liege'" class="mt-4 w-28" aria-hidden="true">
@@ -139,11 +139,11 @@ useSeoMeta({
         </section>
 
         <!-- ── Counters ── -->
-        <section class="bg-ygf">
+        <section class="bg-primary-600">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-16 grid grid-cols-3 gap-6 text-center">
                 <div v-for="(c, i) in COUNTERS" :key="c.key" v-reveal="i">
                     <div class="font-display font-black text-3xl sm:text-5xl text-white">{{ c.value }}</div>
-                    <div class="mt-1 text-white/80 text-xs sm:text-sm">{{ $t(`mkt.about.counters.${c.key}`) }}</div>
+                    <div class="mt-1 text-white text-xs sm:text-sm">{{ $t(`mkt.about.counters.${c.key}`) }}</div>
                 </div>
             </div>
         </section>

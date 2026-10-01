@@ -49,7 +49,7 @@ useSeoMeta({
                 </div>
                 <div v-reveal="1">
                     <h2 class="font-display font-bold text-3xl text-ygf-black mb-1">{{ $t('mkt.concept.broth_story.title') }}</h2>
-                    <p class="font-serifzh text-lg text-ygf-dark mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }}</p>
+                    <p class="font-serifzh text-lg text-ygf-orange-text mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p1') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p2') }}</p>
                     <p class="text-gray-600 leading-relaxed">{{ $t('mkt.concept.broth_story.p3') }}</p>
@@ -75,7 +75,7 @@ useSeoMeta({
                 </details>
             </div>
             <p class="text-center mt-8">
-                <NuxtLinkLocale to="/faq" class="text-sm font-medium text-ygf hover:text-ygf-dark transition-colors">
+                <NuxtLinkLocale to="/faq" class="text-sm font-medium text-ygf-orange-text hover:text-ygf-orange-900 transition-colors">
                     {{ $t('faq.title') }} →
                 </NuxtLinkLocale>
             </p>

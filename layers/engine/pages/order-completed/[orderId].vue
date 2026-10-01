@@ -58,7 +58,7 @@
             <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
                 <a
                     :href="telHref(brand.phone)"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                     {{ $t('orderCompleted.payment.callUs') }}
                 </a>
@@ -80,7 +80,7 @@
             class="flex flex-col items-center justify-center w-full max-w-md mt-16 gap-3"
         >
             <div class="w-8 h-8 border-2 border-neutral-300 border-t-primary-400 rounded-full animate-spin" />
-            <p class="text-sm text-neutral-500">{{ order ? $t('orderCompleted.payment.verifying', 'Verifying your payment…') : $t('orderCompleted.loading') }}</p>
+            <p class="text-sm text-neutral-600">{{ order ? $t('orderCompleted.payment.verifying', 'Verifying your payment…') : $t('orderCompleted.loading') }}</p>
         </div>
 
         <template v-else>
@@ -129,7 +129,7 @@
             </h1>
 
             <!-- Subtitle -->
-            <p class="mt-2 text-neutral-500 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
+            <p class="mt-2 text-neutral-600 text-sm sm:text-base text-center max-w-xs oc-stagger-2">
                 {{ $t('orderCompleted.thankYou') }}
                 <br />
                 {{ $t('orderCompleted.orderSuccess') }}
@@ -165,7 +165,7 @@
 
                 <!-- Items list -->
                 <div data-testid="order-completed-items" class="p-5">
-                    <h3 class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3">
+                    <h3 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-3">
                         {{ $t('orderCompleted.items') }}
                     </h3>
                     <div class="space-y-1">
@@ -178,12 +178,12 @@
                                 <p class="text-sm font-medium text-neutral-900 truncate">
                                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
                                         <span v-if="i > 0" class="text-neutral-400 font-normal mx-1">·</span>
-                                        <span :class="part.muted ? 'text-neutral-400 font-normal' : ''">{{ part.text }}</span>
+                                        <span :class="part.muted ? 'text-neutral-600 font-normal' : ''">{{ part.text }}</span>
                                     </template>
-                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 font-normal leading-snug">{{ orderItemChoice(item) }}</span>
+                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 font-normal leading-snug">{{ orderItemChoice(item) }}</span>
                                 </p>
                             </div>
-                            <span class="text-xs font-semibold text-neutral-500 bg-neutral-100 rounded-full px-2.5 py-0.5 shrink-0">
+                            <span class="text-xs font-semibold text-neutral-600 bg-neutral-100 rounded-full px-2.5 py-0.5 shrink-0">
                                 x{{ item.quantity }}
                             </span>
                         </div>
@@ -197,13 +197,13 @@
 
                 <!-- Status timeline -->
                 <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" class="border-t border-neutral-100 p-5">
-                    <h3 class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-4">
+                    <h3 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-4">
                         {{ $t('orderCompleted.status') }}
                     </h3>
                     <OrderStatusTimeline :order="order" />
 
                     <!-- Live tracking hint -->
-                    <div class="mt-4 flex items-center gap-2 text-xs text-neutral-400">
+                    <div class="mt-4 flex items-center gap-2 text-xs text-neutral-600">
                         <span class="relative flex h-2 w-2 shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
@@ -237,7 +237,7 @@
 
                 <!-- Failed / Cancelled -->
                 <div v-else class="border-t border-neutral-100 p-5">
-                    <p class="text-sm text-primary-500 font-medium">
+                    <p class="text-sm text-primary-700 font-medium">
                         {{ $t('orderCompleted.orderCanceled') }}
                     </p>
                     <p
@@ -253,7 +253,7 @@
 
         <!-- Error State -->
         <div v-else-if="orderError" class="mt-8 w-full max-w-lg p-5 rounded-2xl bg-red-50 border border-red-100 oc-stagger-4">
-            <p class="text-sm text-red-600">
+            <p class="text-sm text-red-700">
                 {{ $t('orderCompleted.loadError') }}
             </p>
         </div>

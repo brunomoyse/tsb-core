@@ -6,7 +6,7 @@
             :href="href"
             :aria-label="ariaLabel || tooltipText"
             :aria-current="isActive ? 'page' : undefined"
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
             <!-- Container with dynamic colors based on active route -->
             <div :class="[
@@ -25,7 +25,7 @@
                 </span>
 
                 <!-- Bottom indicator bar -->
-                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-primary rounded-full transition-transform duration-200 ease-out origin-center"
+                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-primary-600 rounded-full transition-transform duration-200 ease-out origin-center"
                       :class="isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"
                 />
 

@@ -14,7 +14,7 @@
                 :class="[
                     'h-1.5 rounded-full transition-all duration-300',
                     index === current
-                        ? 'w-8 bg-primary-500'
+                        ? 'w-8 bg-primary-600'
                         : index < current
                             ? 'w-4 bg-primary-300'
                             : 'w-4 bg-neutral-200'

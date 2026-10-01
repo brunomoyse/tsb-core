@@ -5,7 +5,7 @@
             <PageTitle>
                 Conditions Générales de Vente
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">Dernière mise à jour : 01/10/2026</p>
+            <p class="mt-3 text-sm text-neutral-600">Dernière mise à jour : 01/10/2026</p>
         </header>
 
         <!-- Company info -->
@@ -174,7 +174,7 @@
                 </p>
                 <p class="mt-2">
                     Toute demande peut être adressée par e-mail à
-                    <a :href="`mailto:${brand.email}`" class="text-primary-600 underline">{{ brand.email }}</a>
+                    <a :href="`mailto:${brand.email}`" class="text-ygf-orange-text underline">{{ brand.email }}</a>
                     ou par courrier à&nbsp;: {{ brand.name }}, {{ streetCityLine }}. Le
                     Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
                     données (APD).
@@ -265,7 +265,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-400">
+        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
             <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
@@ -329,7 +329,7 @@ useSeoMeta({
 }
 
 .terms-subheading {
-    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500;
+    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-600;
 }
 
 .terms-list {

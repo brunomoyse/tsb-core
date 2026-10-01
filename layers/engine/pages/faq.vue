@@ -24,7 +24,7 @@
                 :key="index"
                 class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
             >
-                <summary class="font-semibold text-lg cursor-pointer hover:text-primary-500 transition-colors">
+                <summary class="font-semibold text-lg cursor-pointer hover:text-primary-900 transition-colors">
                     {{ faq.question }}
                 </summary>
                 <!-- Safe: content sourced from i18n translation files, not user input -->

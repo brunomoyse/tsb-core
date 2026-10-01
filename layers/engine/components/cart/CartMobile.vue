@@ -32,7 +32,7 @@
                 <button
                     type="button"
                     :aria-label="$t('cart.closeCart')"
-                    class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="cartStore.toggleCartVisibility"
                 >
                     <svg class="h-6 w-6 text-neutral-700" fill="none" stroke="currentColor">
@@ -76,18 +76,18 @@
 
                     <!-- PRODUCT INFO -->
                     <div class="col-span-3 flex flex-col justify-center text-sm min-w-0">
-                        <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-400 truncate">
+                        <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                             {{ itemLabelMeta(item) }}
                         </span>
                         <span class="font-medium text-neutral-800 leading-snug line-clamp-2">
                             {{ itemLabelName(item) }}
                         </span>
-                        <span v-if="itemChoice(item)" class="text-xs text-primary-600">
+                        <span v-if="itemChoice(item)" class="text-xs text-primary-700">
                             ({{ itemChoice(item) }})
                         </span>
                         <span
                             v-if="item.product.pieceCount"
-                            class="text-neutral-500 text-xs mt-1"
+                            class="text-neutral-600 text-xs mt-1"
                         >
                           {{ item.product.pieceCount }}
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
@@ -105,7 +105,7 @@
                             {{ $t('cart.editItem') }}
                         </UiButton>
                         <button type="button" data-testid="cart-item-remove"
-                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-500 hover:text-red-600 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 @click="removeWithUndo(item)">
                             {{ $t('cart.removeItem') }}
                         </button>
@@ -126,7 +126,7 @@
                 </li>
 
                 <!-- EMPTY STATE -->
-                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-neutral-500">
+                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-neutral-600">
                     <img
                         src="/icons/shopping-bag-icon.svg"
                         alt=""
@@ -139,16 +139,16 @@
             <!-- FOOTER: TOTAL + CHECKOUT -->
             <footer v-if="cartStore.products.length" class="p-4 border-t border-neutral-200 bg-white rounded-b-none">
                 <div class="space-y-1.5 text-sm mb-4">
-                    <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
+                    <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.subtotal') }}</span>
                         <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                     </div>
-                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
+                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.deliveryFee') }}</span>
-                        <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
+                        <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
                             {{ $t('cart.deliveryTbd') }}
                         </span>
-                        <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                        <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
@@ -157,15 +157,15 @@
                         </span>
                         <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                     </div>
-                    <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
+                    <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
                         <span>{{ $t('cart.pickupDiscount') }}</span>
                         <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                     </div>
-                    <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-600">
+                    <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-800">
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
                     </div>
-                    <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                    <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.onlineFee') }}</span>
                         <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                     </div>
@@ -175,16 +175,16 @@
                     </div>
                 </div>
                 <!-- Delivery minimum (delivery only — pickup has no minimum) -->
-                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mb-3">
+                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-700 text-center mb-3">
                     <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
-                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg" @click="switchToPickup">
                         {{ $t('delivery.modal.switchToPickup') }}
                     </button>
                 </div>
-                <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
+                <div v-if="!isOrderingAvailable" class="text-sm text-amber-800 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
                 </div>
-                <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-700 text-center mb-2">
+                <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-800 text-center mb-2">
                     {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
                 </div>
                 <UiButton

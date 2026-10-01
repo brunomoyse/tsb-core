@@ -11,7 +11,7 @@
                     ref="addressInput"
                     v-model="addressQuery"
                     :placeholder="$t('form.address.placeholder')"
-                    class="w-full px-3.5 pr-10 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-400 focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300 disabled:opacity-70"
+                    class="w-full px-3.5 pr-10 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300 disabled:opacity-70"
                     :disabled="Boolean(selectedAddress)"
                     @focus="onAddressFocus"
                     @blur="onAddressBlur"
@@ -47,7 +47,7 @@
                     @mousedown="selectSuggestion(suggestion)"
                 >
                     <div class="font-medium text-sm text-neutral-900">{{ suggestion.mainText }}</div>
-                    <div class="text-xs text-neutral-500 mt-0.5">{{ suggestion.secondaryText }}</div>
+                    <div class="text-xs text-neutral-600 mt-0.5">{{ suggestion.secondaryText }}</div>
                 </li>
             </ul>
             <div
