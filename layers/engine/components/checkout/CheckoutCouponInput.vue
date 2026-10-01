@@ -32,7 +32,7 @@
                     type="text"
                     data-testid="coupon-input"
                     :aria-label="$t('coupon.title')"
-                    class="field flex-1 text-sm disabled:opacity-50"
+                    class="field flex-1 text-base sm:text-sm disabled:opacity-50"
                     :placeholder="$t('coupon.placeholder')"
                     :disabled="isValidating"
                     @keyup.enter="applyCoupon"

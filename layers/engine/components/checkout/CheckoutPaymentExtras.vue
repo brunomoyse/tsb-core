@@ -113,7 +113,7 @@
                             :aria-invalid="showCashShort ? 'true' : undefined"
                             :aria-describedby="cashHintId"
                             :class="[
-                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-600 focus-visible:outline-none transition-all duration-300',
+                                'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-base sm:text-sm text-neutral-900 placeholder-neutral-600 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
                                     ? 'border-neutral-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring'
                                     : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:border-amber-400',
@@ -319,7 +319,7 @@
                 aria-describedby="order-comment-counter"
                 rows="3"
                 maxlength="500"
-                class="field text-sm"
+                class="field text-base sm:text-sm"
                 :placeholder="$t('checkout.orderCommentPlaceholder', 'e.g. Allergies or special instructions')"
             ></textarea>
             <p

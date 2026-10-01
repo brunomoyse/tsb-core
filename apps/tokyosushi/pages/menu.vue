@@ -48,7 +48,7 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
+                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-base sm:text-sm"
                         />
                         <button
                             type="button"

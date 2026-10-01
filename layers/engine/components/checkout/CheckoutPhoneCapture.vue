@@ -49,7 +49,7 @@
                         :aria-label="$t('form.phone')"
                         :aria-invalid="phoneError ? 'true' : undefined"
                         :aria-describedby="phoneError ? 'checkout-phone-error' : undefined"
-                        class="w-full px-3 py-2.5 pr-9 bg-white border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
+                        class="w-full px-3 py-2.5 pr-9 bg-white border border-neutral-200 rounded-xl text-base sm:text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                         @input="onInput"
                         @blur="onBlur"
                     />

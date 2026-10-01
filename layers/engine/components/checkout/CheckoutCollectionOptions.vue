@@ -76,7 +76,7 @@
                 id="addressExtra"
                 v-model="addressExtra"
                 rows="3"
-                class="field text-sm"
+                class="field text-base sm:text-sm"
                 :placeholder="$t('checkout.addressCommentPlaceholder', 'e.g. Ring the bell twice')"
             ></textarea>
         </div>
@@ -108,7 +108,7 @@
                     v-model="preferredReadyTime"
                     id="checkout-preferred-time"
                     data-testid="checkout-preferred-time"
-                    class="field mt-1 block text-sm"
+                    class="field mt-1 block text-base sm:text-sm"
                 >
                     <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
                     <option
