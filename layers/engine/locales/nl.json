@@ -514,6 +514,7 @@
       "addressRequired": "Een adres is vereist voor levering.",
       "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
       "deliveryAddressExcluded": "Wij leveren niet in uw zone.",
+      "deliveryUnavailable": "Levering is niet beschikbaar — kies voor afhalen.",
       "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
       "codeExpired": "De code is verlopen. Vraag een nieuwe aan.",
       "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink.",

@@ -514,6 +514,7 @@
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
       "deliveryAddressExcluded": "我们不配送到您所在的区域。",
+      "deliveryUnavailable": "暂不提供配送，请选择自取。",
       "invalidCode": "验证码无效或已过期。请重试。",
       "codeExpired": "验证码已过期。请重新获取。",
       "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",

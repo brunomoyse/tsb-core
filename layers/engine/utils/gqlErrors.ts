@@ -60,6 +60,7 @@ const CODE_TABLE: Record<string, Describe> = {
     ADDRESS_UNRESOLVABLE: key('notify.errors.addressLookupFailed'),
     DELIVERY_OUT_OF_ZONE: () => ({ key: 'notify.errors.deliveryAddressTooFar', params: { distance: DELIVERY_RADIUS_KM } }),
     DELIVERY_AREA_EXCLUDED: key('notify.errors.deliveryAddressExcluded'),
+    DELIVERY_UNAVAILABLE: key('notify.errors.deliveryUnavailable'),
 
     // Coupons
     COUPON_INVALID: key('coupon.invalid'),
