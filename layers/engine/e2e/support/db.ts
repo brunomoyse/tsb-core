@@ -38,10 +38,13 @@ export interface SeedOrderInput {
   online: boolean
   /** Payment status for online orders (mollie_payments.status): open | pending | paid | canceled | failed | expired. */
   paymentStatus?: string
+  /** Backdates `created_at` (minutes ago); default = now. */
+  createdMinutesAgo?: number
 }
 
 /*
- * Inserts a PICKUP order (no items, no address) plus, for online orders, its
+ * Inserts a PICKUP order (no items, no address) flagged `is_test` (so it never reaches the
+ * kitchen, revenue figures or customer mailings if cleanup fails) plus, for online orders, its
  * mollie_payments row — exactly the rows the Mollie webhook would have left
  * behind. Returns the order id. Columns follow tsb-service/migrations; keep in
  * sync if NOT NULL columns are added to `orders` / `mollie_payments`.
@@ -49,8 +52,8 @@ export interface SeedOrderInput {
 export function seedOrder(input: SeedOrderInput): string {
   const id = randomUUID()
   psql(
-    `INSERT INTO orders (id, user_id, order_status, order_type, is_online_payment, total_price, takeaway_discount, coupon_discount, transaction_fee, language) `
-    + `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, 25.00, 0, 0, ${input.online ? '0.30' : '0'}, 'fr')`,
+    `INSERT INTO orders (id, user_id, order_status, order_type, is_online_payment, total_price, takeaway_discount, coupon_discount, transaction_fee, language, is_test, created_at) `
+    + `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, 25.00, 0, 0, ${input.online ? '0.30' : '0'}, 'fr', TRUE, NOW() - INTERVAL '${Math.trunc(input.createdMinutesAgo ?? 0)} minutes')`,
   )
   if (input.online) {
     psql(

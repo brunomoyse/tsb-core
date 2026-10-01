@@ -12,7 +12,9 @@ import { SEL } from './support/selectors'
  *
  * Contract (useOrderCompleted):
  *   cancelled / failed / expired payment -> retry screen, cart untouched
- *   open / pending payment               -> "verifying" (never a verdict), cart untouched
+ *   open payment on a CANCELLED order    -> retry screen, cart untouched
+ *   open / pending payment               -> "verifying" (never a verdict), cart untouched; if still pending after the
+ *                                           verify window: neutral "awaiting confirmation" (no retry), cart untouched
  *   paid online order or cash order      -> confirmation, cart cleared, but only the cart that
  *                                           was checked out for THAT order (cart.pendingOrderId)
  */
@@ -98,6 +100,8 @@ test.describe('Mollie return (full page load)', () => {
     { payment: 'canceled', status: 'CANCELLED' },
     { payment: 'failed', status: 'FAILED' },
     { payment: 'expired', status: 'CANCELLED' },
+    // The order was already cancelled: the open payment is dead, so a retry is safe.
+    { payment: 'open', status: 'CANCELLED' },
   ]
 
   problemCases.forEach(({ payment, status }) => {
@@ -139,6 +143,27 @@ test.describe('Mollie return (full page load)', () => {
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
+  test('still pending after the verify window: neutral "awaiting confirmation", no retry, cart kept', async ({ authenticatedPage: page }) => {
+    test.setTimeout(120_000) // ~17 s verify window + the webhook step
+    orderId = seedOrder({ userId: userId(), status: 'PENDING', online: true, paymentStatus: 'open' })
+    await seedCart(page, orderId)
+
+    await page.goto(`/fr/order-completed/${orderId}`)
+
+    // The verify loop gives up after ~17 s; the page must NOT then invite a second payment.
+    const waiting = page.locator(SEL.orderCompletedAwaitingConfirmation)
+    await expect(waiting).toBeVisible({ timeout: 40_000 })
+    await expect(page.locator(SEL.orderCompletedPaymentProblem)).toHaveCount(0)
+    await expect(waiting.locator('a[href$="/checkout"]')).toHaveCount(0)
+    await expect(waiting.locator('a[href^="tel:"]')).toHaveCount(1)
+    expect(await cartLineCount(page)).toBe(1)
+
+    // The late webhook finally lands: the page updates by itself and the cart is committed.
+    settleOrder(orderId, 'CONFIRMED', 'paid')
+    await expect(page.locator(SEL.orderCompletedTitle)).toBeVisible({ timeout: 30_000 })
+    await expect.poll(() => cartLineCount(page)).toBe(0)
+  })
+
   test('a paid online order clears the cart', async ({ authenticatedPage: page }) => {
     orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid' })
     await seedCart(page, orderId)
@@ -160,8 +185,21 @@ test.describe('Mollie return (full page load)', () => {
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
-  test('revisiting a paid order later does not clear a newer cart', async ({ authenticatedPage: page }) => {
+  /* Transitional, delete after 2026-11-15 together with the fallback in useOrderCompleted:
+     a checkout that ran on the previous bundle left no pendingOrderId behind. */
+  test('transitional: a cart without pendingOrderId is cleared for an order created minutes ago', async ({ authenticatedPage: page }) => {
     orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid' })
+    await seedCart(page, null)
+
+    await page.goto(`/fr/order-completed/${orderId}`)
+
+    await expect(page.locator(SEL.orderCompletedTitle)).toBeVisible({ timeout: 20_000 })
+    await expect.poll(() => cartLineCount(page)).toBe(0)
+  })
+
+  test('revisiting a paid order later does not clear a newer cart', async ({ authenticatedPage: page }) => {
+    // Older than the transitional 30-minute window, and the cart is not the one checked out for it.
+    orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid', createdMinutesAgo: 45 })
     // The customer already started a new order: the cart is not the one checked out for `orderId`.
     await seedCart(page, null)
 

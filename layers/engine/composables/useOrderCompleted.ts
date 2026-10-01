@@ -18,7 +18,10 @@ import { print } from 'graphql'
  *   error     the order could not be loaded              → error card, cart kept
  *   verifying online order still open/pending            → "verifying" spinner,
  *             (the webhook may be late)                     polled until it settles
- *   problem   canceled / failed / expired / abandoned    → retry screen, cart kept
+ *   awaiting-confirmation  still pending after the verify window → neutral "we have not
+ *             received the confirmation yet, do not pay again" card, cart kept, keeps updating
+ *   problem   canceled / failed / expired, or an open payment on an already
+ *             cancelled/failed order                       → retry screen, cart kept
  *   confirmed paid online order, or any cash order       → celebration, cart cleared
  *
  * The cart is committed (cleared) ONLY in the `confirmed` phase, and only when it is the cart
@@ -72,12 +75,27 @@ export const ORDER_COMPLETED_QUERY = print(gql`
     }
 `)
 
-export type OrderCompletedPhase = 'loading' | 'error' | 'verifying' | 'problem' | 'confirmed'
+export type OrderCompletedPhase = 'loading' | 'error' | 'verifying' | 'awaiting-confirmation' | 'problem' | 'confirmed'
 
 /** Gaps between status checks while an online order is still open/pending (≈17 s in total). */
 const VERIFY_DELAYS_MS = [800, 1200, 1500, 2000, 3000, 4000, 5000]
 /** Safety-net poll for when the WebSocket subscription fails silently. */
 const FALLBACK_POLL_MS = 15_000
+/*
+ * TODO(remove after 2026-11-15): transitional fallback for customers whose checkout ran on the
+ * PREVIOUS web bundle. That bundle never stored `pendingOrderId`, so they come back from Mollie
+ * with `pendingOrderId === null` and would keep a full cart for an order that is already placed
+ * (and could place it twice). For a short window we therefore also commit a cart with no
+ * `pendingOrderId` when the order was created minutes ago. A cart checked out for a DIFFERENT
+ * order (non-null id) is never touched. By the date above every cart in the wild has been written
+ * by a bundle that sets the id: delete this window and the `createdAt` source of the watch below.
+ */
+const TRANSITIONAL_CHECKOUT_WINDOW_MS = 30 * 60 * 1000
+const isTransitionalCheckout = (pendingOrderId: string | null | undefined, createdAt: string | null | undefined): boolean => {
+    if (typeof pendingOrderId === 'string' || !createdAt) return false
+    const age = Date.now() - Date.parse(createdAt)
+    return Number.isFinite(age) && age >= 0 && age < TRANSITIONAL_CHECKOUT_WINDOW_MS
+}
 const TERMINAL_STATUSES = ['DELIVERED', 'PICKED_UP', 'FAILED', 'CANCELLED']
 
 export function useOrderCompleted(orderId: string) {
@@ -118,7 +136,7 @@ export function useOrderCompleted(orderId: string) {
         return out
     })
 
-    // Set once the verify loop gave up: the order is still pending, treat as abandoned.
+    // Set once the verify loop gave up: the order is still pending and the webhook is late.
     const verifyExpired = ref(false)
 
     const phase = computed<OrderCompletedPhase>(() => {
@@ -126,11 +144,17 @@ export function useOrderCompleted(orderId: string) {
         if (!o) return orderError.value ? 'error' : 'loading'
         const out = paymentOutcome.value
         if (out === null) return 'confirmed'
-        if (out === 'abandoned' && o.status === 'PENDING' && !verifyExpired.value) return 'verifying'
+        /* Still PENDING with an open/unknown payment: only a late webhook explains it, so after the
+           verify window show a neutral "awaiting confirmation" state, NEVER the retry screen (a
+           second payment would double-charge a customer whose first one is just not confirmed yet).
+           The retry screen needs a definitive verdict: canceled/failed/expired, or an order that
+           is already CANCELLED/FAILED. */
+        if (out === 'abandoned' && o.status === 'PENDING') return verifyExpired.value ? 'awaiting-confirmation' : 'verifying'
         return isPaymentProblem(out) ? 'problem' : 'confirmed'
     })
 
     const paymentProblem = computed(() => phase.value === 'problem')
+    const awaitingConfirmation = computed(() => phase.value === 'awaiting-confirmation')
     // Neutral spinner: either still loading, or waiting for a late webhook.
     const resolvingPayment = computed(() => phase.value === 'loading' || phase.value === 'verifying')
 
@@ -150,9 +174,9 @@ export function useOrderCompleted(orderId: string) {
        an email link) must not wipe whatever the customer has in the cart by then.
        The pending id also gates a late persisted-state hydration, hence the watch on it. */
     let committed = false
-    watch([phase, () => cartStore.pendingOrderId], ([p, pendingOrderId]) => {
+    watch([phase, () => cartStore.pendingOrderId, () => order.value?.createdAt], ([p, pendingOrderId, createdAt]) => {
         if (p !== 'confirmed' || committed || !import.meta.client) return
-        if (pendingOrderId !== orderId) return
+        if (pendingOrderId !== orderId && !isTransitionalCheckout(pendingOrderId, createdAt)) return
         committed = true
         cartStore.resetState()
     }, { immediate: true })
@@ -161,7 +185,8 @@ export function useOrderCompleted(orderId: string) {
        Returned from Mollie before the webhook landed: re-check the status a few
        times before deciding. Stops as soon as the phase leaves `verifying`
        (subscription/poll update, unmount). If it is still pending when it runs
-       out, fall through to the "abandoned" retry screen — the cart is kept. */
+       out, fall through to the neutral "awaiting confirmation" state (never the retry screen:
+       the webhook may just be late) — the cart is kept and live updates keep running. */
     let verifyRunning = false
     const runVerifyLoop = async () => {
         if (verifyRunning) return
@@ -257,6 +282,7 @@ export function useOrderCompleted(orderId: string) {
         phase,
         paymentOutcome,
         paymentProblem,
+        awaitingConfirmation,
         resolvingPayment,
         liveUpdate,
         refresh,

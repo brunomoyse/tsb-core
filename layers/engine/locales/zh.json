@@ -435,7 +435,10 @@
       "abandonedTitle": "支付未完成",
       "abandonedBody": "您在支付完成前离开，订单未提交。购物车已保留，您可以重试。",
       "tryAgain": "重试",
-      "verifying": "正在验证您的支付…"
+      "verifying": "正在验证您的支付…",
+      "awaitingConfirmationTitle": "正在确认您的支付",
+      "awaitingConfirmationBody": "我们尚未收到支付确认。本页面会自动更新。如果您已被扣款，请勿重复支付，请致电 {phone} 联系我们。",
+      "callUs": "致电餐厅"
     }
   },
   "error": {
