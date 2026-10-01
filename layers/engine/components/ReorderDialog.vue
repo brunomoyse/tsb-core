@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useReorder } from '#engine/composables/useReorder'
 
@@ -82,8 +82,23 @@ const { prompt, resolve } = useReorder()
 const dialogRef = ref<HTMLElement | null>(null)
 useFocusTrap(dialogRef)
 
+// The page's own overflow value is saved on open and put back on close (and on unmount), not blanked: something else may have set it.
+let previousOverflow: string | null = null
+const restoreScroll = () => {
+    if (previousOverflow === null) return
+    document.body.style.overflow = previousOverflow
+    previousOverflow = null
+}
 watch(prompt, (open) => {
     if (!import.meta.client) return
-    document.body.style.overflow = open ? 'hidden' : ''
+    if (open) {
+        if (previousOverflow === null) previousOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+    } else {
+        restoreScroll()
+    }
+})
+onBeforeUnmount(() => {
+    if (import.meta.client) restoreScroll()
 })
 </script>

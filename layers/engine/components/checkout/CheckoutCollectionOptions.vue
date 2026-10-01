@@ -44,10 +44,10 @@
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="isExcludedPostcode(cartStore.address.postcode)" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-primary-600 font-medium">
                     {{ $t('checkout.notDeliverableArea') }}
                 </p>
-                <p v-else-if="cartStore.address.distance >= DELIVERY_ZONE_METERS" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-600 font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-500">
@@ -128,9 +128,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
-import { DELIVERY_ZONE_METERS, isExcludedPostcode } from '#engine/lib/delivery'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
 import { bookableSlots } from '#engine/utils/orderingAvailability'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
@@ -164,6 +164,7 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const cartStore = useCartStore()
+const zoneStatus = computed(() => (cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'))
 const { trackEvent } = useTracking()
 
 // Use backend ordering status when available

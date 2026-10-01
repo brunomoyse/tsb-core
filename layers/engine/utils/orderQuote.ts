@@ -1,6 +1,6 @@
+import { OUT_OF_ZONE, isExcludedPostcode } from '../lib/delivery.ts'
 import type { CartTotalsCents } from './cartTotals.ts'
 import { DELIVERY_MINIMUM_CENTS } from '../lib/fees.ts'
-import { OUT_OF_ZONE } from '../lib/delivery.ts'
 import type { QuoteOrderInput } from './orderPayload.ts'
 import { toCents } from './money.ts'
 import { unwrapGqlError } from './gqlError.ts'
@@ -221,4 +221,15 @@ export function couponVerdict(quote: OrderQuote, cartCouponCode: string | null):
 export function isQuoteUnsupportedError(err: unknown): boolean {
     const gqlError = unwrapGqlError(err)
     return Boolean(gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') && /quoteOrder|QuoteOrder/u.test(gqlError.message))
+}
+
+/**
+ * Why a delivery address is refused: the server's verdict wins (the fresh quote's DELIVERY_AREA_EXCLUDED /
+ * DELIVERY_OUT_OF_ZONE), the client's own rule (excluded postcodes) only speaks when there is no fresh quote.
+ */
+export function deliveryUnavailableKey(quote: OrderQuote | null, postcode?: string | null): 'checkout.notDeliverableArea' | 'checkout.tooFar' {
+    const codes = new Set(quote?.issues.map((issue) => issue.code) ?? [])
+    if (codes.has('DELIVERY_AREA_EXCLUDED')) return 'checkout.notDeliverableArea'
+    if (codes.has('DELIVERY_OUT_OF_ZONE')) return 'checkout.tooFar'
+    return isExcludedPostcode(postcode) ? 'checkout.notDeliverableArea' : 'checkout.tooFar'
 }

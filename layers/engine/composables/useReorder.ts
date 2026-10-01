@@ -34,6 +34,8 @@ export function useReorder() {
     const { t } = useI18n()
     const notifications = useNotificationsStore()
     const prompt = useState<ReorderPrompt | null>('reorder-prompt', () => null)
+    // Shared with the checkout's cash amount field: a cleared amount is not "touched" any more.
+    const cashTouched = useState('checkout-cash-touched', () => false)
 
     const skippedNames = (skipped: ReorderSkipped[]): string =>
         skipped.map((entry) => `${entry.name} (${t(`reorder.reason.${entry.reason}`)})`).join(', ')
@@ -45,6 +47,9 @@ export function useReorder() {
             cartStore.couponCode = null
             cartStore.couponDiscountCents = 0
             cartStore.pendingOrderId = null
+            // The cash amount was typed for the old total.
+            cartStore.cashPaymentAmount = null
+            cashTouched.value = false
         }
         for (const line of plan.lines) {
             cartStore.addProduct(line.product, line.quantity, {

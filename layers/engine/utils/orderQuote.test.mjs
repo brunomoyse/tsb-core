@@ -4,6 +4,7 @@
 import {
   blockingOrderIssues,
   couponVerdict,
+  deliveryUnavailableKey,
   hasLineIssues,
   isQuoteBlocking,
   isQuoteUnsupportedError,
@@ -167,4 +168,17 @@ test('the request key changes with everything that is priced, and with the sessi
   assert.notEqual(key({}, false), reference)
   // What is NOT priced does not re-quote: the note and the extras.
   assert.equal(key({ orderNote: 'x', addressExtra: 'y', orderExtra: [{ name: 'chopsticks' }] }), reference)
+})
+
+test('the reason a delivery address is refused: the fresh quote wins over the client rule', () => {
+  const issue = (code) => quote({ issues: [{ code, minimum: null }] })
+  // No quote: the client's rule (the excluded postcode list).
+  assert.equal(deliveryUnavailableKey(null, '4610'), 'checkout.notDeliverableArea')
+  assert.equal(deliveryUnavailableKey(null, '4000'), 'checkout.tooFar')
+  // The server says "excluded" for a postcode the client does not know.
+  assert.equal(deliveryUnavailableKey(issue('DELIVERY_AREA_EXCLUDED'), '4000'), 'checkout.notDeliverableArea')
+  // The server says "too far" for a postcode the client lists as excluded: the server's reason is shown.
+  assert.equal(deliveryUnavailableKey(issue('DELIVERY_OUT_OF_ZONE'), '4610'), 'checkout.tooFar')
+  // A quote with unrelated issues falls back to the client rule.
+  assert.equal(deliveryUnavailableKey(issue('DELIVERY_MINIMUM_NOT_MET'), '4610'), 'checkout.notDeliverableArea')
 })

@@ -1,10 +1,9 @@
 import { type ComputedRef, computed } from 'vue'
+import { deliveryUnavailableKey, isQuoteBlocking, isQuoteUsableForTotals, quoteRequestKey, totalsFromQuote } from '#engine/utils/orderQuote'
 import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
-import { isQuoteBlocking, isQuoteUsableForTotals, quoteRequestKey, totalsFromQuote } from '#engine/utils/orderQuote'
 import type { CartItem } from '@/types'
 import { buildQuoteInput } from '#engine/utils/orderPayload'
 import { computeCartTotals } from '#engine/utils/cartTotals'
-import { isExcludedPostcode } from '#engine/lib/delivery'
 import { useAuthStore } from '#engine/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useQuoteStore } from '#engine/stores/quote'
@@ -39,7 +38,7 @@ export interface CartTotals {
     pickupDiscountCents: ComputedRef<number>
     /** 0 for pickup / unknown address, -1 (OUT_OF_ZONE) when the address cannot be delivered to. */
     deliveryFeeCents: ComputedRef<number>
-    /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far). */
+    /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far); the fresh quote's verdict wins over the client's rule. */
     deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
     couponDiscountCents: ComputedRef<number>
     /** 30 cents when the selected payment option is ONLINE, else 0. */
@@ -103,7 +102,7 @@ export function useCartTotals(): CartTotals {
         subtotalCents: computed(() => totals.value.subtotalCents),
         pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
         deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
-        deliveryUnavailableKey: computed(() => isExcludedPostcode(cartStore.address?.postcode) ? 'checkout.notDeliverableArea' : 'checkout.tooFar'),
+        deliveryUnavailableKey: computed(() => deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode)),
         couponDiscountCents: computed(() => totals.value.couponDiscountCents),
         onlineFeeCents: computed(() => totals.value.onlineFeeCents),
         payableCents: computed(() => totals.value.payableCents),
