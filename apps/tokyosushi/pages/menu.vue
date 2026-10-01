@@ -213,7 +213,7 @@
             <!-- Products Grid -->
             <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div
-                    v-for="cat in displayedCategories"
+                    v-for="(cat, catIdx) in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
                     class="space-y-4"
@@ -233,11 +233,10 @@
                         class="grid grid-cols-2 gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                     >
                         <ProductCard
-                            :index="idx"
+                            :index="(cardOffsets[catIdx] ?? 0) + idx"
                             :product="prod"
                             :ordering-disabled="!isCartAddAvailable"
-                            class="min-width-[200px] animate-fade-in-up"
-                            :style="{ animationDelay: `${idx * 50}ms` }"
+                            class="min-width-[200px]"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
                             :key="prod.id"
@@ -321,6 +320,7 @@ import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 
 const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
@@ -555,6 +555,9 @@ const displayedCategories = computed<ProductCategory[]>(() => {
         products,
     })).toSorted((a, b) => a.order - b.order)
 })
+
+// Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
+const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))
 
 /**
  * Utility: Update Arrow Visibility

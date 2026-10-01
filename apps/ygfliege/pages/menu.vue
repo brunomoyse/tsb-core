@@ -171,7 +171,7 @@
                 </article>
 
                 <div
-                    v-for="cat in displayedCategories"
+                    v-for="(cat, catIdx) in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
                     class="space-y-4 scroll-mt-52 sm:scroll-mt-36"
@@ -193,11 +193,9 @@
                         class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
                     >
                         <ProductCard
-                            :index="idx"
+                            :index="(cardOffsets[catIdx] ?? 0) + idx"
                             :product="prod"
                             :ordering-disabled="!isCartAddAvailable"
-                            class="animate-fade-in-up"
-                            :style="{ animationDelay: `${idx * 50}ms` }"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
                             :key="prod.id"
@@ -285,6 +283,7 @@ import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
 
 const { brand } = useAppConfig()
@@ -506,6 +505,9 @@ const displayedCategories = computed<ProductCategory[]>(() => {
         products,
     })).toSorted((a, b) => a.order - b.order)
 })
+
+// Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
+const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))
 
 // Mobile category chip nav (scrollspy + jump); ids follow search filtering.
 const categorySectionIds = computed(() => displayedCategories.value.map(cat => cat.id))

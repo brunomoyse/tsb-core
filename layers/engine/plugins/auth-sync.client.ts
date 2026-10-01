@@ -1,6 +1,7 @@
 import type { User } from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 
 /**
  * Reconciles the Pinia auth store with the OIDC token store on app start.
@@ -39,7 +40,31 @@ const ME_QUERY = print(gql`
     }
 `)
 
-export default defineNuxtPlugin(async () => {
+/*
+ * Parallel and deferred (audit PR 3.7, P5): this used to be an async, blocking plugin, so before the app could mount
+ * it imported the OIDC library, read the session and, for a returning visitor with an expired token, waited for a
+ * Zitadel round-trip or a /me request: hydration of every page sat behind it, and nothing in it is needed for first
+ * paint. It now runs once the app is hydrated and the browser is idle (onNuxtReady).
+ *
+ * What does not wait for it: the auth middleware checks the session itself (isAuthenticated / silentRenew, which
+ * share one in-flight renewal with this plugin), /me loads its own user when the store has none, and the persisted
+ * Pinia user is read from localStorage as before. What can now change a moment after first paint is only the drift
+ * this plugin repairs (case 1 and 2 above: a stale or missing user record): the navbar and the checkout's sign-in
+ * step settle when it finishes, instead of before the first render.
+ */
+export default defineNuxtPlugin({
+    name: 'auth-sync',
+    parallel: true,
+    setup(nuxtApp) {
+        onNuxtReady(() => {
+            nuxtApp.runWithContext(syncAuth).catch((err: unknown) => reportError(err, 'auth.sync'))
+        })
+    },
+})
+
+async function syncAuth(): Promise<void> {
+    // Read before the first await: the Nuxt context only holds for the synchronous part.
+    const cfg = useRuntimeConfig()
     const { useAuthStore } = await import('~/stores/auth')
     const authStore = useAuthStore()
 
@@ -65,7 +90,6 @@ export default defineNuxtPlugin(async () => {
     if (!authStore.user && oidcAuthed) {
         const token = await getAccessToken()
         if (!token) return
-        const cfg = useRuntimeConfig()
         const url = cfg.public.graphqlHttp as string
         try {
             const res = await $fetch<{ data?: { me: User }; errors?: unknown[] }>(url, {
@@ -85,4 +109,4 @@ export default defineNuxtPlugin(async () => {
             await removeUser()
         }
     }
-})
+}

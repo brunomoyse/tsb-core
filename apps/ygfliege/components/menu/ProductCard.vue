@@ -50,18 +50,19 @@
                         : `object-contain max-h-full ${!product.isAvailable ? 'grayscale' : ''}`"
                     :class="brandPhoto.cover ? 'absolute inset-3' : undefined"
                 />
-                <picture v-if="!brandPhoto" class="w-full h-full flex justify-center items-center">
+                <!-- Visible from the first paint, with or without JavaScript (it used to be opacity-0 until onMounted saw it loaded, which kept it out of the LCP): the shimmer is only a background behind it, hence "relative" so the image paints over it. -->
+                <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-center">
                     <source :srcset="`${productImageBaseSrc}.avif`"
                             type="image/avif"/>
                     <source :srcset="`${productImageBaseSrc}.webp`"
                             type="image/webp"/>
                     <img ref="imageElement" :alt="product.name"
                          width="185" height="130"
-                         :class="[loaded ? 'opacity-100' : 'opacity-0', !product.isAvailable ? 'grayscale' : '']"
-                         :draggable="false" :fetchpriority="index < 6 ? 'high' : 'low'"
-                         :loading="index > 5 ? 'lazy' : 'eager'"
+                         :class="!product.isAvailable ? 'grayscale' : ''"
+                         :draggable="false" :fetchpriority="imagePriority.fetchpriority"
+                         :loading="imagePriority.loading"
                          :src="`${productImageBaseSrc}.png`"
-                         class="object-contain max-h-full transition-opacity duration-500"
+                         class="object-contain max-h-full"
                          @error="handleImageError"/>
                 </picture>
             </div>
@@ -152,6 +153,7 @@ import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
@@ -177,6 +179,9 @@ const {
 const emit = defineEmits<{
     openProductModal: []
 }>()
+
+// Image loading follows the card's place on the whole page (see utils/menuImagePriority.ts), not in its category.
+const imagePriority = computed(() => menuImagePriority(index))
 
 const hasChoices = computed(() => product.choices?.length > 0);
 

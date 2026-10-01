@@ -235,7 +235,9 @@ useSeoMeta({
     }
 }
 
-/* ── Staggered entrance ── */
+/* ── Staggered entrance ──
+   Transform only: this content is server-rendered, and an opacity animation keeps it out of the paint
+   (and the LCP) until the stylesheet's delay has run (audit PR 3.7, P1). */
 .bento-cell {
     animation: bento-enter 0.5s ease-out both;
     animation-delay: calc(var(--delay, 0) * 80ms);
@@ -243,11 +245,9 @@ useSeoMeta({
 
 @keyframes bento-enter {
     from {
-        opacity: 0;
         transform: translateY(16px) scale(0.97);
     }
     to {
-        opacity: 1;
         transform: translateY(0) scale(1);
     }
 }

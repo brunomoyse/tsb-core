@@ -527,6 +527,11 @@ onMounted(() => {
     })
 })
 
+// The auth-sync plugin repairs a missing user record a moment after first paint (plugins/auth-sync.client.ts): pre-fill the address once it arrives.
+watch(() => authStore.user?.address, (address) => {
+    if (address && !cartStore.address) cartStore.address = address
+})
+
 // Same draft state as the phone card (CheckoutPhoneCapture): lets Pay save a number that was typed but not saved.
 const phoneCapture = usePhoneCapture()
 

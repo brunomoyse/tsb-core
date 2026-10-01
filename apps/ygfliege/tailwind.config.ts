@@ -205,10 +205,6 @@ module.exports = {
                     "0%, 100%": {transform: "scale(1)"},
                     "50%": {transform: "scale(1.02)"},
                 },
-                "fade-in-up": {
-                    "0%": { opacity: "0", transform: "translateY(12px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
-                },
                 "number-bounce": {
                     "0%": { transform: "scale(1)" },
                     "50%": { transform: "scale(1.3)" },
@@ -242,7 +238,6 @@ module.exports = {
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "cart-flash": "cart-flash 1.5s ease-out forwards",
                 "cart-pulse": "cart-pulse 0.3s ease-in-out",
-                "fade-in-up": "fade-in-up 0.35s ease-out both",
                 "number-bounce": "number-bounce 0.2s ease-out",
                 "shake": "shake 0.4s ease-out",
                 "shimmer": "shimmer 1.5s ease-in-out infinite",
