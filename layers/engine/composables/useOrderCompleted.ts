@@ -21,7 +21,8 @@ import { print } from 'graphql'
  *   problem   canceled / failed / expired / abandoned    → retry screen, cart kept
  *   confirmed paid online order, or any cash order       → celebration, cart cleared
  *
- * The cart is committed (cleared) ONLY in the `confirmed` phase. Mirrors
+ * The cart is committed (cleared) ONLY in the `confirmed` phase, and only when it is the cart
+ * checked out for this very order (`cart.pendingOrderId`). Mirrors
  * tsb-mobile's post-payment flow (`lib/paymentOutcome.ts`).
  */
 
@@ -143,10 +144,15 @@ export function useOrderCompleted(orderId: string) {
     /* ── Cart commit ──
        Clear the cart only once the order is known to be committed: a paid online
        order or a cash order. Never on cancelled/failed/expired/abandoned, nor
-       while still loading/verifying/errored, so "Try again" keeps the cart. */
+       while still loading/verifying/errored, so "Try again" keeps the cart.
+       And only the cart that was checked out for THIS order (the checkout stores
+       its id in `pendingOrderId`): revisiting an old confirmation later (history,
+       an email link) must not wipe whatever the customer has in the cart by then.
+       The pending id also gates a late persisted-state hydration, hence the watch on it. */
     let committed = false
-    watch(phase, (p) => {
+    watch([phase, () => cartStore.pendingOrderId], ([p, pendingOrderId]) => {
         if (p !== 'confirmed' || committed || !import.meta.client) return
+        if (pendingOrderId !== orderId) return
         committed = true
         cartStore.resetState()
     }, { immediate: true })

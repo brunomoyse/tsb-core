@@ -719,6 +719,8 @@ const handleCheckout = async () => {
             })
 
             const order = res.createOrder
+            // Remember which order this cart was checked out for: only its confirmation page may clear the cart.
+            if (order?.id) cartStore.pendingOrderId = order.id
             hapticNotification('Success')
 
             trackEvent('order_placed', {

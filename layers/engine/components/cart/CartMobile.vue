@@ -202,6 +202,7 @@ import { defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#i
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
+import { cartLineKey } from '#engine/utils/cartLines'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
@@ -254,13 +255,7 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemKey = (item: CartItem): string => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const getItemKey = (item: CartItem): string => cartLineKey(item)
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
@@ -302,6 +297,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
@@ -311,6 +307,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

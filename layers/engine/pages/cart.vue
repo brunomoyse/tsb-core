@@ -81,6 +81,8 @@
                             ({{ itemChoice(item) }})
                         </p>
 
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-gray-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
@@ -98,7 +100,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -111,7 +115,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -234,6 +240,7 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
+import { canChangeLineQuantity, cartLineKey } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
@@ -362,6 +369,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Light')
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
@@ -376,6 +384,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Light')
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
@@ -387,6 +396,7 @@ const handleRemoveItem = (cartItem: CartItem): void => {
     cartStore.removeFromCart(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Medium')
     trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
@@ -397,13 +407,9 @@ const SWIPE_THRESHOLD = 72
 const swipeState = reactive<Record<string, { startX: number; currentX: number; swiping: boolean; open: boolean }>>({})
 const swipingItemKey = ref<string | null>(null)
 
-const getItemKey = (item: CartItem) => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
+
+const getItemKey = (item: CartItem): string => cartLineKey(item)
 
 const getSwipeOffset = (item: CartItem) => {
     const key = getItemKey(item)

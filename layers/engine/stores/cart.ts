@@ -1,6 +1,7 @@
 // Stores: cart.ts
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
+import { lineSignature, mergeIntoLine, rescaleSelections } from '#engine/utils/cartLines'
 import type { OrderExtraConfig } from '#engine/types/brand'
 import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
@@ -11,9 +12,11 @@ export const MAX_ITEM_QUANTITY = 99
 interface ItemSelectionInput {
     choice?: ProductChoice | null;
     selections?: ProductChoiceSelection[];
+    /** Lookups of an existing line (increment/decrement/remove): the line's own quantity, to tell apart lines whose selections look alike. */
+    quantity?: number;
 }
 
-const normalizeSelections = (choice: ProductChoice | null, selections: ProductChoiceSelection[] = []): ProductChoiceSelection[] => {
+const normalizeSelections = (choice: ProductChoice | null, selections: ProductChoiceSelection[] = [], choiceQuantity = 1): ProductChoiceSelection[] => {
     if (selections.length > 0) {
         return selections
             .filter((selection) => selection.quantity > 0)
@@ -25,8 +28,9 @@ const normalizeSelections = (choice: ProductChoice | null, selections: ProductCh
             .sort((a, b) => a.choiceId.localeCompare(b.choiceId))
     }
 
+    // A lone legacy choice applies to every unit of the line.
     if (choice) {
-        return [{ groupId: choice.choiceGroupId, choiceId: choice.id, quantity: 1 }]
+        return [{ groupId: choice.choiceGroupId, choiceId: choice.id, quantity: choiceQuantity }]
     }
 
     return []
@@ -37,8 +41,29 @@ const selectionSignature = (selections: ProductChoiceSelection[]): string =>
         .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
         .join('|')
 
-const matchesCartItem = (item: CartItem, productId: string, signature: string): boolean =>
-    item.product.id === productId && selectionSignature(item.selectedChoices ?? []) === signature
+// Finds an existing line from its own (line-wide) selections, as the cart surfaces hand them back.
+const matchesCartItem = (item: CartItem, line: { productId: string; signature: string; quantity?: number }): boolean =>
+    item.product.id === line.productId
+    && selectionSignature(item.selectedChoices ?? []) === line.signature
+    && (line.quantity === undefined || item.quantity === line.quantity)
+
+// Merging identity of a NEW add: per unit, so 1 bowl + 2 bowls with the same choices become one line.
+const matchesLineToMerge = (item: CartItem, productId: string, signature: string): boolean =>
+    item.product.id === productId && lineSignature(item.selectedChoices ?? [], item.quantity) === signature
+
+/**
+ * Changes a line's quantity and rescales its selections with it (group min/max scale with the
+ * quantity, so 2 bowls need 2 broths). Returns false and leaves the line untouched when its
+ * composition is not uniform per unit: that line can only be edited from the menu.
+ */
+const setLineQuantity = (item: CartItem, quantity: number): boolean => {
+    const selections = item.selectedChoices ?? []
+    const rescaled = rescaleSelections(selections, item.quantity, quantity)
+    if (!rescaled) return false
+    item.selectedChoices = rescaled
+    item.quantity = quantity
+    return true
+}
 
 /** The `orderExtra` entry for an extra in its pre-selected form (e.g. soy sauce -> `both`). */
 export const defaultOrderExtra = (extra: OrderExtraConfig): { name: string; options?: string[] } =>
@@ -61,6 +86,7 @@ const defaultState = (): CartState => ({
     orderExtra: brand.orderExtras.filter((extra) => extra.preselected).map(defaultOrderExtra),
     orderNote: null,
     preferredReadyTime: null,
+    pendingOrderId: null,
 })
 
 export const useCartStore = defineStore("cart", {
@@ -80,31 +106,40 @@ export const useCartStore = defineStore("cart", {
 
     actions: {
         addProduct(product: Product, quantity: number, selection: ItemSelectionInput = {}): void {
-            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
-            const signature = selectionSignature(normalizedSelections)
+            const lineQuantity = Math.min(Math.max(quantity, 1), MAX_ITEM_QUANTITY)
+            const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [], lineQuantity)
+            const signature = lineSignature(normalizedSelections, lineQuantity)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, signature)
+                (item) => matchesLineToMerge(item, product.id, signature)
             );
             if (cartItem) {
-                cartItem.quantity = Math.min(cartItem.quantity + quantity, MAX_ITEM_QUANTITY);
-            } else {
-                this.products.push({
-                    product,
-                    quantity: Math.min(Math.max(quantity, 1), MAX_ITEM_QUANTITY),
-                    selectedChoices: normalizedSelections,
-                    selectedChoice: selection.choice ?? null,
-                });
+                const merged = mergeIntoLine(
+                    { quantity: cartItem.quantity, selections: cartItem.selectedChoices ?? [] },
+                    { quantity: lineQuantity, selections: normalizedSelections },
+                    MAX_ITEM_QUANTITY,
+                )
+                if (merged) {
+                    cartItem.quantity = merged.quantity
+                    cartItem.selectedChoices = merged.selections
+                    return
+                }
             }
+            this.products.push({
+                product,
+                quantity: lineQuantity,
+                selectedChoices: normalizedSelections,
+                selectedChoice: selection.choice ?? null,
+            });
         },
         incrementQuantity(product: Product, selection: ItemSelectionInput = {}): void {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
             const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, signature)
+                (item) => matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
             );
             if (cartItem) {
                 if (cartItem.quantity < MAX_ITEM_QUANTITY) {
-                    cartItem.quantity += 1;
+                    setLineQuantity(cartItem, cartItem.quantity + 1)
                 }
             } else {
                 this.products.push({
@@ -120,14 +155,14 @@ export const useCartStore = defineStore("cart", {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
             const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, product.id, signature)
+                (item) => matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
             );
             if (cartItem) {
                 if (cartItem.quantity > 1) {
-                    cartItem.quantity -= 1;
+                    setLineQuantity(cartItem, cartItem.quantity - 1)
                 } else {
                     this.products = this.products.filter(
-                        (item) => !matchesCartItem(item, product.id, signature)
+                        (item) => item !== cartItem
                     );
                 }
             }
@@ -137,7 +172,7 @@ export const useCartStore = defineStore("cart", {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
             const signature = selectionSignature(normalizedSelections)
             this.products = this.products.filter(
-                (item) => !matchesCartItem(item, product.id, signature)
+                (item) => !matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
             );
         },
 
@@ -198,7 +233,7 @@ export const useCartStore = defineStore("cart", {
                         ? [{
                             groupId: item.selectedChoice.choiceGroupId,
                             choiceId: item.selectedChoice.id,
-                            quantity: 1,
+                            quantity: item.quantity,
                         }]
                         : []
                 }

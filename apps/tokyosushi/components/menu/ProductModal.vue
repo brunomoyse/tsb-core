@@ -161,6 +161,7 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { lineSignature } from '#engine/utils/cartLines'
 import { priceCartLine } from '#engine/utils/pricing'
 import { print } from 'graphql'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
@@ -479,9 +480,7 @@ const addToCart = () => {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
-        selectionSignature: selectionList.value
-            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-            .join('|'),
+        selectionSignature: lineSignature(selectionList.value, quantity.value),
     })
 
 

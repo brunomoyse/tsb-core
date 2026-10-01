@@ -198,6 +198,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
+import { cartLineKey } from '#engine/utils/cartLines'
 import { onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -256,19 +257,13 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const toSelectionSignature = (item: CartItem): string =>
-    (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-
-const getItemKey = (item: CartItem) => `${item.product.id}-${toSelectionSignature(item) || (item.selectedChoice?.id ?? 'none')}`
+const getItemKey = (item: CartItem) => cartLineKey(item)
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
 
 const onCartItemAdded = (payload: { productId: string; choiceId?: string; selectionSignature?: string }) => {
-    const key = `${payload.productId}-${payload.selectionSignature ?? payload.choiceId ?? 'none'}`
+    const key = `${payload.productId}-${payload.selectionSignature || payload.choiceId || 'none'}`
     highlightedKey.value = key
     if (highlightTimeout) clearTimeout(highlightTimeout)
     highlightTimeout = setTimeout(() => {
@@ -339,6 +334,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
@@ -348,6 +344,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

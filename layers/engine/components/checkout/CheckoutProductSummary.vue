@@ -69,12 +69,16 @@
                             </span>
                         </div>
 
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-gray-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+
                         <!-- Row 2: Stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5">
                             <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                                 <button
                                     :aria-label="$t('cart.decreaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                    :disabled="!canChangeQuantity(item)"
+                                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                     @click="handleDecrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -86,7 +90,9 @@
                                 </span>
                                 <button
                                     :aria-label="$t('cart.increaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                    :disabled="!canChangeQuantity(item)"
+                                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                     @click="handleIncrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -178,6 +184,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
+import { canChangeLineQuantity, cartLineKey } from '#engine/utils/cartLines'
 import { onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -247,13 +254,9 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemKey = (item: CartItem): string => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
+
+const getItemKey = (item: CartItem): string => cartLineKey(item)
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
@@ -291,6 +294,7 @@ const handleIncrementQuantity = (item: CartItem) => {
     cartStore.incrementQuantity(item.product, {
         choice: item.selectedChoice,
         selections: item.selectedChoices,
+        quantity: item.quantity,
     })
     hapticImpact('Light')
 }
@@ -299,6 +303,7 @@ const handleDecrementQuantity = (item: CartItem) => {
     cartStore.decrementQuantity(item.product, {
         choice: item.selectedChoice,
         selections: item.selectedChoices,
+        quantity: item.quantity,
     })
     hapticImpact('Light')
 }
@@ -307,6 +312,7 @@ const handleRemoveFromCart = (item: CartItem) => {
     cartStore.removeFromCart(item.product, {
         choice: item.selectedChoice,
         selections: item.selectedChoices,
+        quantity: item.quantity,
     })
     hapticImpact('Medium')
 }
