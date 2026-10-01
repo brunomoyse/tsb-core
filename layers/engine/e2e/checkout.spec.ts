@@ -1,6 +1,6 @@
 import { expect, test } from './support/test'
 import { SEL } from './support/selectors'
-import { addProductsAndGoToCheckout } from './support/cart.helpers'
+import { addProductsAndGoToCheckout, ensurePhoneNumber } from './support/cart.helpers'
 
 test.describe('Checkout flows', () => {
   test('Cash order happy path lands on /order-completed and appears in /me/orders', async ({ authenticatedPage: page }) => {
@@ -18,6 +18,7 @@ test.describe('Checkout flows', () => {
     }
 
     await test.step('Select cash payment + place order', async () => {
+      await ensurePhoneNumber(page)
       await page.locator(SEL.paymentCash).click()
       /*
        * Cash requires the customer to tick "I confirm I'll pay cash"; the

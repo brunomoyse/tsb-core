@@ -105,7 +105,8 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
     await seedCart(page)
     await page.goto('/fr/checkout')
     await expect(page.getByText('Produit test A').first()).toBeVisible({ timeout: 15_000 })
-    await snap(page, 'checkout-pickup', [page.getByTestId('checkout-preferred-time')])
+    // Time slots follow the clock; paid extras are live menu data from the API.
+    await snap(page, 'checkout-pickup', [page.getByTestId('checkout-preferred-time'), page.getByTestId('checkout-paid-extras')])
   })
 
   test('faq', async ({ page }) => {
@@ -118,8 +119,14 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
     await snap(page, 'terms')
   })
 
-  test('login (AuthFlow)', async ({ page, loginAvailable, loginOrigin }) => {
+  test('login (AuthFlow)', async ({ page, baseURL, loginAvailable, loginOrigin }) => {
     test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally')
+    // A login page served by a deployed site isn't the code under test: its baseline would
+    // track that deployment, not local engine changes.
+    test.skip(
+      Boolean(loginOrigin && baseURL) && new URL(loginOrigin!).origin !== new URL(baseURL!).origin,
+      'Login page is served by a deployed site, not the local app',
+    )
     await page.goto('/fr/auth/login')
     // The form renders before the Zitadel authRequest bounce; wait for the round-trip so the
     // screenshot is this brand's login page, not Zitadel's or another brand's.
@@ -131,7 +138,9 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
   test('account page (logged in)', async ({ authenticatedPage: page }) => {
     await page.goto('/fr/me')
     await expect(page).toHaveURL(/\/fr\/me(?:[/?#]|$)/u, { timeout: 15_000 })
-    // Recent orders change with every e2e run that places an order.
+    // Recent orders change with every e2e run that places an order: masking hides their
+    // content, and a fixed height keeps the rest of the page from shifting as the list grows.
+    await page.addStyleTag({ content: '[data-testid="orders-widget"] { height: 320px !important; overflow: hidden !important; }' })
     await snap(page, 'me', [page.getByTestId('orders-widget')])
   })
 })

@@ -188,7 +188,7 @@
                     </div>
                 </div>
             </div>
-            <div v-if="paidExtras.length > 0" class="mt-4">
+            <div v-if="paidExtras.length > 0" class="mt-4" data-testid="checkout-paid-extras">
                 <p class="text-xs font-semibold uppercase tracking-wide text-primary-700 mb-2">
                     {{ $t('checkout.paidExtra', 'Paid extra') }}
                 </p>

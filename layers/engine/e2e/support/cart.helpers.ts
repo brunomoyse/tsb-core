@@ -79,3 +79,15 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
   await page.locator(SEL.cartCheckoutLink).click()
   await page.waitForURL('**/fr/checkout')
 }
+
+/*
+ * Checkout blocks ordering until the account has a phone number. A valid entry
+ * auto-saves to the account (CheckoutPhoneCapture), so the e2e user only goes
+ * through this once; afterwards the field is collapsed and this is a no-op.
+ */
+export async function ensurePhoneNumber(page: Page) {
+  const input = page.locator('#checkout-phone-capture input[type="tel"]')
+  if (!(await input.isVisible({ timeout: 2_000 }).catch(() => false))) return
+  await input.fill('0470 12 34 56')
+  await expect(input).toBeHidden({ timeout: 10_000 })
+}

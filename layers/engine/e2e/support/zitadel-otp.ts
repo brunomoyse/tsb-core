@@ -21,17 +21,23 @@
 
 import { createDecipheriv } from 'node:crypto'
 import { getDbEnv } from './db-env'
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 
 const IV_SIZE = 16
 
 let cachedUserKey: Buffer | null = null
 
+/*
+ * Password via env and SQL via stdin, never in the command line: a failed
+ * execFileSync puts its command line in the error message, which ends up in
+ * test output and logs.
+ */
 function psql(sql: string): string {
     const dbEnv = getDbEnv()
-    return execSync(
-        `PGPASSWORD='${dbEnv.DB_PASS}' psql -h ${dbEnv.DB_HOST} -p ${dbEnv.DB_PORT} -U ${dbEnv.DB_USER} -d ${dbEnv.ZITADEL_DB} -t -A -F '|' -c "${sql.replace(/"/gu, '\\"')}"`,
-        { encoding: 'utf-8' },
+    return execFileSync(
+        'psql',
+        ['-h', dbEnv.DB_HOST, '-p', dbEnv.DB_PORT, '-U', dbEnv.DB_USER, '-d', dbEnv.ZITADEL_DB, '-t', '-A', '-F', '|'],
+        { encoding: 'utf-8', input: sql, env: { ...process.env, PGPASSWORD: dbEnv.DB_PASS } },
     ).trim()
 }
 

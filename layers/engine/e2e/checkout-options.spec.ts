@@ -12,6 +12,8 @@ test.describe('Checkout options', () => {
      * brand renders. The sauce checkbox has its own test below.
      */
     const toggles = page.locator('input[type="checkbox"][data-testid^="order-extra-"]:not([data-testid="order-extra-sauce"])')
+    // count() doesn't wait: let the extras card render first.
+    await expect(toggles.first()).toBeVisible()
     const count = await toggles.count()
     expect(count).toBeGreaterThan(0)
 

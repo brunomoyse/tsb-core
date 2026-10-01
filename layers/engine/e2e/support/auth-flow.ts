@@ -78,6 +78,24 @@ export async function loginViaOtpAndCaptureState(
     await page.locator('[data-testid="login-verify"]').click()
 
     /*
+     * A user with no name yet (e.g. a fresh e2e account) gets AuthFlow's profile
+     * step before the session is finalized. Fill it once; later runs skip it.
+     */
+    const firstName = page.locator('#auth-firstname')
+    const landed = await Promise.race([
+        // The loser must not reject unhandled later; a double miss falls through to the wait below.
+        page.waitForURL(/\/fr\/menu(?:\/?$|\?)/u, { timeout: 30_000 }).then(() => 'menu' as const, () => null),
+        firstName.waitFor({ state: 'visible', timeout: 30_000 }).then(() => 'profile' as const, () => null),
+    ])
+    if (landed === 'profile') {
+        await firstName.fill('E2E')
+        await page.locator('#auth-lastname').fill('Test')
+        // Structural locator: for some brands this page is served by a deployed site, so
+        // it can't rely on testids that only exist in the local code.
+        await page.locator('form').filter({ has: firstName }).locator('button[type="submit"]').click()
+    }
+
+    /*
      * After verify: createSession → OIDC callback → token exchange → /menu.
      * Wait for the final landing page rather than any intermediate redirect.
      */
