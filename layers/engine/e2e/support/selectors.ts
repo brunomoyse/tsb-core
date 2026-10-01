@@ -53,6 +53,8 @@ export const SEL = {
 
   // Order completed
   orderCompletedTitle: '[data-testid="order-completed-title"]',
+  orderCompletedPaymentProblem: '[data-testid="order-completed-payment-problem"]',
+  orderCompletedVerifying: '[data-testid="order-completed-verifying"]',
 
   // Navigation
   categoryCard: '[data-testid="category-card"]',
