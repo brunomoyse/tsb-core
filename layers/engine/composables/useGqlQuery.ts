@@ -2,9 +2,8 @@
 import type { AsyncData, NuxtApp } from 'nuxt/app'
 import { type DocumentNode, print } from 'graphql'
 import { useAsyncData, useNuxtApp } from '#imports'
-import { hash } from 'ohash'
+import { gqlQueryKey } from '../utils/gqlQueryKey'
 import { useI18n } from 'vue-i18n'
-import { watch } from 'vue'
 
 type Vars = Record<string, unknown> | (() => Record<string, unknown>)
 interface Options {
@@ -15,8 +14,8 @@ interface Options {
     lazy?: boolean
     /**
      * What a second caller of the same query does while the first is still in flight: 'cancel' (Nuxt's default) aborts it and
-     * asks again, 'defer' joins it. Only for queries without variables (the key is the document, not its variables): the
-     * layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
+     * asks again, 'defer' joins it. Only for queries without variables (two callers with different variables are different
+     * keys, so there is nothing to join): the layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
      */
     dedupe?: 'cancel' | 'defer'
 }
@@ -48,8 +47,15 @@ export async function useGqlQuery<T>(
     const getVars = () => (typeof variables === 'function' ? variables() : variables)
     const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
 
-    // Scope the cache key on locale so SSR/cached payloads don't bleed across languages.
-    const key = `gql:${hash(printIfAst(rawQuery))}:${locale.value}`
+    /*
+     * The key is the document, the evaluated variables and the locale (audit R3), and it is a getter: Nuxt 4 watches a
+     * reactive key and, when it changes (variables from a getter, or the language), starts the query under the new key
+     * (keeping the previous data on screen until the answer arrives). That replaces the two watchers that used to
+     * `refresh()` one shared slot, and it keeps a slow answer for the old variables from landing on the new ones.
+     * Locale in the key also stops SSR/cached payloads bleeding across languages.
+     */
+    const query = printIfAst(rawQuery)
+    const key = () => gqlQueryKey(query, getVars(), locale.value)
 
     const asyncData = await useAsyncData<T>(key, handler, {
         immediate: opts.immediate,
@@ -57,19 +63,6 @@ export async function useGqlQuery<T>(
         ...(opts.dedupe ? { dedupe: opts.dedupe } : {}),
         ...(opts.server === false ? { server: false } : {}),
         ...(opts.cache ? {} : { getCachedData: freshExceptWhenHydrating as GetCachedData<T> }),
-    })
-
-    if (typeof variables === 'function') {
-        watch(
-            () => variables(),
-            () => asyncData.refresh({ dedupe: 'cancel' }),
-            { deep: true },
-        )
-    }
-
-    // Refetch when locale changes — covers layout-mounted queries that don't unmount on route change.
-    watch(locale, (next, prev) => {
-        if (next !== prev) asyncData.refresh({ dedupe: 'cancel' })
     })
 
     return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & { refetch: () => Promise<void> }
