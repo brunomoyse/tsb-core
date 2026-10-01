@@ -1,5 +1,5 @@
 import type { BrandConfig, BrandDayHours } from '../types/brand.ts'
-import { OG_IMAGE_PATH, inLanguageTag } from './seoDefaults.ts'
+import { OG_IMAGE_PATH } from './seoDefaults.ts'
 
 /*
  * The schema.org Restaurant JSON-LD of a brand (audit PR 3.8, P8).
@@ -103,14 +103,8 @@ export const buildRestaurantSchema = ({ brand, baseUrl, locale, openingHours }: 
                 servesCuisine: brand.cuisine,
                 priceRange: brand.priceRange,
                 acceptsReservations: brand.acceptsReservations,
-                hasMenu: {
-                    '@type': 'Menu',
-                    '@id': `${menuUrl}#menu`,
-                    url: menuUrl,
-                    name: `${brand.name} Menu`,
-                    description: brand.menuDescription || `${brand.name} menu`,
-                    inLanguage: inLanguageTag(locale),
-                },
+                // A reference only: the menu page declares the Menu node itself (name, description, sections), a second description here would conflict with it.
+                hasMenu: { '@id': `${menuUrl}#menu` },
                 // Only emitted when the brand has a real review aggregate.
                 ...(brand.rating
                     ? {

@@ -1,8 +1,8 @@
 // The useAsyncData key of a GraphQL query includes its variables (audit R3).
 // Run: `node --test layers/engine/utils/gqlQueryKey.test.mjs`.
 
-import { gqlQueryKey } from './gqlQueryKey.ts'
 import assert from 'node:assert/strict'
+import { gqlQueryKey } from './gqlQueryKey.ts'
 import { test } from 'node:test'
 
 const Q = 'query Product($id: ID!) { product(id: $id) { id } }'
@@ -21,7 +21,7 @@ test('array order matters', () => {
 
 test('locale and document are part of the key', () => {
   assert.notEqual(gqlQueryKey(Q, { id: 'a' }, 'fr'), gqlQueryKey(Q, { id: 'a' }, 'en'))
-  assert.notEqual(gqlQueryKey(Q, { id: 'a' }, 'fr'), gqlQueryKey(Q + ' ', { id: 'a' }, 'fr'))
+  assert.notEqual(gqlQueryKey(Q, { id: 'a' }, 'fr'), gqlQueryKey(`${Q} `, { id: 'a' }, 'fr'))
 })
 
 test('no variables, empty variables and undefined values are one key', () => {
@@ -29,7 +29,7 @@ test('no variables, empty variables and undefined values are one key', () => {
   assert.equal(gqlQueryKey(Q, undefined, 'fr'), k)
   assert.equal(gqlQueryKey(Q, null, 'fr'), k)
   assert.equal(gqlQueryKey(Q, { id: undefined }, 'fr'), k)
-  assert.match(k, /^gql:[^:]+:fr$/)
+  assert.match(k, /^gql:[^:]+:fr$/u)
 })
 
 test('null is a value, not an absence', () => {

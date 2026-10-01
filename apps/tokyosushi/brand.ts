@@ -43,7 +43,6 @@ export const brand: BrandConfig = {
         saturday: { open: '12:00', close: '15:00', dinnerOpen: '18:00', dinnerClose: '23:00' },
         sunday: { open: '12:00', close: '15:00', dinnerOpen: '18:00', dinnerClose: '23:00' },
     },
-    menuDescription: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
     priceRange: '€€',
     rating: {
         value: 4.7,

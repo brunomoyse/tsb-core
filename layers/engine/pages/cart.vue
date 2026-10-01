@@ -290,7 +290,7 @@ const { t } = useI18n()
 
 // The page had no title, so the tab, the history and the screen-reader route announcement all said the site name. Private, like checkout: not indexed.
 useSeoMeta({
-    title: t('schema.cart.title'),
+    title: () => t('schema.cart.title'),
     robots: 'noindex,nofollow',
 })
 const { handleProductImageError } = productImage

@@ -91,8 +91,6 @@ export interface BrandConfig {
     openingHours?: BrandOpeningHours
     /** Logo as a path under public/ (square, at least 112x112 px): the schema.org `logo`. */
     logo: string
-    /** schema.org Menu description (one English sentence about the menu). */
-    menuDescription?: string
     /** schema.org priceRange value, e.g. "€€". */
     priceRange: string
     /**

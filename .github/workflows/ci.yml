@@ -42,7 +42,7 @@ jobs:
           - app: tokyosushi
             baseline: 193
           - app: ygfliege
-            baseline: 238
+            baseline: 237
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1

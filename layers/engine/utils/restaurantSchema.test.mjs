@@ -55,9 +55,9 @@ test('cuisine, price, reservations and logo come from the brand', () => {
 })
 
 test('the menu URL is localized', () => {
-  assert.equal(restaurant(build({ locale: 'nl' })).hasMenu.url, 'https://shop.be/nl/menu')
-  assert.equal(restaurant(build({ locale: 'nl' })).hasMenu['@id'], 'https://shop.be/nl/menu#menu')
-  assert.equal(restaurant(build({ locale: 'zh' })).hasMenu.inLanguage, 'zh-CN')
+  // Only a reference to the Menu node of the menu page (which owns the name, description and sections).
+  assert.deepEqual(restaurant(build({ locale: 'nl' })).hasMenu, { '@id': 'https://shop.be/nl/menu#menu' })
+  assert.deepEqual(restaurant(build({ locale: 'zh' })).hasMenu, { '@id': 'https://shop.be/zh/menu#menu' })
 })
 
 test('the live opening hours win over the brand fallback', () => {

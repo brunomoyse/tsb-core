@@ -44,8 +44,8 @@ export const brand: BrandConfig = {
     // Brand founded 2003 in Harbin by Yang Guofu; Liège franchise opened 2026.
     foundingYear: 2003,
     cuisine: ['Chinese', 'Malatang'],
-    // No table service known: malatang is composed and taken away. Flip to true only once the restaurant takes bookings.
-    acceptsReservations: false,
+    // Bookings by phone only, as on ygfliege.be.
+    acceptsReservations: true,
     // Square logo for the schema.org `logo` (public/).
     logo: '/icon-512.png',
     // Fallback for the JSON-LD only (the live restaurantConfig wins): the hours of the ygfliege.be showcase site, 7 days a week.
@@ -62,7 +62,6 @@ export const brand: BrandConfig = {
     // cart is forced to PICKUP (plugins/pickup-only.ts). Flip to true (or
     // remove) when delivery starts.
     deliveryEnabled: false,
-    menuDescription: 'Our menu of malatang bowls, signature herbal broths, noodles and starters',
     priceRange: '€€',
     /*
      * `rating` is intentionally omitted: the Liège restaurant has no public

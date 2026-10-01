@@ -128,12 +128,14 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { BrandConfig } from '#engine/types/brand'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
 import { bookableSlots } from '#engine/utils/orderingAvailability'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
+import { useAppConfig } from '#imports'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
@@ -212,17 +214,11 @@ onMounted(() => {
 })
 onUnmounted(() => { clearInterval(timerId) })
 
-const fallbackOpeningHours: Record<string, OpeningHourEntry | null> = {
-    monday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
-    tuesday: null,
-    wednesday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
-    thursday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
-    friday: { open: '11:45', close: '14:00', dinnerOpen: '17:45', dinnerClose: '22:00' },
-    saturday: { open: '11:45', close: '14:30', dinnerOpen: '17:45', dinnerClose: '22:15' },
-    sunday: { open: '11:45', close: '14:30', dinnerOpen: '17:45', dinnerClose: '22:15' },
-}
-
-const openingHoursSource = computed<Record<string, OpeningHourEntry | null>>(() => openingHours ?? fallbackOpeningHours)
+// The live restaurantConfig hours win; until they are loaded (or if they never are) the brand's own hours are the single fallback.
+const { brand } = useAppConfig() as { brand: BrandConfig }
+const openingHoursSource = computed<Record<string, OpeningHourEntry | null>>(
+    () => openingHours ?? (brand.openingHours as Record<string, OpeningHourEntry | null> | undefined) ?? {},
+)
 
 // Helpers
 const toMins = (hm: string) => {
