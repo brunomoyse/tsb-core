@@ -1,5 +1,6 @@
 // Plugins: gqlFetch.ts — OIDC Bearer token authentication via Zitadel
 import { type DocumentNode, print } from 'graphql'
+import { GqlError, type GqlErrorEntry, isAbortError, operationNameOf } from '#engine/utils/gqlError'
 import {
     defineNuxtPlugin,
     navigateTo,
@@ -12,6 +13,11 @@ import {
 interface GqlOptions {
     variables?: Record<string, unknown>
     signal?: AbortSignal
+}
+
+interface GqlResponse {
+    data?: unknown
+    errors?: GqlErrorEntry[]
 }
 
 export default defineNuxtPlugin(() => {
@@ -27,17 +33,21 @@ export default defineNuxtPlugin(() => {
         return getAccessToken()
     }
 
-    /** Typed helper: POST /graphql with Bearer token */
+    /**
+     * Typed helper: POST /graphql with Bearer token. Every failure is a `GqlError` (see
+     * utils/gqlError.ts): the GraphQL `errors` of the response, or the failed HTTP request.
+     */
     const gqlFetch = async <T = unknown>(
         query: string | DocumentNode,
         { variables = {}, signal }: GqlOptions = {},
     ): Promise<T> => {
-        const body = {
-            query: typeof query === 'string' ? query : print(query),
-            variables,
-        }
+        const queryText = typeof query === 'string' ? query : print(query)
+        const operationName = operationNameOf(queryText)
+        const body = { query: queryText, variables }
+        // An aborted request is control flow, not a failure: it keeps its AbortError identity.
+        const failure = (err: unknown): unknown => (isAbortError(err) ? err : GqlError.fromTransport(err, operationName))
 
-        let res: { data?: unknown; errors?: { extensions?: { code?: string }; message?: string }[] }
+        let res: GqlResponse
 
         // 1) Try the HTTP-level fetch (and 401→refresh→retry)
         try {
@@ -45,13 +55,14 @@ export default defineNuxtPlugin(() => {
         } catch (err: unknown) {
             if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 401) {
                 const ok = await attemptRefresh()
-                if (ok) {
+                if (!ok) throw failure(err)
+                try {
                     res = await doFetch(body, signal)
-                } else {
-                    throw err
+                } catch (retryErr: unknown) {
+                    throw failure(retryErr)
                 }
             } else {
-                throw err
+                throw failure(err)
             }
         }
 
@@ -63,21 +74,25 @@ export default defineNuxtPlugin(() => {
             if (unauth) {
                 const ok = await attemptRefresh()
                 if (ok) {
-                    res = await doFetch(body, signal)
+                    try {
+                        res = await doFetch(body, signal)
+                    } catch (retryErr: unknown) {
+                        throw failure(retryErr)
+                    }
                     if (res.errors?.length) {
-                        throw res.errors
+                        throw new GqlError(res.errors, { operationName })
                     }
                     return res.data as T
                 }
             }
-            throw res.errors
+            throw new GqlError(res.errors, { operationName })
         }
 
         return res.data as T
     }
 
     /** Low-level POST that returns the raw { data, errors } */
-    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<{ data?: unknown; errors?: { extensions?: { code?: string }; message?: string }[] }> => {
+    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<GqlResponse> => {
         const userLocale = useCookie('i18n_redirected').value ?? 'fr'
         return await $fetch(httpURL, {
             method: 'POST',
@@ -117,7 +132,9 @@ export default defineNuxtPlugin(() => {
             const { silentRenew } = useOidc()
             const user = await silentRenew()
             return Boolean(user)
-        } catch {
+        } catch (err: unknown) {
+            // Expected when the session is over (not reported): send the customer back to log in.
+            if (import.meta.dev) console.warn('[gqlFetch] silent renew failed', err)
             navigateTo(`${localePath('auth-login')}?session=expired`)
             return false
         }

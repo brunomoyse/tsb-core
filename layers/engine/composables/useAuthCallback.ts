@@ -1,6 +1,7 @@
 import type { User } from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useTracking } from '~/composables/useTracking'
@@ -87,7 +88,8 @@ export function useAuthCallback() {
         try {
             const data = await $gqlFetch<{ restaurantConfig: { orderingEnabled: boolean; isOrderingCurrentlyOpen: boolean } }>(RESTAURANT_STATUS)
             return Boolean(data?.restaurantConfig?.orderingEnabled && data?.restaurantConfig?.isOrderingCurrentlyOpen)
-        } catch {
+        } catch (err: unknown) {
+            reportError(err, 'auth.checkoutAvailability')
             return false
         }
     }

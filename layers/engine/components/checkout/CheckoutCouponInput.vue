@@ -54,65 +54,34 @@
 </template>
 
 <script lang="ts" setup>
-import { centsToDecimalString, toCents } from '#engine/utils/money'
-import type { CouponValidation } from '#engine/types'
 import { formatCents } from '#engine/lib/price'
-import gql from 'graphql-tag'
 import { ref } from 'vue'
 import { useCartStore } from '#engine/stores/cart'
-import { useGqlMutation } from '#imports'
-import { useI18n } from 'vue-i18n'
-
-
+import { useCouponCode } from '#engine/composables/useCouponCode'
 
 const cartStore = useCartStore()
-const { t } = useI18n()
+const { apply, remove } = useCouponCode()
 
 const couponInput = ref('')
 const errorMessage = ref('')
 const isValidating = ref(false)
 
-const VALIDATE_COUPON = gql`
-    query ValidateCoupon($code: String!, $orderAmount: String!) {
-        validateCoupon(code: $code, orderAmount: $orderAmount) {
-            valid
-            discountAmount
-            errorMessage
-        }
-    }
-`
-
-const { mutate: validateCoupon } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
-
 const applyCoupon = async () => {
-    const code = couponInput.value.trim()
-    if (!code) return
+    if (!couponInput.value.trim()) return
 
     isValidating.value = true
     errorMessage.value = ''
-
     try {
-        const orderAmount = centsToDecimalString(cartStore.subtotalCents)
-        const res = await validateCoupon({ code, orderAmount })
-        const validation = res.validateCoupon
-
-        if (validation.valid) {
-            cartStore.couponCode = code
-            cartStore.couponDiscountCents = toCents(validation.discountAmount)
-            couponInput.value = ''
-        } else {
-            errorMessage.value = validation.errorMessage || t('coupon.invalid')
-        }
-    } catch {
-        errorMessage.value = t('coupon.invalid')
+        const refusal = await apply(couponInput.value)
+        if (refusal) errorMessage.value = refusal
+        else couponInput.value = ''
     } finally {
         isValidating.value = false
     }
 }
 
 const removeCoupon = () => {
-    cartStore.couponCode = null
-    cartStore.couponDiscountCents = 0
+    remove()
     couponInput.value = ''
     errorMessage.value = ''
 }

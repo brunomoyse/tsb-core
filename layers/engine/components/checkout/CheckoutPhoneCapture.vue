@@ -59,6 +59,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation } from '#imports'
 import type { User } from '#engine/types'
 import gql from 'graphql-tag'
+import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 
@@ -126,7 +127,7 @@ const save = async (e164: string) => {
             variant: 'success',
         })
     } catch (err) {
-        if (import.meta.dev) console.error('Failed to save phone:', err)
+        reportError(err, 'checkout.savePhone')
         phoneError.value = t('notify.errors.profileUpdateFailed')
         lastSubmittedE164 = ''
     } finally {

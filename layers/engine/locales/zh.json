@@ -487,7 +487,15 @@
       "oauthFailed": "登录失败，请重试。",
       "invalidEmail": "请输入有效的邮箱地址。",
       "networkError": "无法连接到服务器，请检查您的网络后重试。",
-      "serverError": "服务器暂时不可用，请稍后再试。"
+      "serverError": "服务器暂时不可用，请稍后再试。",
+      "orderTooManyItems": "购物车中的商品种类过多（最多50种）。",
+      "productNotFound": "购物车中有商品已不可用，请移除后重试。",
+      "invalidQuantity": "某件商品的数量无效（须为1至99）。",
+      "selectionInvalid": "您选择的某个选项已失效，请在购物车中修改该商品后重试。",
+      "couponMinOrderNotMet": "此优惠码需要更高的订单金额。",
+      "couponAlreadyActive": "您已有一笔使用优惠码的进行中订单，请在其完成后再试。",
+      "cashAmountInvalid": "填写的现金金额无效。",
+      "paymentFailed": "无法发起支付，请重试。"
     }
   },
   "schema": {

@@ -7,7 +7,8 @@ type Vars = Record<string, unknown>
 
 /**
  * Returns a mutate() you can await anywhere (even inside handlers),
- * plus reactive data/loading/error for your UI.
+ * plus reactive data/loading/error for your UI. Failures throw (and `error` holds) a `GqlError`:
+ * show `useGqlErrorMessage()(err)`, never `err.message`.
  */
 export function useGqlMutation<T = unknown>(
     rawMutation: string | DocumentNode,

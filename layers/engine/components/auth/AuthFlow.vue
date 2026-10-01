@@ -183,6 +183,7 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
 import StepIndicator from '~/components/global/StepIndicator.vue'
 import { isValidEmail } from '#engine/lib/validators'
+import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -411,7 +412,7 @@ const onSubmitCode = async () => {
         await finalizeAndComplete()
     } catch (error: unknown) {
         loading.value = false
-        if (import.meta.dev) console.error('OTP verify error:', error)
+        reportError(error, 'auth.otpVerify')
         const err = error as { response?: { status?: number }, statusCode?: number }
         const status = err?.response?.status ?? err?.statusCode
         if (status === 429) {
@@ -453,7 +454,7 @@ const onSubmitProfile = async (payload: { firstName: string; lastName: string })
         await finalizeAndComplete()
     } catch (error: unknown) {
         loading.value = false
-        if (import.meta.dev) console.error('Profile completion error:', error)
+        reportError(error, 'auth.profileCompletion')
         errorMessage.value = formatError(error, 'notify.errors.requestFailed')
     }
 }
@@ -481,7 +482,8 @@ const finalizeAndComplete = async () => {
             const { useOidc } = await import('#engine/composables/useOidc')
             const { getAuthRequestId } = useOidc()
             effectiveAuthRequestId = await getAuthRequestId()
-        } catch {
+        } catch (err: unknown) {
+            reportError(err, 'auth.authRequestId')
             errorMessage.value = t('notify.errors.sessionExpired')
             loading.value = false
             return
@@ -525,7 +527,7 @@ const startIdpFlow = async (provider: string) => {
         window.location.href = authUrl
     } catch (error: unknown) {
         loading.value = false
-        if (import.meta.dev) console.error('IdP start error:', error)
+        reportError(error, 'auth.idpStart')
         const err = error as { response?: { status?: number }, statusCode?: number }
         const status = err?.response?.status ?? err?.statusCode
         errorMessage.value = status === 429

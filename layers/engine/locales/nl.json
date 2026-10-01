@@ -487,7 +487,15 @@
       "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
       "invalidEmail": "Voer een geldig e-mailadres in.",
       "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
-      "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw."
+      "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw.",
+      "orderTooManyItems": "Uw winkelmand bevat te veel verschillende producten (maximaal 50).",
+      "productNotFound": "Een product in uw winkelmand is niet meer beschikbaar. Verwijder het en probeer opnieuw.",
+      "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
+      "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelmand en probeer opnieuw.",
+      "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
+      "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
+      "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
+      "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw."
     }
   },
   "schema": {

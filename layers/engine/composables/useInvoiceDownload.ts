@@ -1,3 +1,4 @@
+import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '~/stores/notifications'
 import { useRuntimeConfig } from '#imports'
@@ -45,7 +46,8 @@ export function useInvoiceDownload() {
             a.click()
             document.body.removeChild(a)
             window.URL.revokeObjectURL(url)
-        } catch {
+        } catch (err: unknown) {
+            reportError(err, 'invoice.download')
             notifications.notify({
                 message: t('notify.errors.invoiceDownloadFailed'),
                 persistent: false,

@@ -487,7 +487,15 @@
       "oauthFailed": "Login failed. Please try again.",
       "invalidEmail": "Please enter a valid email address.",
       "networkError": "Can't reach the server. Check your connection and try again.",
-      "serverError": "The server is temporarily unavailable. Please try again in a moment."
+      "serverError": "The server is temporarily unavailable. Please try again in a moment.",
+      "orderTooManyItems": "Your cart has too many different products (50 maximum).",
+      "productNotFound": "A product in your cart is no longer available. Remove it and try again.",
+      "invalidQuantity": "The quantity of a product is not valid (between 1 and 99).",
+      "selectionInvalid": "An option you chose is no longer valid. Edit that product in your cart and try again.",
+      "couponMinOrderNotMet": "This promo code requires a higher order amount.",
+      "couponAlreadyActive": "You already have an open order that uses a promo code. Try again once it is complete.",
+      "cashAmountInvalid": "The cash amount you entered is not valid.",
+      "paymentFailed": "The payment could not be started. Please try again."
     }
   },
   "schema": {

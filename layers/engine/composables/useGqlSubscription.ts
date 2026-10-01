@@ -2,6 +2,8 @@
 import { type DocumentNode, print } from 'graphql'
 import { onScopeDispose, ref } from 'vue'
 import type { Client } from 'graphql-ws'
+import { reportError } from '#engine/utils/reportError'
+import { toGqlError } from '#engine/utils/gqlError'
 import { useRuntimeConfig } from '#imports'
 
 let wsClient: Client | null = null
@@ -56,7 +58,7 @@ const disposeClient = () => {
  */
 const notifyReconnected = () => {
     Array.from(subscribers).forEach((s) => {
-        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch(() => {})
+        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch((err: unknown) => reportError(err, 'gql.subscription.reconnect'))
     })
 }
 
@@ -260,14 +262,14 @@ export function useGqlSubscription<T = unknown>(
                             if (msg.data !== undefined) data.value = msg.data as T
                         },
                         error: (e) => {
-                            error.value = e instanceof Error ? e : new Error(String(e))
+                            error.value = toGqlError(e)
                         },
                         complete: () => {},
                     }
                 )
             })
             .catch((e) => {
-                if (!disposed) error.value = e instanceof Error ? e : new Error(String(e))
+                if (!disposed) error.value = toGqlError(e)
             })
     }
 

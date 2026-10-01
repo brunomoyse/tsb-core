@@ -81,6 +81,7 @@ import type { Address, AddressSuggestion } from '#engine/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useNuxtApp } from '#imports'
@@ -197,7 +198,7 @@ const handleAddressInput = () => {
             suggestions.value = data.autocompleteAddresses ?? []
             hasSearched.value = true
         } catch (err) {
-            if (import.meta.dev) console.error('Autocomplete failed:', err)
+            reportError(err, 'address.autocomplete')
             notifications.notify({
                 message: t('notify.errors.addressLookupFailed'),
                 persistent: false,
@@ -274,7 +275,7 @@ const selectSuggestion = async (suggestion: AddressSuggestion) => {
             regenerateSessionToken()
         }
     } catch (err) {
-        if (import.meta.dev) console.error('Resolve address failed:', err)
+        reportError(err, 'address.resolve')
         notifications.notify({
             message: t('notify.errors.addressLookupFailed'),
             persistent: false,

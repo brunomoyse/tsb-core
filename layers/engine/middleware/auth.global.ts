@@ -1,5 +1,6 @@
 // Middleware: auth.global.ts — OIDC session management via Zitadel
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+import { reportError } from '#engine/utils/reportError'
 
 export default defineNuxtRouteMiddleware(async (to) => {
     // Public pages skip auth check
@@ -31,7 +32,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     try {
         await signIn({ ui_locales: locale })
         return navigateTo(`/${locale}/auth/login`)
-    } catch {
+    } catch (err: unknown) {
+        reportError(err, 'auth.signIn')
         return navigateTo(`/${locale}/auth/login`)
     }
 })

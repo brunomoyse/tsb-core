@@ -79,8 +79,9 @@ export default defineNuxtPlugin(async () => {
             }
             // Token accepted at HTTP layer but /me returned nothing or GraphQL errors — stale.
             await removeUser()
-        } catch {
-            // Backend rejected the token (revoked, user deleted, etc.).
+        } catch (err: unknown) {
+            // Backend rejected the token (revoked, user deleted, etc.): expected, not reported.
+            if (import.meta.dev) console.warn('[auth-sync] /me rejected the token', err)
             await removeUser()
         }
     }

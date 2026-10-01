@@ -9,6 +9,7 @@ import UserForm from '~/components/form/UserForm.vue'
 import { formatAddress } from '#engine/utils/utils'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useNotificationsStore } from '#engine/stores/notifications'
@@ -196,7 +197,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
             variant: 'success',
         })
     } catch (error) {
-        if (import.meta.dev) console.error('Error during profile update:', error)
+        reportError(error, 'me.updateProfile')
         notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
@@ -250,7 +251,7 @@ const handleDeleteAccount = async () => {
         })
         await navigateTo(localePath('/'))
     } catch (error) {
-        if (import.meta.dev) console.error('Error deleting account:', error)
+        reportError(error, 'me.deleteAccount')
         deleting.value = false
         notifications.notify({
             message: t('me.profile.deleteError'),
@@ -293,7 +294,7 @@ const submitAddressUpdate = async () => {
         })
         closeAddressModal()
     } catch (error) {
-        if (import.meta.dev) console.error('Error updating address:', error)
+        reportError(error, 'me.updateAddress')
         notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
@@ -331,7 +332,8 @@ const updateNotificationPref = async (
             duration: 3000,
             variant: 'success',
         })
-    } catch {
+    } catch (err: unknown) {
+        reportError(err, 'me.updateNotifications')
         notifications.notify({
             message: t('me.notifications.updateError'),
             persistent: false,

@@ -243,8 +243,10 @@ import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
 import { centsToEuros } from '#engine/utils/money'
 import gql from 'graphql-tag'
+import { reportError } from '#engine/utils/reportError'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -254,6 +256,7 @@ import { useTracking } from '#engine/composables/useTracking'
 const { japaneseAccents = false } = useAppConfig().brand
 
 const { t, locale } = useI18n()
+const gqlErrorMessage = useGqlErrorMessage()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { applyDefaults } = useOrderExtras()
@@ -411,42 +414,6 @@ const handleSlotExpired = () => {
         duration: 5000,
         variant: 'warning',
     })
-}
-
-/** Extract a human-readable message from a GraphQL error, mapping known backend errors to i18n. */
-const extractGqlErrorMessage = (err: unknown): string | null => {
-    const raw = Array.isArray(err) && err.length > 0 && err[0]?.message
-        ? err[0].message as string
-        : err instanceof Error ? err.message : null
-    if (!raw) return null
-
-    // Map known backend error strings to translated messages
-    if (raw.includes('minimum order amount for delivery'))
-        return t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) })
-    if (raw.includes('ordering is currently unavailable'))
-        return t('notify.errors.orderingUnavailable')
-    if (raw.includes('not eligible for delivery'))
-        return t('notify.errors.deliveryAddressExcluded')
-    if (raw.includes('address too far'))
-        return t('notify.errors.deliveryAddressTooFar', { distance: 9 })
-    if (raw.includes('coupon is no longer valid'))
-        return t('coupon.invalid')
-    if (raw.includes('UNAUTHENTICATED'))
-        return null // Let the auth middleware handle this
-    if (raw.includes('preferred ready time is no longer available') || raw.includes('preferred ready time must be at least'))
-        return t('notify.errors.slotTooSoon')
-    if (raw.includes('preferred ready time is outside allowed'))
-        return t('notify.errors.slotOutsideHours')
-    if (raw.includes('preferred ready time must be on the same day'))
-        return t('notify.errors.slotNotToday')
-    if (raw.includes('preferred ready time must be aligned'))
-        return t('notify.errors.slotNotAligned')
-    if (raw.includes('ordering is closed today'))
-        return t('notify.errors.orderingClosedToday')
-    if (raw.includes('fixed time is required while the restaurant is closed'))
-        return t('notify.errors.fixedTimeRequiredWhileClosed')
-
-    return raw
 }
 
 const openAddressModal = () => {
@@ -744,10 +711,10 @@ const handleCheckout = async () => {
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }
         } catch (err: unknown) {
-            if (import.meta.dev) console.error('Error creating order:', err)
+            reportError(err, 'checkout.createOrder')
             hapticNotification('Error')
             notifications.notify({
-                message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
+                message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
@@ -755,10 +722,10 @@ const handleCheckout = async () => {
         }
 
     } catch (err: unknown) {
-        if (import.meta.dev) console.error('Order processing failed:', err)
+        reportError(err, 'checkout.processing')
         hapticNotification('Error')
         notifications.notify({
-            message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
+            message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed'),
             persistent: false,
             duration: 5000,
             variant: 'error',

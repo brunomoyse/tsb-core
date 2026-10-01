@@ -16,6 +16,7 @@
 
 <script lang="ts" setup>
 import { definePageMeta, onMounted, ref } from '#imports'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthCallback } from '#engine/composables/useAuthCallback'
 import { useOidc } from '#engine/composables/useOidc'
 
@@ -50,7 +51,7 @@ onMounted(async () => {
         } catch (e) {
             // Token exchange succeeded but processCallback failed (e.g. silent renew error).
             // The OIDC tokens are already stored (localStorage) — navigate to menu as fallback.
-            if (import.meta.dev) console.warn('processCallback failed, falling back to menu:', e)
+            reportError(e, 'auth.processCallback')
             const localePath = useLocalePath()
             navigateTo(localePath('menu'))
         }
