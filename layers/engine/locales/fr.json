@@ -43,6 +43,7 @@
     "status": {
       "open": "Ouvert",
       "onsiteOnly": "Ouvert · sur place",
+      "preorder": "Fermé · commandez pour {time}",
       "closed": "Fermé"
     }
   },

@@ -43,6 +43,7 @@
     "status": {
       "open": "营业中",
       "onsiteOnly": "营业中 · 仅限堂食",
+      "preorder": "休息中 · 现在可预订 {time}",
       "closed": "休息中"
     }
   },

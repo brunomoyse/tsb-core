@@ -1,6 +1,7 @@
 <template>
-    <div role="alert" data-testid="load-error" class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <p class="min-w-0 flex-1 text-sm font-medium">
+    <div data-testid="load-error" class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <!-- The alert is the message alone: announcing the container would read the Retry button out with it. -->
+        <p role="alert" class="min-w-0 flex-1 text-sm font-medium">
             <slot>{{ message }}</slot>
         </p>
         <button

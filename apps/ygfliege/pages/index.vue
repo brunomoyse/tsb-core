@@ -21,15 +21,17 @@ const { brand } = useAppConfig()
 
 // Live ordering status for the hero; lazy so the page renders without waiting
 // on the config query.
-const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
+const { config: restaurantConfig, status: availability, preorderTime } = await useOrderingAvailability({ lazy: true })
 
-type OrderingStatus = 'open' | 'onsiteOnly' | 'closed' | 'loading'
+// Status states: online-ordering open / closed but pre-orderable today / walk-in only / closed / still loading from backend.
+// Same rule as the menu, the cart and the checkout (useOrderingAvailability), not isOrderingCurrentlyOpen alone: in the pre-order window it says "order now for {time}", and it never says "open" while ordering is switched off.
+type OrderingStatus = 'open' | 'preorder' | 'onsiteOnly' | 'closed' | 'loading'
 const orderingStatus = computed<OrderingStatus>(() => {
     const cfg = restaurantConfig.value?.restaurantConfig
-    if (!cfg) return 'loading'
-    if (cfg.isOrderingCurrentlyOpen) return 'open'
-    if (cfg.isCurrentlyOpen) return 'onsiteOnly'
-    return 'closed'
+    if (!cfg || availability.value === null) return 'loading'
+    if (availability.value === 'open') return 'open'
+    if (availability.value === 'preorder' && preorderTime.value) return 'preorder'
+    return cfg.isCurrentlyOpen ? 'onsiteOnly' : 'closed'
 })
 
 const nextOpeningTime = computed(() => {
@@ -88,6 +90,7 @@ useSeoMeta({
                                 :class="orderingStatus === 'open' ? 'bg-emerald-500 animate-pulse' : 'bg-ygf-orange-400'"
                             />
                             <template v-if="orderingStatus === 'open'">{{ $t('home.status.open') }}</template>
+                            <template v-else-if="orderingStatus === 'preorder'">{{ $t('home.status.preorder', { time: preorderTime ?? '' }) }}</template>
                             <template v-else-if="orderingStatus === 'onsiteOnly'">{{ $t('home.status.onsiteOnly') }}</template>
                             <template v-else-if="nextOpeningTime">{{ $t('checkout.opensAt', { time: nextOpeningTime }) }}</template>
                             <template v-else>{{ $t('home.status.closed') }}</template>

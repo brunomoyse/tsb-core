@@ -1,7 +1,7 @@
 // The checkout gate: open, or closed with a bookable slot left today (audit M6).
 // Run: `node --test layers/engine/utils/orderingAvailability.test.mjs`.
 
-import { bookableSlots, canPlaceOrder, orderingStatus } from './orderingAvailability.ts'
+import { bookableSlots, canPlaceOrder, orderingStatus, preparationBufferMs } from './orderingAvailability.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -50,5 +50,21 @@ test('slots inside the preparation window no longer count (stale config)', () =>
 test('bookableSlots keeps the order and defaults the preparation time to 30 minutes', () => {
   const slots = [slot(10, 'a'), slot(31, 'b'), slot(60, 'c')]
   assert.deepEqual(bookableSlots(slots, undefined, NOW).map((s) => s.label), ['b', 'c'])
-  assert.deepEqual(bookableSlots(slots, 5, NOW).map((s) => s.label), ['a', 'b', 'c'])
+  // A short configured time is raised to the backend's 15 minute floor (a slot 10 minutes away is refused there).
+  assert.deepEqual(bookableSlots(slots, 5, NOW).map((s) => s.label), ['b', 'c'])
+})
+
+test('the buffer mirrors the backend: max(preparation, 15 min), 30 only when there is no usable value', () => {
+  assert.equal(preparationBufferMs(45), 45 * 60_000)
+  assert.equal(preparationBufferMs(10), 15 * 60_000)
+  assert.equal(preparationBufferMs(0), 15 * 60_000)
+  assert.equal(preparationBufferMs(-5), 15 * 60_000)
+  assert.equal(preparationBufferMs(null), 30 * 60_000)
+  assert.equal(preparationBufferMs(undefined), 30 * 60_000)
+  assert.equal(preparationBufferMs(Number.NaN), 30 * 60_000)
+})
+
+test('a slot exactly on the cut-off is still bookable (the backend only refuses a slot BEFORE it)', () => {
+  assert.deepEqual(bookableSlots([slot(30, 'edge'), slot(29, 'early')], 30, NOW).map((s) => s.label), ['edge'])
+  assert.deepEqual(bookableSlots([slot(15, 'edge'), slot(14, 'early')], 0, NOW).map((s) => s.label), ['edge'])
 })

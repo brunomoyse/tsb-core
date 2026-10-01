@@ -16,16 +16,17 @@ const { phoneHref } = useBrandPhone()
 const yearsSince = getBrusselsParts().year - brand.foundingYear
 
 // Live ordering status for the hero order bar; lazy so the homepage renders without waiting on the config query.
-const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
+const { config: restaurantConfig, status: availability, preorderTime } = await useOrderingAvailability({ lazy: true })
 
-// Status states: online-ordering open / walk-in only / closed / still loading from backend.
-type OrderingStatus = 'open' | 'onsiteOnly' | 'closed' | 'loading'
+// Status states: online-ordering open / closed but pre-orderable today / walk-in only / closed / still loading from backend.
+// Same rule as the menu, the cart and the checkout (useOrderingAvailability), not isOrderingCurrentlyOpen alone: in the pre-order window it says "order now for {time}", and it never says "open" while ordering is switched off.
+type OrderingStatus = 'open' | 'preorder' | 'onsiteOnly' | 'closed' | 'loading'
 const orderingStatus = computed<OrderingStatus>(() => {
     const cfg = restaurantConfig.value?.restaurantConfig
-    if (!cfg) return 'loading'
-    if (cfg.isOrderingCurrentlyOpen) return 'open'
-    if (cfg.isCurrentlyOpen) return 'onsiteOnly'
-    return 'closed'
+    if (!cfg || availability.value === null) return 'loading'
+    if (availability.value === 'open') return 'open'
+    if (availability.value === 'preorder' && preorderTime.value) return 'preorder'
+    return cfg.isCurrentlyOpen ? 'onsiteOnly' : 'closed'
 })
 
 const nextOpeningTime = computed(() => {
@@ -161,7 +162,7 @@ useHead({
                             :class="[
                                 'relative inline-flex rounded-full h-2.5 w-2.5',
                                 orderingStatus === 'open' ? 'bg-emerald-500'
-                                    : orderingStatus === 'onsiteOnly' ? 'bg-amber-400'
+                                    : orderingStatus === 'onsiteOnly' || orderingStatus === 'preorder' ? 'bg-amber-400'
                                     : orderingStatus === 'closed' ? 'bg-red-500'
                                     : 'bg-neutral-300',
                             ]"
@@ -169,7 +170,7 @@ useHead({
                     </span>
                     <span v-if="orderingStatus === 'loading'" class="h-4 w-28 rounded animate-shimmer" style="background-size: 200% 100%; background-image: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);" aria-hidden="true" />
                     <span v-else class="text-sm font-semibold text-neutral-900 truncate">
-                        {{ $t(`home.status.${orderingStatus}`) }}
+                        {{ $t(`home.status.${orderingStatus}`, { time: preorderTime ?? '' }) }}
                         <span v-if="orderingStatus === 'closed' && nextOpeningTime" class="font-normal text-neutral-500">
                             · {{ $t('checkout.opensAt', { time: nextOpeningTime }) }}
                         </span>

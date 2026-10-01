@@ -43,6 +43,7 @@
     "status": {
       "open": "Geopend",
       "onsiteOnly": "Open · enkel ter plaatse",
+      "preorder": "Gesloten · bestel nu voor {time}",
       "closed": "Gesloten"
     }
   },

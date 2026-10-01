@@ -43,6 +43,7 @@
     "status": {
       "open": "Open",
       "onsiteOnly": "Open · dine-in only",
+      "preorder": "Closed · order now for {time}",
       "closed": "Closed"
     }
   },
