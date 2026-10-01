@@ -53,29 +53,34 @@
                     class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
                 >
                     <!-- IMAGE -->
-                    <picture
-                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        type="button"
+                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        :aria-label="item.product.name"
+                        aria-haspopup="dialog"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >
-                        <source
-                            :srcset="`${productImageBase(item.product.id)}.avif`"
-                            type="image/avif"
-                        />
-                        <source
-                            :srcset="`${productImageBase(item.product.id)}.webp`"
-                            type="image/webp"
-                        />
-                        <img
-                            ref="itemImageElements"
-                            :src="`${productImageBase(item.product.id)}.png`"
-                            :alt="item.product.name"
-                            class="object-contain w-full h-full"
-                            width="64"
-                            height="64"
-                            draggable="false"
-                            @error="handleProductImageError"
-                        />
-                    </picture>
+                        <picture class="contents">
+                            <source
+                                :srcset="`${productImageBase(item.product.id)}.avif`"
+                                type="image/avif"
+                            />
+                            <source
+                                :srcset="`${productImageBase(item.product.id)}.webp`"
+                                type="image/webp"
+                            />
+                            <img
+                                ref="itemImageElements"
+                                :src="`${productImageBase(item.product.id)}.png`"
+                                alt=""
+                                class="object-contain w-full h-full"
+                                width="64"
+                                height="64"
+                                draggable="false"
+                                @error="handleProductImageError"
+                            />
+                        </picture>
+                    </button>
 
                     <!-- PRODUCT INFO -->
                     <div class="col-span-3 flex flex-col justify-center text-sm min-w-0">
@@ -212,13 +217,14 @@ import * as productImage from '#engine/utils/productImage'
 import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
-const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
+const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { until } from '@vueuse/core'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartSheet } from '#engine/composables/useCartSheet'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
@@ -270,6 +276,8 @@ const openLightbox = async (id: string, name: string) => {
     lightboxAlt.value = name
     showLightbox.value = true
     await nextTick()
+    // The lightbox is an async component: its instance only exists once its chunk has loaded (the first tap used to open nothing).
+    if (!lightboxRef.value) await until(lightboxRef).toBeTruthy({ timeout: 5000 })
     lightboxRef.value?.open()
 }
 

@@ -55,8 +55,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
 import DeliveryZonePicker from '~/components/delivery/DeliveryZonePicker.vue'
+import { ref } from 'vue'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 
 const { japaneseAccents = false } = useAppConfig().brand
@@ -81,10 +82,7 @@ const onBackdropClick = () => {
 }
 
 // Lock body scroll while open
-watch(() => open, (isOpen) => {
-    if (!import.meta.client) return
-    document.body.style.overflow = isOpen ? 'hidden' : ''
-}, { immediate: true })
+useBodyScrollLock(() => open)
 </script>
 
 <style scoped>

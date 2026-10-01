@@ -51,8 +51,11 @@
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
-                    <div
-                        class="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        type="button"
+                        class="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        :aria-label="item.product.name"
+                        aria-haspopup="dialog"
                         @click="openLightbox(item.product?.id, item.product.name)"
                     >
                         <picture>
@@ -64,7 +67,7 @@
                                 type="image/webp"/>
                             <img
                                  ref="itemImageElements"
-                                 :alt="item.product.name"
+                                 alt=""
                                  :src="`${productImageBase(item.product?.id)}.png`"
                                  class="max-w-full max-h-full"
                                  width="48"
@@ -72,7 +75,7 @@
                                  draggable="false"
                                  @error="handleProductImageError"/>
                         </picture>
-                    </div>
+                    </button>
 
                     <!-- Product Details -->
                     <div class="flex flex-col justify-between gap-2">
@@ -210,7 +213,7 @@ import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'

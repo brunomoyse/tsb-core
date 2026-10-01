@@ -18,6 +18,7 @@
             :class="{ 'animate-number-bounce': bounce }"
         >{{ value }}</span>
         <button
+            ref="incButton"
             type="button"
             :data-testid="incTestid"
             :aria-label="$t('cart.increaseQty')"
@@ -33,6 +34,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
+
 // Single -/+ control for the product card, the cart and the product modal.
 // Emits the `.stepper` vocabulary; each brand app styles it in its own CSS.
 const BUTTON = 'stepper-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
@@ -57,4 +60,8 @@ const emit = defineEmits<{
     decrement: []
     increment: []
 }>()
+
+// A parent that swaps its own control for this stepper hands focus to the "+" (the control that just replaced it).
+const incButton = ref<HTMLButtonElement | null>(null)
+defineExpose({ focusIncrement: () => incButton.value?.focus() })
 </script>

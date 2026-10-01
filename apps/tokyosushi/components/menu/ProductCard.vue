@@ -50,6 +50,7 @@
                     <!-- The name is the keyboard-reachable way into the details modal. -->
                     <button
                         type="button"
+                        aria-haspopup="dialog"
                         data-testid="product-name"
                         translate="no"
                         class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
@@ -68,13 +69,13 @@
                 </div>
 
                 <!-- Price and Cart Controls -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center mt-1">
-                    <template v-if="!showControls">
+                <div v-if="product.isAvailable" ref="controlsRef" class="flex justify-between items-center mt-1">
+                    <template v-if="!stepperOpen">
                         <span class="text-black font-semibold text-sm">
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>
-                            <button v-if="!isInCart" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
+                            <button v-if="!isInCart" ref="addButtonRef" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
                                     class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="orderingDisabled"
@@ -82,6 +83,7 @@
                                 <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg"/>
                             </button>
                             <button v-else
+                                 ref="countButtonRef"
                                  class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer"
                                  type="button"
                                  :aria-label="`${$t('nav.cart')}: ${cardQuantity}`"
@@ -93,6 +95,7 @@
                     </template>
                     <QuantityStepper
                         v-else
+                        ref="stepperRef"
                         class="w-full"
                         :value="cardQuantity"
                         :bounce="isQuantityBouncing"
@@ -110,7 +113,7 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -142,16 +145,6 @@ const {
 const emit = defineEmits<{
     openProductModal: []
 }>()
-
-const showControls = ref(false);
-const timeoutId = ref<NodeJS.Timeout | null>(null);
-
-// Clear timeout when component unmounts
-onUnmounted(() => {
-    if (timeoutId.value) {
-        clearTimeout(timeoutId.value);
-    }
-});
 
 const hasChoices = computed(() => product.choices?.length > 0);
 
@@ -187,6 +180,29 @@ const cardQuantity = computed(() =>
         : 0
 );
 
+// Expanded "- n +" stepper. It stays open while the product is in the cart (no auto-collapse: it used to close after
+// 4 s, even under a keyboard user's focus, and hid the only way to decrement).
+const showControls = ref(false);
+const stepperOpen = computed(() => showControls.value && isInCart.value)
+watch(isInCart, (inCart) => {
+    if (!inCart) showControls.value = false
+})
+
+/* The controls swap (add button -> stepper -> add button) destroys the focused element. When focus was on the control being
+   replaced, move it to its successor: the "+" of a new stepper, the add button when the stepper goes away. */
+const controlsRef = ref<HTMLElement | null>(null)
+const addButtonRef = ref<HTMLElement | null>(null)
+const countButtonRef = ref<HTMLElement | null>(null)
+const stepperRef = ref<{ focusIncrement: () => void } | null>(null)
+const controlState = computed(() => (isInCart.value ? (stepperOpen.value ? 'stepper' : 'count') : 'add'))
+watch(controlState, async (state) => {
+    // Runs before the DOM is patched, so the old control still has focus here.
+    if (!controlsRef.value?.contains(document.activeElement)) return
+    await nextTick()
+    if (state === 'stepper') stepperRef.value?.focusIncrement()
+    else (state === 'add' ? addButtonRef : countButtonRef).value?.focus()
+})
+
 const isQuantityBouncing = ref(false)
 watch(cardQuantity, () => {
     if (cardQuantity.value > 0) {
@@ -215,7 +231,6 @@ const addToCart = () => {
     });
 
     showControls.value = true;
-    resetTimeout();
 };
 
 const showExpandedControls = () => {
@@ -225,27 +240,15 @@ const showExpandedControls = () => {
     }
     // Show the expanded - + UI when the user clicks on the existing quantity
     showControls.value = true;
-    resetTimeout();
 };
 
 const decrement = () => {
     // The last unit is a removal like on every other cart surface: it offers Undo.
     decrementProduct(product);
-    resetTimeout();
 };
 
 const increment = () => {
     cartStore.incrementQuantity(product);
-    resetTimeout();
-};
-
-const resetTimeout = () => {
-    if (timeoutId.value) {
-        clearTimeout(timeoutId.value);
-    }
-    timeoutId.value = setTimeout(() => {
-        showControls.value = false;
-    }, 4000);
 };
 
 // Define the ref with the correct type (HTMLImageElement)

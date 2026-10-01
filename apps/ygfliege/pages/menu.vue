@@ -266,7 +266,7 @@ definePageMeta({
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import BowlComposer from '~/components/menu/BowlComposer.vue'
@@ -279,6 +279,7 @@ import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
 import LoadError from '#engine/components/LoadError.vue'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
@@ -325,13 +326,8 @@ const closeModal = () => {
     router.push({ query: {} })
 }
 
-// Lock body scroll when modal is open
-watch(() => route.query.product, (val) => {
-    document.body.style.overflow = val ? 'hidden' : ''
-})
-onBeforeUnmount(() => {
-    document.body.style.overflow = ''
-})
+// Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
+useBodyScrollLock(() => Boolean(route.query.product))
 
 /**
  * GraphQL Query

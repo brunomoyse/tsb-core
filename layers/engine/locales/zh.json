@@ -631,6 +631,7 @@
     "placeholder": "输入优惠码",
     "apply": "应用",
     "remove": "移除",
+    "removed": "优惠码已移除",
     "applied": "优惠码已应用：减 {discount}",
     "invalid": "无效的优惠码",
     "discount": "优惠码折扣",

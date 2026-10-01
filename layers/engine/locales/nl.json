@@ -631,6 +631,7 @@
     "placeholder": "Voer de promocode in",
     "apply": "Toepassen",
     "remove": "Verwijderen",
+    "removed": "Promocode verwijderd",
     "applied": "Promocode toegepast: -{discount} korting",
     "invalid": "Ongeldige promocode",
     "discount": "Korting promocode",

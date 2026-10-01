@@ -73,14 +73,17 @@
                      these cards only ever render inside their own category
                      section, so it repeated the heading on every tile. -->
                 <div class="min-h-[52px] flex flex-col">
-                    <span
-                        data-testid="product-name"
-                        translate="no"
-                        class="text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
-                        :title="product.name"
-                    >
-                      {{ product.name }}
-                    </span>
+                    <!-- The name is the keyboard (and screen-reader) way to open the details; the image above is the pointer way. -->
+                    <button type="button" aria-haspopup="dialog" class="self-start max-w-full rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" @click="emit('openProductModal')">
+                        <span
+                            data-testid="product-name"
+                            translate="no"
+                            class="block text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
+                            :title="product.name"
+                        >
+                          {{ product.name }}
+                        </span>
+                    </button>
                     <span class="text-neutral-600 text-xs mt-0.5">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
@@ -92,13 +95,14 @@
                 <!-- Price and cart controls. The stepper stays visible once the
                      item is in the cart: the inherited control collapsed itself
                      after 4s, which hid the only way to decrement. -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
+                <div v-if="product.isAvailable" ref="controlsRef" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
                     <span class="text-ygf-black font-bold text-base tabular-nums">
                       {{ formatPrice(product.price) }}
                     </span>
 
                     <button
                         v-if="!isInCart"
+                        ref="addButtonRef"
                         :aria-label="$t('cart.addToCart')"
                         data-testid="product-add-to-cart"
                         type="button"
@@ -122,6 +126,7 @@
                         >&minus;</button>
                         <span class="stepper-value text-sm" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
                         <button
+                            ref="incrementButtonRef"
                             type="button"
                             data-testid="product-card-increment"
                             class="stepper-btn"
@@ -141,7 +146,7 @@
 import * as productImage from '#engine/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
@@ -216,6 +221,18 @@ const cardQuantity = computed(() =>
             .reduce((sum, item) => sum + item.quantity, 0)
         : 0
 );
+
+/* The add button is replaced by the stepper on the first add and back when the last unit goes: when focus was on the control
+   being replaced, move it to its successor (the "+" of the new stepper, the add button) instead of losing it to <body>. */
+const controlsRef = ref<HTMLElement | null>(null)
+const addButtonRef = ref<HTMLElement | null>(null)
+const incrementButtonRef = ref<HTMLElement | null>(null)
+watch(isInCart, async (inCart) => {
+    // Runs before the DOM is patched, so the old control still has focus here.
+    if (!controlsRef.value?.contains(document.activeElement)) return
+    await nextTick()
+    ;(inCart ? incrementButtonRef : addButtonRef).value?.focus()
+})
 
 const isQuantityBouncing = ref(false)
 watch(cardQuantity, () => {

@@ -631,6 +631,7 @@
     "placeholder": "Entrez le code promo",
     "apply": "Appliquer",
     "remove": "Retirer",
+    "removed": "Code promo retiré",
     "applied": "Code promo appliqué : -{discount} de réduction",
     "invalid": "Code promo invalide",
     "discount": "Réduction code promo",

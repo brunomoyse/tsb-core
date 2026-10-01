@@ -13,7 +13,13 @@
 
             <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Image Section -->
-                <div class="relative h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-pointer" @click="openLightbox(p.id, p.name)">
+                <button
+                    type="button"
+                    class="relative block w-full h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    :aria-label="p.name"
+                    aria-haspopup="dialog"
+                    @click="openLightbox(p.id, p.name)"
+                >
                     <picture class="w-full h-full flex justify-center items-center p-4">
                         <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif"/>
                         <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp"/>
@@ -26,7 +32,7 @@
                             @error="handleProductImageError"
                         />
                     </picture>
-                </div>
+                </button>
 
                 <!-- Details Section -->
                 <div class="space-y-6">
