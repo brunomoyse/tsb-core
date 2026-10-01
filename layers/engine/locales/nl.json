@@ -16,7 +16,8 @@
     "step": "Stap {n}",
     "discard": "Verwerpen",
     "keepEditing": "Verder bewerken",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "saving": "Opslaan…"
   },
   "nav": {
     "home": "Home",
@@ -168,7 +169,8 @@
       "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
       "houseNumberRequired": "Huisnummer is verplicht.",
       "example": "Voorbeeld: Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Goedendag",
@@ -347,7 +349,8 @@
       "saved": "Telefoonnummer opgeslagen",
       "edit": "Wijzigen",
       "addCountryPrefix": "Voor een niet-Belgisch nummer, voeg het landnummer toe (bijv. +33)",
-      "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt."
+      "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt.",
+      "editAria": "Telefoonnummer wijzigen"
     },
     "orderSummary": "Uw bestelling",
     "emptyCart": "Uw winkelwagen is leeg.",
@@ -421,7 +424,9 @@
     "paidExtra": "Betaalde extra",
     "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd.",
     "quoteIssuesTitle": "Je bestelling kan nog niet worden betaald",
-    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling."
+    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling.",
+    "cashAmountTooLow": "Dit bedrag is lager dan het totaal ({total}). Geef minstens {total} in, of laat het veld leeg.",
+    "cashChangeDue": "Terug te geven wisselgeld: {amount}"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
@@ -460,6 +465,18 @@
       "awaitingConfirmationTitle": "Betaling wordt bevestigd",
       "awaitingConfirmationBody": "We hebben de betalingsbevestiging nog niet ontvangen. Deze pagina wordt automatisch bijgewerkt. Bent u al afgeschreven, betaal dan niet opnieuw: neem contact met ons op via {phone}.",
       "callUs": "Bel het restaurant"
+    },
+    "receipt": {
+      "title": "Betaaloverzicht",
+      "discount": "Korting",
+      "rounding": "Afronding",
+      "paidOnline": "Online betaald",
+      "cashDelivery": "Contant bij levering",
+      "cashPickup": "Contant bij afhaling",
+      "cashWith": "U betaalt met {amount}",
+      "changeDue": "wisselgeld: {amount}",
+      "deliveryTo": "Leveringsadres",
+      "pickupAt": "Afhalen bij"
     }
   },
   "error": {

@@ -76,8 +76,8 @@
             <UiButton variant="secondary" class="flex-1" @click="emit('close')">
                 {{ $t('common.cancel') }}
             </UiButton>
-            <UiButton type="submit" class="flex-1">
-                {{ $t('me.profile.update') }}
+            <UiButton type="submit" class="flex-1" :disabled="submitting" :loading="submitting" data-testid="profile-submit">
+                {{ submitting ? $t('common.saving') : $t('me.profile.update') }}
             </UiButton>
         </div>
     </form>
@@ -101,8 +101,10 @@ interface InitialValues {
     address?: Address | null
 }
 
-const { initialValues = {} as InitialValues } = defineProps<{
+const { initialValues = {} as InitialValues, submitting = false } = defineProps<{
     initialValues?: InitialValues
+    /** The update is on its way: the button is disabled and spins, so the form cannot be sent twice. */
+    submitting?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -152,6 +154,7 @@ const validatePhone = async (): Promise<string | null> => {
 }
 
 const handleSubmit = async () => {
+    if (submitting) return
     const hasCurrentPhone = phoneLocal.value && phoneLocal.value.trim() !== ''
     let phoneE164: string | null = null
     if (hasCurrentPhone) {

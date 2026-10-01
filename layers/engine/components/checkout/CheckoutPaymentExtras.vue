@@ -109,6 +109,8 @@
                             pattern="[0-9]*([.,][0-9]{0,2})?"
                             autocomplete="off"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
+                            :aria-invalid="cashState.kind === 'short' ? 'true' : undefined"
+                            :aria-describedby="cashHintId"
                             :class="[
                                 'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-400 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
@@ -118,6 +120,24 @@
                         />
                         <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-500' : 'text-amber-700']">€</span>
                     </div>
+                    <p
+                        v-if="cashState.kind === 'short'"
+                        id="cash-amount-hint"
+                        data-testid="cash-amount-short"
+                        role="alert"
+                        class="mt-1.5 text-xs font-medium text-ygf-orange-text"
+                    >
+                        {{ $t('checkout.cashAmountTooLow', { total: formatCents(payableCents) }) }}
+                    </p>
+                    <p
+                        v-else-if="cashState.kind === 'change'"
+                        id="cash-amount-hint"
+                        data-testid="cash-amount-change"
+                        role="status"
+                        class="mt-1.5 text-xs font-medium text-ygf-success"
+                    >
+                        {{ $t('checkout.cashChangeDue', { amount: formatCents(cashState.changeCents) }) }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -346,6 +366,7 @@ import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
+import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
@@ -367,7 +388,7 @@ const showCashAckError = computed(() => cashAckError && !cashAcknowledged)
 
 const cartStore = useCartStore()
 // The pay button waits for the server quote and stays disabled while it reports something that would fail the order.
-const { isOrderBlocked, isQuotePending } = useCartTotals()
+const { isOrderBlocked, isQuotePending, payableCents } = useCartTotals()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWasabi, addGinger, addSauce, sauce, sauceOptions, syncLockedExtras } = useOrderExtras()
@@ -492,6 +513,10 @@ const cashPaymentAmount = computed({
         cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
     },
 })
+
+// An amount below the total is refused by the checkout; above it, the change due is shown (audit M25).
+const cashState = computed(() => evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value))
+const cashHintId = computed(() => (cashState.value.kind === 'short' || cashState.value.kind === 'change' ? 'cash-amount-hint' : undefined))
 
 const sauceTypeOptions = computed(() => sauceOptions.map((value) => ({ value, label: t(`checkout.${value}`) })))
 

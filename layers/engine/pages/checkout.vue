@@ -264,6 +264,7 @@ import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.v
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import QuoteIssuesNotice from '#engine/components/QuoteIssuesNotice.vue'
 import { buildCreateOrderInput } from '#engine/utils/orderPayload'
+import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
@@ -594,6 +595,14 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
+    if (cartStore.paymentOption === 'CASH' && evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value).kind === 'short') {
+        errors.push({
+            message: t('checkout.cashAmountTooLow', { total: formatCents(payableCents.value) }),
+            targetId: 'cash-payment-amount',
+            event: 'checkout_error_cash_amount_too_low',
+        })
+    }
+
     if (cartStore.collectionOption === 'DELIVERY' && isExcludedPostcode(cartStore.address?.postcode)) {
         errors.push({
             message: t('notify.errors.deliveryAddressExcluded'),
@@ -783,6 +792,7 @@ watch(
         authStore.user?.phoneNumber,
         cartStore.paymentOption,
         cashAcknowledged.value,
+        cartStore.cashPaymentAmount,
         payableCents.value,
     ],
     () => {

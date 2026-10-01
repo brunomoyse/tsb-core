@@ -16,7 +16,8 @@
     "step": "Step {n}",
     "discard": "Discard",
     "keepEditing": "Keep editing",
-    "retry": "Try again"
+    "retry": "Try again",
+    "saving": "Saving…"
   },
   "nav": {
     "home": "Home",
@@ -168,7 +169,8 @@
       "callHint": "If your address isn't listed, feel free to call us at",
       "houseNumberRequired": "A house number is required.",
       "example": "Example: Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Hello",
@@ -347,7 +349,8 @@
       "saved": "Phone number saved",
       "edit": "Edit",
       "addCountryPrefix": "For a non-Belgian number, add the country code (e.g. +33)",
-      "requiredBeforeOrder": "Please add your phone number before placing the order."
+      "requiredBeforeOrder": "Please add your phone number before placing the order.",
+      "editAria": "Edit phone number"
     },
     "orderSummary": "Your Order",
     "emptyCart": "Your cart is empty.",
@@ -421,7 +424,9 @@
     "paidExtra": "Paid extra",
     "paidExtrasNotice": "These extras are billed as products and added to your cart.",
     "quoteIssuesTitle": "Your order can't be paid yet",
-    "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order."
+    "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order.",
+    "cashAmountTooLow": "That is less than the total ({total}). Enter at least {total}, or leave the field empty.",
+    "cashChangeDue": "Change due: {amount}"
   },
   "orderCompleted": {
     "title": "Order Completed",
@@ -460,6 +465,18 @@
       "awaitingConfirmationTitle": "Confirming your payment",
       "awaitingConfirmationBody": "We haven’t received the payment confirmation yet. This page will update automatically. If you were charged, don’t pay again: contact us at {phone}.",
       "callUs": "Call the restaurant"
+    },
+    "receipt": {
+      "title": "Payment details",
+      "discount": "Discount",
+      "rounding": "Rounding",
+      "paidOnline": "Paid online",
+      "cashDelivery": "Cash on delivery",
+      "cashPickup": "Cash at pickup",
+      "cashWith": "You will pay with {amount}",
+      "changeDue": "change due: {amount}",
+      "deliveryTo": "Delivery address",
+      "pickupAt": "Pick up at"
     }
   },
   "error": {

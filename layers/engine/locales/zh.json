@@ -16,7 +16,8 @@
     "step": "第 {n} 步",
     "discard": "放弃",
     "keepEditing": "继续编辑",
-    "retry": "重试"
+    "retry": "重试",
+    "saving": "正在保存…"
   },
   "nav": {
     "home": "首页",
@@ -168,7 +169,8 @@
       "callHint": "如果找不到您的地址，请随时致电我们：",
       "houseNumberRequired": "必须填写门牌号。",
       "example": "示例：Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
   },
   "me": {
     "greeting": "你好",
@@ -347,7 +349,8 @@
       "saved": "电话号码已保存",
       "edit": "编辑",
       "addCountryPrefix": "非比利时号码请添加国家区号（例如 +33）",
-      "requiredBeforeOrder": "请在下单前填写您的电话号码。"
+      "requiredBeforeOrder": "请在下单前填写您的电话号码。",
+      "editAria": "修改电话号码"
     },
     "orderSummary": "您的订单",
     "emptyCart": "您的购物车为空。",
@@ -421,7 +424,9 @@
     "paidExtra": "付费加购",
     "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。",
     "quoteIssuesTitle": "您的订单暂时无法付款",
-    "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。"
+    "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。",
+    "cashAmountTooLow": "该金额低于订单总额（{total}）。请至少填写 {total}，或将此栏留空。",
+    "cashChangeDue": "应找零：{amount}"
   },
   "orderCompleted": {
     "title": "订单完成",
@@ -460,6 +465,18 @@
       "awaitingConfirmationTitle": "正在确认您的支付",
       "awaitingConfirmationBody": "我们尚未收到支付确认。本页面会自动更新。如果您已被扣款，请勿重复支付，请致电 {phone} 联系我们。",
       "callUs": "致电餐厅"
+    },
+    "receipt": {
+      "title": "付款明细",
+      "discount": "优惠",
+      "rounding": "四舍五入",
+      "paidOnline": "已在线支付",
+      "cashDelivery": "送货时现金支付",
+      "cashPickup": "取餐时现金支付",
+      "cashWith": "您将用 {amount} 支付",
+      "changeDue": "找零：{amount}",
+      "deliveryTo": "送货地址",
+      "pickupAt": "取餐地点"
     }
   },
   "error": {

@@ -197,7 +197,7 @@ import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
-import { useProductChoices } from '~/composables/useProductChoices'
+import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 /**

@@ -21,7 +21,7 @@ import { useI18n } from 'vue-i18n'
 export const useProductChoices = (product: Product | null | undefined, quantity: Ref<number>) => {
     const { t } = useI18n()
 
-    /** choiceId → selected quantity. Entries are deleted, never zeroed. */
+    /** The selected quantity per choiceId. Entries are deleted, never zeroed. */
     const selectedChoiceQuantities = ref<Record<string, number>>({})
 
     /**
@@ -184,10 +184,11 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         selectedChoiceQuantities.value = copy
     }
 
-    // Keep exclusive picks in step when the line quantity changes: a broth
-    // chosen at quantity 1 must count ×2 once the user bumps the footer
-    // stepper to 2, or every pick-one group silently turns unsatisfiable.
-    // Only groups holding exactly one distinct pick are rescaled.
+    /*
+     * Keep exclusive picks in step when the line quantity changes: a broth chosen at quantity 1 must
+     * count ×2 once the user bumps the footer stepper to 2, or every pick-one group silently turns
+     * unsatisfiable. Only groups holding exactly one distinct pick are rescaled.
+     */
     watch(quantity, () => {
         const copy = { ...selectedChoiceQuantities.value }
         let changed = false

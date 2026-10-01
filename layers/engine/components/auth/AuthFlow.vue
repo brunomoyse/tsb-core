@@ -94,7 +94,7 @@
 
             <UiButton
                 block
-                :disabled="loading || !!emailFormatError"
+                :disabled="loading"
                 data-testid="login-submit"
                 type="submit"
             >
@@ -178,7 +178,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
 import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
 import StepIndicator from '~/components/global/StepIndicator.vue'
@@ -275,6 +275,9 @@ const startCooldown = (seconds = 20) => {
         }
     }, 1000)
 }
+
+// Typing clears the format error, so Enter after correcting the address is never blocked by a stale error (audit M22); the format is checked again on blur and on submit.
+watch(email, () => { emailFormatError.value = false })
 
 const validateEmailOnBlur = () => {
     if (email.value.trim() === '') {

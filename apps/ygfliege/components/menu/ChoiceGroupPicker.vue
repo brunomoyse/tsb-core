@@ -110,7 +110,7 @@ import MktPicture from '~/components/mkt/MktPicture.vue'
 import { computed } from 'vue'
 import { formatPrice } from '#engine/lib/price'
 import { toCents } from '#engine/utils/money'
-import type { ProductChoicesApi } from '~/composables/useProductChoices'
+import type { ProductChoicesApi } from '#engine/composables/useProductChoices'
 
 /**
  * Renders one choice group's options — shared by ProductModal (fixed sets)

@@ -185,7 +185,10 @@ const openModal = () => {
 
 const closeModal = () => { showModal.value = false }
 
+const profileSaving = ref(false)
 const submitProfileUpdate = async (formData: UpdateUserRequest) => {
+    if (profileSaving.value) return
+    profileSaving.value = true
     try {
         const res: { updateMe: User } = await mutationUpdateMe({ input: formData })
         authStore.updateUser(res.updateMe)
@@ -205,6 +208,8 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
             variant: 'error',
         })
         return
+    } finally {
+        profileSaving.value = false
     }
     closeModal()
 }
@@ -645,7 +650,7 @@ const updateNotificationPref = async (
                     <h3 id="edit-profile-title" class="text-2xl font-semibold text-neutral-900 text-center mb-6">
                         {{ t('me.profile.update') }}
                     </h3>
-                    <UserForm :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />
+                    <UserForm :initialValues="userInitialValues" :submitting="profileSaving" @submit="submitProfileUpdate" @close="closeModal" />
                 </div>
             </div>
         </transition>

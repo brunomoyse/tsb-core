@@ -190,6 +190,11 @@
                     </div>
                 </div>
 
+                <!-- Receipt: what was charged, how, and where it goes -->
+                <div class="border-t border-neutral-100 p-5">
+                    <OrderReceipt :order="order" />
+                </div>
+
                 <!-- Status timeline -->
                 <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" class="border-t border-neutral-100 p-5">
                     <h3 class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-4">

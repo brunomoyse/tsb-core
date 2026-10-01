@@ -137,7 +137,7 @@ import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
-import { useProductChoices } from '~/composables/useProductChoices'
+import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 /**

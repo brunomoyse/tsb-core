@@ -16,7 +16,8 @@
     "step": "Étape {n}",
     "discard": "Abandonner",
     "keepEditing": "Continuer",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "saving": "Enregistrement…"
   },
   "nav": {
     "home": "Accueil",
@@ -168,7 +169,8 @@
       "callHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
       "houseNumberRequired": "Le numéro de rue est obligatoire.",
       "example": "Exemple : Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Bonjour",
@@ -347,7 +349,8 @@
       "saved": "Numéro enregistré",
       "edit": "Modifier",
       "addCountryPrefix": "Pour un numéro non belge, ajoutez l'indicatif du pays (ex. +33)",
-      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
+      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander.",
+      "editAria": "Modifier le numéro de téléphone"
     },
     "orderSummary": "Votre commande",
     "emptyCart": "Votre panier est vide.",
@@ -421,7 +424,9 @@
     "paidExtra": "Supplément payant",
     "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier.",
     "quoteIssuesTitle": "Votre commande ne peut pas encore être payée",
-    "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande."
+    "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande.",
+    "cashAmountTooLow": "Ce montant est inférieur au total ({total}). Indiquez au moins {total}, ou laissez le champ vide.",
+    "cashChangeDue": "Monnaie à rendre : {amount}"
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -460,6 +465,18 @@
       "awaitingConfirmationTitle": "Paiement en cours de confirmation",
       "awaitingConfirmationBody": "Nous n’avons pas encore reçu la confirmation de votre paiement. Cette page se met à jour automatiquement. Si vous avez été débité, ne payez pas une seconde fois : contactez-nous au {phone}.",
       "callUs": "Appeler le restaurant"
+    },
+    "receipt": {
+      "title": "Détail du paiement",
+      "discount": "Réduction",
+      "rounding": "Arrondi",
+      "paidOnline": "Payé en ligne",
+      "cashDelivery": "Espèces à la livraison",
+      "cashPickup": "Espèces au retrait",
+      "cashWith": "Vous paierez avec {amount}",
+      "changeDue": "monnaie à rendre : {amount}",
+      "deliveryTo": "Adresse de livraison",
+      "pickupAt": "Retrait à"
     }
   },
   "error": {

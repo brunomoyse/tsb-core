@@ -41,7 +41,10 @@ export const ORDER_COMPLETED_QUERY = print(gql`
             isOnlinePayment
             discountAmount
             deliveryFee
+            transactionFee
             totalPrice
+            couponCode
+            cashPaymentAmount
             estimatedReadyTime
             addressExtra
             orderNote
@@ -50,6 +53,8 @@ export const ORDER_COMPLETED_QUERY = print(gql`
 
             address {
                 streetName
+                houseNumber
+                boxNumber
                 municipalityName
                 postcode
             }
