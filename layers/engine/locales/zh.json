@@ -425,6 +425,7 @@
     "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。",
     "quoteIssuesTitle": "您的订单暂时无法付款",
     "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。",
+    "quoteChanged": "价格或供应情况已变更，请检查您的订单。",
     "cashAmountTooLow": "该金额低于订单总额（{total}）。请至少填写 {total}，或将此栏留空。",
     "cashChangeDue": "应找零：{amount}"
   },

@@ -11,6 +11,7 @@ import {
   lineIssuesByKey,
   quoteLineByKey,
   quoteRequestKey,
+  recheckQuote,
   totalsFromQuote,
 } from './orderQuote.ts'
 import { GqlError } from './gqlError.ts'
@@ -73,6 +74,21 @@ test('a quote that could not evaluate the coupon or resolve the address is not u
   assert.equal(isQuoteUsableForTotals(quote({ issues: [{ code: 'ADDRESS_UNRESOLVABLE', minimum: null }] })), false)
   // A refused coupon is usable: the totals are simply without it (and the cart drops the code).
   assert.equal(isQuoteUsableForTotals(quote({ coupon: { code: 'X', valid: false, errorCode: 'COUPON_INVALID' } })), true)
+  // Too many different products: the server prices nothing (zeros), so those zeros are never shown as totals.
+  assert.equal(isQuoteUsableForTotals(quote({ total: '0.00', issues: [{ code: 'ORDER_TOO_MANY_ITEMS', minimum: null }] })), false)
+})
+
+test('the recheck right before ordering: blocked, changed (the total moved) or ok', () => {
+  assert.equal(recheckQuote(quote(), 1250), 'ok')
+  assert.equal(recheckQuote(quote({ total: '13.00' }), 1250), 'changed')
+  assert.equal(recheckQuote(quote({ lines: [line({ issues: [{ code: 'PRODUCT_UNAVAILABLE', currentPrice: null }] })] }), 1250), 'blocked')
+  // A blocking issue wins over a moved total.
+  assert.equal(recheckQuote(quote({ total: '99.00', issues: [{ code: 'ORDERING_UNAVAILABLE', minimum: null }] }), 1250), 'blocked')
+  // A quote the totals cannot use (anonymous coupon, unresolved address) has nothing comparable: it only blocks (an unresolved address does).
+  assert.equal(recheckQuote(quote({ total: '0.00', coupon: { code: 'X', valid: false, errorCode: 'UNAUTHENTICATED' } }), 1250), 'ok')
+  assert.equal(recheckQuote(quote({ total: '0.00', issues: [{ code: 'ADDRESS_UNRESOLVABLE', minimum: null }] }), 1250), 'blocked')
+  // The page handles a missing address itself.
+  assert.equal(recheckQuote(quote({ issues: [{ code: 'ADDRESS_REQUIRED', minimum: null }] }), 1250), 'ok')
 })
 
 test('blocking: any line issue, or an order issue the page does not already handle', () => {

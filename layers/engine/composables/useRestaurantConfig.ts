@@ -1,6 +1,7 @@
 import { type Ref, watch } from 'vue'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
 
@@ -87,6 +88,8 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
                         ...val.restaurantConfigUpdated,
                     },
                 }
+                // Hours, ordering switched off, slots: what the quote of the cart on screen may now say differently.
+                requestQuoteRefresh()
             }
         })
     }

@@ -207,6 +207,7 @@
 import * as productImage from '#engine/utils/productImage'
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
@@ -219,7 +220,6 @@ import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
-import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
@@ -251,7 +251,9 @@ const {
     isMinimumReached,
 } = useCartTotals()
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
-useOrderQuote()
+// The side cart only exists from the `lg` breakpoint up (the parent hides it below): on a phone the drawer asks when it opens, so a cart change there costs no request.
+const isDesktop = useMediaQuery('(min-width: 1024px)')
+useOrderQuote({ active: isDesktop })
 
 const lightboxRef = ref<InstanceType<typeof ImageLightbox> | null>(null)
 const lightboxSrc = ref('')

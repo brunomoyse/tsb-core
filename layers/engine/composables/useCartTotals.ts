@@ -1,9 +1,11 @@
 import { type ComputedRef, computed } from 'vue'
 import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
-import { isQuoteBlocking, isQuoteUsableForTotals, totalsFromQuote } from '#engine/utils/orderQuote'
+import { isQuoteBlocking, isQuoteUsableForTotals, quoteRequestKey, totalsFromQuote } from '#engine/utils/orderQuote'
 import type { CartItem } from '@/types'
+import { buildQuoteInput } from '#engine/utils/orderPayload'
 import { computeCartTotals } from '#engine/utils/cartTotals'
 import { isExcludedPostcode } from '#engine/lib/delivery'
+import { useAuthStore } from '#engine/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useQuoteStore } from '#engine/stores/quote'
 import { useTracking } from '#engine/composables/useTracking'
@@ -63,6 +65,18 @@ export function useCartTotals(): CartTotals {
     const { trackEvent } = useTracking()
 
     const quoteStore = useQuoteStore()
+    const authStore = useAuthStore()
+
+    /*
+     * The quote counts only when it answers the cart as it is RIGHT NOW: compared with the key of
+     * the current cart, not with the last key the cycle was asked for (the cycle learns of a change
+     * a tick later, and a surface that is not asking, e.g. a closed drawer, never does).
+     */
+    const currentQuote = computed(() => {
+        if (cartStore.products.length === 0 || quoteStore.quote === null) return null
+        const key = quoteRequestKey(buildQuoteInput(cartStore), Boolean(authStore.user))
+        return quoteStore.quoteKey === key ? quoteStore.quote : null
+    })
 
     const clientTotals = computed(() => computeCartTotals({
         lines: cartStore.products,
@@ -72,8 +86,8 @@ export function useCartTotals(): CartTotals {
         couponDiscountCents: cartStore.couponDiscountCents,
     }))
     const quote = computed(() => {
-        const fresh = quoteStore.freshQuote
-        return fresh && cartStore.products.length > 0 && isQuoteUsableForTotals(fresh) ? fresh : null
+        const fresh = currentQuote.value
+        return fresh && isQuoteUsableForTotals(fresh) ? fresh : null
     })
     const totals = computed(() => quote.value ? totalsFromQuote(quote.value, cartStore.collectionOption) : clientTotals.value)
 
@@ -98,7 +112,7 @@ export function useCartTotals(): CartTotals {
         amountToDeliveryMinimumCents: computed(() => totals.value.amountToDeliveryMinimumCents),
         isQuoted: computed(() => quote.value !== null),
         isQuotePending: computed(() => quoteStore.pending),
-        isOrderBlocked: computed(() => quoteStore.pending || (quoteStore.freshQuote !== null && isQuoteBlocking(quoteStore.freshQuote))),
+        isOrderBlocked: computed(() => quoteStore.pending || (currentQuote.value !== null && isQuoteBlocking(currentQuote.value))),
         switchToPickup,
     }
 }

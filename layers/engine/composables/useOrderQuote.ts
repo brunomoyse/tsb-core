@@ -24,6 +24,10 @@ import { useQuoteStore } from '#engine/stores/quote'
  *    so a slow old answer never overwrites a new one;
  *  - while a quote is on its way, or when it failed, the cart surfaces keep showing the client's
  *    maths (`useCartTotals`); only blocking issues of a fresh quote stop the order;
+ *  - a request that is not answered within QUOTE_TIMEOUT_MS (8 s) is given up on, so a hung connection
+ *    can never keep the pay button disabled: the surfaces fall back to the client's maths;
+ *  - `refreshQuote()` re-asks for the current cart on demand (right before the order is created, and
+ *    when the server may have changed something while the cart did not): see `useCheckoutQuoteGuard`;
  *  - an older backend without `quoteOrder` is detected once and then never asked again.
  *
  * The coupon of the cart is re-checked by every quote: it follows the basket, and one that stopped
@@ -41,6 +45,19 @@ type GqlFetch = <T>(query: string, options?: { variables?: Record<string, unknow
  */
 let cycle: ReturnType<typeof createQuoteCycle> | null = null
 let consumers = 0
+
+/** The quote of the CURRENT cart, asked for again now. Null when there is nothing to ask or the request failed (carry on as before). */
+export const refreshQuote = async (): Promise<OrderQuote | null> => (await cycle?.refresh()) ?? null
+
+let lastRequestedRefresh = 0
+/** Fire-and-forget `refreshQuote` for server-side changes: bursts of events cost one request per `minGapMs`. */
+export function requestQuoteRefresh(minGapMs = 2000): void {
+    if (!import.meta.client || consumers <= 0) return
+    const now = Date.now()
+    if (now - lastRequestedRefresh < minGapMs) return
+    lastRequestedRefresh = now
+    void refreshQuote()
+}
 
 export interface UseOrderQuoteOptions {
     /** Whether this surface needs the quote now (the drawer only while open). Default: always. */
@@ -80,16 +97,6 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
         }
     }
 
-    cycle ??= createQuoteCycle({
-        store: () => quoteStore,
-        debounceMs: QUOTE_DEBOUNCE_MS,
-        send: async (input, signal) => (await gqlFetch<{ quoteOrder: OrderQuote }>(QUOTE_ORDER_QUERY, { variables: { input }, signal })).quoteOrder,
-        // Only against the quote of the CURRENT cart: a coupon removal re-quotes right after.
-        isCurrent: (request) => request.key === quoteStore.wantedKey,
-        onQuote: (quote) => reconcileCoupon(quote, t as Translate),
-        onError: (err) => reportError(err, 'cart.quote'),
-    })
-
     const schedule = () => {
         if (!toValue(options.active ?? true)) return
         const key = quoteKey.value
@@ -101,6 +108,16 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
     }
 
     if (import.meta.client) {
+        // Built here, not on SSR: the module is shared by every request of the server.
+        cycle ??= createQuoteCycle({
+            store: () => quoteStore,
+            debounceMs: QUOTE_DEBOUNCE_MS,
+            send: async (input, signal) => (await gqlFetch<{ quoteOrder: OrderQuote }>(QUOTE_ORDER_QUERY, { variables: { input }, signal })).quoteOrder,
+            // Only against the quote of the CURRENT cart: a coupon removal re-quotes right after.
+            isCurrent: (request) => request.key === quoteStore.wantedKey,
+            onQuote: (quote) => reconcileCoupon(quote, t as Translate),
+            onError: (err) => reportError(err, 'cart.quote'),
+        })
         consumers += 1
         watch([quoteKey, () => toValue(options.active ?? true)], schedule, { immediate: true })
         onScopeDispose(() => {
@@ -114,11 +131,11 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
     }
 
     const quote = computed(() => quoteStore.quote)
-    /** The quote of the current inputs, null while pending / failed / not asked (surfaces then use the client's maths). */
-    const freshQuote = computed(() => quoteStore.freshQuote)
+    /** The quote of the CURRENT cart, null while pending / failed / not asked (surfaces then use the client's maths). */
+    const freshQuote = computed(() => (quoteStore.quote !== null && quoteKey.value !== '' && quoteStore.quoteKey === quoteKey.value ? quoteStore.quote : null))
     const pending = computed(() => quoteStore.pending)
     /** The order cannot be placed now: a quote is on its way, or the fresh one has blocking issues. */
-    const blocked = computed(() => quoteStore.pending || (quoteStore.freshQuote !== null && isQuoteBlocking(quoteStore.freshQuote)))
+    const blocked = computed(() => quoteStore.pending || (freshQuote.value !== null && isQuoteBlocking(freshQuote.value)))
 
     return {
         quote,
@@ -126,6 +143,7 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
         pending,
         error: computed(() => quoteStore.error),
         blocked,
+        refresh: refreshQuote,
         /** Issues of the cart lines by line key (see `cartLineKeys`). */
         lineIssues: computed(() => quoteStore.lineIssues),
     }

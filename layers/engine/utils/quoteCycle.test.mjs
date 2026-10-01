@@ -1,10 +1,10 @@
 // The quote request cycle: debounce, abort, stale answers, reuse, old backend.
 // Run: `node --test layers/engine/utils/quoteCycle.test.mjs`.
 
+import { QUOTE_TIMEOUT_MS, createQuoteCycle } from './quoteCycle.ts'
 import { mock, test } from 'node:test'
 import { GqlError } from './gqlError.ts'
 import assert from 'node:assert/strict'
-import { createQuoteCycle } from './quoteCycle.ts'
 
 const DEBOUNCE = 400
 
@@ -236,4 +236,121 @@ test('isCurrent decides whether the coupon of the cart is re-checked against an 
   transport.calls[0].resolve(answer('A'))
   await flush()
   assert.deepEqual(events.quotes, [])
+})
+
+test('a request that never answers times out: the cycle settles as failed, so nothing stays pending (Pay is not disabled forever)', async (t) => {
+  const { store, transport, events, cycle } = setup({ ignoreAbort: true })
+  t.after(() => mock.timers.reset())
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  assert.equal(transport.calls.length, 1)
+  assert.equal(store.pending, true)
+  mock.timers.tick(QUOTE_TIMEOUT_MS - 1)
+  await flush()
+  assert.equal(store.pending, true, 'still waiting just before the deadline')
+  mock.timers.tick(1)
+  await flush()
+  assert.equal(transport.calls[0].aborted, true, 'the hung request is aborted')
+  assert.equal(store.pending, false)
+  assert.equal(store.fresh, false)
+  assert.equal(store.quote, null, 'no quote: surfaces use the client totals')
+  assert.equal(events.errors.length, 1)
+  assert.equal(events.errors[0].code, 'NETWORK_ERROR', 'a timeout is a transient failure, not a server fault')
+  // The next change tries again.
+  cycle.request(req('B'))
+  mock.timers.tick(DEBOUNCE)
+  assert.equal(transport.calls.length, 2)
+})
+
+test('the timeout is per request and is dropped when the request answers or is superseded', async (t) => {
+  const { store, transport, events, cycle } = setup({ ignoreAbort: true })
+  t.after(() => mock.timers.reset())
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  transport.calls[0].resolve(answer('A'))
+  await flush()
+  mock.timers.tick(QUOTE_TIMEOUT_MS * 2)
+  await flush()
+  assert.equal(store.fresh, true, 'an answered request is not failed later by its timer')
+  cycle.request(req('B'))
+  mock.timers.tick(DEBOUNCE) // B in flight (never answers)
+  cycle.request(req('C'))
+  mock.timers.tick(DEBOUNCE) // C in flight; B superseded
+  mock.timers.tick(QUOTE_TIMEOUT_MS - DEBOUNCE) // B's deadline passes: it must not fail the store
+  await flush()
+  assert.equal(store.pending, true, 'C is still waited for')
+  assert.deepEqual(events.errors, [])
+  mock.timers.tick(DEBOUNCE)
+  await flush()
+  assert.equal(store.pending, false)
+  assert.equal(events.errors.length, 1)
+})
+
+test('refresh() asks again for the current inputs even though they are already answered', async (t) => {
+  const { store, transport, events, cycle } = setup()
+  t.after(() => mock.timers.reset())
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  transport.calls[0].resolve(answer('A1'))
+  await flush()
+  cycle.request(req('A')) // Same key: no new request
+  assert.equal(transport.calls.length, 1)
+
+  const refreshed = cycle.refresh()
+  assert.equal(transport.calls.length, 2, 'sent at once, no debounce')
+  cycle.request(req('A')) // A second surface announcing the same key must not cancel it
+  assert.equal(transport.calls[1].aborted, false)
+  transport.calls[1].resolve(answer('A2'))
+  assert.equal((await refreshed).total, 'A2')
+  assert.equal(store.quote.total, 'A2')
+  assert.equal(store.pending, false)
+  assert.deepEqual(events.quotes, [['A', 'A1'], ['A', 'A2']])
+})
+
+test('refresh() resolves null (callers carry on as before) when it fails, times out, or has nothing to ask', async (t) => {
+  const { store, transport, cycle } = setup({ ignoreAbort: true })
+  t.after(() => mock.timers.reset())
+  assert.equal(await cycle.refresh(), null, 'nothing requested yet')
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  transport.calls[0].resolve(answer('A'))
+  await flush()
+
+  const failed = cycle.refresh()
+  transport.calls[1].reject(GqlError.fromTransport(new TypeError('Failed to fetch')))
+  assert.equal(await failed, null)
+  assert.equal(store.pending, false)
+
+  const hung = cycle.refresh()
+  mock.timers.tick(QUOTE_TIMEOUT_MS)
+  assert.equal(await hung, null)
+  assert.equal(store.pending, false)
+
+  cycle.stop()
+  assert.equal(await cycle.refresh(), null, 'stopped: nothing to ask')
+})
+
+test('refresh() on an old backend marks it unsupported and resolves null', async (t) => {
+  const { store, transport, cycle } = setup()
+  t.after(() => mock.timers.reset())
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  transport.calls[0].resolve(answer('A'))
+  await flush()
+  const refreshed = cycle.refresh()
+  transport.calls[1].reject(new GqlError([{ message: 'Cannot query field "quoteOrder" on type "Query".', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }]))
+  assert.equal(await refreshed, null)
+  assert.equal(store.unsupported, true)
+})
+
+test('RATE_LIMITED is a transient failure: totals fall back to the client and nothing is pending', async (t) => {
+  const { store, transport, cycle } = setup()
+  t.after(() => mock.timers.reset())
+  cycle.request(req('A'))
+  mock.timers.tick(0)
+  transport.calls[0].reject(new GqlError([{ message: 'slow down', extensions: { code: 'RATE_LIMITED' } }]))
+  await flush()
+  assert.equal(store.pending, false)
+  assert.equal(store.fresh, false)
+  assert.equal(store.unsupported, false, 'asked again on the next change')
 })

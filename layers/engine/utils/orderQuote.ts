@@ -135,14 +135,32 @@ export function quoteLineByKey(quote: OrderQuote, lineKeys: string[], key: strin
     return index === -1 ? null : (quote.lines[index] ?? null)
 }
 
+/** Order-level issues under which the server did not price the order (its amounts are zeros): never shown as totals. */
+const ISSUES_WITHOUT_PRICING = new Set(['ADDRESS_UNRESOLVABLE', 'ORDER_TOO_MANY_ITEMS'])
+
 /**
  * Whether the quote's money can replace the client's maths. Not when the server did not evaluate
- * the coupon the cart carries (anonymous: the client keeps the discount it already has) or could not
- * resolve the delivery address (the client knows the distance, the server's fee would be 0).
+ * the coupon the cart carries (anonymous: the client keeps the discount it already has), could not
+ * resolve the delivery address (the client knows the distance, the server's fee would be 0), or
+ * refused to price a basket of too many different products (all amounts are zero).
  */
 export function isQuoteUsableForTotals(quote: OrderQuote): boolean {
     if (quote.coupon?.errorCode === COUPON_NOT_EVALUATED) return false
-    return !quote.issues.some((issue) => issue.code === 'ADDRESS_UNRESOLVABLE')
+    return !quote.issues.some((issue) => ISSUES_WITHOUT_PRICING.has(issue.code))
+}
+
+/*
+ * Verdict of a quote asked right before the order is created, against what the customer was looking
+ * at: 'blocked' (a line or order issue stops the order), 'changed' (the server's total is not the
+ * payable amount the customer saw: prices or fees moved since), or 'ok'. A quote the totals cannot
+ * use (see above) has nothing comparable, so it can only block.
+ */
+export type QuoteRecheck = 'ok' | 'blocked' | 'changed'
+
+export function recheckQuote(quote: OrderQuote, displayedPayableCents: number): QuoteRecheck {
+    if (isQuoteBlocking(quote)) return 'blocked'
+    if (isQuoteUsableForTotals(quote) && toCents(quote.total) !== displayedPayableCents) return 'changed'
+    return 'ok'
 }
 
 /**

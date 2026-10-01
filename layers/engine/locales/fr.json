@@ -425,6 +425,7 @@
     "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier.",
     "quoteIssuesTitle": "Votre commande ne peut pas encore être payée",
     "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande.",
+    "quoteChanged": "Les prix ou la disponibilité ont changé : veuillez vérifier votre commande.",
     "cashAmountTooLow": "Ce montant est inférieur au total ({total}). Indiquez au moins {total}, ou laissez le champ vide.",
     "cashChangeDue": "Monnaie à rendre : {amount}"
   },

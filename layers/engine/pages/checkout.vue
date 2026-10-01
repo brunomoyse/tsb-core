@@ -279,6 +279,7 @@ import { useI18n } from 'vue-i18n'
 import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCheckoutQuoteGuard } from '#engine/composables/useCheckoutQuoteGuard'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
@@ -301,6 +302,8 @@ const {
 } = useCartTotals()
 // Keeps the server quote of this cart up to date: its totals replace the client's maths below, and its issues block the pay button.
 useOrderQuote()
+// The last check before createOrder, and the re-quotes while the page is open (prices / availability change on the server too).
+const { confirmBeforeOrder } = useCheckoutQuoteGuard()
 const localePath = useLocalePath()
 const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
@@ -713,6 +716,9 @@ const handleCheckout = async () => {
             })
             return
         }
+
+        // Ask the server once more for the cart as it is now: when it reports an issue or another total than the one on screen, stop here (the page shows the new numbers and says so). A failed check lets the order go on.
+        if (!(await confirmBeforeOrder(payableCents.value))) return
 
         // The same builder the quote uses (#engine/utils/orderPayload): the order is exactly what was priced.
         const orderData: CreateOrderRequest = buildCreateOrderInput(cartStore)
