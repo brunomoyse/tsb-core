@@ -111,7 +111,7 @@ import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
-import { useMounted } from '@vueuse/core'
+import { useMediaQuery, useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { visibleNavItems } from './navItems'
 
@@ -162,6 +162,15 @@ const onEscape = (event: KeyboardEvent) => {
     if (target?.closest('[role="listbox"]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
     closeMenu()
 }
+
+/*
+ * `.mobile-only` hides this whole navbar from 641px up (rotating a phone to landscape): the hamburger is gone, so an open menu
+ * must close or its scroll lock would stay on a page nobody can unlock.
+ */
+const isWide = useMediaQuery('(min-width: 641px)')
+watch(isWide, (wide) => {
+    if (wide) closeMenu()
+})
 
 // Opening the cart from the header hands the screen over to the cart sheet.
 watch(() => cartStore.isCartVisible, (visible) => {

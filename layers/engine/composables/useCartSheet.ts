@@ -1,4 +1,5 @@
-import { type Ref, computed, watch } from 'vue'
+import { type Ref, computed, onScopeDispose, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -23,13 +24,31 @@ export function useCartSheet(panelRef: Ref<HTMLElement | null>, closeButtonRef: 
 
     // The opener is read the moment the sheet opens (sync, before the render makes the page inert and drops focus to <body>).
     let opener: HTMLElement | null = null
+    /*
+     * The sheet also closes because the visitor followed a link in it (Checkout, a line issue): the opener belongs to the page they
+     * left, so focus must not jump to the cart trigger of the new one. The navigation guard fires in the click that closed the sheet,
+     * before the leave transition ends and long before the new page has rendered.
+     */
+    const route = useRoute()
+    const router = useRouter()
+    let openedPath = ''
+    let navigatedAway = false
     watch(() => cartStore.isCartVisible, (visible) => {
         if (!visible) return
         const focused = document.activeElement as HTMLElement | null
         opener = focused && focused !== document.body ? focused : null
+        openedPath = route.path
+        navigatedAway = false
     }, { flush: 'sync' })
+    if (import.meta.client) {
+        const removeGuard = router.beforeEach((to) => {
+            if (openedPath && to.path !== openedPath) navigatedAway = true
+        })
+        onScopeDispose(removeGuard)
+    }
 
-    const returnTarget = (): HTMLElement | null => {
+    const returnTarget = (): HTMLElement | null | false => {
+        if (navigatedAway || (openedPath && route.path !== openedPath)) return false
         if (opener?.isConnected && isRendered(opener)) return opener
         // Safari does not focus a button on click: fall back to whichever cart trigger is on screen.
         return Array.from(document.querySelectorAll<HTMLElement>(TRIGGER_SELECTOR)).find(isRendered) ?? null
