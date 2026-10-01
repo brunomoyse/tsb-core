@@ -1,0 +1,138 @@
+import type { Locator, Page } from '@playwright/test'
+import { expect, test } from './support/test'
+import { waitForNuxtHydration } from './support/hydration'
+
+/*
+ * Screenshot tests for the shared engine pages, run by every brand app with
+ * per-brand baselines (apps/<brand>/e2e/__screenshots__/). They catch the
+ * failure lint and functional tests can't: a styling change made for one brand
+ * that looks wrong on the other.
+ *
+ * Determinism:
+ *  - The cart is seeded straight into the Pinia persisted state with two made-up
+ *    products, so screenshots don't depend on either brand's live menu. The cart
+ *    never revalidates products against the API, so fake ids are fine. Slugs
+ *    match no brand photo, so every brand shows its image fallback.
+ *  - Ordering is forced open 24/7 by each app's global-setup.
+ *  - Time slots and other clock-driven values are masked.
+ *
+ * Update baselines after an intended visual change:
+ *   npm run test:visual:update      (from tsb-core, both brands)
+ * then review the PNG diffs in git before committing.
+ */
+
+const category = { id: 'visual-cat', name: 'Visual', slug: 'visual', order: 0 }
+
+const fakeProduct = (n: number, name: string, price: string) => ({
+  id: `00000000-0000-4000-8000-00000000000${n}`,
+  slug: `visual-test-product-${n}`,
+  name,
+  description: null,
+  price,
+  code: null,
+  categoryId: category.id,
+  category,
+  choices: [],
+  choiceGroups: [],
+  isAvailable: true,
+  isDiscountable: true,
+  isHalal: false,
+  isLunchOnly: false,
+  isSpicy: false,
+  isVegetarian: false,
+  isVisible: true,
+  pieceCount: null,
+})
+
+const seededCart = {
+  products: [
+    { product: fakeProduct(1, 'Produit test A', '12.50'), quantity: 2, selectedChoices: [], selectedChoice: null },
+    { product: fakeProduct(2, 'Produit test B', '8.00'), quantity: 1, selectedChoices: [], selectedChoice: null },
+  ],
+  collectionOption: 'PICKUP',
+  couponCode: null,
+  couponDiscount: 0,
+  paymentOption: 'ONLINE',
+  cashPaymentAmount: null,
+  address: null,
+  addressExtra: null,
+  orderExtra: [],
+  orderNote: null,
+  preferredReadyTime: null,
+}
+
+async function seedCart(page: Page) {
+  await page.addInitScript((cart) => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, seededCart)
+}
+
+async function snap(page: Page, name: string, mask: Locator[] = []) {
+  await waitForNuxtHydration(page)
+  await expect(page).toHaveScreenshot(`${name}.png`, {
+    fullPage: true,
+    animations: 'disabled',
+    caret: 'hide',
+    mask,
+    maxDiffPixelRatio: 0.01,
+  })
+}
+
+// Each test gets a fresh browser context, so storage starts empty unless a test seeds it.
+test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
+  test('cart, empty', async ({ page }) => {
+    await page.goto('/fr/cart')
+    await snap(page, 'cart-empty')
+  })
+
+  test('cart, with items', async ({ page }) => {
+    await seedCart(page)
+    await page.goto('/fr/cart')
+    await expect(page.getByText('Produit test A').first()).toBeVisible({ timeout: 15_000 })
+    await snap(page, 'cart-filled')
+  })
+
+  test('checkout, guest sign-in step', async ({ page }) => {
+    await seedCart(page)
+    await page.goto('/fr/checkout')
+    // Guests get the sign-in step first (cart kept, "3 articles"), embedding AuthFlow.
+    await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 15_000 })
+    await snap(page, 'checkout-guest-signin')
+  })
+
+  test('checkout, logged in, pickup', async ({ authenticatedPage: page }) => {
+    await seedCart(page)
+    await page.goto('/fr/checkout')
+    await expect(page.getByText('Produit test A').first()).toBeVisible({ timeout: 15_000 })
+    await snap(page, 'checkout-pickup', [page.getByTestId('checkout-preferred-time')])
+  })
+
+  test('faq', async ({ page }) => {
+    await page.goto('/fr/faq')
+    await snap(page, 'faq')
+  })
+
+  test('terms', async ({ page }) => {
+    await page.goto('/fr/terms')
+    await snap(page, 'terms')
+  })
+
+  test('login (AuthFlow)', async ({ page, loginAvailable }) => {
+    test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally')
+    await page.goto('/fr/auth/login')
+    // The form renders before the Zitadel authRequest bounce, so wait for the round-trip to
+    // land back here; otherwise the screenshot can catch Zitadel's page instead.
+    await page.waitForURL((url) => url.searchParams.has('authRequest') || url.searchParams.has('authRequestID'), {
+      timeout: 30_000,
+    })
+    await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
+    await snap(page, 'login')
+  })
+
+  test('account page (logged in)', async ({ authenticatedPage: page }) => {
+    await page.goto('/fr/me')
+    await expect(page).toHaveURL(/\/fr\/me(?:[/?#]|$)/u, { timeout: 15_000 })
+    // Recent orders change with every e2e run that places an order.
+    await snap(page, 'me', [page.getByTestId('orders-widget')])
+  })
+})

@@ -1,6 +1,6 @@
-import { dismissCookieConsent, waitForNuxtHydration } from './fixtures/cookie-consent.fixture'
+import { dismissCookieConsent, waitForNuxtHydration } from '../../../layers/engine/e2e/support/hydration'
 import { expect, test } from '@playwright/test'
-import { SEL } from './helpers/selectors'
+import { SEL } from '../../../layers/engine/e2e/support/selectors'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()

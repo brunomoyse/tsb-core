@@ -1,7 +1,8 @@
-import { type Page, expect, test } from '@playwright/test'
-import { dismissCookieConsent, waitForNuxtHydration } from './fixtures/cookie-consent.fixture'
-import { openCartIfMobile, visibleCart } from './helpers/cart.helpers'
-import { SEL } from './helpers/selectors'
+import { expect, test } from './support/test'
+import type { Page } from '@playwright/test'
+import { dismissCookieConsent, waitForNuxtHydration } from './support/hydration'
+import { openCartIfMobile, visibleCart } from './support/cart.helpers'
+import { SEL } from './support/selectors'
 
 /*
  * Cart UI splits by viewport: desktop renders <SideCart>, mobile renders
@@ -13,10 +14,19 @@ import { SEL } from './helpers/selectors'
  * A handful of features genuinely exist only on desktop: the pickup/
  * delivery toggle, the minimum-order warning, the aria-disabled checkout
  * link, and the dedicated remove button (mobile uses decrement-to-zero
- * instead). Those tests skip explicitly on Mobile Chrome with a reason.
+ * instead). Those tests skip explicitly on mobile projects with a reason.
  */
 
-const isMobile = (testInfo: { project: { name: string } }) => testInfo.project.name === 'Mobile Chrome'
+const isMobile = (testInfo: { project: { use: { isMobile?: boolean } } }) => testInfo.project.use.isMobile === true
+
+/*
+ * Brands with `deliveryEnabled: false` (pickup-only) render the delivery toggle disabled, and
+ * the delivery-only rules (minimum order, delivery fee) never apply. Gate on that capability
+ * rather than on the brand name, so a brand that turns delivery on gets the tests back.
+ */
+async function deliveryAvailable(page: Page) {
+  return page.locator(SEL.cartOptionDelivery).isEnabled({ timeout: 2_000 }).catch(() => false)
+}
 
 /* Helper: find and click the first enabled add-to-cart button among simple products */
 async function addFirstAvailableProduct(page: Page) {
@@ -69,6 +79,7 @@ test.describe('Cart operations', () => {
       }
     }
     test.skip(addedCount === 0, 'No available products')
+    test.skip(!(await deliveryAvailable(page)), 'Brand is pickup-only: no delivery/pickup toggle to exercise')
 
     // Default is DELIVERY — get the total
     const deliveryTotal = await page.locator(SEL.cartTotal).textContent()
@@ -93,6 +104,7 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     await expect(page.locator(SEL.cartItem)).toBeVisible()
+    test.skip(!(await deliveryAvailable(page)), 'Brand is pickup-only: the minimum order applies to delivery only')
 
     // Minimum warning should be visible (single product likely below €20)
     await expect(page.locator(SEL.cartMinimumWarning)).toBeVisible()

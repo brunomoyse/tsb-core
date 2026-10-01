@@ -16,11 +16,11 @@
  *     base64std(IV(16) || ciphertext) with the same AES-CFB algorithm,
  *     keyed by the decrypted userKey (32 bytes for AES-256).
  *
- * All env vars are required (no in-code defaults): see helpers/db-env.ts.
+ * All env vars are required (no in-code defaults): see support/db-env.ts.
  */
 
 import { createDecipheriv } from 'node:crypto'
-import { dbEnv } from './db-env'
+import { getDbEnv } from './db-env'
 import { execSync } from 'node:child_process'
 
 const IV_SIZE = 16
@@ -28,6 +28,7 @@ const IV_SIZE = 16
 let cachedUserKey: Buffer | null = null
 
 function psql(sql: string): string {
+    const dbEnv = getDbEnv()
     return execSync(
         `PGPASSWORD='${dbEnv.DB_PASS}' psql -h ${dbEnv.DB_HOST} -p ${dbEnv.DB_PORT} -U ${dbEnv.DB_USER} -d ${dbEnv.ZITADEL_DB} -t -A -F '|' -c "${sql.replace(/"/gu, '\\"')}"`,
         { encoding: 'utf-8' },
@@ -50,7 +51,7 @@ function loadUserKey(): Buffer {
     const encrypted = psql("SELECT key FROM system.encryption_keys WHERE id = 'userKey'")
     if (!encrypted) throw new Error('userKey not found in system.encryption_keys')
     const wrapped = Buffer.from(encrypted, 'base64url')
-    const plain = decryptAesCfb(wrapped, Buffer.from(dbEnv.ZITADEL_MASTERKEY))
+    const plain = decryptAesCfb(wrapped, Buffer.from(getDbEnv().ZITADEL_MASTERKEY))
     if (plain.length !== 16 && plain.length !== 24 && plain.length !== 32) {
         throw new Error(`decrypted userKey has unexpected length: ${plain.length}`)
     }

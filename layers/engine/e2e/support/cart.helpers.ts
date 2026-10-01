@@ -1,6 +1,6 @@
 import { type Page, expect, test } from '@playwright/test'
 import { SEL } from './selectors'
-import { waitForNuxtHydration } from '../fixtures/cookie-consent.fixture'
+import { waitForNuxtHydration } from './hydration'
 
 /*
  * When the SideCart is hidden (viewport < lg), tap the FloatingCartBar to

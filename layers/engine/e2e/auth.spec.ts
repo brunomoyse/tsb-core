@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test'
-import { SEL } from './helpers/selectors'
-import { waitForOtpFromZitadel } from './helpers/zitadel-otp'
+import { expect, test } from './support/test'
+import { SEL } from './support/selectors'
+import { waitForOtpFromZitadel } from './support/zitadel-otp'
 
 /*
  * Auth coverage for the OTP-only login flow. The legacy password tests are gone
@@ -15,7 +15,8 @@ import { waitForOtpFromZitadel } from './helpers/zitadel-otp'
  * and would bypass the very thing under test.
  */
 
-test.beforeEach(async ({ context }) => {
+test.beforeEach(async ({ context, loginAvailable }) => {
+  test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally (see the app global-setup)')
   /*
    * Cookies only — oidc-client-ts keeps PKCE state in sessionStorage that
    * must survive the Zitadel redirect chain.
@@ -24,9 +25,9 @@ test.beforeEach(async ({ context }) => {
 })
 
 test.describe('Authentication flows (OTP)', () => {
-  test('Login via OTP code redirects to menu', async ({ page }) => {
-    const email = process.env.E2E_USER_EMAIL
-    test.skip(!email, 'E2E_USER_EMAIL must be set')
+  test('Login via OTP code redirects to menu', async ({ page, e2eUserEmail }) => {
+    const email = e2eUserEmail
+    test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
     const before = new Date()
 
@@ -57,9 +58,9 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page.locator(SEL.productCard).first()).toBeVisible()
   })
 
-  test('Invalid OTP code shows error', async ({ page }) => {
-    const email = process.env.E2E_USER_EMAIL
-    test.skip(!email, 'E2E_USER_EMAIL must be set')
+  test('Invalid OTP code shows error', async ({ page, e2eUserEmail }) => {
+    const email = e2eUserEmail
+    test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
 
     await page.goto('/fr/auth/login')
@@ -98,9 +99,9 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page.locator(SEL.loginSubmit)).toBeVisible()
   })
 
-  test('Resend code button is disabled during cooldown', async ({ page }) => {
-    const email = process.env.E2E_USER_EMAIL
-    test.skip(!email, 'E2E_USER_EMAIL must be set')
+  test('Resend code button is disabled during cooldown', async ({ page, e2eUserEmail }) => {
+    const email = e2eUserEmail
+    test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
 
     await page.goto('/fr/auth/login')

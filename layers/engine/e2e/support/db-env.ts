@@ -7,8 +7,10 @@
  * "boring" fields like host/db/user, since they document the deployment
  * topology of a private system.
  *
- * Read once at module import; consumers re-use the cached object. Throws
- * synchronously on missing vars with a single message listing all gaps.
+ * Read lazily on first use, then cached. Throws on missing vars with a
+ * single message listing all gaps. Lazy so that importing a spec that only
+ * *may* need the DB (e.g. auth.spec.ts on a brand without e2e auth set up)
+ * skips cleanly instead of failing at module load.
  */
 
 function requireVar(name: string, value: string | undefined, errs: string[]): string {
@@ -48,4 +50,9 @@ function load(): DbEnv {
     return env
 }
 
-export const dbEnv = load()
+let cached: DbEnv | null = null
+
+export function getDbEnv(): DbEnv {
+    cached ??= load()
+    return cached
+}

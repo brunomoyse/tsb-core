@@ -1,5 +1,5 @@
 <template>
-    <article class="bg-tsb-two rounded-2xl overflow-hidden">
+    <article class="bg-tsb-two rounded-2xl overflow-hidden" data-testid="orders-widget">
 
         <!-- ── Header ── -->
         <div class="px-6 pt-6 sm:px-7 sm:pt-7">

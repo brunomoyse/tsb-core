@@ -1,6 +1,6 @@
-import { expect, test } from './fixtures/auth.fixture'
-import { SEL } from './helpers/selectors'
-import { addProductsAndGoToCheckout } from './helpers/cart.helpers'
+import { expect, test } from './support/test'
+import { SEL } from './support/selectors'
+import { addProductsAndGoToCheckout } from './support/cart.helpers'
 
 test.describe('Coupon input', () => {
   test('Coupon input and apply button render', async ({ authenticatedPage: page }) => {

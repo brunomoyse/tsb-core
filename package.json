@@ -12,7 +12,12 @@
     "generate": "npm run generate -w tokyosushi",
     "preview": "npm run preview -w tokyosushi",
     "lint": "oxlint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs",
-    "test:e2e": "npm run test:e2e -w tokyosushi"
+    "test:e2e": "npm run test:e2e:all",
+    "test:e2e:tsb": "npm run test:e2e -w tokyosushi",
+    "test:e2e:ygf": "npm run test:e2e -w ygfliege",
+    "test:e2e:all": "npm run test:e2e:tsb; tsb=$?; npm run test:e2e:ygf && exit $tsb",
+    "test:visual": "npm run test:visual -w tokyosushi; tsb=$?; npm run test:visual -w ygfliege && exit $tsb",
+    "test:visual:update": "npm run test:visual:update -w tokyosushi; tsb=$?; npm run test:visual:update -w ygfliege && exit $tsb"
   },
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",

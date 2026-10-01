@@ -1,6 +1,6 @@
-import { expect, test } from './fixtures/auth.fixture'
-import { SEL } from './helpers/selectors'
-import { addProductsAndGoToCheckout } from './helpers/cart.helpers'
+import { expect, test } from './support/test'
+import { SEL } from './support/selectors'
+import { addProductsAndGoToCheckout } from './support/cart.helpers'
 
 test.describe('Checkout options', () => {
   test('Extras checkboxes toggle on and off', async ({ authenticatedPage: page }) => {
