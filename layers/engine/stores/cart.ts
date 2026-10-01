@@ -61,11 +61,9 @@ export const useCartStore = defineStore("cart", {
         cashPaymentAmount: null,
         address: null,
         addressExtra: null,
-        orderExtra: [
-            {name: "chopsticks"},
-            {name: "wasabi"},
-            {name: "ginger"},
-        ],
+        // Brand-specific: checkout fills these from brand.orderExtras (lib/orderExtras.ts).
+        orderExtra: [],
+        orderExtrasInitialized: false,
         orderNote: null,
         preferredReadyTime: null,
     }),
@@ -161,12 +159,8 @@ export const useCartStore = defineStore("cart", {
             this.cashPaymentAmount = null;
             this.address = null;
             this.addressExtra = null;
-            this.orderExtra = [
-                {name: "chopsticks"},
-                {name: "wasabi"},
-                {name: "ginger"},
-                {name: "sauces", options: ["sweet", "salty"]},
-            ];
+            this.orderExtra = [];
+            this.orderExtrasInitialized = false;
             this.orderNote = null;
             this.preferredReadyTime = null;
         },

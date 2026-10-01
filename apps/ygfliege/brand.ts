@@ -62,4 +62,8 @@ export const brand: BrandConfig = {
         fallback: '/images/mascot/fuzi-noodles-700.png',
     },
     faqQuestions: ['what', 'spicy', 'vegan', 'hours', 'delivery', 'payment', 'allergens'],
+    // Nothing pre-ticked: takeaway customers opt in to what they need.
+    orderExtras: {
+        available: ['chopsticks', 'cutlery'],
+    },
 }

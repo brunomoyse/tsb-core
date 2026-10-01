@@ -2,6 +2,26 @@
 // `useAppConfig().brand`. Each brand app supplies one of these from its own
 // root (`apps/<brand>/brand.ts` → `apps/<brand>/app.config.ts`), reachable in
 // engine server routes via the `#brand` alias. Non-secret, build-time data.
+
+/**
+ * Free extras a customer can tick at checkout. Each is sent on the order as
+ * `{ name: <key> }` (sauce also carries its option) and printed as is on the
+ * kitchen ticket, so keys are stable identifiers, never display text.
+ */
+export type OrderExtraKey = 'chopsticks' | 'cutlery' | 'wasabi' | 'ginger' | 'sauce'
+
+export interface OrderExtrasConfig {
+    /** Extras offered at checkout, in display order. */
+    available: OrderExtraKey[]
+    /** Ticked when the customer first reaches checkout with a cart. */
+    preselected?: OrderExtraKey[]
+    /**
+     * Category slugs whose items take no condiments (wasabi, ginger, sauce):
+     * a cart made only of them gets those extras disabled and unticked.
+     */
+    condimentFreeCategories?: string[]
+}
+
 export interface BrandConfig {
     /** Customer-facing display name, e.g. "Tokyo Sushi Bar". */
     name: string
@@ -91,4 +111,6 @@ export interface BrandConfig {
     }
     /** Keys under `faq.questions` to list on the FAQ page, in order. */
     faqQuestions?: string[]
+    /** Checkout extras. Omit to offer chopsticks only, unticked. */
+    orderExtras?: OrderExtrasConfig
 }

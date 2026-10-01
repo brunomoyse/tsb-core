@@ -6,28 +6,28 @@ test.describe('Checkout options', () => {
   test('Extras checkboxes toggle on and off', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
 
-    // Check chopsticks
-    const chopsticks = page.locator('#chopsticks')
-    await chopsticks.check()
-    await expect(chopsticks).toBeChecked()
+    /*
+     * The offered extras come from brand.orderExtras (chopsticks/wasabi/ginger
+     * for one brand, chopsticks/cutlery for another), so toggle whatever the
+     * brand renders. The sauce checkbox has its own test below.
+     */
+    const toggles = page.locator('input[type="checkbox"][data-testid^="order-extra-"]:not([data-testid="order-extra-sauce"])')
+    const count = await toggles.count()
+    expect(count).toBeGreaterThan(0)
 
-    // Check wasabi
-    const wasabi = page.locator('#wasabi')
-    await wasabi.check()
-    await expect(wasabi).toBeChecked()
-
-    // Check ginger
-    const ginger = page.locator('#ginger')
-    await ginger.check()
-    await expect(ginger).toBeChecked()
-
-    // Uncheck chopsticks
-    await chopsticks.uncheck()
-    await expect(chopsticks).not.toBeChecked()
+    for (let i = 0; i < count; i++) {
+      const box = toggles.nth(i)
+      if (await box.isDisabled()) continue
+      await box.check()
+      await expect(box).toBeChecked()
+      await box.uncheck()
+      await expect(box).not.toBeChecked()
+    }
   })
 
   test('Soy sauce pill selection', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
+    test.skip(await page.locator('#add-sauce').count() === 0, 'Brand does not offer the sauce extra')
 
     /*
      * "None" is the unchecked state of the #add-sauce checkbox; pills

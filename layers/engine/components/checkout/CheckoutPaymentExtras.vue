@@ -122,67 +122,45 @@
             </div>
         </div>
 
-        <!-- Extras -->
-        <div class="mb-6">
+        <!-- Extras (brand.orderExtras) -->
+        <div v-if="orderExtras.available.length > 0" class="mb-6">
             <h3 class="font-medium text-lg mb-4">
                 {{ $t('checkout.extras', 'Extras') }}
             </h3>
             <div class="grid grid-cols-1 gap-4">
-                <!-- Chopsticks Card -->
-                <div class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50">
-                    <input
-                        type="checkbox"
-                        id="chopsticks"
-                        v-model="addChopsticks"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded"
-                    />
-                    <label for="chopsticks" class="text-neutral-700 font-medium">
-                        {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
-                    </label>
-                </div>
-                <!-- Wasabi Card -->
+                <!-- On/off extras, in the brand's display order -->
                 <div
+                    v-for="extra in toggleExtras"
+                    :key="extra.key"
                     class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
-                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
+                    :class="extra.condiment && isCondimentFree ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <input
                         type="checkbox"
-                        id="wasabi"
-                        v-model="addWasabi"
-                        :disabled="isTokyoHotOnlyCart"
+                        :id="extra.key"
+                        :data-testid="`order-extra-${extra.key}`"
+                        :checked="hasExtra(extra.key)"
+                        :disabled="extra.condiment && isCondimentFree"
                         class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
+                        @change="setExtra(extra.key, ($event.target as HTMLInputElement).checked)"
                     />
-                    <label for="wasabi" class="text-neutral-700 font-medium">
-                        {{ $t('checkout.addWasabi') }}
-                    </label>
-                </div>
-                <!-- Ginger Card -->
-                <div
-                    class="flex items-center p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
-                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
-                >
-                    <input
-                        type="checkbox"
-                        id="ginger"
-                        v-model="addGinger"
-                        :disabled="isTokyoHotOnlyCart"
-                        class="mr-4 h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
-                    />
-                    <label for="ginger" class="text-neutral-700 font-medium">
-                        {{ $t('checkout.addGinger') }}
+                    <label :for="extra.key" class="text-neutral-700 font-medium">
+                        {{ $t(extra.labelKey) }}
                     </label>
                 </div>
                 <!-- Soy Sauce -->
                 <div
+                    v-if="offers('sauce')"
                     class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
-                    :class="isTokyoHotOnlyCart ? 'opacity-60 cursor-not-allowed' : ''"
+                    :class="isCondimentFree ? 'opacity-60 cursor-not-allowed' : ''"
                 >
                     <div class="flex items-center gap-4 shrink-0">
                         <input
                             type="checkbox"
                             id="add-sauce"
+                            data-testid="order-extra-sauce"
                             :checked="addSauce"
-                            :disabled="isTokyoHotOnlyCart"
+                            :disabled="isCondimentFree"
                             class="h-5 w-5 text-primary-500 border-neutral-300 rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
@@ -323,8 +301,10 @@ import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { DELIVERY_MINIMUM } from '#engine/composables/useCartTotals'
 import { formatPrice } from '#engine/lib/price'
+import { CONDIMENTS, DEFAULT_SAUCE_OPTION, isCondimentFreeCart, resolveOrderExtras } from '#engine/lib/orderExtras'
+import type { OrderExtraKey } from '#engine/types/brand'
 import { useDebounceFn } from '@vueuse/core'
-import { useGqlQuery } from '#imports'
+import { useAppConfig, useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -347,11 +327,24 @@ const ORDER_COMMENT_MAX = 500
 
 const PAID_EXTRA_PRICE_MAX = 1
 
-const isTokyoHotOnlyCart = computed(() => {
-    const items = cartStore.products
-    if (items.length === 0) return false
-    return items.every((item) => item.product.category?.slug === 'tokyo-hot')
-})
+const orderExtras = resolveOrderExtras(useAppConfig().brand.orderExtras)
+const offers = (key: OrderExtraKey) => orderExtras.available.includes(key)
+
+// Condiments (wasabi, ginger, sauce) are locked off when the cart only holds
+// items from the brand's condiment-free categories.
+const isCondimentFree = computed(() => isCondimentFreeCart(cartStore.products, orderExtras.condimentFreeCategories))
+
+const TOGGLE_LABELS: Record<Exclude<OrderExtraKey, 'sauce'>, string> = {
+    chopsticks: 'checkout.addChopsticks',
+    cutlery: 'checkout.addCutlery',
+    wasabi: 'checkout.addWasabi',
+    ginger: 'checkout.addGinger',
+}
+
+// Sauce has its own card (it carries an option), everything else is a plain toggle.
+const toggleExtras = orderExtras.available
+    .filter((key): key is Exclude<OrderExtraKey, 'sauce'> => key !== 'sauce')
+    .map((key) => ({ key, labelKey: TOGGLE_LABELS[key], condiment: CONDIMENTS.includes(key) }))
 
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
@@ -479,7 +472,7 @@ const sauceTypeOptions = computed(() => [
 
 const addSauce = computed({
     get: () => sauce.value !== 'none',
-    set: (value: boolean) => { sauce.value = value ? 'both' : 'none' },
+    set: (value: boolean) => { sauce.value = value ? DEFAULT_SAUCE_OPTION : 'none' },
 })
 
 const setOnlinePayment = (value: boolean) => {
@@ -520,20 +513,14 @@ watch(isOnlinePayment, (online, prev) => {
 })
 
 
-// Factory for a two-way boolean binding against cartStore.orderExtra by name.
-const useExtraToggle = (name: string) => computed({
-    get: () => cartStore.orderExtra?.some(o => o.name === name) ?? false,
-    set: (value: boolean) => {
-        if (!cartStore.orderExtra) cartStore.orderExtra = []
-        const idx = cartStore.orderExtra.findIndex(o => o.name === name)
-        if (value && idx === -1) cartStore.orderExtra.push({ name })
-        else if (!value && idx !== -1) cartStore.orderExtra.splice(idx, 1)
-    },
-})
+const hasExtra = (name: string) => cartStore.orderExtra?.some(o => o.name === name) ?? false
 
-const addChopsticks = useExtraToggle('chopsticks')
-const addWasabi = useExtraToggle('wasabi')
-const addGinger = useExtraToggle('ginger')
+const setExtra = (name: string, value: boolean) => {
+    if (!cartStore.orderExtra) cartStore.orderExtra = []
+    const idx = cartStore.orderExtra.findIndex(o => o.name === name)
+    if (value && idx === -1) cartStore.orderExtra.push({ name })
+    else if (!value && idx !== -1) cartStore.orderExtra.splice(idx, 1)
+}
 
 const sauce = computed<string>({
     get() {
@@ -558,15 +545,16 @@ const sauce = computed<string>({
     }
 })
 
-watch(isTokyoHotOnlyCart, (locked, prev) => {
+watch(isCondimentFree, (locked, prev) => {
     if (locked) {
-        addWasabi.value = false
-        addGinger.value = false
-        sauce.value = 'none'
+        for (const key of CONDIMENTS) setExtra(key, false)
     } else if (prev === true && cartStore.products.length > 0) {
-        addWasabi.value = true
-        addGinger.value = true
-        sauce.value = 'both'
+        // Back to a normal cart: restore the brand's preselected condiments.
+        for (const key of CONDIMENTS) {
+            if (!offers(key) || !orderExtras.preselected.includes(key)) continue
+            if (key === 'sauce') sauce.value = DEFAULT_SAUCE_OPTION
+            else setExtra(key, true)
+        }
     }
 }, { immediate: true })
 

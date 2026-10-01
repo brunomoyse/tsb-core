@@ -238,6 +238,7 @@ import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { formatPrice } from '#engine/lib/price'
+import { isCondimentFreeCart, normalizeOrderExtras, resolveOrderExtras } from '#engine/lib/orderExtras'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { roundToNearest10Cents } from '#engine/utils/money'
 import gql from 'graphql-tag'
@@ -250,6 +251,7 @@ import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
+const orderExtras = resolveOrderExtras(useAppConfig().brand.orderExtras)
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
@@ -488,24 +490,15 @@ onMounted(() => {
         persisted.$hydrate?.({ runHooks: false })
     }
 
-    if (!cartStore.orderExtra) cartStore.orderExtra = []
-
-    // Tokyo-hot-only carts can't take wasabi/ginger/sauce; the matching checkboxes in CheckoutPaymentExtras are disabled, so don't pre-check them here either.
-    const isTokyoHotOnly = cartStore.products.length > 0
-        && cartStore.products.every((item) => item.product.category?.slug === 'tokyo-hot')
-
-    if (isTokyoHotOnly) {
-        cartStore.orderExtra = cartStore.orderExtra.filter(o => !['wasabi', 'ginger', 'sauce'].includes(o.name))
-    } else {
-        for (const name of ['wasabi', 'ginger']) {
-            if (!cartStore.orderExtra.some(o => o.name === name)) {
-                cartStore.orderExtra.push({ name })
-            }
-        }
-        if (!cartStore.orderExtra.some(o => o.name === 'sauce')) {
-            cartStore.orderExtra.push({ name: 'sauce', options: ['both'] })
-        }
-    }
+    // Apply the brand's preselected extras once per cart, then keep only what this brand
+    // offers (and no condiments on a condiment-free cart; their checkboxes are disabled).
+    cartStore.orderExtra = normalizeOrderExtras(
+        cartStore.orderExtra,
+        cartStore.orderExtrasInitialized,
+        orderExtras,
+        isCondimentFreeCart(cartStore.products, orderExtras.condimentFreeCategories),
+    )
+    cartStore.orderExtrasInitialized = true
 
     // If the user is logged in and has an address, pre-fill the cart address
     if (authStore.user?.address && !cartStore.address) {
