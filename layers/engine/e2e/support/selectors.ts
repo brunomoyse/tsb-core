@@ -28,6 +28,10 @@ export const SEL = {
   cartItemIncrement: '[data-testid="cart-item-increment"]',
   cartItemRemove: '[data-testid="cart-item-remove"]',
 
+  // Screen-reader announcements (ToastAnnouncer): cart changes and order status, and the toasts
+  announcerPolite: '[data-testid="announcer-polite"]',
+  toastAnnouncerPolite: '[data-testid="toast-announcer-polite"]',
+
   // Cart page (mobile)
   cartEmpty: '[data-testid="cart-empty"]',
 

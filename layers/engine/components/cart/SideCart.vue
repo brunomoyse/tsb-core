@@ -1,5 +1,6 @@
 <template>
     <aside
+        ref="asideRef"
         data-testid="side-cart"
         class="
             bg-tsb-two
@@ -15,7 +16,7 @@
     >
         <!-- Header with Toggle -->
         <header class="px-4 py-5 flex flex-wrap items-center justify-between gap-x-2 gap-y-3">
-            <h2 class="text-xl font-bold text-neutral-900">
+            <h2 ref="headingRef" tabindex="-1" class="text-xl font-bold focus:outline-none text-neutral-900">
                 {{ $t('cart.title') }}
             </h2>
             <div class="flex gap-1 rounded-full bg-neutral-100 p-1">
@@ -48,6 +49,7 @@
             <div v-else class="space-y-4">
                 <div v-for="(item, lineIndex) in cartStore.products" :key="lineKeys[lineIndex]"
                      data-testid="cart-item"
+                     data-cart-line
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
@@ -124,7 +126,8 @@
                                 @decrement="handleDecrementQuantity(item)"
                                 @increment="handleIncrementQuantity(item)"
                             />
-                            <button type="button" data-testid="cart-item-remove"
+                            <button type="button" data-testid="cart-item-remove" data-cart-remove
+                                    :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                                     class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="removeWithUndo(item)">
                                 {{ $t('cart.removeItem') }}
@@ -238,7 +241,11 @@ const cartStore = useCartStore();
 const { impact } = useHaptics()
 const {t} = useI18n()
 const { trackEvent } = useTracking()
-const { removeWithUndo, editItem } = useCartItemActions()
+// Removing a line with the keyboard keeps focus in the cart: on the next line, or, when the cart is empty (the menu then drops this column, heading included), on the menu search.
+const asideRef = ref<HTMLElement | null>(null)
+const headingRef = ref<HTMLElement | null>(null)
+const lineFocus = { container: () => asideRef.value, fallback: () => headingRef.value ?? document.getElementById('menuSearch') }
+const { removeWithUndo, editItem } = useCartItemActions(lineFocus)
 const {
     getItemLineTotalCents,
     subtotalCents,
@@ -361,6 +368,6 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
 };
 
 // The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
-const { decrementLine: handleDecrementQuantity } = useCartRemoval()
+const { decrementLine: handleDecrementQuantity } = useCartRemoval(lineFocus)
 
 </script>

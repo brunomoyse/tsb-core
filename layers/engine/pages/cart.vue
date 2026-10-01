@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col" :class="cartPageMinHeightClass">
+    <div class="flex flex-col" :class="cartPageMinHeightClass" ref="pageRef">
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
@@ -15,6 +15,7 @@
             <div
                 v-for="(item, lineIndex) in cartStore.products"
                 :key="lineKeys[lineIndex]"
+                data-cart-line
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
@@ -133,6 +134,7 @@
                                 <button
                                     type="button"
                                     :aria-label="$t('cart.removeNamed', { name: item.product.name })"
+                                    data-cart-remove
                                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="handleRemoveItem(item)"
                                 >
@@ -248,6 +250,7 @@
 import * as productImage from '#engine/utils/productImage'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
+import { useRuntimeConfig, useSeoMeta } from '#imports'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
@@ -261,7 +264,6 @@ import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
-import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { showProductCode = false } = useAppConfig().brand
@@ -273,6 +275,12 @@ const cartStore = useCartStore()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+
+// The page had no title, so the tab, the history and the screen-reader route announcement all said the site name. Private, like checkout: not indexed.
+useSeoMeta({
+    title: t('schema.cart.title'),
+    robots: 'noindex,nofollow',
+})
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
@@ -345,7 +353,12 @@ const itemChoice = (item: CartItem): string | undefined =>
         }).choice
 
 // ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
-const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval()
+// Removing a line with the keyboard keeps focus on the page: on the next line, or on the "menu" link of the empty state.
+const pageRef = ref<HTMLElement | null>(null)
+const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval({
+    container: () => pageRef.value,
+    fallback: () => pageRef.value?.querySelector<HTMLElement>('[data-testid="cart-empty"] a'),
+})
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {

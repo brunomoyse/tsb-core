@@ -17,7 +17,8 @@
     "discard": "放弃",
     "keepEditing": "继续编辑",
     "retry": "重试",
-    "saving": "正在保存…"
+    "saving": "正在保存…",
+    "required": "必填"
   },
   "nav": {
     "home": "首页",
@@ -336,7 +337,11 @@
     },
     "removedManyUndo": "已移除 {count} 件商品",
     "removeNamed": "从购物车中移除“{name}”",
-    "buttonLabel": "购物车，{count} 件商品"
+    "buttonLabel": "购物车，{count} 件商品",
+    "announce": {
+      "added": "已将{name}加入购物车，共 {count} 件商品，总计 {total}",
+      "quantity": "{name}，数量 {quantity}"
+    }
   },
   "checkout": {
     "title": "结账",
@@ -598,6 +603,9 @@
     "accountDeletion": {
       "title": "删除账户 - __BRAND__",
       "description": "如何申请删除您的 __BRAND__ 账户及个人数据。"
+    },
+    "cart": {
+      "title": "购物车 - __BRAND__"
     }
   },
   "feedback": {
@@ -732,5 +740,11 @@
   "ordering": {
     "closedPreorder": "我们目前已打烊——现在下单，可预订 {time} 的餐点。",
     "loadFailed": "无法确认当前是否可以下单。"
+  },
+  "orderStatus": {
+    "label": "订单进度",
+    "completed": "已完成",
+    "upcoming": "待进行",
+    "changed": "订单状态：{status}"
   }
 }

@@ -165,9 +165,9 @@
 
                 <!-- Items list -->
                 <div data-testid="order-completed-items" class="p-5">
-                    <h3 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-3">
+                    <h2 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-3">
                         {{ $t('orderCompleted.items') }}
-                    </h3>
+                    </h2>
                     <div class="space-y-1">
                         <div
                             v-for="(item, index) in order.items"
@@ -197,9 +197,9 @@
 
                 <!-- Status timeline -->
                 <div v-if="order.status !== 'FAILED' && order.status !== 'CANCELLED'" class="border-t border-neutral-100 p-5">
-                    <h3 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-4">
+                    <h2 class="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-4">
                         {{ $t('orderCompleted.status') }}
-                    </h3>
+                    </h2>
                     <OrderStatusTimeline :order="order" />
 
                     <!-- Live tracking hint -->

@@ -8,6 +8,8 @@
         ? 'lg:w-[calc(67vw-71px)]'
         : 'lg:w-[calc(100vw-142px)]'"
         >
+            <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
+            <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
             <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
             <div v-if="isClosed" data-testid="menu-restaurant-closed" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

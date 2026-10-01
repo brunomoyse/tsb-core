@@ -8,6 +8,8 @@
             class="w-full min-w-0"
             :class="hasCartItems ? 'lg:w-2/3' : 'lg:w-full'"
         >
+            <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
+            <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
             <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
             <div v-if="isClosed" data-testid="menu-restaurant-closed" class="max-w-7xl mx-auto mt-4 px-4">
                 <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">

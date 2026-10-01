@@ -17,7 +17,8 @@
     "discard": "Verwerpen",
     "keepEditing": "Verder bewerken",
     "retry": "Opnieuw proberen",
-    "saving": "Opslaan…"
+    "saving": "Opslaan…",
+    "required": "verplicht"
   },
   "nav": {
     "home": "Home",
@@ -336,7 +337,11 @@
     },
     "removedManyUndo": "{count} artikelen verwijderd",
     "removeNamed": "\"{name}\" uit de winkelwagen verwijderen",
-    "buttonLabel": "Winkelwagen, {count} artikel | Winkelwagen, {count} artikelen"
+    "buttonLabel": "Winkelwagen, {count} artikel | Winkelwagen, {count} artikelen",
+    "announce": {
+      "added": "{name} toegevoegd aan winkelwagen, {count} artikel, totaal {total} | {name} toegevoegd aan winkelwagen, {count} artikelen, totaal {total}",
+      "quantity": "{name}, aantal {quantity}"
+    }
   },
   "checkout": {
     "title": "Bestelling",
@@ -598,6 +603,9 @@
     "accountDeletion": {
       "title": "Account verwijderen - __BRAND__",
       "description": "Hoe u verwijdering van uw __BRAND__-account en persoonsgegevens aanvraagt."
+    },
+    "cart": {
+      "title": "Winkelwagen - __BRAND__"
     }
   },
   "feedback": {
@@ -732,5 +740,11 @@
   "ordering": {
     "closedPreorder": "We zijn momenteel gesloten — bestel nu voor {time}.",
     "loadFailed": "We konden niet controleren of bestellen mogelijk is."
+  },
+  "orderStatus": {
+    "label": "Voortgang van de bestelling",
+    "completed": "voltooid",
+    "upcoming": "nog te komen",
+    "changed": "Status van de bestelling: {status}"
   }
 }

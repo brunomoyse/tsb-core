@@ -103,7 +103,9 @@
       "video": {
         "label": "Fresh, cooked to order",
         "title": "You build your bowl, we cook it fresh",
-        "subtitle": "Veg, tofu, meat, noodles — pick whatever you fancy. Cooked to the minute in your broth, never fried."
+        "subtitle": "Veg, tofu, meat, noodles — pick whatever you fancy. Cooked to the minute in your broth, never fried.",
+        "pause": "Pause video",
+        "play": "Play video"
       },
       "counters": {
         "restaurants": "restaurants worldwide",

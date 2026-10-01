@@ -50,6 +50,7 @@
                     v-for="(item, lineIndex) in cartStore.products"
                     :key="lineKeys[lineIndex]"
                     data-testid="cart-item"
+                    data-cart-line
                     class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
                 >
                     <!-- IMAGE -->
@@ -112,7 +113,8 @@
                         <UiButton variant="secondary" size="sm" data-testid="cart-item-edit" @click="editItem(item)">
                             {{ $t('cart.editItem') }}
                         </UiButton>
-                        <button type="button" data-testid="cart-item-remove"
+                        <button type="button" data-testid="cart-item-remove" data-cart-remove
+                                :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                                 class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 @click="removeWithUndo(item)">
                             {{ $t('cart.removeItem') }}
@@ -248,7 +250,8 @@ useBottomBarOffset(panelRef)
 useCartSheet(panelRef, closeButtonRef)
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
-const { removeWithUndo, editItem } = useCartItemActions()
+// Removing a line with the keyboard keeps focus in the sheet: on the next line, or on the close button when the cart is empty.
+const { removeWithUndo, editItem } = useCartItemActions({ container: () => panelRef.value, fallback: () => closeButtonRef.value })
 const {
     getItemLineTotalCents,
     subtotalCents,
@@ -339,7 +342,8 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
 };
 
 // The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
-const { decrementLine: handleDecrementQuantity } = useCartRemoval()
+// Removing a line with the keyboard keeps focus in the sheet: on the next line, or on the close button when the cart is empty.
+const { decrementLine: handleDecrementQuantity } = useCartRemoval({ container: () => panelRef.value, fallback: () => closeButtonRef.value })
 </script>
 
 <style scoped>

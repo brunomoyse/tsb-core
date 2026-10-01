@@ -17,7 +17,8 @@
     "discard": "Abandonner",
     "keepEditing": "Continuer",
     "retry": "Réessayer",
-    "saving": "Enregistrement…"
+    "saving": "Enregistrement…",
+    "required": "obligatoire"
   },
   "nav": {
     "home": "Accueil",
@@ -336,7 +337,11 @@
     },
     "removedManyUndo": "{count} articles retirés",
     "removeNamed": "Retirer « {name} » du panier",
-    "buttonLabel": "Panier, {count} article | Panier, {count} articles"
+    "buttonLabel": "Panier, {count} article | Panier, {count} articles",
+    "announce": {
+      "added": "{name} ajouté au panier, {count} article, total {total} | {name} ajouté au panier, {count} articles, total {total}",
+      "quantity": "{name}, quantité {quantity}"
+    }
   },
   "checkout": {
     "title": "Commande",
@@ -598,6 +603,9 @@
     "accountDeletion": {
       "title": "Suppression du compte - __BRAND__",
       "description": "Comment demander la suppression de votre compte __BRAND__ et de vos données personnelles."
+    },
+    "cart": {
+      "title": "Panier - __BRAND__"
     }
   },
   "feedback": {
@@ -732,5 +740,11 @@
   "ordering": {
     "closedPreorder": "Nous sommes fermés pour le moment — commandez dès maintenant pour {time}.",
     "loadFailed": "Impossible de vérifier si les commandes sont ouvertes."
+  },
+  "orderStatus": {
+    "label": "Suivi de la commande",
+    "completed": "terminé",
+    "upcoming": "à venir",
+    "changed": "Statut de la commande : {status}"
   }
 }

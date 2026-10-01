@@ -153,6 +153,48 @@ test.describe('Cart operations', () => {
     await expect(page.locator(SEL.cartItem)).not.toBeVisible()
   })
 
+  test('Adding, stepping and removing are announced to screen readers', async ({ page }, testInfo) => {
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await dismissCookieConsent(page)
+    await page.locator(SEL.productCard).first().waitFor()
+
+    const added = await addFirstAvailableProduct(page)
+    test.skip(!added, 'No available products')
+
+    // A persistent role=status region (see ToastAnnouncer): name, count and total.
+    await expect(page.locator(SEL.announcerPolite)).toContainText(/ajouté au panier, 1 article, total/u)
+
+    await openCartIfMobile(page)
+    const cart = visibleCart(page)
+    await cart.locator(SEL.cartItemIncrement).first().click()
+    await expect(page.locator(SEL.announcerPolite)).toContainText(/, quantité 2$/u)
+
+    // The removal toast carries the Undo and is announced by its own region.
+    test.skip(isMobile(testInfo), 'mobile has no dedicated remove button')
+    await cart.locator(SEL.cartItemDecrement).first().click()
+    await cart.locator(SEL.cartItemRemove).first().click()
+    await expect(page.locator(SEL.toastAnnouncerPolite)).toContainText(/retiré/u)
+  })
+
+  test('Removing the last line with the keyboard keeps focus on the page', async ({ page }, testInfo) => {
+    test.skip(isMobile(testInfo), 'the mobile sheet is covered by the focus fallback to its close button')
+
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await dismissCookieConsent(page)
+    await page.locator(SEL.productCard).first().waitFor()
+
+    const added = await addFirstAvailableProduct(page)
+    test.skip(!added, 'No available products')
+
+    const remove = page.locator(SEL.cartItemRemove).first()
+    await remove.focus()
+    await page.keyboard.press('Enter')
+    // The side cart goes away with its last line: focus moves to the menu search instead of falling to <body>.
+    await expect(page.locator('#menuSearch')).toBeFocused()
+  })
+
   test('Cart survives a hard reload (Pinia persisted state)', async ({ page }) => {
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)

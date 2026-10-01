@@ -33,9 +33,10 @@
 
         <!-- Address Section (if DELIVERY) -->
         <div id="checkout-delivery-address" tabindex="-1" v-if="cartStore.collectionOption === 'DELIVERY'" class="flex flex-col gap-2">
-            <label class="font-medium">
-                {{ $t('checkout.deliveryAddress', 'Delivery Address') }} <span class="text-primary-700">*</span>
-            </label>
+            <!-- A heading, not a label: it names a group (the address and its Edit/Add button), no single control. The * is decoration; "(required)" is the text. -->
+            <h3 class="font-medium">
+                {{ $t('checkout.deliveryAddress') }} <span class="text-primary-700" aria-hidden="true">*</span><span class="sr-only"> ({{ $t('common.required') }})</span>
+            </h3>
             <div v-if="cartStore.address" class="flex flex-col text-neutral-700 bg-neutral-50 rounded p-3">
                 <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
@@ -99,8 +100,8 @@
                 <p v-if="!isOpen" class="text-amber-800 text-sm mb-2">
                     {{ $t('checkout.asapUnavailableWhileClosed', 'ASAP is unavailable while closed. Please select a fixed time for today.') }}
                 </p>
-                <label class="block text-sm font-medium text-neutral-700 mb-2">
-                    {{ $t('checkout.preferredTime', 'Preferred Time') }}
+                <label for="checkout-preferred-time" class="block text-sm font-medium text-neutral-700 mb-2">
+                    {{ $t('checkout.preferredTime') }}
                 </label>
 
                 <!-- Open: ASAP + slots; Closed: fixed slots only -->
