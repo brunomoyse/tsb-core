@@ -42,8 +42,8 @@
             <!-- ITEMS LIST -->
             <ul class="flex-1 overflow-y-auto p-4 space-y-3">
                 <li
-                    v-for="item in cartStore.products"
-                    :key="getItemKey(item)"
+                    v-for="(item, lineIndex) in cartStore.products"
+                    :key="lineKeys[lineIndex]"
                     data-testid="cart-item"
                     class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
                 >
@@ -198,11 +198,11 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
+import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
-import { cartLineKey } from '#engine/utils/cartLines'
+import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
@@ -256,6 +256,8 @@ watch(itemImageElements, () => {
 }, { flush: 'post' })
 
 const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)

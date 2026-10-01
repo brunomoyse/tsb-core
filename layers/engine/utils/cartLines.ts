@@ -19,8 +19,39 @@ export interface LineSelection {
 
 const keyOf = (selection: LineSelection): string => `${selection.groupId}:${selection.choiceId}`
 
-const sorted = <T extends LineSelection>(selections: T[]): T[] =>
-    selections.toSorted((a, b) => keyOf(a).localeCompare(keyOf(b)))
+/**
+ * THE canonical order of a line's selections (by group, then choice). Every place that stores,
+ * compares or signs selections goes through this one comparator: two orders for the same
+ * composition made a merged line impossible to find again (remove/+/- silently did nothing).
+ * Plain code-unit comparison, not localeCompare, so it is the same on every device.
+ */
+export const compareSelections = (a: LineSelection, b: LineSelection): number => {
+    const left = keyOf(a)
+    const right = keyOf(b)
+    return left < right ? -1 : left > right ? 1 : 0
+}
+
+/** The selections in canonical order (a copy). */
+export const sortSelections = <T extends LineSelection>(selections: T[]): T[] =>
+    selections.toSorted(compareSelections)
+
+const sorted = sortSelections
+
+/**
+ * Order-insensitive identity of a line's own (line-wide) selections, used to find an existing
+ * line again from the selections a cart surface hands back.
+ */
+export const selectionsSignature = (selections: LineSelection[]): string =>
+    sorted(selections).map((s) => `${keyOf(s)}:${s.quantity}`).join('|')
+
+/** True when `line` is the cart line of `productId` with exactly these selections (any order) and, when given, this quantity. */
+export const matchesLine = (
+    line: { product: { id: string }; quantity: number; selectedChoices?: LineSelection[] | null },
+    lookup: { productId: string; selections: LineSelection[]; quantity?: number },
+): boolean =>
+    line.product.id === lookup.productId
+    && selectionsSignature(line.selectedChoices ?? []) === selectionsSignature(lookup.selections)
+    && (lookup.quantity === undefined || line.quantity === lookup.quantity)
 
 /** The composition of ONE unit, or null when the line is not uniform per unit. */
 export function perUnitSelections<T extends LineSelection>(selections: T[], quantity: number): T[] | null {
@@ -108,3 +139,61 @@ export const cartLineKey = (item: {
     selectedChoice?: { id: string } | null
 }): string =>
     `${item.product.id}-${lineSignature(item.selectedChoices ?? [], item.quantity) || (item.selectedChoice?.id ?? 'none')}`
+
+/**
+ * Unique v-for keys for a list of cart lines: the stable `cartLineKey`, with `#n` appended to the
+ * 2nd, 3rd... line that would share it (duplicates can survive in an old persisted cart when a
+ * merge would exceed the quantity cap), so Vue never sees a duplicate key.
+ */
+export function cartLineKeys(items: Parameters<typeof cartLineKey>[0][]): string[] {
+    const seen = new Map<string, number>()
+    return items.map((item) => {
+        const key = cartLineKey(item)
+        const n = seen.get(key) ?? 0
+        seen.set(key, n + 1)
+        return n === 0 ? key : `${key}#${n}`
+    })
+}
+
+export interface PersistedCartLine<S extends LineSelection = LineSelection> {
+    product: { id: string }
+    quantity: number
+    selectedChoices: S[]
+    selectedChoice?: { id: string } | null
+}
+
+/**
+ * Repairs lines of carts persisted by older builds, which stored a legacy single choice as
+ * `[{ choiceId, quantity: 1 }]` whatever the line quantity (selection quantities are line-wide now,
+ * so 3 bowls need `quantity: 3`), then merges lines that became the same line (same product and
+ * per-unit composition). A merge that would exceed `max` is skipped so no unit is ever dropped.
+ */
+export function migratePersistedLines<T extends PersistedCartLine>(lines: T[], max: number): T[] {
+    const repaired = lines.map((line) => {
+        const only = line.selectedChoices.length === 1 ? line.selectedChoices[0]! : null
+        if (line.selectedChoice && only && only.choiceId === line.selectedChoice.id && only.quantity === 1 && line.quantity > 1) {
+            return { ...line, selectedChoices: [{ ...only, quantity: line.quantity }] }
+        }
+        return line
+    })
+    const result: T[] = []
+    for (const line of repaired) {
+        const signature = lineSignature(line.selectedChoices, line.quantity)
+        const twin = result.find((other) => other.product.id === line.product.id
+            && lineSignature(other.selectedChoices, other.quantity) === signature)
+        const merged = twin
+            ? mergeIntoLine(
+                { quantity: twin.quantity, selections: twin.selectedChoices },
+                { quantity: line.quantity, selections: line.selectedChoices },
+                max,
+            )
+            : null
+        if (twin && merged && merged.quantity === twin.quantity + line.quantity) {
+            twin.quantity = merged.quantity
+            twin.selectedChoices = merged.selections
+        } else {
+            result.push(line)
+        }
+    }
+    return result
+}

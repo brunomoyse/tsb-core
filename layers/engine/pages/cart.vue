@@ -13,8 +13,8 @@
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
-                v-for="item in cartStore.products"
-                :key="getItemKey(item)"
+                v-for="(item, lineIndex) in cartStore.products"
+                :key="lineKeys[lineIndex]"
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
@@ -240,7 +240,7 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
-import { canChangeLineQuantity, cartLineKey } from '#engine/utils/cartLines'
+import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
@@ -410,6 +410,8 @@ const swipingItemKey = ref<string | null>(null)
 const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
 
 const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const getSwipeOffset = (item: CartItem) => {
     const key = getItemKey(item)

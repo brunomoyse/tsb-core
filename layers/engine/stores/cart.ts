@@ -1,7 +1,7 @@
 // Stores: cart.ts
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
-import { lineSignature, mergeIntoLine, rescaleSelections } from '#engine/utils/cartLines'
+import { lineSignature, matchesLine, mergeIntoLine, migratePersistedLines, rescaleSelections, sortSelections } from '#engine/utils/cartLines'
 import type { OrderExtraConfig } from '#engine/types/brand'
 import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
@@ -18,14 +18,13 @@ interface ItemSelectionInput {
 
 const normalizeSelections = (choice: ProductChoice | null, selections: ProductChoiceSelection[] = [], choiceQuantity = 1): ProductChoiceSelection[] => {
     if (selections.length > 0) {
-        return selections
+        return sortSelections(selections
             .filter((selection) => selection.quantity > 0)
             .map((selection) => ({
                 groupId: selection.groupId,
                 choiceId: selection.choiceId,
                 quantity: selection.quantity,
-            }))
-            .sort((a, b) => a.choiceId.localeCompare(b.choiceId))
+            })))
     }
 
     // A lone legacy choice applies to every unit of the line.
@@ -36,16 +35,10 @@ const normalizeSelections = (choice: ProductChoice | null, selections: ProductCh
     return []
 }
 
-const selectionSignature = (selections: ProductChoiceSelection[]): string =>
-    selections
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .join('|')
-
 // Finds an existing line from its own (line-wide) selections, as the cart surfaces hand them back.
-const matchesCartItem = (item: CartItem, line: { productId: string; signature: string; quantity?: number }): boolean =>
-    item.product.id === line.productId
-    && selectionSignature(item.selectedChoices ?? []) === line.signature
-    && (line.quantity === undefined || item.quantity === line.quantity)
+// Order-insensitive (same canonical comparator as the stored order, see cartLines.ts).
+const matchesCartItem = (item: CartItem, line: { productId: string; selections: ProductChoiceSelection[]; quantity?: number }): boolean =>
+    matchesLine(item, line)
 
 // Merging identity of a NEW add: per unit, so 1 bowl + 2 bowls with the same choices become one line.
 const matchesLineToMerge = (item: CartItem, productId: string, signature: string): boolean =>
@@ -133,9 +126,8 @@ export const useCartStore = defineStore("cart", {
         },
         incrementQuantity(product: Product, selection: ItemSelectionInput = {}): void {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
-            const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
+                (item) => matchesCartItem(item, { productId: product.id, selections: normalizedSelections, quantity: selection.quantity })
             );
             if (cartItem) {
                 if (cartItem.quantity < MAX_ITEM_QUANTITY) {
@@ -153,9 +145,8 @@ export const useCartStore = defineStore("cart", {
 
         decrementQuantity(product: Product, selection: ItemSelectionInput = {}): void {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
-            const signature = selectionSignature(normalizedSelections)
             const cartItem = this.products.find(
-                (item) => matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
+                (item) => matchesCartItem(item, { productId: product.id, selections: normalizedSelections, quantity: selection.quantity })
             );
             if (cartItem) {
                 if (cartItem.quantity > 1) {
@@ -170,9 +161,8 @@ export const useCartStore = defineStore("cart", {
 
         removeFromCart(product: Product, selection: ItemSelectionInput = {}): void {
             const normalizedSelections = normalizeSelections(selection.choice ?? null, selection.selections ?? [])
-            const signature = selectionSignature(normalizedSelections)
             this.products = this.products.filter(
-                (item) => !matchesCartItem(item, { productId: product.id, signature, quantity: selection.quantity })
+                (item) => !matchesCartItem(item, { productId: product.id, selections: normalizedSelections, quantity: selection.quantity })
             );
         },
 
@@ -238,6 +228,8 @@ export const useCartStore = defineStore("cart", {
                         : []
                 }
             }
+            // Carts persisted by older builds: legacy choices stored per unit, duplicate lines.
+            store.products = migratePersistedLines(store.products, MAX_ITEM_QUANTITY)
         },
     },
 });

@@ -46,7 +46,7 @@
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
-                <div v-for="item in cartStore.products" :key="getItemKey(item)"
+                <div v-for="(item, lineIndex) in cartStore.products" :key="lineKeys[lineIndex]"
                      data-testid="cart-item"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
@@ -198,8 +198,8 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { cartLineKey } from '#engine/utils/cartLines'
-import { onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -258,6 +258,8 @@ const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
 const getItemKey = (item: CartItem) => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)

@@ -19,8 +19,8 @@
             <!-- Items -->
             <div class="px-5 space-y-3 pb-4">
                 <div
-                    v-for="item in cartStore.products"
-                    :key="getItemKey(item)"
+                    v-for="(item, lineIndex) in cartStore.products"
+                    :key="lineKeys[lineIndex]"
                     class="flex items-center gap-3"
                 >
                     <!-- Product image -->
@@ -184,8 +184,8 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { canChangeLineQuantity, cartLineKey } from '#engine/utils/cartLines'
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { isExcludedPostcode } from '#engine/lib/delivery'
@@ -257,6 +257,8 @@ watch(itemImageElements, () => {
 const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
 
 const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
