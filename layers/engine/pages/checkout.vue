@@ -421,7 +421,7 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
 
     // Map known backend error strings to translated messages
     if (raw.includes('minimum order amount for delivery'))
-        return t('checkout.minimumDelivery', { amount: DELIVERY_MINIMUM })
+        return t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM })
     if (raw.includes('ordering is currently unavailable'))
         return t('notify.errors.orderingUnavailable')
     if (raw.includes('not eligible for delivery'))

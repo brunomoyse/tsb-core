@@ -111,10 +111,10 @@
                 </svg>
                 <span>
                     <template v-if="order.type === 'DELIVERY'">
-                        {{ $t('orderCompleted.estimatedDeliveredTime', 'Estimated delivered time:') }}
+                        {{ $t('orderCompleted.estimatedDeliveredTime') }}
                     </template>
                     <template v-else>
-                        {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
+                        {{ $t('orderCompleted.estimatedReadyTime') }}
                     </template>
                     <strong>&nbsp;{{ formatEstimatedTime(order.estimatedReadyTime) }}</strong>
                 </span>

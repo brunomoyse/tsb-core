@@ -62,7 +62,7 @@
                      ~10k px tall and needs a way to jump. -->
                 <nav
                     v-if="displayedCategories.length > 1"
-                    :aria-label="$t('menu.categoriesNav')"
+                    :aria-label="$t('mkt.menu.categoriesNav')"
                     class="sm:hidden max-w-7xl mx-auto px-4 pb-3"
                 >
                     <div ref="chipRowRef" class="flex gap-2 overflow-x-auto no-scrollbar">

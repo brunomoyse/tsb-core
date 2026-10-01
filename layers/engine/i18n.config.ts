@@ -47,6 +47,8 @@ function build(base: Messages, brand: Messages): Messages {
 
 export default defineI18nConfig(() => ({
     legacy: false,
+    // Missing keys fall back to French instead of rendering the raw key path.
+    fallbackLocale: 'fr',
     locales: [
         {
             code: "fr",
