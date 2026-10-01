@@ -20,7 +20,7 @@ interface GqlResponse {
     errors?: GqlErrorEntry[]
 }
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
     const cfg     = useRuntimeConfig()
     const httpURL = cfg.public.graphqlHttp as string
     const localePath = useLocalePath()
@@ -91,17 +91,22 @@ export default defineNuxtPlugin(() => {
         return res.data as T
     }
 
+    /*
+     * The language the page is rendered in, read at call time: on the server it is the route's locale for THIS request
+     * (a first visit or a crawler on /en/menu has no i18n_redirected cookie yet, and the cookie of an earlier visit may
+     * name another language), on the client it follows a locale switch immediately. The cookie is only a fallback.
+     */
+    const currentLocale = (): string => nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
+
     /** Low-level POST that returns the raw { data, errors } */
-    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<GqlResponse> => {
-        const userLocale = useCookie('i18n_redirected').value ?? 'fr'
-        return await $fetch(httpURL, {
+    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<GqlResponse> =>
+        await $fetch(httpURL, {
             method: 'POST',
             body,
             credentials: 'omit',
             signal,
-            headers: await buildHeaders(userLocale),
+            headers: await buildHeaders(currentLocale()),
         })
-    }
 
     /** Build the JSON headers + attach Bearer token or forward cookies for SSR */
     const buildHeaders = async (locale: string) => {

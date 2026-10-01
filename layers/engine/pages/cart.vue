@@ -4,13 +4,20 @@
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
             <PageTitle>{{ $t('cart.title') }}</PageTitle>
-            <span v-if="cartStore.totalItems > 0" class="text-sm text-neutral-600 font-medium">
+            <span v-if="hasLines" class="text-sm text-neutral-600 font-medium">
                 {{ cartStore.totalItems }} {{ cartStore.totalItems === 1 ? $t('cart.item') : $t('cart.items') }}
             </span>
         </div>
 
+        <!-- The persisted cart exists only in the browser: until mounted (and in the server render) a skeleton stands in, so neither an empty-cart state nor a list is rendered that the client would then contradict. -->
+        <div v-if="!isMounted" aria-hidden="true" class="flex-1 flex flex-col px-4 pb-4 space-y-2 animate-pulse">
+            <div class="h-[88px] rounded-2xl bg-black/5" />
+            <div class="h-[88px] rounded-2xl bg-black/5" />
+            <div class="mt-2 h-[120px] rounded-2xl bg-black/5" />
+        </div>
+
         <!-- ═══ ITEMS LIST ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
+        <div v-if="hasLines" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
                 v-for="(item, lineIndex) in cartStore.products"
@@ -152,7 +159,7 @@
         </div>
 
         <!-- ═══ ORDER SUMMARY ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
+        <div v-if="hasLines" class="px-4 pb-4">
             <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
                 <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.subtotal') }}</span>
@@ -199,11 +206,11 @@
         </div>
 
         <!-- Spacer pushes checkout bar to the bottom -->
-        <div v-if="cartStore.products.length > 0" class="flex-1" />
+        <div v-if="hasLines" class="flex-1" />
 
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
-            v-if="cartStore.products.length > 0"
+            v-if="hasLines"
             ref="checkoutBarRef"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
@@ -228,7 +235,7 @@
         </div>
 
         <!-- ═══ EMPTY STATE ═══ -->
-        <div v-else data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
+        <div v-else-if="isMounted" data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
             <div class="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-5">
                 <svg class="w-9 h-9 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -263,6 +270,7 @@ import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
+import { useMounted } from '@vueuse/core'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
@@ -273,6 +281,9 @@ definePageMeta({ public: true })
 
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
+// The cart is read from localStorage in the browser only: nothing that depends on it renders before the page is mounted.
+const isMounted = useMounted()
+const hasLines = computed(() => isMounted.value && cartStore.products.length > 0)
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()

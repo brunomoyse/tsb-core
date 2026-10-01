@@ -30,6 +30,7 @@
         />
 
         <!-- Minimum Order Warning Banner -->
+        <ClientOnly>
         <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-primary-50 border border-primary-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -38,6 +39,7 @@
                 {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
             </p>
         </div>
+        </ClientOnly>
 
         <!-- Validation Error Summary: rendered after a failed submit. Each item anchors to its field. -->
         <div
@@ -79,6 +81,12 @@
             <span v-if="japaneseAccents" class="text-primary-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
         </div>
 
+        <!--
+            Everything below depends on state that only exists in the browser (the persisted cart and signed-in user), so the
+            server cannot render it: a client-only block with a same-sized skeleton avoids hydration mismatches and any jump
+            between a server-rendered "anonymous / empty" version and the real one.
+        -->
+        <ClientOnly>
         <!-- Step Indicator — reflects the current sub-step inside checkout so users
              know which stage they're on (address, sign in, phone, review, payment). -->
         <nav class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6" :aria-label="$t('checkout.stepCheckout')">
@@ -184,6 +192,21 @@
                 <div class="safe-area-spacer-bottom" />
             </div>
         </template>
+            <template #fallback>
+                <div aria-hidden="true" class="mb-6 h-5" />
+                <div aria-hidden="true" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div v-for="n in 3" :key="`fallback-${n}`" class="relative overflow-hidden bg-white rounded-2xl border border-neutral-100 shadow-sm p-5 space-y-4 animate-shimmer">
+                        <div class="h-5 w-32 rounded bg-neutral-100" />
+                        <div class="space-y-2">
+                            <div class="h-3 rounded bg-neutral-100" />
+                            <div class="h-3 rounded bg-neutral-100 w-5/6" />
+                            <div class="h-3 rounded bg-neutral-100 w-2/3" />
+                        </div>
+                        <div class="h-10 rounded-lg bg-neutral-100" />
+                    </div>
+                </div>
+            </template>
+        </ClientOnly>
 
         <!-- Payment Redirect Overlay (z-[110]: above the toasts, which sit at z-[100]) — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
         <Teleport v-if="isRedirectingToPayment" to="body">
@@ -513,10 +536,7 @@ onMounted(() => {
     // Pre-select the brand's default extras (brand.orderExtras). Extras the cart can't take, such as wasabi on a hot-dishes-only cart, are cleared; CheckoutPaymentExtras disables their checkboxes.
     applyDefaults()
 
-    // If the user is logged in and has an address, pre-fill the cart address
-    if (authStore.user?.address && !cartStore.address) {
-        cartStore.address = authStore.user.address
-    }
+    prefillAddressFromUser()
 
     trackEvent('checkout_page_loaded', {
         total_items: cartStore.totalItems,
@@ -527,9 +547,28 @@ onMounted(() => {
     })
 })
 
-// The auth-sync plugin repairs a missing user record a moment after first paint (plugins/auth-sync.client.ts): pre-fill the address once it arrives.
-watch(() => authStore.user?.address, (address) => {
-    if (address && !cartStore.address) cartStore.address = address
+/*
+ * The signed-in customer's saved address pre-fills the cart address exactly once. Never again after that: an address the
+ * customer cleared (or replaced) on this page must not come back when the user record is re-set. The auth-sync plugin repairs
+ * a missing record a moment after first paint (plugins/auth-sync.client.ts), so the pre-fill can also happen after mount.
+ * And if the session turns out to be dead (the persisted user is dropped after a failed renewal), the address we took from
+ * that user goes with it: no stale address stays in the cart behind the sign-in step.
+ */
+let prefilledFromUser = false
+let prefilledAddressId: string | null = null
+const prefillAddressFromUser = () => {
+    const address = authStore.user?.address
+    if (prefilledFromUser || !address || cartStore.address) return
+    cartStore.address = address
+    prefilledFromUser = true
+    prefilledAddressId = address.id
+}
+watch(() => authStore.user?.address, prefillAddressFromUser)
+watch(() => authStore.user, (user) => {
+    if (user || !prefilledFromUser) return
+    if (cartStore.address?.id === prefilledAddressId) cartStore.address = null
+    prefilledFromUser = false
+    prefilledAddressId = null
 })
 
 // Same draft state as the phone card (CheckoutPhoneCapture): lets Pay save a number that was typed but not saved.

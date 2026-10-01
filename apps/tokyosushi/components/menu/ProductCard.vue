@@ -19,10 +19,11 @@
                 <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-tsb-four text-primary-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
-                <!-- Shimmer placeholder -->
+                <!-- Placeholder behind the image: a flat tint from the server render on (so without JavaScript, or before hydration, a transparent cut-out never sits on a moving gradient); it only starts shimmering once mounted, and is removed when the image has loaded. -->
                 <div v-if="!loaded"
-                     class="absolute inset-0 animate-shimmer rounded-lg"
-                     style="background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;"
+                     class="absolute inset-0 rounded-lg bg-gray-100"
+                     :class="{ 'animate-shimmer': isMounted }"
+                     :style="isMounted ? 'background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;' : undefined"
                 />
                 <!-- Visible from the first paint, with or without JavaScript (it used to be opacity-0 until onMounted saw it loaded, which kept it out of the LCP): the shimmer is only a background behind it, hence "relative" so the image paints over it. -->
                 <picture class="relative w-full h-full flex justify-center items-center">
