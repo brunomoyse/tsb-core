@@ -11,11 +11,13 @@
 
         <!-- Cart Panel -->
         <Transition name="slide-up">
-            <aside
+            <div
                 v-if="cartStore.isCartVisible"
                 id="cart-mobile"
                 ref="panelRef"
                 data-testid="cart-mobile"
+                role="dialog"
+                aria-modal="true"
                 aria-labelledby="cart-heading"
                 class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
             >
@@ -30,12 +32,13 @@
                     {{ $t('cart.title') }}
                 </h2>
                 <button
+                    ref="closeButtonRef"
                     type="button"
                     :aria-label="$t('cart.closeCart')"
                     class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="cartStore.toggleCartVisibility"
                 >
-                    <svg class="h-6 w-6 text-neutral-700" fill="none" stroke="currentColor">
+                    <svg class="h-6 w-6 text-neutral-700" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </button>
@@ -198,7 +201,7 @@
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </footer>
-            </aside>
+            </div>
         </Transition>
         <ImageLightbox v-if="showLightbox" ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
     </div>
@@ -217,6 +220,7 @@ import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
+import { useCartSheet } from '#engine/composables/useCartSheet'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -232,7 +236,10 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 // The open drawer is a bottom bar too: the toasts (Undo) float above it instead of covering its checkout button.
 const panelRef = ref<HTMLElement | null>(null)
+const closeButtonRef = ref<HTMLElement | null>(null)
 useBottomBarOffset(panelRef)
+// Dialog behaviour: focus trap, Escape, scroll lock, inert page behind, focus back to the opener.
+useCartSheet(panelRef, closeButtonRef)
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
 const { removeWithUndo, editItem } = useCartItemActions()

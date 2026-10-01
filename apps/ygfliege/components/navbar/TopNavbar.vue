@@ -49,6 +49,7 @@
                         type="button"
                         class="lg:hidden chip"
                         data-testid="cart-button"
+                        data-cart-trigger
                         :aria-label="cartLabel"
                         :aria-expanded="cartStore.isCartVisible"
                         :aria-controls="cartStore.isCartVisible ? 'cart-mobile' : undefined"

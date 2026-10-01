@@ -1,7 +1,8 @@
 <template>
     <Transition name="slide-up">
         <div
-            v-if="cartStore.totalItems > 0 && !cartStore.isCartVisible"
+            v-if="cartStore.totalItems > 0"
+            :inert="cartStore.isCartVisible"
             ref="barRef"
             class="fixed bottom-0 inset-x-0 z-30 sm:hidden bg-primary-600 shadow-md"
             :class="{ 'animate-cart-pulse': isPulsing }"
@@ -9,6 +10,7 @@
             <button
                 type="button"
                 data-testid="floating-cart-bar"
+                data-cart-trigger
                 class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-primary-700"
                 @click="cartStore.toggleCartVisibility"
             >

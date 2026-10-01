@@ -1,6 +1,7 @@
 <template>
     <div
         ref="rootRef"
+        data-focus-trap-companion
         class="notification-bar fixed left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
         v-if="visible"
         @mouseenter="hovered = true"
