@@ -28,7 +28,7 @@
                 </UiButton>
                 <NuxtLinkLocale
                     to="/menu"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                     {{ $t('orderCompleted.backToMenu', 'Back to menu') }}
                 </NuxtLinkLocale>
@@ -64,7 +64,7 @@
                 </a>
                 <NuxtLinkLocale
                     to="/menu"
-                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2"
+                    class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                     {{ $t('orderCompleted.backToMenu', 'Back to menu') }}
                 </NuxtLinkLocale>
@@ -265,7 +265,7 @@
             </UiButton>
             <NuxtLinkLocale
                 to="/"
-                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2"
+                class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-tsb-four/50 text-sm font-semibold text-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >
                 {{ $t('orderCompleted.returnHome') }}
             </NuxtLinkLocale>

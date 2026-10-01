@@ -468,7 +468,7 @@ const updateNotificationPref = async (
                                 role="switch"
                                 :aria-checked="notifyMarketing"
                                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                :class="notifyMarketing ? 'bg-primary-400' : 'bg-neutral-200'"
+                                :class="notifyMarketing ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyMarketing"
                             >
                                 <span
@@ -489,7 +489,7 @@ const updateNotificationPref = async (
                                 role="switch"
                                 :aria-checked="notifyOrderUpdates"
                                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                :class="notifyOrderUpdates ? 'bg-primary-400' : 'bg-neutral-200'"
+                                :class="notifyOrderUpdates ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyOrderUpdates"
                             >
                                 <span

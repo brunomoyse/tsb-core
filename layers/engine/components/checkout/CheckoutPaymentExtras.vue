@@ -116,7 +116,7 @@
                                 'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-base sm:text-sm text-neutral-900 placeholder-neutral-600 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
                                     ? 'border-neutral-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring'
-                                    : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:border-amber-400',
+                                    : 'border-amber-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-amber-400',
                             ]"
                         />
                         <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-600' : 'text-amber-800']">€</span>

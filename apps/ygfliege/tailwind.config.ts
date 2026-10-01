@@ -153,7 +153,9 @@ module.exports = {
                 primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412' },
             },
             textColor: {
-                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412', 800: '#9A3412' },
+                // 700 is the orange text (6.9:1 on cream); 800 is one step darker so
+                // `text-primary-700 hover:text-primary-800` links still react on hover.
+                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412', 800: '#7C2D12' },
             },
             borderColor: {
                 neutral: {

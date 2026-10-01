@@ -300,7 +300,7 @@
                                 <!-- Re-order button -->
                                 <button
                                     v-if="isOrderSuccess(order.status)"
-                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary-200 bg-transparent px-4 py-2.5 text-sm font-medium text-primary-700 transition-all duration-300 hover:border-solid hover:border-primary-500 hover:bg-primary-500 hover:text-white"
+                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary-200 bg-transparent px-4 py-2.5 text-sm font-medium text-primary-700 transition-all duration-300 hover:border-solid hover:border-primary hover:bg-primary-600 hover:text-white"
                                     @click="reorder(order)"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

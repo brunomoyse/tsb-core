@@ -85,7 +85,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-400" />
+            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-ring" />
         </ClientOnly>
 
         <ClientOnly>

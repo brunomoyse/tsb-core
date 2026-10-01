@@ -50,7 +50,7 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-base sm:text-sm"
+                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-base sm:text-sm placeholder-gray-600"
                         />
                         <button
                             type="button"
@@ -182,7 +182,7 @@
                     {{ $t('menu.allergenNoticeShort') }}
                     <a :href="phoneHref" class="underline font-medium text-amber-900">{{ phoneLabel }}</a>
                 </span>
-                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
+                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2" :aria-label="$t('common.close')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>

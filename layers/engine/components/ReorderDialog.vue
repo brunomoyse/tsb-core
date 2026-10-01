@@ -71,7 +71,7 @@ import { useReorder } from '#engine/composables/useReorder'
  */
 const {
     primaryClass = 'bg-neutral-900 text-white hover:bg-neutral-700 focus-visible:ring-neutral-900',
-    secondaryClass = 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200 focus-visible:ring-neutral-400',
+    secondaryClass = 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200 focus-visible:ring-ring focus-visible:ring-offset-2',
 } = defineProps<{
     primaryClass?: string
     secondaryClass?: string

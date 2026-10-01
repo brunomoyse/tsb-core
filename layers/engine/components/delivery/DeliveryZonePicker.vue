@@ -133,7 +133,7 @@
                 v-if="showCancel"
                 type="button"
                 @click="emit('cancel')"
-                class="min-h-11 px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-sm font-medium text-neutral-700 transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300"
+                class="min-h-11 px-4 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-sm font-medium text-neutral-700 transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
                 {{ $t('common.cancel') }}
             </button>
