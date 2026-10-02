@@ -379,7 +379,6 @@
 import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
 import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
-import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import LoadError from '#engine/components/LoadError.vue'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
@@ -388,18 +387,19 @@ import { formatAddress } from '#engine/utils/utils'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql/index'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
 import { useReorder } from '#engine/composables/useReorder'
 
-const { showProductCode = false, japaneseAccents = false } = useAppConfig().brand
-const { t, locale } = useI18n()
+const { japaneseAccents = false } = useAppConfig().brand
+const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 const formatDate = (iso: string) => formatDateTime(iso, dateLocale.value)
 
@@ -476,28 +476,7 @@ const {
     },
 })
 
-interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
-    choice?: { name: string } | null
-    selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemParts = (item: OrderItemLike) => orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-})
-
-const orderItemMeta = (item: OrderItemLike): string | undefined => {
-    const parts = orderItemParts(item)
-    // The internal menu code ("E1") only shows for brands that print it.
-    const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-    return meta || undefined
-}
-
-const orderItemName = (item: OrderItemLike): string => orderItemParts(item).name
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemMeta, orderItemName, orderItemChoice } = useOrderItemLabel()
 
 // ── Active / Past split ──
 

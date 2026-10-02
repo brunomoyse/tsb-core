@@ -256,15 +256,15 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '#brand/data/productPhotos'
-import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { canChangeLineQuantity, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -275,7 +275,6 @@ import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { showProductCode = false } = useAppConfig().brand
 
 definePageMeta({ public: true })
 
@@ -340,43 +339,6 @@ watch(itemImageElements, () => {
 
 const cartPageMinHeightClass = 'min-h-[100dvh]'
 
-const itemLabelParts = (item: CartItem) => orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-})
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-    const parts = itemLabelParts(item)
-    const bits: string[] = []
-    if (showProductCode && parts.code) bits.push(parts.code)
-    if (parts.category) bits.push(parts.category)
-    if (item.product.pieceCount) {
-        const suffix = item.product.pieceCount === 1 ? t('menu.pc') : t('menu.pcs')
-        bits.push(`${item.product.pieceCount} ${suffix}`)
-    }
-    return bits.length > 0 ? bits.join(' · ') : undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-    (item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? [])
-            .map((selection) => {
-                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-                if (!choice) return ''
-                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-            })
-            .filter(Boolean)
-            .join(', ') || undefined
-        : orderItemLabelParts({
-            code: item.product.code,
-            categoryName: item.product.category?.name,
-            productName: item.product.name,
-            choiceName: item.selectedChoice?.name,
-        }).choice
-
 // ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
 // Removing a line with the keyboard keeps focus on the page: on the next line, or on the "menu" link of the empty state.
 const pageRef = ref<HTMLElement | null>(null)
@@ -402,7 +364,7 @@ const swipingItemKey = ref<string | null>(null)
 
 const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel({ pieces: true })
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 

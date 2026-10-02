@@ -279,14 +279,15 @@
 import { computed, watch } from 'vue'
 import { definePageMeta, ref, useRoute } from '#imports'
 import { formatDate, formatTime, isSameBrusselsDay } from '#engine/utils/datetime'
-import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
 
 import { useNow } from '@vueuse/core'
 import { useOrderCompleted } from '#engine/composables/useOrderCompleted'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { showProductCode = false, japaneseAccents = false, orderCompletedImage } = useAppConfig().brand
+const { japaneseAccents = false, orderCompletedImage } = useAppConfig().brand
 const heroImage = orderCompletedImage ?? {
     avif: '/images/tsb-takeaway-bag.avif',
     webp: '/images/tsb-takeaway-bag.webp',
@@ -322,30 +323,11 @@ const {
     liveUpdate,
 } = useOrderCompleted(orderId)
 
-interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
-    choice?: { name: string } | null
-    selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
-    const parts = orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-    })
-    const segments: { text: string; muted: boolean }[] = []
-    if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true })
-    if (parts.category) segments.push({ text: parts.category, muted: true })
-    segments.push({ text: parts.name, muted: false })
-    return segments
-}
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemSegments, orderItemChoice } = useOrderItemLabel()
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const paymentProblemTitle = computed(() =>
     paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Title`) : '',
@@ -353,8 +335,7 @@ const paymentProblemTitle = computed(() =>
 const paymentProblemBody = computed(() =>
     paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Body`) : '',
 )
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 watch(order, (orderData) => {
     if (!orderData) return

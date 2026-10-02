@@ -191,21 +191,20 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { canChangeLineQuantity, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 
-const { showProductCode = false } = useAppConfig().brand
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
@@ -267,41 +266,9 @@ watch(itemImageElements, () => {
 
 const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
-
-const itemLabelParts = (item: CartItem) => orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-})
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-    const parts = itemLabelParts(item)
-    // The internal menu code ("E1") only shows for brands that print it.
-    const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-    return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-    (item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? [])
-            .map((selection) => {
-                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-                if (!choice) return ''
-                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-            })
-            .filter(Boolean)
-            .join(', ') || undefined
-        : orderItemLabelParts({
-            code: item.product.code,
-            categoryName: item.product.category?.name,
-            productName: item.product.name,
-            choiceName: item.selectedChoice?.name,
-        }).choice
 
 const handleIncrementQuantity = (item: CartItem) => {
     cartStore.incrementQuantity(item.product, {

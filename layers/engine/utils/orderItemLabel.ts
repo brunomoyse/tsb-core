@@ -55,3 +55,74 @@ export function orderItemChoiceText(item: OrderItemChoiceInput): string | undefi
     }
     return item.choice?.name?.trim() || undefined;
 }
+
+export interface CartLineLabelInput {
+    product: {
+        code?: string | null;
+        name: string;
+        category?: { name: string } | null;
+        choices?: { id: string; name: string }[] | null;
+        pieceCount?: number | null;
+    };
+    selectedChoice?: { name: string } | null;
+    selectedChoices?: { choiceId: string; quantity: number }[] | null;
+}
+
+export interface CartLineMetaOptions {
+    /** `brand.showProductCode`: the menu code ("E1") goes before the category. */
+    showProductCode: boolean;
+    /**
+     * The piece count suffix ("6 pcs") that closes the line on the cart page; absent elsewhere.
+     * With it the parts are joined with " · ", without it with "·" (the compact lines of the drawers and the checkout).
+     */
+    pieces?: { one: string; many: string };
+}
+
+/** The small line above a cart item's name: `code · category · pieces`, whatever the brand and the surface show. */
+export function cartLineMeta(item: CartLineLabelInput, options: CartLineMetaOptions): string | undefined {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    });
+    const bits: string[] = [];
+    if (options.showProductCode && parts.code) bits.push(parts.code);
+    if (parts.category) bits.push(parts.category);
+    if (options.pieces && item.product.pieceCount) {
+        bits.push(`${item.product.pieceCount} ${item.product.pieceCount === 1 ? options.pieces.one : options.pieces.many}`);
+    }
+    return bits.length > 0 ? bits.join(options.pieces ? ' · ' : '·') : undefined;
+}
+
+/** The choices of a cart line, like the order lines show them ("Tonkotsu, Corn x2"). */
+export function cartLineChoiceText(item: CartLineLabelInput): string | undefined {
+    return orderItemChoiceText({
+        choice: item.selectedChoice,
+        selections: item.selectedChoices,
+        product: item.product,
+    });
+}
+
+export interface OrderLineLabelInput extends OrderItemChoiceInput {
+    product: { code?: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null };
+}
+
+export interface OrderLineSegment {
+    text: string;
+    /** Code and category are shown muted, the name is the line's main text. */
+    muted: boolean;
+}
+
+/** The name line of an order line, in pieces: `code` (brand permitting), `category`, then the product name. */
+export function orderLineSegments(item: OrderLineLabelInput, showProductCode: boolean): OrderLineSegment[] {
+    const parts = orderItemLabelParts({
+        code: item.product.code,
+        categoryName: item.product.category?.name,
+        productName: item.product.name,
+    });
+    const segments: OrderLineSegment[] = [];
+    if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true });
+    if (parts.category) segments.push({ text: parts.category, muted: true });
+    segments.push({ text: parts.name, muted: false });
+    return segments;
+}

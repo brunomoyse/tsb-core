@@ -211,7 +211,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
@@ -220,8 +220,8 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { DELIVERY_MINIMUM } from '#engine/lib/fees'
@@ -231,8 +231,7 @@ import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { showProductCode = false, deliveryEnabled = true } = useAppConfig().brand
-
+const { deliveryEnabled = true } = useAppConfig().brand
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{ isOrderingAvailable?: boolean; preorderTime?: string | null }>()
 
@@ -283,7 +282,7 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const getItemKey = (item: CartItem) => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
@@ -323,38 +322,6 @@ const handleOrderType = (option: string) => {
     cartStore.collectionOption = option as 'DELIVERY' | 'PICKUP';
     trackEvent('cart_collection_option_changed', { from, to: option })
 };
-
-const itemLabelParts = (item: CartItem) => orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-})
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-    const parts = itemLabelParts(item)
-    // The internal menu code ("E1") only shows for brands that print it.
-    const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-    return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-    (item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? [])
-            .map((selection) => {
-                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-                if (!choice) return ''
-                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-            })
-            .filter(Boolean)
-            .join(', ') || undefined
-        : orderItemLabelParts({
-            code: item.product.code,
-            categoryName: item.product.category?.name,
-            productName: item.product.name,
-            choiceName: item.selectedChoice?.name,
-        }).choice
 
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {

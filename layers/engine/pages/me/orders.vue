@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue"
-import { orderItemChoiceText, orderItemLabelParts } from "#engine/utils/orderItemLabel"
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import LoadError from "#engine/components/LoadError.vue"
 import { ORDER_ITEMS_SELECTION } from "#engine/lib/orderDocuments"
 import type { Order } from "#engine/types"
@@ -9,7 +10,6 @@ import { formatDateTime } from "#engine/utils/datetime"
 import { formatPrice } from "#engine/lib/price"
 import gql from 'graphql-tag'
 
-const { showProductCode = false } = useAppConfig().brand
 import { print } from "graphql/index"
 import { useGqlQuery } from "#imports"
 import { useI18n } from "vue-i18n"
@@ -21,12 +21,11 @@ import { useReorder } from "#engine/composables/useReorder"
 
 definePageMeta({ public: false })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 useSeoMeta({
     title: t('schema.myOrders.title'),
@@ -76,26 +75,7 @@ const { data: dataOrders, error: ordersError, pending: ordersPending, refresh: r
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
 const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))
 
-interface OrderItemLike {
-    product: { code: string | null; name: string; category?: { name: string } | null; choices?: { id: string; name: string }[] | null }
-    choice?: { name: string } | null
-    selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
-    const parts = orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-    })
-    const segments: { text: string; muted: boolean }[] = []
-    if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true })
-    if (parts.category) segments.push({ text: parts.category, muted: true })
-    segments.push({ text: parts.name, muted: false })
-    return segments
-}
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemSegments, orderItemChoice } = useOrderItemLabel()
 
 /* Live tracking (subscriptions, reconnect refetch, polling fallback, ?followOrder)
    is driven by watchers over the loaded orders: the query is client-only, so the
@@ -249,7 +229,7 @@ const getStatusColorClass = (status: string) => {
                             </span>
                         </div>
                         <p class="mt-0.5 text-xs text-neutral-600 tabular-nums">
-                            {{ formatDateTime(order.createdAt, dateLocale.value) }}
+                            {{ formatDateTime(order.createdAt, dateLocale) }}
                         </p>
                     </div>
                     <div class="flex items-center gap-2 ml-3 shrink-0">

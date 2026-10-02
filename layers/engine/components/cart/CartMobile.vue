@@ -220,23 +220,22 @@ import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch 
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
-import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { cartLineKeys } from '#engine/utils/cartLines'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { until } from '@vueuse/core'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartSheet } from '#engine/composables/useCartSheet'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { showProductCode = false } = useAppConfig().brand
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{ isOrderingAvailable?: boolean; preorderTime?: string | null }>()
 
@@ -292,44 +291,12 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
-
-const itemLabelParts = (item: CartItem) => orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-})
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-    const parts = itemLabelParts(item)
-    // The internal menu code ("E1") only shows for brands that print it.
-    const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-    return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-    (item.selectedChoices?.length ?? 0) > 0
-        ? (item.selectedChoices ?? [])
-            .map((selection) => {
-                const choice = item.product.choices.find((productChoice) => productChoice.id === selection.choiceId)
-                if (!choice) return ''
-                return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-            })
-            .filter(Boolean)
-            .join(', ') || undefined
-        : orderItemLabelParts({
-            code: item.product.code,
-            categoryName: item.product.category?.name,
-            productName: item.product.name,
-            choiceName: item.selectedChoice?.name,
-        }).choice
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     impact('Light')
