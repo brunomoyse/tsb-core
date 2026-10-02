@@ -27,7 +27,6 @@ export default defineNuxtConfig({
 
     css: [
         "~/assets/css/main.css",
-        "~/assets/css/sakura.css",
         // Brand display font (@font-face Channel) + html background.
         "~/assets/css/brand.css",
     ],
