@@ -12,6 +12,9 @@
  *  - Inside onMounted(...), onActivated(...), watch(...), or any function/method body.
  *  - Inside `if (import.meta.client) { ... }` (or `if (process.client)`).
  *  - Lines preceded by `// ssr-safe: <reason>` (an explicit opt-out for known-safe patterns).
+ *    Not honoured for `useEventBus(...).on(...)`: VueUse's tryOnScopeDispose cleanup never runs
+ *    on the server (component scopes are not disposed during SSR), so that shape always leaks.
+ *    It did exactly that in 2026 (/menu leaked ~1.2 MB per render, pods died every ~12 days).
  *
  * Flagged shapes (top-level setup body):
  *  - `eventBus.on(...)`, `bus.on(...)`, `useEventBus(...).on(...)`, any `*.on(...)` call.
@@ -107,6 +110,10 @@ function isClientGuardedIf(node) {
     return false
 }
 
+function isUseEventBusCall(node) {
+    return node?.type === 'CallExpression' && node.callee?.type === 'Identifier' && node.callee.name === 'useEventBus'
+}
+
 function violationsForExpression(callExpr, scriptCode, scriptOffset, fileSource) {
     const callee = callExpr.callee
     if (callee?.type !== 'MemberExpression') return null
@@ -114,7 +121,7 @@ function violationsForExpression(callExpr, scriptCode, scriptOffset, fileSource)
     if (!prop || prop.type !== 'Identifier' || !flaggedMethods.has(prop.name)) return null
     const startInScript = callExpr.start
     const startInFile = scriptOffset + startInScript
-    if (hasSsrSafeComment(fileSource, startInFile)) return null
+    if (!isUseEventBusCall(callee.object) && hasSsrSafeComment(fileSource, startInFile)) return null
     return { offsetInFile: startInFile, method: prop.name }
 }
 
@@ -184,7 +191,7 @@ async function main() {
     }
     console.error(
         `\nFix: wrap in onMounted() / if (import.meta.client) {} / add a "// ssr-safe: <reason>" comment.\n` +
-        `For pub/sub specifically, prefer VueUse useEventBus (auto-cleans on scope dispose).`
+        `useEventBus(...).on() is never SSR-safe at the top level: its auto-cleanup does not run on the server.`
     )
     process.exit(1)
 }

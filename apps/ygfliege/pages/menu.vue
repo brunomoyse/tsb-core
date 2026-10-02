@@ -630,8 +630,9 @@ watch(() => cartStore.products.length, (newLen, oldLen) => {
     if (oldLen >= 1 && newLen === 0) preserveScrollFor(findTopVisibleCard())
 })
 
-// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
-useEventBus(cartItemAddedKey).on(handleCartItemAdded)
+// Client only: the bus is a module singleton and SSR never disposes scopes.
+// A server-side listener would pin every rendered request (heap leak, 2026-10).
+if (import.meta.client) useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
 </script>
 

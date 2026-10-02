@@ -265,8 +265,9 @@ const onCartItemAdded = (payload: { productId: string; choiceId?: string; select
     }, 1500)
 }
 
-// SSR-safe: VueUse useEventBus auto-cleans via tryOnScopeDispose
-useEventBus(cartItemAddedKey).on(onCartItemAdded)
+// Client only: the bus is a module singleton and SSR never disposes scopes.
+// A server-side listener would pin every rendered request (heap leak, 2026-10).
+if (import.meta.client) useEventBus(cartItemAddedKey).on(onCartItemAdded)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
