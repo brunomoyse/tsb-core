@@ -11,7 +11,7 @@
                 type="button"
                 data-testid="floating-cart-bar"
                 data-cart-trigger
-                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-primary-700"
+                class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
                 @click="cartStore.toggleCartVisibility"
             >
                 <div class="flex items-center gap-3 min-w-0">
