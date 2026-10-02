@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RESTAURANT_TZ, getBrusselsParts, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
+import { useBrandPhone } from '#engine/composables/useBrandPhone'
 
 definePageMeta({
     sitemap: { priority: 1, changefreq: 'daily' },
@@ -10,6 +11,7 @@ const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
 const { brand } = useAppConfig()
+const { phoneHref } = useBrandPhone()
 
 const yearsSince = getBrusselsParts().year - brand.foundingYear
 
@@ -329,12 +331,12 @@ useHead({
                 </h3>
                 <p class="text-sm text-neutral-600 mb-4">{{ $t('contact.address') }}</p>
                 <a
-                    href="tel:+32422298888"
-                    :aria-label="`${$t('about.callUs')} +32 4 222 98 88`"
+                    :href="phoneHref"
+                    :aria-label="`${$t('about.callUs')} ${brand.phone}`"
                     class="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white border border-neutral-200 text-sm font-medium text-neutral-900 hover:bg-tsb-four/40 hover:border-neutral-300 transition focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none mb-3"
                 >
                     <svg aria-hidden="true" class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
-                    <span class="tabular-nums">+32 4 222 98 88</span>
+                    <span class="tabular-nums">{{ brand.phone }}</span>
                 </a>
                 <div>
                     <NuxtLinkLocale

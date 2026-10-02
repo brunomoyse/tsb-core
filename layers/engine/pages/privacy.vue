@@ -5,7 +5,7 @@
             <PageTitle>
                 Politique de Confidentialit&eacute;
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">Derni&egrave;re mise &agrave; jour : 02/04/2026</p>
+            <p class="mt-3 text-sm text-neutral-500">Derni&egrave;re mise &agrave; jour : 01/10/2026</p>
         </header>
 
         <!-- Company info -->
@@ -127,10 +127,13 @@
 
                 <h3 class="privacy-subheading">Authentification</h3>
                 <p>
-                    Le Site utilise le protocole OpenID Connect (OIDC). Les jetons d&rsquo;acc&egrave;s sont stock&eacute;s
-                    dans le <code>sessionStorage</code> du navigateur et sont automatiquement supprim&eacute;s &agrave;
-                    la fermeture du navigateur. Sur l&rsquo;Application mobile, les jetons sont stock&eacute;s dans le
-                    <code>localStorage</code>.
+                    Le Site utilise le protocole OpenID Connect (OIDC). Les jetons de connexion (jeton d&rsquo;acc&egrave;s
+                    et jeton d&rsquo;actualisation) sont stock&eacute;s dans le <code>localStorage</code> du navigateur.
+                    Ils y restent, y compris apr&egrave;s la fermeture du navigateur, jusqu&rsquo;&agrave; votre
+                    d&eacute;connexion ou jusqu&rsquo;&agrave; l&rsquo;expiration de votre session, dont la dur&eacute;e
+                    maximale est fix&eacute;e par notre fournisseur d&rsquo;identit&eacute;. Ils ne sont pas transmis sous
+                    forme de cookies. Sur l&rsquo;Application mobile, les jetons sont conserv&eacute;s dans le stockage
+                    s&eacute;curis&eacute; de l&rsquo;appareil (Keychain sur iOS, Keystore sur Android).
                 </p>
 
                 <h3 class="privacy-subheading">Cookie essentiel</h3>

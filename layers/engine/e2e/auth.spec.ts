@@ -19,8 +19,8 @@ import { waitForOtpFromZitadel } from './support/zitadel-otp'
 test.beforeEach(async ({ context, loginAvailable }) => {
   test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally (see the app global-setup)')
   /*
-   * Cookies only — oidc-client-ts keeps PKCE state in sessionStorage that
-   * must survive the Zitadel redirect chain.
+   * Cookies only — oidc-client-ts keeps its PKCE/login state (stateStore) in
+   * localStorage (see useOidc.ts), which must survive the Zitadel redirect chain.
    */
   await context.clearCookies()
 })

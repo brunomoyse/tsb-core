@@ -211,7 +211,7 @@
                 </svg>
             </div>
             <p class="text-lg font-semibold text-neutral-800 mb-1">{{ $t('cart.empty') }}</p>
-            <p class="text-sm text-neutral-400 text-center mb-6">{{ $t('cart.emptyHint', 'Browse the menu to add your favorites') }}</p>
+            <p class="text-sm text-neutral-400 text-center mb-6">{{ $t('cart.emptyHint') }}</p>
             <UiButton to="/menu" size="lg">
                 {{ $t('nav.menu') }}
             </UiButton>

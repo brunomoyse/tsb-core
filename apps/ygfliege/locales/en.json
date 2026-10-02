@@ -422,13 +422,6 @@
     "address": "Rue de la Cathédrale 51, Liège, Belgium",
     "closedTuesday": "Open 7 days a week"
   },
-  "menu": {
-    "allergenNoticeLink": "04 286 68 20"
-  },
-  "orderCompleted": {
-    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at 04 286 68 20.",
-    "restaurantPhone": "04 286 68 20"
-  },
   "composer": {
     "eyebrow": "Build your bowl",
     "title": "Your custom bowl",

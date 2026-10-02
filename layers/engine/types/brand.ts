@@ -4,22 +4,22 @@
 // engine server routes via the `#brand` alias. Non-secret, build-time data.
 
 /**
- * Free extras a customer can tick at checkout. Each is sent on the order as
- * `{ name: <key> }` (sauce also carries its option) and printed as is on the
- * kitchen ticket, so keys are stable identifiers, never display text.
+ * A free extra the customer can attach to an order at checkout (cutlery, condiments).
+ * `name` is what the API, the dashboard and the kitchen receive in `orderExtra[].name`.
  */
-export type OrderExtraKey = 'chopsticks' | 'cutlery' | 'wasabi' | 'ginger' | 'sauce'
-
-export interface OrderExtrasConfig {
-    /** Extras offered at checkout, in display order. */
-    available: OrderExtraKey[]
-    /** Ticked when the customer first reaches checkout with a cart. */
-    preselected?: OrderExtraKey[]
+export interface OrderExtraConfig {
+    name: string
+    /** Ticked on a fresh cart (and re-ticked at checkout when it is category-restricted). */
+    preselected: boolean
+    /** Choices for an extra that has a variant (soy sauce: sweet, salty, both). */
+    options?: string[]
+    /** The option sent when the extra is pre-selected; defaults to the first option. */
+    defaultOption?: string
     /**
-     * Category slugs whose items take no condiments (wasabi, ginger, sauce):
-     * a cart made only of them gets those extras disabled and unticked.
+     * Not offered, and cleared, while every cart item belongs to one of these
+     * category slugs (e.g. no wasabi with a hot-dishes-only cart).
      */
-    condimentFreeCategories?: string[]
+    unavailableWhenCartOnlyIn?: string[]
 }
 
 export interface BrandConfig {
@@ -111,6 +111,9 @@ export interface BrandConfig {
     }
     /** Keys under `faq.questions` to list on the FAQ page, in order. */
     faqQuestions?: string[]
-    /** Checkout extras. Omit to offer chopsticks only, unticked. */
-    orderExtras?: OrderExtrasConfig
+    /**
+     * Free extras offered at checkout, in display order. Anything not listed is
+     * neither shown nor sent: a persisted cart's other entries are dropped on load.
+     */
+    orderExtras: OrderExtraConfig[]
 }

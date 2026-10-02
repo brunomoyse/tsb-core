@@ -238,8 +238,8 @@ import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import { formatPrice } from '#engine/lib/price'
-import { isCondimentFreeCart, normalizeOrderExtras, resolveOrderExtras } from '#engine/lib/orderExtras'
 import { useNotificationsStore } from '#engine/stores/notifications'
+import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { roundToNearest10Cents } from '#engine/utils/money'
 import gql from 'graphql-tag'
 import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
@@ -251,11 +251,11 @@ import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
-const orderExtras = resolveOrderExtras(useAppConfig().brand.orderExtras)
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const { applyDefaults } = useOrderExtras()
 const notifications = useNotificationsStore()
 const {
     subtotal,
@@ -421,7 +421,7 @@ const extractGqlErrorMessage = (err: unknown): string | null => {
 
     // Map known backend error strings to translated messages
     if (raw.includes('minimum order amount for delivery'))
-        return t('checkout.minimumDelivery', { amount: DELIVERY_MINIMUM })
+        return t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM })
     if (raw.includes('ordering is currently unavailable'))
         return t('notify.errors.orderingUnavailable')
     if (raw.includes('not eligible for delivery'))
@@ -490,15 +490,8 @@ onMounted(() => {
         persisted.$hydrate?.({ runHooks: false })
     }
 
-    // Apply the brand's preselected extras once per cart, then keep only what this brand
-    // offers (and no condiments on a condiment-free cart; their checkboxes are disabled).
-    cartStore.orderExtra = normalizeOrderExtras(
-        cartStore.orderExtra,
-        cartStore.orderExtrasInitialized,
-        orderExtras,
-        isCondimentFreeCart(cartStore.products, orderExtras.condimentFreeCategories),
-    )
-    cartStore.orderExtrasInitialized = true
+    // Pre-select the brand's default extras (brand.orderExtras). Extras the cart can't take, such as wasabi on a hot-dishes-only cart, are cleared; CheckoutPaymentExtras disables their checkboxes.
+    applyDefaults()
 
     // If the user is logged in and has an address, pre-fill the cart address
     if (authStore.user?.address && !cartStore.address) {

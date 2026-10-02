@@ -62,7 +62,7 @@
                      ~10k px tall and needs a way to jump. -->
                 <nav
                     v-if="displayedCategories.length > 1"
-                    :aria-label="$t('menu.categoriesNav')"
+                    :aria-label="$t('mkt.menu.categoriesNav')"
                     class="sm:hidden max-w-7xl mx-auto px-4 pb-3"
                 >
                     <div ref="chipRowRef" class="flex gap-2 overflow-x-auto no-scrollbar">
@@ -87,7 +87,7 @@
                 <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
                 <span class="flex-1 truncate">
                     {{ $t('menu.allergenNoticeShort') }}
-                    <a :href="`tel:${brand.phone.replace(/\s/gu, '')}`" class="underline font-medium text-amber-900">{{ $t('menu.allergenNoticeLink') }}</a>
+                    <a :href="telHref(brand.phone)" class="underline font-medium text-amber-900">{{ brand.phone }}</a>
                 </span>
                 <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -247,6 +247,7 @@ import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
 import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { telHref } from '#engine/utils/phone'
 
 const { brand } = useAppConfig()
 const route = useRoute()

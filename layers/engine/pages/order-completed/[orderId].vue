@@ -111,10 +111,10 @@
                 </svg>
                 <span>
                     <template v-if="order.type === 'DELIVERY'">
-                        {{ $t('orderCompleted.estimatedDeliveredTime', 'Estimated delivered time:') }}
+                        {{ $t('orderCompleted.estimatedDeliveredTime') }}
                     </template>
                     <template v-else>
-                        {{ $t('orderCompleted.estimatedReadyTime', 'Estimated ready time:') }}
+                        {{ $t('orderCompleted.estimatedReadyTime') }}
                     </template>
                     <strong>&nbsp;{{ formatEstimatedTime(order.estimatedReadyTime) }}</strong>
                 </span>
@@ -187,7 +187,7 @@
                         </svg>
                         <p>
                             {{ $t('orderCompleted.notConfirmedYet') }}
-                            <a :href="phoneHref" class="font-semibold underline">{{ $t('orderCompleted.restaurantPhone') }}</a>
+                            <a :href="phoneHref" class="font-semibold underline">{{ phoneLabel }}</a>
                         </p>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ const heroImage = orderCompletedImage ?? {
     webp: '/images/tsb-takeaway-bag.webp',
     fallback: '/images/tsb-takeaway-bag.png',
 }
-const { phoneHref } = useBrandPhone()
+const { phoneHref, phoneLabel } = useBrandPhone()
 
 definePageMeta({ public: false })
 

@@ -57,6 +57,12 @@ const PAID_EXTRAS = [
 const isSelected = (key: string) =>
     cartStore.orderExtra?.some(o => o.name === key) ?? false
 
+/*
+ * NOTE: `extra_*` names are filtered by `brand.orderExtras` (cart store afterHydrate and
+ * useOrderExtras.applyDefaults), which drops any name the brand config doesn't list. Add
+ * these names to the brand config before wiring this component into checkout.vue, or the
+ * selection will silently disappear.
+ */
 const toggle = (key: string) => {
     if (!cartStore.orderExtra) cartStore.orderExtra = []
     const idx = cartStore.orderExtra.findIndex(o => o.name === key)

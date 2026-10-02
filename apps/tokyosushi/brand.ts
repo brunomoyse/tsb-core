@@ -39,10 +39,17 @@ export const brand: BrandConfig = {
     showProductCode: true,
     japaneseAccents: true,
     faqQuestions: ['delivery', 'hours', 'halal', 'discount', 'payment', 'allergens', 'invoice', 'freshness', 'parking'],
-    orderExtras: {
-        available: ['chopsticks', 'wasabi', 'ginger', 'sauce'],
-        preselected: ['chopsticks', 'wasabi', 'ginger', 'sauce'],
-        // Hot dishes: no wasabi, ginger or soy sauce when the cart is only these.
-        condimentFreeCategories: ['tokyo-hot'],
-    },
+    // Hot dishes ("tokyo-hot") are not eaten with wasabi, ginger or soy sauce.
+    orderExtras: [
+        { name: 'chopsticks', preselected: true },
+        { name: 'wasabi', preselected: true, unavailableWhenCartOnlyIn: ['tokyo-hot'] },
+        { name: 'ginger', preselected: true, unavailableWhenCartOnlyIn: ['tokyo-hot'] },
+        {
+            name: 'sauce',
+            preselected: true,
+            options: ['sweet', 'salty', 'both'],
+            defaultOption: 'both',
+            unavailableWhenCartOnlyIn: ['tokyo-hot'],
+        },
+    ],
 }

@@ -78,8 +78,6 @@ export interface CartState {
     couponDiscount: number;
     isCartVisible: boolean;
     orderExtra: { name: string; options?: string[]; }[] | null;
-    /* False until checkout has applied the brand's preselected extras to this cart. */
-    orderExtrasInitialized: boolean;
     orderNote: string | null;
     paymentOption: 'ONLINE' | 'CASH';
     preferredReadyTime: string | null;

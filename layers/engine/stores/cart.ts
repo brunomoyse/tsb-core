@@ -1,6 +1,8 @@
 // Stores: cart.ts
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
+import type { OrderExtraConfig } from '#engine/types/brand'
+import { brand } from '#brand/brand'
 import { defineStore } from 'pinia'
 
 export const MAX_ITEM_QUANTITY = 99
@@ -50,23 +52,31 @@ const selectionModifierTotal = (product: Product, selections: ProductChoiceSelec
     return fallbackChoice ? Number(fallbackChoice.priceModifier) : 0
 }
 
+/** The `orderExtra` entry for an extra in its pre-selected form (e.g. soy sauce -> `both`). */
+export const defaultOrderExtra = (extra: OrderExtraConfig): { name: string; options?: string[] } =>
+    extra.options?.length
+        ? { name: extra.name, options: [extra.defaultOption ?? extra.options[0]!] }
+        : { name: extra.name }
+
+// Single source for the initial state and resetState(), so a second order starts exactly like the first.
+const defaultState = (): CartState => ({
+    products: [],
+    isCartVisible: false,
+    collectionOption: 'DELIVERY',
+    couponCode: null,
+    couponDiscount: 0,
+    paymentOption: 'ONLINE',
+    cashPaymentAmount: null,
+    address: null,
+    addressExtra: null,
+    // Only what the brand offers, and only what it pre-ticks.
+    orderExtra: brand.orderExtras.filter((extra) => extra.preselected).map(defaultOrderExtra),
+    orderNote: null,
+    preferredReadyTime: null,
+})
+
 export const useCartStore = defineStore("cart", {
-    state: (): CartState => ({
-        products: [] as CartItem[],
-        isCartVisible: false,
-        collectionOption: 'DELIVERY',
-        couponCode: null,
-        couponDiscount: 0,
-        paymentOption: 'ONLINE',
-        cashPaymentAmount: null,
-        address: null,
-        addressExtra: null,
-        // Brand-specific: checkout fills these from brand.orderExtras (lib/orderExtras.ts).
-        orderExtra: [],
-        orderExtrasInitialized: false,
-        orderNote: null,
-        preferredReadyTime: null,
-    }),
+    state: defaultState,
 
     getters: {
         totalItems(state): number {
@@ -150,19 +160,7 @@ export const useCartStore = defineStore("cart", {
         },
 
         resetState(): void {
-            this.products = [];
-            this.isCartVisible = false;
-            this.collectionOption = 'DELIVERY';
-            this.couponCode = null;
-            this.couponDiscount = 0;
-            this.paymentOption = 'ONLINE';
-            this.cashPaymentAmount = null;
-            this.address = null;
-            this.addressExtra = null;
-            this.orderExtra = [];
-            this.orderExtrasInitialized = false;
-            this.orderNote = null;
-            this.preferredReadyTime = null;
+            this.$patch(defaultState());
         },
 
         toggleCartVisibility(): void {
@@ -199,8 +197,17 @@ export const useCartStore = defineStore("cart", {
          */
         omit: ['isCartVisible'],
         afterHydrate: (ctx) => {
-            const store = ctx.store as { products: CartItem[]; isCartVisible: boolean };
+            const store = ctx.store as {
+                products: CartItem[];
+                isCartVisible: boolean;
+                orderExtra: CartState['orderExtra'];
+            };
             store.isCartVisible = false;
+            // Drop extras this brand doesn't offer (old carts, or entries removed from the UI).
+            if (Array.isArray(store.orderExtra)) {
+                const offered = new Set(brand.orderExtras.map((extra) => extra.name))
+                store.orderExtra = store.orderExtra.filter((extra) => offered.has(extra.name))
+            }
             for (const item of store.products) {
                 if (item.quantity > MAX_ITEM_QUANTITY) item.quantity = MAX_ITEM_QUANTITY;
                 if (item.quantity < 1) item.quantity = 1;

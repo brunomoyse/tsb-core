@@ -422,13 +422,6 @@
     "address": "Rue de la Cathédrale 51, 列日, 比利时",
     "closedTuesday": "每天营业"
   },
-  "menu": {
-    "allergenNoticeLink": "04 286 68 20"
-  },
-  "orderCompleted": {
-    "orderCanceled": "您的订单已被取消。请联系餐厅，电话：04 286 68 20。",
-    "restaurantPhone": "04 286 68 20"
-  },
   "composer": {
     "eyebrow": "自选麻辣烫",
     "title": "您的专属碗",

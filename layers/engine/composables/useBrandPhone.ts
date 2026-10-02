@@ -1,8 +1,8 @@
 import { useAppConfig } from '#imports'
 
 // Tap-to-call link + display form of the brand phone number, so no component
-// hardcodes it. brand.phone is international ("+32 4 222 98 88"); the label is
-// the national form Belgian customers expect ("04 222 98 88").
+// hardcodes it. brand.phone is in international form; the label is the
+// national form Belgian customers expect (leading 0).
 export const useBrandPhone = (): { phoneHref: string; phoneLabel: string } => {
     const { phone } = useAppConfig().brand
     return {

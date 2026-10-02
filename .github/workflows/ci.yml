@@ -21,8 +21,61 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run oxlint
+      - name: Run oxlint, SSR-safety and locale-parity checks
         run: npm run lint
+
+      - name: Run engine unit tests
+        run: node --test layers/engine/utils/*.test.mjs
+
+  typecheck:
+    name: Typecheck (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    # Ratchet: the codebase had never been type-checked, so the baseline is not
+    # zero. The job fails if an app's "error TS" count rises above its baseline.
+    # Baselines should only ever go DOWN: lower the number in the same PR that
+    # fixes errors, and replace this ratchet with a plain `nuxi typecheck` once
+    # an app reaches zero.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: tokyosushi
+            baseline: 231
+          - app: ygfliege
+            baseline: 279
+    env:
+      BASE_URL: https://localhost
+      API_BASE_URL: https://localhost/api/v1
+      S3_BUCKET_URL: https://localhost
+      GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck (ratchet)
+        working-directory: apps/${{ matrix.app }}
+        shell: bash
+        env:
+          BASELINE: ${{ matrix.baseline }}
+        run: |
+          # `nuxi typecheck` exits non-zero while errors exist; the count below is the gate.
+          npx nuxi typecheck > typecheck.log 2>&1 || true
+          cat typecheck.log
+          n=$(grep -c 'error TS' typecheck.log || true)
+          echo "::notice title=typecheck ${{ matrix.app }}::${n} TypeScript errors (baseline ${BASELINE})"
+          if [ "$n" -gt "$BASELINE" ]; then
+            echo "::error::${n} TypeScript errors exceeds the ${{ matrix.app }} baseline of ${BASELINE}. Fix the new errors; do not raise the baseline."
+            exit 1
+          fi
 
   build:
     name: Build (${{ matrix.app }})
