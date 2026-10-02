@@ -308,7 +308,7 @@ const getStatusColorClass = (status: string) => {
                             >
                                 <p class="text-sm text-neutral-800">
                                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                                        <span v-if="i > 0" class="text-neutral-400 mx-1">·</span>
+                                        <span v-if="i > 0" class="text-neutral-400 mx-1" aria-hidden="true">·</span>
                                         <span :class="part.muted ? 'text-neutral-600' : ''">{{ part.text }}</span>
                                     </template>
                                     <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 leading-snug">{{ orderItemChoice(item) }}</span>

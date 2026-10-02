@@ -177,7 +177,7 @@
                             <div class="flex-1 min-w-0 pr-3">
                                 <p class="text-sm font-medium text-neutral-900 truncate">
                                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                                        <span v-if="i > 0" class="text-neutral-400 font-normal mx-1">·</span>
+                                        <span v-if="i > 0" class="text-neutral-400 font-normal mx-1" aria-hidden="true">·</span>
                                         <span :class="part.muted ? 'text-neutral-600 font-normal' : ''">{{ part.text }}</span>
                                     </template>
                                     <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 font-normal leading-snug">{{ orderItemChoice(item) }}</span>
