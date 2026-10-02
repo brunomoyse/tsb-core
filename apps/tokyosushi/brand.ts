@@ -6,6 +6,7 @@ import type { BrandConfig } from '#engine/types/brand'
 export const brand: BrandConfig = {
     name: 'Tokyo Sushi Bar',
     legalName: 'Tokyo Sushi Bar — SRL',
+    legalForm: 'SRL',
     vat: 'BE0772.499.585',
     address: {
         street: 'Rue de la Cathédrale 59',
@@ -29,6 +30,7 @@ export const brand: BrandConfig = {
     foundingYear: 2016,
     administrators: ['Cheng Yanjie', 'Xu Sa', 'Zhu Mengmeng'],
     cuisine: ['Japanese', 'Sushi'],
+    dishesLabel: { fr: 'plats japonais', en: 'Japanese dishes', nl: 'Japanse gerechten', zh: '日本料理' },
     // To book a table, customers phone the restaurant (see the contact page).
     acceptsReservations: true,
     // Square logo for the schema.org `logo` (public/).

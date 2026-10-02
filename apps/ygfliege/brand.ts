@@ -44,6 +44,7 @@ export const brand: BrandConfig = {
     // Brand founded 2003 in Harbin by Yang Guofu; Liège franchise opened 2026.
     foundingYear: 2003,
     cuisine: ['Chinese', 'Malatang'],
+    dishesLabel: { fr: 'malatang et plats chinois', en: 'malatang and Chinese dishes', nl: 'malatang en Chinese gerechten', zh: '麻辣烫和中餐' },
     // Bookings by phone only, as on ygfliege.be.
     acceptsReservations: true,
     // Square logo for the schema.org `logo` (public/).

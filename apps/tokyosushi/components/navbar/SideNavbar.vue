@@ -63,7 +63,6 @@
 
 <script lang="ts" setup>
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
-import Logo from './Logo.vue'
 import NavItem from './NavItem.vue'
 import NavItemButton from './NavItemButton.vue'
 import { computed } from 'vue'

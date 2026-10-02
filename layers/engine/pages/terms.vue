@@ -25,8 +25,8 @@
             <section>
                 <h2 class="terms-heading">1. Objet</h2>
                 <p>
-                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre la SRL {{ brand.name }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
-                    pour la vente de plats japonais en livraison et à emporter. Elles s&rsquo;appliquent à toute
+                    Les présentes Conditions Générales de Vente (CGV) régissent les relations entre {{ legalEntity }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) et ses clients (le &laquo;&nbsp;Client&nbsp;&raquo;)
+                    pour la vente de {{ brand.dishesLabel.fr }} {{ saleChannels }}. Elles s&rsquo;appliquent à toute
                     commande passée en personne, par téléphone ou via le site internet (le
                     &laquo;&nbsp;Site&nbsp;&raquo;).
                 </p>
@@ -249,7 +249,7 @@
             <section>
                 <h2 class="terms-heading">13. Litiges et droit applicable</h2>
                 <p>
-                    Les présentes CGV sont régies par le droit belge. En cas de litige, les tribunaux de Liège sont
+                    Les présentes CGV sont régies par le droit belge. En cas de litige, les tribunaux de {{ brand.address.city }} sont
                     compétents, sauf disposition légale impérative contraire.
                 </p>
             </section>
@@ -283,6 +283,10 @@ const { brand } = useAppConfig()
 // "Belgique" is intentionally hardcoded — this French legal page targets a Belgian entity.
 const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
 const fullAddress = `${streetCityLine}, Belgique`
+
+// The legal form is optional in brand.ts: until it is confirmed the plain trading name is used.
+const legalEntity = brand.legalForm ? `la ${brand.legalForm} ${brand.name}` : brand.name
+const saleChannels = brand.deliveryEnabled === false ? 'à emporter' : 'en livraison et à emporter'
 
 definePageMeta({
     public: true,

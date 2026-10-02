@@ -25,7 +25,7 @@
             <section>
                 <h2 class="privacy-heading">1. Responsable du traitement</h2>
                 <p>
-                    La SRL {{ brand.name }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) est responsable du traitement des
+                    {{ legalEntity }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) est responsable du traitement des
                     donn&eacute;es &agrave; caract&egrave;re personnel collect&eacute;es via le site internet
                     <strong>{{ brand.domain }}</strong> (le &laquo;&nbsp;Site&nbsp;&raquo;) et l&rsquo;application
                     mobile &laquo;&nbsp;{{ brand.name }}&nbsp;&raquo; (l&rsquo;&laquo;&nbsp;Application&nbsp;&raquo;).
@@ -221,6 +221,9 @@ const { brand } = useAppConfig()
 // Belgian entity.
 const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
 const fullAddress = `${streetCityLine}, Belgique`
+
+// The legal form is optional in brand.ts: until it is confirmed the plain trading name is used.
+const legalEntity = brand.legalForm ? `La ${brand.legalForm} ${brand.name}` : brand.name
 
 useJsonLd([
     {

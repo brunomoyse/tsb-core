@@ -102,7 +102,6 @@ import { defineAsyncComponent, ref, watch } from '#imports'
 import CartButton from '#engine/components/cart/CartButton.vue'
 const DeliveryZoneChip = defineAsyncComponent(() => import('#engine/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
-import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import NavIcon from './NavIcon.vue'
 import { computed } from 'vue'

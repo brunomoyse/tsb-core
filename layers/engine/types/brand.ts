@@ -42,6 +42,11 @@ export interface BrandConfig {
      */
     legalName: string
     /**
+     * Legal form as it prefixes the name in running legal text ("la SRL Tokyo Sushi Bar").
+     * Omit until the form is confirmed: the text then uses the plain trading name.
+     */
+    legalForm?: string
+    /**
      * VAT / company registration number. Omit until the real number is known:
      * the legal pages then drop the line rather than publishing a placeholder,
      * which would be a false company identifier on a public site.
@@ -77,6 +82,11 @@ export interface BrandConfig {
     mapsUrl: string
     /** Year the restaurant opened; drives "X years" copy on the homepage. */
     foundingYear: number
+    /**
+     * What the restaurant sells, as it reads in running text ("plats japonais" in the terms of sale).
+     * `fr` is required (the legal pages are French); the other languages are for copy that is translated.
+     */
+    dishesLabel: { fr: string; en?: string; nl?: string; zh?: string }
     /** Legal representatives listed on the terms page. Omit when unconfirmed. */
     administrators?: string[]
     /** schema.org servesCuisine value(s), e.g. ["Japanese", "Sushi"]. */
