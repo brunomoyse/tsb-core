@@ -39,7 +39,13 @@ let proactivelyDisposed = false
  * recycleClient() call (e.g. on resume).
  */
 const disposeClient = () => {
-    wsClient?.dispose()
+    /*
+     * The graphql-ws dispose() awaits any in-flight connect, which rejects with
+     * the raw WebSocket error Event when the network is down (phone waking
+     * up, tab hidden mid-reconnect). The client is being thrown away, so
+     * swallow it instead of surfacing an unhandled rejection in Sentry.
+     */
+    Promise.resolve(wsClient?.dispose()).catch(() => {})
     wsClient = null
     wsClientPromise = null
 }
