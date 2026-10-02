@@ -31,6 +31,8 @@ export const brand: BrandConfig = {
     administrators: ['Cheng Yanjie', 'Xu Sa', 'Zhu Mengmeng'],
     cuisine: ['Japanese', 'Sushi'],
     dishesLabel: { fr: 'plats japonais', en: 'Japanese dishes', nl: 'Japanse gerechten', zh: '日本料理' },
+    // The customer iOS/Android app (tsb-mobile) is Tokyo Sushi's.
+    hasMobileApp: true,
     // To book a table, customers phone the restaurant (see the contact page).
     acceptsReservations: true,
     // Square logo for the schema.org `logo` (public/).

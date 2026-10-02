@@ -58,24 +58,31 @@
             <section>
                 <h2 class="terms-heading">3. Livraison</h2>
 
-                <h3 class="terms-subheading">Zone et frais</h3>
-                <p>
-                    La livraison est assurée dans un rayon limité autour du Restaurant. Les zones desservies et les
-                    frais de livraison applicables sont indiqués sur le Site lors de la commande.
+                <!-- The legal text follows the brand's configured offer: a takeaway-only brand states it, the numbering stays stable. -->
+                <p v-if="!deliveryEnabled">
+                    La livraison n&rsquo;est pas proposée pour le moment&nbsp;; seules les commandes à emporter sont
+                    acceptées.
                 </p>
+                <template v-else>
+                    <h3 class="terms-subheading">Zone et frais</h3>
+                    <p>
+                        La livraison est assurée dans un rayon limité autour du Restaurant. Les zones desservies et les
+                        frais de livraison applicables sont indiqués sur le Site lors de la commande.
+                    </p>
 
-                <h3 class="terms-subheading">Délais</h3>
-                <p>
-                    Le délai indicatif est d&rsquo;environ 45&nbsp;minutes après acceptation de la commande. Ce délai
-                    peut varier selon le volume de commandes, les conditions de circulation ou d&rsquo;autres aléas.
-                </p>
+                    <h3 class="terms-subheading">Délais</h3>
+                    <p>
+                        Le délai indicatif est d&rsquo;environ 45&nbsp;minutes après acceptation de la commande. Ce délai
+                        peut varier selon le volume de commandes, les conditions de circulation ou d&rsquo;autres aléas.
+                    </p>
 
-                <h3 class="terms-subheading">Absence à la livraison</h3>
-                <p>
-                    En cas d&rsquo;absence, la commande est retournée au Restaurant. Le Client peut la récupérer le
-                    jour même. Passé ce délai, la commande est considérée comme perdue et aucun remboursement ne sera
-                    accordé.
-                </p>
+                    <h3 class="terms-subheading">Absence à la livraison</h3>
+                    <p>
+                        En cas d&rsquo;absence, la commande est retournée au Restaurant. Le Client peut la récupérer le
+                        jour même. Passé ce délai, la commande est considérée comme perdue et aucun remboursement ne sera
+                        accordé.
+                    </p>
+                </template>
             </section>
 
             <!-- 4 -->
@@ -117,12 +124,12 @@
                 <h2 class="terms-heading">7. Responsabilité</h2>
                 <p>
                     Le Restaurant garantit la fraîcheur de ses produits. Le Client doit vérifier l&rsquo;état des plats
-                    à la livraison ou au retrait et signaler toute anomalie immédiatement.
+                    {{ deliveryEnabled ? 'à la livraison ou au retrait' : 'au retrait' }} et signaler toute anomalie immédiatement.
                 </p>
                 <p class="mt-2">Le Restaurant ne saurait être tenu responsable&nbsp;:</p>
                 <ul class="terms-list">
                     <li>d&rsquo;une mauvaise utilisation des produits par le Client,</li>
-                    <li>de retards ou impossibilités de livraison liés à un cas de force majeure,</li>
+                    <li>de retards ou impossibilités de {{ deliveryEnabled ? 'livraison' : 'préparation' }} liés à un cas de force majeure,</li>
                     <li>d&rsquo;informations erronées fournies par le Client (adresse, téléphone, etc.).</li>
                 </ul>
                 <p class="mt-2">
@@ -137,7 +144,7 @@
 
                 <h3 class="terms-subheading">Données collectées et finalités</h3>
                 <p>
-                    Le Restaurant collecte le nom, l&rsquo;adresse e-mail, l&rsquo;adresse de livraison et, le cas
+                    Le Restaurant collecte le nom, l&rsquo;adresse e-mail{{ deliveryEnabled ? ', l’adresse de livraison' : '' }} et, le cas
                     échéant, les coordonnées de facturation du Client. Ces données sont traitées pour
                     l&rsquo;exécution des commandes (confirmation, facturation, notification de statut), la
                     récupération de mot de passe et des analyses statistiques internes.
@@ -286,7 +293,9 @@ const fullAddress = `${streetCityLine}, Belgique`
 
 // The legal form is optional in brand.ts: until it is confirmed the plain trading name is used.
 const legalEntity = brand.legalForm ? `la ${brand.legalForm} ${brand.name}` : brand.name
-const saleChannels = brand.deliveryEnabled === false ? 'à emporter' : 'en livraison et à emporter'
+// The legal text follows the brand's configured offer (brand.deliveryEnabled), not the delivery policy the API serves.
+const deliveryEnabled = brand.deliveryEnabled !== false
+const saleChannels = deliveryEnabled ? 'en livraison et à emporter' : 'à emporter'
 
 definePageMeta({
     public: true,

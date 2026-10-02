@@ -63,6 +63,10 @@ export const brand: BrandConfig = {
     // cart is forced to PICKUP (plugins/pickup-only.ts). Flip to true (or
     // remove) when delivery starts.
     deliveryEnabled: false,
+    // True keeps the privacy policy's app passages (push notifications, live activities, device tokens); false drops them.
+    // oxlint-disable-next-line no-warning-comments
+    // TODO(user): confirm whether YGF has a mobile app
+    hasMobileApp: true,
     priceRange: '€€',
     /*
      * `rating` is intentionally omitted: the Liège restaurant has no public

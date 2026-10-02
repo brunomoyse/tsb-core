@@ -110,6 +110,11 @@ export interface BrandConfig {
      */
     deliveryEnabled?: boolean
     /**
+     * Whether the brand publishes a customer mobile app. The privacy policy describes the app (push notifications, live
+     * activities, device tokens) only when it does; a brand without one gets the web-only text.
+     */
+    hasMobileApp: boolean
+    /**
      * Real, publicly verifiable review aggregate. Omit entirely for a brand
      * with no reviews yet — schema.org then drops aggregateRating rather than
      * publishing invented numbers, which would be fabricated review data in

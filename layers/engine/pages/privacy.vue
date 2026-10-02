@@ -27,8 +27,8 @@
                 <p>
                     {{ legalEntity }} (le &laquo;&nbsp;Restaurant&nbsp;&raquo;) est responsable du traitement des
                     donn&eacute;es &agrave; caract&egrave;re personnel collect&eacute;es via le site internet
-                    <strong>{{ brand.domain }}</strong> (le &laquo;&nbsp;Site&nbsp;&raquo;) et l&rsquo;application
-                    mobile &laquo;&nbsp;{{ brand.name }}&nbsp;&raquo; (l&rsquo;&laquo;&nbsp;Application&nbsp;&raquo;).
+                    <strong>{{ brand.domain }}</strong> (le &laquo;&nbsp;Site&nbsp;&raquo;)<template v-if="brand.hasMobileApp"> et l&rsquo;application
+                    mobile &laquo;&nbsp;{{ brand.name }}&nbsp;&raquo; (l&rsquo;&laquo;&nbsp;Application&nbsp;&raquo;)</template>.
                 </p>
             </section>
 
@@ -40,7 +40,7 @@
                     <li><strong>Donn&eacute;es de compte</strong> &mdash; nom, pr&eacute;nom, adresse e-mail, num&eacute;ro de t&eacute;l&eacute;phone.</li>
                     <li><strong>Adresse de livraison</strong> &mdash; rue, num&eacute;ro, code postal, commune.</li>
                     <li><strong>Donn&eacute;es de commande</strong> &mdash; produits command&eacute;s, montant, mode de paiement, statut.</li>
-                    <li><strong>Jeton de notification push</strong> &mdash; identifiant technique de l&rsquo;appareil (iOS ou Android), utilis&eacute; exclusivement pour l&rsquo;envoi de notifications relatives &agrave; vos commandes.</li>
+                    <li v-if="brand.hasMobileApp"><strong>Jeton de notification push</strong> &mdash; identifiant technique de l&rsquo;appareil (iOS ou Android), utilis&eacute; exclusivement pour l&rsquo;envoi de notifications relatives &agrave; vos commandes.</li>
                     <li><strong>Donn&eacute;es d&rsquo;analyse</strong> &mdash; pages visit&eacute;es et &eacute;v&eacute;nements de navigation, collect&eacute;s de mani&egrave;re anonyme via Umami (aucun cookie, aucune donn&eacute;e personnelle).</li>
                 </ul>
                 <p class="mt-2">
@@ -58,12 +58,12 @@
                     <li>Traitement et suivi de vos commandes (confirmation, pr&eacute;paration, livraison).</li>
                     <li>Cr&eacute;ation et gestion de votre compte utilisateur.</li>
                     <li>Envoi d&rsquo;e-mails transactionnels (confirmation de commande, v&eacute;rification de compte).</li>
-                    <li>Envoi de notifications push relatives au statut de vos commandes.</li>
+                    <li v-if="brand.hasMobileApp">Envoi de notifications push relatives au statut de vos commandes.</li>
                 </ul>
 
                 <h3 class="privacy-subheading">Int&eacute;r&ecirc;t l&eacute;gitime</h3>
                 <ul class="privacy-list">
-                    <li>S&eacute;curisation de l&rsquo;Application et pr&eacute;vention des fraudes.</li>
+                    <li>S&eacute;curisation de {{ brand.hasMobileApp ? 'l’Application' : 'du Site' }} et pr&eacute;vention des fraudes.</li>
                     <li>Am&eacute;lioration de nos services.</li>
                 </ul>
 
@@ -83,8 +83,8 @@
                     <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels.</li>
                     <li><strong>Umami</strong> (auto-h&eacute;berg&eacute;, France) &mdash; analyse de fr&eacute;quentation anonyme (sans cookies).</li>
                     <li><strong>OVH</strong> (France) &mdash; h&eacute;bergement du Site et de l&rsquo;API.</li>
-                    <li><strong>Apple APNs</strong> &mdash; acheminement des notifications push iOS.</li>
-                    <li><strong>Google FCM</strong> &mdash; acheminement des notifications push Android.</li>
+                    <li v-if="brand.hasMobileApp"><strong>Apple APNs</strong> &mdash; acheminement des notifications push iOS.</li>
+                    <li v-if="brand.hasMobileApp"><strong>Google FCM</strong> &mdash; acheminement des notifications push Android.</li>
                     <li><strong>Google OAuth</strong> &mdash; authentification (uniquement si le Client choisit cette option).</li>
                     <li><strong>Apple Sign In</strong> &mdash; authentification (uniquement si le Client choisit cette option).</li>
                 </ul>
@@ -96,7 +96,7 @@
             </section>
 
             <!-- 5 -->
-            <section>
+            <section v-if="brand.hasMobileApp">
                 <h2 class="privacy-heading">5. Notifications push</h2>
                 <p>
                     L&rsquo;Application peut envoyer des notifications push pour vous informer du statut de vos
@@ -111,7 +111,7 @@
             </section>
 
             <!-- 6 -->
-            <section>
+            <section v-if="brand.hasMobileApp">
                 <h2 class="privacy-heading">6. Suivi des commandes en temps r&eacute;el</h2>
                 <p>
                     Sur iOS, l&rsquo;Application utilise les Activit&eacute;s en direct (Live Activities) pour afficher
@@ -123,7 +123,7 @@
 
             <!-- 7 -->
             <section>
-                <h2 class="privacy-heading">7. Cookies et stockage local</h2>
+                <h2 class="privacy-heading">{{ 7 - skipped }}. Cookies et stockage local</h2>
 
                 <h3 class="privacy-subheading">Authentification</h3>
                 <p>
@@ -132,8 +132,8 @@
                     Ils y restent, y compris apr&egrave;s la fermeture du navigateur, jusqu&rsquo;&agrave; votre
                     d&eacute;connexion ou jusqu&rsquo;&agrave; l&rsquo;expiration de votre session, dont la dur&eacute;e
                     maximale est fix&eacute;e par notre fournisseur d&rsquo;identit&eacute;. Ils ne sont pas transmis sous
-                    forme de cookies. Sur l&rsquo;Application mobile, les jetons sont conserv&eacute;s dans le stockage
-                    s&eacute;curis&eacute; de l&rsquo;appareil (Keychain sur iOS, Keystore sur Android).
+                    forme de cookies. <template v-if="brand.hasMobileApp">Sur l&rsquo;Application mobile, les jetons sont conserv&eacute;s dans le stockage
+                    s&eacute;curis&eacute; de l&rsquo;appareil (Keychain sur iOS, Keystore sur Android).</template>
                 </p>
 
                 <h3 class="privacy-subheading">Cookie essentiel</h3>
@@ -153,18 +153,18 @@
 
             <!-- 8 -->
             <section>
-                <h2 class="privacy-heading">8. Conservation des donn&eacute;es</h2>
+                <h2 class="privacy-heading">{{ 8 - skipped }}. Conservation des donn&eacute;es</h2>
                 <ul class="privacy-list">
                     <li><strong>Donn&eacute;es de compte</strong> &mdash; conserv&eacute;es tant que votre compte est actif ou jusqu&rsquo;&agrave; demande de suppression.</li>
                     <li><strong>Donn&eacute;es de facturation</strong> &mdash; conserv&eacute;es 7 ans conform&eacute;ment aux obligations comptables belges.</li>
-                    <li><strong>Jetons push</strong> &mdash; supprim&eacute;s lors de la d&eacute;connexion.</li>
+                    <li v-if="brand.hasMobileApp"><strong>Jetons push</strong> &mdash; supprim&eacute;s lors de la d&eacute;connexion.</li>
                     <li><strong>Donn&eacute;es analytiques</strong> &mdash; anonymis&eacute;es apr&egrave;s 12 mois.</li>
                 </ul>
             </section>
 
             <!-- 9 -->
             <section>
-                <h2 class="privacy-heading">9. Vos droits</h2>
+                <h2 class="privacy-heading">{{ 9 - skipped }}. Vos droits</h2>
                 <p>
                     Conform&eacute;ment au RGPD (R&egrave;glement UE 2016/679), vous disposez des droits
                     suivants&nbsp;:
@@ -191,7 +191,7 @@
 
             <!-- 10 -->
             <section>
-                <h2 class="privacy-heading">10. Modifications</h2>
+                <h2 class="privacy-heading">{{ 10 - skipped }}. Modifications</h2>
                 <p>
                     Le Restaurant peut modifier la pr&eacute;sente politique &agrave; tout moment. La date de
                     derni&egrave;re mise &agrave; jour est indiqu&eacute;e en haut de cette page.
@@ -224,6 +224,8 @@ const fullAddress = `${streetCityLine}, Belgique`
 
 // The legal form is optional in brand.ts: until it is confirmed the plain trading name is used.
 const legalEntity = brand.legalForm ? `La ${brand.legalForm} ${brand.name}` : brand.name
+// A brand without a mobile app drops the sections about it (push notifications, live activities), so the later ones are numbered two lower.
+const skipped = brand.hasMobileApp ? 0 : 2
 
 useJsonLd([
     {
