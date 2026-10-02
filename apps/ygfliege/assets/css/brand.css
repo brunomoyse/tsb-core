@@ -3,6 +3,7 @@
    these custom properties exist for ported marketing-page CSS and for values
    utilities can't express (warm borders, eases). */
 :root {
+    --nav-h: 5rem;                       /* height of the fixed mobile navbar (h-20): the menu and the spacer below it follow it */
     /* Primary colors */
     --ygf-orange: #F58220;
     --ygf-orange-light: #FDBA74;
