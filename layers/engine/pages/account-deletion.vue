@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-3xl px-6 py-10">
         <!-- Header -->
         <header class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ygf-orange-text">{{ brand.name }}</p>
+            <p class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ brand.name }}</p>
             <PageTitle class="mt-1">
                 {{ t('accountDeletion.title') }}
             </PageTitle>
@@ -29,7 +29,7 @@
                 <div class="mt-5 rounded-xl border border-neutral-200 bg-neutral-50 p-5 text-center">
                     <a
                         :href="mailtoHref"
-                        class="text-lg font-semibold text-ygf-orange-text underline break-all"
+                        class="text-lg font-semibold text-primary-700 underline break-all"
                     >{{ deletionEmail }}</a>
                 </div>
             </section>

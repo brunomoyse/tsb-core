@@ -54,7 +54,7 @@
                     <button
                         type="button"
                         @click="replaceAddress = true"
-                        class="shrink-0 text-xs font-medium text-ygf-orange-text hover:text-primary-900 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                        class="shrink-0 text-xs font-medium text-primary-700 hover:text-primary-900 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
                     >
                         {{ $t('delivery.modal.change') }}
                     </button>
@@ -80,7 +80,7 @@
                 <div class="flex items-start gap-3">
                     <span
                         class="shrink-0 inline-flex w-7 h-7 items-center justify-center rounded-full"
-                        :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-100 text-ygf-orange-text'"
+                        :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-100 text-primary-700'"
                         aria-hidden="true"
                     >
                         <svg v-if="inZone" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -105,7 +105,7 @@
                             v-if="!inZone"
                             type="button"
                             @click="switchToPickup"
-                            class="mt-3 inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-white border border-primary-200 px-3 py-2 text-xs font-semibold text-ygf-orange-text hover:bg-primary-100 transition-all active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            class="mt-3 inline-flex items-center gap-1.5 min-h-11 rounded-xl bg-white border border-primary-200 px-3 py-2 text-xs font-semibold text-primary-700 hover:bg-primary-100 transition-all active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-3.5 h-3.5" />
                             {{ $t('delivery.modal.switchToPickup') }}

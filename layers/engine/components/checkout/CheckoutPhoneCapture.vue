@@ -27,7 +27,7 @@
                 v-if="isCollapsed"
                 type="button"
                 :aria-label="$t('checkout.phoneCapture.editAria')"
-                class="min-h-11 min-w-11 inline-flex items-center justify-center px-3 -mr-2 text-sm font-medium text-ygf-orange-text hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
+                class="min-h-11 min-w-11 inline-flex items-center justify-center px-3 -mr-2 text-sm font-medium text-primary-700 hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
                 @click="startEditing"
             >
                 {{ $t('checkout.phoneCapture.edit') }}

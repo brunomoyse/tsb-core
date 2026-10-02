@@ -175,8 +175,8 @@ const getStatusColorClass = (status: string) => {
     const map: Record<string,string> = {
         DELIVERED: 'bg-green-50 text-green-800',
         PICKED_UP:  'bg-green-50 text-green-800',
-        CANCELLED: 'bg-primary-50 text-ygf-orange-text',
-        FAILED:    'bg-primary-50 text-ygf-orange-text'
+        CANCELLED: 'bg-primary-50 text-primary-700',
+        FAILED:    'bg-primary-50 text-primary-700'
     }
     return map[status] || 'bg-neutral-100 text-neutral-600'
 }
@@ -243,7 +243,7 @@ const getStatusColorClass = (status: string) => {
                             </h3>
                             <span
                                 class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
-                                :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-ygf-orange-text bg-tsb-four'"
+                                :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-primary-700 bg-tsb-four'"
                             >
                                 {{ getStatus(getTrackedOrder(order).status) }}
                             </span>

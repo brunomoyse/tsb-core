@@ -442,7 +442,7 @@ const updateNotificationPref = async (
                     </span>
                     <button
                         type="button"
-                        class="mt-2 min-h-11 text-sm text-ygf-orange-text hover:text-primary-900 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        class="mt-2 min-h-11 text-sm text-primary-700 hover:text-primary-900 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @click="openAddressModal"
                     >
                         {{ authStore.user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
@@ -543,7 +543,7 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
                         </svg>
                     </div>
-                    <span class="text-sm font-medium text-ygf-orange-text">{{ t('nav.logout') }}</span>
+                    <span class="text-sm font-medium text-primary-700">{{ t('nav.logout') }}</span>
                 </button>
             </div>
 

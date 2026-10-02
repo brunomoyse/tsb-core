@@ -115,7 +115,7 @@ const stateClasses = computed(() => {
         case 'outOfZone':
             return 'bg-primary-50 text-primary-800 border border-primary-200 hover:bg-primary-100'
         case 'pickup':
-            return 'bg-tsb-four text-ygf-orange-text border border-primary-200/60 hover:bg-primary-100'
+            return 'bg-tsb-four text-primary-700 border border-primary-200/60 hover:bg-primary-100'
         default:
             return ''
     }

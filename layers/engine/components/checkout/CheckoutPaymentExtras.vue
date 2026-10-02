@@ -126,7 +126,7 @@
                         id="cash-amount-hint"
                         data-testid="cash-amount-short"
                         aria-live="polite"
-                        class="mt-1.5 text-xs font-medium text-ygf-orange-text"
+                        class="mt-1.5 text-xs font-medium text-primary-700"
                     >
                         {{ $t('checkout.cashAmountTooLow', { total: formatCents(payableCents) }) }}
                     </p>
@@ -135,7 +135,7 @@
                         id="cash-amount-hint"
                         data-testid="cash-amount-change"
                         role="status"
-                        class="mt-1.5 text-xs font-medium text-ygf-success-dark"
+                        class="mt-1.5 text-xs font-medium text-green-800"
                     >
                         {{ $t('checkout.cashChangeDue', { amount: formatCents(cashState.changeCents) }) }}
                     </p>
@@ -332,7 +332,7 @@
         </div>
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
-        <div v-if="!isMinimumReached" class="text-sm text-ygf-orange-text text-center">
+        <div v-if="!isMinimumReached" class="text-sm text-primary-700 text-center">
             {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
         </div>
 

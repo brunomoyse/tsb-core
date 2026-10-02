@@ -6,7 +6,7 @@
         <p class="text-sm text-neutral-600 mt-1 mb-4">
             {{ $t('checkout.extrasDescription', 'Complete your order with some accompaniments') }}
         </p>
-        <p class="text-xs text-ygf-orange-text bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-4 inline-flex items-center gap-2">
+        <p class="text-xs text-primary-700 bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-4 inline-flex items-center gap-2">
             <span class="font-semibold uppercase tracking-wide">{{ $t('checkout.paidExtra', 'Paid extra') }}</span>
             <span>{{ $t('checkout.paidExtrasNotice', 'These extras are billed as products and added to your cart.') }}</span>
         </p>

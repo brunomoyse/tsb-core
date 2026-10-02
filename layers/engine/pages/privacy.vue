@@ -15,7 +15,7 @@
             <p>
                 <template v-if="brand.vat">N&deg; d&rsquo;entreprise : {{ brand.vat }} &middot; </template>T&eacute;l : {{ brand.phone }}
             </p>
-            <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-ygf-orange-text underline">{{ brand.email }}</a></p>
+            <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a></p>
         </section>
 
         <!-- Body -->
@@ -179,13 +179,13 @@
                 </ul>
                 <p class="mt-2">
                     Toute demande peut &ecirc;tre adress&eacute;e par e-mail &agrave;
-                    <a :href="`mailto:${brand.email}`" class="text-ygf-orange-text underline">{{ brand.email }}</a>
+                    <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a>
                     ou par courrier &agrave;&nbsp;: {{ brand.name }}, {{ streetCityLine }}.
                 </p>
                 <p class="mt-2">
                     Vous pouvez &eacute;galement introduire une r&eacute;clamation aupr&egrave;s de
                     l&rsquo;Autorit&eacute; de protection des donn&eacute;es (APD) &mdash;
-                    <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noopener noreferrer" class="text-ygf-orange-text underline">www.autoriteprotectiondonnees.be</a>.
+                    <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noopener noreferrer" class="text-primary-700 underline">www.autoriteprotectiondonnees.be</a>.
                 </p>
             </section>
 

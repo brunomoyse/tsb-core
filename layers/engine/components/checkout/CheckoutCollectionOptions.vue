@@ -41,14 +41,14 @@
                 <span class="whitespace-pre-line">{{ formatAddress(cartStore.address) }}</span>
                 <button
                     @click="openAddressModal"
-                    class="min-h-11 inline-flex items-center self-start mt-2 px-3 -ml-3 text-sm font-medium text-ygf-orange-text hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
+                    class="min-h-11 inline-flex items-center self-start mt-2 px-3 -ml-3 text-sm font-medium text-primary-700 hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-ygf-orange-text font-medium">
+                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-primary-700 font-medium">
                     {{ $t('checkout.notDeliverableArea') }}
                 </p>
-                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-ygf-orange-text font-medium">
+                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-700 font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-600">
@@ -93,7 +93,7 @@
             </p>
 
             <!-- Restaurant closed and no same-day slots -->
-            <p v-else-if="!isOpen && availableFixedSlots.length === 0" class="text-ygf-orange-text font-semibold">
+            <p v-else-if="!isOpen && availableFixedSlots.length === 0" class="text-primary-700 font-semibold">
                 {{ $t('checkout.noRemainingSlotsToday', 'No remaining time slots for today.') }}
             </p>
             <div v-else>

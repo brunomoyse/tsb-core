@@ -35,7 +35,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-            <p class="text-ygf-orange-text font-medium text-sm">
+            <p class="text-primary-700 font-medium text-sm">
                 {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
             </p>
         </div>
@@ -59,7 +59,7 @@
                         <li v-for="err in submitErrors" :key="err.targetId">
                             <button
                                 type="button"
-                                class="text-left text-sm text-ygf-orange-text underline underline-offset-2 decoration-primary-300 hover:text-primary-900 hover:decoration-primary-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded"
+                                class="text-left text-sm text-primary-700 underline underline-offset-2 decoration-primary-300 hover:text-primary-900 hover:decoration-primary-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded"
                                 @click="scrollToValidationTarget(err.targetId)"
                             >
                                 {{ err.message }}

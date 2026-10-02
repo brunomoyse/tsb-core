@@ -174,7 +174,7 @@
                 </p>
                 <p class="mt-2">
                     Toute demande peut être adressée par e-mail à
-                    <a :href="`mailto:${brand.email}`" class="text-ygf-orange-text underline">{{ brand.email }}</a>
+                    <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a>
                     ou par courrier à&nbsp;: {{ brand.name }}, {{ streetCityLine }}. Le
                     Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
                     données (APD).
