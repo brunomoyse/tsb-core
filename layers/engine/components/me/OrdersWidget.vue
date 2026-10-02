@@ -18,7 +18,7 @@
                       aria-hidden="true">注文</span>
                 <NuxtLinkLocale
                     to="/me/orders"
-                    class="text-xs font-medium text-neutral-500 hover:text-primary-500 transition inline-flex items-center gap-1 group"
+                    class="text-xs font-medium text-neutral-600 hover:text-primary-700 transition inline-flex items-center gap-1 group"
                 >
                     {{ $t('me.orders.viewAll') }}
                     <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -91,12 +91,12 @@
                                     <span class="text-sm font-medium text-neutral-800 whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 text-primary-600 whitespace-nowrap shrink-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0">
                                         <span class="w-1.5 h-1.5 rounded-full bg-primary-400 status-pulse" />
                                         {{ getStatus(getTrackedOrder(order).status) }}
                                     </span>
                                 </div>
-                                <p class="mt-0.5 text-xs text-neutral-400 tabular-nums" data-allow-mismatch="text">
+                                <p class="mt-0.5 text-xs text-neutral-600 tabular-nums" data-allow-mismatch="text">
                                     {{ formatDate(order.createdAt) }}
                                 </p>
                             </div>
@@ -133,12 +133,12 @@
                                         <circle cx="12" cy="12" r="10" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
                                     </svg>
-                                    <span class="text-xs font-medium text-amber-700 tabular-nums">~{{ formatReadyTime(getTrackedOrder(order).estimatedReadyTime!) }}</span>
+                                    <span class="text-xs font-medium text-amber-800 tabular-nums">~{{ formatReadyTime(getTrackedOrder(order).estimatedReadyTime!) }}</span>
                                 </div>
 
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80">
-                                    <span class="text-[10px] text-neutral-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <span class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
                                     <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
@@ -149,23 +149,23 @@
                                         class="flex items-baseline gap-2 py-1.5"
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
-                                        <span class="text-neutral-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
+                                        <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-400 truncate leading-tight">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-600 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
+                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
                                         </span>
-                                        <span class="text-xs text-neutral-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
+                                        <span class="text-xs text-neutral-600 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Total -->
                                 <div class="mt-3 pt-2.5 border-t border-neutral-200 flex items-center justify-between">
-                                    <span class="text-xs font-medium text-neutral-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
+                                    <span class="text-xs font-medium text-neutral-600 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
                                     <span class="text-[15px] font-bold text-neutral-900 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 </div>
                             </div>
@@ -232,7 +232,7 @@
                                         {{ getStatus(order.status) }}
                                     </span>
                                 </div>
-                                <p class="mt-0.5 text-xs text-neutral-400 tabular-nums" data-allow-mismatch="text">
+                                <p class="mt-0.5 text-xs text-neutral-600 tabular-nums" data-allow-mismatch="text">
                                     {{ formatDate(order.createdAt) }}
                                 </p>
                             </div>
@@ -260,13 +260,13 @@
                                     v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
                                     class="mb-3 p-3 bg-red-50/70 rounded-lg border border-red-100/80"
                                 >
-                                    <span class="text-[10px] text-red-500 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                                    <span class="text-[10px] text-red-700 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
                                     <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                                 </div>
 
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80">
-                                    <span class="text-[10px] text-neutral-400 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <span class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
                                     <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
@@ -277,30 +277,30 @@
                                         class="flex items-baseline gap-2 py-1.5"
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
-                                        <span class="text-neutral-400 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
+                                        <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
                                         <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-400 truncate leading-tight">
+                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-600 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
                                                 {{ orderItemName(item) }}
                                             </span>
-                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
+                                            <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 text-xs leading-snug">{{ orderItemChoice(item) }}</span>
                                         </span>
-                                        <span class="text-xs text-neutral-500 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
+                                        <span class="text-xs text-neutral-600 tabular-nums flex-shrink-0">{{ formatPrice(item.totalPrice) }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Total -->
                                 <div class="mt-3 pt-2.5 border-t border-neutral-200 flex items-center justify-between">
-                                    <span class="text-xs font-medium text-neutral-400 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
+                                    <span class="text-xs font-medium text-neutral-600 uppercase tracking-wider">{{ $t('me.orders.total') }}</span>
                                     <span class="text-[15px] font-bold text-neutral-900 tabular-nums">{{ formatPrice(order.totalPrice) }}</span>
                                 </div>
 
                                 <!-- Re-order button -->
                                 <button
                                     v-if="isOrderSuccess(order.status)"
-                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary-200 bg-transparent px-4 py-2.5 text-sm font-medium text-primary-500 transition-all duration-300 hover:border-solid hover:border-primary-500 hover:bg-primary-500 hover:text-white"
+                                    class="reorder-btn mt-4 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary-200 bg-transparent px-4 py-2.5 text-sm font-medium text-primary-700 transition-all duration-300 hover:border-solid hover:border-primary hover:bg-primary-600 hover:text-white"
                                     @click="reorder(order)"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -312,7 +312,7 @@
                                 <!-- Download Invoice button -->
                                 <button
                                     v-if="isOrderSuccess(order.status)"
-                                    class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                                    class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                     @click.stop="downloadInvoice(order.id)"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -322,7 +322,7 @@
                                 </button>
 
                                 <!-- Arigatou micro-text -->
-                                <span v-if="japaneseAccents && isOrderSuccess(order.status)" class="block text-right mt-2 text-[10px] text-neutral-300 italic select-none pointer-events-none"
+                                <span v-if="japaneseAccents && isOrderSuccess(order.status)" class="block text-right mt-2 text-[10px] text-neutral-600 italic select-none pointer-events-none"
                                       style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif"
                                       aria-hidden="true">ありがとう</span>
                             </div>
@@ -336,14 +336,14 @@
                     class="group mt-3 w-full rounded-xl border border-dashed border-neutral-300 hover:border-primary-300 bg-white/40 hover:bg-tsb-four/50 py-3 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
                     @click="loadMore"
                 >
-                    <span class="text-xs font-medium text-neutral-400 group-hover:text-primary-500 transition-colors duration-300">
+                    <span class="text-xs font-medium text-neutral-600 group-hover:text-primary-700 transition-colors duration-300">
                         {{ remainingPastCount <= LOAD_STEP
                             ? $t('me.orders.loadMoreLast', { count: remainingPastCount })
                             : $t('me.orders.loadMore', { count: nextPastBatchCount })
                         }}
                     </span>
                     <svg
-                        class="w-3.5 h-3.5 text-neutral-300 group-hover:text-primary-400 transition-all duration-300 group-hover:translate-y-0.5"
+                        class="w-3.5 h-3.5 text-neutral-600 group-hover:text-primary-400 transition-all duration-300 group-hover:translate-y-0.5"
                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -368,7 +368,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-sm text-neutral-500">{{ $t('me.orders.empty') }}</p>
+                <p class="text-sm text-neutral-600">{{ $t('me.orders.empty') }}</p>
             </div>
 
         </div>
@@ -523,8 +523,8 @@ const iconBgClass = (status: string) => {
 }
 
 const iconColorClass = (status: string) => {
-    if (isOrderSuccess(status)) return 'text-emerald-500'
-    if (isOrderFailed(status)) return 'text-amber-500'
+    if (isOrderSuccess(status)) return 'text-emerald-700'
+    if (isOrderFailed(status)) return 'text-amber-800'
     return 'text-primary-400'
 }
 
@@ -536,8 +536,8 @@ const orderBorderClass = (status: string) => {
 
 const statusBadgeClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50 text-emerald-700'
-    if (isOrderFailed(status)) return 'bg-amber-50 text-amber-700'
-    return 'bg-primary-50 text-primary-600'
+    if (isOrderFailed(status)) return 'bg-amber-50 text-amber-800'
+    return 'bg-primary-50 text-primary-700'
 }
 
 // ── Hanko seal helpers ──
@@ -662,7 +662,7 @@ const accordionAfterLeave = (el: Element) => {
 
 /* ── Reorder button focus + icon spin ── */
 .reorder-btn:focus-visible {
-    outline: 2px solid theme('colors.primary.500');
+    outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
 }
 .reorder-btn:hover svg {

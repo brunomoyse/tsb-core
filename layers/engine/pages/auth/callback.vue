@@ -1,9 +1,9 @@
 <template>
     <div class="flex justify-center items-center min-h-[50vh]">
         <div class="text-center">
-            <div v-if="error" class="text-red-600">
+            <div v-if="error" class="text-red-700">
                 <p class="text-lg font-medium">{{ $t('login.callbackError') }}</p>
-                <NuxtLinkLocale to="/auth/login" class="text-primary-500 underline mt-2 inline-block">
+                <NuxtLinkLocale to="/auth/login" class="text-primary-700 underline mt-2 inline-block">
                     {{ $t('login.tryAgain') }}
                 </NuxtLinkLocale>
             </div>

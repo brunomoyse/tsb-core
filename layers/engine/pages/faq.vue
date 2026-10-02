@@ -24,7 +24,7 @@
                 :key="index"
                 class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
             >
-                <summary class="font-semibold text-lg cursor-pointer hover:text-primary-500 transition-colors">
+                <summary class="font-semibold text-lg cursor-pointer hover:text-primary-900 transition-colors">
                     {{ faq.question }}
                 </summary>
                 <!-- Safe: content sourced from i18n translation files, not user input -->
@@ -43,12 +43,13 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.6, changefreq: 'monthly' },
 })
 
 const { t } = useI18n()
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 
 // FAQ data. Each brand lists its own `faq.questions.*` keys in brand.faqQuestions.
 const DEFAULT_QUESTIONS = ['delivery', 'hours', 'payment', 'allergens']
@@ -73,8 +74,8 @@ useJsonLd([
         })),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('faq.breadcrumb'), item: `${config.public.baseUrl}/faq` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('faq.breadcrumb'), item: localizedUrl('/faq') },
     ]),
 ], 'page-jsonld')
 
@@ -84,8 +85,6 @@ useSeoMeta({
     ogTitle: t('faq.schemaTitle'),
     description: t('faq.schemaDescription'),
     ogDescription: t('faq.schemaDescription'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>

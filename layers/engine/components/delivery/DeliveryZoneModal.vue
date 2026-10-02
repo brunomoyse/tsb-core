@@ -20,7 +20,7 @@
                         type="button"
                         @click="close"
                         :aria-label="$t('common.close')"
-                        class="absolute top-3 right-3 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                        class="absolute top-3 right-3 min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-neutral-600 hover:text-neutral-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
@@ -38,7 +38,7 @@
                             </h2>
                             <span v-if="japaneseAccents" class="text-primary-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-neutral-500 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
+                        <p class="text-xs sm:text-sm text-neutral-600 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
                     </header>
 
                     <DeliveryZonePicker
@@ -55,8 +55,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
 import DeliveryZonePicker from '~/components/delivery/DeliveryZonePicker.vue'
+import { ref } from 'vue'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 
 const { japaneseAccents = false } = useAppConfig().brand
@@ -81,10 +82,7 @@ const onBackdropClick = () => {
 }
 
 // Lock body scroll while open
-watch(() => open, (isOpen) => {
-    if (!import.meta.client) return
-    document.body.style.overflow = isOpen ? 'hidden' : ''
-}, { immediate: true })
+useBodyScrollLock(() => open)
 </script>
 
 <style scoped>

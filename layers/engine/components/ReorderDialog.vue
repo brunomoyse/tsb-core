@@ -57,7 +57,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { ref } from 'vue'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useReorder } from '#engine/composables/useReorder'
 
@@ -71,7 +72,7 @@ import { useReorder } from '#engine/composables/useReorder'
  */
 const {
     primaryClass = 'bg-neutral-900 text-white hover:bg-neutral-700 focus-visible:ring-neutral-900',
-    secondaryClass = 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200 focus-visible:ring-neutral-400',
+    secondaryClass = 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200 focus-visible:ring-ring focus-visible:ring-offset-2',
 } = defineProps<{
     primaryClass?: string
     secondaryClass?: string
@@ -82,23 +83,5 @@ const { prompt, resolve } = useReorder()
 const dialogRef = ref<HTMLElement | null>(null)
 useFocusTrap(dialogRef)
 
-// The page's own overflow value is saved on open and put back on close (and on unmount), not blanked: something else may have set it.
-let previousOverflow: string | null = null
-const restoreScroll = () => {
-    if (previousOverflow === null) return
-    document.body.style.overflow = previousOverflow
-    previousOverflow = null
-}
-watch(prompt, (open) => {
-    if (!import.meta.client) return
-    if (open) {
-        if (previousOverflow === null) previousOverflow = document.body.style.overflow
-        document.body.style.overflow = 'hidden'
-    } else {
-        restoreScroll()
-    }
-})
-onBeforeUnmount(() => {
-    if (import.meta.client) restoreScroll()
-})
+useBodyScrollLock(() => Boolean(prompt.value))
 </script>

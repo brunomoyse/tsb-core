@@ -13,8 +13,8 @@
             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
         </svg>
         <!-- Clear button (only shown if there's text) -->
-        <button v-if="modelValue" :aria-label="$t('nav.clearSearch')" class="absolute right-0 top-1/2 flex h-11 w-11 transform -translate-y-1/2 items-center justify-center rounded-2xl text-neutral-500
-             hover:text-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring" type="button" @click="onClear">
+        <button v-if="modelValue" :aria-label="$t('nav.clearSearch')" class="absolute right-0 top-1/2 flex h-11 w-11 transform -translate-y-1/2 items-center justify-center rounded-2xl text-neutral-600
+             hover:text-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" type="button" @click="onClear">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                  stroke-width="2" viewBox="0 0 24 24">
                 <path d="M6 18L18 6M6 6l12 12"/>

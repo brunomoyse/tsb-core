@@ -97,7 +97,7 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
     const asyncData = await useGqlQuery<ConfigResponse>(
         RESTAURANT_CONFIG_QUERY,
         {},
-        { immediate: true, cache: false, ...(options.lazy ? { lazy: true } : {}) }
+        { immediate: true, cache: false, dedupe: 'defer', ...(options.lazy ? { lazy: true } : {}) }
     )
     const { data, refresh, pending, error } = asyncData
     dataRef = data as unknown as Ref<ConfigResponse | null>

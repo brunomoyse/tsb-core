@@ -20,7 +20,7 @@ html {
     --primary-foreground: 0 0% 100%;
     --primary-hover: 0 73.7% 41.8%;      /* red-700 */
     --primary-soft: 0 100% 96.9%;        /* tsb-four */
-    --ring: 0 93.5% 81.8%;               /* red-300 */
+    --ring: 0 72.2% 50.6%;                /* red-600: focus ring, 4.8:1 on white and >= 4.07:1 on the tsb surfaces (WCAG 1.4.11) */
     /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
     --side-rail-width: 142px;
     --destructive: 0 72.2% 50.6%;

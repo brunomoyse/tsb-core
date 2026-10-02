@@ -14,10 +14,10 @@
                     type="button"
                     :data-testid="`cart-line-issue-action-${action}`"
                     :class="[
-                        'min-h-9 rounded-md px-2.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                        'min-h-9 rounded-md px-2.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
                         index === 0
-                            ? 'bg-amber-600 text-white hover:bg-amber-700'
-                            : 'text-amber-900 underline underline-offset-2 hover:text-amber-700',
+                            ? 'bg-amber-700 text-white hover:bg-amber-800'
+                            : 'text-amber-900 underline underline-offset-2 hover:text-amber-800',
                     ]"
                     @click="run(action, view)"
                 >

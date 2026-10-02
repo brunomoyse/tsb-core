@@ -2,11 +2,11 @@
     <div class="mx-auto max-w-3xl px-6 py-10">
         <!-- Header -->
         <header class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-wide text-primary-600">{{ brand.name }}</p>
+            <p class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ brand.name }}</p>
             <PageTitle class="mt-1">
                 {{ t('accountDeletion.title') }}
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">{{ t('accountDeletion.lastUpdated') }}</p>
+            <p class="mt-3 text-sm text-neutral-600">{{ t('accountDeletion.lastUpdated') }}</p>
         </header>
 
         <!-- Body -->
@@ -29,7 +29,7 @@
                 <div class="mt-5 rounded-xl border border-neutral-200 bg-neutral-50 p-5 text-center">
                     <a
                         :href="mailtoHref"
-                        class="text-lg font-semibold text-primary-600 underline break-all"
+                        class="text-lg font-semibold text-primary-700 underline break-all"
                     >{{ deletionEmail }}</a>
                 </div>
             </section>
@@ -58,19 +58,20 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-400">
+        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
             <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     public: true,
     sitemap: { priority: 0.5, changefreq: 'yearly' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t, tm, rt } = useI18n()
 const { brand } = useAppConfig()
 
@@ -91,8 +92,8 @@ useJsonLd([
         description: t('schema.accountDeletion.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.accountDeletion'), item: `${config.public.baseUrl}/account-deletion` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.accountDeletion'), item: localizedUrl('/account-deletion') },
     ]),
 ], 'page-jsonld')
 
@@ -102,8 +103,6 @@ useSeoMeta({
     ogTitle: t('schema.accountDeletion.title'),
     description: t('schema.accountDeletion.description'),
     ogDescription: t('schema.accountDeletion.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>

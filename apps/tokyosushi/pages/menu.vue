@@ -8,9 +8,11 @@
         ? 'lg:w-[calc(67vw-71px)]'
         : 'lg:w-[calc(100vw-142px)]'"
         >
+            <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
+            <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
             <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
             <div v-if="isClosed" data-testid="menu-restaurant-closed" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <div class="min-w-0">
@@ -19,7 +21,7 @@
                 </div>
             </div>
             <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="menu-preorder-banner" class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p class="text-amber-900 text-sm font-semibold">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
@@ -37,7 +39,7 @@
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
-                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px]">
+                    <div class="relative flex items-center rounded-2xl bg-tsb-two h-[44px] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-tsb-one">
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
@@ -48,14 +50,14 @@
                             v-model="searchValue"
                             type="search"
                             :placeholder="$t('nav.search')"
-                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-sm"
+                            class="w-full h-full bg-transparent rounded-2xl pl-11 pr-10 outline-none text-base sm:text-sm placeholder-gray-600"
                         />
                         <button
                             type="button"
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
                             :aria-label="$t('nav.clearSearch')"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-600 hover:text-neutral-700 transition-colors rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -70,7 +72,7 @@
                             type="button"
                             @click="toggleFilter('halal')"
                             :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
@@ -88,9 +90,9 @@
                             type="button"
                             @click="toggleFilter('vegetarian')"
                             :aria-pressed="activeFilters.has('vegetarian')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('vegetarian')
-                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200'
+                                ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
                         >
                             <DietIcon
@@ -106,10 +108,10 @@
                             type="button"
                             @click="toggleFilter('spicy')"
                             :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
-                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200'"
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-800 hover:border-red-200'"
                         >
                             <DietIcon
                                 kind="spicy"
@@ -180,7 +182,7 @@
                     {{ $t('menu.allergenNoticeShort') }}
                     <a :href="phoneHref" class="underline font-medium text-amber-900">{{ phoneLabel }}</a>
                 </span>
-                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" :aria-label="$t('common.close')">
+                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2" :aria-label="$t('common.close')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
@@ -211,7 +213,7 @@
             <!-- Products Grid -->
             <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div
-                    v-for="cat in displayedCategories"
+                    v-for="(cat, catIdx) in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
                     class="space-y-4"
@@ -231,11 +233,10 @@
                         class="grid grid-cols-2 gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
                     >
                         <ProductCard
-                            :index="idx"
+                            :index="(cardOffsets[catIdx] ?? 0) + idx"
                             :product="prod"
                             :ordering-disabled="!isCartAddAvailable"
-                            class="min-width-[200px] animate-fade-in-up"
-                            :style="{ animationDelay: `${idx * 50}ms` }"
+                            class="min-width-[200px]"
                             v-for="(prod, idx) in cat.products"
                             @openProductModal="openModal(prod.id)"
                             :key="prod.id"
@@ -243,7 +244,7 @@
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="text-center text-neutral-500 italic">
+                    <div v-else class="text-center text-neutral-600 italic">
                         {{ $t('menu.noProduct') }}
                     </div>
                 </div>
@@ -254,12 +255,12 @@
                 </div>
 
                 <!-- Search No Results -->
-                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
+                <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
                 </div>
 
                 <!-- Filter No Results -->
-                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-neutral-500">
+                <div v-if="!searchValue.trim().length && activeFilters.size > 0 && displayedCategories.length === 0" class="text-center py-12 text-neutral-600">
                     <p class="text-lg">{{ $t('menu.noProduct') }}</p>
                 </div>
             </section>
@@ -295,16 +296,19 @@
 </template>
 
 <script setup lang="ts">
+import { breadcrumbList, useJsonLd } from '#engine/composables/useJsonLd'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.9, changefreq: 'weekly' },
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '#engine/components/cart/SideCart.vue'
@@ -317,7 +321,10 @@ import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
-import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
+import { buildMenuSchema } from '#engine/utils/menuSchema'
+import { inLanguageTag } from '#engine/utils/seoDefaults'
+import { searchFromQuery } from '#engine/utils/menuSearch'
+import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 
 const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
@@ -361,13 +368,8 @@ const closeModal = () => {
     router.push({ query: {} })
 }
 
-// Lock body scroll when modal is open
-watch(() => route.query.product, (val) => {
-    document.body.style.overflow = val ? 'hidden' : ''
-})
-onBeforeUnmount(() => {
-    document.body.style.overflow = ''
-})
+// Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
+useBodyScrollLock(() => Boolean(route.query.product))
 
 /**
  * GraphQL Query
@@ -458,7 +460,8 @@ watch(liveProduct, (val) => {
 /**
  * Refs & Reactive State
  */
-const searchValue = ref('')
+// A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
+const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
 const activeCategory = ref<string>('')
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -558,11 +561,16 @@ const displayedCategories = computed<ProductCategory[]>(() => {
     })).toSorted((a, b) => a.order - b.order)
 })
 
+// Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
+const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))
+
 /**
  * Utility: Update Arrow Visibility
  */
 const updateScrollButtons = () => {
-    const el = scrollContainer.value!
+    // The strip is not rendered while a search is active, which includes a menu opened with ?q=.
+    const el = scrollContainer.value
+    if (!el) return
     canScrollLeft.value = el.scrollLeft > 0
     canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
 }
@@ -571,14 +579,15 @@ const updateScrollButtons = () => {
  * Drag-to-scroll Handlers
  */
 const startDrag = (e: MouseEvent) => {
+    if (!scrollContainer.value) return
     isDragging.value = true
     dragStartX.value = e.pageX
-    scrollStartX.value = scrollContainer.value!.scrollLeft
+    scrollStartX.value = scrollContainer.value.scrollLeft
 }
 const onDrag = (e: MouseEvent) => {
-    if (!isDragging.value) return
+    if (!isDragging.value || !scrollContainer.value) return
     const dx = e.pageX - dragStartX.value
-    scrollContainer.value!.scrollLeft = scrollStartX.value - dx
+    scrollContainer.value.scrollLeft = scrollStartX.value - dx
     updateScrollButtons()
 }
 const stopDrag = () => {
@@ -642,98 +651,32 @@ watch(activeCategory, newVal => {
  * Schema.org Structured Data
  */
 const config = useRuntimeConfig()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
-// Build the Menu graph: Menu -> hasMenuSection[] -> hasMenuItem[]
-const menuSchema = computed(() => {
-    const fallbackImage = {
-        '@type': 'ImageObject',
-        url: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        contentUrl: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-        thumbnail: `${config.public.baseUrl}${PRODUCT_IMAGE_FALLBACK}`,
-    }
-
-    const sections = new Map<string, { id: string, name: string, items: Record<string, unknown>[] }>()
-    for (const product of allProducts.value) {
-        if (!product.category) continue
-        if (!sections.has(product.category.id)) {
-            sections.set(product.category.id, {
-                id: product.category.id,
-                name: product.category.name,
-                items: [],
-            })
-        }
-        const diets: string[] = []
-        if (product.isHalal) diets.push('https://schema.org/HalalDiet')
-        if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
-
-        sections.get(product.category.id)!.items.push({
-            '@type': 'MenuItem',
-            '@id': `${config.public.baseUrl}/menu#${product.id}`,
-            name: product.name,
-            image: product.slug
-                ? {
-                    '@type': 'ImageObject',
-                    url: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                    contentUrl: productImageUrl(config.public.s3bucketUrl, product.slug, 'webp'),
-                    thumbnail: productImageUrl(config.public.s3bucketUrl, product.slug, 'png'),
-                }
-                : fallbackImage,
-            offers: {
-                '@type': 'Offer',
-                price: product.price,
-                priceCurrency: 'EUR',
-                availability: product.isAvailable
-                    ? 'https://schema.org/InStock'
-                    : 'https://schema.org/OutOfStock',
-            },
-            ...(diets.length ? { suitableForDiet: diets } : {}),
-        })
-    }
-
-    return {
-        '@type': 'Menu',
-        '@id': `${config.public.baseUrl}/menu#menu`,
-        name: t('schema.menu.name'),
-        description: t('schema.menu.description'),
-        inLanguage: ['fr-BE', 'en-US', 'zh-CN', 'nl-BE'],
-        hasMenuSection: [...sections.values()].map(section => ({
-            '@type': 'MenuSection',
-            '@id': `${config.public.baseUrl}/menu#section-${section.id}`,
-            name: section.name,
-            hasMenuItem: section.items,
-        })),
-    }
-})
-
-// Breadcrumb schema
-const breadcrumbSchema = computed(() => ({
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-        {
-            '@type': 'ListItem',
-            position: 1,
-            name: t('schema.breadcrumb.home'),
-            item: config.public.baseUrl
-        },
-        {
-            '@type': 'ListItem',
-            position: 2,
-            name: t('schema.breadcrumb.menu'),
-            item: `${config.public.baseUrl}/menu`
-        }
-    ]
-}))
+const localizedUrl = useLocalizedUrl()
 
 watch(allProducts, () => {
+    // Inside the watcher: the language is the current one when the menu (re)loads after a language switch.
+    const menuUrl = localizedUrl('/menu')
     useJsonLd([
         {
             '@type': 'WebPage',
             name: t('schema.menu.title'),
             description: t('schema.menu.description'),
         },
-        breadcrumbSchema.value,
-        menuSchema.value,
+        breadcrumbList([
+            { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+            { name: t('schema.breadcrumb.menu'), item: menuUrl },
+        ]),
+        buildMenuSchema({
+            products: allProducts.value,
+            menuUrl,
+            baseUrl: config.public.baseUrl as string,
+            s3BaseUrl: config.public.s3bucketUrl as string,
+            name: t('schema.menu.name'),
+            description: t('schema.menu.description'),
+            inLanguage: inLanguageTag(locale.value),
+        }),
     ], 'page-jsonld')
 }, { immediate: true })
 
@@ -743,8 +686,6 @@ useSeoMeta({
     ogTitle: t('schema.menu.title'),
     description: t('schema.menu.description'),
     ogDescription: t('schema.menu.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 

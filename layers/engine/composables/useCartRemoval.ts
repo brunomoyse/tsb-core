@@ -1,4 +1,5 @@
 import type { CartItem, Product, ProductChoice, ProductChoiceSelection } from '#engine/types'
+import { type CartLineFocusOptions, useCartLineFocus } from '#engine/composables/useCartLineFocus'
 import { REMOVAL_TOAST_GROUP, nextRemovalBatch, removalToastMessage } from '#engine/utils/cartRemoval'
 import { matchesLine } from '#engine/utils/cartLines'
 import { useCartStore } from '#engine/stores/cart'
@@ -26,8 +27,11 @@ let removedBatch: RemovedLine[] = []
  * product card, quantity going down to 0): the line is removed, and an "X removed, Undo" toast offers
  * to put it back (audit finding M8: only /cart had it, the other surfaces dropped lines silently).
  * Removing several lines in a row keeps every Undo reachable: they merge into one toast (M19).
+ *
+ * A surface that lists the lines passes `focus` (see useCartLineFocus) so that removing a line with the keyboard
+ * does not drop focus on <body>.
  */
-export function useCartRemoval() {
+export function useCartRemoval(focus?: CartLineFocusOptions) {
     const cartStore = useCartStore()
     const notifications = useNotificationsStore()
     const { t } = useI18n()
@@ -83,5 +87,10 @@ export function useCartRemoval() {
         if (line) decrementLine(line)
     }
 
-    return { removeLine, decrementLine, decrementProduct }
+    const { keepFocus } = useCartLineFocus(focus ?? { container: () => null, fallback: () => null })
+    return {
+        removeLine: (item: CartItem): void => { void keepFocus(() => removeLine(item)) },
+        decrementLine: (item: CartItem): void => { void keepFocus(() => decrementLine(item)) },
+        decrementProduct,
+    }
 }

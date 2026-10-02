@@ -10,6 +10,8 @@
     "toTop": "返回顶部",
     "remove": "删除",
     "close": "关闭",
+    "image": "图片",
+    "viewPhoto": "查看{name}的照片",
     "skipToContent": "跳转到主要内容",
     "accept": "接受",
     "acceptCookies": "接受 Cookie",
@@ -17,7 +19,8 @@
     "discard": "放弃",
     "keepEditing": "继续编辑",
     "retry": "重试",
-    "saving": "正在保存…"
+    "saving": "正在保存…",
+    "required": "必填"
   },
   "nav": {
     "home": "首页",
@@ -169,7 +172,11 @@
       "noMatch": "未找到地址。",
       "callHint": "如果找不到您的地址，请随时致电我们：",
       "houseNumberRequired": "必须填写门牌号。",
-      "example": "示例：Rue de Fragnée 12, Liège"
+      "example": "示例：Rue de Fragnée 12, Liège",
+      "clear": "清除地址",
+      "suggestions": "有 {count} 条地址建议可选",
+      "selected": "已选择地址：{address}",
+      "cleared": "地址已清除"
     },
     "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
   },
@@ -332,7 +339,11 @@
     },
     "removedManyUndo": "已移除 {count} 件商品",
     "removeNamed": "从购物车中移除“{name}”",
-    "buttonLabel": "购物车，{count} 件商品"
+    "buttonLabel": "购物车，{count} 件商品",
+    "announce": {
+      "added": "已将{name}加入购物车，共 {count} 件商品，总计 {total}",
+      "quantity": "{name}，数量 {quantity}"
+    }
   },
   "checkout": {
     "title": "结账",
@@ -594,6 +605,9 @@
     "accountDeletion": {
       "title": "删除账户 - __BRAND__",
       "description": "如何申请删除您的 __BRAND__ 账户及个人数据。"
+    },
+    "cart": {
+      "title": "购物车 - __BRAND__"
     }
   },
   "feedback": {
@@ -631,6 +645,7 @@
     "placeholder": "输入优惠码",
     "apply": "应用",
     "remove": "移除",
+    "removed": "优惠码已移除",
     "applied": "优惠码已应用：减 {discount}",
     "invalid": "无效的优惠码",
     "discount": "优惠码折扣",
@@ -727,5 +742,11 @@
   "ordering": {
     "closedPreorder": "我们目前已打烊——现在下单，可预订 {time} 的餐点。",
     "loadFailed": "无法确认当前是否可以下单。"
+  },
+  "orderStatus": {
+    "label": "订单进度",
+    "completed": "已完成",
+    "upcoming": "待进行",
+    "changed": "订单状态：{status}"
   }
 }

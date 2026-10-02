@@ -16,7 +16,6 @@ definePageMeta({
 })
 
 const { t, locale } = useI18n()
-const config = useRuntimeConfig()
 const { brand } = useAppConfig()
 
 // Live ordering status for the hero; lazy so the page renders without waiting
@@ -52,8 +51,6 @@ useSeoMeta({
     ogTitle: t('mkt.seo.home_title'),
     description: t('mkt.seo.home_desc'),
     ogDescription: t('mkt.seo.home_desc'),
-    ogImage: `${config.public.baseUrl}/images/hero/bowl-creative-1000.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -73,7 +70,7 @@ useSeoMeta({
                     <div v-reveal="2" class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                         <NuxtLinkLocale
                             to="/menu"
-                            class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-ygf text-white font-semibold shadow-ygf-md hover:bg-ygf-dark transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             {{ $t('mkt.hero.cta') }}
                         </NuxtLinkLocale>
@@ -83,7 +80,7 @@ useSeoMeta({
                             class="inline-flex items-center gap-2 text-sm font-medium rounded-full px-4 py-2"
                             :class="orderingStatus === 'open'
                                 ? 'bg-emerald-50 text-emerald-700'
-                                : 'bg-ygf-orange-50 text-ygf-orange-700'"
+                                : 'bg-ygf-orange-50 text-ygf-orange-text'"
                         >
                             <span
                                 class="w-2 h-2 rounded-full"
@@ -105,14 +102,21 @@ useSeoMeta({
                         <span class="steam-wisp" style="left: 50%; animation-delay: 1.1s" />
                         <span class="steam-wisp" style="left: 58%; animation-delay: 2.2s" />
                     </div>
+                    <!--
+                        The width is on the <picture> (it is a flex item, so a percentage width on the image alone resolved
+                        to 0 until the file arrived and the hero jumped: audit PR 3.8, P4). `sizes` is what that box really
+                        measures: 72vw up to 448px below lg; 38vw up to the 532px column above (the 1400w file is never needed).
+                    -->
                     <MktPicture
                         src="/images/hero/bowl-creative"
                         :widths="[640, 1000, 1400]"
                         :fallback-width="1000"
+                        :fallback-height="1299"
                         :alt="$t('mkt.hero.bowl_alt')"
-                        sizes="(min-width: 1024px) 38vw, 72vw"
+                        sizes="(min-width: 1024px) min(38vw, 532px), min(72vw, 448px)"
                         eager
-                        img-class="w-full max-w-md lg:max-w-xl drop-shadow-2xl"
+                        class="block w-[72vw] max-w-md lg:w-[38vw] lg:max-w-xl"
+                        img-class="w-full drop-shadow-2xl"
                     />
                 </div>
             </div>
@@ -121,7 +125,7 @@ useSeoMeta({
         <!-- ── Signature broths: interactive selector ── -->
         <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
             <div v-reveal class="text-center mb-10">
-                <span class="text-ygf text-sm font-semibold uppercase tracking-widest">{{ $t('mkt.broths.label') }}</span>
+                <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{ $t('mkt.broths.label') }}</span>
                 <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black mt-2">{{ $t('mkt.broths.title') }}</h2>
                 <p class="mt-3 text-gray-600 max-w-2xl mx-auto">{{ $t('mkt.broths.subtitle') }}</p>
             </div>
@@ -136,18 +140,19 @@ useSeoMeta({
                         src="/images/about/herbs-grid"
                         :widths="[640, 1080, 1600]"
                         :fallback-width="1080"
+                        :fallback-height="720"
                         :alt="$t('mkt.concept.broth_story.title')"
                         sizes="(min-width: 1024px) 48vw, 92vw"
                         img-class="w-full rounded-ygf-lg shadow-ygf-lg"
                     />
                 </div>
                 <div v-reveal="1">
-                    <span class="text-ygf text-sm font-semibold uppercase tracking-widest">{{ $t('mkt.home.broth_hero.label') }}</span>
+                    <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{ $t('mkt.home.broth_hero.label') }}</span>
                     <h2 class="font-display font-bold text-3xl text-ygf-black mt-2 mb-1">{{ $t('mkt.concept.broth_story.title') }}</h2>
-                    <p class="font-serifzh text-lg text-ygf-dark mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }} · {{ $t('mkt.home.broth_hero.translit') }}</p>
+                    <p class="font-serifzh text-lg text-ygf-orange-text mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }} · {{ $t('mkt.home.broth_hero.translit') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p1') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-5">{{ $t('mkt.concept.broth_story.p2') }}</p>
-                    <NuxtLinkLocale to="/concept" class="inline-flex items-center gap-1.5 font-semibold text-ygf hover:text-ygf-dark transition-colors">
+                    <NuxtLinkLocale to="/concept" class="inline-flex items-center gap-1.5 font-semibold text-ygf-orange-text hover:text-ygf-orange-900 transition-colors">
                         {{ $t('mkt.home.broth_hero.cta') }}
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </NuxtLinkLocale>
@@ -169,7 +174,7 @@ useSeoMeta({
 
         <!-- ── Why Yangguofu ── -->
         <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-            <p v-reveal class="text-center font-serifzh text-ygf-dark mb-2">{{ $t('mkt.home.stats.slogan') }}</p>
+            <p v-reveal class="text-center font-serifzh text-ygf-orange-text mb-2">{{ $t('mkt.home.stats.slogan') }}</p>
             <h2 v-reveal="1" class="text-center font-display font-bold text-3xl sm:text-4xl text-ygf-black mb-10">{{ $t('mkt.home.why.title') }}</h2>
             <div class="grid gap-6 sm:grid-cols-3">
                 <article
@@ -196,14 +201,14 @@ useSeoMeta({
         </section>
 
         <!-- ── CTA + address ── -->
-        <section class="bg-ygf">
+        <section class="bg-primary-600">
             <div v-reveal class="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
                 <h2 class="font-display font-bold text-3xl sm:text-4xl text-white">{{ $t('mkt.cta.title') }}</h2>
-                <p class="mt-3 text-white/85">{{ $t('mkt.cta.subtitle') }}</p>
-                <p class="mt-1 text-white/70 text-sm">{{ $t('contact.address') }}</p>
+                <p class="mt-3 text-white">{{ $t('mkt.cta.subtitle') }}</p>
+                <p class="mt-1 text-white text-sm">{{ $t('contact.address') }}</p>
                 <NuxtLinkLocale
                     to="/menu"
-                    class="mt-8 inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-white text-ygf font-semibold hover:bg-ygf-orange-50 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    class="mt-8 inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-white text-ygf-orange-text font-semibold hover:bg-ygf-orange-50 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                     {{ $t('mkt.cta.button') }}
                 </NuxtLinkLocale>

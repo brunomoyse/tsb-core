@@ -1,5 +1,5 @@
 <template>
-    <nav class="sm:hidden bg-white text-neutral-700 fixed z-50 h-20 w-full">
+    <nav ref="navRef" @keydown.esc.capture="onEscape" class="sm:hidden bg-white text-neutral-700 fixed z-50 h-20 w-full">
         <div class="relative px-4 flex items-center h-full mx-auto">
             <!-- Mobile Logo -->
             <div class="flex items-center shrink-0">
@@ -32,11 +32,12 @@
                 <!-- Hamburger Menu -->
                 <div class="flex flex-col items-center ml-6">
                     <button
+                        ref="hamburgerRef"
                         type="button"
                         :aria-label="$t('nav.toggleMenu')"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
-                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        class="hamburger inline-flex h-11 w-11 items-center justify-center cursor-pointer rounded-xl border border-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         :class="{ 'hamburger-active': isMenuOpen }"
                         @click="toggleMenu"
                     >
@@ -47,6 +48,8 @@
 
                     <!-- Mobile Sidebar Menu (same entries as the desktop sidebar) -->
                     <div id="mobile-menu"
+                         ref="menuRef"
+                         :inert="!isMenuOpen"
                          :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
                          class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto bg-tsb-two">
 
@@ -105,8 +108,10 @@ import NavIcon from './NavIcon.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
+import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
-import { useMounted } from '@vueuse/core'
+import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { useMediaQuery, useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { visibleNavItems } from './navItems'
 
@@ -136,13 +141,40 @@ const closeMenu = () => {
     isMenuOpen.value = false
 }
 
-// Toggle body overflow based on menu state
-watch(isMenuOpen, (open) => {
-    if (open) {
-        document.body.classList.add('overflow-hidden')
-    } else {
-        document.body.classList.remove('overflow-hidden')
-    }
+// The open menu is a modal overlay: the page cannot scroll behind it, and Tab stays inside the header and the menu.
+useBodyScrollLock(isMenuOpen)
+
+const navRef = ref<HTMLElement | null>(null)
+const hamburgerRef = ref<HTMLElement | null>(null)
+const menuRef = ref<HTMLElement | null>(null)
+
+useFocusTrap(computed(() => (isMenuOpen.value ? navRef.value : null)), {
+    // First link of the menu; the menu stops being inert in the same render, so this runs once it is reachable.
+    initialFocus: () => menuRef.value?.querySelector<HTMLElement>('a[href]'),
+    // Back to the hamburger, unless the cart sheet took over (it manages its own focus).
+    returnFocus: () => (cartStore.isCartVisible ? false : hamburgerRef.value),
+})
+
+// Escape closes the menu, except while the language dropdown is open: it closes itself first (read in the capture phase, before it does).
+const onEscape = (event: KeyboardEvent) => {
+    if (!isMenuOpen.value) return
+    const target = event.target as HTMLElement | null
+    if (target?.closest('[role="listbox"]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
+    closeMenu()
+}
+
+/*
+ * `.mobile-only` hides this whole navbar from 641px up (rotating a phone to landscape): the hamburger is gone, so an open menu
+ * must close or its scroll lock would stay on a page nobody can unlock.
+ */
+const isWide = useMediaQuery('(min-width: 641px)')
+watch(isWide, (wide) => {
+    if (wide) closeMenu()
+})
+
+// Opening the cart from the header hands the screen over to the cart sheet.
+watch(() => cartStore.isCartVisible, (visible) => {
+    if (visible) closeMenu()
 })
 </script>
 
@@ -208,18 +240,21 @@ watch(isMenuOpen, (open) => {
     z-index: 40;
 }
 
+/* visibility flips only after the fade-out, so the animation stays and the closed menu is never focusable or read aloud. */
 .menu-closed {
     opacity: 0;
     transform: translateY(-20px);
     pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s linear 0.4s;
 }
 
 .menu-open {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    visibility: visible;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
 }
 
 .menu-closed li {

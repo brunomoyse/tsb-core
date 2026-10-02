@@ -1,7 +1,7 @@
 <template>
     <li ref="rootRef" class="relative">
         <!-- Language Icon Button -->
-        <button type="button" data-testid="language-picker" class="min-h-11 min-w-11 w-11 h-11 bg-white border border-ygf-orange-100 flex items-center justify-center rounded-full hover:bg-ygf-orange-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+        <button type="button" data-testid="language-picker" class="min-h-11 min-w-11 w-11 h-11 bg-white border border-ygf-orange-100 flex items-center justify-center rounded-full hover:bg-ygf-orange-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :aria-expanded="showDropdown"
               :aria-label="tooltipText"
               aria-haspopup="listbox"

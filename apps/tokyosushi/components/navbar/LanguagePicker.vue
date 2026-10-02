@@ -5,19 +5,19 @@
             type="button"
             data-testid="language-picker"
             :class="variant === 'rail'
-                ? 'relative group w-[50px] h-[50px] bg-white text-neutral-900 flex flex-col items-center justify-center gap-0.5 rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-                : 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium text-neutral-700 hover:bg-tsb-four/40 transition-colors duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'"
+                ? 'relative group w-[50px] h-[50px] bg-white text-neutral-900 flex flex-col items-center justify-center gap-0.5 rounded-full hover:shadow-md transition-shadow overflow-visible cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+                : 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium text-neutral-700 hover:bg-tsb-four/40 transition-colors duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'"
             :aria-expanded="showDropdown"
             :aria-label="`${$t('nav.language')} (${$t('nav.currentLanguage', { language: current.label })})`"
             aria-haspopup="listbox"
             @click.stop="toggleDropdown"
             @keydown.escape="hideDropdown()"
         >
-            <NavIcon src="/icons/translate-icon.svg" :class="variant === 'rail' ? 'h-5 w-5' : 'h-5 w-5 text-neutral-500'" />
+            <NavIcon src="/icons/translate-icon.svg" :class="variant === 'rail' ? 'h-5 w-5' : 'h-5 w-5 text-neutral-600'" />
             <span v-if="variant === 'rail'" class="text-[10px] font-semibold leading-none">{{ current.short }}</span>
             <template v-else>
                 <span>{{ current.label }}</span>
-                <svg class="h-4 w-4 text-neutral-400 transition-transform duration-300" :class="{ 'rotate-180': showDropdown }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="h-4 w-4 text-neutral-600 transition-transform duration-300" :class="{ 'rotate-180': showDropdown }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </template>

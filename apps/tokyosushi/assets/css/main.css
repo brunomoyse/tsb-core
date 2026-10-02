@@ -108,12 +108,18 @@ input::-webkit-inner-spin-button {
     margin: 0;
 }
 
-/* iOS-only: prevent WKWebView/Safari auto-zoom on focus by enforcing 16px font-size on form fields */
+/* iOS-only: prevent WKWebView/Safari auto-zoom on focus by enforcing 16px font-size on form fields.
+   !important is deliberate: Tailwind utilities such as `.text-sm` / `.text-xs` on the same element
+   have higher specificity than these element selectors and would otherwise win, so the guard never
+   protected the ~10 small fields per app (audit V1). Do not drop it. Templates should still write
+   `text-base sm:text-sm` on fields so other browsers and a no-@supports fallback render at >= 16px
+   on small screens too. Fields that are deliberately larger (the `text-lg` one-time-code input) opt
+   out: the guard is only meant to lift small text, never to shrink a bigger one. */
 @supports (-webkit-touch-callout: none) {
-    input,
+    input:not(.text-lg),
     textarea,
     select {
-        font-size: 16px;
+        font-size: 16px !important;
     }
 }
 

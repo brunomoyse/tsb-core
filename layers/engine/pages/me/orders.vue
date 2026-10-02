@@ -173,10 +173,10 @@ const accordionAfterLeave = (el: Element) => {
 
 const getStatusColorClass = (status: string) => {
     const map: Record<string,string> = {
-        DELIVERED: 'bg-green-50 text-green-700',
-        PICKED_UP:  'bg-green-50 text-green-700',
-        CANCELLED: 'bg-primary-50 text-primary-600',
-        FAILED:    'bg-primary-50 text-primary-600'
+        DELIVERED: 'bg-green-50 text-green-800',
+        PICKED_UP:  'bg-green-50 text-green-800',
+        CANCELLED: 'bg-primary-50 text-primary-700',
+        FAILED:    'bg-primary-50 text-primary-700'
     }
     return map[status] || 'bg-neutral-100 text-neutral-600'
 }
@@ -188,7 +188,7 @@ const getStatusColorClass = (status: string) => {
         <div class="mb-6 sm:mb-8 bento-cell" style="--delay: 0">
             <NuxtLinkLocale
                 to="/me"
-                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm text-neutral-500 hover:text-primary-500 transition mb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm text-neutral-600 hover:text-primary-700 transition mb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
@@ -202,7 +202,7 @@ const getStatusColorClass = (status: string) => {
 
         <!-- Loading State -->
         <div v-if="orders === null && !ordersFailed" class="bento-cell" style="--delay: 1">
-            <div class="bg-tsb-two rounded-2xl p-8 text-center text-neutral-500 text-sm">
+            <div class="bg-tsb-two rounded-2xl p-8 text-center text-neutral-600 text-sm">
                 {{ $t('me.orders.loading') }}
             </div>
         </div>
@@ -233,7 +233,7 @@ const getStatusColorClass = (status: string) => {
                     :aria-expanded="isExpanded(order.id)"
                     :aria-controls="`order-panel-${order.id}`"
                     :aria-label="$t('me.orders.toggleOrder')"
-                    class="w-full min-h-11 text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                    class="w-full min-h-11 text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="toggleOrder(order.id)"
                 >
                     <div class="flex-1 min-w-0">
@@ -243,12 +243,12 @@ const getStatusColorClass = (status: string) => {
                             </h3>
                             <span
                                 class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
-                                :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-primary-600 bg-tsb-four'"
+                                :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-primary-700 bg-tsb-four'"
                             >
                                 {{ getStatus(getTrackedOrder(order).status) }}
                             </span>
                         </div>
-                        <p class="mt-0.5 text-xs text-neutral-400 tabular-nums">
+                        <p class="mt-0.5 text-xs text-neutral-600 tabular-nums">
                             {{ formatDateTime(order.createdAt, dateLocale.value) }}
                         </p>
                     </div>
@@ -258,7 +258,7 @@ const getStatusColorClass = (status: string) => {
                         </span>
                         <span
                             :class="{ 'rotate-180': isExpanded(order.id) }"
-                            class="text-neutral-400 transition-transform duration-200 flex-shrink-0"
+                            class="text-neutral-600 transition-transform duration-200 flex-shrink-0"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
@@ -289,13 +289,13 @@ const getStatusColorClass = (status: string) => {
                             v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
                             class="mb-3 p-3 bg-primary-50/70 rounded-xl"
                         >
-                            <span class="text-[11px] text-red-500 uppercase tracking-wider">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                            <span class="text-[11px] text-red-700 uppercase tracking-wider">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
                             <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                         </div>
 
                         <!-- Delivery Address -->
                         <div v-if="order.address" class="mb-3 p-3 bg-white/60 rounded-xl">
-                            <span class="text-[11px] text-neutral-500 uppercase tracking-wider">{{ $t('checkout.deliveryAddress') }}</span>
+                            <span class="text-[11px] text-neutral-600 uppercase tracking-wider">{{ $t('checkout.deliveryAddress') }}</span>
                             <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                         </div>
 
@@ -309,20 +309,20 @@ const getStatusColorClass = (status: string) => {
                                 <p class="text-sm text-neutral-800">
                                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
                                         <span v-if="i > 0" class="text-neutral-400 mx-1">·</span>
-                                        <span :class="part.muted ? 'text-neutral-400' : ''">{{ part.text }}</span>
+                                        <span :class="part.muted ? 'text-neutral-600' : ''">{{ part.text }}</span>
                                     </template>
-                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-400 leading-snug">{{ orderItemChoice(item) }}</span>
+                                    <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 leading-snug">{{ orderItemChoice(item) }}</span>
                                 </p>
                                 <div class="flex items-center gap-2 ml-3 flex-shrink-0">
-                                    <span class="text-xs font-medium text-neutral-500 tabular-nums">x{{ item.quantity }}</span>
-                                    <span class="text-xs text-neutral-400 tabular-nums">{{ formatPrice(item.totalPrice) }}</span>
+                                    <span class="text-xs font-medium text-neutral-600 tabular-nums">x{{ item.quantity }}</span>
+                                    <span class="text-xs text-neutral-600 tabular-nums">{{ formatPrice(item.totalPrice) }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Order Footer -->
                         <div class="mt-4 pt-3 border-t border-neutral-200/60 flex items-center justify-between">
-                            <span class="text-xs text-neutral-500">{{ $t('me.orders.total') }}</span>
+                            <span class="text-xs text-neutral-600">{{ $t('me.orders.total') }}</span>
                             <span class="text-sm font-semibold text-neutral-900 tabular-nums">
                                 {{ formatPrice(order.totalPrice) }}
                             </span>
@@ -342,7 +342,7 @@ const getStatusColorClass = (status: string) => {
                         <button
                             v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
                             type="button"
-                            class="mt-2 w-full min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                            class="mt-2 w-full min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                             @click.stop="downloadInvoice(order.id)"
                         >
                             {{ $t('me.orders.downloadInvoice') }}
@@ -355,17 +355,17 @@ const getStatusColorClass = (status: string) => {
             <button
                 v-if="hasMore"
                 type="button"
-                class="load-more-btn group mt-2 w-full min-h-11 rounded-2xl border border-dashed border-neutral-300 hover:border-primary-300 bg-tsb-two/60 hover:bg-tsb-four/50 py-4 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                class="load-more-btn group mt-2 w-full min-h-11 rounded-2xl border border-dashed border-neutral-300 hover:border-primary-300 bg-tsb-two/60 hover:bg-tsb-four/50 py-4 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @click="loadMore"
             >
-                <span class="text-sm font-medium text-neutral-400 group-hover:text-primary-500 transition-colors duration-300">
+                <span class="text-sm font-medium text-neutral-600 group-hover:text-primary-900 transition-colors duration-300">
                     {{ remainingCount <= LOAD_STEP
                         ? $t('me.orders.loadMoreLast', { count: remainingCount })
                         : $t('me.orders.loadMore', { count: nextBatchCount })
                     }}
                 </span>
                 <svg
-                    class="w-4 h-4 text-neutral-300 group-hover:text-primary-400 transition-all duration-300 group-hover:translate-y-0.5"
+                    class="w-4 h-4 text-neutral-600 group-hover:text-primary-900 transition-all duration-300 group-hover:translate-y-0.5"
                     fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                 >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -381,7 +381,7 @@ const getStatusColorClass = (status: string) => {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
                     </svg>
                 </div>
-                <p class="text-sm text-neutral-500">{{ $t('me.orders.empty') }}</p>
+                <p class="text-sm text-neutral-600">{{ $t('me.orders.empty') }}</p>
                 <!-- Subtle chopsticks decoration -->
                 <div class="flex justify-center mt-3" aria-hidden="true">
                     <svg class="w-8 h-6 text-neutral-300/50" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">

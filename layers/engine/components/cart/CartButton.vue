@@ -1,5 +1,5 @@
 <template>
-    <button type="button" data-testid="cart-button" :aria-label="label" :aria-expanded="cartStore.isCartVisible" :aria-controls="cartStore.isCartVisible ? 'cart-mobile' : undefined" class="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    <button type="button" data-testid="cart-button" data-cart-trigger :aria-label="label" :aria-expanded="cartStore.isCartVisible" :aria-controls="cartStore.isCartVisible ? 'cart-mobile' : undefined" class="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="handleToggleCart"
     >
         <!-- Cart Icon -->

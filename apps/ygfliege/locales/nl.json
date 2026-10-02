@@ -103,7 +103,9 @@
       "video": {
         "label": "Vers, op het moment gegaard",
         "title": "Stel je kom samen, wij koken hem vers",
-        "subtitle": "Groenten, tofu, vlees, noedels — kies waar je zin in hebt. Vers gegaard in je bouillon, nooit gefrituurd."
+        "subtitle": "Groenten, tofu, vlees, noedels — kies waar je zin in hebt. Vers gegaard in je bouillon, nooit gefrituurd.",
+        "pause": "Video pauzeren",
+        "play": "Video afspelen"
       },
       "counters": {
         "restaurants": "restaurants wereldwijd",

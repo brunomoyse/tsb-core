@@ -7,7 +7,6 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const config = useRuntimeConfig()
 
 const FAQ_ITEMS = ['spicy', 'what', 'vegan'] as const
 
@@ -17,8 +16,6 @@ useSeoMeta({
     ogTitle: `${t('mkt.concept.title')} - ${t('brandName')}`,
     description: t('mkt.concept.subtitle'),
     ogDescription: t('mkt.concept.subtitle'),
-    ogImage: `${config.public.baseUrl}/images/about/herbs-grid-1080.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -42,6 +39,7 @@ useSeoMeta({
                         src="/images/about/herbs-grid"
                         :widths="[640, 1080, 1600]"
                         :fallback-width="1080"
+                        :fallback-height="720"
                         :alt="$t('mkt.concept.broth_story.title')"
                         sizes="(min-width: 1024px) 48vw, 92vw"
                         img-class="w-full rounded-ygf-lg shadow-ygf-lg"
@@ -49,7 +47,7 @@ useSeoMeta({
                 </div>
                 <div v-reveal="1">
                     <h2 class="font-display font-bold text-3xl text-ygf-black mb-1">{{ $t('mkt.concept.broth_story.title') }}</h2>
-                    <p class="font-serifzh text-lg text-ygf-dark mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }}</p>
+                    <p class="font-serifzh text-lg text-ygf-orange-text mb-4">{{ $t('mkt.concept.broth_story.chinese_title') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p1') }}</p>
                     <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p2') }}</p>
                     <p class="text-gray-600 leading-relaxed">{{ $t('mkt.concept.broth_story.p3') }}</p>
@@ -75,7 +73,7 @@ useSeoMeta({
                 </details>
             </div>
             <p class="text-center mt-8">
-                <NuxtLinkLocale to="/faq" class="text-sm font-medium text-ygf hover:text-ygf-dark transition-colors">
+                <NuxtLinkLocale to="/faq" class="text-sm font-medium text-ygf-orange-text hover:text-ygf-orange-900 transition-colors">
                     {{ $t('faq.title') }} →
                 </NuxtLinkLocale>
             </p>

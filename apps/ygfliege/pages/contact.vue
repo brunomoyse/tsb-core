@@ -1,10 +1,11 @@
 <script setup>
 import { telHref } from '#engine/utils/phone'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.7, changefreq: 'monthly' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
@@ -20,8 +21,8 @@ useJsonLd([
         description: t('schema.contact.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.contact'), item: `${config.public.baseUrl}/contact` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.contact'), item: localizedUrl('/contact') },
     ]),
 ], 'page-jsonld')
 
@@ -31,8 +32,6 @@ useSeoMeta({
     ogTitle: t('schema.contact.title'),
     description: t('schema.contact.description'),
     ogDescription: t('schema.contact.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -43,7 +42,7 @@ useSeoMeta({
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8 bento-cell" style="--delay: 0">
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ $t('contact.title') }}</h1>
-            <p class="mt-2 text-sm sm:text-base text-gray-500 font-light">{{ $t('contact.subtitle') }}</p>
+            <p class="mt-2 text-sm sm:text-base text-neutral-600 font-light">{{ $t('contact.subtitle') }}</p>
             <!-- Decorative noren curtain lines -->
             <div class="flex justify-center items-end gap-1.5 mt-3" aria-hidden="true">
                 <div class="w-px h-3 bg-ygf-orange-300/30 rounded-full" />
@@ -74,7 +73,7 @@ useSeoMeta({
                         :href="googleMapsLink"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="absolute bottom-3 right-3 inline-flex min-h-11 items-center bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        class="absolute bottom-3 right-3 inline-flex min-h-11 items-center bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         {{ $t('contact.viewLargerMap') }}
                         <svg class="w-3 h-3 inline-block ml-1 -mt-px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
@@ -99,7 +98,7 @@ useSeoMeta({
                         :href="googleMapsLink"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-gray-900 hover:text-ygf-orange-600 transition group/link rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-gray-900 hover:text-ygf-orange-900 transition group/link rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         {{ $t('contact.viewLargerMap') }}
                         <svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
@@ -109,7 +108,7 @@ useSeoMeta({
 
             <!-- Phone -->
             <div class="bento-phone bento-cell" style="--delay: 4">
-                <a :href="telHref(brand.phone)" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300">
+                <a :href="telHref(brand.phone)" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                     <div class="bg-ygf-cream rounded-2xl p-6 sm:p-8 h-full flex flex-col hover:bg-ygf-orange-100/40 transition-colors duration-300">
                         <h2 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                             <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
@@ -122,14 +121,14 @@ useSeoMeta({
 
             <!-- Email -->
             <div class="bento-email bento-cell" style="--delay: 5">
-                <a :href="`mailto:${brand.email}`" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300">
+                <a :href="`mailto:${brand.email}`" class="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                     <div class="bg-ygf-cream rounded-2xl p-6 sm:p-8 h-full flex flex-col hover:bg-ygf-orange-100/40 transition-colors duration-300">
                         <h2 class="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-[15px]">
                             <svg aria-hidden="true" class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                             {{ $t('contact.emailTitle') }}
                         </h2>
                         <span class="text-sm text-gray-600 break-all">{{ brand.email }}</span>
-                        <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-amber-700">
+                        <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-amber-800">
                             <svg aria-hidden="true" class="w-4 h-4 shrink-0 mt-px" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
                             <span>{{ $t('contact.reservationNotice') }}</span>
                         </p>
@@ -149,7 +148,7 @@ useSeoMeta({
                             :href="brand.socials.instagram"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <img src="/images/icons/social-instagram.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
                             <span class="text-sm font-medium text-gray-900">Instagram</span>
@@ -158,7 +157,7 @@ useSeoMeta({
                             :href="brand.socials.tiktok"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <img src="/images/icons/social-tiktok.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
                             <span class="text-sm font-medium text-gray-900">TikTok</span>
@@ -167,7 +166,7 @@ useSeoMeta({
                             :href="brand.socials.rednote"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange-300"
+                            class="inline-flex items-center gap-2 min-h-11 pl-1.5 pr-4 rounded-full bg-white hover:bg-ygf-orange-100 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                             <img src="/images/icons/social-rednote.svg" alt="" aria-hidden="true" class="w-8 h-8"/>
                             <span class="text-sm font-medium text-gray-900">RedNote</span>
@@ -248,7 +247,9 @@ useSeoMeta({
     }
 }
 
-/* ── Staggered entrance ── */
+/* ── Staggered entrance ──
+   Transform only: this content is server-rendered, and an opacity animation keeps it out of the paint
+   (and the LCP) until the stylesheet's delay has run (audit PR 3.7, P1). */
 .bento-cell {
     animation: bento-enter 0.5s ease-out both;
     animation-delay: calc(var(--delay, 0) * 80ms);
@@ -256,11 +257,9 @@ useSeoMeta({
 
 @keyframes bento-enter {
     from {
-        opacity: 0;
         transform: translateY(16px) scale(0.97);
     }
     to {
-        opacity: 1;
         transform: translateY(0) scale(1);
     }
 }

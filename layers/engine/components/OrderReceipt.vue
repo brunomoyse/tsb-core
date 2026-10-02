@@ -1,8 +1,8 @@
 <template>
     <section data-testid="order-receipt" :aria-labelledby="titleId">
-        <h3 :id="titleId" class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-3">
+        <h2 :id="titleId" class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-3">
             {{ $t('orderCompleted.receipt.title') }}
-        </h3>
+        </h2>
         <dl class="space-y-1.5 text-sm">
             <div class="flex justify-between gap-4" data-testid="receipt-subtotal">
                 <dt class="opacity-70">{{ $t('cart.subtotal') }}</dt>

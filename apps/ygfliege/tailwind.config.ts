@@ -33,6 +33,9 @@ module.exports = {
                     'red': '#D42B2B',
                     'white': '#FFFFFF',
                     'success': '#2E8B57',
+                    // Success text/fill that passes AA: 5.33:1 on white, 4.65+ on the
+                    // orange tints; #2E8B57 is 4.25 on white.
+                    'success-dark': '#1F7A4A',
                     'error': '#D32F2F',
                     // Warm border tint, same value as --border-default.
                     'border': 'rgba(242, 123, 32, 0.12)',
@@ -96,7 +99,7 @@ module.exports = {
                 },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
+                ring: "hsl(var(--ring) / <alpha-value>)",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 primary: {
@@ -110,7 +113,10 @@ module.exports = {
                     700: '#C2570C',
                     800: '#9A3412',
                     900: '#7C2D12',
-                    DEFAULT: "hsl(var(--primary))",
+                    // Bare `primary` (bg-primary, border-primary, ring-primary) is the
+                    // AA-safe orange: white on #F58220 is 2.59:1. The brand orange
+                    // stays `ygf` / --ygf-orange (decor).
+                    DEFAULT: '#C2570C',   // --ygf-orange-on-white
                     foreground: "hsl(var(--primary-foreground))",
                     hover: '#9A3412',
                     soft: '#FFEDD5',
@@ -147,7 +153,9 @@ module.exports = {
                 primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412' },
             },
             textColor: {
-                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412', 800: '#9A3412' },
+                // 700 is the orange text (6.9:1 on cream); 800 is one step darker so
+                // `text-primary-700 hover:text-primary-800` links still react on hover.
+                primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412', 800: '#7C2D12' },
             },
             borderColor: {
                 neutral: {
@@ -199,10 +207,6 @@ module.exports = {
                     "0%, 100%": {transform: "scale(1)"},
                     "50%": {transform: "scale(1.02)"},
                 },
-                "fade-in-up": {
-                    "0%": { opacity: "0", transform: "translateY(12px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
-                },
                 "number-bounce": {
                     "0%": { transform: "scale(1)" },
                     "50%": { transform: "scale(1.3)" },
@@ -236,7 +240,6 @@ module.exports = {
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "cart-flash": "cart-flash 1.5s ease-out forwards",
                 "cart-pulse": "cart-pulse 0.3s ease-in-out",
-                "fade-in-up": "fade-in-up 0.35s ease-out both",
                 "number-bounce": "number-bounce 0.2s ease-out",
                 "shake": "shake 0.4s ease-out",
                 "shimmer": "shimmer 1.5s ease-in-out infinite",

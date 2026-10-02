@@ -1,20 +1,28 @@
 <template>
-    <div class="flex flex-col" :class="cartPageMinHeightClass">
+    <div class="flex flex-col" :class="cartPageMinHeightClass" ref="pageRef">
 
         <!-- ═══ HEADER ═══ -->
         <div class="px-4 pt-5 pb-2 flex items-baseline justify-between">
             <PageTitle>{{ $t('cart.title') }}</PageTitle>
-            <span v-if="cartStore.totalItems > 0" class="text-sm text-neutral-400 font-medium">
+            <span v-if="hasLines" class="text-sm text-neutral-600 font-medium">
                 {{ cartStore.totalItems }} {{ cartStore.totalItems === 1 ? $t('cart.item') : $t('cart.items') }}
             </span>
         </div>
 
+        <!-- The persisted cart exists only in the browser: until mounted (and in the server render) a skeleton stands in, so neither an empty-cart state nor a list is rendered that the client would then contradict. -->
+        <div v-if="!isMounted" aria-hidden="true" class="flex-1 flex flex-col px-4 pb-4 space-y-2 animate-pulse">
+            <div class="h-[88px] rounded-2xl bg-black/5" />
+            <div class="h-[88px] rounded-2xl bg-black/5" />
+            <div class="mt-2 h-[120px] rounded-2xl bg-black/5" />
+        </div>
+
         <!-- ═══ ITEMS LIST ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
+        <div v-if="hasLines" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
                 v-for="(item, lineIndex) in cartStore.products"
                 :key="lineKeys[lineIndex]"
+                data-cart-line
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
@@ -44,16 +52,16 @@
                     <div class="w-[68px] h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden">
                         <picture>
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.avif`"
+                                :srcset="itemImage(item.product).avif"
                                 type="image/avif"
                             />
                             <source
-                                :srcset="`${productImageBase(item.product.slug)}.webp`"
+                                :srcset="itemImage(item.product).webp"
                                 type="image/webp"
                             />
                             <img
                                 ref="itemImageElements"
-                                :src="`${productImageBase(item.product.slug)}.png`"
+                                :src="itemImage(item.product).png"
                                 :alt="item.product.name"
                                 class="w-full h-full object-contain p-1"
                                 width="68"
@@ -67,7 +75,7 @@
                     <!-- INFO + CONTROLS -->
                     <div class="flex-1 min-w-0">
                         <!-- Row 1: Metadata (small, gray, truncated) -->
-                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-neutral-500 truncate leading-tight mb-0.5">
+                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-neutral-600 truncate leading-tight mb-0.5">
                             {{ itemLabelMeta(item) }}
                         </p>
 
@@ -77,11 +85,11 @@
                         </p>
 
                         <!-- Row 3: Choice (red) -->
-                        <p v-if="itemChoice(item)" class="text-xs text-primary-500 mt-0.5 truncate">
+                        <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 truncate">
                             ({{ itemChoice(item) }})
                         </p>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
                         <!-- What the server quote says about this line, with the way out -->
                         <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
@@ -91,7 +99,7 @@
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
                                     {{ formatCents(getItemLineTotalCents(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-600 tabular-nums">
                                     {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                                 </span>
                             </div>
@@ -102,7 +110,7 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)"
@@ -117,7 +125,7 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)"
@@ -133,7 +141,8 @@
                                 <button
                                     type="button"
                                     :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-400 hover:text-primary-500 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                    data-cart-remove
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="handleRemoveItem(item)"
                                 >
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -150,18 +159,18 @@
         </div>
 
         <!-- ═══ ORDER SUMMARY ═══ -->
-        <div v-if="cartStore.products.length > 0" class="px-4 pb-4">
+        <div v-if="hasLines" class="px-4 pb-4">
             <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
-                <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
+                <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.subtotal') }}</span>
                     <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.deliveryFee') }}</span>
-                    <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
+                    <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
@@ -170,15 +179,15 @@
                     </span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
                     <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.onlineFee') }}</span>
                     <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
@@ -188,20 +197,20 @@
                 </div>
             </div>
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
-            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-700 text-center mt-3">
                 <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
-                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg" @click="switchToPickup">
                     {{ $t('delivery.modal.switchToPickup') }}
                 </button>
             </div>
         </div>
 
         <!-- Spacer pushes checkout bar to the bottom -->
-        <div v-if="cartStore.products.length > 0" class="flex-1" />
+        <div v-if="hasLines" class="flex-1" />
 
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
-            v-if="cartStore.products.length > 0"
+            v-if="hasLines"
             ref="checkoutBarRef"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
@@ -216,17 +225,17 @@
                 </span>
                 <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
             </UiButton>
-            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-600">
+            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-800">
                 {{ $t('cart.orderingUnavailable') }}
             </p>
-            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-700">
+            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-800">
                 {{ $t('ordering.closedPreorder', { time: firstSlotLabel }) }}
             </p>
             <div class="safe-area-spacer-bottom" />
         </div>
 
         <!-- ═══ EMPTY STATE ═══ -->
-        <div v-else data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
+        <div v-else-if="isMounted" data-testid="cart-empty" class="flex-1 flex flex-col items-center justify-center px-8">
             <div class="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-5">
                 <svg class="w-9 h-9 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -235,7 +244,7 @@
                 </svg>
             </div>
             <p class="text-lg font-semibold text-neutral-800 mb-1">{{ $t('cart.empty') }}</p>
-            <p class="text-sm text-neutral-400 text-center mb-6">{{ $t('cart.emptyHint') }}</p>
+            <p class="text-sm text-neutral-600 text-center mb-6">{{ $t('cart.emptyHint') }}</p>
             <UiButton to="/menu" size="lg">
                 {{ $t('nav.menu') }}
             </UiButton>
@@ -246,8 +255,10 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
+import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '#brand/data/productPhotos'
 import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
+import { useRuntimeConfig, useSeoMeta } from '#imports'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
@@ -259,9 +270,9 @@ import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
+import { useMounted } from '@vueuse/core'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
-import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { showProductCode = false } = useAppConfig().brand
@@ -270,11 +281,33 @@ definePageMeta({ public: true })
 
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
+// The cart is read from localStorage in the browser only: nothing that depends on it renders before the page is mounted.
+const isMounted = useMounted()
+const hasLines = computed(() => isMounted.value && cartStore.products.length > 0)
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+
+// The page had no title, so the tab, the history and the screen-reader route announcement all said the site name. Private, like checkout: not indexed.
+useSeoMeta({
+    title: () => t('schema.cart.title'),
+    robots: 'noindex,nofollow',
+})
 const { handleProductImageError } = productImage
-const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
+const productImageBase = (id?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, id)
+/*
+ * The same image as every other surface: the official photo of a mapped product (smallest size, the PNG fallback),
+ * otherwise the dashboard upload keyed by product id (audit PR 3.8, P9: this used the slug, so it never found one).
+ */
+const itemImage = (product: { id: string, slug?: string | null }) => {
+    const photo = productPhoto(product.slug)
+    if (photo) {
+        const small = Math.min(...(photo.widths ?? PRODUCT_PHOTO_WIDTHS))
+        return { avif: `${photo.base}-${small}.avif`, webp: `${photo.base}-${small}.webp`, png: `${photo.base}-${photo.fallbackWidth ?? 560}.png` }
+    }
+    const base = productImageBase(product.id)
+    return { avif: `${base}.avif`, webp: `${base}.webp`, png: `${base}.png` }
+}
 const itemImageElements = ref<HTMLImageElement[]>([])
 // Publishes the checkout bar's height so the toasts float above it.
 const checkoutBarRef = ref<HTMLElement | null>(null)
@@ -345,7 +378,12 @@ const itemChoice = (item: CartItem): string | undefined =>
         }).choice
 
 // ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
-const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval()
+// Removing a line with the keyboard keeps focus on the page: on the next line, or on the "menu" link of the empty state.
+const pageRef = ref<HTMLElement | null>(null)
+const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval({
+    container: () => pageRef.value,
+    fallback: () => pageRef.value?.querySelector<HTMLElement>('[data-testid="cart-empty"] a'),
+})
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {

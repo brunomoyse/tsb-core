@@ -357,7 +357,7 @@ const updateNotificationPref = async (
             <PageTitle>
                 {{ authStore.user?.firstName ? `${t('me.greeting')}, ${authStore.user.firstName}` : t('schema.myAccount.title') }}
             </PageTitle>
-            <p class="mt-2 text-sm sm:text-base text-neutral-500 font-light">{{ t('me.subtitle') }}</p>
+            <p class="mt-2 text-sm sm:text-base text-neutral-600 font-light">{{ t('me.subtitle') }}</p>
             <!-- Japanese greeting: ようこそ (welcome) -->
             <p v-if="japaneseAccents" class="mt-1 text-xs text-primary-300/40 tracking-[0.25em]" aria-hidden="true">ようこそ</p>
         </div>
@@ -369,12 +369,12 @@ const updateNotificationPref = async (
             <div class="bento-profile bento-cell" style="--delay: 1">
                 <div class="bg-tsb-two rounded-2xl p-6 sm:p-7 h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4">
-                        <span class="text-xl font-bold text-primary-400">{{ initials }}</span>
+                        <span class="text-xl font-bold text-primary-700">{{ initials }}</span>
                     </div>
                     <h2 class="font-semibold text-neutral-900 text-base">{{ fullName }}</h2>
                     <button
                         type="button"
-                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-neutral-500 hover:text-primary-500 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                        class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-primary-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @click="openModal"
                     >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -393,12 +393,12 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
                         </svg>
                     </div>
-                    <span class="text-xs text-neutral-500 uppercase tracking-wider">{{ t('me.profile.email') }}</span>
+                    <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ t('me.profile.email') }}</span>
                     <span class="text-sm text-neutral-900 mt-1 break-all">{{ authStore.user?.email || '–' }}</span>
 
                     <!-- Email verification status (verified if logged in via Zitadel) -->
                     <div class="mt-2">
-                        <span class="inline-flex items-center gap-1 text-xs text-green-600">
+                        <span class="inline-flex items-center gap-1 text-xs text-green-800">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
@@ -416,15 +416,15 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
                         </svg>
                     </div>
-                    <span class="text-xs text-neutral-500 uppercase tracking-wider">{{ t('me.profile.phoneNumber') }}</span>
+                    <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ t('me.profile.phoneNumber') }}</span>
                     <a
                         v-if="authStore.user?.phoneNumber"
                         :href="`tel:${authStore.user.phoneNumber}`"
-                        class="inline-flex min-h-11 items-center text-sm text-neutral-900 mt-1 hover:text-primary-500 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 rounded-md"
+                        class="inline-flex min-h-11 items-center text-sm text-neutral-900 mt-1 hover:text-primary-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
                     >
                         {{ authStore.user.phoneNumber }}
                     </a>
-                    <span v-else class="text-sm text-neutral-400 mt-1">–</span>
+                    <span v-else class="text-sm text-neutral-600 mt-1">–</span>
                 </div>
             </div>
 
@@ -436,13 +436,13 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 0115 0z"/>
                         </svg>
                     </div>
-                    <span class="text-xs text-neutral-500 uppercase tracking-wider">{{ t('me.profile.address') }}</span>
+                    <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ t('me.profile.address') }}</span>
                     <span v-if="authStore.user?.address" class="text-sm text-neutral-900 mt-1 whitespace-pre-line">
                         {{ formatAddress(authStore.user.address) }}
                     </span>
                     <button
                         type="button"
-                        class="mt-2 min-h-11 text-sm text-primary-500 hover:text-primary-600 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                        class="mt-2 min-h-11 text-sm text-primary-700 hover:text-primary-900 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         @click="openAddressModal"
                     >
                         {{ authStore.user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
@@ -458,7 +458,7 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.093L2.25 6.75"/>
                         </svg>
                     </div>
-                    <span class="text-xs text-neutral-500 uppercase tracking-wider">{{ t('me.notifications.title') }}</span>
+                    <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ t('me.notifications.title') }}</span>
 
                     <!-- Marketing emails -->
                     <div class="mt-3">
@@ -467,8 +467,8 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyMarketing"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
-                                :class="notifyMarketing ? 'bg-primary-400' : 'bg-neutral-200'"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                :class="notifyMarketing ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyMarketing"
                             >
                                 <span
@@ -478,7 +478,7 @@ const updateNotificationPref = async (
                             </button>
                             <span class="text-sm text-neutral-700">{{ t('me.notifications.marketingLabel') }}</span>
                         </div>
-                        <p class="text-xs text-neutral-400 mt-1.5">{{ t('me.notifications.marketingDescription') }}</p>
+                        <p class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.marketingDescription') }}</p>
                     </div>
 
                     <!-- Order tracking emails -->
@@ -488,8 +488,8 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyOrderUpdates"
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
-                                :class="notifyOrderUpdates ? 'bg-primary-400' : 'bg-neutral-200'"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                :class="notifyOrderUpdates ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyOrderUpdates"
                             >
                                 <span
@@ -499,7 +499,7 @@ const updateNotificationPref = async (
                             </button>
                             <span class="text-sm text-neutral-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
                         </div>
-                        <p class="text-xs text-neutral-400 mt-1.5">{{ t('me.notifications.orderUpdatesDescription') }}</p>
+                        <p class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.orderUpdatesDescription') }}</p>
                     </div>
                 </div>
             </div>
@@ -512,16 +512,16 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/>
                         </svg>
                     </div>
-                    <span class="text-xs text-neutral-500 uppercase tracking-wider">{{ t('nav.language') }}</span>
+                    <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ t('nav.language') }}</span>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <NuxtLink
                             v-for="lang in languages"
                             :key="lang.code"
                             :to="switchLocalePath(lang.code)"
                             :class="[
-                                'inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300',
+                                'inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                                 locale === lang.code
-                                    ? 'bg-primary-500 text-white font-medium'
+                                    ? 'bg-primary-600 text-white font-medium'
                                     : 'bg-white text-neutral-600 hover:bg-neutral-100'
                             ]"
                         >
@@ -535,7 +535,7 @@ const updateNotificationPref = async (
             <div class="bento-logout bento-cell self-start" style="--delay: 9">
                 <button
                     type="button"
-                    class="bg-tsb-two rounded-2xl p-6 w-full flex flex-col text-left hover:bg-primary-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                    class="bg-tsb-two rounded-2xl p-6 w-full flex flex-col text-left hover:bg-primary-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="handleLogout"
                 >
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mb-3">
@@ -543,7 +543,7 @@ const updateNotificationPref = async (
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
                         </svg>
                     </div>
-                    <span class="text-sm font-medium text-primary-500">{{ t('nav.logout') }}</span>
+                    <span class="text-sm font-medium text-primary-700">{{ t('nav.logout') }}</span>
                 </button>
             </div>
 
@@ -558,7 +558,7 @@ const updateNotificationPref = async (
         <div class="mt-8 text-center bento-cell" style="--delay: 11">
             <button
                 type="button"
-                class="inline-flex min-h-11 items-center text-xs text-neutral-400 hover:text-primary-500 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                class="inline-flex min-h-11 items-center text-xs text-neutral-600 hover:text-primary-700 transition rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @click="openDeleteModal"
             >
                 {{ t('me.profile.deleteAccount') }}
@@ -614,7 +614,7 @@ const updateNotificationPref = async (
                         <input
                             v-model="acceptDelete"
                             type="checkbox"
-                            class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-2 focus:ring-primary-300"
+                            class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         >
                         <span class="text-sm text-neutral-600">{{ t('me.profile.deleteConfirmCheckbox') }}</span>
                     </label>
@@ -622,7 +622,7 @@ const updateNotificationPref = async (
                     <p class="text-center mb-5">
                         <NuxtLinkLocale
                             to="/account-deletion"
-                            class="text-xs text-neutral-400 underline hover:text-neutral-600 transition"
+                            class="text-xs text-neutral-600 underline hover:text-neutral-600 transition"
                         >
                             {{ t('me.profile.deleteLearnMore') }}
                         </NuxtLinkLocale>

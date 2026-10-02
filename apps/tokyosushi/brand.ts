@@ -28,8 +28,21 @@ export const brand: BrandConfig = {
     mapsUrl: 'https://maps.app.goo.gl/XFqBuvzaAPzev7Tn7',
     foundingYear: 2016,
     administrators: ['Cheng Yanjie', 'Xu Sa', 'Zhu Mengmeng'],
-    cuisine: 'Japanese',
-    menuDescription: 'Our menu of fresh sushi, sashimi, and authentic Japanese cuisine',
+    cuisine: ['Japanese', 'Sushi'],
+    // To book a table, customers phone the restaurant (see the contact page).
+    acceptsReservations: true,
+    // Square logo for the schema.org `logo` (public/).
+    logo: '/android-chrome-512x512.png',
+    // Fallback for the JSON-LD only (the live restaurantConfig wins): the hours this site has always published.
+    openingHours: {
+        monday: { open: '12:00', close: '14:30', dinnerOpen: '18:00', dinnerClose: '22:30' },
+        tuesday: null,
+        wednesday: { open: '12:00', close: '14:30', dinnerOpen: '18:00', dinnerClose: '22:30' },
+        thursday: { open: '12:00', close: '14:30', dinnerOpen: '18:00', dinnerClose: '22:30' },
+        friday: { open: '12:00', close: '14:30', dinnerOpen: '18:00', dinnerClose: '22:30' },
+        saturday: { open: '12:00', close: '15:00', dinnerOpen: '18:00', dinnerClose: '23:00' },
+        sunday: { open: '12:00', close: '15:00', dinnerOpen: '18:00', dinnerClose: '23:00' },
+    },
     priceRange: '€€',
     rating: {
         value: 4.7,

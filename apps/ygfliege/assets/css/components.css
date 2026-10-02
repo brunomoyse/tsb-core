@@ -38,6 +38,15 @@
                     opacity var(--duration-normal) var(--ease-out);
     }
 
+    /* Keyboard focus for the shared control primitives. Templates that add their
+       own `focus-visible:ring-*` utilities still win (utilities come later). */
+    .btn:focus-visible,
+    .chip:focus-visible,
+    .stepper-btn:focus-visible {
+        outline: 2px solid var(--ygf-focus);
+        outline-offset: 2px;
+    }
+
     .btn:disabled,
     .btn[aria-disabled="true"] {
         opacity: 0.45;
@@ -168,14 +177,17 @@
                     box-shadow var(--duration-normal) var(--ease-out);
     }
 
+    /* Placeholder text needs 4.5:1 too: #999 is 2.85:1, #666 is 5.74:1. */
     .field::placeholder {
-        color: var(--ygf-gray-400, #999999);
+        color: var(--ygf-gray-600, #666666);
     }
 
+    /* Focus indicator >= 3:1 (WCAG 1.4.11). The old 1px orange border change plus
+       a 12-18% orange glow was ~1.7:1. */
     .field:focus {
-        outline: none;
-        border-color: var(--ygf-orange);
-        box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.18);
+        outline: 2px solid var(--ygf-focus);
+        outline-offset: 1px;
+        border-color: var(--ygf-focus);
     }
 
     .field[aria-invalid="true"] {
@@ -183,7 +195,7 @@
     }
 
     .field[aria-invalid="true"]:focus {
-        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.18);
+        outline-color: var(--ygf-error);
     }
 
     .field:disabled {

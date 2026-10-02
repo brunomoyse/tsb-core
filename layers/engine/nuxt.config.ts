@@ -65,7 +65,6 @@ export default defineNuxtConfig({
         // Absolute paths: `~` in a layer config points at the main app, not here.
         fileURLToPath(new URL('./plugins/api', import.meta.url)),
         fileURLToPath(new URL('./plugins/gqlFetch', import.meta.url)),
-        fileURLToPath(new URL('./plugins/orientation-lock.client', import.meta.url)),
     ],
 
     i18n: {

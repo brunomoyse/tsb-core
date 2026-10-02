@@ -43,12 +43,25 @@ export const brand: BrandConfig = {
     mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Rue%20de%20la%20Cath%C3%A9drale%2051%2C%204000%20Li%C3%A8ge',
     // Brand founded 2003 in Harbin by Yang Guofu; Liège franchise opened 2026.
     foundingYear: 2003,
-    cuisine: 'Chinese',
+    cuisine: ['Chinese', 'Malatang'],
+    // Bookings by phone only, as on ygfliege.be.
+    acceptsReservations: true,
+    // Square logo for the schema.org `logo` (public/).
+    logo: '/icon-512.png',
+    // Fallback for the JSON-LD only (the live restaurantConfig wins): the hours of the ygfliege.be showcase site, 7 days a week.
+    openingHours: {
+        monday: { open: '11:30', close: '22:00' },
+        tuesday: { open: '11:30', close: '22:00' },
+        wednesday: { open: '11:30', close: '22:00' },
+        thursday: { open: '11:30', close: '22:00' },
+        friday: { open: '11:30', close: '22:00' },
+        saturday: { open: '11:30', close: '22:00' },
+        sunday: { open: '11:30', close: '22:00' },
+    },
     // Takeaway-only at launch: delivery toggles show "available soon" and the
     // cart is forced to PICKUP (plugins/pickup-only.ts). Flip to true (or
     // remove) when delivery starts.
     deliveryEnabled: false,
-    menuDescription: 'Our menu of malatang bowls, signature herbal broths, noodles and starters',
     priceRange: '€€',
     /*
      * `rating` is intentionally omitted: the Liège restaurant has no public

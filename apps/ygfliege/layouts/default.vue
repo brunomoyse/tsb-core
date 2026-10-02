@@ -14,10 +14,10 @@
 
         <Body class="bg-ygf-bg overflow-x-hidden">
         <NuxtLoadingIndicator color="#F58220" :height="2" />
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ygf-orange-500">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             {{ $t('common.skipToContent') }}
         </a>
-        <div class="min-h-screen flex flex-col">
+        <div class="min-h-screen flex flex-col" data-app-root>
             <!-- display:contents — a plain <header> box would be TopNavbar's
                  containing block, exactly nav-height, so sticky couldn't stick. -->
             <header class="contents">
@@ -101,7 +101,7 @@
         </ClientOnly>
 
         <ClientOnly>
-            <LazyReorderDialog primary-class="bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover focus-visible:ring-ygf-orange-300" secondary-class="bg-ygf-gray-100 text-ygf-gray-600 hover:bg-ygf-gray-200 focus-visible:ring-ygf-gray-300" />
+            <LazyReorderDialog primary-class="bg-ygf-orange-on-white text-ygf-white hover:bg-ygf-orange-on-white-hover focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-ygf-gray-100 text-ygf-gray-600 hover:bg-ygf-gray-200 focus-visible:ring-ring" />
         </ClientOnly>
 
         <ClientOnly>
@@ -124,6 +124,7 @@ import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
+import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -133,7 +134,10 @@ const { brand } = useAppConfig()
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
 // Closed is only true once the config has loaded and says nothing can be ordered: while it loads (or if it failed) the drawer's checkout link stays enabled and checkout explains.
-const { isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
+const { config: restaurantConfig, isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
+
+// The restaurant's JSON-LD (hours from the live config), on every page.
+useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)
 
 const head = useLocaleHead()
 const notifications = useNotificationsStore()

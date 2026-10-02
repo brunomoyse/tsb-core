@@ -5,7 +5,7 @@
             <PageTitle>
                 Politique de Confidentialit&eacute;
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">Derni&egrave;re mise &agrave; jour : 01/10/2026</p>
+            <p class="mt-3 text-sm text-neutral-600">Derni&egrave;re mise &agrave; jour : 01/10/2026</p>
         </header>
 
         <!-- Company info -->
@@ -15,7 +15,7 @@
             <p>
                 <template v-if="brand.vat">N&deg; d&rsquo;entreprise : {{ brand.vat }} &middot; </template>T&eacute;l : {{ brand.phone }}
             </p>
-            <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-primary-600 underline">{{ brand.email }}</a></p>
+            <p>E-mail : <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a></p>
         </section>
 
         <!-- Body -->
@@ -179,13 +179,13 @@
                 </ul>
                 <p class="mt-2">
                     Toute demande peut &ecirc;tre adress&eacute;e par e-mail &agrave;
-                    <a :href="`mailto:${brand.email}`" class="text-primary-600 underline">{{ brand.email }}</a>
+                    <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a>
                     ou par courrier &agrave;&nbsp;: {{ brand.name }}, {{ streetCityLine }}.
                 </p>
                 <p class="mt-2">
                     Vous pouvez &eacute;galement introduire une r&eacute;clamation aupr&egrave;s de
                     l&rsquo;Autorit&eacute; de protection des donn&eacute;es (APD) &mdash;
-                    <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noopener noreferrer" class="text-primary-600 underline">www.autoriteprotectiondonnees.be</a>.
+                    <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noopener noreferrer" class="text-primary-700 underline">www.autoriteprotectiondonnees.be</a>.
                 </p>
             </section>
 
@@ -200,19 +200,20 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-400">
+        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
             <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     public: true,
     sitemap: { priority: 0.5, changefreq: 'yearly' },
 })
 
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
@@ -228,8 +229,8 @@ useJsonLd([
         description: t('schema.privacy.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.privacy'), item: `${config.public.baseUrl}/privacy` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.privacy'), item: localizedUrl('/privacy') },
     ]),
 ], 'page-jsonld')
 
@@ -239,8 +240,6 @@ useSeoMeta({
     ogTitle: t('schema.privacy.title'),
     description: t('schema.privacy.description'),
     ogDescription: t('schema.privacy.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -251,7 +250,7 @@ useSeoMeta({
 }
 
 .privacy-subheading {
-    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500;
+    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-600;
 }
 
 .privacy-list {

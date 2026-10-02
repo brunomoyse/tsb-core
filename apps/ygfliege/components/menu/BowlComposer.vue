@@ -20,7 +20,7 @@
                 type="button"
                 data-testid="bowl-composer-close"
                 :aria-label="$t('common.close')"
-                class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-ygf-black/60 hover:text-ygf-black hover:bg-white transition-colors"
+                class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-neutral-600 hover:text-ygf-black hover:bg-white transition-colors"
                 @click="emit('close')"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -57,7 +57,7 @@
                     <!-- Live count so the 5/20 rule is legible before the CTA is reached. -->
                     <p
                         class="text-sm font-semibold tabular-nums"
-                        :class="isGroupSatisfied(group) ? 'text-ygf-success' : 'text-ygf-orange-600'"
+                        :class="isGroupSatisfied(group) ? 'text-ygf-success-dark' : 'text-ygf-orange-text'"
                     >
                         <template v-if="isMultiSelectGroup(group)">
                             {{ $t('composer.selectedCount', {

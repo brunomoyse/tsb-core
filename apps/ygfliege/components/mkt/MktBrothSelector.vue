@@ -8,6 +8,7 @@
                     :src="`/images/broths/${active.slug}`"
                     :widths="[480, 800, 1200]"
                     :fallback-width="800"
+                    :fallback-height="600"
                     :alt="$t(`mkt.broths.${active.key}.name`)"
                     sizes="(min-width: 1024px) 44vw, 92vw"
                     img-class="w-full rounded-ygf-lg shadow-ygf-lg aspect-[4/3] object-cover"
@@ -25,7 +26,7 @@
                     :aria-selected="broth.key === active.key"
                     class="px-4 py-2 rounded-ygf-btn text-sm font-medium transition-all duration-300 border"
                     :class="broth.key === active.key
-                        ? 'bg-ygf text-white border-ygf shadow-ygf-md'
+                        ? 'bg-primary-600 text-white border-primary shadow-ygf-md'
                         : 'bg-white text-gray-700 border-ygf-orange-200 hover:bg-ygf-orange-50'"
                     @click="activeKey = broth.key"
                 >
@@ -36,7 +37,7 @@
             <!-- Active broth details -->
             <Transition name="broth-fade" mode="out-in">
                 <div :key="active.key">
-                    <p class="font-serifzh text-xl text-ygf-dark mb-1">{{ $t(`mkt.broths.${active.key}.chinese`) }}</p>
+                    <p class="font-serifzh text-xl text-ygf-orange-text mb-1">{{ $t(`mkt.broths.${active.key}.chinese`) }}</p>
                     <h3 class="font-display font-bold text-2xl text-ygf-black mb-3">
                         {{ $t(`mkt.broths.${active.key}.name`) }}
                         <span
@@ -45,7 +46,7 @@
                         >{{ $t('mkt.broths.vegan_badge') }}</span>
                     </h3>
                     <p class="text-gray-600 leading-relaxed mb-4">{{ $t(`mkt.broths.${active.key}.desc`) }}</p>
-                    <div class="flex flex-col gap-1.5 text-sm text-gray-500">
+                    <div class="flex flex-col gap-1.5 text-sm text-neutral-600">
                         <p class="flex items-center gap-2">
                             <span aria-hidden="true">
                                 <template v-if="active.spiceLevel === 0">🌿</template>

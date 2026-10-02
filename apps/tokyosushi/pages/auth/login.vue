@@ -16,7 +16,7 @@
                         v-if="sessionExpired"
                         aria-atomic="true"
                         aria-live="assertive"
-                        class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-4 animate-shake"
+                        class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-4 animate-shake"
                         role="alert"
                     >
                         {{ $t('notify.errors.sessionExpired') }}

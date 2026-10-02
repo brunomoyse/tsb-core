@@ -1,10 +1,11 @@
 // Plugins/api.ts — OIDC Bearer token authentication via Zitadel
 import { defineNuxtPlugin, navigateTo, useCookie, useLocalePath, useRequestEvent, useRuntimeConfig } from '#imports'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
     const config = useRuntimeConfig()
     const apiUrl: string = config.public.api as string
-    const userLocale = useCookie('i18n_redirected').value ?? 'fr'
+    // The page's language at call time (route locale on the server, current locale on the client); the cookie is only a fallback.
+    const currentLocale = (): string => nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
     const localePath = useLocalePath()
 
     /** Get access token from OIDC client (client-side only) */
@@ -29,20 +30,18 @@ export default defineNuxtPlugin(() => {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Accept-Language': userLocale
         },
         async onRequest({ options }: { options: { headers?: Record<string, string> } }) {
+            options.headers = { ...options.headers, 'Accept-Language': currentLocale() }
             if (import.meta.server) {
-                // SSR: forward cookies for Accept-Language if available
+                // SSR: forward cookies if available
                 const event = useRequestEvent()
-                const serverLocale = useCookie('i18n_redirected').value ?? 'fr'
                 const cookies = event?.node.req.headers.cookie
 
                 if (cookies) {
                     options.headers = {
                         ...options.headers,
                         cookie: cookies,
-                        'Accept-Language': serverLocale
                     }
                 }
             } else {

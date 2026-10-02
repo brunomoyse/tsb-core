@@ -9,6 +9,8 @@
             preload="none"
             poster="/images/videos/ingredients-poster.jpg"
             aria-hidden="true"
+            @play="playing = true"
+            @pause="playing = false"
         >
             <source data-src="/videos/ingredients-loop.webm" type="video/webm" />
             <source data-src="/videos/ingredients-loop.mp4" type="video/mp4" />
@@ -19,6 +21,18 @@
             <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-3 mb-4">{{ $t('mkt.home.video.title') }}</h2>
             <p class="text-white/80 leading-relaxed max-w-2xl mx-auto">{{ $t('mkt.home.video.subtitle') }}</p>
         </div>
+        <!-- Pause / play (WCAG 2.2.2): the loop moves for more than 5 s, so it needs a control. Only offered where the video can move at all (not for reduced-motion visitors, who only ever see the poster); its name changes with the state. -->
+        <button
+            v-if="motionAllowed"
+            type="button"
+            data-testid="video-toggle"
+            class="absolute bottom-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full bg-ygf-black/70 px-4 text-sm font-semibold text-white hover:bg-ygf-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ygf-black"
+            @click="toggle"
+        >
+            <svg v-if="playing" aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+            <svg v-else aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" /></svg>
+            {{ playing ? $t('mkt.home.video.pause') : $t('mkt.home.video.play') }}
+        </button>
     </section>
 </template>
 
@@ -28,23 +42,51 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 // Full-bleed looping ingredient video. Sources are swapped in lazily when the
 // band nears the viewport so the ~3MB files never block initial load; autoplay
 // is muted + playsinline (mobile-safe) and skipped for reduced-motion users.
+// A visible pause/play button (audit PR 3.6, A18) lets anyone stop the loop.
 const band = ref<HTMLElement | null>(null)
 const video = ref<HTMLVideoElement | null>(null)
+const playing = ref(false)
+// Set after mount: the button is not server-rendered (it only makes sense once we know the visitor accepts motion).
+const motionAllowed = ref(false)
+// The visitor paused (or pressed play) themselves: the lazy start must not override it.
+let userChoice: 'pause' | 'play' | null = null
 let observer: IntersectionObserver | null = null
+// The sources live on <source> children, so video.src stays empty even once they are set: remember it here (a second load() would restart the clip).
+let sourcesLoaded = false
+
+const loadSources = (v: HTMLVideoElement): boolean => {
+    if (sourcesLoaded || !v.children.length) return false
+    sourcesLoaded = true
+    for (const source of Array.from(v.querySelectorAll('source'))) {
+        const src = source.getAttribute('data-src')
+        if (src) source.setAttribute('src', src)
+    }
+    v.load()
+    return true
+}
+
+const toggle = () => {
+    const v = video.value
+    if (!v) return
+    loadSources(v)
+    if (v.paused) {
+        userChoice = 'play'
+        v.play().catch(() => { /* Autoplay refused: the poster stays */ })
+    } else {
+        userChoice = 'pause'
+        v.pause()
+    }
+}
 
 onMounted(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    motionAllowed.value = true
     observer = new IntersectionObserver((entries) => {
         for (const entry of entries) {
             if (!entry.isIntersecting) continue
             const v = video.value
-            if (v && !v.src && v.children.length) {
-                for (const source of Array.from(v.querySelectorAll('source'))) {
-                    const src = source.getAttribute('data-src')
-                    if (src) source.setAttribute('src', src)
-                }
-                v.load()
-                v.play().catch(() => { /* autoplay refused — poster stays */ })
+            if (v && loadSources(v) && userChoice !== 'pause') {
+                v.play().catch(() => { /* Autoplay refused: the poster stays */ })
             }
             observer?.disconnect()
         }

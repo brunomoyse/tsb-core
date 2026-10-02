@@ -5,7 +5,7 @@
             <PageTitle>
                 Conditions Générales de Vente
             </PageTitle>
-            <p class="mt-3 text-sm text-neutral-500">Dernière mise à jour : 01/10/2026</p>
+            <p class="mt-3 text-sm text-neutral-600">Dernière mise à jour : 01/10/2026</p>
         </header>
 
         <!-- Company info -->
@@ -174,7 +174,7 @@
                 </p>
                 <p class="mt-2">
                     Toute demande peut être adressée par e-mail à
-                    <a :href="`mailto:${brand.email}`" class="text-primary-600 underline">{{ brand.email }}</a>
+                    <a :href="`mailto:${brand.email}`" class="text-primary-700 underline">{{ brand.email }}</a>
                     ou par courrier à&nbsp;: {{ brand.name }}, {{ streetCityLine }}. Le
                     Client peut également introduire une réclamation auprès de l&rsquo;Autorité de protection des
                     données (APD).
@@ -265,7 +265,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-400">
+        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
             <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
         </footer>
     </div>
@@ -273,9 +273,10 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted } from 'vue'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 
 const route = useRoute()
-const config = useRuntimeConfig()
+const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
@@ -306,8 +307,8 @@ useJsonLd([
         description: t('schema.terms.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: `${config.public.baseUrl}/` },
-        { name: t('schema.breadcrumb.terms'), item: `${config.public.baseUrl}/terms` },
+        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+        { name: t('schema.breadcrumb.terms'), item: localizedUrl('/terms') },
     ]),
 ], 'page-jsonld')
 
@@ -317,8 +318,6 @@ useSeoMeta({
     ogTitle: t('schema.terms.title'),
     description: t('schema.terms.description'),
     ogDescription: t('schema.terms.description'),
-    ogImage: `${config.public.baseUrl}/images/about-hero.png`,
-    twitterCard: 'summary_large_image',
     ...useLocaleSeoMeta(),
 })
 </script>
@@ -329,7 +328,7 @@ useSeoMeta({
 }
 
 .terms-subheading {
-    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500;
+    @apply mt-4 mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-600;
 }
 
 .terms-list {

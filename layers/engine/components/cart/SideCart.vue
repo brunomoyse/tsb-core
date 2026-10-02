@@ -1,5 +1,6 @@
 <template>
     <aside
+        ref="asideRef"
         data-testid="side-cart"
         class="
             bg-tsb-two
@@ -15,7 +16,7 @@
     >
         <!-- Header with Toggle -->
         <header class="px-4 py-5 flex flex-wrap items-center justify-between gap-x-2 gap-y-3">
-            <h2 class="text-xl font-bold text-neutral-900">
+            <h2 ref="headingRef" tabindex="-1" class="text-xl font-bold focus:outline-none text-neutral-900">
                 {{ $t('cart.title') }}
             </h2>
             <div class="flex gap-1 rounded-full bg-neutral-100 p-1">
@@ -26,11 +27,11 @@
                         :disabled="option.disabled"
                         :title="option.disabled ? `${option.label}: ${$t('delivery.comingSoon')}` : undefined"
                         :class="[
-          'flex min-h-9 items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          'flex min-h-9 items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           option.disabled ? 'cursor-not-allowed opacity-40' : '',
           cartStore.collectionOption === option.value
             ? 'bg-white text-neutral-900 shadow-sm'
-            : 'text-neutral-500 hover:bg-tsb-four/40'
+            : 'text-neutral-600 hover:bg-tsb-four/40'
         ]"
                         @click="handleOrderType(option.value)">
                     <img alt="" :src="option.icon" class="w-4 h-4 shrink-0"/>
@@ -42,17 +43,21 @@
 
         <!-- Cart Items -->
         <div class="flex-1 overflow-y-auto p-4 space-y-4">
-            <p v-if="cartStore.products.length === 0" class="text-neutral-500 text-center py-8">
+            <p v-if="cartStore.products.length === 0" class="text-neutral-600 text-center py-8">
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
                 <div v-for="(item, lineIndex) in cartStore.products" :key="lineKeys[lineIndex]"
                      data-testid="cart-item"
+                     data-cart-line
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
-                    <div
-                        class="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        type="button"
+                        class="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex items-center justify-center cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        :aria-label="$t('common.viewPhoto', { name: item.product.name })"
+                        aria-haspopup="dialog"
                         @click="openLightbox(item.product?.id, item.product.name)"
                     >
                         <picture>
@@ -64,7 +69,7 @@
                                 type="image/webp"/>
                             <img
                                  ref="itemImageElements"
-                                 :alt="item.product.name"
+                                 alt=""
                                  :src="`${productImageBase(item.product?.id)}.png`"
                                  class="max-w-full max-h-full"
                                  width="48"
@@ -72,23 +77,23 @@
                                  draggable="false"
                                  @error="handleProductImageError"/>
                         </picture>
-                    </div>
+                    </button>
 
                     <!-- Product Details -->
                     <div class="flex flex-col justify-between gap-2">
                         <!-- Product Info and Price -->
                         <div class="flex justify-between items-start gap-2">
                             <div class="flex flex-col min-w-0 flex-1">
-                                <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-400 truncate">
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                                     {{ itemLabelMeta(item) }}
                                 </p>
                                 <h3 class="text-sm font-medium text-neutral-900 leading-snug line-clamp-2">
                                     {{ itemLabelName(item) }}
                                 </h3>
-                                <span v-if="itemChoice(item)" class="text-xs text-primary-600">
+                                <span v-if="itemChoice(item)" class="text-xs text-primary-700">
                                     ({{ itemChoice(item) }})
                                 </span>
-                                <span v-if="item.product.pieceCount" class="text-xs text-neutral-500">
+                                <span v-if="item.product.pieceCount" class="text-xs text-neutral-600">
                                     {{ item.product.pieceCount }}
                                     {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                                 </span>
@@ -121,8 +126,9 @@
                                 @decrement="handleDecrementQuantity(item)"
                                 @increment="handleIncrementQuantity(item)"
                             />
-                            <button type="button" data-testid="cart-item-remove"
-                                    class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-500 hover:text-red-600 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            <button type="button" data-testid="cart-item-remove" data-cart-remove
+                                    :aria-label="$t('cart.removeNamed', { name: item.product.name })"
+                                    class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="removeWithUndo(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>
@@ -142,10 +148,10 @@
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-neutral-600">
                     <span>{{ $t('cart.deliveryFee') }}:</span>
-                    <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
+                    <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
@@ -154,11 +160,11 @@
                     </span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscountCents > 0" class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between items-center text-sm text-green-800">
                     <span>{{ $t('cart.pickupDiscount') }}:</span>
                     <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="couponDiscountCents > 0" class="flex justify-between items-center text-sm text-green-600">
+                <div v-if="couponDiscountCents > 0" class="flex justify-between items-center text-sm text-green-800">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
                 </div>
@@ -173,18 +179,18 @@
             </div>
 
             <!-- Delivery minimum (delivery only — pickup has no minimum) -->
-            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-primary-600 text-center">
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-primary-700 text-center">
                 <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
-                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 rounded-lg" @click="switchToPickup">
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg" @click="switchToPickup">
                     {{ $t('delivery.modal.switchToPickup') }}
                 </button>
             </div>
 
             <!-- Ordering Unavailable Warning -->
-            <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center">
+            <div v-if="!isOrderingAvailable" class="text-sm text-amber-800 text-center">
                 {{ $t('cart.orderingUnavailable') }}
             </div>
-            <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-700 text-center">
+            <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-800 text-center">
                 {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
             </div>
 
@@ -210,7 +216,7 @@ import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
@@ -235,7 +241,11 @@ const cartStore = useCartStore();
 const { impact } = useHaptics()
 const {t} = useI18n()
 const { trackEvent } = useTracking()
-const { removeWithUndo, editItem } = useCartItemActions()
+// Removing a line with the keyboard keeps focus in the cart: on the next line, or, when the cart is empty (the menu then drops this column, heading included), on the menu search.
+const asideRef = ref<HTMLElement | null>(null)
+const headingRef = ref<HTMLElement | null>(null)
+const lineFocus = { container: () => asideRef.value, fallback: () => headingRef.value ?? document.getElementById('menuSearch') }
+const { removeWithUndo, editItem } = useCartItemActions(lineFocus)
 const {
     getItemLineTotalCents,
     subtotalCents,
@@ -358,6 +368,6 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
 };
 
 // The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
-const { decrementLine: handleDecrementQuantity } = useCartRemoval()
+const { decrementLine: handleDecrementQuantity } = useCartRemoval(lineFocus)
 
 </script>

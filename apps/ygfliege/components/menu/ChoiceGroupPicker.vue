@@ -7,7 +7,7 @@
             type="button"
             :data-testid="`${prefix}-choice-${choice.id}`"
             :aria-pressed="api.quantityOf(choice) > 0"
-            class="card card-interactive text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+            class="card card-interactive text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             :class="{ 'card-selected': api.quantityOf(choice) > 0 }"
             @click="api.selectExclusive(choice)"
         >
@@ -15,6 +15,7 @@
                 :src="`/images/broths/${photoSlugs[choice.id]}`"
                 :widths="[480, 800]"
                 :fallback-width="800"
+                :fallback-height="600"
                 :alt="choice.name"
                 sizes="(min-width: 1024px) 260px, 45vw"
                 img-class="w-full aspect-[4/3] object-cover"
@@ -55,7 +56,7 @@
             type="button"
             :data-testid="`${prefix}-choice-${choice.id}`"
             :aria-pressed="api.quantityOf(choice) > 0"
-            class="chip min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2"
+            class="chip min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="api.selectExclusive(choice)"
         >
             <span translate="no">{{ choice.name }}</span>
@@ -73,11 +74,11 @@
             :data-testid="`${prefix}-choice-${choice.id}`"
             class="flex items-center gap-3 rounded-ygf-card border px-3 py-2 transition-colors"
             :class="api.quantityOf(choice) > 0
-                ? 'border-ygf-orange bg-ygf-orange-50'
+                ? 'border-primary bg-ygf-orange-50'
                 : 'border-ygf-orange-100 bg-white'"
         >
             <span translate="no" class="flex-1 text-sm text-ygf-black">{{ choice.name }}</span>
-            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-ygf-black/50 whitespace-nowrap">
+            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-600 whitespace-nowrap">
                 {{ modifierLabel(choice) }}
             </span>
             <div class="stepper shrink-0">

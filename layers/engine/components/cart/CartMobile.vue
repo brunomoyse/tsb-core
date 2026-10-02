@@ -11,11 +11,13 @@
 
         <!-- Cart Panel -->
         <Transition name="slide-up">
-            <aside
+            <div
                 v-if="cartStore.isCartVisible"
                 id="cart-mobile"
                 ref="panelRef"
                 data-testid="cart-mobile"
+                role="dialog"
+                aria-modal="true"
                 aria-labelledby="cart-heading"
                 class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
             >
@@ -30,12 +32,13 @@
                     {{ $t('cart.title') }}
                 </h2>
                 <button
+                    ref="closeButtonRef"
                     type="button"
                     :aria-label="$t('cart.closeCart')"
-                    class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="cartStore.toggleCartVisibility"
                 >
-                    <svg class="h-6 w-6 text-neutral-700" fill="none" stroke="currentColor">
+                    <svg class="h-6 w-6 text-neutral-700" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </button>
@@ -47,47 +50,53 @@
                     v-for="(item, lineIndex) in cartStore.products"
                     :key="lineKeys[lineIndex]"
                     data-testid="cart-item"
+                    data-cart-line
                     class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
                 >
                     <!-- IMAGE -->
-                    <picture
-                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        type="button"
+                        class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        :aria-label="$t('common.viewPhoto', { name: item.product.name })"
+                        aria-haspopup="dialog"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >
-                        <source
-                            :srcset="`${productImageBase(item.product.id)}.avif`"
-                            type="image/avif"
-                        />
-                        <source
-                            :srcset="`${productImageBase(item.product.id)}.webp`"
-                            type="image/webp"
-                        />
-                        <img
-                            ref="itemImageElements"
-                            :src="`${productImageBase(item.product.id)}.png`"
-                            :alt="item.product.name"
-                            class="object-contain w-full h-full"
-                            width="64"
-                            height="64"
-                            draggable="false"
-                            @error="handleProductImageError"
-                        />
-                    </picture>
+                        <picture class="contents">
+                            <source
+                                :srcset="`${productImageBase(item.product.id)}.avif`"
+                                type="image/avif"
+                            />
+                            <source
+                                :srcset="`${productImageBase(item.product.id)}.webp`"
+                                type="image/webp"
+                            />
+                            <img
+                                ref="itemImageElements"
+                                :src="`${productImageBase(item.product.id)}.png`"
+                                alt=""
+                                class="object-contain w-full h-full"
+                                width="64"
+                                height="64"
+                                draggable="false"
+                                @error="handleProductImageError"
+                            />
+                        </picture>
+                    </button>
 
                     <!-- PRODUCT INFO -->
                     <div class="col-span-3 flex flex-col justify-center text-sm min-w-0">
-                        <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-400 truncate">
+                        <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                             {{ itemLabelMeta(item) }}
                         </span>
                         <span class="font-medium text-neutral-800 leading-snug line-clamp-2">
                             {{ itemLabelName(item) }}
                         </span>
-                        <span v-if="itemChoice(item)" class="text-xs text-primary-600">
+                        <span v-if="itemChoice(item)" class="text-xs text-primary-700">
                             ({{ itemChoice(item) }})
                         </span>
                         <span
                             v-if="item.product.pieceCount"
-                            class="text-neutral-500 text-xs mt-1"
+                            class="text-neutral-600 text-xs mt-1"
                         >
                           {{ item.product.pieceCount }}
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
@@ -104,8 +113,9 @@
                         <UiButton variant="secondary" size="sm" data-testid="cart-item-edit" @click="editItem(item)">
                             {{ $t('cart.editItem') }}
                         </UiButton>
-                        <button type="button" data-testid="cart-item-remove"
-                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-500 hover:text-red-600 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        <button type="button" data-testid="cart-item-remove" data-cart-remove
+                                :aria-label="$t('cart.removeNamed', { name: item.product.name })"
+                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 @click="removeWithUndo(item)">
                             {{ $t('cart.removeItem') }}
                         </button>
@@ -126,7 +136,7 @@
                 </li>
 
                 <!-- EMPTY STATE -->
-                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-neutral-500">
+                <li v-if="cartStore.products.length === 0" class="flex flex-col items-center justify-center h-64 text-neutral-600">
                     <img
                         src="/icons/shopping-bag-icon.svg"
                         alt=""
@@ -139,16 +149,16 @@
             <!-- FOOTER: TOTAL + CHECKOUT -->
             <footer v-if="cartStore.products.length" class="p-4 border-t border-neutral-200 bg-white rounded-b-none">
                 <div class="space-y-1.5 text-sm mb-4">
-                    <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
+                    <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.subtotal') }}</span>
                         <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                     </div>
-                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
+                    <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.deliveryFee') }}</span>
-                        <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
+                        <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
                             {{ $t('cart.deliveryTbd') }}
                         </span>
-                        <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                        <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
@@ -157,15 +167,15 @@
                         </span>
                         <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                     </div>
-                    <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
+                    <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
                         <span>{{ $t('cart.pickupDiscount') }}</span>
                         <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                     </div>
-                    <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-600">
+                    <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-800">
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
                     </div>
-                    <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                    <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                         <span>{{ $t('cart.onlineFee') }}</span>
                         <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                     </div>
@@ -175,16 +185,16 @@
                     </div>
                 </div>
                 <!-- Delivery minimum (delivery only — pickup has no minimum) -->
-                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mb-3">
+                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-700 text-center mb-3">
                     <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
-                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg" @click="switchToPickup">
                         {{ $t('delivery.modal.switchToPickup') }}
                     </button>
                 </div>
-                <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
+                <div v-if="!isOrderingAvailable" class="text-sm text-amber-800 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
                 </div>
-                <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-700 text-center mb-2">
+                <div v-else-if="preorderTime" data-testid="cart-preorder-hint" class="text-sm text-amber-800 text-center mb-2">
                     {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
                 </div>
                 <UiButton
@@ -198,7 +208,7 @@
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </footer>
-            </aside>
+            </div>
         </Transition>
         <ImageLightbox v-if="showLightbox" ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
     </div>
@@ -209,14 +219,16 @@ import * as productImage from '#engine/utils/productImage'
 import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
-const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
+const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
 import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { until } from '@vueuse/core'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
+import { useCartSheet } from '#engine/composables/useCartSheet'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
@@ -232,10 +244,14 @@ const config = useRuntimeConfig();
 const cartStore = useCartStore();
 // The open drawer is a bottom bar too: the toasts (Undo) float above it instead of covering its checkout button.
 const panelRef = ref<HTMLElement | null>(null)
+const closeButtonRef = ref<HTMLElement | null>(null)
 useBottomBarOffset(panelRef)
+// Dialog behaviour: focus trap, Escape, scroll lock, inert page behind, focus back to the opener.
+useCartSheet(panelRef, closeButtonRef)
 const { impact } = useHaptics()
 const { trackEvent } = useTracking();
-const { removeWithUndo, editItem } = useCartItemActions()
+// Removing a line with the keyboard keeps focus in the sheet: on the next line, or on the close button when the cart is empty.
+const { removeWithUndo, editItem } = useCartItemActions({ container: () => panelRef.value, fallback: () => closeButtonRef.value })
 const {
     getItemLineTotalCents,
     subtotalCents,
@@ -263,6 +279,8 @@ const openLightbox = async (id: string, name: string) => {
     lightboxAlt.value = name
     showLightbox.value = true
     await nextTick()
+    // The lightbox is an async component: its instance only exists once its chunk has loaded (the first tap used to open nothing).
+    if (!lightboxRef.value) await until(lightboxRef).toBeTruthy({ timeout: 5000 })
     lightboxRef.value?.open()
 }
 
@@ -324,7 +342,8 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
 };
 
 // The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
-const { decrementLine: handleDecrementQuantity } = useCartRemoval()
+// Removing a line with the keyboard keeps focus in the sheet: on the next line, or on the close button when the cart is empty.
+const { decrementLine: handleDecrementQuantity } = useCartRemoval({ container: () => panelRef.value, fallback: () => closeButtonRef.value })
 </script>
 
 <style scoped>

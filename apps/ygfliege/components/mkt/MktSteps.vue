@@ -10,13 +10,14 @@
                 :src="`/images/steps/step-${step.num}`"
                 :widths="[400, 800]"
                 :fallback-width="400"
+                :fallback-height="792"
                 :alt="$t(`${keyPrefix}.step${step.num}.title`)"
                 sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 92vw"
                 img-class="w-full aspect-square object-cover"
             />
             <div class="p-5">
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="w-7 h-7 rounded-full bg-ygf text-white text-sm font-bold flex items-center justify-center">{{ step.num }}</span>
+                    <span class="w-7 h-7 rounded-full bg-primary-600 text-white text-sm font-bold flex items-center justify-center">{{ step.num }}</span>
                     <h3 class="font-display font-bold text-lg text-ygf-black">{{ $t(`${keyPrefix}.step${step.num}.title`) }}</h3>
                 </div>
                 <p class="text-sm text-gray-600 leading-relaxed">{{ $t(`${keyPrefix}.step${step.num}.desc`) }}</p>

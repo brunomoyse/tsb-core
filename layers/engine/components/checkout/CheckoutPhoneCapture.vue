@@ -8,7 +8,7 @@
             : 'bg-amber-50/70 border-amber-200'"
     >
         <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 mt-0.5 shrink-0" :class="isCollapsed ? 'text-neutral-600' : 'text-amber-600'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 mt-0.5 shrink-0" :class="isCollapsed ? 'text-neutral-600' : 'text-amber-700'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path v-if="isCollapsed" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 <path v-else stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.5a1 1 0 01-.5 1.21l-2.26 1.13a11 11 0 005.5 5.5l1.13-2.26a1 1 0 011.21-.5l4.5 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z" />
             </svg>
@@ -19,7 +19,7 @@
                 <p v-if="isCollapsed" class="text-xs mt-0.5 text-neutral-600 tabular-nums">
                     {{ savedNumber }}
                 </p>
-                <p v-else class="text-xs mt-0.5 text-amber-700/80">
+                <p v-else class="text-xs mt-0.5 text-amber-800">
                     {{ $t('checkout.phoneCapture.description') }}
                 </p>
             </div>
@@ -27,7 +27,7 @@
                 v-if="isCollapsed"
                 type="button"
                 :aria-label="$t('checkout.phoneCapture.editAria')"
-                class="min-h-11 min-w-11 inline-flex items-center justify-center px-3 -mr-2 text-sm font-medium text-primary-600 hover:text-primary-700 rounded-md focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none transition-colors"
+                class="min-h-11 min-w-11 inline-flex items-center justify-center px-3 -mr-2 text-sm font-medium text-primary-700 hover:text-primary-900 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none transition-colors"
                 @click="startEditing"
             >
                 {{ $t('checkout.phoneCapture.edit') }}
@@ -49,7 +49,7 @@
                         :aria-label="$t('form.phone')"
                         :aria-invalid="phoneError ? 'true' : undefined"
                         :aria-describedby="phoneError ? 'checkout-phone-error' : undefined"
-                        class="w-full px-3 py-2.5 pr-9 bg-white border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 tabular-nums focus-visible:ring-2 focus-visible:ring-primary-300/50 focus-visible:border-primary-300 focus-visible:outline-none transition-all duration-300"
+                        class="w-full px-3 py-2.5 pr-9 bg-white border border-neutral-200 rounded-xl text-base sm:text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                         @input="onInput"
                         @blur="onBlur"
                     />
@@ -69,14 +69,14 @@
                     type="submit"
                     data-testid="checkout-phone-save"
                     :disabled="loading"
-                    class="min-h-11 shrink-0 px-4 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-300 focus-visible:ring-2 focus-visible:outline-none disabled:opacity-60 disabled:cursor-wait"
+                    class="min-h-11 shrink-0 px-4 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-2 focus-visible:outline-none disabled:opacity-60 disabled:cursor-wait"
                 >
                     {{ $t('common.save') }}
                 </button>
             </div>
         </form>
 
-        <p v-if="phoneError" id="checkout-phone-error" role="alert" class="text-xs text-red-600 mt-2">{{ phoneError }}</p>
+        <p v-if="phoneError" id="checkout-phone-error" role="alert" class="text-xs text-red-700 mt-2">{{ phoneError }}</p>
     </section>
 </template>
 

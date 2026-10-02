@@ -103,7 +103,9 @@
       "video": {
         "label": "Frais, cuit à la minute",
         "title": "Composez votre bol, on s'occupe de la cuisson",
-        "subtitle": "Légumes, tofu, viandes, nouilles — choisissez ce qui vous fait envie. Cuit minute dans votre bouillon, jamais frit."
+        "subtitle": "Légumes, tofu, viandes, nouilles — choisissez ce qui vous fait envie. Cuit minute dans votre bouillon, jamais frit.",
+        "pause": "Pause vidéo",
+        "play": "Lire la vidéo"
       },
       "counters": {
         "restaurants": "restaurants dans le monde",

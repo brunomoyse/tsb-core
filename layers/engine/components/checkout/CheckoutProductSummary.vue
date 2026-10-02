@@ -5,13 +5,13 @@
             <h2 class="text-lg font-bold text-neutral-900">
                 {{ $t('checkout.orderSummary', 'Your Order') }}
             </h2>
-            <span class="text-xs text-neutral-400 font-medium">
+            <span class="text-xs text-neutral-600 font-medium">
                 {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
             </span>
         </div>
 
         <!-- Empty state -->
-        <div v-if="cartStore.products.length === 0" class="px-5 pb-5 text-neutral-400 text-center text-sm">
+        <div v-if="cartStore.products.length === 0" class="px-5 pb-5 text-neutral-600 text-center text-sm">
             {{ $t('checkout.emptyCart', 'Your cart is empty.') }}
         </div>
 
@@ -24,8 +24,11 @@
                     class="flex items-center gap-3"
                 >
                     <!-- Product image -->
-                    <div
-                        class="w-14 h-14 shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
+                    <button
+                        type="button"
+                        class="w-14 h-14 shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        :aria-label="$t('common.viewPhoto', { name: item.product.name })"
+                        aria-haspopup="dialog"
                         @click="openLightbox(item.product.id, item.product.name)"
                     >
                         <picture>
@@ -40,27 +43,27 @@
                             <img
                                 ref="itemImageElements"
                                 :src="`${productImageBase(item.product.id)}.png`"
-                                :alt="item.product.name"
+                                alt=""
                                 class="w-full h-full object-contain p-0.5"
                                 width="56"
                                 height="56"
                                 @error="handleProductImageError"
                             />
                         </picture>
-                    </div>
+                    </button>
 
                     <!-- Info + controls -->
                     <div class="flex-1 min-w-0">
                         <!-- Row 1: Name + price -->
                         <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
-                                <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-500 truncate leading-tight mb-0.5">
+                                <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate leading-tight mb-0.5">
                                     {{ itemLabelMeta(item) }}
                                 </p>
                                 <p class="text-[15px] font-semibold text-neutral-900 leading-tight line-clamp-2 pr-1">
                                     {{ itemLabelName(item) }}
                                 </p>
-                                <p v-if="itemChoice(item)" class="text-xs text-primary-500 mt-0.5 truncate">
+                                <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 truncate">
                                     ({{ itemChoice(item) }})
                                 </p>
                             </div>
@@ -69,7 +72,7 @@
                             </span>
                         </div>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
                         <!-- What the server quote says about this line, with the way out -->
                         <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
@@ -105,7 +108,7 @@
                             </div>
                             <button
                                 :aria-label="$t('cart.removeItem')"
-                                class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-500 hover:text-primary-500 hover:bg-primary-50 active:bg-primary-100 transition-colors"
+                                class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors"
                                 @click="handleRemoveFromCart(item)"
                             >
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -123,11 +126,11 @@
 
             <!-- Price summary -->
             <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
-                <div class="flex justify-between text-neutral-500">
+                <div class="flex justify-between text-neutral-600">
                     <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
                     <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500 relative">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600 relative">
                     <div class="flex items-center gap-1">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
                         <button
@@ -135,7 +138,7 @@
                             type="button"
                             :aria-label="$t('checkout.deliveryFee')"
                             :aria-expanded="showTooltip"
-                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-500 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-primary-300 focus:outline-none rounded-full relative"
+                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-600 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-full relative"
                             @click.stop="showTooltip = !showTooltip"
                             @mouseenter="showTooltip = true"
                             @mouseleave="showTooltip = false"
@@ -155,30 +158,30 @@
                             </div>
                         </button>
                     </div>
-                    <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic">{{ $t('checkout.tbd') }}</span>
-                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                    <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic">{{ $t('checkout.tbd') }}</span>
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
                         {{ $t(deliveryUnavailableKey) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
                     <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('checkout.discount') }}</span>
                     <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
                     <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                     <span>{{ $t('checkout.transactionFee') }}</span>
                     <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatCents(payableCents) }}</span></span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-700 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
             </div>
         </template>
@@ -192,7 +195,7 @@ import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
-import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'

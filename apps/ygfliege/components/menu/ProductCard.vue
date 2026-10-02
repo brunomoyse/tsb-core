@@ -14,26 +14,27 @@
                     <div v-if="product.isHalal" class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-50 text-blue-700" role="img" :aria-label="$t('menu.halal')" :title="$t('menu.halal')">
                         <DietIcon kind="halal" class="w-3 h-3" />
                     </div>
-                    <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
+                    <div v-if="product.isVegetarian" class="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700" role="img" :aria-label="$t('menu.vegetarian')" :title="$t('menu.vegetarian')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/>
                             <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
                         </svg>
                     </div>
-                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-ygf-orange-50 text-ygf-orange-500" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
+                    <div v-if="product.isSpicy" class="w-5 h-5 flex items-center justify-center rounded-full bg-ygf-orange-50 text-ygf-orange-text" role="img" :aria-label="$t('menu.spicy')" :title="$t('menu.spicy')">
                         <svg aria-hidden="true" class="w-3 h-3" viewBox="720 640 640 820" fill="currentColor" fill-rule="evenodd">
                             <path d="M1311 1195C1286 1323 1155 1418 1038 1415C927 1413 813 1323 788 1195C748 986 1048 910 934 666C934 666 1097 737 1171 933C1197 943 1208 873 1176 833C1308 942 1327 1112 1311 1195ZM934 1336C945 1393 1003 1435 1055 1434C1105 1433 1156 1393 1167 1336C1185 1243 1051 1209 1102 1099C1102 1099 1029 1131 996 1219C984 1223 979 1192 994 1174C935 1223 926 1299 934 1336Z"/>
                         </svg>
                     </div>
                 </div>
                 <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
-                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-700 text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
+                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
-                <!-- Shimmer placeholder -->
+                <!-- Placeholder behind the image: a flat tint from the server render on (so without JavaScript, or before hydration, a transparent cut-out never sits on a moving gradient); it only starts shimmering once mounted, and is removed when the image has loaded. -->
                 <div v-if="!loaded && !brandPhoto"
-                     class="absolute inset-0 animate-shimmer rounded-lg"
-                     style="background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;"
+                     class="absolute inset-0 rounded-lg bg-gray-100"
+                     :class="{ 'animate-shimmer': isMounted }"
+                     :style="isMounted ? 'background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%;' : undefined"
                 />
                 <!-- Official bowl photography for the malatang sets; other
                      products keep the dashboard-uploaded S3 image. Cut-outs
@@ -43,6 +44,7 @@
                     :src="brandPhoto.base"
                     :widths="brandPhoto.widths ?? PRODUCT_PHOTO_WIDTHS"
                     :fallback-width="brandPhoto.fallbackWidth ?? 560"
+                    :fallback-height="brandPhoto.fallbackHeight ?? brandPhoto.fallbackWidth ?? 560"
                     :alt="product.name"
                     sizes="(min-width: 640px) 300px, 45vw"
                     :img-class="brandPhoto.cover
@@ -50,18 +52,19 @@
                         : `object-contain max-h-full ${!product.isAvailable ? 'grayscale' : ''}`"
                     :class="brandPhoto.cover ? 'absolute inset-3' : undefined"
                 />
-                <picture v-if="!brandPhoto" class="w-full h-full flex justify-center items-center">
+                <!-- Visible from the first paint, with or without JavaScript (it used to be opacity-0 until onMounted saw it loaded, which kept it out of the LCP): the shimmer is only a background behind it, hence "relative" so the image paints over it. -->
+                <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-center">
                     <source :srcset="`${productImageBaseSrc}.avif`"
                             type="image/avif"/>
                     <source :srcset="`${productImageBaseSrc}.webp`"
                             type="image/webp"/>
                     <img ref="imageElement" :alt="product.name"
                          width="185" height="130"
-                         :class="[loaded ? 'opacity-100' : 'opacity-0', !product.isAvailable ? 'grayscale' : '']"
-                         :draggable="false" :fetchpriority="index < 6 ? 'high' : 'low'"
-                         :loading="index > 5 ? 'lazy' : 'eager'"
+                         :class="!product.isAvailable ? 'grayscale' : ''"
+                         :draggable="false" :fetchpriority="imagePriority.fetchpriority"
+                         :loading="imagePriority.loading"
                          :src="`${productImageBaseSrc}.png`"
-                         class="object-contain max-h-full transition-opacity duration-500"
+                         class="object-contain max-h-full"
                          @error="handleImageError"/>
                 </picture>
             </div>
@@ -73,15 +76,18 @@
                      these cards only ever render inside their own category
                      section, so it repeated the heading on every tile. -->
                 <div class="min-h-[52px] flex flex-col">
-                    <span
-                        data-testid="product-name"
-                        translate="no"
-                        class="text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
-                        :title="product.name"
-                    >
-                      {{ product.name }}
-                    </span>
-                    <span class="text-ygf-black/55 text-xs mt-0.5">
+                    <!-- The name is the keyboard (and screen-reader) way to open the details; the image above is the pointer way. -->
+                    <button type="button" aria-haspopup="dialog" class="self-start max-w-full rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" @click="emit('openProductModal')">
+                        <span
+                            data-testid="product-name"
+                            translate="no"
+                            class="block text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
+                            :title="product.name"
+                        >
+                          {{ product.name }}
+                        </span>
+                    </button>
+                    <span class="text-neutral-600 text-xs mt-0.5">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
                         {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ forcedChoiceGroupLabel(group) }}
@@ -92,17 +98,18 @@
                 <!-- Price and cart controls. The stepper stays visible once the
                      item is in the cart: the inherited control collapsed itself
                      after 4s, which hid the only way to decrement. -->
-                <div v-if="product.isAvailable" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
+                <div v-if="product.isAvailable" ref="controlsRef" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
                     <span class="text-ygf-black font-bold text-base tabular-nums">
                       {{ formatPrice(product.price) }}
                     </span>
 
                     <button
                         v-if="!isInCart"
+                        ref="addButtonRef"
                         :aria-label="$t('cart.addToCart')"
                         data-testid="product-add-to-cart"
                         type="button"
-                        class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ygf-orange focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                        class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                         :disabled="orderingDisabled"
                         @click="addToCart"
                     >
@@ -122,6 +129,7 @@
                         >&minus;</button>
                         <span class="stepper-value text-sm" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
                         <button
+                            ref="incrementButtonRef"
                             type="button"
                             data-testid="product-card-increment"
                             class="stepper-btn"
@@ -131,7 +139,7 @@
                         >+</button>
                     </div>
                 </div>
-                <div v-else class="text-sm text-ygf-black/55 mt-2">{{ $t('menu.unavailable') }}</div>
+                <div v-else class="text-sm text-neutral-600 mt-2">{{ $t('menu.unavailable') }}</div>
             </div>
         </div>
     </div>
@@ -141,12 +149,13 @@
 import * as productImage from '#engine/utils/productImage'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
@@ -172,6 +181,9 @@ const {
 const emit = defineEmits<{
     openProductModal: []
 }>()
+
+// Image loading follows the card's place on the whole page (see utils/menuImagePriority.ts), not in its category.
+const imagePriority = computed(() => menuImagePriority(index))
 
 const hasChoices = computed(() => product.choices?.length > 0);
 
@@ -216,6 +228,18 @@ const cardQuantity = computed(() =>
             .reduce((sum, item) => sum + item.quantity, 0)
         : 0
 );
+
+/* The add button is replaced by the stepper on the first add and back when the last unit goes: when focus was on the control
+   being replaced, move it to its successor (the "+" of the new stepper, the add button) instead of losing it to <body>. */
+const controlsRef = ref<HTMLElement | null>(null)
+const addButtonRef = ref<HTMLElement | null>(null)
+const incrementButtonRef = ref<HTMLElement | null>(null)
+watch(isInCart, async (inCart) => {
+    // Runs before the DOM is patched, so the old control still has focus here.
+    if (!controlsRef.value?.contains(document.activeElement)) return
+    await nextTick()
+    ;(inCart ? incrementButtonRef : addButtonRef).value?.focus()
+})
 
 const isQuantityBouncing = ref(false)
 watch(cardQuantity, () => {

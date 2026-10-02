@@ -10,6 +10,8 @@
     "toTop": "Back to top",
     "remove": "Remove",
     "close": "Close",
+    "image": "Image",
+    "viewPhoto": "View photo of {name}",
     "skipToContent": "Skip to main content",
     "accept": "Accept",
     "acceptCookies": "Accept cookies",
@@ -17,7 +19,8 @@
     "discard": "Discard",
     "keepEditing": "Keep editing",
     "retry": "Try again",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "required": "required"
   },
   "nav": {
     "home": "Home",
@@ -169,7 +172,11 @@
       "noMatch": "No address found.",
       "callHint": "If your address isn't listed, feel free to call us at",
       "houseNumberRequired": "A house number is required.",
-      "example": "Example: Rue de Fragnée 12, Liège"
+      "example": "Example: Rue de Fragnée 12, Liège",
+      "clear": "Clear address",
+      "suggestions": "1 suggestion available | {count} suggestions available",
+      "selected": "Address selected: {address}",
+      "cleared": "Address cleared"
     },
     "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)"
   },
@@ -332,7 +339,11 @@
     },
     "removedManyUndo": "{count} items removed",
     "removeNamed": "Remove \"{name}\" from the cart",
-    "buttonLabel": "Cart, {count} item | Cart, {count} items"
+    "buttonLabel": "Cart, {count} item | Cart, {count} items",
+    "announce": {
+      "added": "{name} added to cart, {count} item, total {total} | {name} added to cart, {count} items, total {total}",
+      "quantity": "{name}, quantity {quantity}"
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -594,6 +605,9 @@
     "accountDeletion": {
       "title": "Account Deletion - __BRAND__",
       "description": "How to request deletion of your __BRAND__ account and personal data."
+    },
+    "cart": {
+      "title": "Cart - __BRAND__"
     }
   },
   "feedback": {
@@ -631,6 +645,7 @@
     "placeholder": "Enter promo code",
     "apply": "Apply",
     "remove": "Remove",
+    "removed": "Promo code removed",
     "applied": "Coupon applied: -{discount} off",
     "invalid": "Invalid promo code",
     "discount": "Coupon discount",
@@ -727,5 +742,11 @@
   "ordering": {
     "closedPreorder": "We're closed right now — order now for {time}.",
     "loadFailed": "We couldn't check whether ordering is open."
+  },
+  "orderStatus": {
+    "label": "Order progress",
+    "completed": "completed",
+    "upcoming": "upcoming",
+    "changed": "Order status: {status}"
   }
 }
