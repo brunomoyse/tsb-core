@@ -10,6 +10,7 @@ import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useNuxtApp } from '#imports'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useQuoteStore } from '#engine/stores/quote'
 
 /*
@@ -72,6 +73,7 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
     // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
     const gqlFetch = (useNuxtApp() as unknown as { $gqlFetch: GqlFetch }).$gqlFetch
     const { t } = useI18n()
+    const { policy } = useOrderingPolicy()
 
     const quoteKey = computed(() =>
         cartStore.products.length > 0 ? quoteRequestKey(buildQuoteInput(cartStore), Boolean(authStore.user)) : '',
@@ -86,7 +88,7 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
             if (verdict.discountCents !== cartStore.couponDiscountCents) cartStore.couponDiscountCents = verdict.discountCents
         } else if (verdict.kind === 'refused') {
             const code = cartStore.couponCode ?? ''
-            const refusal = describeCouponRefusal({ valid: false, errorCode: verdict.errorCode })
+            const refusal = describeCouponRefusal({ valid: false, errorCode: verdict.errorCode }, policy.value)
             cartStore.couponCode = null
             cartStore.couponDiscountCents = 0
             notifications.notify({

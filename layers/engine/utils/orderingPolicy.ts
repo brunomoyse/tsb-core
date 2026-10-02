@@ -80,7 +80,13 @@ export const ORDERING_POLICY_SELECTION = `
  * Fee in whole EUR = index of the first tier the distance is under: < 3 km → 0 (free), 3-4 km → 1, ... 8-9 km → 6.
  * Same numbers as `DefaultOrderingPolicy` in tsb-service restaurant/domain/policy.go.
  */
-export const DEFAULT_ORDERING_POLICY: OrderingPolicy = Object.freeze({
+const deepFreeze = <T extends object>(value: T): T => {
+    for (const child of Object.values(value)) if (child && typeof child === 'object') deepFreeze(child)
+    return Object.freeze(value)
+}
+
+/** Frozen all the way down: the default is shared by every caller, so no one can edit the grid under the others. */
+export const DEFAULT_ORDERING_POLICY: OrderingPolicy = deepFreeze({
     deliveryEnabled: true,
     deliveryMinimumCents: 2500,
     deliveryMaxMeters: 9000,
@@ -100,7 +106,7 @@ export const DEFAULT_ORDERING_POLICY: OrderingPolicy = Object.freeze({
     totalRoundingStepCents: 10,
     slotIntervalMinutes: 15,
     minimumPreparationMinutes: 15,
-}) as OrderingPolicy
+} satisfies OrderingPolicy)
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
@@ -114,6 +120,30 @@ const centsOr = (value: unknown, fallback: number): number => {
 const positiveIntOr = (value: unknown, fallback: number): number =>
     isFiniteNumber(value) && value > 0 ? Math.round(value) : fallback
 
+const nonNegativeIntOr = (value: unknown, fallback: number): number =>
+    isFiniteNumber(value) && value >= 0 ? Math.round(value) : fallback
+
+/** A decimal string of money in cents, or null when it is not a non-negative amount (so a bad fee never reads as 0). */
+const strictCents = (value: unknown): number | null => {
+    const cents = centsOr(value, -1)
+    return cents < 0 ? null : cents
+}
+
+/**
+ * The fee grid from the API, or null when ANY tier is malformed: a tier whose fee does not parse must not become a
+ * free delivery, and dropping one tier silently would shift the others' bands, so the whole grid falls back.
+ */
+const tiersFromApi = (raw: unknown): DeliveryFeeTierCents[] | null => {
+    if (!Array.isArray(raw) || raw.length === 0) return null
+    const tiers: DeliveryFeeTierCents[] = []
+    for (const tier of raw) {
+        const feeCents = strictCents(tier?.fee)
+        if (!isFiniteNumber(tier?.upToKm) || tier.upToKm <= 0 || feeCents === null) return null
+        tiers.push({ upToMeters: kmToMeters(tier.upToKm), feeCents })
+    }
+    return tiers.toSorted((a, b) => a.upToMeters - b.upToMeters)
+}
+
 const kmToMeters = (km: number): number => Math.round(km * 1000)
 
 /**
@@ -124,13 +154,7 @@ export function orderingPolicyFromApi(raw: Partial<ApiOrderingPolicy> | null | u
     if (!raw || typeof raw !== 'object') return DEFAULT_ORDERING_POLICY
     const fallback = DEFAULT_ORDERING_POLICY
 
-    const tiers = Array.isArray(raw.deliveryFeeTiers)
-        ? raw.deliveryFeeTiers
-            .filter((tier) => isFiniteNumber(tier?.upToKm) && tier.upToKm > 0)
-            .map((tier) => ({ upToMeters: kmToMeters(tier.upToKm), feeCents: centsOr(tier.fee, 0) }))
-            .sort((a, b) => a.upToMeters - b.upToMeters)
-        : []
-    const deliveryFeeTiers = tiers.length > 0 ? tiers : fallback.deliveryFeeTiers.map((tier) => ({ ...tier }))
+    const deliveryFeeTiers = tiersFromApi(raw.deliveryFeeTiers) ?? fallback.deliveryFeeTiers.map((tier) => ({ ...tier }))
     const lastTier = deliveryFeeTiers[deliveryFeeTiers.length - 1]!
 
     return {
@@ -143,14 +167,16 @@ export function orderingPolicyFromApi(raw: Partial<ApiOrderingPolicy> | null | u
         excludedPostcodes: Array.isArray(raw.excludedPostcodes)
             ? raw.excludedPostcodes.filter((code): code is string => typeof code === 'string').map((code) => code.trim())
             : [...fallback.excludedPostcodes],
+        // A fraction: capped to 0..1, so a malformed rate can never take more than the whole price off.
         pickupDiscountRateBp: isFiniteNumber(raw.pickupDiscountRate) && raw.pickupDiscountRate >= 0
-            ? Math.round(raw.pickupDiscountRate * 10_000)
+            ? Math.round(Math.min(raw.pickupDiscountRate, 1) * 10_000)
             : fallback.pickupDiscountRateBp,
         pickupDiscountMinimumCents: centsOr(raw.pickupDiscountMinimum, fallback.pickupDiscountMinimumCents),
         onlinePaymentFeeCents: centsOr(raw.onlinePaymentFee, fallback.onlinePaymentFeeCents),
         totalRoundingStepCents: Math.max(centsOr(raw.totalRoundingStep, fallback.totalRoundingStepCents), 1),
         slotIntervalMinutes: positiveIntOr(raw.slotIntervalMinutes, fallback.slotIntervalMinutes),
-        minimumPreparationMinutes: positiveIntOr(raw.minimumPreparationMinutes, fallback.minimumPreparationMinutes),
+        // As served: the backend floors the preparation time at max(prep, this), and 0 is a legitimate "no floor".
+        minimumPreparationMinutes: nonNegativeIntOr(raw.minimumPreparationMinutes, fallback.minimumPreparationMinutes),
     }
 }
 

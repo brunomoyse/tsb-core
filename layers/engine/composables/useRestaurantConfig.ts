@@ -1,11 +1,11 @@
 import { type ApiOrderingPolicy, ORDERING_POLICY_SELECTION, isPolicyUnsupportedError } from '#engine/utils/orderingPolicy'
+import { type DocumentNode, print } from 'graphql'
 import { type Ref, effectScope, shallowRef, watch } from 'vue'
+import { useNuxtApp, useState } from '#imports'
 import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
-import { useState } from '#imports'
 
 /*
  * The restaurant config: hours, the ordering switch, today's slots and (audit PR 4.5) the ordering policy the
@@ -71,13 +71,22 @@ const usePolicyUnsupported = () => useState<boolean>('restaurant-config-policy-u
  * It lives in a detached effect scope so it is not tied to the component that happened to ask first: it keeps feeding
  * the shared state across client-side navigations, with the shared WebSocket client of useGqlSubscription.
  */
-function ensureLiveUpdates(state: Ref<RestaurantConfigResponse | null>, policyUnsupported: Ref<boolean>, started: Ref<boolean>) {
+function ensureLiveUpdates({ state, policyUnsupported, started, refetch }: {
+    state: Ref<RestaurantConfigResponse | null>
+    policyUnsupported: Ref<boolean>
+    started: Ref<boolean>
+    /** Gap recovery: asks for the config again after the socket reconnected. */
+    refetch: () => Promise<void>
+}) {
     if (!import.meta.client || started.value) return
     started.value = true
 
     const subscribe = (withPolicy: boolean) => {
         const sub = useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(
             print(withPolicy ? SUB_RESTAURANT_CONFIG : SUB_RESTAURANT_CONFIG_LEGACY),
+            {},
+            // Gap recovery: a push missed while the socket was down (a network blip, a backgrounded tab) is never replayed.
+            { onReconnect: refetch },
         )
         watch(sub.data, (val) => {
             // An update that arrives before the initial query resolved is dropped: that query is up to date anyway.
@@ -105,6 +114,31 @@ function ensureLiveUpdates(state: Ref<RestaurantConfigResponse | null>, policyUn
     scope.run(() => subscribe(!policyUnsupported.value))
 }
 
+/**
+ * Asks for the config again and replaces the shared state with the answer: what `ensureLiveUpdates` runs after the
+ * socket reconnected. Calls that overlap share one request (the shared client can announce a reconnect more than once).
+ */
+function makeRefetch(state: Ref<RestaurantConfigResponse | null>, policyUnsupported: Ref<boolean>): () => Promise<void> {
+    // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
+    const { $gqlFetch } = useNuxtApp() as unknown as { $gqlFetch: <T>(query: DocumentNode) => Promise<T> }
+    let inFlight: Promise<void> | null = null
+    const run = async () => {
+        let fresh: RestaurantConfigResponse
+        try {
+            fresh = await $gqlFetch<RestaurantConfigResponse>(policyUnsupported.value ? RESTAURANT_CONFIG_QUERY_LEGACY : RESTAURANT_CONFIG_QUERY)
+        } catch (err) {
+            if (policyUnsupported.value || !isPolicyUnsupportedError(err)) throw err
+            policyUnsupported.value = true
+            fresh = await $gqlFetch<RestaurantConfigResponse>(RESTAURANT_CONFIG_QUERY_LEGACY)
+        }
+        if (!fresh?.restaurantConfig) return
+        state.value = fresh
+        // The hours or the slots may have changed in the gap: what the quote of the cart on screen says may too.
+        requestQuoteRefresh()
+    }
+    return () => (inFlight ??= run().finally(() => { inFlight = null }))
+}
+
 export async function useRestaurantConfig(options: UseRestaurantConfigOptions = {}) {
     const state = useRestaurantConfigState()
     const policyUnsupported = usePolicyUnsupported()
@@ -120,7 +154,7 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
      * refresh or of a language change replaces the shared state, which also drops whatever the subscription had
      * merged into the previous answer.
      */
-    ensureLiveUpdates(state, policyUnsupported, subscriptionStarted)
+    ensureLiveUpdates({ state, policyUnsupported, started: subscriptionStarted, refetch: makeRefetch(state, policyUnsupported) })
     const answer = shallowRef<(() => RestaurantConfigResponse | null | undefined) | null>(null)
     watch(() => answer.value?.() ?? null, (fresh) => {
         if (fresh) state.value = fresh

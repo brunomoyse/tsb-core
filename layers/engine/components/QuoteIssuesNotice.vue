@@ -13,6 +13,7 @@ import { blockingOrderIssues, hasLineIssues } from '#engine/utils/orderQuote'
 import { computed } from 'vue'
 import { describeErrorCode } from '#engine/utils/gqlErrors'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useQuoteStore } from '#engine/stores/quote'
 
 /*
@@ -25,6 +26,7 @@ import { useQuoteStore } from '#engine/stores/quote'
  */
 const { t } = useI18n()
 const quoteStore = useQuoteStore()
+const { policy } = useOrderingPolicy()
 
 const ALREADY_SHOWN_ELSEWHERE = new Set(['DELIVERY_MINIMUM_NOT_MET'])
 
@@ -34,7 +36,7 @@ const messages = computed(() => {
     const texts = blockingOrderIssues(quote)
         .filter((issue) => !ALREADY_SHOWN_ELSEWHERE.has(issue.code))
         .map((issue) => {
-            const described = describeErrorCode(issue.code, issue.minimum ? { minimum: issue.minimum } : {})
+            const described = describeErrorCode(issue.code, policy.value, issue.minimum ? { minimum: issue.minimum } : {})
             return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
         })
     return [...new Set(texts)]

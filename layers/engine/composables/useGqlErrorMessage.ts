@@ -1,5 +1,6 @@
 import { describeGqlError } from '#engine/utils/gqlErrors'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 /**
  * `message(err, fallbackKey)` → the translated text for a failed GraphQL call.
@@ -9,9 +10,10 @@ import { useI18n } from 'vue-i18n'
  */
 export function useGqlErrorMessage() {
     const { t } = useI18n()
+    const { policy } = useOrderingPolicy()
 
     return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
-        const described = describeGqlError(err)
+        const described = describeGqlError(err, policy.value)
         return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
     }
 }

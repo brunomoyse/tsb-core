@@ -79,8 +79,45 @@ test('an old backend (no policy) gets the fallback; a partial or malformed answe
   assert.deepEqual(partial.excludedPostcodes, ['4610'])
 })
 
+test('a malformed fee tier never becomes a free delivery: the whole grid falls back', () => {
+  const grid = (deliveryFeeTiers) => orderingPolicyFromApi({ ...SERVED_TODAY, deliveryFeeTiers }).deliveryFeeTiers
+  for (const bad of [
+    [{ upToKm: 3, fee: '0.00' }, { upToKm: 5, fee: 'abc' }],
+    [{ upToKm: 3, fee: '' }, { upToKm: 5, fee: '2.00' }],
+    [{ upToKm: 3, fee: '-1.00' }, { upToKm: 5, fee: '2.00' }],
+    [{ upToKm: 3, fee: null }, { upToKm: 5, fee: '2.00' }],
+    [{ upToKm: 0, fee: '1.00' }, { upToKm: 5, fee: '2.00' }],
+    [{ upToKm: 'x', fee: '1.00' }, { upToKm: 5, fee: '2.00' }],
+  ]) assert.deepEqual(grid(bad), DEFAULT_ORDERING_POLICY.deliveryFeeTiers, JSON.stringify(bad))
+  // A well-formed free tier is still free.
+  assert.deepEqual(grid([{ upToKm: 3, fee: '0.00' }, { upToKm: 5, fee: '2.00' }]), [{ upToMeters: 3000, feeCents: 0 }, { upToMeters: 5000, feeCents: 200 }])
+})
+
+test('the pickup discount is capped to a fraction, the preparation floor is taken as served', () => {
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 5 }).pickupDiscountRateBp, 10_000)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 0 }).pickupDiscountRateBp, 0)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: -0.1 }).pickupDiscountRateBp, 1000)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, minimumPreparationMinutes: 0 }).minimumPreparationMinutes, 0)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, minimumPreparationMinutes: 20 }).minimumPreparationMinutes, 20)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, minimumPreparationMinutes: -1 }).minimumPreparationMinutes, 15)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, minimumPreparationMinutes: null }).minimumPreparationMinutes, 15)
+})
+
+test('the policy handed out never shares an array with the frozen default', () => {
+  const policy = orderingPolicyFromApi({ deliveryEnabled: true })
+  assert.notEqual(policy.deliveryFeeTiers, DEFAULT_ORDERING_POLICY.deliveryFeeTiers)
+  assert.notEqual(policy.excludedPostcodes, DEFAULT_ORDERING_POLICY.excludedPostcodes)
+  policy.deliveryFeeTiers.push({ upToMeters: 1, feeCents: 1 })
+  policy.excludedPostcodes.push('0000')
+  assert.equal(DEFAULT_ORDERING_POLICY.deliveryFeeTiers.length, 7)
+  assert.deepEqual(DEFAULT_ORDERING_POLICY.excludedPostcodes, ['4610'])
+})
+
 test('the fallback is frozen and has exactly today\'s constants', () => {
   assert.equal(Object.isFrozen(DEFAULT_ORDERING_POLICY), true)
+  assert.equal(Object.isFrozen(DEFAULT_ORDERING_POLICY.deliveryFeeTiers), true)
+  assert.equal(Object.isFrozen(DEFAULT_ORDERING_POLICY.deliveryFeeTiers[0]), true)
+  assert.equal(Object.isFrozen(DEFAULT_ORDERING_POLICY.excludedPostcodes), true)
   assert.equal(DEFAULT_ORDERING_POLICY.deliveryMinimumCents, 2500)
   assert.equal(DEFAULT_ORDERING_POLICY.onlinePaymentFeeCents, 30)
   assert.equal(DEFAULT_ORDERING_POLICY.pickupDiscountMinimumCents, 2000)
