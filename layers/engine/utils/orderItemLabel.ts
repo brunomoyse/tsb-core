@@ -26,3 +26,32 @@ export function orderItemLabelParts(input: OrderItemLabelInput): OrderItemLabelP
         choice: input.choiceName?.trim() || undefined,
     };
 }
+
+export interface OrderItemChoiceInput {
+    choice?: { name: string } | null;
+    selections?: { choiceId: string; quantity: number }[] | null;
+    product?: { choices?: { id: string; name: string }[] | null };
+}
+
+/**
+ * The choices of an order line as shown to the customer: "Tonkotsu, Corn x2" (selection quantities are
+ * line-wide, like in the cart). The names come from the product's choices because the API's
+ * `OrderItemSelection.choice` is not queried (see types/index.ts). Orders from before selections
+ * existed fall back to their single `choice`.
+ */
+export function orderItemChoiceText(item: OrderItemChoiceInput): string | undefined {
+    const selections = item.selections ?? [];
+    if (selections.length > 0) {
+        const names = new Map((item.product?.choices ?? []).map((choice) => [choice.id, choice.name]));
+        const text = selections
+            .map((selection) => {
+                const name = names.get(selection.choiceId);
+                if (!name) return '';
+                return selection.quantity > 1 ? `${name} x${selection.quantity}` : name;
+            })
+            .filter(Boolean)
+            .join(', ');
+        if (text) return text;
+    }
+    return item.choice?.name?.trim() || undefined;
+}

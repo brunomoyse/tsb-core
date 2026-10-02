@@ -1,5 +1,6 @@
 import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '#engine/types'
 import { type Ref, computed, ref, watch } from 'vue'
+import { priceCartLine } from '#engine/utils/pricing'
 import { useI18n } from 'vue-i18n'
 
 /**
@@ -20,7 +21,7 @@ import { useI18n } from 'vue-i18n'
 export const useProductChoices = (product: Product | null | undefined, quantity: Ref<number>) => {
     const { t } = useI18n()
 
-    /** choiceId → selected quantity. Entries are deleted, never zeroed. */
+    /** The selected quantity per choiceId. Entries are deleted, never zeroed. */
     const selectedChoiceQuantities = ref<Record<string, number>>({})
 
     /**
@@ -92,16 +93,21 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         return product.choices.find((choice) => choice.id === selection.choiceId) ?? null
     })
 
-    /** Base price plus every selected choice's modifier × its quantity. */
-    const displayPrice = computed(() => {
-        if (!product) return '0'
-        const modifier = Object.entries(selectedChoiceQuantities.value).reduce((sum, [choiceId, selectedQty]) => {
-            const choice = product.choices?.find((c) => c.id === choiceId)
-            if (!choice || selectedQty <= 0) return sum
-            return sum + Number(choice.priceModifier) * selectedQty
-        }, 0)
-        return String(Number(product.price) + modifier)
+    /**
+     * Line pricing is shared with the cart and the backend (#engine/utils/pricing):
+     * base × qty + Σ(modifier × selection qty). Selection quantities are already
+     * line-wide, so the surcharge is not multiplied by the line quantity again.
+     */
+    const pricedLine = computed(() => {
+        if (!product) return { lineTotalCents: 0, unitPriceCents: 0 }
+        return priceCartLine({ quantity: quantity.value, product, selectedChoices: selectionList.value })
     })
+
+    /** What the line costs: the amount charged for the whole line, in cents. */
+    const lineTotalCents = computed(() => pricedLine.value.lineTotalCents)
+
+    /** Headline price of one unit (lineTotal / qty, rounded to the cent), in cents. */
+    const displayPriceCents = computed(() => pricedLine.value.unitPriceCents)
 
     const isGroupSatisfied = (group: ProductChoiceGroup) => {
         const selected = selectedCountIn(group)
@@ -178,10 +184,11 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         selectedChoiceQuantities.value = copy
     }
 
-    // Keep exclusive picks in step when the line quantity changes: a broth
-    // chosen at quantity 1 must count ×2 once the user bumps the footer
-    // stepper to 2, or every pick-one group silently turns unsatisfiable.
-    // Only groups holding exactly one distinct pick are rescaled.
+    /*
+     * Keep exclusive picks in step when the line quantity changes: a broth chosen at quantity 1 must
+     * count ×2 once the user bumps the footer stepper to 2, or every pick-one group silently turns
+     * unsatisfiable. Only groups holding exactly one distinct pick are rescaled.
+     */
     watch(quantity, () => {
         const copy = { ...selectedChoiceQuantities.value }
         let changed = false
@@ -215,7 +222,8 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         quantityOf,
         selectionList,
         selectedChoice,
-        displayPrice,
+        displayPriceCents,
+        lineTotalCents,
         isGroupSatisfied,
         allGroupsSatisfied,
         groupHint,

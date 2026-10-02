@@ -57,8 +57,8 @@
 
 <script lang="ts" setup>
 import { computed, ref, useAttrs } from 'vue'
-import { DELIVERY_ZONE_METERS } from '#engine/lib/delivery'
 import DeliveryZoneModal from '~/components/delivery/DeliveryZoneModal.vue'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
@@ -87,8 +87,7 @@ const state = computed<ChipState>(() => {
     if (!isMounted.value) return 'notSet'
     if (cartStore.collectionOption === 'PICKUP') return 'pickup'
     if (!cartStore.address) return 'notSet'
-    const d = cartStore.address.distance ?? 0
-    return d < DELIVERY_ZONE_METERS ? 'inZone' : 'outOfZone'
+    return deliveryZoneStatus(cartStore.address) === 'ok' ? 'inZone' : 'outOfZone'
 })
 
 const distanceKm = computed(() =>

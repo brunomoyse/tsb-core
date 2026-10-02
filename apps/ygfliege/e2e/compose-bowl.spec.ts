@@ -145,4 +145,27 @@ test.describe('compose a bowl (Malatang sur mesure)', () => {
         await expect(cartItem).toContainText("Bouillon d'os de bœuf épicé")
         await expect(cartItem).toContainText('Fort')
     })
+
+    test('the card "+" of a customised product opens the modal instead of adding a line without selections', async ({ page }) => {
+        const modal = await openProductModal(page, 'Menu Découverte')
+        const addButton = modal.getByTestId('product-modal-add-to-cart')
+        await incrementChoice(modal, 'product-modal', "Bouillon d'os de bœuf épicé")
+        await incrementChoice(modal, 'product-modal', 'Fort')
+        await addButton.click()
+        await expect(modal).toBeHidden()
+
+        // Now in the cart: the card shows a stepper whose "+" must go back to the modal and "−" must not exist.
+        const card = page.getByTestId('product-card').filter({ hasText: 'Menu Découverte' }).first()
+        await expect(card.getByTestId('product-card-decrement')).toHaveCount(0)
+        await card.getByTestId('product-card-increment').click()
+        await expect(modal).toBeVisible()
+
+        // The regression: "+" used to push a second line with no selections, which the backend rejects at payment.
+        const lines = await page.evaluate(() => {
+            const raw = localStorage.getItem('cart')
+            return raw ? (JSON.parse(raw).products as { selectedChoices?: unknown[] }[]) : []
+        })
+        expect(lines).toHaveLength(1)
+        for (const line of lines) expect(line.selectedChoices?.length ?? 0).toBeGreaterThan(0)
+    })
 })

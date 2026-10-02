@@ -19,8 +19,8 @@
             <!-- Items -->
             <div class="px-5 space-y-3 pb-4">
                 <div
-                    v-for="item in cartStore.products"
-                    :key="getItemKey(item)"
+                    v-for="(item, lineIndex) in cartStore.products"
+                    :key="lineKeys[lineIndex]"
                     class="flex items-center gap-3"
                 >
                     <!-- Product image -->
@@ -65,16 +65,22 @@
                                 </p>
                             </div>
                             <span class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums">
-                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                {{ formatCents(getItemLineTotalCents(item)) }}
                             </span>
                         </div>
+
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <!-- What the server quote says about this line, with the way out -->
+                        <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
                         <!-- Row 2: Stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5">
                             <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                                 <button
                                     :aria-label="$t('cart.decreaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                    :disabled="!canChangeQuantity(item)"
+                                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                     @click="handleDecrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -86,7 +92,9 @@
                                 </span>
                                 <button
                                     :aria-label="$t('cart.increaseQty')"
-                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors"
+                                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                    :disabled="!canChangeQuantity(item)"
+                                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                     @click="handleIncrementQuantity(item)"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -117,7 +125,7 @@
             <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
                 <div class="flex justify-between text-neutral-500">
                     <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500 relative">
                     <div class="flex items-center gap-1">
@@ -148,27 +156,29 @@
                         </button>
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic">{{ $t('checkout.tbd') }}</span>
-                    <span v-else-if="isExcludedPostcode(cartStore.address?.postcode)" class="text-primary-500 font-medium">{{ $t('checkout.notDeliverableArea') }}</span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium">{{ $t('checkout.tooFar') }}</span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
-                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                        {{ $t(deliveryUnavailableKey) }}
+                        <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
+                    </span>
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
+                    <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('checkout.discount') }}</span>
-                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
-                    <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.paymentOption === 'ONLINE'" class="flex justify-between text-neutral-500">
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
                     <span>{{ $t('checkout.transactionFee') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(TRANSACTION_FEE) }}</span>
+                    <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <!-- Total -->
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-                    <span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatPrice(finalTotal) }}</span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-600 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
             </div>
         </template>
@@ -178,14 +188,15 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { type ComputedRef, computed, onBeforeUnmount, ref, watch } from 'vue'
+import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
-import { TRANSACTION_FEE } from '#engine/lib/fees'
-import { isExcludedPostcode } from '#engine/lib/delivery'
-import { formatPrice } from '#engine/lib/price'
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
+import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
-import { roundToNearest10Cents } from '#engine/utils/money'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -197,10 +208,14 @@ const cartStore = useCartStore()
 const config = useRuntimeConfig()
 const { impact: hapticImpact } = useHaptics()
 const {
-    getItemUnitPrice,
-    subtotal,
-    pickupDiscount,
-    deliveryFee,
+    getItemLineTotalCents,
+    subtotalCents,
+    pickupDiscountCents,
+    deliveryFeeCents,
+    deliveryUnavailableKey,
+    switchToPickup,
+    onlineFeeCents,
+    payableCents,
 } = useCartTotals()
 const showTooltip = ref(false)
 const tooltipButtonRef = ref<HTMLElement | null>(null)
@@ -247,13 +262,11 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemKey = (item: CartItem): string => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
+
+const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const itemLabelParts = (item: CartItem) => orderItemLabelParts({
     code: item.product.code,
@@ -287,35 +300,15 @@ const itemChoice = (item: CartItem): string | undefined =>
             choiceName: item.selectedChoice?.name,
         }).choice
 
-const finalTotal: ComputedRef<number> = computed(() => {
-    const fee = cartStore.collectionOption === 'DELIVERY' ? Math.max(deliveryFee.value, 0) : 0
-    const txFee = cartStore.paymentOption === 'ONLINE' ? TRANSACTION_FEE : 0
-    return roundToNearest10Cents(
-        subtotal.value + fee - pickupDiscount.value - cartStore.couponDiscount + txFee,
-    )
-})
-
 const handleIncrementQuantity = (item: CartItem) => {
     cartStore.incrementQuantity(item.product, {
         choice: item.selectedChoice,
         selections: item.selectedChoices,
+        quantity: item.quantity,
     })
     hapticImpact('Light')
 }
 
-const handleDecrementQuantity = (item: CartItem) => {
-    cartStore.decrementQuantity(item.product, {
-        choice: item.selectedChoice,
-        selections: item.selectedChoices,
-    })
-    hapticImpact('Light')
-}
-
-const handleRemoveFromCart = (item: CartItem) => {
-    cartStore.removeFromCart(item.product, {
-        choice: item.selectedChoice,
-        selections: item.selectedChoices,
-    })
-    hapticImpact('Medium')
-}
+// The "−" and the remove button share one flow with every other cart surface: the last unit going down is a removal, and every removal offers Undo.
+const { removeLine: handleRemoveFromCart, decrementLine: handleDecrementQuantity } = useCartRemoval()
 </script>

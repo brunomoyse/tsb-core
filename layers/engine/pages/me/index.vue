@@ -9,6 +9,7 @@ import UserForm from '~/components/form/UserForm.vue'
 import { formatAddress } from '#engine/utils/utils'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useNotificationsStore } from '#engine/stores/notifications'
@@ -184,7 +185,10 @@ const openModal = () => {
 
 const closeModal = () => { showModal.value = false }
 
+const profileSaving = ref(false)
 const submitProfileUpdate = async (formData: UpdateUserRequest) => {
+    if (profileSaving.value) return
+    profileSaving.value = true
     try {
         const res: { updateMe: User } = await mutationUpdateMe({ input: formData })
         authStore.updateUser(res.updateMe)
@@ -196,7 +200,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
             variant: 'success',
         })
     } catch (error) {
-        if (import.meta.dev) console.error('Error during profile update:', error)
+        reportError(error, 'me.updateProfile')
         notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
@@ -204,6 +208,8 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
             variant: 'error',
         })
         return
+    } finally {
+        profileSaving.value = false
     }
     closeModal()
 }
@@ -250,7 +256,7 @@ const handleDeleteAccount = async () => {
         })
         await navigateTo(localePath('/'))
     } catch (error) {
-        if (import.meta.dev) console.error('Error deleting account:', error)
+        reportError(error, 'me.deleteAccount')
         deleting.value = false
         notifications.notify({
             message: t('me.profile.deleteError'),
@@ -293,7 +299,7 @@ const submitAddressUpdate = async () => {
         })
         closeAddressModal()
     } catch (error) {
-        if (import.meta.dev) console.error('Error updating address:', error)
+        reportError(error, 'me.updateAddress')
         notifications.notify({
             message: t('notify.errors.profileUpdateFailed'),
             persistent: false,
@@ -331,7 +337,8 @@ const updateNotificationPref = async (
             duration: 3000,
             variant: 'success',
         })
-    } catch {
+    } catch (err: unknown) {
+        reportError(err, 'me.updateNotifications')
         notifications.notify({
             message: t('me.notifications.updateError'),
             persistent: false,
@@ -643,7 +650,7 @@ const updateNotificationPref = async (
                     <h3 id="edit-profile-title" class="text-2xl font-semibold text-neutral-900 text-center mb-6">
                         {{ t('me.profile.update') }}
                     </h3>
-                    <UserForm :initialValues="userInitialValues" @submit="submitProfileUpdate" @close="closeModal" />
+                    <UserForm :initialValues="userInitialValues" :submitting="profileSaving" @submit="submitProfileUpdate" @close="closeModal" />
                 </div>
             </div>
         </transition>

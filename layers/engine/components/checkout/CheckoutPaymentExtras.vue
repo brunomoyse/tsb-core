@@ -109,6 +109,9 @@
                             pattern="[0-9]*([.,][0-9]{0,2})?"
                             autocomplete="off"
                             :placeholder="$t('checkout.cashAmountPlaceholder')"
+                            @blur="cashTouched = true"
+                            :aria-invalid="showCashShort ? 'true' : undefined"
+                            :aria-describedby="cashHintId"
                             :class="[
                                 'w-full pl-3.5 pr-8 py-2.5 border rounded-xl bg-white text-sm text-neutral-900 placeholder-neutral-400 focus-visible:outline-none transition-all duration-300',
                                 cashAcknowledgedModel
@@ -118,6 +121,24 @@
                         />
                         <span :class="['absolute inset-y-0 right-3 flex items-center text-sm pointer-events-none', cashAcknowledgedModel ? 'text-neutral-500' : 'text-amber-700']">€</span>
                     </div>
+                    <p
+                        v-if="showCashShort"
+                        id="cash-amount-hint"
+                        data-testid="cash-amount-short"
+                        aria-live="polite"
+                        class="mt-1.5 text-xs font-medium text-ygf-orange-text"
+                    >
+                        {{ $t('checkout.cashAmountTooLow', { total: formatCents(payableCents) }) }}
+                    </p>
+                    <p
+                        v-else-if="cashState.kind === 'change'"
+                        id="cash-amount-hint"
+                        data-testid="cash-amount-change"
+                        role="status"
+                        class="mt-1.5 text-xs font-medium text-ygf-success"
+                    >
+                        {{ $t('checkout.cashChangeDue', { amount: formatCents(cashState.changeCents) }) }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -248,7 +269,7 @@
                         >
                             <span>{{ extra.label }}</span>
                             <span class="rounded-full bg-white/80 border border-neutral-200 px-2 py-0.5 tabular-nums">
-                                +{{ formatPrice(extra.price) }}
+                                +{{ formatCents(extra.priceCents) }}
                             </span>
                         </button>
                         <div
@@ -269,7 +290,7 @@
                                     class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-500 text-white text-[10px] font-semibold tabular-nums px-1.5"
                                 >×{{ extra.quantity }}</span>
                                 <span class="rounded-full bg-white/80 border border-primary-200 px-2 py-0.5 tabular-nums">
-                                    +{{ formatPrice(extra.price) }}
+                                    +{{ formatCents(extra.priceCents) }}
                                 </span>
                             </button>
                             <button
@@ -312,7 +333,7 @@
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
         <div v-if="!isMinimumReached" class="text-sm text-primary-600 text-center">
-            {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+            {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
         </div>
 
         <!-- Checkout Button (desktop only) -->
@@ -321,7 +342,7 @@
             size="lg"
             block
             class="hidden lg:inline-flex"
-            :disabled="!isOrderingAvailable || isCartEmpty"
+            :disabled="!isOrderingAvailable || isCartEmpty || isOrderBlocked"
             :loading="loading"
             @click="debouncedCheckout"
         >
@@ -333,18 +354,24 @@
                 }}
             </template>
         </UiButton>
+        <p v-if="isQuotePending" data-testid="checkout-quote-updating-desktop" class="hidden lg:block text-center text-xs text-neutral-400 mt-1">
+            {{ $t('cart.quoteUpdating') }}
+        </p>
     </section>
 </template>
 
 <script lang="ts" setup>
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
+import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { DELIVERY_MINIMUM } from '#engine/composables/useCartTotals'
-import { formatPrice } from '#engine/lib/price'
+import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
+import { evaluateCashAmount } from '#engine/utils/cashPayment'
+import { formatCents } from '#engine/lib/price'
+import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
-import { useGqlQuery } from '#imports'
+import { useGqlQuery, useState } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { useTracking } from '#engine/composables/useTracking'
@@ -361,13 +388,15 @@ const { isMinimumReached = false, loading = false, isOrderingAvailable = true, c
 const showCashAckError = computed(() => cashAckError && !cashAcknowledged)
 
 const cartStore = useCartStore()
+// The pay button waits for the server quote and stays disabled while it reports something that would fail the order.
+const { isOrderBlocked, isQuotePending, payableCents } = useCartTotals()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWasabi, addGinger, addSauce, sauce, sauceOptions, syncLockedExtras } = useOrderExtras()
 
 const ORDER_COMMENT_MAX = 500
 
-const PAID_EXTRA_PRICE_MAX = 1
+const PAID_EXTRA_PRICE_MAX_CENTS = 100
 
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
@@ -444,23 +473,22 @@ const paidExtras = computed(() => {
     const products = accompagnementCategory.value?.products ?? []
     return products
         .filter((p) => {
-            const price = Number(p.price)
+            const priceCents = toCents(p.price)
             return (
                 p.isVisible &&
                 p.code !== null &&
-                Number.isFinite(price) &&
-                price > 0 &&
-                price <= PAID_EXTRA_PRICE_MAX
+                priceCents > 0 &&
+                priceCents <= PAID_EXTRA_PRICE_MAX_CENTS
             )
         })
         .map((p) => ({
             code: p.code as string,
             label: p.name,
-            price: Number(p.price),
+            priceCents: toCents(p.price),
             isAvailable: p.isAvailable,
             quantity: paidExtraQuantity(p.code as string),
         }))
-        .sort((a, b) => a.price - b.price || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
+        .sort((a, b) => a.priceCents - b.priceCents || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
 })
 
 const emit = defineEmits<{
@@ -486,6 +514,13 @@ const cashPaymentAmount = computed({
         cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
     },
 })
+
+// An amount below the total is refused by the checkout; above it, the change due is shown (audit M25).
+const cashState = computed(() => evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value))
+// "Less than the total" is only said once the customer is done typing (blur) or has tried to order (the checkout sets the flag): not on every digit.
+const cashTouched = useState('checkout-cash-touched', () => false)
+const showCashShort = computed(() => cashState.value.kind === 'short' && cashTouched.value)
+const cashHintId = computed(() => (showCashShort.value || cashState.value.kind === 'change' ? 'cash-amount-hint' : undefined))
 
 const sauceTypeOptions = computed(() => sauceOptions.map((value) => ({ value, label: t(`checkout.${value}`) })))
 

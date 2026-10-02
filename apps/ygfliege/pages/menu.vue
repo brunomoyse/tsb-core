@@ -8,17 +8,33 @@
             class="w-full min-w-0"
             :class="hasCartItems ? 'lg:w-2/3' : 'lg:w-full'"
         >
-            <!-- Restaurant Closed Banner -->
-            <div v-if="!isCheckoutAvailable" class="max-w-7xl mx-auto mt-4 px-4">
-            <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                <div class="min-w-0">
-                    <p class="text-amber-900 text-sm font-semibold">{{ $t('menu.restaurantClosed') }}</p>
-                    <p class="text-amber-800 text-sm mt-0.5">{{ $t('menu.restaurantClosedDetails') }}</p>
+            <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
+            <div v-if="isClosed" data-testid="menu-restaurant-closed" class="max-w-7xl mx-auto mt-4 px-4">
+                <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <div class="min-w-0">
+                        <p class="text-amber-900 text-sm font-semibold">{{ $t('menu.restaurantClosed') }}</p>
+                        <p class="text-amber-800 text-sm mt-0.5">{{ $t('menu.restaurantClosedDetails') }}</p>
+                    </div>
                 </div>
             </div>
+            <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="menu-preorder-banner" class="max-w-7xl mx-auto mt-4 px-4">
+                <div class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-amber-900 text-sm font-semibold">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
+                </div>
+            </div>
+            <div v-else-if="configLoadFailed" class="max-w-7xl mx-auto mt-4 px-4">
+                <LoadError
+                    :message="$t('ordering.loadFailed')"
+                    :busy="configPending"
+                    class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900"
+                    @retry="retryConfig()"
+                />
             </div>
 
             <!-- Sticky search header. The dietary filter chips and the category
@@ -97,8 +113,19 @@
             </div>
             </div>
 
+            <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
+            <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
+                <LoadError
+                    :message="$t('menu.loadFailed')"
+                    :busy="categoriesPending"
+                    data-testid="menu-load-error"
+                    class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
+                    @retry="refetchCategories()"
+                />
+            </section>
+
             <!-- Skeleton Loading State -->
-            <section v-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+            <section v-else-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
                 <div v-for="i in 3" :key="i" class="space-y-4">
                     <div class="h-6 w-32 bg-ygf-orange-100/60 rounded animate-pulse"></div>
                     <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
@@ -181,6 +208,11 @@
                     </div>
                 </div>
 
+                <!-- The menu loaded and is truly empty -->
+                <div v-if="!baseCategories.length" class="text-center py-12 text-ygf-black/60">
+                    <p class="text-lg">{{ $t('menu.noProduct') }}</p>
+                </div>
+
                 <!-- Search No Results -->
                 <div v-if="searchValue.trim().length && displayedCategories.length === 0" class="text-center py-12 text-ygf-black/60">
                     <p class="text-lg">{{ $t('menu.noResults', { query: searchValue }) }}</p>
@@ -193,7 +225,7 @@
             v-if="hasCartItems"
             class="hidden lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:block lg:w-1/3 lg:pr-4"
         >
-            <SideCart :is-ordering-available="isCheckoutAvailable" />
+            <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
         </aside>
 
 
@@ -207,17 +239,19 @@
                              fixed set stays on the ordinary product modal. -->
                         <BowlComposer
                             v-if="routedProductIsComposer"
-                            :key="route.query.product"
+                            :key="`${route.query.product}-${modalAttempt}`"
                             :product="route.query.product as string"
                             :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
+                            @retry="modalAttempt++"
                         />
                         <ProductModal
                             v-else
-                            :key="route.query.product"
+                            :key="`${route.query.product}-${modalAttempt}`"
                             :product="route.query.product as string"
                             :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
+                            @retry="modalAttempt++"
                         />
                     </Transition>
                 </div>
@@ -244,7 +278,8 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import LoadError from '#engine/components/LoadError.vue'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 import { PRODUCT_IMAGE_FALLBACK, productImageUrl } from '#engine/utils/productImage'
 import { telHref } from '#engine/utils/phone'
@@ -265,11 +300,20 @@ const dismissAllergenNotice = () => {
 }
 
 // Restaurant config
-const { config: restaurantConfig } = await useRestaurantConfig()
-const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
-const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
-const isCheckoutAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
-const isCartAddAvailable = computed(() => isOrderingEnabled.value)
+// A config that failed to load says nothing about opening hours: only a loaded config that says "closed" shows the closed banner and only a loaded "ordering off" disables adding to the cart.
+const {
+    isClosed,
+    isPreorderOnly,
+    isOrderingDisabled,
+    preorderTime,
+    loadFailed: configLoadFailed,
+    pending: configPending,
+    retry: retryConfig,
+} = await useOrderingAvailability()
+const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
+
+// Bumped by a modal's Retry: remounting it runs its product query again.
+const modalAttempt = ref(0)
 
 const openModal = (id: string) => {
     // Add productId to URL query
@@ -335,7 +379,7 @@ const cartStore = useCartStore()
 // SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
 const isMounted = useMounted()
 const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
-const { data: dataCategories } = await useGqlQuery<{
+const { data: dataCategories, error: categoriesError, pending: categoriesPending, refresh: refetchCategories } = await useGqlQuery<{
     productCategories: ProductCategory[]
 }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
 

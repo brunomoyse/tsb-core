@@ -1,96 +1,117 @@
 import { type ComputedRef, computed } from 'vue'
+import { deliveryUnavailableKey, isQuoteBlocking, isQuoteUsableForTotals, quoteRequestKey, totalsFromQuote } from '#engine/utils/orderQuote'
+import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
 import type { CartItem } from '@/types'
-import { deliveryFeeForDistance, isExcludedPostcode } from '~/lib/delivery'
-import { roundToNearest10Cents } from '~/utils/money'
+import { buildQuoteInput } from '#engine/utils/orderPayload'
+import { computeCartTotals } from '#engine/utils/cartTotals'
+import { useAuthStore } from '#engine/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useQuoteStore } from '#engine/stores/quote'
+import { useTracking } from '#engine/composables/useTracking'
 
 /*
  * Single source of truth for cart totals across every surface that shows them:
- * SideCart, CartMobile, FloatingCartBar, pages/cart.vue, CheckoutProductSummary.
+ * SideCart, CartMobile, FloatingCartBar, pages/cart.vue, checkout pay bar and CheckoutProductSummary.
  *
- * The contract mirrors what the backend charges (see tsb-service/pkg/money/rounding.go):
- * subtotal stays raw, pickupDiscount is rounded individually, and displayTotal is rounded
- * once after summing — identical to CheckoutProductSummary.finalTotal sans transactionFee.
+ * Every amount is an INTEGER NUMBER OF CENTS (audit M13); templates format them with
+ * `formatCents` and only the API boundary turns them into decimal strings. The maths lives in
+ * `#engine/utils/cartTotals` (pure, covered by the backend parity test); this composable just
+ * makes it reactive.
+ *
+ * When the server's quote of the CURRENT cart is available (`useOrderQuote` keeps it up to date)
+ * its numbers are shown instead of the client's maths: they are what createOrder will charge.
+ * While a quote is pending or failed, and on a backend without quoteOrder, the client's maths
+ * (parity-tested against the backend) is shown, so a surface never waits on the network to show a total.
+ *
+ * The contract mirrors what the backend charges (see tsb-service/pkg/money/rounding.go and
+ * `computePayableCents`): subtotal stays raw, the discounts are rounded individually, and
+ * payableCents — the amount Mollie is asked for — is rounded once after summing everything,
+ * including the delivery fee and the online payment fee.
  */
 
-const PICKUP_DISCOUNT_THRESHOLD = 20
-const PICKUP_DISCOUNT_RATE = 0.1
-// Minimum subtotal for a delivery order, in euros. Exported so every warning
-// message renders the same amount the totals enforce.
-export const DELIVERY_MINIMUM = 25
-
 export interface CartTotals {
-    getItemUnitPrice: (item: CartItem) => number
-    subtotal: ComputedRef<number>
-    pickupDiscount: ComputedRef<number>
-    deliveryFee: ComputedRef<number>
-    couponDiscount: ComputedRef<number>
-    displayTotal: ComputedRef<number>
+    /** Line amount in cents: base × qty + Σ(modifier × selection qty). See #engine/utils/pricing. */
+    getItemLineTotalCents: (item: CartItem) => number
+    /** Per-unit price in cents, only when it multiplies back to the line total exactly (else null). */
+    getItemExactUnitCents: (item: CartItem) => number | null
+    subtotalCents: ComputedRef<number>
+    pickupDiscountCents: ComputedRef<number>
+    /** 0 for pickup / unknown address, -1 (OUT_OF_ZONE) when the address cannot be delivered to. */
+    deliveryFeeCents: ComputedRef<number>
+    /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far); the fresh quote's verdict wins over the client's rule. */
+    deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
+    couponDiscountCents: ComputedRef<number>
+    /** 30 cents when the selected payment option is ONLINE, else 0. */
+    onlineFeeCents: ComputedRef<number>
+    /** What the customer pays: subtotal − discounts (clamped ≥ 0) + delivery fee + online fee. */
+    payableCents: ComputedRef<number>
     hasBreakdown: ComputedRef<boolean>
     isMinimumReached: ComputedRef<boolean>
+    /** Delivery only: how much more the basket needs to reach the minimum (0 when reached / pickup). */
+    amountToDeliveryMinimumCents: ComputedRef<number>
+    /** The totals above are the server's quote (true), not the client's maths. */
+    isQuoted: ComputedRef<boolean>
+    /** A quote of the current cart is on its way: the totals shown may still move ("updating…"). */
+    isQuotePending: ComputedRef<boolean>
+    /** The order cannot be placed now: the quote is pending, or the fresh quote reports blocking issues. */
+    isOrderBlocked: ComputedRef<boolean>
+    /** Switches the order to pickup (the "or switch to pickup" action of the minimum notice). */
+    switchToPickup: () => void
 }
 
 export function useCartTotals(): CartTotals {
     const cartStore = useCartStore()
+    const { trackEvent } = useTracking()
 
-    const getItemUnitPrice = (item: CartItem): number => {
-        const base = Number(item.product.price)
-        const selections = item.selectedChoices ?? []
-        if (selections.length > 0) {
-            const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
-            return base + selections.reduce((sum, selection) => {
-                const choice = choiceMap.get(selection.choiceId)
-                return choice ? sum + Number(choice.priceModifier) * selection.quantity : sum
-            }, 0)
-        }
-        return base + (item.selectedChoice ? Number(item.selectedChoice.priceModifier) : 0)
+    const quoteStore = useQuoteStore()
+    const authStore = useAuthStore()
+
+    /*
+     * The quote counts only when it answers the cart as it is RIGHT NOW: compared with the key of
+     * the current cart, not with the last key the cycle was asked for (the cycle learns of a change
+     * a tick later, and a surface that is not asking, e.g. a closed drawer, never does).
+     */
+    const currentQuote = computed(() => {
+        if (cartStore.products.length === 0 || quoteStore.quote === null) return null
+        const key = quoteRequestKey(buildQuoteInput(cartStore), Boolean(authStore.user))
+        return quoteStore.quoteKey === key ? quoteStore.quote : null
+    })
+
+    const clientTotals = computed(() => computeCartTotals({
+        lines: cartStore.products,
+        collectionOption: cartStore.collectionOption,
+        address: cartStore.address,
+        paymentOption: cartStore.paymentOption,
+        couponDiscountCents: cartStore.couponDiscountCents,
+    }))
+    const quote = computed(() => {
+        const fresh = currentQuote.value
+        return fresh && isQuoteUsableForTotals(fresh) ? fresh : null
+    })
+    const totals = computed(() => quote.value ? totalsFromQuote(quote.value, cartStore.collectionOption) : clientTotals.value)
+
+    const switchToPickup = () => {
+        if (cartStore.collectionOption === 'PICKUP') return
+        trackEvent('cart_collection_option_changed', { from: cartStore.collectionOption, to: 'PICKUP' })
+        cartStore.collectionOption = 'PICKUP'
     }
 
-    const subtotal = computed(() =>
-        cartStore.products.reduce((acc, item) => acc + getItemUnitPrice(item) * item.quantity, 0),
-    )
-
-    const pickupDiscount = computed(() => {
-        if (cartStore.collectionOption !== 'PICKUP' || subtotal.value < PICKUP_DISCOUNT_THRESHOLD) return 0
-        const raw = cartStore.products.reduce((acc, item) =>
-            item.product.isDiscountable
-                ? acc + getItemUnitPrice(item) * item.quantity * PICKUP_DISCOUNT_RATE
-                : acc, 0)
-        return roundToNearest10Cents(raw)
-    })
-
-    const deliveryFee = computed(() => {
-        if (cartStore.collectionOption !== 'DELIVERY' || !cartStore.address) return 0
-        if (isExcludedPostcode(cartStore.address.postcode)) return -1
-        return deliveryFeeForDistance(cartStore.address.distance)
-    })
-
-    const couponDiscount = computed(() => cartStore.couponDiscount)
-
-    const displayTotal = computed(() => {
-        const fee = cartStore.collectionOption === 'DELIVERY' ? Math.max(deliveryFee.value, 0) : 0
-        const raw = subtotal.value + fee - pickupDiscount.value - couponDiscount.value
-        return roundToNearest10Cents(Math.max(raw, 0))
-    })
-
-    const hasBreakdown = computed(() =>
-        cartStore.collectionOption === 'DELIVERY' ||
-        pickupDiscount.value > 0 ||
-        couponDiscount.value > 0,
-    )
-
-    const isMinimumReached = computed(() =>
-        cartStore.collectionOption === 'DELIVERY' ? subtotal.value >= DELIVERY_MINIMUM : true,
-    )
-
     return {
-        getItemUnitPrice,
-        subtotal,
-        pickupDiscount,
-        deliveryFee,
-        couponDiscount,
-        displayTotal,
-        hasBreakdown,
-        isMinimumReached,
+        getItemLineTotalCents: lineTotalCents,
+        getItemExactUnitCents: exactUnitPriceCents,
+        subtotalCents: computed(() => totals.value.subtotalCents),
+        pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
+        deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
+        deliveryUnavailableKey: computed(() => deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode)),
+        couponDiscountCents: computed(() => totals.value.couponDiscountCents),
+        onlineFeeCents: computed(() => totals.value.onlineFeeCents),
+        payableCents: computed(() => totals.value.payableCents),
+        hasBreakdown: computed(() => totals.value.hasBreakdown),
+        isMinimumReached: computed(() => totals.value.isMinimumReached),
+        amountToDeliveryMinimumCents: computed(() => totals.value.amountToDeliveryMinimumCents),
+        isQuoted: computed(() => quote.value !== null),
+        isQuotePending: computed(() => quoteStore.pending),
+        isOrderBlocked: computed(() => quoteStore.pending || (currentQuote.value !== null && isQuoteBlocking(currentQuote.value))),
+        switchToPickup,
     }
 }

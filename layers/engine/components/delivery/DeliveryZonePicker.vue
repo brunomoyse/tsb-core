@@ -94,7 +94,9 @@
                         <p class="text-sm font-medium">
                             {{ inZone
                                 ? $t('delivery.modal.distanceOk')
-                                : $t('delivery.modal.distanceTooFar') }}
+                                : zoneStatus === 'excluded'
+                                    ? $t('checkout.notDeliverableArea')
+                                    : $t('delivery.modal.distanceTooFar') }}
                         </p>
                         <p class="text-xs mt-1 opacity-80">
                             {{ $t('delivery.modal.distanceValue', { km: distanceKm }) }}
@@ -146,7 +148,8 @@
 import { computed, ref } from 'vue'
 import type { Address } from '#engine/types'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
-import { DELIVERY_ZONE_METERS } from '#engine/lib/delivery'
+import { brand } from '#brand/brand'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { useCartStore } from '#engine/stores/cart'
 import { useTracking } from '#engine/composables/useTracking'
@@ -165,9 +168,9 @@ const { trackEvent } = useTracking()
 
 const replaceAddress = ref(false)
 
-const inZone = computed(() =>
-    Boolean(cartStore.address) && (cartStore.address!.distance ?? 0) < DELIVERY_ZONE_METERS,
-)
+// Distance AND postcode (4610 is excluded whatever its distance): same rule as the checkout gate.
+const zoneStatus = computed(() => (cartStore.address ? deliveryZoneStatus(cartStore.address) : null))
+const inZone = computed(() => zoneStatus.value === 'ok')
 
 const distanceKm = computed(() =>
     cartStore.address ? ((cartStore.address.distance ?? 0) / 1000).toFixed(1) : '0',
@@ -178,7 +181,6 @@ const canConfirm = computed(() => {
     return Boolean(cartStore.address) && inZone.value
 })
 
-const { brand } = useAppConfig()
 const restaurantAddress = `${brand.address.street}\n${brand.address.postal} ${brand.address.city}`
 const deliveryEnabled = brand.deliveryEnabled !== false
 
@@ -195,7 +197,7 @@ const handleAddressUpdate = (address: Address | null) => {
     if (address) {
         trackEvent('delivery_address_resolved', {
             distance_m: address.distance ?? 0,
-            in_zone: (address.distance ?? 0) < DELIVERY_ZONE_METERS,
+            in_zone: deliveryZoneStatus(address) === 'ok',
         })
     }
 }

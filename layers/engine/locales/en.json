@@ -15,7 +15,9 @@
     "acceptCookies": "Accept cookies",
     "step": "Step {n}",
     "discard": "Discard",
-    "keepEditing": "Keep editing"
+    "keepEditing": "Keep editing",
+    "retry": "Try again",
+    "saving": "Saving…"
   },
   "nav": {
     "home": "Home",
@@ -41,6 +43,7 @@
     "status": {
       "open": "Open",
       "onsiteOnly": "Open · dine-in only",
+      "preorder": "Closed · order now for {time}",
       "closed": "Closed"
     }
   },
@@ -119,7 +122,9 @@
     "required": "Required",
     "addWithPrice": "Add · {price}",
     "updateWithPrice": "Update · {price}",
-    "viewDetails": "View details for {name}"
+    "viewDetails": "View details for {name}",
+    "loadFailed": "We couldn't load the menu.",
+    "productLoadFailed": "We couldn't load this product."
   },
   "days": {},
   "login": {
@@ -165,7 +170,8 @@
       "callHint": "If your address isn't listed, feel free to call us at",
       "houseNumberRequired": "A house number is required.",
       "example": "Example: Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Hello",
@@ -299,7 +305,6 @@
     "increaseQty": "Increase quantity",
     "customizedItemHint": "Customized: remove then re-add from the menu to edit",
     "closeCart": "Close cart",
-    "notifications": "Cart notifications",
     "addToCart": "Add to cart",
     "item": "item",
     "items": "items",
@@ -309,7 +314,25 @@
     "eachSuffix": "each",
     "deliveryTbd": "Delivery calculated at checkout",
     "editItem": "Edit",
-    "pickupDiscountShort": "-10%"
+    "pickupDiscountShort": "-10%",
+    "onlineFee": "Online payment fee",
+    "addForDelivery": "Add {amount} more to qualify for delivery.",
+    "quoteUpdating": "Updating prices…",
+    "removedUnavailable": "Some items in your cart are no longer available and were removed.",
+    "issues": {
+      "notFound": "This item is no longer on the menu.",
+      "unavailable": "This item is currently unavailable.",
+      "priceChanged": "Price updated: {from} → {to}",
+      "acceptPrice": "Accept new price",
+      "lunchOnly": "Only available for a weekday lunch slot (Mon–Fri).",
+      "chooseSlot": "Choose a time slot",
+      "selectionInvalid": "An option you chose is no longer valid. Remove this item and build it again from the menu.",
+      "invalidQuantity": "The quantity of this item is not valid.",
+      "generic": "This item can't be ordered as it is."
+    },
+    "removedManyUndo": "{count} items removed",
+    "removeNamed": "Remove \"{name}\" from the cart",
+    "buttonLabel": "Cart, {count} item | Cart, {count} items"
   },
   "checkout": {
     "title": "Checkout",
@@ -326,7 +349,9 @@
       "saved": "Phone number saved",
       "edit": "Edit",
       "addCountryPrefix": "For a non-Belgian number, add the country code (e.g. +33)",
-      "requiredBeforeOrder": "Please add your phone number before placing the order."
+      "requiredBeforeOrder": "Please add your phone number before placing the order.",
+      "unsaved": "Save or fix your phone number before placing the order.",
+      "editAria": "Edit phone number"
     },
     "orderSummary": "Your Order",
     "emptyCart": "Your cart is empty.",
@@ -398,7 +423,12 @@
     "addExtras": "Add some extras?",
     "extrasDescription": "Complete your order with some accompaniments",
     "paidExtra": "Paid extra",
-    "paidExtrasNotice": "These extras are billed as products and added to your cart."
+    "paidExtrasNotice": "These extras are billed as products and added to your cart.",
+    "quoteIssuesTitle": "Your order can't be paid yet",
+    "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order.",
+    "quoteChanged": "Prices or availability changed: please review your order.",
+    "cashAmountTooLow": "That is less than the total ({total}). Enter at least {total}, or leave the field empty.",
+    "cashChangeDue": "Change due: {amount}"
   },
   "orderCompleted": {
     "title": "Order Completed",
@@ -433,7 +463,22 @@
       "abandonedTitle": "Payment not completed",
       "abandonedBody": "You left before the payment was completed, so your order wasn’t placed. Your cart is saved. You can try again.",
       "tryAgain": "Try again",
-      "verifying": "Verifying your payment…"
+      "verifying": "Verifying your payment…",
+      "awaitingConfirmationTitle": "Confirming your payment",
+      "awaitingConfirmationBody": "We haven’t received the payment confirmation yet. This page will update automatically. If you were charged, don’t pay again: contact us at {phone}.",
+      "callUs": "Call the restaurant"
+    },
+    "receipt": {
+      "title": "Payment details",
+      "discount": "Discount",
+      "rounding": "Rounding",
+      "paidOnline": "Paid online",
+      "cashDelivery": "Cash on delivery",
+      "cashPickup": "Cash at pickup",
+      "cashWith": "You will pay with {amount}",
+      "changeDue": "change due: {amount}",
+      "deliveryTo": "Delivery address",
+      "pickupAt": "Pick up at"
     }
   },
   "error": {
@@ -471,6 +516,7 @@
       "slotNotAligned": "Time slots must be aligned to 15-minute intervals.",
       "orderingClosedToday": "Ordering is closed today.",
       "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again.",
+      "couponCheckFailed": "We could not check your coupon. Please try again.",
       "orderCreationFailed": "Order creation failed. Please try again.",
       "profileUpdateFailed": "Profile update failed.",
       "requestFailed": "Request failed. Please try again.",
@@ -482,7 +528,16 @@
       "oauthFailed": "Login failed. Please try again.",
       "invalidEmail": "Please enter a valid email address.",
       "networkError": "Can't reach the server. Check your connection and try again.",
-      "serverError": "The server is temporarily unavailable. Please try again in a moment."
+      "serverError": "The server is temporarily unavailable. Please try again in a moment.",
+      "orderTooManyItems": "Your cart has too many different products (50 maximum).",
+      "productNotFound": "A product in your cart is no longer available. Remove it and try again.",
+      "invalidQuantity": "The quantity of a product is not valid (between 1 and 99).",
+      "selectionInvalid": "An option you chose is no longer valid. Edit that product in your cart and try again.",
+      "couponMinOrderNotMet": "This promo code requires a higher order amount.",
+      "couponAlreadyActive": "You already have an open order that uses a promo code. Try again once it is complete.",
+      "cashAmountInvalid": "The cash amount you entered is not valid.",
+      "paymentFailed": "The payment could not be started. Please try again.",
+      "priceChanged": "The price of an item in your cart has changed. Check your cart and confirm the new price."
     }
   },
   "schema": {
@@ -578,15 +633,28 @@
     "remove": "Remove",
     "applied": "Coupon applied: -{discount} off",
     "invalid": "Invalid promo code",
-    "discount": "Coupon discount"
+    "discount": "Coupon discount",
+    "removedNoLongerApplies": "Promo code {code} was removed: {reason}"
   },
   "reorder": {
     "button": "Re-order",
     "success": "{count} items added to cart",
-    "partial": "{added} items added, {skipped} unavailable items skipped",
-    "empty": "No available items to re-order"
+    "partial": "{added} items added. Not added: {names}",
+    "empty": "No available items to re-order",
+    "emptyWithNames": "Nothing could be re-ordered: {names}",
+    "reason": {
+      "unavailable": "unavailable",
+      "choices": "choices changed, please build it again from the menu"
+    },
+    "confirmTitle": "Replace your current cart?",
+    "confirmBody": "Your cart already has items. Replace it with this order, or add this order to it.",
+    "replace": "Replace",
+    "add": "Add to cart"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accept",
+    "acceptAria": "Accept cookies"
+  },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to your questions about __BRAND__",
@@ -655,5 +723,9 @@
     "timingTitle": "Processing time",
     "timingBody": "Self-service deletion from the app or website is immediate. Requests sent by email are processed within 30 days.",
     "contactBody": "Questions? Contact us at the address above."
+  },
+  "ordering": {
+    "closedPreorder": "We're closed right now — order now for {time}.",
+    "loadFailed": "We couldn't check whether ordering is open."
   }
 }

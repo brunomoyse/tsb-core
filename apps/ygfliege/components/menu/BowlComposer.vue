@@ -29,8 +29,18 @@
             </button>
         </header>
 
+        <!-- The product could not be loaded (or no longer exists): say so instead of an empty composer -->
+        <div v-if="!p" class="flex-1 px-5 py-8 sm:px-8">
+            <LoadError
+                :message="$t('menu.productLoadFailed')"
+                data-testid="bowl-composer-load-error"
+                class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
+                @retry="emit('retry')"
+            />
+        </div>
+
         <!-- Steps -->
-        <div class="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-10">
+        <div v-else class="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-10">
             <section
                 v-for="(group, index) in choiceGroups"
                 :key="group.id"
@@ -65,7 +75,7 @@
         </div>
 
         <!-- Summary rail -->
-        <footer class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5 space-y-3">
+        <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5 space-y-3">
             <!-- polite, not assertive: the total updates on every tap and would -->
             <!-- otherwise interrupt a screen reader mid-sentence. -->
             <p aria-live="polite" class="text-sm text-ygf-black/70 min-h-5">
@@ -105,7 +115,7 @@
                     <span>{{ $t('menu.addToCart') }}</span>
                     <!-- Price only once the bowl is valid: before that, lineTotal
                          is just the 2,50 € base and reads as the full price. -->
-                    <span v-if="canAddToCart" class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
+                    <span v-if="canAddToCart" class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
                 </button>
             </div>
         </footer>
@@ -116,16 +126,18 @@
 import type { Product } from '#engine/types'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
+import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
-import { useProductChoices } from '~/composables/useProductChoices'
+import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 /**
@@ -146,7 +158,7 @@ const { product, orderingDisabled = false } = defineProps<{
     orderingDisabled?: boolean
 }>()
 
-const emit = defineEmits<{ close: [] }>()
+const emit = defineEmits<{ close: []; retry: [] }>()
 
 const MAX_QUANTITY = 99
 
@@ -203,14 +215,13 @@ const {
     quantityOf,
     selectionList,
     selectedChoice,
-    displayPrice,
+    displayPriceCents,
+    lineTotalCents,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,
     blockingGroup,
 } = choicesApi
-
-const lineTotal = computed(() => String(Number(displayPrice.value) * quantity.value))
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false
@@ -254,9 +265,7 @@ const addToCart = () => {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
-        selectionSignature: selectionList.value
-            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-            .join('|'),
+        selectionSignature: lineSignature(selectionList.value, quantity.value),
     })
 
     emit('close')

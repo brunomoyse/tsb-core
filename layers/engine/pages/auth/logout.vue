@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { definePageMeta, navigateTo, onMounted, useLocalePath, useRoute } from '#imports'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -34,8 +35,9 @@ onMounted(async () => {
     const { signOut } = useOidc()
     try {
         await signOut()
-    } catch {
+    } catch (err: unknown) {
         // If Zitadel unreachable, navigate home anyway
+        reportError(err, 'auth.signOut')
         navigateTo(localePath('/'))
     }
 })

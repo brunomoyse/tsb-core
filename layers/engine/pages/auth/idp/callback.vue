@@ -30,6 +30,7 @@
 <script lang="ts" setup>
 import { definePageMeta, onMounted, ref, useRoute } from '#imports'
 import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
+import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 
 definePageMeta({ public: true })
@@ -97,7 +98,7 @@ onMounted(async () => {
         const result = await finalizeOidcAuth(authRequestId, session.sessionId, session.sessionToken)
         redirectToCallback(result.callbackUrl)
     } catch (e: any) {
-        if (import.meta.dev) console.error('IdP callback error:', e)
+        reportError(e, 'auth.idpCallback')
         const status = e?.response?.status || e?.statusCode
         if (status === 429) {
             rateLimited.value = true
@@ -130,7 +131,7 @@ const onSubmitProfile = async (payload: { firstName: string; lastName: string })
         redirectToCallback(result.callbackUrl)
     } catch (e: any) {
         profileLoading.value = false
-        if (import.meta.dev) console.error('IdP profile completion error:', e)
+        reportError(e, 'auth.idpProfileCompletion')
         const status = e?.response?.status || e?.statusCode
         profileError.value = status === 429
             ? t('notify.errors.tooManyRequests')

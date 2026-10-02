@@ -69,7 +69,7 @@
                 <div class="space-y-4 min-w-0">
                     <!-- Price + portion -->
                     <div class="flex items-baseline gap-3 flex-wrap">
-                        <span class="text-2xl font-bold text-ygf-black tabular-nums">{{ formatPrice(displayPrice) }}</span>
+                        <span class="text-2xl font-bold text-ygf-black tabular-nums">{{ formatCents(displayPriceCents) }}</span>
                         <span v-if="p.pieceCount" class="text-sm text-ygf-black/60">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
@@ -130,9 +130,19 @@
             </section>
         </div>
 
+        <!-- The product could not be loaded (or no longer exists): say so instead of an empty dialog -->
+        <div v-else class="flex-1 px-5 py-8 sm:px-8">
+            <LoadError
+                :message="$t('menu.productLoadFailed')"
+                data-testid="product-modal-load-error"
+                class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
+                @retry="emit('retry')"
+            />
+        </div>
+
         <!-- Footer rail -->
-        <footer class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
-            <p v-if="p && !p.isAvailable" class="text-sm text-ygf-black/60 mb-3">{{ $t('menu.unavailable') }}</p>
+        <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
+            <p v-if="!p.isAvailable" class="text-sm text-ygf-black/60 mb-3">{{ $t('menu.unavailable') }}</p>
             <div class="flex items-center gap-3 sm:gap-4">
                 <div class="stepper shrink-0">
                     <button
@@ -160,7 +170,7 @@
                     @click="addToCart"
                 >
                     <span>{{ $t('menu.addToCart') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(lineTotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
                 </button>
             </div>
         </footer>
@@ -177,15 +187,17 @@ import { useGqlQuery, useRuntimeConfig } from '#imports'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '~/data/productPhotos'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import LoadError from '#engine/components/LoadError.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
-import { useProductChoices } from '~/composables/useProductChoices'
+import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 /**
@@ -213,6 +225,7 @@ const {
 
 const emit = defineEmits<{
     close: []
+    retry: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -301,13 +314,12 @@ const {
     choiceGroups,
     selectionList,
     selectedChoice,
-    displayPrice,
+    displayPriceCents,
+    lineTotalCents,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,
 } = choicesApi
-
-const lineTotal = computed(() => String(Number(displayPrice.value) * quantity.value))
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false
@@ -356,9 +368,7 @@ const addToCart = () => {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
-        selectionSignature: selectionList.value
-            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-            .join('|'),
+        selectionSignature: lineSignature(selectionList.value, quantity.value),
     })
 
     emit('close')

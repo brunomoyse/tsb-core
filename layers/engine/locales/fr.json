@@ -15,7 +15,9 @@
     "acceptCookies": "Accepter les cookies",
     "step": "Étape {n}",
     "discard": "Abandonner",
-    "keepEditing": "Continuer"
+    "keepEditing": "Continuer",
+    "retry": "Réessayer",
+    "saving": "Enregistrement…"
   },
   "nav": {
     "home": "Accueil",
@@ -41,6 +43,7 @@
     "status": {
       "open": "Ouvert",
       "onsiteOnly": "Ouvert · sur place",
+      "preorder": "Fermé · commandez pour {time}",
       "closed": "Fermé"
     }
   },
@@ -119,7 +122,9 @@
     "required": "Obligatoire",
     "addWithPrice": "Ajouter · {price}",
     "updateWithPrice": "Mettre à jour · {price}",
-    "viewDetails": "Voir le détail de {name}"
+    "viewDetails": "Voir le détail de {name}",
+    "loadFailed": "Impossible de charger le menu.",
+    "productLoadFailed": "Impossible de charger ce produit."
   },
   "days": {},
   "login": {
@@ -165,7 +170,8 @@
       "callHint": "Si votre adresse n'apparaît pas, n'hésitez pas à nous appeler au",
       "houseNumberRequired": "Le numéro de rue est obligatoire.",
       "example": "Exemple : Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Bonjour",
@@ -299,7 +305,6 @@
     "increaseQty": "Augmenter la quantité",
     "customizedItemHint": "Personnalisé : retirez puis rajoutez depuis le menu pour modifier",
     "closeCart": "Fermer le panier",
-    "notifications": "Notifications du panier",
     "addToCart": "Ajouter au panier",
     "item": "article",
     "items": "articles",
@@ -309,7 +314,25 @@
     "eachSuffix": "pièce",
     "deliveryTbd": "Livraison calculée au paiement",
     "editItem": "Modifier",
-    "pickupDiscountShort": "-10 %"
+    "pickupDiscountShort": "-10 %",
+    "onlineFee": "Frais de paiement en ligne",
+    "addForDelivery": "Ajoutez encore {amount} pour la livraison.",
+    "quoteUpdating": "Mise à jour des prix…",
+    "removedUnavailable": "Certains articles de votre panier ne sont plus disponibles et ont été retirés.",
+    "issues": {
+      "notFound": "Cet article n'est plus au menu.",
+      "unavailable": "Cet article est actuellement indisponible.",
+      "priceChanged": "Prix mis à jour : {from} → {to}",
+      "acceptPrice": "Accepter le nouveau prix",
+      "lunchOnly": "Disponible uniquement sur un créneau lunch (lundi-vendredi).",
+      "chooseSlot": "Choisir un créneau",
+      "selectionInvalid": "Une option choisie n'est plus valable. Retirez cet article puis recomposez-le depuis le menu.",
+      "invalidQuantity": "La quantité de cet article n'est pas valable.",
+      "generic": "Cet article ne peut pas être commandé tel quel."
+    },
+    "removedManyUndo": "{count} articles retirés",
+    "removeNamed": "Retirer « {name} » du panier",
+    "buttonLabel": "Panier, {count} article | Panier, {count} articles"
   },
   "checkout": {
     "title": "Commande",
@@ -326,7 +349,9 @@
       "saved": "Numéro enregistré",
       "edit": "Modifier",
       "addCountryPrefix": "Pour un numéro non belge, ajoutez l'indicatif du pays (ex. +33)",
-      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander."
+      "requiredBeforeOrder": "Veuillez renseigner votre numéro de téléphone avant de commander.",
+      "unsaved": "Enregistrez ou corrigez votre numéro de téléphone avant de commander.",
+      "editAria": "Modifier le numéro de téléphone"
     },
     "orderSummary": "Votre commande",
     "emptyCart": "Votre panier est vide.",
@@ -398,7 +423,12 @@
     "addExtras": "Envie d'un accompagnement ?",
     "extrasDescription": "Complétez votre commande avec des accompagnements",
     "paidExtra": "Supplément payant",
-    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier."
+    "paidExtrasNotice": "Ces suppléments sont facturés comme des produits et ajoutés au panier.",
+    "quoteIssuesTitle": "Votre commande ne peut pas encore être payée",
+    "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande.",
+    "quoteChanged": "Les prix ou la disponibilité ont changé : veuillez vérifier votre commande.",
+    "cashAmountTooLow": "Ce montant est inférieur au total ({total}). Indiquez au moins {total}, ou laissez le champ vide.",
+    "cashChangeDue": "Monnaie à rendre : {amount}"
   },
   "orderCompleted": {
     "title": "Commande reçue",
@@ -433,7 +463,22 @@
       "abandonedTitle": "Paiement non finalisé",
       "abandonedBody": "Vous avez quitté avant la fin du paiement, votre commande n’a donc pas été passée. Votre panier est conservé. Vous pouvez réessayer.",
       "tryAgain": "Réessayer",
-      "verifying": "Vérification de votre paiement…"
+      "verifying": "Vérification de votre paiement…",
+      "awaitingConfirmationTitle": "Paiement en cours de confirmation",
+      "awaitingConfirmationBody": "Nous n’avons pas encore reçu la confirmation de votre paiement. Cette page se met à jour automatiquement. Si vous avez été débité, ne payez pas une seconde fois : contactez-nous au {phone}.",
+      "callUs": "Appeler le restaurant"
+    },
+    "receipt": {
+      "title": "Détail du paiement",
+      "discount": "Réduction",
+      "rounding": "Arrondi",
+      "paidOnline": "Payé en ligne",
+      "cashDelivery": "Espèces à la livraison",
+      "cashPickup": "Espèces au retrait",
+      "cashWith": "Vous paierez avec {amount}",
+      "changeDue": "monnaie à rendre : {amount}",
+      "deliveryTo": "Adresse de livraison",
+      "pickupAt": "Retrait à"
     }
   },
   "error": {
@@ -471,6 +516,7 @@
       "slotNotAligned": "Le créneau doit être aligné sur des intervalles de 15 minutes.",
       "orderingClosedToday": "Les commandes sont fermées aujourd'hui.",
       "tooManyRequests": "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+      "couponCheckFailed": "Nous n'avons pas pu vérifier votre code promo. Veuillez réessayer.",
       "orderCreationFailed": "La création de la commande a échoué. Veuillez réessayer.",
       "profileUpdateFailed": "La mise à jour du profil a échoué.",
       "requestFailed": "La requête a échoué. Veuillez réessayer.",
@@ -482,7 +528,16 @@
       "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
       "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
       "networkError": "Connexion impossible. Vérifiez votre réseau et réessayez.",
-      "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants."
+      "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants.",
+      "orderTooManyItems": "Votre panier contient trop de produits différents (50 maximum).",
+      "productNotFound": "Un produit de votre panier n'est plus disponible. Retirez-le puis réessayez.",
+      "invalidQuantity": "La quantité d'un produit n'est pas valide (entre 1 et 99).",
+      "selectionInvalid": "Une option choisie n'est plus valable. Modifiez ce produit dans votre panier puis réessayez.",
+      "couponMinOrderNotMet": "Ce code promo demande un montant de commande plus élevé.",
+      "couponAlreadyActive": "Vous avez déjà une commande en cours qui utilise un code promo. Réessayez une fois celle-ci terminée.",
+      "cashAmountInvalid": "Le montant en espèces indiqué n'est pas valide.",
+      "paymentFailed": "Le paiement n'a pas pu être initialisé. Veuillez réessayer.",
+      "priceChanged": "Le prix d'un article de votre panier a changé. Vérifiez votre panier et confirmez le nouveau prix."
     }
   },
   "schema": {
@@ -578,15 +633,28 @@
     "remove": "Retirer",
     "applied": "Code promo appliqué : -{discount} de réduction",
     "invalid": "Code promo invalide",
-    "discount": "Réduction code promo"
+    "discount": "Réduction code promo",
+    "removedNoLongerApplies": "Le code promo {code} a été retiré : {reason}"
   },
   "reorder": {
     "button": "Recommander",
     "success": "{count} articles ajoutés au panier",
-    "partial": "{added} articles ajoutés, {skipped} articles indisponibles ignorés",
-    "empty": "Aucun article disponible à recommander"
+    "partial": "{added} articles ajoutés. Non ajoutés : {names}",
+    "empty": "Aucun article disponible à recommander",
+    "emptyWithNames": "Rien n'a pu être recommandé : {names}",
+    "reason": {
+      "unavailable": "indisponible",
+      "choices": "choix modifiés, à recomposer depuis le menu"
+    },
+    "confirmTitle": "Remplacer votre panier actuel ?",
+    "confirmBody": "Votre panier contient déjà des articles. Remplacez-le par cette commande ou ajoutez-y cette commande.",
+    "replace": "Remplacer",
+    "add": "Ajouter au panier"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accepter",
+    "acceptAria": "Accepter les cookies"
+  },
   "faq": {
     "title": "Questions Fréquentes",
     "subtitle": "Trouvez les réponses à vos questions sur __BRAND__",
@@ -655,5 +723,9 @@
     "timingTitle": "Délai de traitement",
     "timingBody": "La suppression en libre-service depuis l'application ou le site web est immédiate. Les demandes envoyées par e-mail sont traitées dans un délai de 30 jours.",
     "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
+  },
+  "ordering": {
+    "closedPreorder": "Nous sommes fermés pour le moment — commandez dès maintenant pour {time}.",
+    "loadFailed": "Impossible de vérifier si les commandes sont ouvertes."
   }
 }

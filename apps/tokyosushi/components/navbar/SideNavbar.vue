@@ -13,14 +13,26 @@
                 :icon="item.icon"
                 :to="item.to"
             />
-            <!-- Cart button for tablet (hidden on lg+ where SideCart is visible) -->
+            <!-- Cart, on every page once the cart has items. Tablet: opens the cart drawer. -->
             <NavItemButton
                 v-if="isMounted && cartStore.totalItems > 0 && !isCartFlowPage"
                 class="lg:hidden"
-                :tooltipText="$t('nav.cart')"
+                :tooltipText="cartLabel"
                 icon="/icons/shopping-bag-icon.svg"
                 :badge="cartStore.totalItems"
+                :expanded="cartStore.isCartVisible"
+                :controls="cartStore.isCartVisible ? 'cart-mobile' : undefined"
                 @click="cartStore.toggleCartVisibility()"
+            />
+            <!-- Desktop has no drawer: the menu page shows the SideCart, every other page links to /cart. -->
+            <NavItem
+                v-if="isMounted && cartStore.totalItems > 0 && !isMenuPage"
+                class="hidden lg:block"
+                :tooltipText="cartLabel"
+                alt="Cart Icon"
+                icon="/icons/shopping-bag-icon.svg"
+                :badge="cartStore.totalItems"
+                to="cart"
             />
         </ul>
 
@@ -58,6 +70,7 @@ import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useCartStore } from '#engine/stores/cart'
+import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { visibleNavItems } from './navItems'
@@ -69,6 +82,9 @@ const logoAlt = `${useAppConfig().brand.name} logo`
 const { phoneHref, phoneLabel } = useBrandPhone()
 // The cart and checkout pages already show the cart; no shortcut there.
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
+// "Cart, 3 items": the count is part of the accessible name.
+const { t } = useI18n()
+const cartLabel = computed(() => t('cart.buttonLabel', { count: cartStore.totalItems }, cartStore.totalItems))
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 </script>

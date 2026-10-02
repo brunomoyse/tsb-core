@@ -15,7 +15,9 @@
     "acceptCookies": "接受 Cookie",
     "step": "第 {n} 步",
     "discard": "放弃",
-    "keepEditing": "继续编辑"
+    "keepEditing": "继续编辑",
+    "retry": "重试",
+    "saving": "正在保存…"
   },
   "nav": {
     "home": "首页",
@@ -41,6 +43,7 @@
     "status": {
       "open": "营业中",
       "onsiteOnly": "营业中 · 仅限堂食",
+      "preorder": "休息中 · 现在可预订 {time}",
       "closed": "休息中"
     }
   },
@@ -119,7 +122,9 @@
     "required": "必选",
     "addWithPrice": "添加 · {price}",
     "updateWithPrice": "更新 · {price}",
-    "viewDetails": "查看 {name} 详情"
+    "viewDetails": "查看 {name} 详情",
+    "loadFailed": "无法加载菜单。",
+    "productLoadFailed": "无法加载该商品。"
   },
   "days": {},
   "login": {
@@ -165,7 +170,8 @@
       "callHint": "如果找不到您的地址，请随时致电我们：",
       "houseNumberRequired": "必须填写门牌号。",
       "example": "示例：Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
   },
   "me": {
     "greeting": "你好",
@@ -299,7 +305,6 @@
     "increaseQty": "增加数量",
     "customizedItemHint": "已定制：请先移除并通过菜单重新添加进行修改",
     "closeCart": "关闭购物车",
-    "notifications": "购物车通知",
     "addToCart": "加入购物车",
     "item": "件商品",
     "items": "件商品",
@@ -309,7 +314,25 @@
     "eachSuffix": "每份",
     "deliveryTbd": "运费将在结账时计算",
     "editItem": "修改",
-    "pickupDiscountShort": "-10%"
+    "pickupDiscountShort": "-10%",
+    "onlineFee": "在线支付手续费",
+    "addForDelivery": "再添加 {amount} 即可配送。",
+    "quoteUpdating": "正在更新价格…",
+    "removedUnavailable": "购物车中的部分商品已不再提供，已被移除。",
+    "issues": {
+      "notFound": "该商品已不在菜单上。",
+      "unavailable": "该商品暂时无法提供。",
+      "priceChanged": "价格已更新：{from} → {to}",
+      "acceptPrice": "接受新价格",
+      "lunchOnly": "仅限工作日（周一至周五）午餐时段。",
+      "chooseSlot": "选择时间段",
+      "selectionInvalid": "您选择的某个选项已失效。请移除该商品，并从菜单重新选择。",
+      "invalidQuantity": "该商品的数量无效。",
+      "generic": "该商品无法按当前状态下单。"
+    },
+    "removedManyUndo": "已移除 {count} 件商品",
+    "removeNamed": "从购物车中移除“{name}”",
+    "buttonLabel": "购物车，{count} 件商品"
   },
   "checkout": {
     "title": "结账",
@@ -326,7 +349,9 @@
       "saved": "电话号码已保存",
       "edit": "编辑",
       "addCountryPrefix": "非比利时号码请添加国家区号（例如 +33）",
-      "requiredBeforeOrder": "请在下单前填写您的电话号码。"
+      "requiredBeforeOrder": "请在下单前填写您的电话号码。",
+      "unsaved": "下单前请先保存或更正您的手机号码。",
+      "editAria": "修改电话号码"
     },
     "orderSummary": "您的订单",
     "emptyCart": "您的购物车为空。",
@@ -398,7 +423,12 @@
     "addExtras": "加点配菜？",
     "extrasDescription": "为您的订单添加一些配菜",
     "paidExtra": "付费加购",
-    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。"
+    "paidExtrasNotice": "这些加购将作为商品计费并加入购物车。",
+    "quoteIssuesTitle": "您的订单暂时无法付款",
+    "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。",
+    "quoteChanged": "价格或供应情况已变更，请检查您的订单。",
+    "cashAmountTooLow": "该金额低于订单总额（{total}）。请至少填写 {total}，或将此栏留空。",
+    "cashChangeDue": "应找零：{amount}"
   },
   "orderCompleted": {
     "title": "订单完成",
@@ -433,7 +463,22 @@
       "abandonedTitle": "支付未完成",
       "abandonedBody": "您在支付完成前离开，订单未提交。购物车已保留，您可以重试。",
       "tryAgain": "重试",
-      "verifying": "正在验证您的支付…"
+      "verifying": "正在验证您的支付…",
+      "awaitingConfirmationTitle": "正在确认您的支付",
+      "awaitingConfirmationBody": "我们尚未收到支付确认。本页面会自动更新。如果您已被扣款，请勿重复支付，请致电 {phone} 联系我们。",
+      "callUs": "致电餐厅"
+    },
+    "receipt": {
+      "title": "付款明细",
+      "discount": "优惠",
+      "rounding": "四舍五入",
+      "paidOnline": "已在线支付",
+      "cashDelivery": "送货时现金支付",
+      "cashPickup": "取餐时现金支付",
+      "cashWith": "您将用 {amount} 支付",
+      "changeDue": "找零：{amount}",
+      "deliveryTo": "送货地址",
+      "pickupAt": "取餐地点"
     }
   },
   "error": {
@@ -471,6 +516,7 @@
       "slotNotAligned": "时间段必须对齐到15分钟间隔。",
       "orderingClosedToday": "今天暂停接单。",
       "tooManyRequests": "尝试次数过多。请等待几分钟后再试。",
+      "couponCheckFailed": "无法验证您的优惠码，请重试。",
       "orderCreationFailed": "订单创建失败，请重试。",
       "profileUpdateFailed": "个人资料更新失败。",
       "requestFailed": "请求失败，请重试。",
@@ -482,7 +528,16 @@
       "oauthFailed": "登录失败，请重试。",
       "invalidEmail": "请输入有效的邮箱地址。",
       "networkError": "无法连接到服务器，请检查您的网络后重试。",
-      "serverError": "服务器暂时不可用，请稍后再试。"
+      "serverError": "服务器暂时不可用，请稍后再试。",
+      "orderTooManyItems": "购物车中的商品种类过多（最多50种）。",
+      "productNotFound": "购物车中有商品已不可用，请移除后重试。",
+      "invalidQuantity": "某件商品的数量无效（须为1至99）。",
+      "selectionInvalid": "您选择的某个选项已失效，请在购物车中修改该商品后重试。",
+      "couponMinOrderNotMet": "此优惠码需要更高的订单金额。",
+      "couponAlreadyActive": "您已有一笔使用优惠码的进行中订单，请在其完成后再试。",
+      "cashAmountInvalid": "填写的现金金额无效。",
+      "paymentFailed": "无法发起支付，请重试。",
+      "priceChanged": "购物车中某件商品的价格已变动。请检查购物车并确认新价格。"
     }
   },
   "schema": {
@@ -578,15 +633,28 @@
     "remove": "移除",
     "applied": "优惠码已应用：减 {discount}",
     "invalid": "无效的优惠码",
-    "discount": "优惠码折扣"
+    "discount": "优惠码折扣",
+    "removedNoLongerApplies": "优惠码 {code} 已移除：{reason}"
   },
   "reorder": {
     "button": "重新订购",
     "success": "{count} 件商品已添加到购物车",
-    "partial": "{added} 件已添加，{skipped} 件缺货已跳过",
-    "empty": "没有可重新订购的商品"
+    "partial": "已添加 {added} 件商品。未添加：{names}",
+    "empty": "没有可重新订购的商品",
+    "emptyWithNames": "无法再次下单：{names}",
+    "reason": {
+      "unavailable": "暂不供应",
+      "choices": "选项已变更，请从菜单重新选择"
+    },
+    "confirmTitle": "替换当前购物车？",
+    "confirmBody": "您的购物车中已有商品。可用此订单替换，或将此订单加入购物车。",
+    "replace": "替换",
+    "add": "加入购物车"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "接受",
+    "acceptAria": "接受 Cookie"
+  },
   "faq": {
     "title": "常见问题",
     "subtitle": "找到关于 __BRAND__ 的问题答案",
@@ -655,5 +723,9 @@
     "timingTitle": "处理时间",
     "timingBody": "通过应用程序或网站自助删除是即时的。通过电子邮件发送的申请将在 30 天内处理完成。",
     "contactBody": "有疑问？请通过上述邮箱地址联系我们。"
+  },
+  "ordering": {
+    "closedPreorder": "我们目前已打烊——现在下单，可预订 {time} 的餐点。",
+    "loadFailed": "无法确认当前是否可以下单。"
   }
 }

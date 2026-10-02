@@ -25,14 +25,21 @@
                 <p class="err-desc">{{ errorMessage }}</p>
 
                 <nav class="err-nav">
+                    <!-- A server error may be a blip: retry the page the visitor was on -->
+                    <template v-if="isServerError">
+                        <button type="button" class="err-link err-retry" data-testid="error-retry" @click="retry">
+                            {{ $t('common.retry') }}
+                        </button>
+                        <span class="err-sep" aria-hidden="true">&middot;</span>
+                    </template>
                     <button type="button" class="err-link" @click="goHome">
-                        <span class="err-arrow" aria-hidden="true">&larr;</span>
+                        <span class="err-arrow err-arrow-back" aria-hidden="true">&larr;</span>
                         {{ $t('error.homeButton') }}
                     </button>
                     <span class="err-sep" aria-hidden="true">&middot;</span>
                     <button type="button" class="err-link" @click="goMenu">
                         {{ $t('error.menuButton') }}
-                        <span class="err-arrow" aria-hidden="true">&rarr;</span>
+                        <span class="err-arrow err-arrow-next" aria-hidden="true">&rarr;</span>
                     </button>
                 </nav>
 
@@ -47,7 +54,9 @@
 </template>
 
 <script setup lang="ts">
+import { clearError, computed, ref, reloadNuxtApp, useLocalePath } from '#imports'
 import type { NuxtError } from '#app'
+import { useI18n } from 'vue-i18n'
 
 const { error } = defineProps<{
     error: NuxtError
@@ -84,8 +93,20 @@ const bgKanji = computed(() => {
     }
 })
 
-const goHome = () => clearError({ redirect: '/' })
-const goMenu = () => clearError({ redirect: '/menu' })
+// Locale-prefixed targets: "/" and "/menu" would land on the default locale whatever language the visitor is reading.
+const localePath = useLocalePath()
+const goHome = () => clearError({ redirect: localePath('/') })
+const goMenu = () => clearError({ redirect: localePath('/menu') })
+
+const isServerError = computed(() => statusCode.value >= 500)
+
+// Clears the error, then reloads the current URL for real so the page that failed runs its data fetching again.
+const recovering = ref(false)
+const retry = async () => {
+    recovering.value = true
+    await clearError()
+    reloadNuxtApp({ path: `${window.location.pathname}${window.location.search}`, force: true, persistState: false })
+}
 </script>
 
 <style scoped>
@@ -245,11 +266,11 @@ const goMenu = () => clearError({ redirect: '/menu' })
     transition: transform 0.25s ease;
 }
 
-.err-link:first-child:hover .err-arrow {
+.err-link:hover .err-arrow-back {
     transform: translateX(-3px);
 }
 
-.err-link:last-child:hover .err-arrow {
+.err-link:hover .err-arrow-next {
     transform: translateX(3px);
 }
 

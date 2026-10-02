@@ -4,6 +4,8 @@
             type="button"
             class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             :aria-label="tooltipText"
+            :aria-expanded="expanded"
+            :aria-controls="controls"
             @click="$emit('click')"
         >
             <div class="relative group w-[50px] h-[50px] flex items-center justify-center rounded-full bg-white text-neutral-900 hover:shadow-md transition-shadow overflow-visible">
@@ -12,6 +14,7 @@
                 <!-- Badge -->
                 <span
                     v-if="badge && badge > 0"
+                    aria-hidden="true"
                     class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-primary-foreground bg-primary rounded-full"
                 >
                     {{ badge }}
@@ -36,8 +39,11 @@ interface NavItemButtonProps {
     icon: string
     tooltipText?: string
     badge?: number
+    /** Set when the button toggles a panel: aria-expanded / aria-controls. */
+    expanded?: boolean
+    controls?: string
 }
 
-const { icon, tooltipText, badge } = defineProps<NavItemButtonProps>()
+const { icon, tooltipText, badge, expanded, controls = undefined } = defineProps<NavItemButtonProps>()
 defineEmits<{ click: [] }>()
 </script>

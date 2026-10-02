@@ -1,7 +1,7 @@
 <template>
     <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
-        <!-- Restaurant Closed Banner -->
-        <div v-if="!isOrderingAvailable" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+        <!-- Restaurant Closed Banner: only for a loaded config that says nothing can be ordered -->
+        <div v-if="isOrderingClosed" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
@@ -11,13 +11,31 @@
             </p>
         </div>
 
+        <!-- Closed right now, but a slot today can still be booked -->
+        <div v-else-if="isPreorderOnly && preorderTime" role="status" data-testid="checkout-preorder-banner" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-amber-800 font-medium">{{ $t('ordering.closedPreorder', { time: preorderTime }) }}</p>
+        </div>
+
+        <!-- The opening hours could not be loaded: not "closed", an error with Retry -->
+        <LoadError
+            v-else-if="configLoadFailed"
+            :message="$t('ordering.loadFailed')"
+            :busy="restaurantConfigPending"
+            data-testid="checkout-config-error"
+            class="mb-6 rounded-lg p-4 bg-amber-50 border border-amber-200 text-amber-800"
+            @retry="retryConfig()"
+        />
+
         <!-- Minimum Order Warning Banner -->
         <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-primary-50 border border-primary-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <p class="text-primary-700 font-medium text-sm">
-                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+                {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
             </p>
         </div>
 
@@ -49,6 +67,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- What stops the order according to the server quote (ordering off, slot gone, coupon no longer applies, flagged lines) -->
+        <QuoteIssuesNotice />
 
         <!-- Page Title (Japanese accent is per brand) -->
         <div class="flex items-center gap-3 mb-4">
@@ -95,13 +116,13 @@
                     <span class="text-neutral-500">
                         {{ $t('checkout.itemCount', { count: cartStore.totalItems }, cartStore.totalItems) }}
                     </span>
-                    <span class="font-bold text-neutral-900">{{ formatPrice(cartTotal) }}</span>
+                    <span class="font-bold text-neutral-900">{{ formatCents(payableCents) }}</span>
                 </div>
             </div>
 
             <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
             <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                <template v-if="restaurantConfigPending">
+                <template v-if="restaurantConfigPending && !restaurantConfig">
                     <div
                         v-for="n in 3"
                         :key="`skel-${n}`"
@@ -117,7 +138,7 @@
                         <div class="h-10 rounded-lg bg-neutral-100" />
                     </div>
                 </template>
-                <template v-else>
+                <template v-else-if="!configLoadFailed">
                     <CheckoutProductSummary />
                     <CheckoutCollectionOptions
                         @open-address-modal="openAddressModal"
@@ -134,6 +155,7 @@
 
             <!-- Fixed Bottom Checkout Button (mobile only) -->
             <div
+                ref="payBarRef"
                 class="fixed left-0 right-0 sm:left-[var(--side-rail-width,0px)] bottom-0 z-30 lg:hidden bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
             >
                 <UiButton
@@ -141,7 +163,7 @@
                     size="lg"
                     block
                     class="justify-between"
-                    :disabled="!isOrderingAvailable || cartStore.products.length === 0"
+                    :disabled="!isOrderingAvailable || cartStore.products.length === 0 || isOrderBlocked"
                     :loading="isCheckoutProcessing"
                     @click="handleCheckout"
                 >
@@ -154,19 +176,22 @@
                             }}
                         </template>
                     </span>
-                    <span class="ml-auto font-bold text-base tabular-nums">{{ formatPrice(cartTotal) }}</span>
+                    <span class="flex flex-col items-end leading-tight">
+                        <span class="ml-auto font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
+                        <span v-if="isQuotePending" class="text-[10px] font-normal opacity-80" data-testid="checkout-quote-updating">{{ $t('cart.quoteUpdating') }}</span>
+                    </span>
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />
             </div>
         </template>
 
-        <!-- Payment Redirect Overlay — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
+        <!-- Payment Redirect Overlay (z-[110]: above the toasts, which sit at z-[100]) — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
         <Teleport v-if="isRedirectingToPayment" to="body">
             <div
                 role="status"
                 aria-live="polite"
                 aria-atomic="true"
-                class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
+                class="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm"
             >
                 <svg class="animate-spin h-8 w-8 text-primary-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -229,7 +254,7 @@ definePageMeta({ public: true, pageTransition: false })
 
 import type { Address, CreateOrderRequest, Order } from '#engine/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
-import { computed, navigateTo, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath } from '#imports'
+import { computed, navigateTo, nextTick, onMounted, useAuthStore, useCartStore, useGqlMutation, useLocalePath, useRoute, useState } from '#imports'
 import { onMounted as onMountedVue, onUnmounted, ref, watch } from 'vue'
 import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
 import CheckoutAuthStep from '~/components/checkout/CheckoutAuthStep.vue'
@@ -237,47 +262,78 @@ import CheckoutCollectionOptions from '~/components/checkout/CheckoutCollectionO
 import CheckoutDeliveryGate from '~/components/checkout/CheckoutDeliveryGate.vue'
 import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
-import { formatPrice } from '#engine/lib/price'
+import QuoteIssuesNotice from '#engine/components/QuoteIssuesNotice.vue'
+import { buildCreateOrderInput } from '#engine/utils/orderPayload'
+import { evaluateCashAmount } from '#engine/utils/cashPayment'
+import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { roundToNearest10Cents } from '#engine/utils/money'
+import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
+import { centsToEuros } from '#engine/utils/money'
 import gql from 'graphql-tag'
-import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
+import { reportError } from '#engine/utils/reportError'
+import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
-import { DELIVERY_ZONE_METERS, isDeliverable, isExcludedPostcode } from '#engine/lib/delivery'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
+import { usePhoneCapture } from '#engine/composables/usePhoneCapture'
 import { useHaptics } from '#engine/composables/useHaptics'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCheckoutQuoteGuard } from '#engine/composables/useCheckoutQuoteGuard'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
+import LoadError from '#engine/components/LoadError.vue'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
 
 const { t, locale } = useI18n()
+const gqlErrorMessage = useGqlErrorMessage()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { applyDefaults } = useOrderExtras()
 const notifications = useNotificationsStore()
+// The payable total is the amount Mollie is asked for (goods − discounts + delivery + online fee): the pay bar, the summary and the analytics payloads all use it.
 const {
-    subtotal,
-    pickupDiscount,
+    payableCents,
     isMinimumReached,
+    isOrderBlocked,
+    isQuotePending,
 } = useCartTotals()
+// Keeps the server quote of this cart up to date: its totals replace the client's maths below, and its issues block the pay button.
+useOrderQuote()
+// The last check before createOrder, and the re-quotes while the page is open (prices / availability change on the server too).
+const { confirmBeforeOrder } = useCheckoutQuoteGuard()
 const localePath = useLocalePath()
 const { notification: hapticNotification } = useHaptics()
 const { trackEvent } = useTracking()
 
 // Check restaurant ordering status. Lazy so the checkout page can render a skeleton while the initial query resolves on slow client hydration.
-const { config: restaurantConfig, pending: restaurantConfigPending } = await useRestaurantConfig({ lazy: true })
+// The mobile pay bar publishes its height so the toasts float above it instead of covering the button.
+const payBarRef = ref<HTMLElement | null>(null)
+useBottomBarOffset(payBarRef)
+
+// The one ordering gate (engine, utils/orderingAvailability.ts): open, or closed with a slot still bookable today (a pre-order). The closed banner only shows for a loaded config; a failed load shows its own error with Retry.
+const {
+    config: restaurantConfig,
+    pending: restaurantConfigPending,
+    isAvailable: isOrderingAvailable,
+    isClosed: isOrderingClosed,
+    isPreorderOnly,
+    preorderTime,
+    loadFailed: configLoadFailed,
+    retry: retryConfig,
+} = await useOrderingAvailability({ lazy: true })
+// Open right now (ASAP is possible); while closed an order needs a fixed slot.
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
-const isOrderingEnabled = computed(() => restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false)
-const isOrderingAvailable = computed(() => isOrderingEnabled.value && isOrderingCurrentlyOpen.value)
 
 // Pre-auth delivery zone gate: block anonymous users from hitting login/register
 // Until we know their address is deliverable. Preserves the cart either way.
 const needsDeliveryGate = computed(() =>
     !authStore.user
     && cartStore.collectionOption === 'DELIVERY'
-    && (!cartStore.address || !isDeliverable(cartStore.address.distance ?? 0, cartStore.address.postcode)),
+    && (!cartStore.address || deliveryZoneStatus(cartStore.address) !== 'ok'),
 )
 
 const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
@@ -412,42 +468,6 @@ const handleSlotExpired = () => {
     })
 }
 
-/** Extract a human-readable message from a GraphQL error, mapping known backend errors to i18n. */
-const extractGqlErrorMessage = (err: unknown): string | null => {
-    const raw = Array.isArray(err) && err.length > 0 && err[0]?.message
-        ? err[0].message as string
-        : err instanceof Error ? err.message : null
-    if (!raw) return null
-
-    // Map known backend error strings to translated messages
-    if (raw.includes('minimum order amount for delivery'))
-        return t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM })
-    if (raw.includes('ordering is currently unavailable'))
-        return t('notify.errors.orderingUnavailable')
-    if (raw.includes('not eligible for delivery'))
-        return t('notify.errors.deliveryAddressExcluded')
-    if (raw.includes('address too far'))
-        return t('notify.errors.deliveryAddressTooFar', { distance: 9 })
-    if (raw.includes('coupon is no longer valid'))
-        return t('coupon.invalid')
-    if (raw.includes('UNAUTHENTICATED'))
-        return null // Let the auth middleware handle this
-    if (raw.includes('preferred ready time is no longer available') || raw.includes('preferred ready time must be at least'))
-        return t('notify.errors.slotTooSoon')
-    if (raw.includes('preferred ready time is outside allowed'))
-        return t('notify.errors.slotOutsideHours')
-    if (raw.includes('preferred ready time must be on the same day'))
-        return t('notify.errors.slotNotToday')
-    if (raw.includes('preferred ready time must be aligned'))
-        return t('notify.errors.slotNotAligned')
-    if (raw.includes('ordering is closed today'))
-        return t('notify.errors.orderingClosedToday')
-    if (raw.includes('fixed time is required while the restaurant is closed'))
-        return t('notify.errors.fixedTimeRequiredWhileClosed')
-
-    return raw
-}
-
 const openAddressModal = () => {
     trackEvent('delivery_address_modal_opened')
     showAddressModal.value = true
@@ -500,17 +520,23 @@ onMounted(() => {
 
     trackEvent('checkout_page_loaded', {
         total_items: cartStore.totalItems,
-        total_price: cartTotal.value,
+        total_price: centsToEuros(payableCents.value),
         collection_option: cartStore.collectionOption,
         has_address: Boolean(cartStore.address),
         is_authenticated: Boolean(authStore.user),
     })
 })
 
+// Same draft state as the phone card (CheckoutPhoneCapture): lets Pay save a number that was typed but not saved.
+const phoneCapture = usePhoneCapture()
+
 const cashAcknowledged = ref(false)
+// Set by an order attempt so the cash-amount field says "less than the total" even if it was never left (see CheckoutPaymentExtras).
+const cashTouched = useState('checkout-cash-touched', () => false)
 watch(() => cartStore.paymentOption, (value) => {
     if (value === 'ONLINE') {
         cashAcknowledged.value = false
+        cashTouched.value = false
         cartStore.cashPaymentAmount = null
     }
 })
@@ -549,13 +575,20 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
 
     if (!isMinimumReached.value) {
         errors.push({
-            message: t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }),
+            message: t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }),
             targetId: 'checkout-minimum-order-banner',
             event: 'checkout_error_minimum_not_reached',
         })
     }
 
-    if (!authStore.user?.phoneNumber) {
+    if (phoneCapture.hasUnsavedInput.value) {
+        // Typed but not saved (Pay commits it first, so this is an invalid number or a failed save): the field shows why.
+        errors.push({
+            message: t('checkout.phoneCapture.unsaved'),
+            targetId: 'checkout-phone-input',
+            event: 'checkout_error_phone_unsaved',
+        })
+    } else if (!authStore.user?.phoneNumber) {
         errors.push({
             message: t('checkout.phoneCapture.requiredBeforeOrder'),
             targetId: 'checkout-phone-capture',
@@ -579,13 +612,22 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    if (cartStore.collectionOption === 'DELIVERY' && isExcludedPostcode(cartStore.address?.postcode)) {
+    if (cartStore.paymentOption === 'CASH' && evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value).kind === 'short') {
+        errors.push({
+            message: t('checkout.cashAmountTooLow', { total: formatCents(payableCents.value) }),
+            targetId: 'cash-payment-amount',
+            event: 'checkout_error_cash_amount_too_low',
+        })
+    }
+
+    const zone = cartStore.collectionOption === 'DELIVERY' && cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'
+    if (zone === 'excluded') {
         errors.push({
             message: t('notify.errors.deliveryAddressExcluded'),
             targetId: 'checkout-delivery-address',
             event: 'checkout_error_address_excluded',
         })
-    } else if (cartStore.collectionOption === 'DELIVERY' && (cartStore.address?.distance ?? 0) >= DELIVERY_ZONE_METERS) {
+    } else if (zone === 'tooFar') {
         errors.push({
             message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
             targetId: 'checkout-delivery-address',
@@ -607,12 +649,24 @@ const handleCheckout = async () => {
     let createdOrder = false
 
     try {
-        if (!isOrderingEnabled.value) {
+        if (!isOrderingAvailable.value) {
             notifications.notify({
                 message: t('notify.errors.orderingUnavailable'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
+            })
+            return
+        }
+
+        // The pay button is disabled in this state; this covers Enter keys and double taps. Nothing is sent
+        // While the server has not priced the cart, or while it reports something that would fail the order.
+        if (isOrderBlocked.value) {
+            notifications.notify({
+                message: t(isQuotePending.value ? 'cart.quoteUpdating' : 'checkout.quoteLineIssues'),
+                persistent: false,
+                duration: 3000,
+                variant: 'warning',
             })
             return
         }
@@ -656,6 +710,10 @@ const handleCheckout = async () => {
             return
         }
 
+        // A phone number typed but not saved yet is saved now, so the order carries the number on screen. When it is not valid, the field keeps its error and the summary below points at it.
+        await phoneCapture.commitPending()
+
+        if (cartStore.paymentOption === 'CASH') cashTouched.value = true
         const validationErrors = getCheckoutValidationErrors()
         submitErrors.value = validationErrors
         if (validationErrors.length > 0) {
@@ -678,40 +736,11 @@ const handleCheckout = async () => {
             return
         }
 
-        // Send ASAP as null. Fixed slots are already RFC3339 values.
-        const { preferredReadyTime: selectedPreferredReadyTime } = cartStore
-        let preferredReadyTime = null
-        if (selectedPreferredReadyTime) {
-            preferredReadyTime = selectedPreferredReadyTime
-        }
+        // Ask the server once more for the cart as it is now: when it reports an issue or another total than the one on screen, stop here (the page shows the new numbers and says so). A failed check lets the order go on.
+        if (!(await confirmBeforeOrder(payableCents.value))) return
 
-        const cashAmount = cartStore.paymentOption === 'CASH'
-            ? (String(cartStore.cashPaymentAmount ?? '').trim() || null)
-            : null
-
-        const orderData: CreateOrderRequest = {
-            orderType: cartStore.collectionOption,
-            isOnlinePayment: cartStore.paymentOption === 'ONLINE',
-            addressPlaceId: (cartStore.collectionOption === 'DELIVERY')
-                ? (cartStore.address?.id ?? null)
-                : null,
-            addressExtra: cartStore.addressExtra,
-            couponCode: cartStore.couponCode,
-            orderNote: cartStore.orderNote?.trim() || null,
-            orderExtra: cartStore.orderExtra,
-            items: cartStore.products.map((item) => {
-                const hasSelections = (item.selectedChoices?.length ?? 0) > 0
-                return {
-                    productId: item.product.id,
-                    quantity: item.quantity,
-                    ...(hasSelections
-                        ? { selections: item.selectedChoices }
-                        : (item.selectedChoice ? { choiceId: item.selectedChoice.id } : {})),
-                }
-            }),
-            preferredReadyTime,
-            cashPaymentAmount: cashAmount,
-        }
+        // The same builder the quote uses (#engine/utils/orderPayload): the order is exactly what was priced.
+        const orderData: CreateOrderRequest = buildCreateOrderInput(cartStore)
 
         try {
             const res : { createOrder: Order } = await mutationCreateOrder({
@@ -719,15 +748,17 @@ const handleCheckout = async () => {
             })
 
             const order = res.createOrder
+            // Remember which order this cart was checked out for: only its confirmation page may clear the cart.
+            if (order?.id) cartStore.pendingOrderId = order.id
             hapticNotification('Success')
 
             trackEvent('order_placed', {
                 order_id: order?.id,
                 order_type: cartStore.collectionOption,
                 is_online_payment: cartStore.paymentOption === 'ONLINE',
-                total_price: cartTotal.value,
+                total_price: centsToEuros(payableCents.value),
                 items_count: cartStore.totalItems,
-                revenue: order?.totalPrice ?? cartTotal.value,
+                revenue: order?.totalPrice ?? centsToEuros(payableCents.value),
                 currency: 'EUR',
             })
 
@@ -741,10 +772,10 @@ const handleCheckout = async () => {
                 navigateTo(localePath(`/order-completed/${order.id}`))
             }
         } catch (err: unknown) {
-            if (import.meta.dev) console.error('Error creating order:', err)
+            reportError(err, 'checkout.createOrder')
             hapticNotification('Error')
             notifications.notify({
-                message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
+                message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed'),
                 persistent: false,
                 duration: 5000,
                 variant: 'error',
@@ -752,10 +783,10 @@ const handleCheckout = async () => {
         }
 
     } catch (err: unknown) {
-        if (import.meta.dev) console.error('Order processing failed:', err)
+        reportError(err, 'checkout.processing')
         hapticNotification('Error')
         notifications.notify({
-            message: extractGqlErrorMessage(err) ?? t('notify.errors.orderCreationFailed'),
+            message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed'),
             persistent: false,
             duration: 5000,
             variant: 'error',
@@ -767,9 +798,14 @@ const handleCheckout = async () => {
         if (!createdOrder) isCheckoutProcessing.value = false
     }
 }
-const cartTotal = computed(() =>
-    roundToNearest10Cents(Math.max(subtotal.value - pickupDiscount.value - cartStore.couponDiscount, 0)),
-)
+
+// Arriving from a cart line that needs a lunch slot ("Choose a time slot"): bring the picker into view once the page has rendered it.
+const route = useRoute()
+watch(restaurantConfigPending, async (pending) => {
+    if (pending || route.hash !== '#checkout-preferred-time') return
+    await nextTick()
+    scrollToValidationTarget('checkout-preferred-time')
+}, { immediate: true })
 
 // Keep the error summary in sync after submit; placed after deps so the getter doesn't hit TDZ.
 watch(
@@ -779,9 +815,11 @@ watch(
         cartStore.address?.id,
         cartStore.address?.distance,
         authStore.user?.phoneNumber,
+        phoneCapture.hasUnsavedInput.value,
         cartStore.paymentOption,
         cashAcknowledged.value,
-        cartTotal.value,
+        cartStore.cashPaymentAmount,
+        payableCents.value,
     ],
     () => {
         if (submitErrors.value.length === 0) return

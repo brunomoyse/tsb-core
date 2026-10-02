@@ -11,7 +11,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
                 <span class="text-sm text-primary-700 font-medium">
-                    {{ $t('coupon.applied', { discount: formatPrice(cartStore.couponDiscount) }) }}
+                    {{ $t('coupon.applied', { discount: formatCents(cartStore.couponDiscountCents) }) }}
                 </span>
             </div>
             <button
@@ -54,64 +54,34 @@
 </template>
 
 <script lang="ts" setup>
-import type { CouponValidation } from '#engine/types'
-import { formatPrice } from '#engine/lib/price'
-import gql from 'graphql-tag'
+import { formatCents } from '#engine/lib/price'
 import { ref } from 'vue'
 import { useCartStore } from '#engine/stores/cart'
-import { useGqlMutation } from '#imports'
-import { useI18n } from 'vue-i18n'
-
-
+import { useCouponCode } from '#engine/composables/useCouponCode'
 
 const cartStore = useCartStore()
-const { t } = useI18n()
+const { apply, remove } = useCouponCode()
 
 const couponInput = ref('')
 const errorMessage = ref('')
 const isValidating = ref(false)
 
-const VALIDATE_COUPON = gql`
-    query ValidateCoupon($code: String!, $orderAmount: String!) {
-        validateCoupon(code: $code, orderAmount: $orderAmount) {
-            valid
-            discountAmount
-            errorMessage
-        }
-    }
-`
-
-const { mutate: validateCoupon } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
-
 const applyCoupon = async () => {
-    const code = couponInput.value.trim()
-    if (!code) return
+    if (!couponInput.value.trim()) return
 
     isValidating.value = true
     errorMessage.value = ''
-
     try {
-        const orderAmount = cartStore.totalPrice.toFixed(2)
-        const res = await validateCoupon({ code, orderAmount })
-        const validation = res.validateCoupon
-
-        if (validation.valid) {
-            cartStore.couponCode = code
-            cartStore.couponDiscount = Number(validation.discountAmount)
-            couponInput.value = ''
-        } else {
-            errorMessage.value = validation.errorMessage || t('coupon.invalid')
-        }
-    } catch {
-        errorMessage.value = t('coupon.invalid')
+        const refusal = await apply(couponInput.value)
+        if (refusal) errorMessage.value = refusal
+        else couponInput.value = ''
     } finally {
         isValidating.value = false
     }
 }
 
 const removeCoupon = () => {
-    cartStore.couponCode = null
-    cartStore.couponDiscount = 0
+    remove()
     couponInput.value = ''
     errorMessage.value = ''
 }

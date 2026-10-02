@@ -13,15 +13,15 @@
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
-                v-for="item in cartStore.products"
-                :key="getItemKey(item)"
+                v-for="(item, lineIndex) in cartStore.products"
+                :key="lineKeys[lineIndex]"
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
                 <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
                     <button
                         type="button"
-                        :aria-label="$t('cart.removeItem')"
+                        :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                         class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
                     >
@@ -81,14 +81,18 @@
                             ({{ itemChoice(item) }})
                         </p>
 
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <!-- What the server quote says about this line, with the way out -->
+                        <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
+
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
-                                    {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                    {{ formatCents(getItemLineTotalCents(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1" class="text-[11px] text-neutral-400 tabular-nums">
-                                    {{ item.quantity }} × {{ formatPrice(getItemUnitPrice(item)) }}
+                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                    {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                                 </span>
                             </div>
 
@@ -98,7 +102,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -111,7 +117,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -124,7 +132,7 @@
                                 <!-- Explicit remove -->
                                 <button
                                     type="button"
-                                    :aria-label="$t('cart.removeItem')"
+                                    :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-400 hover:text-primary-500 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                                     @click="handleRemoveItem(item)"
                                 >
@@ -146,33 +154,45 @@
             <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
                 <div v-if="hasBreakdown" class="flex justify-between text-neutral-500">
                     <span>{{ $t('cart.subtotal') }}</span>
-                    <span class="tabular-nums">{{ formatPrice(subtotal) }}</span>
+                    <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-500">
                     <span>{{ $t('cart.deliveryFee') }}</span>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-400 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
-                    <span v-else-if="deliveryFee === -1" class="text-red-600 font-medium text-xs">
-                        {{ $t('checkout.tooFar') }}
+                    <span v-else-if="deliveryFeeCents === -1" class="text-red-600 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
+                        {{ $t(deliveryUnavailableKey) }}
+                        <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
-                    <span v-else-if="deliveryFee === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
                         {{ $t('checkout.free') }}
                     </span>
-                    <span v-else class="tabular-nums">{{ formatPrice(deliveryFee) }}</span>
+                    <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
                 </div>
-                <div v-if="pickupDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('cart.pickupDiscount') }}</span>
-                    <span class="tabular-nums">-{{ formatPrice(pickupDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscount > 0" class="flex justify-between text-green-600">
+                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-600">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
-                    <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
+                </div>
+                <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-500">
+                    <span>{{ $t('cart.onlineFee') }}</span>
+                    <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
                 </div>
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-                    <span class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span class="inline-flex items-baseline gap-2"><QuoteUpdatingHint /><span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatCents(payableCents) }}</span></span>
                 </div>
+            </div>
+            <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
+                <p>{{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}</p>
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                    {{ $t('delivery.modal.switchToPickup') }}
+                </button>
             </div>
         </div>
 
@@ -182,9 +202,10 @@
         <!-- ═══ BOTTOM CHECKOUT BAR ═══ -->
         <div
             v-if="cartStore.products.length > 0"
+            ref="checkoutBarRef"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
-            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!isCheckoutAvailable">
+            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -193,10 +214,13 @@
                     </svg>
                     {{ $t('cart.checkout') }}
                 </span>
-                <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
             </UiButton>
-            <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
+            <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
+            </p>
+            <p v-else-if="isPreorderOnly && firstSlotLabel" data-testid="cart-preorder-hint" class="mt-2 text-center text-sm text-amber-700">
+                {{ $t('ordering.closedPreorder', { time: firstSlotLabel }) }}
             </p>
             <div class="safe-area-spacer-bottom" />
         </div>
@@ -222,16 +246,21 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
+import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
-import { formatPrice } from '#engine/lib/price'
+import type { CartItem } from '#engine/types'
+import CartLineIssues from '#engine/components/CartLineIssues.vue'
+import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
+import { formatCents } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '#engine/stores/notifications'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useOrderQuote } from '#engine/composables/useOrderQuote'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -241,28 +270,36 @@ definePageMeta({ public: true })
 
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
-const notifications = useNotificationsStore()
 const { impact: hapticImpact } = useHaptics()
 const { trackEvent } = useTracking()
 const { t } = useI18n()
 const { handleProductImageError } = productImage
 const productImageBase = (slug?: string | null) => productImage.productImageBase(config.public.s3bucketUrl, slug)
 const itemImageElements = ref<HTMLImageElement[]>([])
-const { config: restaurantConfig } = await useRestaurantConfig()
+// Publishes the checkout bar's height so the toasts float above it.
+const checkoutBarRef = ref<HTMLElement | null>(null)
+useBottomBarOffset(checkoutBarRef)
+// Blocking: the page renders with the config loaded (or failed). The checkout link is only disabled once the config says nothing can be ordered, never because it is missing; checkout shows the load error with its Retry.
+const { isClosed, isPreorderOnly, firstSlotLabel } = await useOrderingAvailability()
 const {
-    getItemUnitPrice,
-    subtotal,
-    pickupDiscount,
-    deliveryFee,
-    couponDiscount,
-    displayTotal,
+    getItemLineTotalCents,
+    getItemExactUnitCents,
+    subtotalCents,
+    pickupDiscountCents,
+    deliveryFeeCents,
+    deliveryUnavailableKey,
+    couponDiscountCents,
+    onlineFeeCents,
+    payableCents,
     hasBreakdown,
+    isMinimumReached,
+    amountToDeliveryMinimumCents,
+    switchToPickup,
 } = useCartTotals()
-const isCheckoutAvailable = computed(() => {
-    const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
-    const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
-    return orderingEnabled && isOrderingCurrentlyOpen
-})
+// Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
+useOrderQuote()
+// The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.
+const canCheckout = computed(() => !isClosed.value && isMinimumReached.value)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
@@ -307,71 +344,17 @@ const itemChoice = (item: CartItem): string | undefined =>
             choiceName: item.selectedChoice?.name,
         }).choice
 
-// ── Cart mutations with undo support
-const restoreItem = (item: {
-    product: CartItem['product'];
-    choice: ProductChoice | null;
-    selections: ProductChoiceSelection[];
-    quantity: number;
-}): void => {
-    cartStore.addProduct(item.product, item.quantity, {
-        choice: item.choice,
-        selections: item.selections,
-    })
-    hapticImpact('Light')
-    trackEvent('product_removal_undone', { product_id: item.product.id, quantity: item.quantity })
-}
-
-const emitRemoveUndoToast = (item: CartItem): void => {
-    const { product, selectedChoice, selectedChoices, quantity } = item
-    notifications.notify({
-        message: t('cart.removedUndo', { name: product.name }),
-        duration: 4000,
-        variant: 'neutral',
-        action: {
-            label: t('cart.undo'),
-            handler: () => restoreItem({
-                product,
-                choice: selectedChoice,
-                selections: selectedChoices,
-                quantity,
-            }),
-        },
-    })
-}
+// ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
+const { removeLine: handleRemoveItem, decrementLine: handleDecrementQuantity } = useCartRemoval()
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Light')
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-}
-
-const handleDecrementQuantity = (cartItem: CartItem): void => {
-    if (cartItem.quantity === 1) {
-        // Route decrement-to-zero through the remove-with-undo path
-        handleRemoveItem(cartItem)
-        return
-    }
-    cartStore.decrementQuantity(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-    })
-    hapticImpact('Light')
-    trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
-}
-
-const handleRemoveItem = (cartItem: CartItem): void => {
-    // Snapshot before removal so undo can restore the exact quantity
-    emitRemoveUndoToast(cartItem)
-    cartStore.removeFromCart(cartItem.product, {
-        choice: cartItem.selectedChoice,
-        selections: cartItem.selectedChoices,
-    })
-    hapticImpact('Medium')
-    trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
 }
 
 // ── Swipe-to-delete state
@@ -379,13 +362,11 @@ const SWIPE_THRESHOLD = 72
 const swipeState = reactive<Record<string, { startX: number; currentX: number; swiping: boolean; open: boolean }>>({})
 const swipingItemKey = ref<string | null>(null)
 
-const getItemKey = (item: CartItem) => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
+
+const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const getSwipeOffset = (item: CartItem) => {
     const key = getItemKey(item)

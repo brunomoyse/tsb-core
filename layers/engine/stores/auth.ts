@@ -1,5 +1,6 @@
 import type { User } from '@/types'
 import { defineStore } from 'pinia'
+import { reportError } from '#engine/utils/reportError'
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -32,7 +33,7 @@ export const useAuthStore = defineStore("auth", {
                 const { signOut } = useOidc()
                 await signOut()
             } catch (error) {
-                if (import.meta.dev) console.error('Logout error:', error)
+                reportError(error, 'auth.logout')
             }
         },
         /*
@@ -53,7 +54,7 @@ export const useAuthStore = defineStore("auth", {
                 const { removeUser } = useOidc()
                 await removeUser()
             } catch (error) {
-                if (import.meta.dev) console.error('Delete-account session clear error:', error)
+                reportError(error, 'auth.deleteAccountClearSession')
             }
         }
     },

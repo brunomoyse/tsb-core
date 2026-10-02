@@ -44,10 +44,10 @@
                 >
                     {{ $t('checkout.editAddress', 'Edit Address') }}
                 </button>
-                <p v-if="isExcludedPostcode(cartStore.address.postcode)" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-if="zoneStatus === 'excluded'" class="mt-2 text-sm text-primary-600 font-medium">
                     {{ $t('checkout.notDeliverableArea') }}
                 </p>
-                <p v-else-if="cartStore.address.distance >= DELIVERY_ZONE_METERS" class="mt-2 text-sm text-primary-600 font-medium">
+                <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-600 font-medium">
                     {{ $t('checkout.tooFar') }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-500">
@@ -106,6 +106,7 @@
                 <!-- Open: ASAP + slots; Closed: fixed slots only -->
                 <select
                     v-model="preferredReadyTime"
+                    id="checkout-preferred-time"
                     data-testid="checkout-preferred-time"
                     class="field mt-1 block text-sm"
                 >
@@ -127,8 +128,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
-import { DELIVERY_ZONE_METERS, isExcludedPostcode } from '#engine/lib/delivery'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
+import { bookableSlots } from '#engine/utils/orderingAvailability'
+import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
@@ -162,6 +164,7 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const cartStore = useCartStore()
+const zoneStatus = computed(() => (cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'))
 const { trackEvent } = useTracking()
 
 // Use backend ordering status when available
@@ -228,12 +231,10 @@ const toMins = (hm: string) => {
     return h * 60 + m
 }
 
-// Filter out slots that are in the past or within the preparation buffer.
-const availableFixedSlots = computed<RestaurantTimeSlot[]>(() => {
-    const prepMs = (preparationMinutes ?? 30) * 60_000
-    const cutoff = new Date(now.value.getTime() + prepMs)
-    return (availableSlotsToday ?? []).filter(slot => new Date(slot.value) > cutoff)
-})
+// Filter out slots that are in the past or within the preparation buffer (the same cut-off the checkout gate applies, see utils/orderingAvailability.ts).
+const availableFixedSlots = computed<RestaurantTimeSlot[]>(() =>
+    bookableSlots(availableSlotsToday, preparationMinutes, now.value.getTime()) as RestaurantTimeSlot[],
+)
 
 // Selected preferred time binding
 const preferredReadyTime = computed<string>({

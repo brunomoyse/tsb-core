@@ -67,10 +67,11 @@
             </footer>
         </div>
         <ClientOnly>
-            <LazyCartMobile :is-ordering-available="isOrderingAvailable" />
+            <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
             <LazyCartFloatingCartBar v-if="isMenuPage" />
         </ClientOnly>
         <ClientOnly>
+            <ToastAnnouncer />
             <LazyNotificationBar
                 v-if="notifications.current"
                 :key="notifications.seq"
@@ -81,6 +82,10 @@
                 :action="notifications.current.action"
                 @close="notifications.dismiss()"
             />
+        </ClientOnly>
+
+        <ClientOnly>
+            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-300" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-400" />
         </ClientOnly>
 
         <ClientOnly>
@@ -102,7 +107,7 @@ import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
-import { useRestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRoute } from 'vue-router'
 
 useHead({
@@ -123,8 +128,8 @@ const { brand } = useAppConfig()
 
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
-const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })
-const isOrderingAvailable = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
+// Closed is only true once the config has loaded and says nothing can be ordered: while it loads (or if it failed) the drawer's checkout link stays enabled and checkout explains.
+const { isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
 
 const head = useLocaleHead()
 const notifications = useNotificationsStore()

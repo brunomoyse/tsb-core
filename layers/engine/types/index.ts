@@ -3,7 +3,10 @@
 export interface CouponValidation {
     valid: boolean;
     discountAmount: string;
+    /** English backend text: for logs only, never shown (see utils/gqlErrors.ts). */
     errorMessage: string | null;
+    /** Stable refusal code (COUPON_INVALID, COUPON_MIN_ORDER_NOT_MET, COUPON_RATE_LIMITED); absent on an old backend. */
+    errorCode?: string | null;
 }
 
 export interface ProductChoice {
@@ -75,10 +78,15 @@ export interface CartState {
     cashPaymentAmount: string | null;
     collectionOption: OrderType;
     couponCode: string | null;
-    couponDiscount: number;
+    /** What the applied coupon takes off, in integer cents (0 without a coupon). */
+    couponDiscountCents: number;
     isCartVisible: boolean;
+    /** Transient (never persisted): how many lines of the saved cart could not be recovered at hydration; the notice plugin tells the customer once. */
+    droppedOnHydrate: number;
     orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;
+    /** The order the cart was just checked out for; only that order's confirmation may clear the cart. */
+    pendingOrderId: string | null;
     paymentOption: 'ONLINE' | 'CASH';
     preferredReadyTime: string | null;
     products: CartItem[];
@@ -95,14 +103,18 @@ export interface NotifyPayload {
     duration?: number;
     variant?: string;
     action?: NotificationAction;
+    /** A toast of the same group replaces the one showing (or waiting) instead of queueing behind it. */
+    group?: string;
 }
 
 export interface Notification {
+    id: number;
     message: string;
     persistent: boolean;
     duration: number;
     variant: string;
     action?: NotificationAction;
+    group?: string;
 }
 
 export interface LoginResponse {
@@ -145,7 +157,10 @@ export interface Order {
     couponCode: string | null;
     createdAt: string;
     deliveryFee: string | null;
+    /** Pickup discount + coupon discount (the API does not split them). */
     discountAmount: string;
+    /** The online-payment fee; null/"0" for cash. */
+    transactionFee?: string | null;
     estimatedReadyTime: string | null;
     id: string;
     isOnlinePayment: boolean;
@@ -165,6 +180,13 @@ export interface Order {
     payment: MolliePayment | null;
 }
 
+/**
+ * One selected choice of an order line; `quantity` is LINE-WIDE (already scaled by the line quantity).
+ * The API's `OrderItemSelection.choice` / `.group` are NOT queried: the backend mapper never fills them
+ * and both are non-null, so asking for them fails the whole order. Names come from `product.choices`.
+ */
+export type OrderItemSelection = ProductChoiceSelection
+
 export interface OrderProduct {
     quantity: number;
     totalPrice: string;
@@ -172,6 +194,7 @@ export interface OrderProduct {
 
     product: Product;
     choice: ProductChoice | null;
+    selections?: OrderItemSelection[] | null;
 }
 
 export interface MolliePayment {

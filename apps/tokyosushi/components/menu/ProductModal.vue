@@ -37,7 +37,7 @@
 
                     <!-- Price & Badges -->
                     <div class="flex items-baseline gap-3 flex-wrap">
-                        <span class="text-2xl font-bold text-neutral-900">{{ formatPrice(displayPrice) }}</span>
+                        <span class="text-2xl font-bold text-neutral-900">{{ formatCents(displayPriceCents) }}</span>
                         <span v-if="p.pieceCount" class="text-sm text-neutral-600">
                             {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
                         </span>
@@ -104,14 +104,14 @@
                                         class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
                                     >
                                         <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
-                                        <span v-if="Number(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
-                                            {{ Number(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
+                                        <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-500">
+                                            {{ toCents(choice.priceModifier) > 0 ? '+' : '' }}{{ formatPrice(choice.priceModifier) }}
                                         </span>
                                         <QuantityStepper
                                             size="sm"
                                             :value="selectedChoiceQuantities[choice.id] ?? 0"
                                             :dec-disabled="!(selectedChoiceQuantities[choice.id] > 0)"
-                                            :inc-disabled="(selectedQuantitiesByGroup[group.id] ?? 0) >= groupTargetMax(group)"
+                                            :inc-disabled="!canIncrement(choice)"
                                             :dec-testid="`product-modal-choice-dec-${choice.id}`"
                                             :inc-testid="`product-modal-choice-inc-${choice.id}`"
                                             @decrement="decrementChoice(choice)"
@@ -125,6 +125,7 @@
 
                     <!-- Cart Controls -->
                     <div class="border-t pt-4">
+                        <p v-if="!p.isAvailable" data-testid="product-modal-unavailable" class="text-sm text-gray-600">{{ $t('menu.unavailable') }}</p>
                         <div class="flex items-center justify-between gap-4">
                             <QuantityStepper
                                 :value="quantity"
@@ -141,12 +142,21 @@
                                 :disabled="!canOrder"
                                 @click="addToCart"
                             >
-                                {{ $t(editItem ? 'menu.updateWithPrice' : 'menu.addWithPrice', { price: formatPrice(lineTotal) }) }}
+                                {{ $t(editItem ? 'menu.updateWithPrice' : 'menu.addWithPrice', { price: formatCents(lineTotalCents) }) }}
                             </UiButton>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- The product could not be loaded (or no longer exists): say so instead of an empty dialog -->
+            <LoadError
+                v-else
+                :message="$t('menu.productLoadFailed')"
+                data-testid="product-modal-load-error"
+                class="mt-8 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-800"
+                @retry="emit('retry')"
+            />
 
             <ImageLightbox ref="lightboxRef" :src="lightboxSrc" :alt="lightboxAlt" />
         </div>
@@ -154,19 +164,23 @@
 
 <script setup lang="ts">
 import * as productImage from '#engine/utils/productImage'
-import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '#engine/types'
 import { type ComponentPublicInstance, computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { Product, ProductChoiceGroup } from '#engine/types'
+import { formatCents, formatPrice } from '#engine/lib/price'
 import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
+import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
+import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useI18n } from 'vue-i18n'
+import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 const cartItemAdded = useEventBus(cartItemAddedKey)
@@ -188,6 +202,7 @@ const {
 
 const emit = defineEmits<{
     close: []
+    retry: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -213,9 +228,6 @@ const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value
 
 const quantity = ref(editItem?.quantity ?? 1)
 const maxQuantity = 99
-const selectedChoiceQuantities = ref<Record<string, number>>(
-    Object.fromEntries((editItem?.selectedChoices ?? []).map((selection) => [selection.choiceId, selection.quantity])),
-)
 
 const PRODUCT_QUERY = gql`
   query Product($id: ID!) {
@@ -271,93 +283,44 @@ const { data: dataProduct } = await useGqlQuery<{
 
 const p = dataProduct.value?.product
 
-const hasChoices = computed(() => p?.choices && p.choices.length > 0)
+/*
+ * Selection state, gating and pricing are shared with the YGF modal and composer (engine composable):
+ * the min/max of every group scale with the quantity, a pick-one choice follows the quantity stepper,
+ * and the price is the line total (audit M23).
+ */
+const choicesApi = useProductChoices(p, quantity)
+const {
+    choiceGroups,
+    hasChoices,
+    selectedChoiceQuantities,
+    selectedQuantitiesByGroup,
+    selectionList,
+    selectedChoice,
+    displayPriceCents,
+    lineTotalCents,
+    groupTargetMax,
+    isGroupSatisfied,
+    allGroupsSatisfied,
+    groupHint,
+    canIncrement,
+    incrementChoice,
+    decrementChoice,
+    reset: resetChoices,
+} = choicesApi
 
-const choiceGroups = computed(() => {
-    if (!p?.choiceGroups || p.choiceGroups.length === 0) {
-        if (!p?.choices || p.choices.length === 0) return []
-        return [{
-            id: 'legacy-single',
-            productId: p.id,
-            minSelections: 1,
-            maxSelections: 1,
-            sortOrder: 0,
-            name: t('menu.choice'),
-            choices: p.choices.toSorted((a, b) => a.sortOrder - b.sortOrder),
-        }]
-    }
-    return p.choiceGroups.toSorted((a, b) => a.sortOrder - b.sortOrder)
-})
-
-const selectedChoice = computed((): ProductChoice | null => {
-    const selection = selectionList.value.find((item) => item.quantity === 1)
-    if (!selection || !p?.choices) return null
-    return p.choices.find((choice) => choice.id === selection.choiceId) ?? null
-})
-
-const displayPrice = computed(() => {
-    if (!p) return '0'
-    const base = Number(p.price)
-    const modifier = Object.entries(selectedChoiceQuantities.value).reduce((sum, [choiceId, selectedQty]) => {
-        const choice = p.choices?.find((c) => c.id === choiceId)
-        if (!choice || selectedQty <= 0) return sum
-        return sum + Number(choice.priceModifier) * selectedQty
-    }, 0)
-    return String(base + modifier)
-})
-
-const selectedQuantitiesByGroup = computed(() => {
-    const currentProduct = p
-    const byGroup: Record<string, number> = {}
-    if (!currentProduct?.choices) return byGroup
-
-    for (const [choiceId, selectedQty] of Object.entries(selectedChoiceQuantities.value)) {
-        if (selectedQty <= 0) continue
-        const choice = currentProduct.choices.find((c) => c.id === choiceId)
-        if (!choice) continue
-        const groupId = choice.choiceGroupId
-        byGroup[groupId] = (byGroup[groupId] ?? 0) + selectedQty
-    }
-
-    return byGroup
-})
-
-const selectionList = computed((): ProductChoiceSelection[] => {
-    const currentProduct = p
-    if (!currentProduct?.choices) return []
-    return Object.entries(selectedChoiceQuantities.value)
-        .filter(([, selectedQty]) => selectedQty > 0)
-        .map(([choiceId, selectedQty]) => {
-            const choice = currentProduct.choices.find((c) => c.id === choiceId)
-            if (!choice) return null
-            return {
-                groupId: choice.choiceGroupId,
-                choiceId,
-                quantity: selectedQty,
-            }
-        })
-        .filter((item): item is ProductChoiceSelection => Boolean(item))
-})
-
-const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value
-const groupTargetMax = (group: ProductChoiceGroup) => group.maxSelections * quantity.value
+// Editing a cart line: start from its selections.
+if (editItem?.selectedChoices?.length) {
+    selectedChoiceQuantities.value = Object.fromEntries(editItem.selectedChoices.map((selection) => [selection.choiceId, selection.quantity]))
+}
 
 const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
     if (p?.category?.slug === 'menu-plateau') return t('menu.soup')
     return group.name
 }
 
-// Same line total the cart shows: unit price (with modifiers) times quantity.
-const lineTotal = computed(() => Number(displayPrice.value) * quantity.value)
-
 // The button stays clickable while choices are missing so a click can point at
 // the group that still needs a selection; it is only disabled when ordering is.
 const canOrder = computed(() => !orderingDisabled && Boolean(p?.isAvailable))
-
-const isGroupSatisfied = (group: ProductChoiceGroup) => {
-    const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
-    return selected >= groupTargetMin(group) && selected <= groupTargetMax(group)
-}
 
 // Groups open neutral; the error treatment only appears after an add attempt.
 const showGroupErrors = ref(false)
@@ -384,45 +347,6 @@ const flagFirstIncompleteGroup = (group: ProductChoiceGroup) => {
     shakingGroupId.value = group.id
     if (shakeTimeout) clearTimeout(shakeTimeout)
     shakeTimeout = setTimeout(() => { shakingGroupId.value = null }, 400)
-}
-
-const groupHint = (group: ProductChoiceGroup) => {
-    const selected = selectedQuantitiesByGroup.value[group.id] ?? 0
-    const targetMin = groupTargetMin(group)
-    const targetMax = groupTargetMax(group)
-    if (selected > targetMax) {
-        const excess = selected - targetMax
-        return t('menu.removeExcess', { count: excess }, excess)
-    }
-    const remaining = Math.max(0, targetMin - selected)
-    if (group.minSelections === group.maxSelections) {
-        return t('menu.chooseRemaining', { count: remaining }, remaining)
-    }
-    return t('menu.chooseAtLeast', { count: remaining }, remaining)
-}
-
-const incrementChoice = (choice: ProductChoice) => {
-    const group = choiceGroups.value.find((g) => g.id === choice.choiceGroupId)
-    if (!group) return
-    const currentCount = selectedQuantitiesByGroup.value[group.id] ?? 0
-    if (currentCount >= groupTargetMax(group)) return
-    selectedChoiceQuantities.value = {
-        ...selectedChoiceQuantities.value,
-        [choice.id]: (selectedChoiceQuantities.value[choice.id] ?? 0) + 1,
-    }
-}
-
-const decrementChoice = (choice: ProductChoice) => {
-    const current = selectedChoiceQuantities.value[choice.id] ?? 0
-    if (current <= 0) return
-    const next = current - 1
-    const copy = { ...selectedChoiceQuantities.value }
-    if (next === 0) {
-        delete copy[choice.id]
-    } else {
-        copy[choice.id] = next
-    }
-    selectedChoiceQuantities.value = copy
 }
 
 // Close modal on escape key
@@ -464,6 +388,7 @@ const addToCart = () => {
         cartStore.removeFromCart(editItem.product, {
             choice: editItem.selectedChoice,
             selections: editItem.selectedChoices,
+            quantity: editItem.quantity,
         })
     }
     cartStore.addProduct(p, quantity.value, {
@@ -483,9 +408,7 @@ const addToCart = () => {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
-        selectionSignature: selectionList.value
-            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-            .join('|'),
+        selectionSignature: lineSignature(selectionList.value, quantity.value),
     })
 
 
@@ -495,7 +418,7 @@ const addToCart = () => {
 // Reset quantity when product changes
 watch(() => p, () => {
     quantity.value = 1
-    selectedChoiceQuantities.value = {}
+    resetChoices()
 })
 
 </script>

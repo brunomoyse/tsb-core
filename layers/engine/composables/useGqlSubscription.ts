@@ -2,6 +2,8 @@
 import { type DocumentNode, print } from 'graphql'
 import { onScopeDispose, ref } from 'vue'
 import type { Client } from 'graphql-ws'
+import { reportError } from '#engine/utils/reportError'
+import { toGqlError } from '#engine/utils/gqlError'
 import { useRuntimeConfig } from '#imports'
 
 let wsClient: Client | null = null
@@ -50,18 +52,28 @@ const disposeClient = () => {
     wsClientPromise = null
 }
 
+/*
+ * Gap recovery: events emitted while the socket was down are lost. Run every subscriber's
+ * onReconnect (typically a refetch of the underlying query). Callers coalesce their own refetch.
+ */
+const notifyReconnected = () => {
+    Array.from(subscribers).forEach((s) => {
+        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch((err: unknown) => reportError(err, 'gql.subscription.reconnect'))
+    })
+}
+
 const recycleClient = () => {
     disposeClient()
     // Snapshot in case a restart callback mutates the set.
     Array.from(subscribers).forEach((s) => {
         s.restart()
-        /*
-         * GraphQL subscriptions don't replay history — events emitted during the
-         * disconnect window are lost. Callers that need gap recovery pass an
-         * onReconnect callback that refetches the underlying query.
-         */
-        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch(() => {})
     })
+    /*
+     * GraphQL subscriptions don't replay history — events emitted during the
+     * disconnect window are lost. Callers that need gap recovery pass an
+     * onReconnect callback that refetches the underlying query.
+     */
+    notifyReconnected()
 }
 
 const handleOffline = () => {
@@ -163,7 +175,17 @@ const getWsClient = (): Promise<Client> => {
                  */
                 keepAlive: 12_000,
                 on: {
-                    connected: (socket) => { activeSocket = socket as WebSocket },
+                    connected: (socket, _payload, wasRetry) => {
+                        activeSocket = socket as WebSocket
+                        /*
+                         * The socket was re-established by graphql-ws itself (network blip, server
+                         * restart, pong timeout), which re-subscribed: the events of the gap are
+                         * lost, so give every subscriber its gap-recovery callback too. The
+                         * first connection of a client is not a reconnect, and recycleClient()
+                         * (which creates a NEW client) notifies on its own.
+                         */
+                        if (wasRetry) notifyReconnected()
+                    },
                     closed: () => {
                         if (pongTimer) { clearTimeout(pongTimer); pongTimer = null }
                         activeSocket = null
@@ -186,12 +208,16 @@ const getWsClient = (): Promise<Client> => {
                     },
                 },
                 retryAttempts: Infinity,
+                /*
+                 * Plain exponential backoff, also after a session that failed to renew:
+                 * getAccessToken() then returns null (the stale user was wiped) and the
+                 * socket reconnects anonymously, which keeps the public feeds (open/closed,
+                 * availability) alive. Authenticated subscriptions simply fail as
+                 * unauthorized on their own; the backoff keeps that from becoming a tight loop.
+                 */
                 retryWait: async (retries) => {
                     const delay = Math.min(1000 * 2 ** retries, 30_000)
                     await new Promise<void>(resolve => { setTimeout(resolve, delay) })
-                    // If no valid token after refresh attempt, stop retrying
-                    const token = await getAccessToken()
-                    if (!token) await new Promise<void>(() => {})
                 },
             })
             wsClient = client
@@ -236,14 +262,14 @@ export function useGqlSubscription<T = unknown>(
                             if (msg.data !== undefined) data.value = msg.data as T
                         },
                         error: (e) => {
-                            error.value = e instanceof Error ? e : new Error(String(e))
+                            error.value = toGqlError(e)
                         },
                         complete: () => {},
                     }
                 )
             })
             .catch((e) => {
-                if (!disposed) error.value = e instanceof Error ? e : new Error(String(e))
+                if (!disposed) error.value = toGqlError(e)
             })
     }
 

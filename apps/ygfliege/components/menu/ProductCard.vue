@@ -1,5 +1,6 @@
 <template>
-    <div :class="{ 'pointer-events-none grayscale': !product.isAvailable }" class="h-full">
+    <!-- An unavailable product stays openable (details, allergens): only the add control is gone, see below. -->
+    <div :class="{ grayscale: !product.isAvailable }" class="h-full">
         <div v-if="product" :key="product.id"
              ref="cardRef"
              data-testid="product-card"
@@ -108,9 +109,13 @@
                         <img alt="" aria-hidden="true" class="w-5 h-5" src="/icons/shopping-bag-icon.svg"/>
                     </button>
 
+                    <!-- A product with choices has no "plain" line to step: "+" opens the composer so the
+                         new line gets its own selections, and "−" is left out (lines are edited in the cart). -->
                     <div v-else class="stepper stepper--sm">
                         <button
+                            v-if="!hasChoices"
                             type="button"
+                            data-testid="product-card-decrement"
                             class="stepper-btn"
                             :aria-label="$t('cart.decreaseQty')"
                             @click="decrement"
@@ -118,9 +123,10 @@
                         <span class="stepper-value text-sm" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
                         <button
                             type="button"
+                            data-testid="product-card-increment"
                             class="stepper-btn"
-                            :aria-label="$t('cart.increaseQty')"
-                            :disabled="cardQuantity >= MAX_ITEM_QUANTITY"
+                            :aria-label="hasChoices ? $t('cart.addToCart') : $t('cart.increaseQty')"
+                            :disabled="!hasChoices && cardQuantity >= MAX_ITEM_QUANTITY"
                             @click="increment"
                         >+</button>
                     </div>
@@ -141,12 +147,14 @@ import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
 
 const cartItemAdded = useEventBus(cartItemAddedKey)
 const cartStore = useCartStore();
+const { decrementProduct } = useCartRemoval()
 const config = useRuntimeConfig();
 const { trackEvent } = useTracking();
 const { impact } = useHaptics()
@@ -237,11 +245,19 @@ const addToCart = () => {
     });
 };
 
+/* Only products without choices are stepped from the card: a customised line is identified by its
+   selections, which the card does not have (the backend rejects a line with none). */
 const decrement = () => {
-    cartStore.decrementQuantity(product);
+    if (hasChoices.value) return;
+    // The last unit is a removal like on every other cart surface: it offers Undo.
+    decrementProduct(product);
 };
 
 const increment = () => {
+    if (hasChoices.value) {
+        emit('openProductModal');
+        return;
+    }
     cartStore.incrementQuantity(product);
 };
 

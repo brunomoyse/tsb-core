@@ -1,6 +1,8 @@
+import { type OrderingConfigInput, canPlaceOrder } from '#engine/utils/orderingAvailability'
 import type { User } from '@/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useTracking } from '~/composables/useTracking'
@@ -33,6 +35,8 @@ const RESTAURANT_STATUS = print(gql`
         restaurantConfig {
             orderingEnabled
             isOrderingCurrentlyOpen
+            preparationMinutes
+            availableSlotsToday { label value }
         }
     }
 `)
@@ -74,10 +78,12 @@ export function useAuthCallback() {
         }
         /*
          * Cart has items — auto-jump to checkout when ordering is actually
-         * available. When the restaurant is closed, /cart is a dead-end (the
-         * user can see items but cannot do anything with them), so send them
-         * to /menu instead, where the closed banner appears alongside the
-         * menu the user might still want to browse.
+         * available: open, or closed with a slot still bookable today (a
+         * pre-order, see utils/orderingAvailability.ts). When the restaurant
+         * is closed for good today, /cart is a dead-end (the user can see
+         * items but cannot do anything with them), so send them to /menu
+         * instead, where the closed banner appears alongside the menu the
+         * user might still want to browse.
          */
         const canCheckout = await isCheckoutAvailable()
         navigateTo(localePath(canCheckout ? 'checkout' : 'menu'))
@@ -85,10 +91,12 @@ export function useAuthCallback() {
 
     async function isCheckoutAvailable(): Promise<boolean> {
         try {
-            const data = await $gqlFetch<{ restaurantConfig: { orderingEnabled: boolean; isOrderingCurrentlyOpen: boolean } }>(RESTAURANT_STATUS)
-            return Boolean(data?.restaurantConfig?.orderingEnabled && data?.restaurantConfig?.isOrderingCurrentlyOpen)
-        } catch {
-            return false
+            const data = await $gqlFetch<{ restaurantConfig: OrderingConfigInput }>(RESTAURANT_STATUS)
+            return canPlaceOrder(data?.restaurantConfig, Date.now())
+        } catch (err: unknown) {
+            reportError(err, 'auth.checkoutAvailability')
+            // We could not tell: checkout checks again and offers a retry, the menu would only hide the cart.
+            return true
         }
     }
 

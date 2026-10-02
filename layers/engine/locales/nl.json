@@ -15,7 +15,9 @@
     "acceptCookies": "Cookies accepteren",
     "step": "Stap {n}",
     "discard": "Verwerpen",
-    "keepEditing": "Verder bewerken"
+    "keepEditing": "Verder bewerken",
+    "retry": "Opnieuw proberen",
+    "saving": "Opslaan…"
   },
   "nav": {
     "home": "Home",
@@ -41,6 +43,7 @@
     "status": {
       "open": "Geopend",
       "onsiteOnly": "Open · enkel ter plaatse",
+      "preorder": "Gesloten · bestel nu voor {time}",
       "closed": "Gesloten"
     }
   },
@@ -119,7 +122,9 @@
     "required": "Verplicht",
     "addWithPrice": "Toevoegen · {price}",
     "updateWithPrice": "Bijwerken · {price}",
-    "viewDetails": "Details van {name} bekijken"
+    "viewDetails": "Details van {name} bekijken",
+    "loadFailed": "We konden het menu niet laden.",
+    "productLoadFailed": "We konden dit product niet laden."
   },
   "days": {},
   "login": {
@@ -165,7 +170,8 @@
       "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
       "houseNumberRequired": "Huisnummer is verplicht.",
       "example": "Voorbeeld: Rue de Fragnée 12, Liège"
-    }
+    },
+    "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)"
   },
   "me": {
     "greeting": "Goedendag",
@@ -299,7 +305,6 @@
     "increaseQty": "Aantal verhogen",
     "customizedItemHint": "Aangepast: verwijder en voeg opnieuw toe via het menu om te wijzigen",
     "closeCart": "Winkelwagen sluiten",
-    "notifications": "Meldingen winkelwagen",
     "addToCart": "Toevoegen aan winkelwagen",
     "item": "artikel",
     "items": "artikelen",
@@ -309,7 +314,25 @@
     "undo": "Ongedaan maken",
     "removedUndo": "“{name}” verwijderd",
     "eachSuffix": "per stuk",
-    "deliveryTbd": "Levering wordt berekend bij het afrekenen"
+    "deliveryTbd": "Levering wordt berekend bij het afrekenen",
+    "onlineFee": "Kosten online betaling",
+    "addForDelivery": "Voeg nog {amount} toe om te laten leveren.",
+    "quoteUpdating": "Prijzen worden bijgewerkt…",
+    "removedUnavailable": "Sommige artikelen in je winkelwagen zijn niet meer beschikbaar en werden verwijderd.",
+    "issues": {
+      "notFound": "Dit artikel staat niet meer op het menu.",
+      "unavailable": "Dit artikel is momenteel niet beschikbaar.",
+      "priceChanged": "Prijs bijgewerkt: {from} → {to}",
+      "acceptPrice": "Nieuwe prijs accepteren",
+      "lunchOnly": "Alleen beschikbaar op een lunchmoment (maandag-vrijdag).",
+      "chooseSlot": "Kies een tijdslot",
+      "selectionInvalid": "Een gekozen optie is niet meer geldig. Verwijder dit artikel en stel het opnieuw samen via het menu.",
+      "invalidQuantity": "De hoeveelheid van dit artikel is niet geldig.",
+      "generic": "Dit artikel kan niet zo besteld worden."
+    },
+    "removedManyUndo": "{count} artikelen verwijderd",
+    "removeNamed": "\"{name}\" uit de winkelwagen verwijderen",
+    "buttonLabel": "Winkelwagen, {count} artikel | Winkelwagen, {count} artikelen"
   },
   "checkout": {
     "title": "Bestelling",
@@ -326,7 +349,9 @@
       "saved": "Telefoonnummer opgeslagen",
       "edit": "Wijzigen",
       "addCountryPrefix": "Voor een niet-Belgisch nummer, voeg het landnummer toe (bijv. +33)",
-      "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt."
+      "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt.",
+      "unsaved": "Sla uw telefoonnummer op of corrigeer het voordat u bestelt.",
+      "editAria": "Telefoonnummer wijzigen"
     },
     "orderSummary": "Uw bestelling",
     "emptyCart": "Uw winkelwagen is leeg.",
@@ -398,7 +423,12 @@
     "addExtras": "Zin in extra's?",
     "extrasDescription": "Maak uw bestelling compleet met bijgerechten",
     "paidExtra": "Betaalde extra",
-    "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd."
+    "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd.",
+    "quoteIssuesTitle": "Je bestelling kan nog niet worden betaald",
+    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling.",
+    "quoteChanged": "Prijzen of beschikbaarheid zijn gewijzigd: controleer uw bestelling.",
+    "cashAmountTooLow": "Dit bedrag is lager dan het totaal ({total}). Geef minstens {total} in, of laat het veld leeg.",
+    "cashChangeDue": "Terug te geven wisselgeld: {amount}"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
@@ -433,7 +463,22 @@
       "abandonedTitle": "Betaling niet voltooid",
       "abandonedBody": "U bent vertrokken voordat de betaling was voltooid, dus uw bestelling is niet geplaatst. Uw winkelwagen is bewaard. U kunt het opnieuw proberen.",
       "tryAgain": "Opnieuw proberen",
-      "verifying": "Uw betaling controleren…"
+      "verifying": "Uw betaling controleren…",
+      "awaitingConfirmationTitle": "Betaling wordt bevestigd",
+      "awaitingConfirmationBody": "We hebben de betalingsbevestiging nog niet ontvangen. Deze pagina wordt automatisch bijgewerkt. Bent u al afgeschreven, betaal dan niet opnieuw: neem contact met ons op via {phone}.",
+      "callUs": "Bel het restaurant"
+    },
+    "receipt": {
+      "title": "Betaaloverzicht",
+      "discount": "Korting",
+      "rounding": "Afronding",
+      "paidOnline": "Online betaald",
+      "cashDelivery": "Contant bij levering",
+      "cashPickup": "Contant bij afhaling",
+      "cashWith": "U betaalt met {amount}",
+      "changeDue": "wisselgeld: {amount}",
+      "deliveryTo": "Leveringsadres",
+      "pickupAt": "Afhalen bij"
     }
   },
   "error": {
@@ -471,6 +516,7 @@
       "slotNotAligned": "Het tijdslot moet op een interval van 15 minuten vallen.",
       "orderingClosedToday": "Bestellingen zijn vandaag gesloten.",
       "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
+      "couponCheckFailed": "We konden uw kortingscode niet controleren. Probeer het opnieuw.",
       "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
       "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
       "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",
@@ -482,7 +528,16 @@
       "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
       "invalidEmail": "Voer een geldig e-mailadres in.",
       "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
-      "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw."
+      "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw.",
+      "orderTooManyItems": "Uw winkelwagen bevat te veel verschillende producten (maximaal 50).",
+      "productNotFound": "Een product in uw winkelwagen is niet meer beschikbaar. Verwijder het en probeer opnieuw.",
+      "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
+      "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelwagen en probeer opnieuw.",
+      "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
+      "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
+      "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
+      "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
+      "priceChanged": "De prijs van een artikel in je winkelwagen is gewijzigd. Controleer je winkelwagen en bevestig de nieuwe prijs."
     }
   },
   "schema": {
@@ -578,15 +633,28 @@
     "remove": "Verwijderen",
     "applied": "Promocode toegepast: -{discount} korting",
     "invalid": "Ongeldige promocode",
-    "discount": "Korting promocode"
+    "discount": "Korting promocode",
+    "removedNoLongerApplies": "Promocode {code} is verwijderd: {reason}"
   },
   "reorder": {
     "button": "Opnieuw bestellen",
     "success": "{count} artikelen toegevoegd aan winkelwagen",
-    "partial": "{added} artikelen toegevoegd, {skipped} niet-beschikbare artikelen overgeslagen",
-    "empty": "Geen beschikbare artikelen om opnieuw te bestellen"
+    "partial": "{added} artikelen toegevoegd. Niet toegevoegd: {names}",
+    "empty": "Geen beschikbare artikelen om opnieuw te bestellen",
+    "emptyWithNames": "Er kon niets opnieuw besteld worden: {names}",
+    "reason": {
+      "unavailable": "niet beschikbaar",
+      "choices": "keuzes gewijzigd, stel het opnieuw samen via het menu"
+    },
+    "confirmTitle": "Uw huidige winkelwagen vervangen?",
+    "confirmBody": "Uw winkelwagen bevat al artikelen. Vervang ze door deze bestelling of voeg deze bestelling eraan toe.",
+    "replace": "Vervangen",
+    "add": "Toevoegen aan winkelwagen"
   },
-  "cookies": {},
+  "cookies": {
+    "accept": "Accepteren",
+    "acceptAria": "Cookies accepteren"
+  },
   "faq": {
     "title": "Veelgestelde Vragen",
     "subtitle": "Vind antwoorden op uw vragen over __BRAND__",
@@ -655,5 +723,9 @@
     "timingTitle": "Verwerkingstijd",
     "timingBody": "Zelf verwijderen via de app of website is onmiddellijk. Verzoeken die per e-mail worden verzonden, worden binnen 30 dagen verwerkt.",
     "contactBody": "Vragen? Neem contact met ons op via het bovenstaande adres."
+  },
+  "ordering": {
+    "closedPreorder": "We zijn momenteel gesloten — bestel nu voor {time}.",
+    "loadFailed": "We konden niet controleren of bestellen mogelijk is."
   }
 }

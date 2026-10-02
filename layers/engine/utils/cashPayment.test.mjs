@@ -1,0 +1,32 @@
+// Run: `node --test layers/engine/utils/cashPayment.test.mjs`.
+
+import assert from 'node:assert/strict'
+import { evaluateCashAmount } from './cashPayment.ts'
+import { test } from 'node:test'
+
+test('an empty amount is fine: the field is optional', () => {
+  assert.deepEqual(evaluateCashAmount('', 3050), { kind: 'none' })
+  assert.deepEqual(evaluateCashAmount(null, 3050), { kind: 'none' })
+  assert.deepEqual(evaluateCashAmount('  ', 3050), { kind: 'none' })
+})
+
+test('below the total is short, with what is missing', () => {
+  assert.deepEqual(evaluateCashAmount('20', 3050), { kind: 'short', missingCents: 1050 })
+  assert.deepEqual(evaluateCashAmount('30.49', 3050), { kind: 'short', missingCents: 1 })
+})
+
+test('zero or not an amount is short (never silently accepted)', () => {
+  assert.equal(evaluateCashAmount('0', 3050).kind, 'short')
+  assert.equal(evaluateCashAmount('.', 3050).kind, 'short')
+  assert.equal(evaluateCashAmount('0', 0).kind, 'short')
+})
+
+test('exactly the total needs no change', () => {
+  assert.deepEqual(evaluateCashAmount('30.50', 3050), { kind: 'exact' })
+  assert.deepEqual(evaluateCashAmount('30,5', 3050), { kind: 'exact' })
+})
+
+test('above the total reports the change due', () => {
+  assert.deepEqual(evaluateCashAmount('50', 3050), { kind: 'change', changeCents: 1950 })
+  assert.deepEqual(evaluateCashAmount('50.00', 3050), { kind: 'change', changeCents: 1950 })
+})

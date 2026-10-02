@@ -35,7 +35,7 @@
                     </span>
                 </span>
                 <span :class="['text-sm font-semibold shrink-0 tabular-nums', isSelected(extra.key) ? 'text-primary-700' : 'text-neutral-900']">
-                    +{{ formatPrice(extra.price) }}
+                    +{{ formatCents(extra.priceCents) }}
                 </span>
             </label>
         </div>
@@ -43,15 +43,15 @@
 </template>
 
 <script lang="ts" setup>
-import { formatPrice } from '#engine/lib/price'
+import { formatCents } from '#engine/lib/price'
 import { useCartStore } from '#engine/stores/cart'
 
 const cartStore = useCartStore()
 
 // Pending: confirm pricing with restaurant before wiring into checkout.vue. Backend does not yet accept priced extras — the price field here is UI-only.
 const PAID_EXTRAS = [
-    { key: 'extra_wasabi', label: 'Wasabi supplémentaire', price: 1 },
-    { key: 'extra_soy', label: 'Sauce soja supplémentaire', price: 1 },
+    { key: 'extra_wasabi', label: 'Wasabi supplémentaire', priceCents: 100 },
+    { key: 'extra_soy', label: 'Sauce soja supplémentaire', priceCents: 100 },
 ] as const
 
 const isSelected = (key: string) =>
