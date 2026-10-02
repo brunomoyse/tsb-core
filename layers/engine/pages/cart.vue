@@ -25,10 +25,11 @@
                 data-cart-line
                 class="relative overflow-hidden rounded-2xl"
             >
-                <!-- Delete action (revealed on swipe) -->
-                <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
+                <!-- Delete action (revealed on swipe; inset by 1px at rest, so its rounded corners leave no red fringe around the card's): a pointer-only shortcut. The explicit remove button below is the keyboard and screen-reader way, so this one stays out of the tab order and the accessibility tree (audit A17). -->
+                <div class="absolute flex items-center bg-red-500 rounded-2xl" :class="getSwipeOffset(item) === 0 ? 'inset-y-px right-px' : 'inset-y-0 right-0'" aria-hidden="true">
                     <button
                         type="button"
+                        tabindex="-1"
                         :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                         class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
                         @click="handleRemoveItem(item)"
