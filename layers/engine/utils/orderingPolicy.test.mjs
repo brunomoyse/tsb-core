@@ -93,8 +93,13 @@ test('a malformed fee tier never becomes a free delivery: the whole grid falls b
   assert.deepEqual(grid([{ upToKm: 3, fee: '0.00' }, { upToKm: 5, fee: '2.00' }]), [{ upToMeters: 3000, feeCents: 0 }, { upToMeters: 5000, feeCents: 200 }])
 })
 
-test('the pickup discount is capped to a fraction, the preparation floor is taken as served', () => {
-  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 5 }).pickupDiscountRateBp, 10_000)
+test('a pickup discount outside [0, 1] is malformed and falls back to the default, the preparation floor is taken as served', () => {
+  const def = DEFAULT_ORDERING_POLICY.pickupDiscountRateBp
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 5 }).pickupDiscountRateBp, def)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 1.0001 }).pickupDiscountRateBp, def)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: Number.NaN }).pickupDiscountRateBp, def)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: Number.POSITIVE_INFINITY }).pickupDiscountRateBp, def)
+  assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 1 }).pickupDiscountRateBp, 10_000)
   assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: 0 }).pickupDiscountRateBp, 0)
   assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, pickupDiscountRate: -0.1 }).pickupDiscountRateBp, 1000)
   assert.equal(orderingPolicyFromApi({ ...SERVED_TODAY, minimumPreparationMinutes: 0 }).minimumPreparationMinutes, 0)

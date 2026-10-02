@@ -168,8 +168,9 @@ export function orderingPolicyFromApi(raw: Partial<ApiOrderingPolicy> | null | u
             ? raw.excludedPostcodes.filter((code): code is string => typeof code === 'string').map((code) => code.trim())
             : [...fallback.excludedPostcodes],
         // A fraction: capped to 0..1, so a malformed rate can never take more than the whole price off.
-        pickupDiscountRateBp: isFiniteNumber(raw.pickupDiscountRate) && raw.pickupDiscountRate >= 0
-            ? Math.round(Math.min(raw.pickupDiscountRate, 1) * 10_000)
+        // A rate is a fraction: a value outside [0, 1] is malformed (5 would be a 500% discount), so it falls back to the default.
+        pickupDiscountRateBp: isFiniteNumber(raw.pickupDiscountRate) && raw.pickupDiscountRate >= 0 && raw.pickupDiscountRate <= 1
+            ? Math.round(raw.pickupDiscountRate * 10_000)
             : fallback.pickupDiscountRateBp,
         pickupDiscountMinimumCents: centsOr(raw.pickupDiscountMinimum, fallback.pickupDiscountMinimumCents),
         onlinePaymentFeeCents: centsOr(raw.onlinePaymentFee, fallback.onlinePaymentFeeCents),
