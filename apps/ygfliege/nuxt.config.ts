@@ -56,6 +56,8 @@ export default defineNuxtConfig({
                 { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
                 { name: 'description', content: 'Yangguofu Malatang à Liège — composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.' },
                 { name: 'theme-color', content: '#F58220' },
+                // Light only (no dark theme): stops Android auto-dark from inverting the UI.
+                { name: 'color-scheme', content: 'only light' },
             ],
             link: [
                 { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

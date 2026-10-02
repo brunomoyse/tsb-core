@@ -51,6 +51,9 @@ export default defineNuxtConfig({
                 { charset: "utf-8" },
                 { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
                 { name: 'description', content: 'Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.' },
+                // Light only (no dark theme): stops Android auto-dark from inverting the UI. theme-color is the page background (site.webmanifest agrees).
+                { name: 'color-scheme', content: 'only light' },
+                { name: 'theme-color', content: '#F6F5F2' },
             ],
             link: [
                 // Favicon: light theme (black logo)

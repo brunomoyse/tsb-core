@@ -5,7 +5,7 @@
         aria-modal="true"
         aria-labelledby="bowl-composer-title"
         data-testid="bowl-composer"
-        class="bg-white w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
+        class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
         @click.stop
     >
         <!-- Header -->

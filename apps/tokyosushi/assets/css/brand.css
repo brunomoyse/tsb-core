@@ -11,6 +11,7 @@
 
 html {
     background-color: #F6F5F2;
+    color-scheme: light;
 }
 
 /* Brand accent tokens (HSL channels), consumed as primary / primary-hover /

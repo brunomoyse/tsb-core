@@ -9,7 +9,7 @@
             flex-col
             divide-y
             divide-neutral-200
-            max-h-[calc(100vh-32px)]
+            max-h-[calc(100dvh-32px)]
             overflow-y-auto
             mt-4
          "

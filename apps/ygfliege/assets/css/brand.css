@@ -77,4 +77,5 @@
 html {
     /* White base; the cream (--ygf-cream) alternates on marketing sections (GUIDELINES.md §3.2) */
     background-color: #FFFFFF;
+    color-scheme: light;
 }

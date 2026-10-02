@@ -1,5 +1,5 @@
 <template>
-        <div ref="modalRef" @click.stop role="dialog" aria-modal="true" aria-labelledby="product-modal-title" data-testid="product-modal" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div ref="modalRef" @click.stop role="dialog" aria-modal="true" aria-labelledby="product-modal-title" data-testid="product-modal" class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90dvh] overflow-y-auto">
             <button
                 @click="emit('close')"
                 :aria-label="$t('common.close')"

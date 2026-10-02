@@ -5,7 +5,7 @@
         aria-modal="true"
         aria-labelledby="product-modal-title"
         data-testid="product-modal"
-        class="bg-white w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-3xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
+        class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-3xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
         @click.stop
     >
         <!-- Header -->
@@ -61,7 +61,7 @@
                             ref="imageElement"
                             :alt="p.name"
                             :src="`${productImageBaseSrc}.png`"
-                            class="object-contain w-full h-full transition-opacity duration-500"
+                            class="object-contain w-full h-full transition-opacity duration-slow"
                             :class="[!p.isAvailable ? 'grayscale' : '']"
                             @error="handleProductImageError"
                         />

@@ -12,7 +12,7 @@
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="delivery-zone-modal-title"
-                    class="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-lg sm:mx-4 p-6 sm:p-7 max-h-[90vh] overflow-y-auto"
+                    class="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-lg sm:mx-4 p-6 sm:p-7 max-h-[90dvh] overflow-y-auto"
                     @click.stop
                 >
                     <!-- Close button -->

@@ -168,11 +168,12 @@ onMounted(async () => {
 
 .progress-bar {
     width: 100%;
+    transform-origin: left;
     animation: toast-progress linear forwards;
 }
 
 @keyframes toast-progress {
-    from { width: 100%; }
-    to { width: 0; }
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
 }
 </style>

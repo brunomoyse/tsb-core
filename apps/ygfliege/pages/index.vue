@@ -61,13 +61,13 @@ useSeoMeta({
         <section class="relative overflow-hidden bg-gradient-to-b from-ygf-bg to-white">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 grid gap-10 lg:grid-cols-2 lg:items-center">
                 <div class="text-center lg:text-left">
-                    <h1 v-reveal class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-ygf-black leading-tight">
+                    <h1 class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-ygf-black leading-tight">
                         {{ $t('mkt.hero.slogan') }}
                     </h1>
-                    <p v-reveal="1" class="mt-5 text-gray-600 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    <p class="mt-5 text-gray-600 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
                         {{ $t('mkt.hero.subtitle') }}
                     </p>
-                    <div v-reveal="2" class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                    <div class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                         <NuxtLinkLocale
                             to="/menu"
                             class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"

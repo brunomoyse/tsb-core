@@ -27,6 +27,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.directive('reveal', {
         mounted(el: HTMLElement, binding) {
             if (reduced) return
+            // Already on screen at hydration (the hero): never hide what the visitor is looking at, it would flash.
+            if (el.getBoundingClientRect().top < window.innerHeight) return
             el.classList.add('reveal-init')
             const delay = Number(binding.value) || 0
             if (delay > 0) el.style.transitionDelay = `${delay * 0.12}s`

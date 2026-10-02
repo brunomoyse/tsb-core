@@ -33,7 +33,7 @@
                          ref="menuRef"
                          :inert="!isMenuOpen"
                          :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
-                         class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto">
+                         class="fixed top-[var(--nav-h)] left-0 w-full h-[calc(100dvh-var(--nav-h))] p-4 overflow-y-auto">
 
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
@@ -175,30 +175,26 @@ watch(() => cartStore.isCartVisible, (visible) => {
 .hamburger span {
     position: absolute;
     left: 50%;
+    top: 50%;
     width: 24px;
     height: 2px;
     border-radius: 9999px;
     background-color: currentColor;
-    transform: translateX(-50%);
-    transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
-}
-
-.hamburger span:nth-child(1) {
-    top: calc(50% - 8px);
+    /* The bars move with transform only (the old top transition animated layout). */
+    transform: translate(-50%, calc(-50% - 8px));
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .hamburger span:nth-child(2) {
-    top: 50%;
     transform: translate(-50%, -50%);
 }
 
 .hamburger span:nth-child(3) {
-    top: calc(50% + 8px);
+    transform: translate(-50%, calc(-50% + 8px));
 }
 
 /* Transform the hamburger into an X when active */
 .hamburger-active span:nth-child(1) {
-    top: 50%;
     transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -208,7 +204,6 @@ watch(() => cartStore.isCartVisible, (visible) => {
 }
 
 .hamburger-active span:nth-child(3) {
-    top: 50%;
     transform: translate(-50%, -50%) rotate(-45deg);
 }
 
@@ -247,14 +242,14 @@ watch(() => cartStore.isCartVisible, (visible) => {
 .menu-closed li {
     opacity: 0;
     transform: translateX(-10px);
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
     transition-delay: 0s;
 }
 
 .menu-open li {
     opacity: 1;
     transform: translateX(0);
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
 }
 .menu-open li:nth-child(1) { transition-delay: 0.05s; }
 .menu-open li:nth-child(2) { transition-delay: 0.1s; }

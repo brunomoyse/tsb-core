@@ -22,7 +22,7 @@
                              colour, so it isn't signalled by colour alone. -->
                         <span
                             aria-hidden="true"
-                            class="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-ygf-orange-600 transition-transform duration-200 ease-out origin-center"
+                            class="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-ygf-orange-600 transition-transform duration-normal ease-brand-out origin-center"
                             :class="isActive(item.to) ? 'scale-x-100' : 'scale-x-0'"
                         />
                     </NuxtLinkLocale>

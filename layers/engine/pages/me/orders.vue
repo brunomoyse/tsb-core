@@ -383,7 +383,7 @@ const getStatusColorClass = (status: string) => {
 /* Staggered entrance */
 .bento-cell {
     animation: bento-enter 0.5s ease-out both;
-    animation-delay: calc(var(--delay, 0) * 80ms);
+    animation-delay: calc(min(var(--delay, 0), 8) * 40ms); /* capped: a long list must not make the last cell wait */
 }
 
 @keyframes bento-enter {

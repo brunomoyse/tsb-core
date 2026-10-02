@@ -76,7 +76,7 @@ const active = computed(() => BROTHS.find((b) => b.key === activeKey.value) ?? B
 <style scoped>
 .broth-fade-enter-active,
 .broth-fade-leave-active {
-    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
 }
 .broth-fade-enter-from,
 .broth-fade-leave-to {

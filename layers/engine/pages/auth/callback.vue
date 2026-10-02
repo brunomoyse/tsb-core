@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-center items-center min-h-[50vh]">
+    <div class="flex justify-center items-center min-h-[50dvh]">
         <div class="text-center">
             <div v-if="error" class="text-red-700">
                 <p class="text-lg font-medium">{{ $t('login.callbackError') }}</p>

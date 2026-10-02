@@ -229,7 +229,7 @@
         <!-- Desktop Cart Sidebar -->
         <aside
             v-if="hasCartItems"
-            class="hidden lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:block lg:w-1/3 lg:pr-4"
+            class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:block lg:w-1/3 lg:pr-4"
         >
             <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
         </aside>

@@ -6,8 +6,9 @@ import animate from 'tailwindcss-animate'
  *  brand apps).
  *  @type {import('tailwindcss').Config} */
 module.exports = {
-    darkMode: ["class"],
-    safelist: ["dark"],
+    /* No dark theme: neither brand defines one (the page declares color-scheme: only light) and no `dark:` utility is used.
+       `hoverOnlyWhenSupported` wraps every `hover:` in @media (hover: hover), so a lift or tint does not stick after a tap. */
+    future: { hoverOnlyWhenSupported: true },
     prefix: "",
 
     theme: {

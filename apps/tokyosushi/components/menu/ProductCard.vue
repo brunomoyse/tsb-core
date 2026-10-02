@@ -73,7 +73,7 @@
                 <!-- Price and Cart Controls -->
                 <div v-if="product.isAvailable" ref="controlsRef" class="flex justify-between items-center mt-1">
                     <template v-if="!stepperOpen">
-                        <span class="text-black font-semibold text-sm">
+                        <span class="text-black font-semibold text-base tabular-nums">
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>

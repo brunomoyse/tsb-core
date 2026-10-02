@@ -19,7 +19,7 @@
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="cart-heading"
-                class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
+                class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85dvh] rounded-t-2xl shadow-2xl"
             >
             <!-- Drag Handle -->
             <div class="flex justify-center pt-3 pb-1">

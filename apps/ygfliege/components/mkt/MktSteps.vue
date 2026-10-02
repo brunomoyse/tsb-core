@@ -4,7 +4,7 @@
             v-for="step in steps"
             :key="step.num"
             v-reveal="step.num"
-            class="bg-white rounded-ygf-card shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-300 overflow-hidden"
+            class="bg-white rounded-ygf-card shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-normal overflow-hidden"
         >
             <MktPicture
                 :src="`/images/steps/step-${step.num}`"

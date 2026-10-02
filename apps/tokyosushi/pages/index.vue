@@ -124,7 +124,7 @@ useHead({
 
         <!-- First fold: image card flexes on mobile; at lg the order panel floats as overlay on the image. -->
         <div :class="firstFoldClass">
-            <div class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl">
+            <div class="relative flex-1 min-h-[clamp(11rem,30dvh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl">
                 <picture>
                     <source media="(max-width: 640px)" srcset="/images/restaurant-illustrated-mobile.avif" type="image/avif" />
                     <source media="(max-width: 640px)" srcset="/images/restaurant-illustrated-mobile.webp" type="image/webp" />

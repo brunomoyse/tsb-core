@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-center items-center min-h-[50vh]">
+    <div class="flex justify-center items-center min-h-[50dvh]">
         <div class="w-full max-w-sm px-4 text-center">
             <div v-if="rateLimited" class="text-amber-700">
                 <p class="text-lg font-medium">{{ $t('notify.errors.tooManyRequests') }}</p>

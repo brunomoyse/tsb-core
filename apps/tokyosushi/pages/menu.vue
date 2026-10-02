@@ -3,10 +3,7 @@
         <!-- Main Content -->
         <div
             ref="contentContainer"
-            class="w-full sm:w-[calc(100vw-142px)]"
-            :class="hasCartItems
-        ? 'lg:w-[calc(67vw-71px)]'
-        : 'lg:w-[calc(100vw-142px)]'"
+            class="w-full min-w-0 flex-1"
         >
             <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
             <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
@@ -35,7 +32,7 @@
             />
 
             <!-- Sticky Categories Header -->
-            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[80px] sm:top-0">
+            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0">
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
@@ -269,7 +266,7 @@
         <!-- Desktop Cart Sidebar -->
         <aside
             v-if="hasCartItems"
-            class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+            class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:shrink-0"
         >
             <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
         </aside>

@@ -16,7 +16,7 @@
                     :fallback-height="636"
                     :alt="$t(`mkt.home.gallery.items.${i}`)"
                     sizes="(min-width: 1024px) 24vw, (min-width: 640px) 32vw, 46vw"
-                    img-class="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-105"
+                    img-class="w-full aspect-[3/4] object-cover transition-transform duration-slow group-hover:scale-105"
                 />
             </button>
         </div>
@@ -42,7 +42,7 @@
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
-                    <figure class="max-w-[92vw] max-h-[82vh]">
+                    <figure class="max-w-[92vw] max-h-[82dvh]">
                         <MktPicture
                             :src="`/images/gallery/${GALLERY_SLUGS[openIndex]}`"
                             :widths="[480, 900, 1400]"
@@ -50,7 +50,7 @@
                             :fallback-height="636"
                             :alt="$t(`mkt.home.gallery.items.${openIndex}`)"
                             sizes="92vw"
-                            img-class="max-w-full max-h-[74vh] object-contain rounded-ygf-card"
+                            img-class="max-w-full max-h-[74dvh] object-contain rounded-ygf-card"
                         />
                         <figcaption class="text-center text-white/80 text-sm mt-3">{{ $t(`mkt.home.gallery.items.${openIndex}`) }}</figcaption>
                     </figure>
@@ -97,7 +97,7 @@ useBodyScrollLock(computed(() => openIndex.value !== null))
 <style scoped>
 .mkt-lightbox-enter-active,
 .mkt-lightbox-leave-active {
-    transition: opacity 0.2s ease-out;
+    transition: opacity var(--duration-normal) var(--ease-out);
 }
 .mkt-lightbox-enter-from,
 .mkt-lightbox-leave-to {
