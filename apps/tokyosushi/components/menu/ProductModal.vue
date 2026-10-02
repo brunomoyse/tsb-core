@@ -115,6 +115,7 @@
                                         </span>
                                         <QuantityStepper
                                             size="sm"
+                                            :name="choice.name"
                                             :value="selectedChoiceQuantities[choice.id] ?? 0"
                                             :dec-disabled="!(selectedChoiceQuantities[choice.id] > 0)"
                                             :inc-disabled="!canIncrement(choice)"
@@ -134,6 +135,7 @@
                         <p v-if="!p.isAvailable" data-testid="product-modal-unavailable" class="text-sm text-gray-600">{{ $t('menu.unavailable') }}</p>
                         <div class="flex items-center justify-between gap-4">
                             <QuantityStepper
+                                :name="p.name"
                                 :value="quantity"
                                 :dec-disabled="quantity === 1"
                                 :inc-disabled="quantity === maxQuantity"

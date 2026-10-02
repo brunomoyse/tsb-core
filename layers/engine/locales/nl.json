@@ -343,7 +343,10 @@
     "announce": {
       "added": "{name} toegevoegd aan winkelwagen, {count} artikel, totaal {total} | {name} toegevoegd aan winkelwagen, {count} artikelen, totaal {total}",
       "quantity": "{name}, aantal {quantity}"
-    }
+    },
+    "increaseQtyOf": "Aantal van {name} verhogen",
+    "decreaseQtyOf": "Aantal van {name} verminderen",
+    "addNamed": "{name} toevoegen aan winkelwagen"
   },
   "checkout": {
     "title": "Bestelling",

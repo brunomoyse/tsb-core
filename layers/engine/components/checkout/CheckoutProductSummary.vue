@@ -80,7 +80,7 @@
                         <div class="flex items-center justify-between mt-1.5">
                             <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                                 <button
-                                    :aria-label="$t('cart.decreaseQty')"
+                                    :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
                                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                     :disabled="!canChangeQuantity(item)"
                                     :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -94,7 +94,7 @@
                                     {{ item.quantity }}
                                 </span>
                                 <button
-                                    :aria-label="$t('cart.increaseQty')"
+                                    :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
                                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                     :disabled="!canChangeQuantity(item)"
                                     :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"

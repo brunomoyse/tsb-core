@@ -91,7 +91,7 @@
                     <button
                         type="button"
                         class="stepper-btn"
-                        :aria-label="$t('cart.decreaseQty')"
+                        :aria-label="$t('cart.decreaseQtyOf', { name: p?.name ?? $t('composer.title') })"
                         :disabled="quantity <= 1"
                         @click="quantity--"
                     >&minus;</button>
@@ -99,7 +99,7 @@
                     <button
                         type="button"
                         class="stepper-btn"
-                        :aria-label="$t('cart.increaseQty')"
+                        :aria-label="$t('cart.increaseQtyOf', { name: p?.name ?? $t('composer.title') })"
                         :disabled="quantity >= MAX_QUANTITY"
                         @click="quantity++"
                     >+</button>

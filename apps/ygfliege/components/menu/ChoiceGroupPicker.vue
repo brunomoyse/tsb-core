@@ -86,7 +86,7 @@
                     type="button"
                     :data-testid="`${prefix}-choice-dec-${choice.id}`"
                     class="stepper-btn"
-                    :aria-label="$t('cart.decreaseQty')"
+                    :aria-label="$t('cart.decreaseQtyOf', { name: choice.name })"
                     :disabled="api.quantityOf(choice) === 0"
                     @click="api.decrementChoice(choice)"
                 >&minus;</button>
@@ -95,7 +95,7 @@
                     type="button"
                     :data-testid="`${prefix}-choice-inc-${choice.id}`"
                     class="stepper-btn"
-                    :aria-label="$t('cart.increaseQty')"
+                    :aria-label="$t('cart.increaseQtyOf', { name: choice.name })"
                     :disabled="!api.canIncrement(choice)"
                     @click="api.incrementChoice(choice)"
                 >+</button>

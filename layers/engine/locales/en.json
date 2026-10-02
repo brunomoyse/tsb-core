@@ -343,7 +343,10 @@
     "announce": {
       "added": "{name} added to cart, {count} item, total {total} | {name} added to cart, {count} items, total {total}",
       "quantity": "{name}, quantity {quantity}"
-    }
+    },
+    "increaseQtyOf": "Increase quantity of {name}",
+    "decreaseQtyOf": "Decrease quantity of {name}",
+    "addNamed": "Add {name} to the cart"
   },
   "checkout": {
     "title": "Checkout",

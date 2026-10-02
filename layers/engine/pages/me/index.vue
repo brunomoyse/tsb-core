@@ -467,6 +467,8 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyMarketing"
+                                aria-labelledby="me-notifyMarketing-label"
+                                aria-describedby="me-notifyMarketing-desc"
                                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                 :class="notifyMarketing ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyMarketing"
@@ -476,9 +478,9 @@ const updateNotificationPref = async (
                                     :class="notifyMarketing ? 'translate-x-[22px]' : 'translate-x-0.5'"
                                 />
                             </button>
-                            <span class="text-sm text-neutral-700">{{ t('me.notifications.marketingLabel') }}</span>
+                            <span id="me-notifyMarketing-label" class="text-sm text-neutral-700">{{ t('me.notifications.marketingLabel') }}</span>
                         </div>
-                        <p class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.marketingDescription') }}</p>
+                        <p id="me-notifyMarketing-desc" class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.marketingDescription') }}</p>
                     </div>
 
                     <!-- Order tracking emails -->
@@ -488,6 +490,8 @@ const updateNotificationPref = async (
                                 type="button"
                                 role="switch"
                                 :aria-checked="notifyOrderUpdates"
+                                aria-labelledby="me-notifyOrderUpdates-label"
+                                aria-describedby="me-notifyOrderUpdates-desc"
                                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                 :class="notifyOrderUpdates ? 'bg-primary-600' : 'bg-neutral-200'"
                                 @click="toggleNotifyOrderUpdates"
@@ -497,9 +501,9 @@ const updateNotificationPref = async (
                                     :class="notifyOrderUpdates ? 'translate-x-[22px]' : 'translate-x-0.5'"
                                 />
                             </button>
-                            <span class="text-sm text-neutral-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
+                            <span id="me-notifyOrderUpdates-label" class="text-sm text-neutral-700">{{ t('me.notifications.orderUpdatesLabel') }}</span>
                         </div>
-                        <p class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.orderUpdatesDescription') }}</p>
+                        <p id="me-notifyOrderUpdates-desc" class="text-xs text-neutral-600 mt-1.5">{{ t('me.notifications.orderUpdatesDescription') }}</p>
                     </div>
                 </div>
             </div>

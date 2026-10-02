@@ -77,7 +77,7 @@
                           {{ formatPrice(product.price) }}
                         </span>
                         <div>
-                            <button v-if="!isInCart" ref="addButtonRef" :aria-label="$t('cart.addToCart')" data-testid="product-add-to-cart"
+                            <button v-if="!isInCart" ref="addButtonRef" :aria-label="$t('cart.addNamed', { name: product.name })" data-testid="product-add-to-cart"
                                     class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     type="button"
                                     :disabled="orderingDisabled"
@@ -99,6 +99,7 @@
                         v-else
                         ref="stepperRef"
                         class="w-full"
+                        :name="product.name"
                         :value="cardQuantity"
                         :bounce="isQuantityBouncing"
                         :inc-disabled="cardQuantity >= MAX_ITEM_QUANTITY"

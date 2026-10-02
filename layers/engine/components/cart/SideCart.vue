@@ -118,6 +118,7 @@
                             <QuantityStepper
                                 v-else
                                 size="sm"
+                                :name="item.product.name"
                                 :value="item.quantity"
                                 :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
                                 dec-testid="cart-item-decrement"

@@ -343,7 +343,10 @@
     "announce": {
       "added": "{name} ajouté au panier, {count} article, total {total} | {name} ajouté au panier, {count} articles, total {total}",
       "quantity": "{name}, quantité {quantity}"
-    }
+    },
+    "increaseQtyOf": "Augmenter la quantité de {name}",
+    "decreaseQtyOf": "Diminuer la quantité de {name}",
+    "addNamed": "Ajouter {name} au panier"
   },
   "checkout": {
     "title": "Commande",

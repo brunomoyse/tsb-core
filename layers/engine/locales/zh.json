@@ -343,7 +343,10 @@
     "announce": {
       "added": "已将{name}加入购物车，共 {count} 件商品，总计 {total}",
       "quantity": "{name}，数量 {quantity}"
-    }
+    },
+    "increaseQtyOf": "增加{name}的数量",
+    "decreaseQtyOf": "减少{name}的数量",
+    "addNamed": "将{name}加入购物车"
   },
   "checkout": {
     "title": "结账",

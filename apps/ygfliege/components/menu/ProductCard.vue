@@ -106,7 +106,7 @@
                     <button
                         v-if="!isInCart"
                         ref="addButtonRef"
-                        :aria-label="$t('cart.addToCart')"
+                        :aria-label="$t('cart.addNamed', { name: product.name })"
                         data-testid="product-add-to-cart"
                         type="button"
                         class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
@@ -124,7 +124,7 @@
                             type="button"
                             data-testid="product-card-decrement"
                             class="stepper-btn"
-                            :aria-label="$t('cart.decreaseQty')"
+                            :aria-label="$t('cart.decreaseQtyOf', { name: product.name })"
                             @click="decrement"
                         >&minus;</button>
                         <span class="stepper-value text-sm" :class="{ 'animate-number-bounce': isQuantityBouncing }">{{ cardQuantity }}</span>
@@ -133,7 +133,7 @@
                             type="button"
                             data-testid="product-card-increment"
                             class="stepper-btn"
-                            :aria-label="hasChoices ? $t('cart.addToCart') : $t('cart.increaseQty')"
+                            :aria-label="hasChoices ? $t('cart.addToCart') : $t('cart.increaseQtyOf', { name: product.name })"
                             :disabled="!hasChoices && cardQuantity >= MAX_ITEM_QUANTITY"
                             @click="increment"
                         >+</button>

@@ -109,7 +109,7 @@
                                 <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                                     <button
                                         type="button"
-                                        :aria-label="$t('cart.decreaseQty')"
+                                        :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
                                         class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -124,7 +124,7 @@
                                     </span>
                                     <button
                                         type="button"
-                                        :aria-label="$t('cart.increaseQty')"
+                                        :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
                                         class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                                         :disabled="!canChangeQuantity(item)"
                                         :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
