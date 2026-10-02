@@ -333,7 +333,7 @@
 
         <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
         <div v-if="!isMinimumReached" class="text-sm text-primary-700 text-center">
-            {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
+            {{ $t('cart.minimumDelivery', { amount: minimumAmount }) }}
         </div>
 
         <!-- Checkout Button (desktop only) -->
@@ -366,15 +366,18 @@ import type { Product, ProductCategory } from '#engine/types'
 import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
 import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useGqlQuery, useState } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { useTracking } from '#engine/composables/useTracking'
+
+const { policy } = useOrderingPolicy()
+const minimumAmount = computed(() => centsToEuros(policy.value.deliveryMinimumCents))
 
 const { isMinimumReached = false, loading = false, isOrderingAvailable = true, cashAcknowledged = false, cashAckError = false } = defineProps<{
     isMinimumReached?: boolean

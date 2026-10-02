@@ -62,6 +62,7 @@ import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 defineOptions({ inheritAttrs: false })
 
@@ -78,6 +79,7 @@ const forwardedAttrs = computed(() => {
 const open = ref(false)
 const cartStore = useCartStore()
 const { t } = useI18n()
+const { policy } = useOrderingPolicy()
 // SSR-safe: cart store hydrates from localStorage post-mount; render 'notSet' until then.
 const isMounted = useMounted()
 
@@ -87,7 +89,7 @@ const state = computed<ChipState>(() => {
     if (!isMounted.value) return 'notSet'
     if (cartStore.collectionOption === 'PICKUP') return 'pickup'
     if (!cartStore.address) return 'notSet'
-    return deliveryZoneStatus(cartStore.address) === 'ok' ? 'inZone' : 'outOfZone'
+    return deliveryZoneStatus(policy.value, cartStore.address) === 'ok' ? 'inZone' : 'outOfZone'
 })
 
 const distanceKm = computed(() =>

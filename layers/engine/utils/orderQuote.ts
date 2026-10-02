@@ -1,6 +1,6 @@
 import { OUT_OF_ZONE, isExcludedPostcode } from '../lib/delivery.ts'
 import type { CartTotalsCents } from './cartTotals.ts'
-import { DELIVERY_MINIMUM_CENTS } from '../lib/fees.ts'
+import type { OrderingPolicy } from './orderingPolicy.ts'
 import type { QuoteOrderInput } from './orderPayload.ts'
 import { toCents } from './money.ts'
 import { unwrapGqlError } from './gqlError.ts'
@@ -166,9 +166,9 @@ export function recheckQuote(quote: OrderQuote, displayedPayableCents: number): 
 /**
  * The cart totals as the server priced them, in the shape every cart surface already reads
  * (`CartTotalsCents`). The delivery fee keeps the web's OUT_OF_ZONE sentinel so the "too far"
- * wording keeps working; the minimum comes from the issue the server reports.
+ * wording keeps working; the minimum comes from the issue the server reports (the policy's one as a fallback).
  */
-export function totalsFromQuote(quote: OrderQuote, collection: 'PICKUP' | 'DELIVERY'): CartTotalsCents {
+export function totalsFromQuote(quote: OrderQuote, collection: 'PICKUP' | 'DELIVERY', policy: OrderingPolicy): CartTotalsCents {
     const isDelivery = collection === 'DELIVERY'
     const codes = new Set(quote.issues.map((issue) => issue.code))
     const subtotalCents = toCents(quote.subtotal)
@@ -178,7 +178,7 @@ export function totalsFromQuote(quote: OrderQuote, collection: 'PICKUP' | 'DELIV
     const outOfZone = codes.has('DELIVERY_OUT_OF_ZONE') || codes.has('DELIVERY_AREA_EXCLUDED')
 
     const minimumIssue = quote.issues.find((issue) => issue.code === 'DELIVERY_MINIMUM_NOT_MET')
-    const minimumCents = minimumIssue?.minimum ? toCents(minimumIssue.minimum) : DELIVERY_MINIMUM_CENTS
+    const minimumCents = minimumIssue?.minimum ? toCents(minimumIssue.minimum) : policy.deliveryMinimumCents
     const isMinimumReached = !isDelivery || !minimumIssue
 
     return {
@@ -227,9 +227,9 @@ export function isQuoteUnsupportedError(err: unknown): boolean {
  * Why a delivery address is refused: the server's verdict wins (the fresh quote's DELIVERY_AREA_EXCLUDED /
  * DELIVERY_OUT_OF_ZONE), the client's own rule (excluded postcodes) only speaks when there is no fresh quote.
  */
-export function deliveryUnavailableKey(quote: OrderQuote | null, postcode?: string | null): 'checkout.notDeliverableArea' | 'checkout.tooFar' {
+export function deliveryUnavailableKey(quote: OrderQuote | null, postcode: string | null | undefined, policy: OrderingPolicy): 'checkout.notDeliverableArea' | 'checkout.tooFar' {
     const codes = new Set(quote?.issues.map((issue) => issue.code) ?? [])
     if (codes.has('DELIVERY_AREA_EXCLUDED')) return 'checkout.notDeliverableArea'
     if (codes.has('DELIVERY_OUT_OF_ZONE')) return 'checkout.tooFar'
-    return isExcludedPostcode(postcode) ? 'checkout.notDeliverableArea' : 'checkout.tooFar'
+    return isExcludedPostcode(policy, postcode) ? 'checkout.notDeliverableArea' : 'checkout.tooFar'
 }

@@ -152,7 +152,7 @@
                         {{ $t('cart.deliveryTbd') }}
                     </span>
                     <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
-                        {{ $t(deliveryUnavailableKey) }}
+                        {{ $t(deliveryUnavailableKey, policyParams) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
                     <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
@@ -224,14 +224,16 @@ import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
-import { DELIVERY_MINIMUM } from '#engine/lib/fees'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { deliveryEnabled = true } = useAppConfig().brand
+const { deliveryEnabled } = useDeliveryMode()
+const { policyParams } = useOrderingPolicy()
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{ isOrderingAvailable?: boolean; preorderTime?: string | null }>()
 
@@ -312,10 +314,10 @@ onUnmounted(() => {
 
 // Delivery options setup. A takeaway-only brand (brand.deliveryEnabled false)
 // keeps delivery visible but disabled ("available soon").
-const collectionOptions = [
-    {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled},
+const collectionOptions = computed(() => [
+    {value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled.value},
     {value: 'PICKUP', label: t('cart.pickup'), icon: '/icons/shopping-bag-icon.svg', disabled: false}
-];
+])
 
 const handleOrderType = (option: string) => {
     const from = cartStore.collectionOption

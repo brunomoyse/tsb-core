@@ -12,6 +12,11 @@
  * "pick a time for today" flow of the collection options unreachable).
  */
 
+import type { OrderingPolicy } from './orderingPolicy.ts'
+
+/** What the slot cut-off needs of the ordering policy (`RestaurantConfig.policy`). */
+export type SlotPolicy = Pick<OrderingPolicy, 'minimumPreparationMinutes'>
+
 export interface OrderingTimeSlot {
     /** Wall-clock "HH:MM" in the restaurant's time zone. */
     label: string
@@ -34,17 +39,15 @@ export type OrderingStatus = 'open' | 'preorder' | 'closed' | 'disabled'
 
 // Used while the config has no preparation time (not loaded, or a malformed value).
 const DEFAULT_PREPARATION_MINUTES = 30
-// The backend never accepts a slot closer than this, whatever preparation time is configured.
-const MIN_PREPARATION_MINUTES = 15
 
 /**
  * How far ahead of now a slot must be: the backend's rule (`validatePreferredReadyTime` in tsb-service:
- * `max(preparationMinutes, 15 min)`, and a slot exactly on the line is accepted). A missing or malformed
- * preparation time falls back to the 30 minute default.
+ * `max(preparationMinutes, policy.minimumPreparationMinutes)`, and a slot exactly on the line is accepted).
+ * A missing or malformed preparation time falls back to the 30 minute default.
  */
-export const preparationBufferMs = (preparationMinutes: number | null | undefined): number => {
+export const preparationBufferMs = (preparationMinutes: number | null | undefined, policy: SlotPolicy): number => {
     const minutes = typeof preparationMinutes === 'number' && Number.isFinite(preparationMinutes) ? preparationMinutes : DEFAULT_PREPARATION_MINUTES
-    return Math.max(minutes, MIN_PREPARATION_MINUTES) * 60_000
+    return Math.max(minutes, policy.minimumPreparationMinutes) * 60_000
 }
 
 /**
@@ -53,21 +56,21 @@ export const preparationBufferMs = (preparationMinutes: number | null | undefine
  */
 export function bookableSlots(
     slots: OrderingTimeSlot[] | null | undefined,
-    preparationMinutes: number | null | undefined,
-    nowMs: number,
+    { preparationMinutes, nowMs }: { preparationMinutes: number | null | undefined, nowMs: number },
+    policy: SlotPolicy,
 ): OrderingTimeSlot[] {
-    const cutoff = nowMs + preparationBufferMs(preparationMinutes)
+    const cutoff = nowMs + preparationBufferMs(preparationMinutes, policy)
     return (slots ?? []).filter((slot) => new Date(slot.value).getTime() >= cutoff)
 }
 
-export function orderingStatus(config: OrderingConfigInput | null | undefined, nowMs: number): OrderingStatus {
+export function orderingStatus(config: OrderingConfigInput | null | undefined, nowMs: number, policy: SlotPolicy): OrderingStatus {
     if (!config?.orderingEnabled) return 'disabled'
     if (config.isOrderingCurrentlyOpen) return 'open'
-    return bookableSlots(config.availableSlotsToday, config.preparationMinutes, nowMs).length > 0 ? 'preorder' : 'closed'
+    return bookableSlots(config.availableSlotsToday, { preparationMinutes: config.preparationMinutes, nowMs }, policy).length > 0 ? 'preorder' : 'closed'
 }
 
 /** The one gate: ordering is enabled and either open or still bookable ahead today. */
-export const canPlaceOrder = (config: OrderingConfigInput | null | undefined, nowMs: number): boolean => {
-    const status = orderingStatus(config, nowMs)
+export const canPlaceOrder = (config: OrderingConfigInput | null | undefined, nowMs: number, policy: SlotPolicy): boolean => {
+    const status = orderingStatus(config, nowMs, policy)
     return status === 'open' || status === 'preorder'
 }

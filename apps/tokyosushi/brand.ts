@@ -52,6 +52,8 @@ export const brand: BrandConfig = {
     },
     deletionEmail: 'cloud@nuagemagique.dev',
     showProductCode: true,
+    // The choice groups of the "menu-plateau" menus are the soups, whatever the catalog calls them.
+    choiceGroupLabels: { 'menu-plateau': { one: 'menu.soup', other: 'menu.soups' } },
     japaneseAccents: true,
     faqQuestions: ['delivery', 'hours', 'halal', 'discount', 'payment', 'allergens', 'invoice', 'freshness', 'parking'],
     // Hot dishes ("tokyo-hot") are not eaten with wasabi, ginger or soy sauce.

@@ -36,7 +36,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <p class="text-red-700 font-medium text-sm">
-                {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
+                {{ $t('cart.minimumDelivery', { amount: minimumAmount }) }}
             </p>
         </div>
         </ClientOnly>
@@ -291,7 +291,6 @@ import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
 import { centsToEuros } from '#engine/utils/money'
 import gql from 'graphql-tag'
 import { reportError } from '#engine/utils/reportError'
@@ -299,6 +298,7 @@ import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
 import { useI18n } from 'vue-i18n'
+import { deliveryMaxKm } from '#engine/utils/orderingPolicy'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { usePhoneCapture } from '#engine/composables/usePhoneCapture'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -307,6 +307,7 @@ import { useCheckoutQuoteGuard } from '#engine/composables/useCheckoutQuoteGuard
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
@@ -348,6 +349,8 @@ const {
     loadFailed: configLoadFailed,
     retry: retryConfig,
 } = await useOrderingAvailability({ lazy: true })
+const { policy } = useOrderingPolicy()
+const minimumAmount = computed(() => centsToEuros(policy.value.deliveryMinimumCents))
 // Open right now (ASAP is possible); while closed an order needs a fixed slot.
 const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false)
 
@@ -356,7 +359,7 @@ const isOrderingCurrentlyOpen = computed(() => restaurantConfig.value?.restauran
 const needsDeliveryGate = computed(() =>
     !authStore.user
     && cartStore.collectionOption === 'DELIVERY'
-    && (!cartStore.address || deliveryZoneStatus(cartStore.address) !== 'ok'),
+    && (!cartStore.address || deliveryZoneStatus(policy.value, cartStore.address) !== 'ok'),
 )
 
 const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
@@ -664,7 +667,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     }
 
-    const zone = cartStore.collectionOption === 'DELIVERY' && cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'
+    const zone = cartStore.collectionOption === 'DELIVERY' && cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : 'ok'
     if (zone === 'excluded') {
         errors.push({
             message: t('notify.errors.deliveryAddressExcluded'),
@@ -673,7 +676,7 @@ const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
         })
     } else if (zone === 'tooFar') {
         errors.push({
-            message: t('notify.errors.deliveryAddressTooFar', { distance: 9 }),
+            message: t('notify.errors.deliveryAddressTooFar', { distance: deliveryMaxKm(policy.value) }),
             targetId: 'checkout-delivery-address',
             event: 'checkout_error_address_too_far',
         })

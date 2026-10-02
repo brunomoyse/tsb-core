@@ -5,6 +5,7 @@ import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '~/composables/useTracking'
 
 const ME = print(gql`
@@ -52,6 +53,7 @@ export function useAuthCallback() {
     const localePath = useLocalePath()
     const { $gqlFetch } = useNuxtApp()
     const { trackEvent, identifyUser } = useTracking()
+    const { policy } = useOrderingPolicy()
 
     async function processCallback() {
         // Verify token is available before making the query
@@ -92,7 +94,7 @@ export function useAuthCallback() {
     async function isCheckoutAvailable(): Promise<boolean> {
         try {
             const data = await $gqlFetch<{ restaurantConfig: OrderingConfigInput }>(RESTAURANT_STATUS)
-            return canPlaceOrder(data?.restaurantConfig, Date.now())
+            return canPlaceOrder(data?.restaurantConfig, Date.now(), policy.value)
         } catch (err: unknown) {
             reportError(err, 'auth.checkoutAvailability')
             // We could not tell: checkout checks again and offers a retry, the menu would only hide the cart.

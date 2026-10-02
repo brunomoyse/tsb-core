@@ -12,13 +12,21 @@ import { fileURLToPath } from 'node:url'
 // built from import.meta.url.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Derive origins for CSP from environment variables (dev defaults).
+/*
+ * Public environment every deployment must provide at BUILD time (they are baked into the client bundle). There is
+ * deliberately no default for any of them: a brand that forgot one used to silently talk to Tokyo Sushi's identity
+ * provider. A production build (`nuxt build` / `generate`) stops with the list of what is missing; dev servers and
+ * `nuxi prepare` / `typecheck` do not need them.
+ */
+const REQUIRED_PUBLIC_ENV = ['BASE_URL', 'API_BASE_URL', 'S3_BUCKET_URL', 'GRAPHQL_WS_URL', 'ZITADEL_AUTHORITY', 'ZITADEL_CLIENT_ID'] as const
+
+// Derive origins for CSP from environment variables (the API falls back to a local one for development only).
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
 const s3Url = process.env.S3_BUCKET_URL
 const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
-const zitadelOrigin = process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be'
+const zitadelOrigin = process.env.ZITADEL_AUTHORITY || ''
 const turnstile = 'https://challenges.cloudflare.com'
 const iconifyHost = 'https://api.iconify.design'
 const sentryHost = 'https://*.ingest.de.sentry.io'
@@ -29,13 +37,28 @@ const csp = `${[
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''} ${iconifyHost}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin} ${zitadelOrigin} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
-    `frame-src 'self' ${osm} ${zitadelOrigin} ${turnstile}`,
+    `connect-src 'self' ${apiOrigin} ${wsOrigin}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
+    `frame-src 'self' ${osm}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${turnstile}`,
     "worker-src 'self' blob:",
 ].join('; ')};`
 
 export default defineNuxtConfig({
     ssr: true,
+
+    hooks: {
+        ready: (nuxt) => {
+            // `_prepare` is `nuxi prepare` / `typecheck` (and the postinstall): types only, nothing is built.
+            // oxlint-disable-next-line no-underscore-dangle -- `_prepare` is Nuxt's own flag for `nuxi prepare` / `typecheck`.
+            if (nuxt.options.dev || nuxt.options._prepare) return
+            const missing = REQUIRED_PUBLIC_ENV.filter((name) => !process.env[name]?.trim())
+            if (missing.length > 0) {
+                throw new Error(
+                    `Missing required environment variable(s) for a production build: ${missing.join(', ')}. `
+                    + 'They are baked into the client bundle, so set them when building (Docker: --build-arg, CI: repository variables).',
+                )
+            }
+        },
+    },
 
     site: {
         url: process.env.BASE_URL,
@@ -101,7 +124,7 @@ export default defineNuxtConfig({
             umamiHost: process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev',
             umamiWebsiteId: process.env.UMAMI_WEBSITE_ID || '',
             // Zitadel OIDC
-            zitadelAuthority: process.env.ZITADEL_AUTHORITY || 'https://auth.tokyosushibarliege.be',
+            zitadelAuthority: process.env.ZITADEL_AUTHORITY || '',
             zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
             zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
             turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',

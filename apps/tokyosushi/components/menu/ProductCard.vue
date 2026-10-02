@@ -123,6 +123,8 @@ import { formatPrice } from '#engine/lib/price'
 import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { brand } from '#brand/brand'
+import { choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
@@ -161,10 +163,8 @@ const forcedChoiceGroups = computed(() =>
 );
 
 const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
-    if (product.category?.slug === 'menu-plateau') {
-        return t(group.maxSelections > 1 ? 'menu.soups' : 'menu.soup').toLowerCase();
-    }
-    return group.name.toLowerCase();
+    const key = choiceGroupLabelKey(brand.choiceGroupLabels, product.category?.slug, group.maxSelections)
+    return (key ? t(key) : group.name).toLowerCase();
 };
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));

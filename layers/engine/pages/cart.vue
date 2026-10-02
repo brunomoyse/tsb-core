@@ -171,7 +171,7 @@
                         {{ $t('cart.deliveryTbd') }}
                     </span>
                     <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
-                        {{ $t(deliveryUnavailableKey) }}
+                        {{ $t(deliveryUnavailableKey, policyParams) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
                     <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
@@ -268,6 +268,7 @@ import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
@@ -328,6 +329,7 @@ const {
     amountToDeliveryMinimumCents,
     switchToPickup,
 } = useCartTotals()
+const { policyParams } = useOrderingPolicy()
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
 useOrderQuote()
 // The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.

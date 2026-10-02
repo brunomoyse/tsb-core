@@ -33,6 +33,7 @@
 
 import assert from 'node:assert/strict'
 import { computeCartTotals } from './cartTotals.ts'
+import { DEFAULT_ORDERING_POLICY as policy } from './orderingPolicy.ts'
 import { test } from 'node:test'
 
 // ---------------------------------------------------------------------------------------------
@@ -255,6 +256,7 @@ const engineInput = (cart, couponDiscountCents) => ({
   address: cart.type === 'DELIVERY' ? { distance: cart.distance, postcode: cart.postcode } : null,
   paymentOption: cart.online ? 'ONLINE' : 'CASH',
   couponDiscountCents,
+  policy,
 })
 
 test('10,000 random carts: the engine total equals the backend total_price', () => {
@@ -335,6 +337,7 @@ test('audit M13 example: one 24.15 € item × 3 on pickup gets a 7.30 € disco
     }],
     collectionOption: 'PICKUP',
     paymentOption: 'CASH',
+    policy,
   }
   const cash = computeCartTotals(input)
   assert.strictEqual(cash.subtotalCents, 7245)

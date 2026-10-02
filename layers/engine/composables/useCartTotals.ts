@@ -6,6 +6,7 @@ import { buildQuoteInput } from '#engine/utils/orderPayload'
 import { computeCartTotals } from '#engine/utils/cartTotals'
 import { useAuthStore } from '#engine/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useQuoteStore } from '#engine/stores/quote'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -41,7 +42,7 @@ export interface CartTotals {
     /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far); the fresh quote's verdict wins over the client's rule. */
     deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
     couponDiscountCents: ComputedRef<number>
-    /** 30 cents when the selected payment option is ONLINE, else 0. */
+    /** The online payment fee (policy) when the selected payment option is ONLINE, else 0. */
     onlineFeeCents: ComputedRef<number>
     /** What the customer pays: subtotal − discounts (clamped ≥ 0) + delivery fee + online fee. */
     payableCents: ComputedRef<number>
@@ -65,6 +66,7 @@ export function useCartTotals(): CartTotals {
 
     const quoteStore = useQuoteStore()
     const authStore = useAuthStore()
+    const { policy } = useOrderingPolicy()
 
     /*
      * The quote counts only when it answers the cart as it is RIGHT NOW: compared with the key of
@@ -83,12 +85,13 @@ export function useCartTotals(): CartTotals {
         address: cartStore.address,
         paymentOption: cartStore.paymentOption,
         couponDiscountCents: cartStore.couponDiscountCents,
+        policy: policy.value,
     }))
     const quote = computed(() => {
         const fresh = currentQuote.value
         return fresh && isQuoteUsableForTotals(fresh) ? fresh : null
     })
-    const totals = computed(() => quote.value ? totalsFromQuote(quote.value, cartStore.collectionOption) : clientTotals.value)
+    const totals = computed(() => quote.value ? totalsFromQuote(quote.value, cartStore.collectionOption, policy.value) : clientTotals.value)
 
     const switchToPickup = () => {
         if (cartStore.collectionOption === 'PICKUP') return
@@ -102,7 +105,7 @@ export function useCartTotals(): CartTotals {
         subtotalCents: computed(() => totals.value.subtotalCents),
         pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
         deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
-        deliveryUnavailableKey: computed(() => deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode)),
+        deliveryUnavailableKey: computed(() => deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode, policy.value)),
         couponDiscountCents: computed(() => totals.value.couponDiscountCents),
         onlineFeeCents: computed(() => totals.value.onlineFeeCents),
         payableCents: computed(() => totals.value.payableCents),

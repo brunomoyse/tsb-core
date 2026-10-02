@@ -95,7 +95,7 @@
                             {{ $t('menu.lunchOnly') }}
                         </span>
                         <span v-if="p.isDiscountable" class="chip chip-static !bg-emerald-50 !border-emerald-200 !text-emerald-800">
-                            {{ $t('menu.pickupDiscountBadge') }}
+                            {{ $t('menu.pickupDiscountBadge', policyParams) }}
                         </span>
                     </div>
 
@@ -182,6 +182,7 @@
 </template>
 
 <script setup lang="ts">
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import * as productImage from '#engine/utils/productImage'
 import type { Product } from '#engine/types'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -214,6 +215,7 @@ import { useTracking } from '#engine/composables/useTracking'
 const cartItemAdded = useEventBus(cartItemAddedKey)
 
 const { trackEvent } = useTracking()
+const { policyParams } = useOrderingPolicy()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 

@@ -49,7 +49,7 @@
                     {{ $t('checkout.notDeliverableArea') }}
                 </p>
                 <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-700 font-medium">
-                    {{ $t('checkout.tooFar') }}
+                    {{ $t('checkout.tooFar', policyParams) }}
                 </p>
                 <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-600">
                     {{ $t('checkout.addressDistanceKm', { distance: (cartStore.address.distance / 1000).toFixed(1) }) }}
@@ -137,7 +137,9 @@ import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
 import { useAppConfig } from '#imports'
 import { useCartStore } from '#engine/stores/cart'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
 interface OpeningHourEntry {
@@ -167,7 +169,8 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const cartStore = useCartStore()
-const zoneStatus = computed(() => (cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok'))
+const { policy, policyParams } = useOrderingPolicy()
+const zoneStatus = computed(() => (cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : 'ok'))
 const { trackEvent } = useTracking()
 
 // Use backend ordering status when available
@@ -175,13 +178,13 @@ const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
 // Delivery/Pickup options. A takeaway-only brand (brand.deliveryEnabled
 // false) keeps delivery visible but disabled ("available soon").
-const { deliveryEnabled = true } = useAppConfig().brand
-const collectionOptions = [
-    { value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled },
+const { deliveryEnabled } = useDeliveryMode()
+const collectionOptions = computed(() => [
+    { value: 'DELIVERY', label: t('cart.delivery'), icon: '/icons/moped-icon.svg', disabled: !deliveryEnabled.value },
     { value: 'PICKUP',   label: t('cart.pickup'),   icon: '/icons/shopping-bag-icon.svg', disabled: false }
-]
+])
 const setDeliveryOption = (v: 'DELIVERY' | 'PICKUP') => {
-    if (v === 'DELIVERY' && !deliveryEnabled) return
+    if (v === 'DELIVERY' && !deliveryEnabled.value) return
     trackEvent('collection_option_changed', { option: v })
     cartStore.collectionOption = v
 }
@@ -192,7 +195,7 @@ const onRadioKeydown = (e: KeyboardEvent) => {
     const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
     if (!keys.includes(e.key)) return
     e.preventDefault()
-    const options = collectionOptions
+    const options = collectionOptions.value
     const currentIdx = options.findIndex(o => o.value === cartStore.collectionOption)
     const safeCurrent = currentIdx === -1 ? 0 : currentIdx
     let nextIdx = safeCurrent
@@ -230,7 +233,7 @@ const toMins = (hm: string) => {
 
 // Filter out slots that are in the past or within the preparation buffer (the same cut-off the checkout gate applies, see utils/orderingAvailability.ts).
 const availableFixedSlots = computed<RestaurantTimeSlot[]>(() =>
-    bookableSlots(availableSlotsToday, preparationMinutes, now.value.getTime()) as RestaurantTimeSlot[],
+    bookableSlots(availableSlotsToday, { preparationMinutes, nowMs: now.value.getTime() }, policy.value) as RestaurantTimeSlot[],
 )
 
 // Selected preferred time binding

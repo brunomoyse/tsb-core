@@ -78,9 +78,9 @@
     "cash": "Contant",
     "infoCards": {
       "freeDelivery": "Gratis levering",
-      "freeDeliveryDesc": "Gratis vanaf 25 €, met leveringskosten op basis van afstand daarboven.",
-      "takeawayDiscount": "Afhalen -10%",
-      "takeawayDiscountDesc": "10% korting op kortingsbare artikelen vanaf 20 € voor elke afhaalbestelling.",
+      "freeDeliveryDesc": "Gratis vanaf {deliveryMinimum} €, met leveringskosten op basis van afstand daarboven.",
+      "takeawayDiscount": "Afhalen -{rate}%",
+      "takeawayDiscountDesc": "{rate}% korting op kortingsbare artikelen vanaf {pickupMinimum} € voor elke afhaalbestelling.",
       "freshDaily": "Dagelijks vers",
       "freshDailyDesc": "Onze vis wordt elke ochtend vers gesneden door onze chef voor een onberispelijke kwaliteit."
     }
@@ -118,7 +118,7 @@
     "discountable": "Korting mogelijk",
     "yes": "Ja",
     "no": "Nee",
-    "pickupDiscountBadge": "10% korting bij afhalen",
+    "pickupDiscountBadge": "{rate}% korting bij afhalen",
     "restaurantClosed": "Het restaurant is momenteel gesloten.",
     "restaurantClosedDetails": "U kunt het menu bekijken, maar bestellingen zijn niet beschikbaar.",
     "choice": "Keuze",
@@ -281,7 +281,7 @@
       "currentAddress": "Huidig adres",
       "change": "Wijzigen",
       "distanceOk": "We leveren op dit adres",
-      "distanceTooFar": "Dit adres ligt buiten onze leveringszone van 9 km",
+      "distanceTooFar": "Dit adres ligt buiten onze leveringszone van {distance} km",
       "distanceValue": "Afstand: {km} km",
       "switchToPickup": "Overschakelen naar afhalen",
       "confirm": "Bevestigen",
@@ -368,7 +368,9 @@
     "emptyCart": "Uw winkelwagen is leeg.",
     "subtotal": "Subtotaal:",
     "deliveryFee": "Leveringskosten:",
-    "deliveryFeeInfo": "Leveringskosten op basis van afstand:\n• Minder dan 3 km: Gratis\n• 3-4 km: 1€\n• 4-5 km: 2€\n• 5-6 km: 3€\n• 6-7 km: 4€\n• 7-8 km: 5€\n• 8-9 km: 6€",
+    "deliveryFeeInfo": "Leveringskosten op basis van afstand:\n{tiers}",
+    "deliveryFeeTierFirst": "• Minder dan {to} km: {fee}",
+    "deliveryFeeTier": "• {from}-{to} km: {fee}",
     "transactionFee": "Transactiekosten:",
     "discount": "Korting (afhalen)",
     "total": "Totaal:",
@@ -423,7 +425,7 @@
     "stepPayment": "Betaling",
     "itemCount": "{count} artikel | {count} artikelen",
     "opensAt": "Opent om {time}",
-    "tooFar": "Te ver voor levering (max 9 km)",
+    "tooFar": "Te ver voor levering (max {distance} km)",
     "notDeliverableArea": "Wij leveren niet in uw zone.",
     "tbd": "Nader te bepalen",
     "optional": "(optioneel)",
@@ -694,7 +696,7 @@
       },
       "discount": {
         "question": "Is er korting voor afhaalbestellingen?",
-        "answer": "Ja! Geniet van 10% korting op alle kortingsbare artikelen wanneer u kiest voor afhalen. De korting wordt automatisch toegepast bij de betaling."
+        "answer": "Ja! Geniet van {rate}% korting op alle kortingsbare artikelen wanneer u kiest voor afhalen. De korting wordt automatisch toegepast bij de betaling."
       },
       "payment": {
         "question": "Welke betaalmethoden accepteren jullie?",

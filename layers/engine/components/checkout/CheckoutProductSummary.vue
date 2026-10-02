@@ -151,7 +151,7 @@
                                 role="tooltip"
                                 class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-neutral-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
                             >
-                                {{ $t('checkout.deliveryFeeInfo') }}
+                                {{ deliveryFeeInfo }}
                                 <div class="absolute top-full left-3 -mt-1">
                                     <div class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-neutral-800" />
                                 </div>
@@ -160,7 +160,7 @@
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic">{{ $t('checkout.tbd') }}</span>
                     <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
-                        {{ $t(deliveryUnavailableKey) }}
+                        {{ $t(deliveryUnavailableKey, policyParams) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
                     <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">{{ $t('checkout.free') }}</span>
@@ -197,17 +197,30 @@ import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
+import { deliveryFeeRows } from '#engine/utils/orderingPolicy'
 import { formatCents } from '#engine/lib/price'
 import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 
 
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
+const { t } = useI18n()
+const { policy, policyParams } = useOrderingPolicy()
+// The fee grid tooltip: one line per distance band of the API's policy (the first band is "less than X km").
+const deliveryFeeInfo = computed(() => t('checkout.deliveryFeeInfo', {
+    tiers: deliveryFeeRows(policy.value).map((row) => t(row.fromKm === null ? 'checkout.deliveryFeeTierFirst' : 'checkout.deliveryFeeTier', {
+        from: row.fromKm,
+        to: row.toKm,
+        fee: row.feeCents === 0 ? t('checkout.free') : formatCents(row.feeCents),
+    })).join('\n'),
+}))
 const { impact: hapticImpact } = useHaptics()
 const {
     getItemLineTotalCents,

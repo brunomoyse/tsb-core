@@ -78,9 +78,9 @@
     "cash": "现金",
     "infoCards": {
       "freeDelivery": "免费配送",
-      "freeDeliveryDesc": "满25欧元免费配送，超出范围按距离收取配送费。",
-      "takeawayDiscount": "自取享9折",
-      "takeawayDiscountDesc": "满20欧元自取订单，所有可折扣商品享受10%折扣。",
+      "freeDeliveryDesc": "满{deliveryMinimum}欧元免费配送，超出范围按距离收取配送费。",
+      "takeawayDiscount": "自取立减{rate}%",
+      "takeawayDiscountDesc": "满{pickupMinimum}欧元自取订单，所有可折扣商品享受{rate}%折扣。",
       "freshDaily": "每日新鲜",
       "freshDailyDesc": "我们的鱼每天早上由厨师现场切割，保证无可挑剔的品质。"
     }
@@ -118,7 +118,7 @@
     "discountable": "可折扣",
     "yes": "是",
     "no": "否",
-    "pickupDiscountBadge": "自取享9折",
+    "pickupDiscountBadge": "自取立减{rate}%",
     "restaurantClosed": "餐厅目前已关闭。",
     "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。",
     "choice": "选项",
@@ -281,7 +281,7 @@
       "currentAddress": "当前地址",
       "change": "修改",
       "distanceOk": "该地址在配送范围内",
-      "distanceTooFar": "该地址超出我们 9 公里的配送范围",
+      "distanceTooFar": "该地址超出我们 {distance} 公里的配送范围",
       "distanceValue": "距离：{km} 公里",
       "switchToPickup": "改为自取",
       "confirm": "确认",
@@ -368,7 +368,9 @@
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",
     "deliveryFee": "配送费：",
-    "deliveryFeeInfo": "配送费按距离计算：\n• 3公里以内：免费\n• 3-4公里：1€\n• 4-5公里：2€\n• 5-6公里：3€\n• 6-7公里：4€\n• 7-8公里：5€\n• 8-9公里：6€",
+    "deliveryFeeInfo": "配送费按距离计算：\n{tiers}",
+    "deliveryFeeTierFirst": "• {to}公里以内：{fee}",
+    "deliveryFeeTier": "• {from}-{to}公里：{fee}",
     "transactionFee": "交易费：",
     "total": "总计：",
     "collection": "取货/配送",
@@ -423,7 +425,7 @@
     "stepPayment": "付款",
     "itemCount": "{count} 件商品",
     "opensAt": "营业时间：{time}",
-    "tooFar": "超出配送范围（最远9公里）",
+    "tooFar": "超出配送范围（最远{distance}公里）",
     "notDeliverableArea": "我们不配送到您所在的区域。",
     "tbd": "待定",
     "optional": "（选填）",
@@ -694,7 +696,7 @@
       },
       "discount": {
         "question": "自取订单有折扣吗？",
-        "answer": "有的！选择自取选项时，所有可折扣商品享受 10% 折扣。折扣会在结账时自动应用。"
+        "answer": "有的！选择自取选项时，所有可折扣商品享受 {rate}% 折扣。折扣会在结账时自动应用。"
       },
       "payment": {
         "question": "你们接受什么付款方式？",

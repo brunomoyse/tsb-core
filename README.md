@@ -30,14 +30,18 @@ Customer-facing webshop for Tokyo Sushi Bar.
 cp .env.example .env
 ```
 
-Minimum variables:
+Required for a production build (`npm run build`, the Docker image): there is no default, and the build fails
+naming whatever is missing. They are baked into the client bundle, so set them when building (Docker: `--build-arg`).
+The dev server and `nuxi typecheck` do not need them.
 
 - `BASE_URL`
 - `API_BASE_URL`
 - `S3_BUCKET_URL`
+- `GRAPHQL_WS_URL`
 - `ZITADEL_AUTHORITY`
 - `ZITADEL_CLIENT_ID`
-- `ZITADEL_NATIVE_CLIENT_ID`
+
+Optional: `ZITADEL_NATIVE_CLIENT_ID`, `UMAMI_*`, `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, `SENTRY_*`.
 
 ### 2) Install and run
 

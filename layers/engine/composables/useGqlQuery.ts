@@ -2,6 +2,7 @@
 import type { AsyncData, NuxtApp } from 'nuxt/app'
 import { type DocumentNode, print } from 'graphql'
 import { useAsyncData, useNuxtApp } from '#imports'
+import type { Ref } from 'vue'
 import { gqlQueryKey } from '../utils/gqlQueryKey'
 import { useI18n } from 'vue-i18n'
 
@@ -18,6 +19,17 @@ interface Options {
      * keys, so there is nothing to join): the layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
      */
     dedupe?: 'cancel' | 'defer'
+    /**
+     * An older document for a backend that does not know a field of the main one (a newer field added to a shared query).
+     * The main document is asked first; when the error says the backend does not know it (`isUnsupported`), `unsupported`
+     * is set (shared, so it is remembered for the whole app) and `query` is asked instead, now and on every later run.
+     * The cache key stays the main document's.
+     */
+    legacy?: {
+        query: string | DocumentNode
+        isUnsupported: (err: unknown) => boolean
+        unsupported: Ref<boolean>
+    }
 }
 
 /*
@@ -45,7 +57,20 @@ export async function useGqlQuery<T>(
     const { $gqlFetch } = useNuxtApp()
     const { locale } = useI18n()
     const getVars = () => (typeof variables === 'function' ? variables() : variables)
-    const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
+    const ask = (document: string | DocumentNode) => $gqlFetch<T>(printIfAst(document), { variables: getVars() })
+    const { legacy } = opts
+    const handler = async (): Promise<T> => {
+        if (!legacy) return ask(rawQuery)
+        if (!legacy.unsupported.value) {
+            try {
+                return await ask(rawQuery)
+            } catch (err) {
+                if (!legacy.isUnsupported(err)) throw err
+                legacy.unsupported.value = true
+            }
+        }
+        return ask(legacy.query)
+    }
 
     /*
      * The key is the document, the evaluated variables and the locale (audit R3), and it is a getter: Nuxt 4 watches a

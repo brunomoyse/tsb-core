@@ -48,6 +48,8 @@ jobs:
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
+      ZITADEL_AUTHORITY: https://zitadel.localhost
+      ZITADEL_CLIENT_ID: ci-dummy-client-id
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -88,6 +90,8 @@ jobs:
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
+      ZITADEL_AUTHORITY: https://zitadel.localhost
+      ZITADEL_CLIENT_ID: ci-dummy-client-id
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -113,6 +117,8 @@ jobs:
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
+      ZITADEL_AUTHORITY: https://zitadel.localhost
+      ZITADEL_CLIENT_ID: ci-dummy-client-id
       E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
       E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
     steps:

@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
     sitemap: { priority: 0.6, changefreq: 'monthly' },
@@ -50,13 +51,14 @@ definePageMeta({
 
 const { t } = useI18n()
 const localizedUrl = useLocalizedUrl()
+const { policyParams } = useOrderingPolicy()
 
 // FAQ data. Each brand lists its own `faq.questions.*` keys in brand.faqQuestions.
 const DEFAULT_QUESTIONS = ['delivery', 'hours', 'payment', 'allergens']
 const questionKeys = useAppConfig().brand.faqQuestions ?? DEFAULT_QUESTIONS
 const faqs = computed(() => questionKeys.map((key: string) => ({
     question: t(`faq.questions.${key}.question`),
-    answer: t(`faq.questions.${key}.answer`),
+    answer: t(`faq.questions.${key}.answer`, policyParams.value),
 })))
 
 useJsonLd([

@@ -78,9 +78,9 @@
     "cash": "Cash",
     "infoCards": {
       "freeDelivery": "Free delivery",
-      "freeDeliveryDesc": "Free from 25 EUR, with delivery fees based on distance beyond.",
-      "takeawayDiscount": "Takeaway -10%",
-      "takeawayDiscountDesc": "10% discount on eligible items from 20 EUR for all pickup orders.",
+      "freeDeliveryDesc": "Free from {deliveryMinimum} EUR, with delivery fees based on distance beyond.",
+      "takeawayDiscount": "Takeaway -{rate}%",
+      "takeawayDiscountDesc": "{rate}% discount on eligible items from {pickupMinimum} EUR for all pickup orders.",
       "freshDaily": "Fresh daily",
       "freshDailyDesc": "Our fish is cut fresh every morning by our chef for uncompromising quality."
     }
@@ -118,7 +118,7 @@
     "discountable": "Discountable",
     "yes": "Yes",
     "no": "No",
-    "pickupDiscountBadge": "10% off on pickup",
+    "pickupDiscountBadge": "{rate}% off on pickup",
     "restaurantClosed": "The restaurant is currently closed.",
     "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable.",
     "choice": "Choice",
@@ -281,7 +281,7 @@
       "currentAddress": "Current address",
       "change": "Change",
       "distanceOk": "We deliver to this address",
-      "distanceTooFar": "This address is outside our 9 km delivery zone",
+      "distanceTooFar": "This address is outside our {distance} km delivery zone",
       "distanceValue": "Distance: {km} km",
       "switchToPickup": "Switch to pickup",
       "confirm": "Confirm",
@@ -368,7 +368,9 @@
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
     "deliveryFee": "Delivery Fee:",
-    "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 3 km: Free\n• 3-4 km: €1\n• 4-5 km: €2\n• 5-6 km: €3\n• 6-7 km: €4\n• 7-8 km: €5\n• 8-9 km: €6",
+    "deliveryFeeInfo": "Delivery fees based on distance:\n{tiers}",
+    "deliveryFeeTierFirst": "• Less than {to} km: {fee}",
+    "deliveryFeeTier": "• {from}-{to} km: {fee}",
     "transactionFee": "Transaction fee:",
     "discount": "Pick-up discount",
     "total": "Total:",
@@ -423,7 +425,7 @@
     "stepPayment": "Payment",
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",
-    "tooFar": "Too far for delivery (max 9 km)",
+    "tooFar": "Too far for delivery (max {distance} km)",
     "notDeliverableArea": "We don't deliver to your area.",
     "tbd": "To be determined",
     "optional": "(optional)",
@@ -694,7 +696,7 @@
       },
       "discount": {
         "question": "Is there a discount for pickup orders?",
-        "answer": "Yes! Enjoy 10% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
+        "answer": "Yes! Enjoy {rate}% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
       },
       "payment": {
         "question": "What payment methods do you accept?",

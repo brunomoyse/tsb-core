@@ -78,9 +78,9 @@
     "cash": "Espèces",
     "infoCards": {
       "freeDelivery": "Livraison gratuite",
-      "freeDeliveryDesc": "Gratuite dès 25 €, avec frais de livraison selon la distance au-delà.",
-      "takeawayDiscount": "À emporter -10%",
-      "takeawayDiscountDesc": "10 % de réduction sur les articles remisables dès 20 € pour toute commande à emporter.",
+      "freeDeliveryDesc": "Gratuite dès {deliveryMinimum} €, avec frais de livraison selon la distance au-delà.",
+      "takeawayDiscount": "À emporter -{rate}%",
+      "takeawayDiscountDesc": "{rate} % de réduction sur les articles remisables dès {pickupMinimum} € pour toute commande à emporter.",
       "freshDaily": "Frais chaque jour",
       "freshDailyDesc": "Notre poisson est découpé frais chaque matin par notre chef pour une qualité irréprochable."
     }
@@ -118,7 +118,7 @@
     "discountable": "Remise possible",
     "yes": "Oui",
     "no": "Non",
-    "pickupDiscountBadge": "10% de remise à emporter",
+    "pickupDiscountBadge": "{rate}% de remise à emporter",
     "restaurantClosed": "Le restaurant est actuellement fermé.",
     "restaurantClosedDetails": "Vous pouvez consulter le menu, mais les commandes ne sont pas disponibles.",
     "choice": "Choix",
@@ -281,7 +281,7 @@
       "currentAddress": "Adresse actuelle",
       "change": "Modifier",
       "distanceOk": "Nous livrons à cette adresse",
-      "distanceTooFar": "Cette adresse est hors de notre zone de 9 km",
+      "distanceTooFar": "Cette adresse est hors de notre zone de {distance} km",
       "distanceValue": "Distance : {km} km",
       "switchToPickup": "Passer au retrait",
       "confirm": "Confirmer",
@@ -368,7 +368,9 @@
     "emptyCart": "Votre panier est vide.",
     "subtotal": "Sous-total :",
     "deliveryFee": "Frais de livraison :",
-    "deliveryFeeInfo": "Frais de livraison selon la distance :\n• Moins de 3 km : Gratuit\n• 3-4 km : 1€\n• 4-5 km : 2€\n• 5-6 km : 3€\n• 6-7 km : 4€\n• 7-8 km : 5€\n• 8-9 km : 6€",
+    "deliveryFeeInfo": "Frais de livraison selon la distance :\n{tiers}",
+    "deliveryFeeTierFirst": "• Moins de {to} km : {fee}",
+    "deliveryFeeTier": "• {from}-{to} km : {fee}",
     "transactionFee": "Frais de transaction :",
     "discount": "Remise (à emporter)",
     "total": "Total :",
@@ -423,7 +425,7 @@
     "stepPayment": "Paiement",
     "itemCount": "{count} article | {count} articles",
     "opensAt": "Ouverture à {time}",
-    "tooFar": "Trop loin pour la livraison (max 9 km)",
+    "tooFar": "Trop loin pour la livraison (max {distance} km)",
     "notDeliverableArea": "Nous ne livrons pas dans votre zone.",
     "tbd": "À déterminer",
     "optional": "(facultatif)",
@@ -694,7 +696,7 @@
       },
       "discount": {
         "question": "Y a-t-il une réduction pour les commandes à emporter ?",
-        "answer": "Oui ! Profitez de 10% de réduction sur tous les articles remisables lorsque vous choisissez l'option à emporter. La réduction est automatiquement appliquée lors du paiement."
+        "answer": "Oui ! Profitez de {rate}% de réduction sur tous les articles remisables lorsque vous choisissez l'option à emporter. La réduction est automatiquement appliquée lors du paiement."
       },
       "payment": {
         "question": "Quels modes de paiement acceptez-vous ?",

@@ -8,6 +8,7 @@ import {
   formatCentsForLocale,
   intlLocaleFor,
   roundCentsToNearest10,
+  roundCentsToStep,
   toCents,
 } from './money.ts'
 import assert from 'node:assert/strict'
@@ -98,4 +99,20 @@ test('price formatting follows the app locale, always EUR (audit V11)', () => {
   assert.strictEqual(norm(formatCentsForLocale(2415, 'zh')), '€24.15')
   assert.strictEqual(norm(formatCentsForLocale(0, 'fr')), '0,00 €')
   assert.strictEqual(norm(formatCentsForLocale(123456, 'fr')), '1 234,56 €')
+})
+
+test('roundCentsToStep rounds to the policy step, ties up, and keeps 10 as roundCentsToNearest10', () => {
+  assert.strictEqual(roundCentsToStep(2442, 10), roundCentsToNearest10(2442))
+  assert.strictEqual(roundCentsToStep(2445, 10), 2450)
+  // 5 cent step: 24,42 -> 24,40, 24,43 -> 24,45 (2.5 is the tie, up)
+  assert.strictEqual(roundCentsToStep(2442, 5), 2440)
+  assert.strictEqual(roundCentsToStep(2443, 5), 2445)
+  assert.strictEqual(roundCentsToStep(2447, 5), 2445)
+  assert.strictEqual(roundCentsToStep(2448, 5), 2450)
+  // A 1 cent step (no rounding) and a 25 cent step
+  assert.strictEqual(roundCentsToStep(2442, 1), 2442)
+  assert.strictEqual(roundCentsToStep(2462, 25), 2450)
+  assert.strictEqual(roundCentsToStep(2463, 25), 2475)
+  assert.strictEqual(roundCentsToStep(-2463, 25), -2475)
+  assert.ok(Object.is(roundCentsToStep(-1, 10), 0), 'never -0')
 })

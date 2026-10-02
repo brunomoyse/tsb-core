@@ -2,6 +2,7 @@
 import { RESTAURANT_TZ, getBrusselsParts, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 definePageMeta({
     sitemap: { priority: 1, changefreq: 'daily' },
@@ -10,6 +11,7 @@ definePageMeta({
 const localizedUrl = useLocalizedUrl()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
+const { policyParams } = useOrderingPolicy()
 const { brand } = useAppConfig()
 const { phoneHref } = useBrandPhone()
 
@@ -229,15 +231,15 @@ useHead({
                     <svg aria-hidden="true" class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 16v1a2 2 0 0 0 4 0v-5h-3a3 3 0 0 0 -3 3v1h10a6 6 0 0 1 5 -4v-5a2 2 0 0 0 -2 -2h-1"/><path d="M6 9l3 0"/></svg>
                 </div>
                 <p class="font-semibold text-neutral-900 mb-1 text-[15px]">{{ $t('about.infoCards.freeDelivery') }}</p>
-                <p class="text-neutral-600 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc') }}</p>
+                <p class="text-neutral-600 text-sm leading-relaxed">{{ $t('about.infoCards.freeDeliveryDesc', policyParams) }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">
                     <!-- Shopping bag icon (Heroicons, same as OrdersWidget) -->
                     <svg aria-hidden="true" class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                 </div>
-                <p class="font-semibold text-neutral-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount') }}</p>
-                <p class="text-neutral-600 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc') }}</p>
+                <p class="font-semibold text-neutral-900 mb-1 text-[15px]">{{ $t('about.infoCards.takeawayDiscount', policyParams) }}</p>
+                <p class="text-neutral-600 text-sm leading-relaxed">{{ $t('about.infoCards.takeawayDiscountDesc', policyParams) }}</p>
             </div>
             <div class="bg-tsb-two rounded-2xl p-5 text-center">
                 <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-white flex items-center justify-center">

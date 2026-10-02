@@ -128,6 +128,12 @@ export interface BrandConfig {
      */
     showProductCode?: boolean
     /**
+     * Display names for the choice groups of a category's products, by category slug, as i18n keys: the group of a
+     * "menu-plateau" product is shown as its soup ("1 soupe", "2 soupes") whatever the catalog calls it. Omit for
+     * a brand that shows the catalog's group names.
+     */
+    choiceGroupLabels?: Record<string, { one: string; other: string }>
+    /**
      * Decorative Japanese accents (kanji watermarks, hanko seal, torii
      * divider, falling petals) in the shared shop components. Off by default.
      */

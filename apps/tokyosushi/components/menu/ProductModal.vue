@@ -57,7 +57,7 @@
                             {{ $t('menu.lunchOnly') }}
                         </span>
                         <span v-if="p.isDiscountable" class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200">
-                            {{ $t('menu.pickupDiscountBadge') }}
+                            {{ $t('menu.pickupDiscountBadge', policyParams) }}
                         </span>
                     </div>
 
@@ -185,7 +185,10 @@ import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { brand } from '#brand/brand'
+import { choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -195,6 +198,7 @@ const cartItemAdded = useEventBus(cartItemAddedKey)
 
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+const { policyParams } = useOrderingPolicy()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 
@@ -320,8 +324,8 @@ if (editItem?.selectedChoices?.length) {
 }
 
 const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
-    if (p?.category?.slug === 'menu-plateau') return t('menu.soup')
-    return group.name
+    const key = choiceGroupLabelKey(brand.choiceGroupLabels, p?.category?.slug, 1)
+    return key ? t(key) : group.name
 }
 
 // The button stays clickable while choices are missing so a click can point at
