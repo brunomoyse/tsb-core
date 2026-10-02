@@ -13,9 +13,10 @@
                     {{ $t('me.orders.recentTitle') }}
                 </h2>
                 <!-- Kanji watermark -->
-                <span v-if="japaneseAccents" class="absolute bottom-0 right-2 text-8xl leading-none pointer-events-none select-none text-primary-500/[0.04]"
+                <span v-if="japaneseAccents" class="absolute bottom-0 right-2 text-8xl leading-none pointer-events-none select-none text-primary-500/[0.04] after:content-[attr(data-glyph)]"
+                      data-glyph="注文"
                       style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif"
-                      aria-hidden="true">注文</span>
+                      aria-hidden="true" />
                 <NuxtLinkLocale
                     to="/me/orders"
                     class="text-xs font-medium text-neutral-600 hover:text-primary-700 transition inline-flex items-center gap-1 group"
