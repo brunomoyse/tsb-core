@@ -4,14 +4,8 @@
         class="hidden sm:block sticky top-0 z-40 bg-ygf-bg/95 backdrop-blur border-b border-ygf-orange-100"
     >
         <div class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center gap-8">
-            <!-- Logo, left-aligned per GUIDELINES.md §4.5 -->
-            <NuxtLinkLocale
-                to="/"
-                :aria-label="$t('nav.home')"
-                class="shrink-0 inline-flex items-center rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-                <img src="/images/logos/logo-color.svg" :alt="logoAlt" width="44" height="44" class="h-11 w-11" />
-            </NuxtLinkLocale>
+            <!-- Logo with its name, left-aligned per GUIDELINES.md §4.5 (the circle is never shown without it, §2.2) -->
+            <BrandLockup />
 
             <!-- Primary destinations. Text labels, not icons: an icon-only rail
                  hides where things are, and the guide asks for 5–6 clear items. -->
@@ -96,6 +90,7 @@
 </template>
 
 <script lang="ts" setup>
+import BrandLockup from '~/components/navbar/BrandLockup.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { computed } from 'vue'

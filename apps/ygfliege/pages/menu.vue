@@ -73,6 +73,10 @@
                             </svg>
                         </button>
                     </div>
+                    <!-- Delivery zone on a phone: the header carries the logo with its name, so the chip sits beside the search (the tablet and desktop header shows it). -->
+                    <ClientOnly>
+                        <DeliveryZoneChip compact class="sm:hidden shrink-0 max-w-[9.5rem]" />
+                    </ClientOnly>
                 </section>
 
                 <!-- Mobile-only category jump-nav. On desktop 3–4 sections fit
@@ -273,6 +277,7 @@ import type { Product, ProductCategory } from '#engine/types'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
+import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import BowlComposer from '~/components/menu/BowlComposer.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import ProductModal from '~/components/menu/ProductModal.vue'

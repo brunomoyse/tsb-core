@@ -40,6 +40,20 @@ module.exports = {
                     // Warm border tint, same value as --border-default.
                     'border': 'rgba(242, 123, 32, 0.12)',
                 },
+                // Warm neutrals replace Tailwind's default cool `gray` scale, so a stray gray-* utility reads as part of the brand.
+                // 400 is decor only (about 2.7:1 on white); 500 and up pass AA for text.
+                'gray': {
+                    50: '#FAF8F5',
+                    100: '#F5F1EC',
+                    200: '#E8E2DA',
+                    300: '#D6CEC4',
+                    400: '#A39A90',
+                    500: '#7A7168',
+                    600: '#5F574F',
+                    700: '#4A433D',
+                    800: '#332E29',
+                    900: '#1A1A1A',
+                },
                 // Neutral text/surface grays, matching --ygf-gray-* in brand.css
                 // (intermediate steps interpolated).
                 'ygf-gray': {
@@ -165,12 +179,25 @@ module.exports = {
                 },
             },
             fontFamily: {
-                // Headings + CJK display (700/900 per guide).
-                display: ['"Noto Sans SC"', 'Inter', 'system-ui', 'sans-serif'],
+                // Headings: Inter for Latin (as ygfliege.be), Noto Sans SC for the CJK glyphs; zh headings switch to
+                // Noto Serif SC through the `:lang(zh)` rule in main.css.
+                display: ['Inter', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
                 // Body text.
-                body: ['Inter', '"Noto Sans"', 'system-ui', 'sans-serif'],
+                body: ['Inter', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
                 // Chinese calligraphy accents (杨国福麻辣烫).
                 serifzh: ['"Noto Serif SC"', 'serif'],
+            },
+            /* One container width (the vitrine's --container-max, 1200px) for header, footer, menu and marketing sections:
+               the shared `max-w-7xl` / `max-w-6xl` wrappers resolve to it in this brand. */
+            maxWidth: {
+                '6xl': '1200px',
+                '7xl': '1200px',
+            },
+            /* 14px floor for secondary text (GUIDELINES.md §3.3): `text-xs` is 14px in this brand, so no engine or app template
+               can set body-adjacent text smaller. Logo compositions, legal footnotes and the like opt out with an explicit
+               rem value (e.g. text-[0.75rem]). The arbitrary 10/11px sizes are lifted in main.css. */
+            fontSize: {
+                xs: ['0.875rem', { lineHeight: '1.25rem' }],
             },
             borderRadius: {
                 lg: "var(--radius)",
@@ -185,6 +212,13 @@ module.exports = {
             },
             // Warm orange-tinted shadows — the guide forbids cold gray shadows.
             boxShadow: {
+                // Tailwind's default scale, re-tinted warm: a stray `shadow-md` inherits the brand, never a grey shadow.
+                DEFAULT: '0 2px 8px rgba(242, 123, 32, 0.08)',
+                sm: '0 1px 4px rgba(242, 123, 32, 0.06)',
+                md: '0 4px 20px rgba(242, 123, 32, 0.08)',
+                lg: '0 8px 30px rgba(242, 123, 32, 0.10)',
+                xl: '0 12px 40px rgba(242, 123, 32, 0.12)',
+                '2xl': '0 20px 60px rgba(242, 123, 32, 0.16)',
                 'ygf-sm': '0 2px 8px rgba(242, 123, 32, 0.06)',
                 'ygf-md': '0 4px 20px rgba(242, 123, 32, 0.08)',
                 'ygf-lg': '0 8px 40px rgba(242, 123, 32, 0.12)',

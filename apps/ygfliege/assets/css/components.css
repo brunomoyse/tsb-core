@@ -345,17 +345,18 @@
     .section-label {
         display: inline-block;
         margin-bottom: 0.75rem;
-        font-size: 0.6875rem;
+        font-size: 0.875rem; /* the vitrine sets 0.6875rem; the guide's floor is 14px */
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.14em;
         color: var(--ygf-orange-text);
     }
 
     .section-title {
-        font-family: var(--font-chinese), var(--font-sans);
+        font-family: var(--font-sans), var(--font-chinese);
         font-weight: 700;
         line-height: 1.25;
+        letter-spacing: -0.02em;
         color: var(--ygf-black);
     }
 }

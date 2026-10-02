@@ -36,6 +36,7 @@
     /* Functional colors */
     --ygf-red: #D42B2B;
     --ygf-success: #2E8B57;
+    --ygf-success-dark: #1F7A4A;         /* success text/fill that passes AA (the success token) */
     --ygf-error: #D32F2F;
 
     /* Warm neutrals — the guide's body/secondary text grays. */
@@ -74,5 +75,6 @@
 }
 
 html {
-    background-color: #FFF7ED;
+    /* White base; the cream (--ygf-cream) alternates on marketing sections (GUIDELINES.md §3.2) */
+    background-color: #FFFFFF;
 }

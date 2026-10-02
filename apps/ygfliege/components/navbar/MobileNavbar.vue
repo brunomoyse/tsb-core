@@ -1,26 +1,8 @@
 <template>
     <nav ref="navRef" @keydown.esc.capture="onEscape" class="mobile-only bg-white text-gray-700 fixed z-50 h-20 w-full">
         <div class="relative px-4 flex items-center h-full mx-auto">
-            <!-- Mobile Logo -->
-            <div class="flex items-center shrink-0">
-                <Logo
-                    :aria-label="$t('nav.home')"
-                    :alt="logoAlt"
-                    class="list-none"
-                    icon="/images/logos/logo-color.svg"
-                    to="/"
-                    :size="56"
-                />
-            </div>
-
-            <div
-                v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
-                class="absolute left-1/2 -translate-x-1/2 min-w-0 max-w-[148px]"
-            >
-                <ClientOnly>
-                    <DeliveryZoneChip compact class="min-w-0 w-full" />
-                </ClientOnly>
-            </div>
+            <!-- Logo with its name (never the circle alone, GUIDELINES.md §2.2) -->
+            <BrandLockup />
 
             <!-- Right part -->
             <div class="flex items-center ml-auto shrink-0">
@@ -112,9 +94,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch } from '#imports'
+import { computed, ref, watch } from '#imports'
+import BrandLockup from './BrandLockup.vue'
 import CartButton from '#engine/components/cart/CartButton.vue'
-const DeliveryZoneChip = defineAsyncComponent(() => import('#engine/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '#engine/stores/auth'
@@ -123,9 +105,7 @@ import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useMediaQuery, useMounted } from '@vueuse/core'
-import { useRoute } from 'vue-router'
 
-const currentRoute = useRoute();
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { brand } = useAppConfig()

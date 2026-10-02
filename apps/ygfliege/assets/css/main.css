@@ -52,11 +52,28 @@
     }
 }
 
-/* Body font: Inter (Noto Sans SC covers CJK glyph fallback). Headings opt into
-   font-display (Noto Sans SC bold) via Tailwind classes. */
+/* Body font: Inter, Noto Sans SC for the CJK glyphs. Headings are Inter too, with the vitrine's tight tracking, as on
+   ygfliege.be; only zh headings take the calligraphic Noto Serif SC (GUIDELINES.md §3.3, accents chinois). */
 * {
     max-width: 100%;
     font-family: "Inter", "Noto Sans SC", system-ui, sans-serif;
+}
+
+@layer base {
+    h1, h2, h3, h4 {
+        letter-spacing: -0.02em;
+    }
+}
+:lang(zh) :is(h1, h2) {
+    font-family: "Noto Serif SC", "Noto Sans SC", serif;
+}
+
+/* 14px floor (GUIDELINES.md §3.3): the engine has a few arbitrary 10/11px sizes (badges, hints, compact chips) that the
+   fontSize scale cannot reach. In this brand they render at 14px; Tokyo Sushi keeps its own sizes. */
+.text-\[10px\],
+.text-\[11px\] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
 }
 
 input,
