@@ -23,10 +23,12 @@ interface Options {
      * An older document for a backend that does not know a field of the main one (a newer field added to a shared query).
      * The main document is asked first; when the error says the backend does not know it (`isUnsupported`), `unsupported`
      * is set (shared, so it is remembered for the whole app) and `query` is asked instead, now and on every later run.
-     * The cache key stays the main document's.
+     * The cache key stays the main document's. `variables` are what the legacy document is asked with (the main
+     * document's by default): a document must not be sent a variable it does not declare, which a server rejects.
      */
     legacy?: {
         query: string | DocumentNode
+        variables?: Vars
         isUnsupported: (err: unknown) => boolean
         unsupported: Ref<boolean>
     }
@@ -56,8 +58,9 @@ export async function useGqlQuery<T>(
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
     const { $gqlFetch } = useNuxtApp()
     const { locale } = useI18n()
-    const getVars = () => (typeof variables === 'function' ? variables() : variables)
-    const ask = (document: string | DocumentNode) => $gqlFetch<T>(printIfAst(document), { variables: getVars() })
+    const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
+    const getVars = () => evaluate(variables)
+    const ask = (document: string | DocumentNode, vars: Vars = variables) => $gqlFetch<T>(printIfAst(document), { variables: evaluate(vars) })
     const { legacy } = opts
     const handler = async (): Promise<T> => {
         if (!legacy) return ask(rawQuery)
@@ -69,7 +72,7 @@ export async function useGqlQuery<T>(
                 legacy.unsupported.value = true
             }
         }
-        return ask(legacy.query)
+        return ask(legacy.query, legacy.variables ?? variables)
     }
 
     /*
