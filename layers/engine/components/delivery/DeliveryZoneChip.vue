@@ -16,7 +16,7 @@
             v-if="state === 'inZone' || state === 'outOfZone'"
             :class="[
                 'w-1.5 h-1.5 rounded-full shrink-0',
-                state === 'inZone' ? 'bg-emerald-500' : 'bg-primary-500'
+                state === 'inZone' ? 'bg-emerald-500' : 'bg-red-600'
             ]"
             aria-hidden="true"
         />
@@ -113,7 +113,7 @@ const stateClasses = computed(() => {
         case 'inZone':
             return 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
         case 'outOfZone':
-            return 'bg-primary-50 text-primary-800 border border-primary-200 hover:bg-primary-100'
+            return 'bg-red-50 text-red-800 border border-red-200 hover:bg-red-100'
         case 'pickup':
             return 'bg-tsb-four text-primary-700 border border-primary-200/60 hover:bg-primary-100'
         default:

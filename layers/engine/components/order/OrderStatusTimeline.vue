@@ -14,7 +14,7 @@
                 <div class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center" aria-hidden="true">
                     <div
                         v-if="step.state === 'current'"
-                        class="w-[7px] h-[7px] rounded-full bg-primary-600 stone-ripple"
+                        class="w-[7px] h-[7px] rounded-full bg-primary-600 text-primary-600 stone-ripple"
                     />
                     <div
                         v-else-if="step.state === 'done'"
@@ -57,16 +57,17 @@ const { steps } = useOrderStatusTimeline(() => order)
     animation: ripple 2s ease-out infinite;
 }
 
+/* The ring follows the dot's colour (text-primary-600 sets currentColor): red on Tokyo Sushi, orange on YGF. */
 @keyframes ripple {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-    70% { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 35%, transparent); }
+    70% { box-shadow: 0 0 0 5px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .stone-ripple {
         animation: none;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 15%, transparent);
     }
 }
 </style>

@@ -188,24 +188,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid theme('colors.neutral.200');
-    border-radius: 0.375rem;
-    background: white;
-}
-li {
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-li:hover {
-    background-color: theme('colors.neutral.100');
-}
 input, select, textarea {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }

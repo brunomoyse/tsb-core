@@ -73,14 +73,14 @@
                 class="rounded-2xl border p-4 transition-colors"
                 :class="inZone
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-primary-50 border-primary-200 text-primary-800'"
+                    : 'bg-red-50 border-red-200 text-red-800'"
                 role="status"
                 aria-live="polite"
             >
                 <div class="flex items-start gap-3">
                     <span
                         class="shrink-0 inline-flex w-7 h-7 items-center justify-center rounded-full"
-                        :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-100 text-primary-700'"
+                        :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
                         aria-hidden="true"
                     >
                         <svg v-if="inZone" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

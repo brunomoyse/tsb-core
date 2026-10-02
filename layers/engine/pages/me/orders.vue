@@ -175,8 +175,8 @@ const getStatusColorClass = (status: string) => {
     const map: Record<string,string> = {
         DELIVERED: 'bg-green-50 text-green-800',
         PICKED_UP:  'bg-green-50 text-green-800',
-        CANCELLED: 'bg-primary-50 text-primary-700',
-        FAILED:    'bg-primary-50 text-primary-700'
+        CANCELLED: 'bg-red-50 text-red-700',
+        FAILED:    'bg-red-50 text-red-700'
     }
     return map[status] || 'bg-neutral-100 text-neutral-600'
 }

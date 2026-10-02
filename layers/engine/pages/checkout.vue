@@ -31,11 +31,11 @@
 
         <!-- Minimum Order Warning Banner -->
         <ClientOnly>
-        <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-primary-50 border border-primary-200 p-4 flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div id="checkout-minimum-order-banner" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" v-if="!isMinimumReached && cartStore.products.length > 0" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-            <p class="text-primary-700 font-medium text-sm">
+            <p class="text-red-700 font-medium text-sm">
                 {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
             </p>
         </div>
@@ -47,14 +47,14 @@
             role="alert"
             aria-live="assertive"
             aria-atomic="true"
-            class="mb-6 rounded-lg bg-primary-50 border border-primary-200 p-4"
+            class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4"
         >
             <div class="flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <div class="flex-1 min-w-0">
-                    <p class="text-primary-800 font-semibold text-sm mb-2">{{ $t('checkout.completeBeforeOrder') }}</p>
+                    <p class="text-red-800 font-semibold text-sm mb-2">{{ $t('checkout.completeBeforeOrder') }}</p>
                     <ul class="space-y-1.5">
                         <li v-for="err in submitErrors" :key="err.targetId">
                             <button
