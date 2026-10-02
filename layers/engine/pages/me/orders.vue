@@ -218,9 +218,9 @@ const getStatusColorClass = (status: string) => {
                 >
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2">
-                            <h3 class="font-semibold text-neutral-700 text-sm whitespace-nowrap">
+                            <span class="font-semibold text-neutral-700 text-sm whitespace-nowrap">
                                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
-                            </h3>
+                            </span>
                             <span
                                 class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
                                 :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-primary-700 bg-tsb-four'"

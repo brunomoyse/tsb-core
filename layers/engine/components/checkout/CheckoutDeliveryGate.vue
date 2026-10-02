@@ -13,7 +13,7 @@
                 >
                     {{ $t('delivery.gate.title') }}
                 </h2>
-                <span v-if="japaneseAccents" class="text-primary-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達エリア</span>
+                <span v-if="japaneseAccents" class="text-primary-300/40 text-xs tracking-[0.2em] after:content-[attr(data-glyph)]" data-glyph="配達エリア" aria-hidden="true" />
             </div>
             <p class="text-sm text-neutral-600 leading-relaxed">
                 {{ $t('delivery.gate.subtitle') }}

@@ -136,7 +136,7 @@
             </p>
 
             <!-- Japanese thank you -->
-            <p v-if="japaneseAccents" class="mt-2 text-primary-300/50 text-xs tracking-[0.25em] oc-stagger-2" aria-hidden="true">ありがとうございます</p>
+            <p v-if="japaneseAccents" class="mt-2 text-primary-300/50 text-xs tracking-[0.25em] oc-stagger-2 after:content-[attr(data-glyph)]" data-glyph="ありがとうございます" aria-hidden="true" />
 
             <!-- Estimated time badge -->
             <div

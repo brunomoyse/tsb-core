@@ -78,7 +78,7 @@
             <PageTitle>
                 {{ $t('checkout.title', 'Checkout') }}
             </PageTitle>
-            <span v-if="japaneseAccents" class="text-primary-300/30 text-sm tracking-wider" aria-hidden="true">お会計</span>
+            <span v-if="japaneseAccents" class="text-primary-300/30 text-sm tracking-wider after:content-[attr(data-glyph)]" data-glyph="お会計" aria-hidden="true" />
         </div>
 
         <!--

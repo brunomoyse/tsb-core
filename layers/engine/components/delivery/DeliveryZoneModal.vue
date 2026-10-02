@@ -36,7 +36,7 @@
                             >
                                 {{ $t('delivery.modal.title') }}
                             </h2>
-                            <span v-if="japaneseAccents" class="text-primary-300/40 text-xs tracking-[0.2em]" aria-hidden="true">配達</span>
+                            <span v-if="japaneseAccents" class="text-primary-300/40 text-xs tracking-[0.2em] after:content-[attr(data-glyph)]" data-glyph="配達" aria-hidden="true" />
                         </div>
                         <p class="text-xs sm:text-sm text-neutral-600 mt-1 truncate">{{ $t('delivery.modal.subtitle') }}</p>
                     </header>

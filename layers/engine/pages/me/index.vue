@@ -359,7 +359,7 @@ const updateNotificationPref = async (
             </PageTitle>
             <p class="mt-2 text-sm sm:text-base text-neutral-600 font-light">{{ t('me.subtitle') }}</p>
             <!-- Japanese greeting: ようこそ (welcome) -->
-            <p v-if="japaneseAccents" class="mt-1 text-xs text-primary-300/40 tracking-[0.25em]" aria-hidden="true">ようこそ</p>
+            <p v-if="japaneseAccents" class="mt-1 text-xs text-primary-300/40 tracking-[0.25em] after:content-[attr(data-glyph)]" data-glyph="ようこそ" aria-hidden="true" />
         </div>
 
         <!-- Bento Grid -->
