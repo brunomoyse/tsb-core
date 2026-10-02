@@ -35,3 +35,12 @@ fails contrast (YGF: `backgroundColor.primary`, `textColor.primary`, `borderColo
   CTA fill or the focus ring drops below its ratio (`--table` prints every pair), and if a template
   uses pale secondary text.
 - `scripts/check-focus-ring-contrast.mjs`: no `focus:ring-<colour>-100…400` utility in a template.
+
+## Moving a file into the engine
+
+Both apps used to hold near-identical copies of many components and pages; one copy now lives in
+`layers/engine` and an app keeps a file only to override it (Nuxt resolves an app file over a layer
+file of the same path). When you move one: write it with the contract names above, import siblings
+through `#engine/components/...` (never `~/components/...`: `~` is the app) and brand data through
+`#brand/...`, and take brand facts from `useAppConfig().brand` (`legalName`, `legalForm`,
+`dishesLabel`, `deliveryEnabled`, `japaneseAccents`, ...) instead of keeping a per-brand copy.
