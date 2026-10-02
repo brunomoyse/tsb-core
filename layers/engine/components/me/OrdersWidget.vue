@@ -50,6 +50,7 @@
                 <div v-if="activeOrders.length" class="pt-3 space-y-3">
                     <div
                         v-for="order in activeOrders"
+                        :id="`order-card-${order.id}`"
                         :key="order.id"
                         class="active-card relative bg-white rounded-xl border-l-[3px] border-l-primary-400"
                     >
@@ -177,7 +178,7 @@
                 <!-- ━━ Past Orders ━━ -->
                 <div :class="activeOrders.length ? '' : 'pt-3'" class="space-y-2">
                     <div
-                        v-for="order in visiblePastOrders" :key="order.id"
+                        v-for="order in visiblePastOrders" :id="`order-card-${order.id}`" :key="order.id"
                         class="past-card relative bg-white rounded-xl border-l-[3px] shadow-sm transition-shadow hover:shadow-md"
                         :class="orderBorderClass(order.status)"
                     >
@@ -365,9 +366,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
-import { useGqlQuery, useGqlSubscription, useNuxtApp } from '#imports'
+import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
 import type { Order } from '#engine/types'
 import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
@@ -375,13 +376,12 @@ import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { print } from 'graphql/index'
+import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
 import { useReorder } from '#engine/composables/useReorder'
 
 const { showProductCode = false, japaneseAccents = false } = useAppConfig().brand
-
-const { $gqlFetch } = useNuxtApp()
 const { t, locale } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
@@ -443,8 +443,34 @@ const MY_ORDERS = gql`
   }
 `
 
-const { data: dataOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+const { data: dataOrders, refetch: refetchOrders } = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
+
+/* Live tracking (subscriptions, reconnect refetch, polling fallback, auto-expand
+   of active orders, ?followOrder) is driven by watchers over the loaded orders:
+   the query is client-only, so the list is still empty at setup/onMounted on a
+   hard load. */
+const {
+    trackedOrders,
+    getTrackedOrder,
+    toggleOrder,
+    isExpanded,
+    getStatus,
+    isOrderSuccess,
+    isOrderFailed,
+} = useOrderTracking({
+    orders,
+    refetch: refetchOrders,
+    autoExpandActive: true,
+    // A ?followOrder id that is a past order beyond the first page must be rendered before it is scrolled to.
+    // `index` is the order's position in `orders`; the past list shows only the completed ones.
+    revealOrder: (index) => {
+        const list = orders.value ?? []
+        if (!list[index] || !isOrderCompleted(list[index].status)) return
+        const pastIndex = list.slice(0, index).filter((o) => isOrderCompleted(o.status)).length
+        if (pastIndex >= visibleCount.value) visibleCount.value = pastIndex + 1
+    },
+})
 
 interface OrderItemLike {
     product: { code: string | null; name: string; category?: { name: string } | null }
@@ -477,10 +503,10 @@ const orderItemChoice = (item: OrderItemLike): string | undefined =>
 // ── Active / Past split ──
 
 const activeOrders = computed(() =>
-    (orders.value ?? []).filter(o => !isOrderCompleted(getTrackedOrder(o).status))
+    (trackedOrders.value ?? []).filter(o => !isOrderCompleted(o.status))
 )
 const pastOrders = computed(() =>
-    (orders.value ?? []).filter(o => isOrderCompleted(getTrackedOrder(o).status))
+    (trackedOrders.value ?? []).filter(o => isOrderCompleted(o.status))
 )
 const visiblePastOrders = computed(() => pastOrders.value.slice(0, visibleCount.value))
 const remainingPastCount = computed(() => Math.max(0, pastOrders.value.length - visibleCount.value))
@@ -489,25 +515,7 @@ const nextPastBatchCount = computed(() => Math.min(LOAD_STEP, remainingPastCount
 
 const loadMore = () => { visibleCount.value += LOAD_STEP }
 
-// ── Expand / Collapse ──
-
-const expandedOrders = ref(new Set<string>())
-
-const toggleOrder = (orderId: string) => {
-    if (expandedOrders.value.has(orderId)) {
-        expandedOrders.value.delete(orderId)
-    } else {
-        expandedOrders.value.add(orderId)
-    }
-}
-
-const isExpanded = (orderId: string) => expandedOrders.value.has(orderId)
-
 // ── Status helpers ──
-
-const isOrderCompleted = (status: string) => ['DELIVERED', 'PICKED_UP', 'CANCELLED', 'FAILED'].includes(status)
-const isOrderSuccess = (status: string) => ['DELIVERED', 'PICKED_UP'].includes(status)
-const isOrderFailed = (status: string) => ['CANCELLED', 'FAILED'].includes(status)
 
 const iconBgClass = (status: string) => {
     if (isOrderSuccess(status)) return 'bg-emerald-50'
@@ -519,21 +527,6 @@ const iconColorClass = (status: string) => {
     if (isOrderSuccess(status)) return 'text-emerald-500'
     if (isOrderFailed(status)) return 'text-amber-500'
     return 'text-primary-400'
-}
-
-const getStatus = (status: string) => {
-    const map: Record<string, string> = {
-        PENDING: t('me.orders.status.pending'),
-        CONFIRMED: t('me.orders.status.confirmed'),
-        PREPARING: t('me.orders.status.preparing'),
-        AWAITING_PICK_UP: t('me.orders.status.awaitingPickup'),
-        OUT_FOR_DELIVERY: t('me.orders.status.outForDelivery'),
-        PICKED_UP: t('me.orders.status.pickedUp'),
-        DELIVERED: t('me.orders.status.delivered'),
-        CANCELLED: t('me.orders.status.cancelled'),
-        FAILED: t('me.orders.status.failed'),
-    }
-    return map[status] || ''
 }
 
 const orderBorderClass = (status: string) => {
@@ -559,67 +552,6 @@ const hankoKanji = (status: string) => {
 const hankoRotation = (orderId: string) => {
     const deg = orderId.charCodeAt(orderId.length - 1) % 10 - 5
     return `rotate(${deg}deg)`
-}
-
-// ── Live subscriptions ──
-
-const liveOrderData = ref<Record<string, Partial<Order>>>({})
-const subscriptionStops = new Map<string, () => void>()
-
-const SUB_ORDER_UPDATES = gql`
-    subscription ($orderId: ID!) {
-        myOrderUpdated(orderId: $orderId) {
-            id
-            status
-            updatedAt
-            estimatedReadyTime
-            payment { status }
-        }
-    }
-`
-
-const subscribeToOrder = (orderId: string) => {
-    if (subscriptionStops.has(orderId)) return
-
-    const { data: liveUpdate, stop } = useGqlSubscription<{ myOrderUpdated: Partial<Order> }>(
-        print(SUB_ORDER_UPDATES), { orderId }
-    )
-
-    subscriptionStops.set(orderId, stop)
-
-    watch(liveUpdate, (val) => {
-        if (val?.myOrderUpdated) {
-            liveOrderData.value[orderId] = {
-                ...liveOrderData.value[orderId],
-                ...val.myOrderUpdated
-            }
-            if (isOrderCompleted(val.myOrderUpdated.status ?? '')) {
-                unsubscribeFromOrder(orderId)
-            }
-        }
-    })
-}
-
-const unsubscribeFromOrder = (orderId: string) => {
-    const stopFn = subscriptionStops.get(orderId)
-    if (stopFn) {
-        stopFn()
-        subscriptionStops.delete(orderId)
-    }
-}
-
-onUnmounted(() => {
-    subscriptionStops.forEach((stopFn) => stopFn())
-    subscriptionStops.clear()
-    if (pollTimer) {
-        clearInterval(pollTimer)
-        pollTimer = null
-    }
-})
-
-const getTrackedOrder = (order: Order): Order => {
-    const live = liveOrderData.value[order.id]
-    return live ? { ...order, ...live } as Order : order
 }
 
 // ── Accordion transitions ──
@@ -664,55 +596,6 @@ const accordionAfterLeave = (el: Element) => {
     h.style.transition = ''
     h.style.opacity = ''
 }
-
-// ── Mount ──
-
-// Polling fallback for when WebSocket subscriptions fail
-let pollTimer: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-    const allOrders = orders.value ?? []
-
-    // Subscribe to all active orders
-    const pendingOrders = allOrders.filter(o => !isOrderCompleted(o.status))
-    pendingOrders.forEach(o => {
-        subscribeToOrder(o.id)
-        // Auto-expand active orders
-        expandedOrders.value.add(o.id)
-    })
-
-    // Polling fallback for active orders
-    if (activeOrders.length > 0) {
-        pollTimer = setInterval(async () => {
-            try {
-                const fresh = await $gqlFetch<{ myOrders: Order[] }>(print(MY_ORDERS))
-                if (fresh?.myOrders) {
-                    for (const freshOrder of fresh.myOrders) {
-                        const current = allOrders.find(o => o.id === freshOrder.id)
-                        if (current && current.status !== freshOrder.status) {
-                            liveOrderData.value[freshOrder.id] = {
-                                ...liveOrderData.value[freshOrder.id],
-                                ...freshOrder,
-                            }
-                        }
-                    }
-                    if (!fresh.myOrders.some(o => !isOrderCompleted(o.status)) && pollTimer) {
-                        clearInterval(pollTimer)
-                        pollTimer = null
-                    }
-                }
-            } catch { /* Polling errors are non-critical */ }
-        }, 30_000)
-    }
-
-    // Auto-expand from URL param
-    const params = new URLSearchParams(window.location.search)
-    const followId = params.get('followOrder')
-    if (followId) {
-        const order = allOrders.find(o => o.id === followId)
-        if (order) expandedOrders.value.add(order.id)
-    }
-})
 </script>
 
 <style scoped>

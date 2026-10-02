@@ -309,7 +309,9 @@
     "undo": "Ongedaan maken",
     "removedUndo": "“{name}” verwijderd",
     "eachSuffix": "per stuk",
-    "deliveryTbd": "Levering wordt berekend bij het afrekenen"
+    "deliveryTbd": "Levering wordt berekend bij het afrekenen",
+    "onlineFee": "Kosten online betaling",
+    "addForDelivery": "Voeg nog {amount} toe om te laten leveren."
   },
   "checkout": {
     "title": "Bestelling",
@@ -433,7 +435,10 @@
       "abandonedTitle": "Betaling niet voltooid",
       "abandonedBody": "U bent vertrokken voordat de betaling was voltooid, dus uw bestelling is niet geplaatst. Uw winkelwagen is bewaard. U kunt het opnieuw proberen.",
       "tryAgain": "Opnieuw proberen",
-      "verifying": "Uw betaling controleren…"
+      "verifying": "Uw betaling controleren…",
+      "awaitingConfirmationTitle": "Betaling wordt bevestigd",
+      "awaitingConfirmationBody": "We hebben de betalingsbevestiging nog niet ontvangen. Deze pagina wordt automatisch bijgewerkt. Bent u al afgeschreven, betaal dan niet opnieuw: neem contact met ons op via {phone}.",
+      "callUs": "Bel het restaurant"
     }
   },
   "error": {

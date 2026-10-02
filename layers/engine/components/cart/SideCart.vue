@@ -46,7 +46,7 @@
                 {{ $t('cart.empty') }}
             </p>
             <div v-else class="space-y-4">
-                <div v-for="item in cartStore.products" :key="getItemKey(item)"
+                <div v-for="(item, lineIndex) in cartStore.products" :key="lineKeys[lineIndex]"
                      data-testid="cart-item"
                      class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
@@ -94,7 +94,7 @@
                                 </span>
                             </div>
                             <span class="text-sm font-medium whitespace-nowrap flex-shrink-0 self-start">
-                                {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                {{ formatPrice(getItemLineTotal(item)) }}
                             </span>
                         </div>
 
@@ -158,15 +158,22 @@
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span>:</span>
                     <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                 </div>
+                <div v-if="onlineFee > 0" class="flex justify-between items-center text-sm text-neutral-600">
+                    <span>{{ $t('cart.onlineFee') }}:</span>
+                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                </div>
                 <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
                     <span>{{ $t('cart.total') }}:</span>
-                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span data-testid="cart-total" class="tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </div>
             </div>
 
-            <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
+            <!-- Delivery minimum (delivery only — pickup has no minimum) -->
             <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-primary-600 text-center">
-                {{ $t('cart.minimumDelivery', { amount: DELIVERY_MINIMUM }) }}
+                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 rounded-lg" @click="switchToPickup">
+                    {{ $t('delivery.modal.switchToPickup') }}
+                </button>
             </div>
 
             <!-- Ordering Unavailable Warning -->
@@ -191,14 +198,16 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
+import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 import ImageLightbox from '~/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
-import { DELIVERY_MINIMUM, useCartTotals } from '#engine/composables/useCartTotals'
+import { useCartTotals } from '#engine/composables/useCartTotals'
+import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useEventBus } from '@vueuse/core'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -217,12 +226,15 @@ const {t} = useI18n()
 const { trackEvent } = useTracking()
 const { removeWithUndo, editItem } = useCartItemActions()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
     subtotal,
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
+    amountToDeliveryMinimum,
+    switchToPickup,
     hasBreakdown,
     isMinimumReached,
 } = useCartTotals()
@@ -245,19 +257,15 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const toSelectionSignature = (item: CartItem): string =>
-    (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-
-const getItemKey = (item: CartItem) => `${item.product.id}-${toSelectionSignature(item) || (item.selectedChoice?.id ?? 'none')}`
+const getItemKey = (item: CartItem) => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
 
 const onCartItemAdded = (payload: { productId: string; choiceId?: string; selectionSignature?: string }) => {
-    const key = `${payload.productId}-${payload.selectionSignature ?? payload.choiceId ?? 'none'}`
+    const key = `${payload.productId}-${payload.selectionSignature || payload.choiceId || 'none'}`
     highlightedKey.value = key
     if (highlightTimeout) clearTimeout(highlightTimeout)
     highlightTimeout = setTimeout(() => {
@@ -328,6 +336,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
@@ -337,6 +346,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

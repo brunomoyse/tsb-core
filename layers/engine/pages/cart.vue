@@ -13,8 +13,8 @@
         <div v-if="cartStore.products.length > 0" class="px-4 pb-4 space-y-2">
             <!-- Swipeable cart item wrapper -->
             <div
-                v-for="item in cartStore.products"
-                :key="getItemKey(item)"
+                v-for="(item, lineIndex) in cartStore.products"
+                :key="lineKeys[lineIndex]"
                 class="relative overflow-hidden rounded-2xl"
             >
                 <!-- Delete action (revealed on swipe) -->
@@ -81,14 +81,16 @@
                             ({{ itemChoice(item) }})
                         </p>
 
+                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-400 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+
                         <!-- Row 4: Price + Quantity stepper + remove -->
                         <div class="flex items-center justify-between mt-1.5 gap-2">
                             <div class="min-w-0 flex flex-col leading-tight">
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
-                                    {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                                    {{ formatPrice(getItemLineTotal(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1" class="text-[11px] text-neutral-400 tabular-nums">
-                                    {{ item.quantity }} × {{ formatPrice(getItemUnitPrice(item)) }}
+                                <span v-if="item.quantity > 1 && getItemExactUnitPrice(item) !== null" class="text-[11px] text-neutral-400 tabular-nums">
+                                    {{ item.quantity }} × {{ formatPrice(getItemExactUnitPrice(item)!) }}
                                 </span>
                             </div>
 
@@ -98,7 +100,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.decreaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleDecrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -111,7 +115,9 @@
                                     <button
                                         type="button"
                                         :aria-label="$t('cart.increaseQty')"
-                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                                        class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                                        :disabled="!canChangeQuantity(item)"
+                                        :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
                                         @click="handleIncrementQuantity(item)"
                                     >
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -169,10 +175,21 @@
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                     <span class="tabular-nums">-{{ formatPrice(cartStore.couponDiscount) }}</span>
                 </div>
+                <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                    <span>{{ $t('cart.onlineFee') }}</span>
+                    <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                </div>
                 <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                     <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-                    <span class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span data-testid="cart-page-total" class="font-bold text-lg text-neutral-900 tabular-nums">{{ formatPrice(payableTotal) }}</span>
                 </div>
+            </div>
+            <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+            <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mt-3">
+                <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                    {{ $t('delivery.modal.switchToPickup') }}
+                </button>
             </div>
         </div>
 
@@ -184,7 +201,7 @@
             v-if="cartStore.products.length > 0"
             class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
-            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!isCheckoutAvailable">
+            <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -193,7 +210,7 @@
                     </svg>
                     {{ $t('cart.checkout') }}
                 </span>
-                <span class="font-bold text-base tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                <span class="font-bold text-base tabular-nums">{{ formatPrice(payableTotal) }}</span>
             </UiButton>
             <p v-if="!isCheckoutAvailable" class="mt-2 text-center text-sm text-amber-600">
                 {{ $t('cart.orderingUnavailable') }}
@@ -223,6 +240,7 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import type { CartItem, ProductChoice, ProductChoiceSelection } from '#engine/types'
+import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
@@ -250,19 +268,26 @@ const productImageBase = (slug?: string | null) => productImage.productImageBase
 const itemImageElements = ref<HTMLImageElement[]>([])
 const { config: restaurantConfig } = await useRestaurantConfig()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
+    getItemExactUnitPrice,
     subtotal,
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
     hasBreakdown,
+    isMinimumReached,
+    amountToDeliveryMinimum,
+    switchToPickup,
 } = useCartTotals()
 const isCheckoutAvailable = computed(() => {
     const orderingEnabled = restaurantConfig.value?.restaurantConfig?.orderingEnabled ?? false
     const isOrderingCurrentlyOpen = restaurantConfig.value?.restaurantConfig?.isOrderingCurrentlyOpen ?? false
     return orderingEnabled && isOrderingCurrentlyOpen
 })
+// The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.
+const canCheckout = computed(() => isCheckoutAvailable.value && isMinimumReached.value)
 
 watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
@@ -344,6 +369,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Light')
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
@@ -358,6 +384,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Light')
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
@@ -369,6 +396,7 @@ const handleRemoveItem = (cartItem: CartItem): void => {
     cartStore.removeFromCart(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     })
     hapticImpact('Medium')
     trackEvent('product_removed_from_cart', { product_id: cartItem.product.id })
@@ -379,13 +407,11 @@ const SWIPE_THRESHOLD = 72
 const swipeState = reactive<Record<string, { startX: number; currentX: number; swiping: boolean; open: boolean }>>({})
 const swipingItemKey = ref<string | null>(null)
 
-const getItemKey = (item: CartItem) => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const canChangeQuantity = (item: CartItem): boolean => canChangeLineQuantity(item.selectedChoices, item.quantity)
+
+const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const getSwipeOffset = (item: CartItem) => {
     const key = getItemKey(item)

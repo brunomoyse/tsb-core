@@ -19,6 +19,8 @@ export const SEL = {
   cartOptionPickup: '[data-testid="cart-option-pickup"]',
   cartTotal: '[data-testid="cart-total"]',
   cartMinimumWarning: '[data-testid="cart-minimum-warning"]',
+  cartSwitchToPickup: '[data-testid="cart-switch-to-pickup"]',
+  cartPageTotal: '[data-testid="cart-page-total"]',
   cartCheckoutLink: '[data-testid="cart-checkout-link"]',
   cartItem: '[data-testid="cart-item"]',
   cartItemQuantity: '[data-testid="cart-item-quantity"]',
@@ -53,6 +55,9 @@ export const SEL = {
 
   // Order completed
   orderCompletedTitle: '[data-testid="order-completed-title"]',
+  orderCompletedPaymentProblem: '[data-testid="order-completed-payment-problem"]',
+  orderCompletedVerifying: '[data-testid="order-completed-verifying"]',
+  orderCompletedAwaitingConfirmation: '[data-testid="order-completed-awaiting-confirmation"]',
 
   // Navigation
   categoryCard: '[data-testid="category-card"]',

@@ -79,6 +79,8 @@ export interface CartState {
     isCartVisible: boolean;
     orderExtra: { name: string; options?: string[]; }[] | null;
     orderNote: string | null;
+    /** The order the cart was just checked out for; only that order's confirmation may clear the cart. */
+    pendingOrderId: string | null;
     paymentOption: 'ONLINE' | 'CASH';
     preferredReadyTime: string | null;
     products: CartItem[];

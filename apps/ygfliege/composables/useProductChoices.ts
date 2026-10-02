@@ -1,5 +1,6 @@
 import type { Product, ProductChoice, ProductChoiceGroup, ProductChoiceSelection } from '#engine/types'
 import { type Ref, computed, ref, watch } from 'vue'
+import { priceCartLine } from '#engine/utils/pricing'
 import { useI18n } from 'vue-i18n'
 
 /**
@@ -92,16 +93,21 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         return product.choices.find((choice) => choice.id === selection.choiceId) ?? null
     })
 
-    /** Base price plus every selected choice's modifier × its quantity. */
-    const displayPrice = computed(() => {
-        if (!product) return '0'
-        const modifier = Object.entries(selectedChoiceQuantities.value).reduce((sum, [choiceId, selectedQty]) => {
-            const choice = product.choices?.find((c) => c.id === choiceId)
-            if (!choice || selectedQty <= 0) return sum
-            return sum + Number(choice.priceModifier) * selectedQty
-        }, 0)
-        return String(Number(product.price) + modifier)
+    /**
+     * Line pricing is shared with the cart and the backend (#engine/utils/pricing):
+     * base × qty + Σ(modifier × selection qty). Selection quantities are already
+     * line-wide, so the surcharge is not multiplied by the line quantity again.
+     */
+    const pricedLine = computed(() => {
+        if (!product) return { lineTotalCents: 0, unitPriceCents: 0 }
+        return priceCartLine({ quantity: quantity.value, product, selectedChoices: selectionList.value })
     })
+
+    /** What the line costs: the amount charged for the whole line, in euros. */
+    const lineTotal = computed(() => pricedLine.value.lineTotalCents / 100)
+
+    /** Headline price of one unit (lineTotal / qty, rounded to the cent). */
+    const displayPrice = computed(() => pricedLine.value.unitPriceCents / 100)
 
     const isGroupSatisfied = (group: ProductChoiceGroup) => {
         const selected = selectedCountIn(group)
@@ -216,6 +222,7 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
         selectionList,
         selectedChoice,
         displayPrice,
+        lineTotal,
         isGroupSatisfied,
         allGroupsSatisfied,
         groupHint,

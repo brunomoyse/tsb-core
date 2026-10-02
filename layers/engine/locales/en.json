@@ -309,7 +309,9 @@
     "eachSuffix": "each",
     "deliveryTbd": "Delivery calculated at checkout",
     "editItem": "Edit",
-    "pickupDiscountShort": "-10%"
+    "pickupDiscountShort": "-10%",
+    "onlineFee": "Online payment fee",
+    "addForDelivery": "Add {amount} more to qualify for delivery."
   },
   "checkout": {
     "title": "Checkout",
@@ -433,7 +435,10 @@
       "abandonedTitle": "Payment not completed",
       "abandonedBody": "You left before the payment was completed, so your order wasn’t placed. Your cart is saved. You can try again.",
       "tryAgain": "Try again",
-      "verifying": "Verifying your payment…"
+      "verifying": "Verifying your payment…",
+      "awaitingConfirmationTitle": "Confirming your payment",
+      "awaitingConfirmationBody": "We haven’t received the payment confirmation yet. This page will update automatically. If you were charged, don’t pay again: contact us at {phone}.",
+      "callUs": "Call the restaurant"
     }
   },
   "error": {

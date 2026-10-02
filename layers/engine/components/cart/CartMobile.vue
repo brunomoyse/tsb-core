@@ -42,8 +42,8 @@
             <!-- ITEMS LIST -->
             <ul class="flex-1 overflow-y-auto p-4 space-y-3">
                 <li
-                    v-for="item in cartStore.products"
-                    :key="getItemKey(item)"
+                    v-for="(item, lineIndex) in cartStore.products"
+                    :key="lineKeys[lineIndex]"
                     data-testid="cart-item"
                     class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
                 >
@@ -91,7 +91,7 @@
                           {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
                         </span>
                         <span class="text-neutral-800 font-medium text-xs mt-1">
-                            {{ formatPrice(getItemUnitPrice(item) * item.quantity) }}
+                            {{ formatPrice(getItemLineTotal(item)) }}
                         </span>
                     </div>
 
@@ -160,10 +160,21 @@
                         <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
                         <span class="tabular-nums">-{{ formatPrice(couponDiscount) }}</span>
                     </div>
+                    <div v-if="onlineFee > 0" class="flex justify-between text-neutral-500">
+                        <span>{{ $t('cart.onlineFee') }}</span>
+                        <span class="tabular-nums">{{ formatPrice(onlineFee) }}</span>
+                    </div>
                     <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
                         <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
-                        <span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                        <span data-testid="cart-total" class="text-lg font-semibold text-neutral-900 tabular-nums">{{ formatPrice(payableTotal) }}</span>
                     </div>
+                </div>
+                <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+                <div v-if="!isMinimumReached" data-testid="cart-minimum-warning" class="text-sm text-red-600 text-center mb-3">
+                    <p>{{ $t('cart.addForDelivery', { amount: formatPrice(amountToDeliveryMinimum) }) }}</p>
+                    <button type="button" data-testid="cart-switch-to-pickup" class="mt-1 min-h-11 px-3 font-medium underline hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 rounded-lg" @click="switchToPickup">
+                        {{ $t('delivery.modal.switchToPickup') }}
+                    </button>
                 </div>
                 <div v-if="!isOrderingAvailable" class="text-sm text-amber-600 text-center mb-2">
                     {{ $t('cart.orderingUnavailable') }}
@@ -172,7 +183,7 @@
                     to="/checkout"
                     size="lg"
                     block
-                    :disabled="!isOrderingAvailable"
+                    :disabled="!isOrderingAvailable || !isMinimumReached"
                     @click="cartStore.toggleCartVisibility"
                 >
                     {{ $t('cart.checkout') }}
@@ -187,10 +198,11 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
+import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('~/components/ImageLightbox.vue'))
+import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
 import { formatPrice } from '#engine/lib/price'
 import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
@@ -209,13 +221,17 @@ const { impact } = useHaptics()
 const { trackEvent } = useTracking();
 const { removeWithUndo, editItem } = useCartItemActions()
 const {
-    getItemUnitPrice,
+    getItemLineTotal,
     subtotal,
     pickupDiscount,
     deliveryFee,
     couponDiscount,
-    displayTotal,
+    onlineFee,
+    payableTotal,
     hasBreakdown,
+    isMinimumReached,
+    amountToDeliveryMinimum,
+    switchToPickup,
 } = useCartTotals()
 
 const lightboxRef = ref<{ open: () => void } | null>(null)
@@ -239,13 +255,9 @@ watch(itemImageElements, () => {
     itemImageElements.value.forEach((img) => productImage.ensureProductImageFallback(img))
 }, { flush: 'post' })
 
-const getItemKey = (item: CartItem): string => {
-    const signature = (item.selectedChoices ?? [])
-        .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-        .sort()
-        .join('|')
-    return `${item.product.id}-${signature || (item.selectedChoice?.id ?? 'none')}`
-}
+const getItemKey = (item: CartItem): string => cartLineKey(item)
+// Unique even if an old persisted cart still holds two lines that share a key.
+const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
     (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
@@ -287,6 +299,7 @@ const handleIncrementQuantity = (cartItem: CartItem): void => {
     cartStore.incrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_incremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };
@@ -296,6 +309,7 @@ const handleDecrementQuantity = (cartItem: CartItem): void => {
     cartStore.decrementQuantity(cartItem.product, {
         choice: cartItem.selectedChoice,
         selections: cartItem.selectedChoices,
+        quantity: cartItem.quantity,
     });
     trackEvent('product_quantity_decremented', { product_id: cartItem.product.id, new_quantity: cartItem.quantity })
 };

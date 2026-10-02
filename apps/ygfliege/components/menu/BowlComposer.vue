@@ -119,6 +119,7 @@ import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
+import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
@@ -204,13 +205,12 @@ const {
     selectionList,
     selectedChoice,
     displayPrice,
+    lineTotal,
     isGroupSatisfied,
     allGroupsSatisfied,
     groupHint,
     blockingGroup,
 } = choicesApi
-
-const lineTotal = computed(() => String(Number(displayPrice.value) * quantity.value))
 
 const canAddToCart = computed(() => {
     if (orderingDisabled) return false
@@ -254,9 +254,7 @@ const addToCart = () => {
         productName: p.name,
         productId: p.id,
         choiceId: selectedChoice.value?.id,
-        selectionSignature: selectionList.value
-            .map((selection) => `${selection.groupId}:${selection.choiceId}:${selection.quantity}`)
-            .join('|'),
+        selectionSignature: lineSignature(selectionList.value, quantity.value),
     })
 
     emit('close')

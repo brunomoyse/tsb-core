@@ -230,6 +230,47 @@ test.describe('Cart operations', () => {
     await expect(checkoutLink).toHaveAttribute('aria-disabled', 'true')
   })
 
+  test('Switching to pickup from the minimum notice clears it', async ({ page }, testInfo) => {
+    test.skip(isMobile(testInfo), 'asserted on the SideCart; CartMobile and /cart render the same notice')
+
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await dismissCookieConsent(page)
+    await page.locator(SEL.productCard).first().waitFor()
+
+    const added = await addFirstAvailableProduct(page)
+    test.skip(!added, 'No available products')
+
+    const warning = page.locator(SEL.cartMinimumWarning)
+    test.skip(!(await warning.isVisible({ timeout: 2_000 }).catch(() => false)), 'First product already meets minimum')
+
+    await page.locator(SEL.cartSwitchToPickup).click()
+    await expect(warning).toBeHidden()
+    await expect(page.locator(SEL.cartCheckoutLink)).toHaveAttribute('aria-disabled', 'false')
+  })
+
+  test('SideCart and /cart show the same payable total', async ({ page }, testInfo) => {
+    test.skip(isMobile(testInfo), 'SideCart is desktop only; CartMobile shares the same computed total')
+
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await dismissCookieConsent(page)
+    await page.locator(SEL.productCard).first().waitFor()
+
+    const added = await addFirstAvailableProduct(page)
+    test.skip(!added, 'No available products')
+
+    // Pickup avoids needing an address; the default payment option is ONLINE, so the 0,30 € fee is part of both.
+    await page.locator(SEL.cartOptionPickup).click()
+    const sideTotal = ((await page.locator(SEL.cartTotal).textContent()) ?? '').trim()
+    expect(sideTotal).toMatch(/\d/u)
+
+    // The cart is persisted in localStorage, so the dedicated page sees the same basket.
+    await page.goto('/fr/cart')
+    await waitForNuxtHydration(page)
+    await expect(page.locator(SEL.cartPageTotal)).toHaveText(sideTotal)
+  })
+
   test('Empty cart page shows empty state and no checkout link', async ({ page }) => {
     await page.goto('/fr/cart')
     await waitForNuxtHydration(page)

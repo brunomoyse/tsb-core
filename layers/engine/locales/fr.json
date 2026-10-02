@@ -309,7 +309,9 @@
     "eachSuffix": "pièce",
     "deliveryTbd": "Livraison calculée au paiement",
     "editItem": "Modifier",
-    "pickupDiscountShort": "-10 %"
+    "pickupDiscountShort": "-10 %",
+    "onlineFee": "Frais de paiement en ligne",
+    "addForDelivery": "Ajoutez encore {amount} pour la livraison."
   },
   "checkout": {
     "title": "Commande",
@@ -433,7 +435,10 @@
       "abandonedTitle": "Paiement non finalisé",
       "abandonedBody": "Vous avez quitté avant la fin du paiement, votre commande n’a donc pas été passée. Votre panier est conservé. Vous pouvez réessayer.",
       "tryAgain": "Réessayer",
-      "verifying": "Vérification de votre paiement…"
+      "verifying": "Vérification de votre paiement…",
+      "awaitingConfirmationTitle": "Paiement en cours de confirmation",
+      "awaitingConfirmationBody": "Nous n’avons pas encore reçu la confirmation de votre paiement. Cette page se met à jour automatiquement. Si vous avez été débité, ne payez pas une seconde fois : contactez-nous au {phone}.",
+      "callUs": "Appeler le restaurant"
     }
   },
   "error": {

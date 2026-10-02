@@ -21,7 +21,7 @@
                     </span>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <span class="font-semibold tabular-nums">{{ formatPrice(displayTotal) }}</span>
+                    <span class="font-semibold tabular-nums">{{ formatPrice(payableTotal) }}</span>
                     <svg class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                         <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -42,7 +42,7 @@ import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useEventBus } from '@vueuse/core'
 
 const cartStore = useCartStore()
-const { displayTotal } = useCartTotals()
+const { payableTotal } = useCartTotals()
 
 const isPulsing = ref(false)
 let pulseTimeout: NodeJS.Timeout | null = null
