@@ -126,7 +126,7 @@
     }
 
     .stepper-btn {
-        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 transition-all duration-300 ease-out;
+        @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 transition-all duration-300 ease-out;
     }
 
     .stepper-btn:not(:disabled):hover {
@@ -142,7 +142,7 @@
     }
 
     .stepper--sm .stepper-btn {
-        @apply h-9 w-9 rounded-lg;
+        @apply h-11 w-11 rounded-lg;
     }
 }
 

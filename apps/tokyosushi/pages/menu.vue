@@ -69,7 +69,7 @@
                             type="button"
                             @click="toggleFilter('halal')"
                             :aria-pressed="activeFilters.has('halal')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('halal')
                                 ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200'"
@@ -87,7 +87,7 @@
                             type="button"
                             @click="toggleFilter('vegetarian')"
                             :aria-pressed="activeFilters.has('vegetarian')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('vegetarian')
                                 ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200'"
@@ -105,7 +105,7 @@
                             type="button"
                             @click="toggleFilter('spicy')"
                             :aria-pressed="activeFilters.has('spicy')"
-                            class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :class="activeFilters.has('spicy')
                                 ? 'bg-red-500 text-white shadow-sm shadow-red-200'
                                 : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-800 hover:border-red-200'"
@@ -173,18 +173,7 @@
             </section>
 
             <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-            <div v-if="showAllergenNotice" class="mx-4 mb-2 h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
-                <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
-                <span class="flex-1 truncate">
-                    {{ $t('menu.allergenNoticeShort') }}
-                    <a :href="phoneHref" class="underline font-medium text-amber-900">{{ phoneLabel }}</a>
-                </span>
-                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2" :aria-label="$t('common.close')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
+            <MenuAllergenNotice :show="showAllergenNotice" :phone-href="phoneHref" :phone-label="phoneLabel" @dismiss="dismissAllergenNotice" />
 
             <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
             <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
@@ -308,6 +297,7 @@ import ProductCard from '~/components/menu/ProductCard.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
 import ProductModal from '~/components/menu/ProductModal.vue'
+import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import SideCart from '#engine/components/cart/SideCart.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'

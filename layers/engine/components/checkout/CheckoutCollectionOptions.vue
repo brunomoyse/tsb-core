@@ -109,7 +109,7 @@
                     v-model="preferredReadyTime"
                     id="checkout-preferred-time"
                     data-testid="checkout-preferred-time"
-                    class="field mt-1 block text-base sm:text-sm"
+                    class="field mt-1 block min-h-11 text-base sm:text-sm"
                 >
                     <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
                     <option

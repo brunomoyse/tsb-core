@@ -66,9 +66,9 @@
                             v-show="searchValue.length > 0"
                             @click.stop="clearSearch"
                             :aria-label="$t('common.clear')"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-ygf-black transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-600 hover:text-ygf-black transition-colors rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -104,20 +104,7 @@
             </section>
 
             <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-            <div v-if="showAllergenNotice" class="max-w-7xl mx-auto mb-2 px-4">
-            <div class="h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]">
-                <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
-                <span class="flex-1 truncate">
-                    {{ $t('menu.allergenNoticeShort') }}
-                    <a :href="telHref(brand.phone)" class="underline font-medium text-amber-900">{{ brand.phone }}</a>
-                </span>
-                <button type="button" @click="dismissAllergenNotice" class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2" :aria-label="$t('common.close')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
-            </div>
+            <MenuAllergenNotice contained :show="showAllergenNotice" :phone-href="telHref(brand.phone)" :phone-label="brand.phone" @dismiss="dismissAllergenNotice" />
 
             <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
             <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
@@ -298,6 +285,7 @@ import { baseCategories as baseCategoriesOf, displayedCategories as displayedCat
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
+import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 

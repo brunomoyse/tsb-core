@@ -115,7 +115,7 @@
                         </UiButton>
                         <button type="button" data-testid="cart-item-remove" data-cart-remove
                                 :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                class="min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 @click="removeWithUndo(item)">
                             {{ $t('cart.removeItem') }}
                         </button>

@@ -38,19 +38,19 @@
                 <div class="max-w-7xl mx-auto px-6 py-10 sm:py-12">
                     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
                         <div class="space-y-3">
-                            <img src="/images/logos/logo-white.svg" :alt="`${brand.name} logo`" width="120" height="40" class="h-10 w-auto" loading="lazy" />
+                            <img src="/images/logos/logo-white.svg" :alt="$t('common.logoAlt', { name: brand.name })" width="120" height="40" class="h-10 w-auto" loading="lazy" />
                             <address class="not-italic text-sm leading-relaxed">
                                 {{ brand.address.street }}<br>
                                 {{ brand.address.postal }} {{ brand.address.city }}<br>
-                                <a :href="telHref(brand.phone)" class="hover:text-white transition-colors">{{ brand.phone }}</a>
+                                <a :href="telHref(brand.phone)" class="inline-flex min-h-11 items-center hover:text-white transition-colors">{{ brand.phone }}</a>
                             </address>
                         </div>
 
-                        <nav :aria-label="$t('nav.secondary')" class="flex flex-col gap-2 text-sm">
-                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/concept">{{ $t('mkt.nav.concept') }}</NuxtLinkLocale>
-                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/about">{{ $t('mkt.nav.about') }}</NuxtLinkLocale>
-                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/terms">{{ $t('footer.terms') }}</NuxtLinkLocale>
-                            <NuxtLinkLocale class="hover:text-white transition-colors" to="/privacy">{{ $t('footer.privacy') }}</NuxtLinkLocale>
+                        <nav :aria-label="$t('nav.secondary')" class="flex flex-col gap-0 text-sm">
+                            <NuxtLinkLocale class="inline-flex min-h-11 items-center hover:text-white transition-colors" to="/concept">{{ $t('mkt.nav.concept') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="inline-flex min-h-11 items-center hover:text-white transition-colors" to="/about">{{ $t('mkt.nav.about') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="inline-flex min-h-11 items-center hover:text-white transition-colors" to="/terms">{{ $t('footer.terms') }}</NuxtLinkLocale>
+                            <NuxtLinkLocale class="inline-flex min-h-11 items-center hover:text-white transition-colors" to="/privacy">{{ $t('footer.privacy') }}</NuxtLinkLocale>
                         </nav>
 
                         <!-- Branded QR tiles from the YGF kit, labeled like the
@@ -77,7 +77,7 @@
 
                     <div class="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-white/50">
                         <p translate="no">{{ brand.name }}</p>
-                        <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">nuagemagique.dev</a>
+                        <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center hover:text-white/80 transition-colors">nuagemagique.dev</a>
                     </div>
                 </div>
             </footer>

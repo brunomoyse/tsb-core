@@ -3,6 +3,7 @@ import { useGqlSubscription, useRoute } from '#imports'
 import type { Order } from '#engine/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useI18n } from 'vue-i18n'
 
 /*
@@ -179,9 +180,8 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
         expandedOrders.value.add(id)
         if (!import.meta.client) return
         await nextTick()
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
         document.getElementById(`order-card-${id}`)?.scrollIntoView({
-            behavior: reduceMotion ? 'auto' : 'smooth',
+            behavior: scrollBehavior(),
             block: 'center',
         })
     }, { immediate: true })
