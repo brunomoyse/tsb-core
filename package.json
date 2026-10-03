@@ -71,8 +71,11 @@
   "devEngines": {
     "packageManager": {
       "name": "npm",
-      "version": "11.19.0",
-      "onFail": "download"
+      "version": "^12.2.0",
+      "onFail": "error"
     }
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }
