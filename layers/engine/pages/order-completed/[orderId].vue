@@ -77,10 +77,11 @@
         <div
             v-else-if="resolvingPayment"
             data-testid="order-completed-verifying"
+            role="status"
             class="flex flex-col items-center justify-center w-full max-w-md mt-16 gap-3"
         >
             <div class="w-8 h-8 border-2 border-neutral-300 border-t-primary-400 rounded-full animate-spin" />
-            <p class="text-sm text-neutral-600">{{ order ? $t('orderCompleted.payment.verifying', 'Verifying your payment…') : $t('orderCompleted.loading') }}</p>
+            <h1 class="text-sm text-neutral-600">{{ order ? $t('orderCompleted.payment.verifying', 'Verifying your payment…') : $t('orderCompleted.loading') }}</h1>
         </div>
 
         <template v-else>

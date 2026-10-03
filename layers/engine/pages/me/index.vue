@@ -345,7 +345,7 @@ const updateNotificationPref = async (
             <!-- Profile card — avatar + name + edit -->
             <div class="bento-profile bento-cell" style="--delay: 1">
                 <div class="bg-tsb-two rounded-2xl p-6 sm:p-7 h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 rounded-full bg-white ring-1 ring-primary-200 flex items-center justify-center mb-4">
                         <span class="text-xl font-bold text-primary-700">{{ initials }}</span>
                     </div>
                     <h2 class="font-semibold text-neutral-900 text-base">{{ fullName }}</h2>
