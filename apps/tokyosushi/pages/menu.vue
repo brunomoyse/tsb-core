@@ -277,13 +277,13 @@
 
         <ClientOnly>
             <Transition name="modal-backdrop">
-                <div v-if="route.query.product"
+                <div v-if="routedProductId"
                      class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
                      @click.self="closeModal">
                     <Transition name="modal-panel" appear>
                         <ProductModal
-                            :key="`${route.query.product}-${modalAttempt}`"
-                            :product="route.query.product as string"
+                            :key="`${routedProductId}-${modalAttempt}`"
+                            :product="routedProductId"
                             :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
                             @retry="modalAttempt++"
@@ -324,10 +324,13 @@ import { useTracking } from '#engine/composables/useTracking'
 import { buildMenuSchema } from '#engine/utils/menuSchema'
 import { inLanguageTag } from '#engine/utils/seoDefaults'
 import { searchFromQuery } from '#engine/utils/menuSearch'
+import { baseCategories as baseCategoriesOf, displayedCategories as displayedCategoriesOf, flattenProducts, searchProducts } from '#engine/utils/menuCatalog'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 
 const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
+// The product open in the modal: only a plain `?product=<id>` (a repeated or empty parameter opens nothing).
+const routedProductId = computed(() => (typeof route.query.product === 'string' && route.query.product ? route.query.product : null))
 const router = useRouter()
 const { trackEvent } = useTracking()
 const { phoneHref, phoneLabel } = useBrandPhone()
@@ -369,7 +372,7 @@ const closeModal = () => {
 }
 
 // Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
-useBodyScrollLock(() => Boolean(route.query.product))
+useBodyScrollLock(() => Boolean(routedProductId.value))
 
 /**
  * GraphQL Query
@@ -502,64 +505,21 @@ const toggleFilter = (filter: string) => {
 /**
  * Computed: Categories & Products
  */
-// Base categories with live updates merged and only visible products, sorted
-const baseCategories = computed(() =>
-    (dataCategories.value?.productCategories ?? [])
-        .map(cat => ({
-            ...cat,
-            products: cat.products
-                .map(p => {
-                    const live = liveProductData.value[p.id]
-                    return live ? { ...p, ...live } as Product : p
-                })
-                .filter(p => p.isVisible)
-        }))
-        .filter(cat => cat.products.length)
-        .toSorted((a, b) => a.order - b.order)
-)
+// The menu's catalogue rules are pure (engine, utils/menuCatalog.ts): live updates merged, only visible products, the search, the dietary filters.
+const baseCategories = computed(() => baseCategoriesOf(dataCategories.value?.productCategories ?? [], liveProductData.value))
 
 // All products flattened for search
-const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =>
-        cat.products.map(p => ({ ...p, category: cat }))
-    )
-)
+const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.value))
 
 // Filtered list based on search query (all words must match)
-const filteredProducts = computed(() => {
-    const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q) return allProducts.value
-    const words = q.split(/\s+/u)
-    return allProducts.value.filter(p => {
-        const haystack = [p.name, p.code, p.category.name]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase()
-        return words.every(w => haystack.includes(w))
-    })
-})
+const filteredProducts = computed(() => searchProducts(allProducts.value, debouncedSearchValue.value))
 
-// Apply dietary filters (AND logic: product must match ALL active filters)
-const dietaryFiltered = computed(() => {
-    const filters = activeFilters.value
-    if (filters.size === 0) return filteredProducts.value
-    return filteredProducts.value.filter(p => {
-        if (filters.has('halal') && !p.isHalal) return false
-        if (filters.has('vegetarian') && !p.isVegetarian) return false
-        if (filters.has('spicy') && !p.isSpicy) return false
-        return true
-    })
-})
-
-// Categories displayed, grouping filtered products
-const displayedCategories = computed<ProductCategory[]>(() => {
-    const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q && activeFilters.value.size === 0) return baseCategories.value
-    const grouped = Map.groupBy(dietaryFiltered.value, prod => prod.category.id)
-    return Array.from(grouped.entries()).map(([, products]) => ({
-        ...products[0]!.category,
-        products,
-    })).toSorted((a, b) => a.order - b.order)
-})
+// Categories displayed: the whole menu, or the products matching the search and the dietary filters (AND logic) grouped back
+const displayedCategories = computed<ProductCategory[]>(() => displayedCategoriesOf(baseCategories.value, allProducts.value, {
+    query: debouncedSearchValue.value,
+    filters: activeFilters.value,
+    excludeComposer: false,
+}))
 
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))

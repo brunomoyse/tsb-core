@@ -237,7 +237,7 @@
 
         <ClientOnly>
             <Transition name="modal-backdrop">
-                <div v-if="route.query.product"
+                <div v-if="routedProductId"
                      class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center sm:p-4 backdrop-blur-sm"
                      @click.self="closeModal">
                     <Transition name="modal-panel" appear>
@@ -245,16 +245,16 @@
                              fixed set stays on the ordinary product modal. -->
                         <BowlComposer
                             v-if="routedProductIsComposer"
-                            :key="`${route.query.product}-${modalAttempt}`"
-                            :product="route.query.product as string"
+                            :key="`${routedProductId}-${modalAttempt}`"
+                            :product="routedProductId"
                             :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
                             @retry="modalAttempt++"
                         />
                         <ProductModal
                             v-else
-                            :key="`${route.query.product}-${modalAttempt}`"
-                            :product="route.query.product as string"
+                            :key="`${routedProductId}-${modalAttempt}`"
+                            :product="routedProductId"
                             :ordering-disabled="!isCartAddAvailable"
                             @close="closeModal"
                             @retry="modalAttempt++"
@@ -294,12 +294,15 @@ import { useTracking } from '#engine/composables/useTracking'
 import { buildMenuSchema } from '#engine/utils/menuSchema'
 import { inLanguageTag } from '#engine/utils/seoDefaults'
 import { searchFromQuery } from '#engine/utils/menuSearch'
+import { baseCategories as baseCategoriesOf, displayedCategories as displayedCategoriesOf, flattenProducts, isComposerProduct, searchProducts } from '#engine/utils/menuCatalog'
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
 
 const { brand } = useAppConfig()
 const route = useRoute()
+// The product open in the modal: only a plain `?product=<id>` (a repeated or empty parameter opens nothing).
+const routedProductId = computed(() => (typeof route.query.product === 'string' && route.query.product ? route.query.product : null))
 const router = useRouter()
 const { trackEvent } = useTracking()
 const showAllergenNotice = ref(true)
@@ -340,7 +343,7 @@ const closeModal = () => {
 }
 
 // Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
-useBodyScrollLock(() => Boolean(route.query.product))
+useBodyScrollLock(() => Boolean(routedProductId.value))
 
 /**
  * GraphQL Query
@@ -447,77 +450,33 @@ const clearSearch = () => {
 /**
  * Computed: Categories & Products
  */
-// Base categories with live updates merged and only visible products, sorted
-const baseCategories = computed(() =>
-    (dataCategories.value?.productCategories ?? [])
-        .map(cat => ({
-            ...cat,
-            products: cat.products
-                .map(p => {
-                    const live = liveProductData.value[p.id]
-                    return live ? { ...p, ...live } as Product : p
-                })
-                .filter(p => p.isVisible)
-        }))
-        .filter(cat => cat.products.length)
-        .toSorted((a, b) => a.order - b.order)
-)
+// The menu's catalogue rules are pure (engine, utils/menuCatalog.ts): live updates merged, only visible products, the search.
+const baseCategories = computed(() => baseCategoriesOf(dataCategories.value?.productCategories ?? [], liveProductData.value))
 
 // All products flattened for search
-const allProducts = computed<Product[]>(() => baseCategories.value.flatMap(cat =>
-        cat.products.map(p => ({ ...p, category: cat }))
-    )
-)
+const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.value))
 
-/**
- * The build-your-own-bowl product, detected by shape rather than by id: any
- * product with a choice group allowing more than one pick is a composer. The
- * category query already returns minSelections/maxSelections, so this needs no
- * extra round trip, and adding a second composer to the menu needs no code
- * change here.
- */
-const isComposerProduct = (p: Product) => p.choiceGroups?.some(group => group.maxSelections > 1) ?? false
-
+// The build-your-own-bowl product is detected by shape (`isComposerProduct`), so a second composer on the menu needs no code change here.
 const composerProduct = computed(() => allProducts.value.find(isComposerProduct) ?? null)
 
 /** Whether the product currently open in the route query is a composer. */
 const routedProductIsComposer = computed(() => {
-    const id = route.query.product
-    if (typeof id !== 'string') return false
+    const id = routedProductId.value
+    if (id === null) return false
     const p = allProducts.value.find(product => product.id === id)
     return p ? isComposerProduct(p) : false
 })
 
 // Filtered list based on search query (all words must match)
-const filteredProducts = computed(() => {
-    const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q) return allProducts.value
-    const words = q.split(/\s+/u)
-    return allProducts.value.filter(p => {
-        const haystack = [p.name, p.code, p.category.name]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase()
-        return words.every(w => haystack.includes(w))
-    })
-})
+const filteredProducts = computed(() => searchProducts(allProducts.value, debouncedSearchValue.value))
 
-// Categories displayed, grouping search-filtered products. Composer products
-// are excluded from the grid: the hero banner is their single entry point, and
+// Categories displayed. Composer products are excluded from the grid: the hero banner is their single entry point, and
 // a card would show the bare base price (2,50 €) as if it were the full price.
-const displayedCategories = computed<ProductCategory[]>(() => {
-    const q = debouncedSearchValue.value.trim().toLowerCase()
-    if (!q) {
-        return baseCategories.value
-            .map(cat => ({ ...cat, products: cat.products.filter(p => !isComposerProduct(p)) }))
-            .filter(cat => cat.products.length)
-    }
-    const grouped = Map.groupBy(filteredProducts.value.filter(p => !isComposerProduct(p)), prod => prod.category.id)
-    return Array.from(grouped.entries()).map(([, products]) => ({
-        ...products[0]!.category,
-        products,
-    })).toSorted((a, b) => a.order - b.order)
-})
+const displayedCategories = computed<ProductCategory[]>(() => displayedCategoriesOf(baseCategories.value, allProducts.value, {
+    query: debouncedSearchValue.value,
+    filters: new Set<string>(),
+    excludeComposer: true,
+}))
 
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))
