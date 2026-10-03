@@ -131,7 +131,7 @@
       </div>
 
       <!-- Product Details (fixed size: does not grow) -->
-      <div class="shrink-0 px-3 pb-3 pt-1">
+      <div class="card-buy shrink-0 px-3 pb-3 pt-1">
         <!-- Text block: fixed height so price always aligns across cards.
                      The category name that used to sit above the title is gone —
                      these cards only ever render inside their own category
@@ -164,14 +164,11 @@
           </span>
         </div>
 
-        <!-- Price and cart controls. The stepper stays visible once the
+        <!-- Price and cart controls: price above the control until the card is wide enough for both on one row (a container query on
+             the card, see .card-buy-row), so a card in the cart keeps the same rows as its neighbours instead of wrapping on content width. The stepper stays visible once the
                      item is in the cart: the inherited control collapsed itself
                      after 4s, which hid the only way to decrement. -->
-        <div
-          v-if="product.isAvailable"
-          ref="controlsRef"
-          class="flex flex-wrap justify-between items-center gap-x-1 gap-y-1 sm:gap-2 mt-2"
-        >
+        <div v-if="product.isAvailable" ref="controlsRef" class="card-buy-row">
           <span class="text-ygf-black font-bold text-base tabular-nums">
             {{ formatPrice(product.price) }}
           </span>
@@ -191,7 +188,7 @@
 
           <!-- A product with choices has no "plain" line to step: "+" opens the composer so the
                          new line gets its own selections, and "−" is left out (lines are edited in the cart). -->
-          <div v-else class="stepper stepper--sm ml-auto">
+          <div v-else class="stepper stepper--sm">
             <button
               v-if="!hasChoices"
               type="button"

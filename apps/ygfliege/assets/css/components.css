@@ -308,6 +308,7 @@
 
   .stepper-btn {
     display: inline-flex;
+    flex: none; /* a narrow row must not squeeze the 44px target */
     align-items: center;
     justify-content: center;
     width: 2.75rem;
@@ -359,9 +360,58 @@
   }
 
   .stepper--sm .stepper-value {
-    min-width: 1.375rem;
+    min-width: 1.25rem;
     font-size: 0.875rem;
-    padding: 0 0.25rem;
+    padding: 0;
+  }
+
+  /* Product card: price and add button / stepper. The card is the container, so the layout follows ITS width, not what
+       the content happens to need: narrow (a phone's two columns) = price row, then the control row below (the stepper
+       spans it); wide enough for the price beside the widest stepper = one row. A card in the cart then has the same
+       rows as its neighbours. */
+  .card-buy {
+    container-type: inline-size;
+  }
+
+  .card-buy-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .card-buy-row > .stepper {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+
+  .card-buy-row > .stepper .stepper-value {
+    flex: 1;
+  }
+
+  .card-buy-row > button {
+    align-self: flex-end;
+  }
+
+  @container (min-width: 14rem) {
+    .card-buy-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card-buy-row > .stepper {
+      align-self: auto;
+    }
+
+    .card-buy-row > .stepper .stepper-value {
+      flex: none;
+    }
+
+    .card-buy-row > button {
+      align-self: auto;
+    }
   }
 
   @media (min-width: 640px) {

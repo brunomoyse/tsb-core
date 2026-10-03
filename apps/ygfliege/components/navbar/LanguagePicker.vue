@@ -52,6 +52,8 @@
 </template>
 
 <script lang="ts" setup>
+import { nextTick, watch } from 'vue'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useLanguagePicker } from '#engine/composables/useLanguagePicker'
 
 /** `label` names the button ("Select language"); the icon beside it is decorative. */
@@ -61,4 +63,22 @@ defineProps<{
 }>()
 
 const { open, rootRef, buttonRef, panelId, languages, toggle, choose } = useLanguagePicker()
+
+/* In the phone menu the list opens below the button, which can sit near the bottom of the scrolling menu panel: scroll that
+   panel (never the page, whose sticky header and scroll-padding would move it) just enough to show the whole list. */
+watch(open, async (isOpen) => {
+  if (!isOpen) return
+  await nextTick()
+  const panel = document.getElementById(panelId)
+  let scroller = panel?.parentElement ?? null
+  while (
+    scroller &&
+    scroller !== document.body &&
+    !/(?:auto|scroll)/u.test(getComputedStyle(scroller).overflowY)
+  )
+    scroller = scroller.parentElement
+  if (!panel || !scroller || scroller === document.body) return
+  const hidden = panel.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom
+  if (hidden > 0) scroller.scrollBy({ top: hidden + 16, behavior: scrollBehavior() })
+})
 </script>
