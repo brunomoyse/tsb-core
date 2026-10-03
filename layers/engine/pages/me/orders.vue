@@ -257,7 +257,7 @@ const getStatusColorClass = (status: string) => {
               </span>
             </div>
             <p class="mt-0.5 text-xs text-neutral-600 tabular-nums">
-              {{ formatDateTime(order.createdAt, dateLocale.value) }}
+              {{ formatDateTime(order.createdAt, dateLocale) }}
             </p>
           </div>
           <div class="flex items-center gap-2 ml-3 shrink-0">

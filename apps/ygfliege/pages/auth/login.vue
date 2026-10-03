@@ -65,7 +65,7 @@ const languages = [
   { code: 'en', label: 'EN' },
   { code: 'nl', label: 'NL' },
   { code: 'zh', label: '中文' },
-]
+] as const
 
 const sessionExpired = ref(false)
 const authRequestId = computed(

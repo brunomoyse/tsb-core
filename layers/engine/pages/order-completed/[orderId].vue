@@ -70,11 +70,11 @@
         {{ $t('orderCompleted.payment.awaitingConfirmationTitle') }}
       </h1>
       <p class="mt-3 text-neutral-600 text-sm sm:text-base text-center max-w-sm">
-        {{ $t('orderCompleted.payment.awaitingConfirmationBody', { phone: brand.phone }) }}
+        {{ $t('orderCompleted.payment.awaitingConfirmationBody', { phone: phoneLabel }) }}
       </p>
       <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
         <a
-          :href="telHref(brand.phone)"
+          :href="phoneHref"
           class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           {{ $t('orderCompleted.payment.callUs') }}
@@ -336,7 +336,7 @@ import { formatDate, formatTime, isSameBrusselsDay } from '#engine/utils/datetim
 import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import OrderStatusTimeline from '#engine/components/order/OrderStatusTimeline.vue'
 
-import { useNow } from '@vueuse/core'
+import { useIntervalFn, useNow } from '@vueuse/core'
 import { useOrderCompleted } from '#engine/composables/useOrderCompleted'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -573,7 +573,8 @@ watch(
 /* Reactive "now" ticks every 30s so the unconfirmed-order banner appears
    without a hard reload. The subscription updates `order.status` separately
    — once it leaves PENDING the computed flips back to false. */
-const now = useNow({ interval: 30_000 })
+// VueUse 15 dropped `interval` (it defaulted to a per-frame tick); pass the 30s scheduler.
+const now = useNow({ scheduler: (update) => useIntervalFn(update, 30_000) })
 const pendingTooLong = computed(() => {
   const o = order.value
   if (!o || o.status !== 'PENDING' || !o.createdAt) return false

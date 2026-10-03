@@ -285,7 +285,6 @@ import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
-import { DELIVERY_MINIMUM } from '#engine/lib/fees'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
@@ -387,7 +386,7 @@ onUnmounted(() => {
 })
 
 // Delivery options setup. A takeaway-only brand (brand.deliveryEnabled false)
-// keeps delivery visible but disabled ("available soon").
+// Keeps delivery visible but disabled ("available soon").
 const collectionOptions = [
   {
     value: 'DELIVERY',

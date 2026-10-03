@@ -3,11 +3,11 @@
     <Html :dir="head.htmlAttrs?.dir ?? 'ltr'" :lang="head.htmlAttrs?.lang ?? 'en'">
       <Head>
         <Title>{{ title }}</Title>
-        <template v-for="link in head.link" :key="link.hid">
-          <Link :id="link.hid" :href="link.href" :hreflang="link.hreflang" :rel="link.rel" />
+        <template v-for="link in head.link" :key="link.id ?? link.href">
+          <Link v-bind="link" />
         </template>
-        <template v-for="meta in head.meta" :key="meta.hid">
-          <Meta :id="meta.hid" :content="meta.content" :property="meta.property" />
+        <template v-for="meta in head.meta" :key="meta.id ?? meta.property">
+          <Meta :id="meta.id" :property="meta.property" :content="String(meta.content)" />
         </template>
       </Head>
 

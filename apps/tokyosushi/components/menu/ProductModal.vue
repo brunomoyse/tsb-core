@@ -146,7 +146,7 @@
                   <QuantityStepper
                     size="sm"
                     :value="selectedChoiceQuantities[choice.id] ?? 0"
-                    :dec-disabled="!(selectedChoiceQuantities[choice.id] > 0)"
+                    :dec-disabled="!((selectedChoiceQuantities[choice.id] ?? 0) > 0)"
                     :inc-disabled="!canIncrement(choice)"
                     :dec-testid="`product-modal-choice-dec-${choice.id}`"
                     :inc-testid="`product-modal-choice-inc-${choice.id}`"
@@ -265,7 +265,7 @@ const openLightbox = (id: string, name: string) => {
 }
 
 // Set when the modal was opened from a customized cart line ("Edit"): prefill
-// from that line and replace it on confirm instead of adding a second one.
+// From that line and replace it on confirm instead of adding a second one.
 const cartItemEdit = useCartItemEdit()
 const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value : null
 
@@ -364,7 +364,7 @@ const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
 }
 
 // The button stays clickable while choices are missing so a click can point at
-// the group that still needs a selection; it is only disabled when ordering is.
+// The group that still needs a selection; it is only disabled when ordering is.
 const canOrder = computed(() => !orderingDisabled && Boolean(p?.isAvailable))
 
 // Groups open neutral; the error treatment only appears after an add attempt.

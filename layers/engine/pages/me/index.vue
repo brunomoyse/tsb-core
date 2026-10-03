@@ -34,7 +34,7 @@ const languages = [
   { code: 'en', label: 'English' },
   { code: 'nl', label: 'Nederlands' },
   { code: 'zh', label: '中文' },
-]
+] as const
 const authStore = useAuthStore()
 const notifications = useNotificationsStore()
 const { $gqlFetch } = useNuxtApp()

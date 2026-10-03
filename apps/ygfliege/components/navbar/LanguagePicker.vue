@@ -56,7 +56,7 @@ const languages = [
   { code: 'en', label: 'English' },
   { code: 'nl', label: 'Nederlands' },
   { code: 'zh', label: '中文' },
-]
+] as const
 
 const localesToPick = computed(() =>
   languages.filter((lang) => codeAvailables.value.includes(lang.code)),

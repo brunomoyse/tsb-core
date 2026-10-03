@@ -100,6 +100,8 @@ const logoAlt = `${useAppConfig().brand.name} logo`
 const { phoneHref, phoneLabel } = useBrandPhone()
 // The cart and checkout pages already show the cart; no shortcut there.
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
+// The menu page shows the SideCart on desktop, so the nav cart link is hidden there.
+const isMenuPage = computed(() => /\/menu$/u.test(route.path))
 // "Cart, 3 items": the count is part of the accessible name.
 const { t } = useI18n()
 const cartLabel = computed(() =>
