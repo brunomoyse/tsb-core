@@ -5,27 +5,24 @@ on:
     branches: [main]
 
 jobs:
-  lint:
-    name: Lint
+  check:
+    name: Vite+ check and unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
+          node-version: '24'
+          cache: true
 
-      - name: Install dependencies
-        run: npm ci
+      - name: vp check (format, lint, type check) and repo guard scripts
+        run: vp run check
 
-      - name: Run oxlint, SSR-safety and locale-parity checks
-        run: npm run lint
-
-      - name: Run engine unit tests
-        run: node --test layers/engine/utils/*.test.mjs
+      - name: Engine unit tests (vp test)
+        run: vp test run
 
   typecheck:
     name: Typecheck (${{ matrix.app }})
@@ -40,9 +37,9 @@ jobs:
       matrix:
         include:
           - app: tokyosushi
-            baseline: 193
+            baseline: 14
           - app: ygfliege
-            baseline: 237
+            baseline: 30
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1
@@ -52,14 +49,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+          node-version: '24'
+          cache: true
 
       - name: Typecheck (ratchet)
         working-directory: apps/${{ matrix.app }}
@@ -68,7 +62,7 @@ jobs:
           BASELINE: ${{ matrix.baseline }}
         run: |
           # `nuxi typecheck` exits non-zero while errors exist; the count below is the gate.
-          npx nuxi typecheck > typecheck.log 2>&1 || true
+          vp exec nuxi typecheck > typecheck.log 2>&1 || true
           cat typecheck.log
           n=$(grep -c 'error TS' typecheck.log || true)
           echo "::notice title=typecheck ${{ matrix.app }}::${n} TypeScript errors (baseline ${BASELINE})"
@@ -92,14 +86,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+          node-version: '24'
+          cache: true
 
       - name: Build
         run: npm run build -w ${{ matrix.app }}
@@ -119,17 +110,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+          node-version: '24'
+          cache: true
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: vp exec playwright install --with-deps chromium
 
       - name: Run E2E tests
         run: npm run test:e2e
