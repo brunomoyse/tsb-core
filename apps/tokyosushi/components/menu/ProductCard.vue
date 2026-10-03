@@ -85,8 +85,8 @@
             :aria-label="$t('menu.viewDetails', { name: product.name })"
             @click="emit('openProductModal')"
           >
-            <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. -->
-            <span class="line-clamp-2 break-words">{{ product.name }}</span>
+            <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. px-1: Chrome centres a clamped last line before it appends the ellipsis, so the "…" ends up 2-5px past the line and the box's overflow:hidden cut its last dot ("premium.."); the padding is the room it needs. -->
+            <span class="line-clamp-2 break-words px-1">{{ product.name }}</span>
           </button>
           <span class="text-neutral-600 text-xs text-center">
             <template v-if="product?.pieceCount"
