@@ -393,7 +393,11 @@
     align-self: flex-end;
   }
 
-  @container (min-width: 14rem) {
+  /* The container query measures the CONTENT box of .card-buy (the card minus its px-3), not the card. One row needs the
+     widest price (69px for "123,40 €") + the gap (8px) + the full-size stepper (132px, − 1 +) = 209px, so 13.5rem (216px)
+     = a card of 240px or more. The content box measures 163px at 640 px, 217px at 800, 250px at 1280+ (side cart closed) and 164-218px
+     between 1280 and 1640 px with the side cart open: the stepper really does not fit beside the price there. */
+  @container (min-width: 13.5rem) {
     .card-buy-row {
       flex-direction: row;
       align-items: center;
