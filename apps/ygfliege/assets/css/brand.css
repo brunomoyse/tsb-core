@@ -2,6 +2,45 @@
    (malatang GUIDELINES.md / tokens.css). Tailwind utilities cover most usage;
    these custom properties exist for ported marketing-page CSS and for values
    utilities can't express (warm borders, eases). */
+/* Metric-matched stand-in for the swap (audit PR 6.3, P13): until Inter has arrived the text is set in local Arial scaled to
+   Inter's width, ascent and descent, so the swap changes the letter shapes but not the line breaks or the height of anything.
+   Numbers: fontaine's getMetricsForFamily('Inter') against Arial. Listed after Inter in the font stacks. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 107.1194%;
+  ascent-override: 90.4365%;
+  descent-override: 22.518%;
+  line-gap-override: 0%;
+}
+
+/* Noto Serif SC, bold: only the Chinese accents of the brand pages (杨国福…, the broth names, the slogan; the keys are
+   mkt.broths.*.chinese, mkt.concept.broth_story.chinese_title, mkt.home.broth_hero.translit and mkt.home.stats.slogan) and
+   the Latin text that shares those lines. 24 KB instead of the three slices (78 KB) the full family cost on every page, and
+   no 300 unicode-range rules in the stylesheet. Made with Google's `text=` subsetting:
+     https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=<the characters below>
+   典冬刻功在就幸拌本此汤甜番石磨福穹经茄草菌辣酸醇阴顶香骨麻 + printable ASCII, French accents, « » · – — ’ “ ” €, pinyin vowels.
+   A new Chinese character in one of those texts is drawn by the next font of the stack until this file is made again. */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/noto-serif-sc-700-accents.woff2') format('woff2');
+  unicode-range:
+    U+20-7e, U+ab, U+b7, U+bb, U+c0-c2, U+c4, U+c6-cf, U+d2-d4, U+d6, U+d9-dd, U+e0-e2, U+e4,
+    U+e6-ef, U+f2-f4, U+f6, U+f9-fd, U+ff-101, U+106-109, U+10c-10f, U+112-113, U+11a-11d,
+    U+122-125, U+12a-12b, U+134-137, U+139-13e, U+143-148, U+14c-14d, U+152-165, U+16a-16b,
+    U+174-17a, U+17d-17e, U+1cd-1dc, U+1de-1df, U+1e2-1e3, U+1e6-1e9, U+1f0, U+1f4-1f5, U+1f8-1f9,
+    U+1fc-1fd, U+21e-21f, U+228-22b, U+232-233, U+300-302, U+304, U+308, U+30c, U+327, U+1e08-1e09,
+    U+1e10-1e11, U+1e14-1e17, U+1e20-1e21, U+1e26-1e29, U+1e2e-1e31, U+1e3e-1e3f, U+1e50-1e55,
+    U+1e7a-1e7b, U+1e80-1e85, U+1e8c-1e8d, U+1e90-1e91, U+1e97, U+1ea4-1ea7, U+1ebe-1ec1,
+    U+1ed0-1ed3, U+1ef2-1ef3, U+2013-2014, U+2018-2019, U+201c-201d, U+20ac, U+5178, U+51ac, U+523b,
+    U+529f, U+5728, U+5c31, U+5e78, U+62cc, U+672c, U+6b64, U+6c64, U+751c, U+756a, U+77f3, U+78e8,
+    U+798f, U+7a79, U+7ecf, U+8304, U+8349, U+83cc, U+8fa3, U+9178, U+9187, U+9634, U+9876, U+9999,
+    U+9aa8, U+9ebb;
+}
+
 :root {
   /* --nav-h (the fixed navbar height) is set on `html` in main.css: a :root declaration here would beat its 640px override. */
   /* Primary colors */
@@ -47,8 +86,10 @@
   --ygf-gray-600: #666666; /* secondary text: 5.74:1 on white. Use this, not gray-400, for text. */
 
   /* Typography */
-  --font-sans: 'Inter', 'Noto Sans', system-ui, sans-serif;
-  --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-sans: 'Inter', 'Inter Fallback', 'Noto Sans', system-ui, sans-serif;
+  /* Chinese text is set in the visitor's own CJK font (Noto Sans SC where installed, else PingFang / Microsoft YaHei):
+     the hosted Noto Sans SC is not shipped any more (see nuxt.config.ts). */
+  --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --font-serif-chinese: 'Noto Serif SC', serif;
 
   /* Radii */

@@ -71,6 +71,19 @@ export default defineNuxtConfig({
         ...(s3Origin ? [{ rel: 'preconnect', href: s3Origin }] : []),
         { rel: 'preconnect', href: apiOrigin, crossorigin: 'anonymous' as const },
       ],
+      script: [
+        /*
+         * A returning visitor with a cart gets the menu's desktop cart column on the very first paint (audit PR 6.3, P13):
+         * the cart is in localStorage, which the server cannot read, so the column used to appear after hydration and
+         * narrow the menu, re-wrapping every product row. This flags <html data-has-cart> before the body is parsed; the
+         * menu pages reserve the column from it (until they are mounted and know the real cart). Key and shape: the
+         * 'cart' store (stores/cart.ts, utils/cartPersistence.ts).
+         */
+        {
+          innerHTML:
+            "try{var c=JSON.parse(localStorage.getItem('cart')||'null');if(c&&c.products&&c.products.length)document.documentElement.setAttribute('data-has-cart','')}catch(e){}",
+        },
+      ],
     },
   },
 

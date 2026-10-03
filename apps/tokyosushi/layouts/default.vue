@@ -166,25 +166,12 @@
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
 import { computed } from 'vue'
-import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
-
-useHead({
-  link: [
-    {
-      rel: 'preload',
-      href: '/fonts/channel.woff2',
-      as: 'font',
-      type: 'font/woff2',
-      crossorigin: 'anonymous',
-    },
-  ],
-})
 
 const route = useRoute()
 const { t } = useI18n()

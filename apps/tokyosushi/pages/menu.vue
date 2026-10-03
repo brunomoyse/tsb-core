@@ -358,11 +358,16 @@
     </div>
 
     <!-- Desktop Cart Sidebar -->
+    <!-- The column is in the server's HTML and shown from the first paint when <html data-has-cart> says the visitor has a cart (see the engine nuxt.config): no width change after hydration. -->
     <aside
-      v-if="hasCartItems"
-      class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:min-w-[18.5rem] lg:shrink-0"
+      class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:w-[28%] lg:min-w-[18.5rem] lg:shrink-0"
+      :class="isMounted ? hasCartItems && 'lg:block' : '[html[data-has-cart]_&]:lg:block'"
     >
-      <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
+      <SideCart
+        v-if="hasCartItems"
+        :is-ordering-available="!isClosed"
+        :preorder-time="preorderTime"
+      />
     </aside>
 
     <ClientOnly>
@@ -398,7 +403,7 @@ definePageMeta({
 
 import type { Product, ProductCategory } from '#engine/types'
 import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
+import { useGqlQuery, useGqlSubscription, useHead, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
@@ -764,6 +769,19 @@ watch(
   },
   { immediate: true },
 )
+
+// The display font is on this page's first screen (the category headings), not on the others: only here it is worth a preload (audit PR 6.3, P13).
+useHead({
+  link: [
+    {
+      rel: 'preload',
+      href: '/fonts/channel.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous',
+    },
+  ],
+})
 
 useSeoMeta({
   title: t('schema.menu.title'),

@@ -6,7 +6,13 @@
     <div
       ref="contentContainer"
       class="w-full min-w-0"
-      :class="hasCartItems ? 'lg:w-2/3' : 'lg:w-full'"
+      :class="
+        isMounted
+          ? hasCartItems
+            ? 'lg:w-2/3'
+            : 'lg:w-full'
+          : 'lg:w-full [html[data-has-cart]_&]:lg:w-2/3'
+      "
     >
       <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
       <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
@@ -296,11 +302,16 @@
     </div>
 
     <!-- Desktop Cart Sidebar -->
+    <!-- The column is in the server's HTML and shown from the first paint when <html data-has-cart> says the visitor has a cart (see the engine nuxt.config): no width change after hydration. -->
     <aside
-      v-if="hasCartItems"
-      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:block lg:w-1/3 lg:pr-4"
+      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:w-1/3 lg:pr-4"
+      :class="isMounted ? hasCartItems && 'lg:block' : '[html[data-has-cart]_&]:lg:block'"
     >
-      <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
+      <SideCart
+        v-if="hasCartItems"
+        :is-ordering-available="!isClosed"
+        :preorder-time="preorderTime"
+      />
     </aside>
 
     <ClientOnly>

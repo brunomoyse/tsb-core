@@ -67,13 +67,14 @@ export default defineNuxtConfig({
     },
   },
 
-  // Inter for body text, Noto Sans SC for headings + CJK, Noto Serif SC for
-  // The Chinese calligraphy accents (杨国福麻辣烫) — per GUIDELINES.md.
+  // Inter for body text. Noto Sans SC (headings + CJK) and Noto Serif SC (the Chinese calligraphy accents, 杨国福麻辣烫)
+  // Are not requested from Google Fonts any more (audit PR 6.3, P13): the module saved every unicode-range slice of a CJK
+  // Family under one file name, so ~100 rules per weight (500 KB of the stylesheet) pointed at a single slice and most
+  // Glyphs came from the visitor's own font anyway, at the price of a 75 KB download. The CJK glyphs are set in the
+  // System's CJK font (see --font-chinese in brand.css); the accents use a 24 KB subset of Noto Serif SC (brand.css).
   googleFonts: {
     families: {
       Inter: [400, 500, 600, 700],
-      'Noto Sans SC': [400, 500, 700, 900],
-      'Noto Serif SC': [700],
     },
     display: 'swap',
     download: true,
