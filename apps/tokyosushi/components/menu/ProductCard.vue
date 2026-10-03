@@ -65,7 +65,7 @@
       </div>
 
       <!-- Product Details (fixed size: does not grow) -->
-      <div class="shrink-0 px-1 sm:px-2 pb-1">
+      <div class="card-buy shrink-0 px-1 sm:px-2 pb-1">
         <!-- Text block: fixed height so price always aligns across cards -->
         <div class="min-h-[76px] flex flex-col items-center">
           <span
@@ -86,7 +86,7 @@
             @click="emit('openProductModal')"
           >
             <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. -->
-            <span class="line-clamp-2 break-words hyphens-auto">{{ product.name }}</span>
+            <span class="line-clamp-2 break-words">{{ product.name }}</span>
           </button>
           <span class="text-neutral-600 text-xs text-center">
             <template v-if="product?.pieceCount"
@@ -99,12 +99,8 @@
           </span>
         </div>
 
-        <!-- Price and Cart Controls -->
-        <div
-          v-if="product.isAvailable"
-          ref="controlsRef"
-          class="flex flex-wrap justify-between items-center gap-x-1 gap-y-1 mt-1"
-        >
+        <!-- Price and Cart Controls: the price sits above the add button until the card is wide enough for both on one row (a container query, see .card-buy-row), so every card of a phone's two columns has the same rows -->
+        <div v-if="product.isAvailable" ref="controlsRef" class="card-buy-row mt-1">
           <template v-if="!stepperOpen">
             <span class="whitespace-nowrap text-black font-semibold text-base tabular-nums">
               {{ formatPrice(product.price) }}
