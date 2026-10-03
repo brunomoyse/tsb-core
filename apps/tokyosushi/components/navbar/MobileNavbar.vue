@@ -16,12 +16,13 @@
         />
       </div>
 
+      <!-- The delivery zone takes whatever the logo and the buttons leave (in the flow, not centred on the screen: at 320px a centred chip ran under the cart button) -->
       <div
         v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
-        class="absolute left-1/2 -translate-x-1/2 min-w-0 max-w-[148px]"
+        class="flex min-w-0 flex-1 justify-center px-2"
       >
         <ClientOnly>
-          <DeliveryZoneChip compact class="min-w-0 w-full" />
+          <DeliveryZoneChip compact class="min-w-0" />
         </ClientOnly>
       </div>
 
@@ -33,7 +34,7 @@
         </div>
 
         <!-- Hamburger Menu -->
-        <div class="flex flex-col items-center ml-6">
+        <div class="flex flex-col items-center ml-3">
           <button
             ref="hamburgerRef"
             type="button"

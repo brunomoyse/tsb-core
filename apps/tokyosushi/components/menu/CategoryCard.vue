@@ -3,7 +3,8 @@
     :aria-pressed="active"
     data-testid="category-card"
     translate="no"
-    class="relative overflow-hidden shrink-0 min-h-11 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
+    class="relative overflow-hidden shrink-0 max-w-[calc(100%-3rem)] min-h-11 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
+    :title="category.name"
     :class="
       active
         ? 'bg-tsb-four text-primary-900/80 font-semibold'
@@ -13,7 +14,7 @@
     :data-id="category.id"
     :data-chip-category="category.id"
   >
-    {{ category.name }}
+    <span class="block truncate">{{ category.name }}</span>
     <!-- Red accent bar clipped by rounded corners -->
     <span
       class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-primary-400 transition-all duration-300 ease-out origin-center"

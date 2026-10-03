@@ -65,10 +65,13 @@
       </div>
 
       <!-- Product Details (fixed size: does not grow) -->
-      <div class="shrink-0 px-2 pb-1">
+      <div class="shrink-0 px-1 sm:px-2 pb-1">
         <!-- Text block: fixed height so price always aligns across cards -->
         <div class="min-h-[76px] flex flex-col items-center">
-          <span translate="no" class="text-neutral-600 font-medium text-xs mb-0.5 truncate">
+          <span
+            translate="no"
+            class="text-neutral-600 font-medium text-xs mb-0.5 max-w-full truncate"
+          >
             {{ product.category?.name }}
           </span>
           <!-- The name is the keyboard-reachable way into the details modal. -->
@@ -83,7 +86,7 @@
             @click="emit('openProductModal')"
           >
             <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. -->
-            <span class="line-clamp-2">{{ product.name }}</span>
+            <span class="line-clamp-2 break-words hyphens-auto">{{ product.name }}</span>
           </button>
           <span class="text-neutral-600 text-xs text-center">
             <template v-if="product?.pieceCount"
@@ -100,13 +103,13 @@
         <div
           v-if="product.isAvailable"
           ref="controlsRef"
-          class="flex justify-between items-center mt-1"
+          class="flex flex-wrap justify-between items-center gap-x-1 gap-y-1 mt-1"
         >
           <template v-if="!stepperOpen">
-            <span class="text-black font-semibold text-base tabular-nums">
+            <span class="whitespace-nowrap text-black font-semibold text-base tabular-nums">
               {{ formatPrice(product.price) }}
             </span>
-            <div>
+            <div class="ml-auto">
               <button
                 v-if="!isInCart"
                 ref="addButtonRef"
