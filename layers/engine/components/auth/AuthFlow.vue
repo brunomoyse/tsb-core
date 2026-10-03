@@ -152,7 +152,7 @@
 
       <UiButton
         block
-        :disabled="loading || code.length < 6"
+        :disabled="isVerifyDisabled(code, loading)"
         :loading="loading"
         data-testid="login-verify"
         type="submit"
@@ -169,7 +169,7 @@
           {{ $t('login.backToEmail') }}
         </button>
         <button
-          :disabled="resendCooldown > 0 || loading"
+          :disabled="isResendDisabled(resendCooldown, loading)"
           class="inline-flex min-h-11 items-center text-primary-700 font-medium hover:text-primary-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           type="button"
           @click="resendCode"
@@ -200,10 +200,21 @@ import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
 import StepIndicator from '#engine/components/global/StepIndicator.vue'
 import { isValidEmail } from '#engine/lib/validators'
 import {
-  authErrorKey,
-  classifyAuthError,
-  isUndeliverableEmailError,
-} from '#engine/utils/authErrors'
+  type AuthStep,
+  RESEND_COOLDOWN_SECONDS,
+  authStepIndex,
+  describeGenericFailure,
+  describeIdpStartFailure,
+  describeRequestCodeFailure,
+  describeVerifyFailure,
+  emailFormatInvalid,
+  hasUsableOtpSession,
+  isResendDisabled,
+  isVerifyDisabled,
+  stepAfterVerify,
+  tickResendCooldown,
+  totalAuthSteps,
+} from '#engine/utils/authFlow'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
@@ -226,8 +237,7 @@ const { trackEvent } = useTracking()
 const route = useRoute()
 const config = useRuntimeConfig()
 
-type Step = 'email' | 'code' | 'profile'
-const step = ref<Step>('email')
+const step = ref<AuthStep>('email')
 
 const email = ref('')
 const code = ref('')
@@ -250,12 +260,8 @@ let cooldownTimer: ReturnType<typeof setInterval> | null = null
 // "3 steps" variant of the indicator and gates the profile step.
 const requiresProfile = ref(false)
 
-const totalSteps = computed(() => (requiresProfile.value ? 3 : 2))
-const stepIndex = computed(() => {
-  if (step.value === 'email') return 0
-  if (step.value === 'code') return 1
-  return 2
-})
+const totalSteps = computed(() => totalAuthSteps(requiresProfile.value))
+const stepIndex = computed(() => authStepIndex(step.value))
 const stepLabels = computed(() => {
   const labels = [t('login.stepEmail'), t('login.stepCode')]
   if (requiresProfile.value) labels.push(t('login.stepProfile'))
@@ -283,12 +289,13 @@ onBeforeUnmount(() => {
   if (cooldownTimer) clearInterval(cooldownTimer)
 })
 
-const startCooldown = (seconds = 20) => {
+const startCooldown = (seconds = RESEND_COOLDOWN_SECONDS) => {
   resendCooldown.value = seconds
   if (cooldownTimer) clearInterval(cooldownTimer)
   cooldownTimer = setInterval(() => {
-    resendCooldown.value--
-    if (resendCooldown.value <= 0 && cooldownTimer) {
+    const tick = tickResendCooldown(resendCooldown.value)
+    resendCooldown.value = tick.seconds
+    if (tick.done && cooldownTimer) {
       clearInterval(cooldownTimer)
       cooldownTimer = null
     }
@@ -302,11 +309,7 @@ watch(email, () => {
 })
 
 const validateEmailOnBlur = () => {
-  if (email.value.trim() === '') {
-    emailFormatError.value = false
-    return
-  }
-  emailFormatError.value = !isValidEmail(email.value)
+  emailFormatError.value = emailFormatInvalid(email.value)
 }
 
 /*
@@ -314,7 +317,6 @@ const validateEmailOnBlur = () => {
  * field), 5xx, 429, and unknown errors each get their own message so the user
  * knows what to try next.
  */
-const formatError = (error: unknown, fallback: string): string => t(authErrorKey(error, fallback))
 
 /*
  * Synchronous in-flight flags. The reactive `loading` ref drives the UI,
@@ -346,7 +348,7 @@ const onSubmitEmail = async () => {
     const { requestOtpLogin } = useZitadelApi()
     const session = await requestOtpLogin(email.value)
 
-    if (!session.sessionId || !session.sessionToken) {
+    if (!hasUsableOtpSession(session)) {
       /*
        * Backend short-circuited (auth service unavailable, etc.). Surface
        * a generic error so the user can retry.
@@ -364,7 +366,8 @@ const onSubmitEmail = async () => {
     await nextTick()
     codeInputRef.value?.focus()
   } catch (error: unknown) {
-    if (isUndeliverableEmailError(error)) {
+    const failure = describeRequestCodeFailure(error)
+    if (failure.kind === 'undeliverable') {
       trackEvent('login_error', { error_type: 'undeliverable_email' })
       emailUndeliverable.value = true
       await nextTick()
@@ -372,7 +375,7 @@ const onSubmitEmail = async () => {
       return
     }
     trackEvent('login_error', { error_type: 'request_failed' })
-    errorMessage.value = formatError(error, 'notify.errors.requestFailed')
+    errorMessage.value = t(failure.key)
   } finally {
     requestInFlight = false
     loading.value = false
@@ -401,7 +404,7 @@ const resendCode = async () => {
     startCooldown()
     trackEvent('otp_resent')
   } catch (error: unknown) {
-    errorMessage.value = formatError(error, 'notify.errors.requestFailed')
+    errorMessage.value = t(describeGenericFailure(error))
   } finally {
     loading.value = false
   }
@@ -422,7 +425,7 @@ const onSubmitCode = async () => {
     otpSessionToken.value = verified.sessionToken
     requiresProfile.value = verified.requiresProfile
 
-    if (verified.requiresProfile) {
+    if (stepAfterVerify(verified) === 'profile') {
       /*
        * Identifier-first signup: collect name before OIDC finalize so the
        * app user is JIT-provisioned with real values, not the placeholder.
@@ -437,10 +440,9 @@ const onSubmitCode = async () => {
   } catch (error: unknown) {
     loading.value = false
     reportError(error, 'auth.otpVerify')
-    const kind = classifyAuthError(error)
-    if (kind === 'rateLimited') trackEvent('login_error', { error_type: 'rate_limited' })
-    else if (kind === 'rejected') trackEvent('login_error', { error_type: 'invalid_code' })
-    errorMessage.value = t(authErrorKey(error, 'notify.errors.invalidCode'))
+    const failure = describeVerifyFailure(error)
+    if (failure.track) trackEvent('login_error', { error_type: failure.track })
+    errorMessage.value = t(failure.key)
   } finally {
     /*
      * Always release the in-flight flag so retries can re-fire. The
@@ -470,7 +472,7 @@ const onSubmitProfile = async (payload: { firstName: string; lastName: string })
   } catch (error: unknown) {
     loading.value = false
     reportError(error, 'auth.profileCompletion')
-    errorMessage.value = formatError(error, 'notify.errors.requestFailed')
+    errorMessage.value = t(describeGenericFailure(error))
   }
 }
 
@@ -547,10 +549,7 @@ const startIdpFlow = async (provider: string) => {
   } catch (error: unknown) {
     loading.value = false
     reportError(error, 'auth.idpStart')
-    errorMessage.value =
-      classifyAuthError(error) === 'rateLimited'
-        ? t('notify.errors.tooManyRequests')
-        : t('notify.errors.oauthFailed')
+    errorMessage.value = t(describeIdpStartFailure(error))
   }
 }
 

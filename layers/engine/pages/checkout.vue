@@ -447,6 +447,7 @@ import CheckoutDeliveryGate from '#engine/components/checkout/CheckoutDeliveryGa
 import CheckoutPaymentExtras from '#engine/components/checkout/CheckoutPaymentExtras.vue'
 import CheckoutProductSummary from '#engine/components/checkout/CheckoutProductSummary.vue'
 import QuoteIssuesNotice from '#engine/components/QuoteIssuesNotice.vue'
+import { blockingProductName, orderPlacementRoute } from '#engine/utils/checkoutSubmit'
 import { buildCreateOrderInput } from '#engine/utils/orderPayload'
 import {
   checkoutPreflight,
@@ -487,11 +488,8 @@ const { japaneseAccents = false } = useAppConfig().brand
 const { t, locale } = useI18n()
 const gqlErrorMessage = useGqlErrorMessage()
 // Names the cart item a line-level createOrder error points at (`extensions.productId`) in the message.
-const blockingProductName = (err: unknown): string | undefined => {
-  const productId = unwrapGqlError(err)?.extensions.productId
-  if (typeof productId !== 'string') return undefined
-  return cartStore.products.find((item) => item.product.id === productId)?.product.name
-}
+const blockingProductNameOf = (err: unknown): string | undefined =>
+  blockingProductName(unwrapGqlError(err)?.extensions.productId, cartStore.products)
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { applyDefaults } = useOrderExtras()
@@ -913,21 +911,22 @@ const handleCheckout = async () => {
         currency: 'EUR',
       })
 
-      if (order?.payment?.links) {
-        trackEvent('payment_redirect', { order_id: order.id })
+      const route = orderPlacementRoute(order)
+      if (route.kind === 'payment') {
+        trackEvent('payment_redirect', { order_id: order?.id })
         isRedirectingToPayment.value = true
         createdOrder = true
-        navigateTo(order.payment.links.checkout.href, { external: true })
-      } else if (order?.id) {
+        navigateTo(route.href, { external: true })
+      } else if (route.kind === 'confirmation') {
         createdOrder = true
-        navigateTo(localePath(`/order-completed/${order.id}`))
+        navigateTo(localePath(`/order-completed/${route.orderId}`))
       }
     } catch (err: unknown) {
       reportError(err, 'checkout.createOrder')
       hapticNotification('Error')
       notifications.notify({
         message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed', {
-          productName: blockingProductName(err),
+          productName: blockingProductNameOf(err),
         }),
         persistent: false,
         duration: 5000,

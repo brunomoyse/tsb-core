@@ -378,6 +378,9 @@ for (const lang of ['fr', 'en', 'nl', 'zh']) {
 // Parity with the backend: every code of tsb-service's apperr/codes.go is known here.
 // Only runs in the workspace layout (tsb-core next to tsb-service), skipped in a lone checkout.
 // ---------------------------------------------------------------------------------------------
+// Codes only the dashboard's assistant can raise: the customer app never calls that API, so they have no
+// Customer message on purpose (a translation here would be dead copy).
+const DASHBOARD_ONLY_CODES = ['ASSISTANT_DISABLED', 'ASSISTANT_UNAVAILABLE']
 const goCodes = new URL(
   '../../../../tsb-service/internal/api/graphql/apperr/codes.go',
   import.meta.url,
@@ -391,7 +394,9 @@ test(
       (m) => m.groups.code,
     )
     assert.ok(codes.length > 20, 'codes.go not parsed')
-    const missing = codes.filter((code) => !GQL_KNOWN_CODES.includes(code))
+    const missing = codes.filter(
+      (code) => !GQL_KNOWN_CODES.includes(code) && !DASHBOARD_ONLY_CODES.includes(code),
+    )
     assert.deepEqual(missing, [], 'codes the backend sends that the web does not translate')
   },
 )

@@ -1,8 +1,10 @@
 import {
-  type PaymentOutcome,
-  isPaymentProblem,
-  outcomeFromPaymentStatus,
-} from '#engine/lib/paymentOutcome'
+  type OrderCompletedPhase,
+  orderCompletedPhase,
+  paymentOutcomeOf,
+  shouldCommitCart,
+} from '#engine/utils/orderCompleted'
+import type { PaymentOutcome } from '#engine/lib/paymentOutcome'
 import { computed, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { useAsyncData, useCartStore, useGqlSubscription, useNuxtApp } from '#imports'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
@@ -75,36 +77,10 @@ export const ORDER_COMPLETED_QUERY = print(gql`
     }
 `)
 
-export type OrderCompletedPhase =
-  | 'loading'
-  | 'error'
-  | 'verifying'
-  | 'awaiting-confirmation'
-  | 'problem'
-  | 'confirmed'
-
 /** Gaps between status checks while an online order is still open/pending (≈17 s in total). */
 const VERIFY_DELAYS_MS = [800, 1200, 1500, 2000, 3000, 4000, 5000]
 /** Safety-net poll for when the WebSocket subscription fails silently. */
 const FALLBACK_POLL_MS = 15_000
-/*
- * TODO(remove after 2026-11-15): transitional fallback for customers whose checkout ran on the
- * PREVIOUS web bundle. That bundle never stored `pendingOrderId`, so they come back from Mollie
- * with `pendingOrderId === null` and would keep a full cart for an order that is already placed
- * (and could place it twice). For a short window we therefore also commit a cart with no
- * `pendingOrderId` when the order was created minutes ago. A cart checked out for a DIFFERENT
- * order (non-null id) is never touched. By the date above every cart in the wild has been written
- * by a bundle that sets the id: delete this window and the `createdAt` source of the watch below.
- */
-const TRANSITIONAL_CHECKOUT_WINDOW_MS = 30 * 60 * 1000
-const isTransitionalCheckout = (
-  pendingOrderId: string | null | undefined,
-  createdAt: string | null | undefined,
-): boolean => {
-  if (typeof pendingOrderId === 'string' || !createdAt) return false
-  const age = Date.now() - Date.parse(createdAt)
-  return Number.isFinite(age) && age >= 0 && age < TRANSITIONAL_CHECKOUT_WINDOW_MS
-}
 const TERMINAL_STATUSES = ['DELIVERED', 'PICKED_UP', 'FAILED', 'CANCELLED']
 
 export function useOrderCompleted(orderId: string) {
@@ -137,32 +113,18 @@ export function useOrderCompleted(orderId: string) {
        PENDING (the webhook confirmed it). Only surface a problem while the order
        is still unpaid: an online order is PENDING until paid, and
        CANCELLED/FAILED once payment fails/cancels/expires. */
-  const paymentOutcome = computed<PaymentOutcome | null>(() => {
-    const o = order.value
-    if (!o || !o.isOnlinePayment) return null // Cash orders never have a payment problem
-    const out = outcomeFromPaymentStatus(o.payment?.status)
-    if (out === 'paid') return null
-    if (o.status !== 'PENDING' && o.status !== 'CANCELLED' && o.status !== 'FAILED') return null
-    return out
-  })
+  const paymentOutcome = computed<PaymentOutcome | null>(() => paymentOutcomeOf(order.value))
 
   // Set once the verify loop gave up: the order is still pending and the webhook is late.
   const verifyExpired = ref(false)
 
-  const phase = computed<OrderCompletedPhase>(() => {
-    const o = order.value
-    if (!o) return orderError.value ? 'error' : 'loading'
-    const out = paymentOutcome.value
-    if (out === null) return 'confirmed'
-    /* Still PENDING with an open/unknown payment: only a late webhook explains it, so after the
-           verify window show a neutral "awaiting confirmation" state, NEVER the retry screen (a
-           second payment would double-charge a customer whose first one is just not confirmed yet).
-           The retry screen needs a definitive verdict: canceled/failed/expired, or an order that
-           is already CANCELLED/FAILED. */
-    if (out === 'abandoned' && o.status === 'PENDING')
-      return verifyExpired.value ? 'awaiting-confirmation' : 'verifying'
-    return isPaymentProblem(out) ? 'problem' : 'confirmed'
-  })
+  const phase = computed<OrderCompletedPhase>(() =>
+    orderCompletedPhase({
+      order: order.value,
+      loadFailed: Boolean(orderError.value),
+      verifyExpired: verifyExpired.value,
+    }),
+  )
 
   const paymentProblem = computed(() => phase.value === 'problem')
   const awaitingConfirmation = computed(() => phase.value === 'awaiting-confirmation')
@@ -192,8 +154,15 @@ export function useOrderCompleted(orderId: string) {
   watch(
     [phase, () => cartStore.pendingOrderId, () => order.value?.createdAt],
     ([p, pendingOrderId, createdAt]) => {
-      if (p !== 'confirmed' || committed || !import.meta.client) return
-      if (pendingOrderId !== orderId && !isTransitionalCheckout(pendingOrderId, createdAt)) return
+      const commit = shouldCommitCart({
+        phase: p,
+        alreadyCommitted: committed,
+        isClient: import.meta.client,
+        orderId,
+        pendingOrderId,
+        createdAt,
+      })
+      if (!commit) return
       committed = true
       cartStore.resetState()
     },

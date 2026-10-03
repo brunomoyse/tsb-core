@@ -1,3 +1,4 @@
+import { postAuthTarget, sanitizeReturnTo } from '#engine/utils/authFlow'
 import { type OrderingConfigInput, canPlaceOrder } from '#engine/utils/orderingAvailability'
 import type { User } from '#engine/types'
 import gql from 'graphql-tag'
@@ -72,12 +73,12 @@ export function useAuthCallback() {
 
     trackEvent('user_logged_in', { method: 'oidc' })
 
-    const returnTo = consumeReturnTo()
-    if (returnTo) {
-      await navigateTo(returnTo)
+    const target = postAuthTarget(consumeReturnTo(), cartStore.products.length === 0)
+    if (target.kind === 'path') {
+      await navigateTo(target.path)
       return
     }
-    if (cartStore.products.length === 0) {
+    if (target.kind === 'menu') {
       await navigateTo(localePath('menu'))
       return
     }
@@ -109,11 +110,8 @@ export function useAuthCallback() {
     if (typeof sessionStorage === 'undefined') return null
     const raw = sessionStorage.getItem('oidc_return_to')
     sessionStorage.removeItem('oidc_return_to')
-    // Only allow same-origin absolute paths; reject protocol-relative (//) or off-site URLs.
-    if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null
-    // Don't bounce back into the auth flow itself.
-    if (/^\/[^/]+\/auth(\/|$)/u.test(raw)) return null
-    return raw
+    // Only same-origin absolute paths that are not the auth flow itself (see sanitizeReturnTo).
+    return sanitizeReturnTo(raw)
   }
 
   return { processCallback }
