@@ -50,7 +50,7 @@ const { payableCents } = useCartTotals()
 
 // Publishes the bar's height so the toasts and the scroll-to-top button float above it.
 const barRef = ref<HTMLElement | null>(null)
-useBottomBarOffset(barRef)
+useBottomBarOffset(barRef, { reserveSpace: true })
 
 const isPulsing = ref(false)
 let pulseTimeout: NodeJS.Timeout | null = null

@@ -33,6 +33,27 @@
     }
 }
 
+/*
+ * Fixed and sticky bars must not hide the element that has keyboard focus (WCAG 2.4.11, audit A16): the browser scrolls a
+ * focused element (and a #anchor or a category jump) clear of `scroll-padding`. At the top that is the fixed mobile
+ * navigation (--nav-h: the 5rem mobile bar, the 4rem sticky top header from 641px up), or, on /menu, the bottom edge of the sticky search and
+ * category header, which the page publishes as --sticky-top-h (useStickyTopOffset). At the bottom it is the fixed bar that
+ * publishes --bottom-bar-h (useBottomBarOffset: the checkout pay bar, the floating cart bar, the open cart sheet), else
+ * the safe area. The extra 1rem keeps the element's focus ring visible.
+ */
+html {
+    --nav-h: 5rem;
+    scroll-padding-top: calc(var(--sticky-top-h, var(--nav-h)) + 1rem);
+    scroll-padding-bottom: calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem);
+}
+/* Room at the end of the page for the fixed bar of the page (--page-bottom-pad, useBottomBarOffset): the footer links scroll clear of it. */
+body {
+    padding-bottom: var(--page-bottom-pad, 0px);
+}
+@media (min-width: 641px) {
+    html { --nav-h: 4rem; }
+}
+
 @layer utilities {
     .min-h-calc {
         min-height: calc(100dvh - 60px);

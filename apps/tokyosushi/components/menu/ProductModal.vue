@@ -182,6 +182,7 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
@@ -355,7 +356,7 @@ const groupTagClass = (group: ProductChoiceGroup) => {
 
 const flagFirstIncompleteGroup = (group: ProductChoiceGroup) => {
     showGroupErrors.value = true
-    groupElements.get(group.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    groupElements.get(group.id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' })
     shakingGroupId.value = group.id
     if (shakeTimeout) clearTimeout(shakeTimeout)
     shakeTimeout = setTimeout(() => { shakingGroupId.value = null }, 400)

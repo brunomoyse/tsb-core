@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 scroll-mt-6 h-full flex flex-col">
+    <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full flex flex-col">
         <component :is="as" class="font-semibold text-neutral-900 mb-4 flex items-center gap-2 text-[15px]">
             <svg aria-hidden="true" class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $t('about.openingHoursLabel') }}

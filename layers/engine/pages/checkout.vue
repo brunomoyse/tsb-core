@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-7xl mx-auto p-4 pb-24 lg:pb-4">
+    <div class="max-w-7xl mx-auto p-4">
         <!-- Restaurant Closed Banner: only for a loaded config that says nothing can be ordered -->
         <div v-if="isOrderingClosed" role="alert" aria-live="assertive" aria-atomic="true" data-testid="checkout-restaurant-closed" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,7 +90,7 @@
         <!-- Step Indicator — reflects the current sub-step inside checkout so users
              know which stage they're on (address, sign in, phone, review, payment). -->
         <nav class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6" :aria-label="$t('checkout.stepCheckout')">
-            <NuxtLinkLocale to="/menu" class="text-primary-700 hover:text-primary-800 font-medium">
+            <NuxtLinkLocale to="/menu" class="inline-flex min-h-11 items-center text-primary-700 hover:text-primary-800 font-medium">
                 {{ $t('checkout.stepMenu') }}
             </NuxtLinkLocale>
             <template v-for="(step, idx) in visibleSteps" :key="step.key">
@@ -118,7 +118,8 @@
             <!-- Sticky Order Summary Bar (mobile only, appears on scroll) -->
             <div
                 v-if="showStickyBar && cartStore.products.length > 0"
-                class="sticky top-0 z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-neutral-200/60 transition-all"
+                ref="stickyBarRef"
+                class="sticky top-[var(--nav-h,0px)] z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-neutral-200/60 transition-all"
             >
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-neutral-600">
@@ -228,10 +229,9 @@
         <div
             v-if="showAddressModal"
             class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
-            tabindex="0"
             @click.self="guardedCloseAddressModal"
         >
-            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop>
+            <div ref="addressModalRef" role="dialog" aria-modal="true" aria-labelledby="address-modal-title" class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative" @click.stop @keydown.esc="guardedCloseAddressModal">
                 <button
                     type="button"
                     @click="guardedCloseAddressModal"
@@ -304,6 +304,8 @@ import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { usePhoneCapture } from '#engine/composables/usePhoneCapture'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCheckoutQuoteGuard } from '#engine/composables/useCheckoutQuoteGuard'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import LoadError from '#engine/components/LoadError.vue'
@@ -337,7 +339,10 @@ const { trackEvent } = useTracking()
 // Check restaurant ordering status. Lazy so the checkout page can render a skeleton while the initial query resolves on slow client hydration.
 // The mobile pay bar publishes its height so the toasts float above it instead of covering the button.
 const payBarRef = ref<HTMLElement | null>(null)
-useBottomBarOffset(payBarRef)
+useBottomBarOffset(payBarRef, { reserveSpace: true })
+// The sticky summary bar (mobile) publishes the bottom edge it covers, so a focused field scrolls clear of it.
+const stickyBarRef = ref<HTMLElement | null>(null)
+useStickyTopOffset(stickyBarRef)
 
 // The one ordering gate (engine, utils/orderingAvailability.ts): open, or closed with a slot still bookable today (a pre-order). The closed banner only shows for a loaded config; a failed load shows its own error with Retry.
 const {
@@ -593,7 +598,7 @@ const scrollToValidationTarget = (targetId: string) => {
     if (!import.meta.client) return
     const target = document.getElementById(targetId)
     if (!target) return
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    target.scrollIntoView({ behavior: scrollBehavior(), block: 'center' })
     if (target instanceof HTMLElement) {
         window.setTimeout(() => {
             target.focus({ preventScroll: true })

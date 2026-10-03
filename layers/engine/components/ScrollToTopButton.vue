@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 
@@ -33,7 +34,7 @@ const onScroll = () => {
 }
 
 const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: scrollBehavior() })
 }
 
 onMounted(() => {

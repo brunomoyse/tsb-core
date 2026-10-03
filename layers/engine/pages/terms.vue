@@ -195,7 +195,7 @@
             </section>
 
             <!-- 9 -->
-            <section id="cookies" class="scroll-mt-24">
+            <section id="cookies">
                 <h2 class="terms-heading">9. Cookies</h2>
 
                 <h3 class="terms-subheading">Authentification</h3>
@@ -280,6 +280,7 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted } from 'vue'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 
 const route = useRoute()
@@ -307,7 +308,7 @@ onMounted(() => {
         nextTick(() => {
             const el = document.querySelector(route.hash)
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' })
             }
         })
     }
