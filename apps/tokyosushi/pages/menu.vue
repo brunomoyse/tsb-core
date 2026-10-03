@@ -62,13 +62,15 @@
         @retry="retryConfig()"
       />
 
-      <!-- Sticky Categories Header -->
+      <!-- Search, filters and categories. From 640px up they form one sticky block. On a phone the block dissolves (`contents`)
+           and only the category strip below sticks: stuck under the navbar, search + filters + strip took over half of a
+           568px screen, so the search and the filters scroll away with the page. -->
       <section
-        ref="stickyHeader"
-        class="sticky z-20 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0"
+        ref="stickyBlock"
+        class="contents sm:block sm:sticky sm:z-20 sm:pt-8 sm:bg-tsb-one sm:top-0"
       >
         <!-- Search + Filter Section -->
-        <section class="mb-4 px-0 sm:px-4 space-y-1.5">
+        <section class="pt-4 sm:pt-0 mb-4 px-0 sm:px-4 space-y-1.5">
           <!-- Search Bar (full-width, labeled) -->
           <div
             class="relative flex items-center rounded-2xl bg-tsb-two h-[44px] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-tsb-one"
@@ -113,8 +115,10 @@
             </button>
           </div>
 
-          <!-- Filter Row (compact chips) -->
-          <div class="flex items-center gap-1.5 flex-wrap">
+          <!-- Filter Row (compact chips): one horizontally scrolling row on a phone (padding + negative margin keep the focus rings inside the scroller), wrapping from 640px up -->
+          <div
+            class="flex items-center gap-1.5 flex-nowrap overflow-x-auto no-scrollbar -mx-1.5 -my-1.5 px-1.5 py-1.5 sm:flex-wrap sm:overflow-visible sm:m-0 sm:p-0 [&>button]:shrink-0"
+          >
             <!-- Halal toggle -->
             <button
               type="button"
@@ -183,7 +187,11 @@
         </section>
 
         <!-- Categories Scroll -->
-        <section v-if="!searchValue.trim().length" class="relative mx-0 sm:mx-4 mb-2">
+        <section
+          v-if="!searchValue.trim().length"
+          ref="categoryBar"
+          class="sticky top-[var(--nav-h)] z-20 bg-tsb-one pt-1 pb-2 sm:relative sm:z-auto sm:bg-transparent sm:top-auto sm:pt-0 sm:pb-0 mx-0 sm:mx-4 sm:mb-2"
+        >
           <!-- Left gradient fade -->
           <div
             class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
@@ -403,7 +411,7 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
-import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
+import { useDebounce, useEventBus, useMediaQuery, useMounted } from '@vueuse/core'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import LoadError from '#engine/components/LoadError.vue'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
@@ -579,7 +587,11 @@ const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
-const stickyHeader = ref<HTMLElement | null>(null)
+// The sticky element at the current breakpoint: the whole block from 640px up, the category strip alone on a phone (it is absent while a search is active).
+const stickyBlock = ref<HTMLElement | null>(null)
+const categoryBar = ref<HTMLElement | null>(null)
+const isPhone = useMediaQuery('(max-width: 639.98px)')
+const stickyHeader = computed(() => (isPhone.value ? categoryBar.value : stickyBlock.value))
 
 const searchInputRef = ref<HTMLInputElement | null>(null)
 

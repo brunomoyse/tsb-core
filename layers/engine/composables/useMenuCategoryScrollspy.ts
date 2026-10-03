@@ -16,7 +16,7 @@ export interface MenuScrollspyOptions {
    * band is fixed (from 200px down to 45% of the viewport). Jumps land under the header either way, through
    * the page's `scroll-padding-top`.
    */
-  header?: Ref<HTMLElement | null>
+  header?: Readonly<Ref<HTMLElement | null>>
   /** Mark the first category active before the visitor has scrolled (a tab strip with a selected first tab). */
   selectFirst?: boolean
 }
