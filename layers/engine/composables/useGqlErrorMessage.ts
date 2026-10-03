@@ -12,8 +12,13 @@ export function useGqlErrorMessage() {
   const { t } = useI18n()
   const { policy } = useOrderingPolicy()
 
-  return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
-    const described = describeGqlError(err, policy.value)
+  // `context` adds parameters the backend cannot know, e.g. `{ productName }` from the cart.
+  return (
+    err: unknown,
+    fallbackKey = 'notify.errors.requestFailed',
+    context: Record<string, unknown> = {},
+  ): string => {
+    const described = describeGqlError(err, policy.value, context)
     return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
   }
 }

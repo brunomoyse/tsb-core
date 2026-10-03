@@ -554,14 +554,18 @@
       "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
       "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw.",
       "orderTooManyItems": "Uw winkelwagen bevat te veel verschillende producten (maximaal 50).",
-      "productNotFound": "Een product in uw winkelwagen is niet meer beschikbaar. Verwijder het en probeer opnieuw.",
+      "productNotFound": "Een artikel in uw winkelwagen staat niet meer op het menu. Verwijder het uit uw winkelwagen en probeer opnieuw.",
       "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
       "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelwagen en probeer opnieuw.",
       "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
       "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
       "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
       "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
-      "priceChanged": "De prijs van een artikel in je winkelwagen is gewijzigd. Controleer je winkelwagen en bevestig de nieuwe prijs."
+      "priceChanged": "De prijs van een artikel in je winkelwagen is gewijzigd. Controleer je winkelwagen en bevestig de nieuwe prijs.",
+      "productNotFoundNamed": "\"{name}\" staat niet meer op het menu. Verwijder het uit uw winkelwagen en probeer opnieuw.",
+      "productUnavailable": "Een artikel in uw winkelwagen is momenteel uitverkocht. Verwijder het uit uw winkelwagen en probeer opnieuw.",
+      "productUnavailableNamed": "\"{name}\" is momenteel uitverkocht. Verwijder het uit uw winkelwagen en probeer opnieuw.",
+      "selectionInvalidNamed": "Een gekozen optie voor \"{name}\" is niet meer geldig. Pas dit artikel aan in uw winkelwagen en probeer opnieuw."
     }
   },
   "schema": {

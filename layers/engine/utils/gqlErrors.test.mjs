@@ -131,6 +131,22 @@ test('the delivery minimum and radius quoted come from the policy passed in, not
   })
 })
 
+test('a line-level error names the cart item when the caller knows it', () => {
+  const err = response('PRODUCT_NOT_FOUND', 'product p1 not found', { productId: 'p1' })
+  assert.deepEqual(describeGqlError(err, POLICY, { productName: 'Plateau 42 pièces' }), {
+    key: 'notify.errors.productNotFoundNamed',
+    params: { name: 'Plateau 42 pièces' },
+  })
+  assert.deepEqual(describeGqlError(err, POLICY), { key: 'notify.errors.productNotFound' })
+  assert.deepEqual(describeErrorCode('PRODUCT_UNAVAILABLE', POLICY, { productName: 'Gyoza' }), {
+    key: 'notify.errors.productUnavailableNamed',
+    params: { name: 'Gyoza' },
+  })
+  assert.deepEqual(describeErrorCode('PRODUCT_UNAVAILABLE', POLICY), {
+    key: 'notify.errors.productUnavailable',
+  })
+})
+
 test('a bare code (an issue of a quote) is described like the error that carries it', () => {
   assert.deepEqual(describeErrorCode('DELIVERY_MINIMUM_NOT_MET', POLICY, { minimum: '30' }), {
     key: 'cart.minimumDelivery',

@@ -28,6 +28,17 @@ const key =
   (value: string): Describe =>
   () => ({ key: value })
 
+/**
+ * A line-level code: names the item when the caller resolved `extensions.productId` to the cart's
+ * product name (`extensions.productName`), the generic sentence otherwise.
+ */
+const named =
+  (generic: string, withName: string): Describe =>
+  (ext) =>
+    typeof ext.productName === 'string' && ext.productName !== ''
+      ? { key: withName, params: { name: ext.productName } }
+      : { key: generic }
+
 const CODE_TABLE: Record<string, Describe> = {
   // Session
   UNAUTHENTICATED: key('notify.errors.sessionExpired'),
@@ -48,10 +59,13 @@ const CODE_TABLE: Record<string, Describe> = {
   // Basket
   ORDER_EMPTY: key('notify.errors.cartEmpty'),
   ORDER_TOO_MANY_ITEMS: key('notify.errors.orderTooManyItems'),
-  PRODUCT_NOT_FOUND: key('notify.errors.productNotFound'),
-  PRODUCT_UNAVAILABLE: key('notify.errors.productNotFound'),
+  PRODUCT_NOT_FOUND: named('notify.errors.productNotFound', 'notify.errors.productNotFoundNamed'),
+  PRODUCT_UNAVAILABLE: named(
+    'notify.errors.productUnavailable',
+    'notify.errors.productUnavailableNamed',
+  ),
   INVALID_QUANTITY: key('notify.errors.invalidQuantity'),
-  SELECTION_INVALID: key('notify.errors.selectionInvalid'),
+  SELECTION_INVALID: named('notify.errors.selectionInvalid', 'notify.errors.selectionInvalidNamed'),
   INVALID_PRICE: key('notify.errors.orderCreationFailed'),
   PRICE_CHANGED: key('notify.errors.priceChanged'),
 
@@ -154,9 +168,14 @@ const legacyCodeOf = (message: string): string | null => {
 /**
  * The translated message to show for a failed GraphQL call, or null when nothing specific is
  * known: the caller then shows its own generic text for the action (never the backend message).
- * `policy` is the ordering policy (`useOrderingPolicy().policy`) the numbers of the message come from.
+ * `policy` is the ordering policy (`useOrderingPolicy().policy`) the numbers of the message come from;
+ * `context` adds parameters the backend cannot know, e.g. `{ productName }` from the cart.
  */
-export function describeGqlError(raw: unknown, policy: OrderingPolicy): GqlErrorDescriptor | null {
+export function describeGqlError(
+  raw: unknown,
+  policy: OrderingPolicy,
+  context: Record<string, unknown> = {},
+): GqlErrorDescriptor | null {
   const err = unwrapGqlError(raw)
   if (!err) return null
 
@@ -166,7 +185,7 @@ export function describeGqlError(raw: unknown, policy: OrderingPolicy): GqlError
   }
 
   const code = err.code ?? legacyCodeOf(err.message)
-  return code ? describeErrorCode(code, policy, err.extensions) : null
+  return code ? describeErrorCode(code, policy, { ...err.extensions, ...context }) : null
 }
 
 /**

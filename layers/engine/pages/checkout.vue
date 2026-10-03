@@ -466,6 +466,7 @@ import { reportError } from '#engine/utils/reportError'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useGqlErrorMessage } from '#engine/composables/useGqlErrorMessage'
+import { unwrapGqlError } from '#engine/utils/gqlError'
 import { useI18n } from 'vue-i18n'
 import { deliveryMaxKm } from '#engine/utils/orderingPolicy'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
@@ -485,6 +486,12 @@ const { japaneseAccents = false } = useAppConfig().brand
 
 const { t, locale } = useI18n()
 const gqlErrorMessage = useGqlErrorMessage()
+// Names the cart item a line-level createOrder error points at (`extensions.productId`) in the message.
+const blockingProductName = (err: unknown): string | undefined => {
+  const productId = unwrapGqlError(err)?.extensions.productId
+  if (typeof productId !== 'string') return undefined
+  return cartStore.products.find((item) => item.product.id === productId)?.product.name
+}
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { applyDefaults } = useOrderExtras()
@@ -919,7 +926,9 @@ const handleCheckout = async () => {
       reportError(err, 'checkout.createOrder')
       hapticNotification('Error')
       notifications.notify({
-        message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed'),
+        message: gqlErrorMessage(err, 'notify.errors.orderCreationFailed', {
+          productName: blockingProductName(err),
+        }),
         persistent: false,
         duration: 5000,
         variant: 'error',

@@ -554,14 +554,18 @@
       "networkError": "Connexion impossible. Vérifiez votre réseau et réessayez.",
       "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants.",
       "orderTooManyItems": "Votre panier contient trop de produits différents (50 maximum).",
-      "productNotFound": "Un produit de votre panier n'est plus disponible. Retirez-le puis réessayez.",
+      "productNotFound": "Un article de votre panier n'est plus au menu. Retirez-le de votre panier puis réessayez.",
       "invalidQuantity": "La quantité d'un produit n'est pas valide (entre 1 et 99).",
       "selectionInvalid": "Une option choisie n'est plus valable. Modifiez ce produit dans votre panier puis réessayez.",
       "couponMinOrderNotMet": "Ce code promo demande un montant de commande plus élevé.",
       "couponAlreadyActive": "Vous avez déjà une commande en cours qui utilise un code promo. Réessayez une fois celle-ci terminée.",
       "cashAmountInvalid": "Le montant en espèces indiqué n'est pas valide.",
       "paymentFailed": "Le paiement n'a pas pu être initialisé. Veuillez réessayer.",
-      "priceChanged": "Le prix d'un article de votre panier a changé. Vérifiez votre panier et confirmez le nouveau prix."
+      "priceChanged": "Le prix d'un article de votre panier a changé. Vérifiez votre panier et confirmez le nouveau prix.",
+      "productNotFoundNamed": "« {name} » n'est plus au menu. Retirez-le de votre panier puis réessayez.",
+      "productUnavailable": "Un article de votre panier est épuisé pour le moment. Retirez-le de votre panier puis réessayez.",
+      "productUnavailableNamed": "« {name} » est épuisé pour le moment. Retirez-le de votre panier puis réessayez.",
+      "selectionInvalidNamed": "Une option choisie pour « {name} » n'est plus valable. Modifiez cet article dans votre panier puis réessayez."
     }
   },
   "schema": {
