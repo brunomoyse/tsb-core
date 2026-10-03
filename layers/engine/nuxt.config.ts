@@ -28,14 +28,13 @@ const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || ''
 const turnstile = 'https://challenges.cloudflare.com'
-const iconifyHost = 'https://api.iconify.design'
 const sentryHost = 'https://*.ingest.de.sentry.io'
 
 const csp = `${[
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''} ${iconifyHost}`,
+    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
     "font-src 'self' https://fonts.gstatic.com",
     `connect-src 'self' ${apiOrigin} ${wsOrigin}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
     `frame-src 'self' ${osm}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${turnstile}`,
