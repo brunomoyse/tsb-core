@@ -2,7 +2,7 @@
   <aside
     ref="asideRef"
     data-testid="side-cart"
-    class="bg-tsb-two rounded-l-xl flex flex-col divide-y divide-neutral-200 max-h-[calc(100vh-32px)] overflow-y-auto mt-4"
+    class="bg-tsb-two rounded-l-xl flex flex-col divide-y divide-neutral-200 max-h-[calc(100dvh-32px)] overflow-y-auto mt-4"
   >
     <!-- Header with Toggle -->
     <header class="px-4 py-5 flex flex-wrap items-center justify-between gap-x-2 gap-y-3">
@@ -22,8 +22,11 @@
           :aria-pressed="cartStore.collectionOption === option.value"
           :disabled="option.disabled"
           :title="option.disabled ? `${option.label}: ${$t('delivery.comingSoon')}` : undefined"
+          :aria-label="
+            option.disabled ? `${option.label} — ${$t('delivery.comingSoon')}` : undefined
+          "
           :class="[
-            'flex min-h-9 items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'flex min-h-11 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             option.disabled ? 'cursor-not-allowed opacity-40' : '',
             cartStore.collectionOption === option.value
               ? 'bg-white text-neutral-900 shadow-sm'
@@ -34,9 +37,9 @@
           <img alt="" :src="option.icon" class="w-4 h-4 shrink-0" />
           <span>{{ option.label }}</span>
           <span
-            v-if="option.value === 'PICKUP'"
-            class="rounded-full bg-tsb-four px-1 py-0.5 text-[10px] font-semibold text-primary-700"
-            >{{ $t('cart.pickupDiscountShort') }}</span
+            v-if="option.value === 'PICKUP' && policyParams.rate > 0"
+            class="rounded-full bg-tsb-four px-1 py-0.5 text-xs font-semibold text-primary-700"
+            >{{ $t('cart.pickupDiscountShort', policyParams) }}</span
           >
         </button>
       </div>
@@ -53,7 +56,7 @@
           :key="lineKeys[lineIndex]"
           data-testid="cart-item"
           data-cart-line
-          class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
+          class="group relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 p-3 bg-white rounded-xl"
           :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }"
         >
           <!-- Product Image -->
@@ -80,15 +83,18 @@
             </picture>
           </button>
 
-          <!-- Product Details -->
-          <div class="flex flex-col justify-between gap-2">
+          <!-- Product details: `contents`, so the title and price sit beside the picture while the line's controls
+                         take the full width of the line (they do not fit beside the picture in a narrow column) -->
+          <div class="contents">
             <!-- Product Info and Price -->
-            <div class="flex justify-between items-start gap-2">
+            <div class="flex min-w-0 justify-between items-start gap-2">
               <div class="flex flex-col min-w-0 flex-1">
                 <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                   {{ itemLabelMeta(item) }}
                 </p>
-                <h3 class="text-sm font-medium text-neutral-900 leading-snug line-clamp-2">
+                <h3
+                  class="text-sm font-medium text-neutral-900 leading-snug line-clamp-2 break-words"
+                >
                   {{ itemLabelName(item) }}
                 </h3>
                 <span v-if="itemChoice(item)" class="text-xs text-primary-700">
@@ -105,10 +111,10 @@
             </div>
 
             <!-- What the server quote says about this line, with the way out -->
-            <CartLineIssues :item="item" :line-key="lineKeys[lineIndex]" />
+            <CartLineIssues class="col-span-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
             <!-- Quantity Controls and Remove -->
-            <div class="flex items-center justify-between mt-auto">
+            <div class="col-span-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
               <!-- Customized lines carry per-line selections, so they are edited in the modal -->
               <div v-if="hasChoices(item)" class="flex items-center gap-2">
                 <span
@@ -128,6 +134,7 @@
               <QuantityStepper
                 v-else
                 size="sm"
+                :name="item.product.name"
                 :value="item.quantity"
                 :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
                 dec-testid="cart-item-decrement"
@@ -141,7 +148,7 @@
                 data-testid="cart-item-remove"
                 data-cart-remove
                 :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                class="min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @click="removeWithUndo(item)"
               >
                 {{ $t('cart.removeItem') }}
@@ -162,17 +169,20 @@
         </div>
         <div
           v-if="cartStore.collectionOption === 'DELIVERY'"
-          class="flex justify-between items-center text-sm text-neutral-600"
+          class="flex justify-between items-center gap-x-3 text-sm text-neutral-600"
         >
-          <span>{{ $t('cart.deliveryFee') }}:</span>
-          <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
+          <span class="shrink-0 whitespace-nowrap">{{ $t('cart.deliveryFee') }}:</span>
+          <span
+            v-if="!cartStore.address?.distance"
+            class="min-w-0 text-right text-neutral-600 italic text-xs"
+          >
             {{ $t('cart.deliveryTbd') }}
           </span>
           <span
             v-else-if="deliveryFeeCents === -1"
             class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right"
           >
-            {{ $t(deliveryUnavailableKey) }}
+            {{ $t(deliveryUnavailableKey, policyParams) }}
             <button
               type="button"
               data-testid="cart-out-of-zone-switch-to-pickup"
@@ -184,7 +194,7 @@
           </span>
           <span
             v-else-if="deliveryFeeCents === 0"
-            class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide"
+            class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide"
           >
             {{ $t('checkout.free') }}
           </span>
@@ -216,7 +226,7 @@
         </div>
         <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
           <span>{{ $t('cart.total') }}:</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span data-testid="cart-total" class="tabular-nums">{{
               formatCents(payableCents)
             }}</span></span
@@ -272,7 +282,7 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
@@ -281,17 +291,20 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { showProductCode = false, deliveryEnabled = true } = useAppConfig().brand
+const { deliveryEnabled } = useDeliveryMode()
+const { policyParams } = useOrderingPolicy()
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{
   isOrderingAvailable?: boolean
@@ -349,7 +362,7 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const getItemKey = (item: CartItem) => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
@@ -387,12 +400,12 @@ onUnmounted(() => {
 
 // Delivery options setup. A takeaway-only brand (brand.deliveryEnabled false)
 // Keeps delivery visible but disabled ("available soon").
-const collectionOptions = [
+const collectionOptions = computed(() => [
   {
     value: 'DELIVERY',
     label: t('cart.delivery'),
     icon: '/icons/moped-icon.svg',
-    disabled: !deliveryEnabled,
+    disabled: !deliveryEnabled.value,
   },
   {
     value: 'PICKUP',
@@ -400,48 +413,13 @@ const collectionOptions = [
     icon: '/icons/shopping-bag-icon.svg',
     disabled: false,
   },
-]
+])
 
 const handleOrderType = (option: string) => {
   const from = cartStore.collectionOption
   cartStore.collectionOption = option as 'DELIVERY' | 'PICKUP'
   trackEvent('cart_collection_option_changed', { from, to: option })
 }
-
-const itemLabelParts = (item: CartItem) =>
-  orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-  const parts = itemLabelParts(item)
-  // The internal menu code ("E1") only shows for brands that print it.
-  const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-  return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-  (item.selectedChoices?.length ?? 0) > 0
-    ? (item.selectedChoices ?? [])
-        .map((selection) => {
-          const choice = item.product.choices.find(
-            (productChoice) => productChoice.id === selection.choiceId,
-          )
-          if (!choice) return ''
-          return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-        })
-        .filter(Boolean)
-        .join(', ') || undefined
-    : orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-      }).choice
 
 // Cart actions
 const handleIncrementQuantity = (cartItem: CartItem): void => {

@@ -1,18 +1,14 @@
 <template>
   <div class="flex">
     <!-- Main Content -->
-    <div
-      ref="contentContainer"
-      class="w-full sm:w-[calc(100vw-142px)]"
-      :class="hasCartItems ? 'lg:w-[calc(67vw-71px)]' : 'lg:w-[calc(100vw-142px)]'"
-    >
+    <div ref="contentContainer" class="w-full min-w-0 flex-1">
       <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
       <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
       <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
       <div
         v-if="isClosed"
         data-testid="menu-restaurant-closed"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +33,7 @@
         v-else-if="isPreorderOnly && preorderTime"
         role="status"
         data-testid="menu-preorder-banner"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -62,17 +58,17 @@
         v-else-if="configLoadFailed"
         :message="$t('ordering.loadFailed')"
         :busy="configPending"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900"
         @retry="retryConfig()"
       />
 
       <!-- Sticky Categories Header -->
       <section
         ref="stickyHeader"
-        class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[80px] sm:top-0"
+        class="sticky z-20 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0"
       >
         <!-- Search + Filter Section -->
-        <section class="mb-4 px-4 space-y-1.5">
+        <section class="mb-4 px-0 sm:px-4 space-y-1.5">
           <!-- Search Bar (full-width, labeled) -->
           <div
             class="relative flex items-center rounded-2xl bg-tsb-two h-[44px] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-tsb-one"
@@ -124,7 +120,7 @@
               type="button"
               @click="toggleFilter('halal')"
               :aria-pressed="activeFilters.has('halal')"
-              class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :class="
                 activeFilters.has('halal')
                   ? 'bg-blue-700 text-white shadow-sm shadow-blue-200'
@@ -144,7 +140,7 @@
               type="button"
               @click="toggleFilter('vegetarian')"
               :aria-pressed="activeFilters.has('vegetarian')"
-              class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :class="
                 activeFilters.has('vegetarian')
                   ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-200'
@@ -164,7 +160,7 @@
               type="button"
               @click="toggleFilter('spicy')"
               :aria-pressed="activeFilters.has('spicy')"
-              class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :class="
                 activeFilters.has('spicy')
                   ? 'bg-red-500 text-white shadow-sm shadow-red-200'
@@ -187,7 +183,7 @@
         </section>
 
         <!-- Categories Scroll -->
-        <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
+        <section v-if="!searchValue.trim().length" class="relative mx-0 sm:mx-4 mb-2">
           <!-- Left gradient fade -->
           <div
             class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
@@ -213,7 +209,7 @@
             @mouseup="stopDrag"
             @mouseleave="stopDrag"
             :class="[
-              'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth snap-x snap-mandatory',
+              'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth motion-reduce:scroll-auto snap-x snap-mandatory',
               isDragging ? 'cursor-grabbing' : 'cursor-grab',
             ]"
           >
@@ -221,7 +217,7 @@
               v-for="cat in displayedCategories"
               :key="cat.id"
               :id="`category-card-${cat.id}`"
-              :active="activeCategory === cat.id"
+              :active="activeCategoryId === cat.id"
               :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
               class="snap-center"
               @select="scrollToCategory"
@@ -248,38 +244,18 @@
       </section>
 
       <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-      <div
-        v-if="showAllergenNotice"
-        class="mx-4 mb-2 h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]"
-      >
-        <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
-        <span class="flex-1 truncate">
-          {{ $t('menu.allergenNoticeShort') }}
-          <a :href="phoneHref" class="underline font-medium text-amber-900">{{ phoneLabel }}</a>
-        </span>
-        <button
-          type="button"
-          @click="dismissAllergenNotice"
-          class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-          :aria-label="$t('common.close')"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-3 w-3"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
+      <MenuAllergenNotice
+        :show="showAllergenNotice"
+        :phone-href="phoneHref"
+        :phone-label="phoneLabel"
+        @dismiss="dismissAllergenNotice"
+      />
 
       <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
-      <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
+      <section
+        v-if="!dataCategories && categoriesError"
+        class="max-w-7xl mx-auto px-0 sm:px-4 py-4"
+      >
         <LoadError
           :message="$t('menu.loadFailed')"
           :busy="categoriesPending"
@@ -290,10 +266,10 @@
       </section>
 
       <!-- Skeleton Loading State -->
-      <section v-else-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+      <section v-else-if="!dataCategories" class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
         <div v-for="i in 3" :key="i" class="space-y-4">
-          <div class="h-6 w-32 bg-neutral-200 rounded animate-pulse ml-4"></div>
-          <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
+          <div class="h-6 w-32 bg-neutral-200 rounded animate-pulse ml-0 sm:ml-4"></div>
+          <div class="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4">
             <div
               v-for="j in 4"
               :key="j"
@@ -304,7 +280,7 @@
       </section>
 
       <!-- Products Grid -->
-      <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+      <section v-else class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
         <div
           v-for="(cat, catIdx) in displayedCategories"
           :key="cat.id"
@@ -312,7 +288,7 @@
           class="space-y-4"
         >
           <!-- Category Title with Japanese bracket decoration -->
-          <div class="flex items-center gap-3 ml-4">
+          <div class="flex items-center gap-3 ml-0 sm:ml-4">
             <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true"
               >「</span
             >
@@ -330,13 +306,12 @@
           <!-- Product Cards -->
           <div
             v-if="cat.products.length"
-            class="grid grid-cols-2 gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+            class="grid grid-cols-2 gap-3 sm:gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
           >
             <ProductCard
               :index="(cardOffsets[catIdx] ?? 0) + idx"
               :product="prod"
               :ordering-disabled="!isCartAddAvailable"
-              class="min-width-[200px]"
               v-for="(prod, idx) in cat.products"
               @openProductModal="openModal(prod.id)"
               :key="prod.id"
@@ -377,7 +352,7 @@
     <!-- Desktop Cart Sidebar -->
     <aside
       v-if="hasCartItems"
-      class="hidden lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+      class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:min-w-[18.5rem] lg:shrink-0"
     >
       <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
     </aside>
@@ -385,14 +360,14 @@
     <ClientOnly>
       <Transition name="modal-backdrop">
         <div
-          v-if="route.query.product"
+          v-if="routedProductId"
           class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
           @click.self="closeModal"
         >
           <Transition name="modal-panel" appear>
             <ProductModal
-              :key="`${route.query.product}-${modalAttempt}`"
-              :product="route.query.product as string"
+              :key="`${routedProductId}-${modalAttempt}`"
+              :product="routedProductId"
               :ordering-disabled="!isCartAddAvailable"
               @close="closeModal"
               @retry="modalAttempt++"
@@ -420,7 +395,10 @@ import ProductCard from '~/components/menu/ProductCard.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
 import ProductModal from '~/components/menu/ProductModal.vue'
+import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import SideCart from '#engine/components/cart/SideCart.vue'
+import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
+import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
@@ -433,10 +411,20 @@ import { useTracking } from '#engine/composables/useTracking'
 import { buildMenuSchema } from '#engine/utils/menuSchema'
 import { inLanguageTag } from '#engine/utils/seoDefaults'
 import { searchFromQuery } from '#engine/utils/menuSearch'
+import {
+  baseCategories as baseCategoriesOf,
+  displayedCategories as displayedCategoriesOf,
+  flattenProducts,
+  searchProducts,
+} from '#engine/utils/menuCatalog'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 
 const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
+// The product open in the modal: only a plain `?product=<id>` (a repeated or empty parameter opens nothing).
+const routedProductId = computed(() =>
+  typeof route.query.product === 'string' && route.query.product ? route.query.product : null,
+)
 const router = useRouter()
 const { trackEvent } = useTracking()
 const { phoneHref, phoneLabel } = useBrandPhone()
@@ -478,7 +466,7 @@ const closeModal = () => {
 }
 
 // Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
-useBodyScrollLock(() => Boolean(route.query.product))
+useBodyScrollLock(() => Boolean(routedProductId.value))
 
 /**
  * GraphQL Query
@@ -518,6 +506,9 @@ const PRODUCT_CATEGORIES = gql`
           minSelections
           maxSelections
           sortOrder
+          choices {
+            id
+          }
         }
       }
     }
@@ -583,10 +574,7 @@ watch(liveProduct, (val) => {
 // A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
 const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
-const activeCategory = ref<string>('')
-const scrollContainer = ref<HTMLElement | null>(null)
 const isDragging = ref(false)
-const isScrollingToCategory = ref(false)
 const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
@@ -622,67 +610,42 @@ const toggleFilter = (filter: string) => {
 /**
  * Computed: Categories & Products
  */
-// Base categories with live updates merged and only visible products, sorted
+// The menu's catalogue rules are pure (engine, utils/menuCatalog.ts): live updates merged, only visible products, the search, the dietary filters.
 const baseCategories = computed(() =>
-  (dataCategories.value?.productCategories ?? [])
-    .map((cat) => ({
-      ...cat,
-      products: cat.products
-        .map((p) => {
-          const live = liveProductData.value[p.id]
-          return live ? ({ ...p, ...live } as Product) : p
-        })
-        .filter((p) => p.isVisible),
-    }))
-    .filter((cat) => cat.products.length)
-    .toSorted((a, b) => a.order - b.order),
+  baseCategoriesOf(dataCategories.value?.productCategories ?? [], liveProductData.value),
 )
 
 // All products flattened for search
-const allProducts = computed<Product[]>(() =>
-  baseCategories.value.flatMap((cat) => cat.products.map((p) => ({ ...p, category: cat }))),
-)
+const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.value))
 
 // Filtered list based on search query (all words must match)
-const filteredProducts = computed(() => {
-  const q = debouncedSearchValue.value.trim().toLowerCase()
-  if (!q) return allProducts.value
-  const words = q.split(/\s+/u)
-  return allProducts.value.filter((p) => {
-    const haystack = [p.name, p.code, p.category.name].filter(Boolean).join(' ').toLowerCase()
-    return words.every((w) => haystack.includes(w))
-  })
-})
+const filteredProducts = computed(() =>
+  searchProducts(allProducts.value, debouncedSearchValue.value),
+)
 
-// Apply dietary filters (AND logic: product must match ALL active filters)
-const dietaryFiltered = computed(() => {
-  const filters = activeFilters.value
-  if (filters.size === 0) return filteredProducts.value
-  return filteredProducts.value.filter((p) => {
-    if (filters.has('halal') && !p.isHalal) return false
-    if (filters.has('vegetarian') && !p.isVegetarian) return false
-    if (filters.has('spicy') && !p.isSpicy) return false
-    return true
-  })
-})
-
-// Categories displayed, grouping filtered products
-const displayedCategories = computed<ProductCategory[]>(() => {
-  const q = debouncedSearchValue.value.trim().toLowerCase()
-  if (!q && activeFilters.value.size === 0) return baseCategories.value
-  const grouped = Map.groupBy(dietaryFiltered.value, (prod) => prod.category.id)
-  return Array.from(grouped.entries())
-    .map(([, products]) => ({
-      ...products[0]!.category,
-      products,
-    }))
-    .toSorted((a, b) => a.order - b.order)
-})
+// Categories displayed: the whole menu, or the products matching the search and the dietary filters (AND logic) grouped back
+const displayedCategories = computed<ProductCategory[]>(() =>
+  displayedCategoriesOf(baseCategories.value, allProducts.value, {
+    query: debouncedSearchValue.value,
+    filters: activeFilters.value,
+    excludeComposer: false,
+  }),
+)
 
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() =>
   categoryCardOffsets(displayedCategories.value.map((cat) => cat.products.length)),
 )
+
+// Category scroll-spy and jump (engine composable shared with the other brand): the band starts under the sticky header, a jump lands under it through the page's scroll-padding-top.
+const categorySectionIds = computed(() => displayedCategories.value.map((cat) => cat.id))
+const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(
+  categorySectionIds,
+  { header: stickyHeader, selectFirst: true },
+)
+const scrollContainer = chipRowRef
+// The sticky header publishes the bottom edge it covers, so a focused card or a jump clears it.
+useStickyTopOffset(stickyHeader)
 
 /**
  * Utility: Update Arrow Visibility
@@ -716,30 +679,6 @@ const stopDrag = () => {
 }
 
 /**
- * Scroll-to-Category Method
- */
-const scrollToCategory = (categoryId: string) => {
-  const element = document.getElementById(`category-${categoryId}`)
-  if (!element || !stickyHeader.value) return
-
-  // Suppress observer during programmatic scroll and set active immediately
-  isScrollingToCategory.value = true
-  activeCategory.value = categoryId
-
-  const headerHeight = stickyHeader.value.offsetHeight
-  const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
-  const gap = 16
-  const position =
-    element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
-  window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
-
-  // Re-enable observer after smooth scroll completes
-  setTimeout(() => {
-    isScrollingToCategory.value = false
-  }, 600)
-}
-
-/**
  * Watchers
  */
 // Track search queries
@@ -750,29 +689,6 @@ watch(debouncedSearchValue, (newVal, oldVal) => {
   } else if (oldVal && oldVal.trim().length > 0) {
     trackEvent('search_cleared')
   }
-})
-
-// Initialize active category when list changes
-watch(
-  displayedCategories,
-  (cats) => {
-    if (!activeCategory.value && cats.length) activeCategory.value = cats[0]!.id
-  },
-  { immediate: true },
-)
-
-// Center active card on change
-watch(activeCategory, (newVal) => {
-  nextTick(() => {
-    if (!scrollContainer.value || !newVal) return
-    const card = document.getElementById(`category-card-${newVal}`)
-    if (!card) return
-
-    const container = scrollContainer.value
-    const scrollPosition =
-      card.offsetLeft - container.offsetLeft - container.clientWidth / 2 + card.offsetWidth / 2
-    container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
-  })
 })
 
 /**
@@ -870,45 +786,12 @@ watch(
 // A server-side listener would pin every rendered request (heap leak, 2026-10).
 if (import.meta.client) useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
-/**
- * IntersectionObserver: Scroll Spy
- */
-let observer: IntersectionObserver | null = null
-
 onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !isScrollingToCategory.value) {
-          activeCategory.value = entry.target.id.replace('category-', '')
-        }
-      })
-    },
-    {
-      threshold: 0.1,
-      rootMargin: '-80px 0px -40% 0px',
-    },
-  )
-
-  // Observe each category section
-  const observeSections = () => {
-    observer!.disconnect()
-    nextTick(() => {
-      displayedCategories.value.forEach((cat) => {
-        const el = document.getElementById(`category-${cat.id}`)
-        if (el) observer!.observe(el)
-      })
-    })
-  }
-
-  observeSections()
-  watch(displayedCategories, observeSections, { deep: true })
   updateScrollButtons()
   scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
 })
 
 onUnmounted(() => {
-  observer?.disconnect()
   scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
 })
 </script>

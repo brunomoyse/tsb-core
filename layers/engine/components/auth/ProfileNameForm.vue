@@ -54,7 +54,12 @@
       {{ errorMessage }}
     </div>
 
-    <UiButton block :disabled="loading || !firstName.trim() || !lastName.trim()" type="submit">
+    <UiButton
+      block
+      :disabled="loading || !firstName.trim() || !lastName.trim()"
+      :loading="loading"
+      type="submit"
+    >
       {{ $t('login.completeSignup') }}
     </UiButton>
   </form>

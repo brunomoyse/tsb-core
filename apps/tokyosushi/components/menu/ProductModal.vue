@@ -6,7 +6,7 @@
     aria-modal="true"
     aria-labelledby="product-modal-title"
     data-testid="product-modal"
-    class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+    class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90dvh] overflow-y-auto"
   >
     <button
       @click="emit('close')"
@@ -86,7 +86,7 @@
             v-if="p.isDiscountable"
             class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200"
           >
-            {{ $t('menu.pickupDiscountBadge') }}
+            {{ $t('menu.pickupDiscountBadge', policyParams) }}
           </span>
         </div>
 
@@ -136,15 +136,25 @@
                   v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
                   :key="choice.id"
                   :data-testid="'product-modal-choice-' + choice.id"
-                  class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
+                  class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200 max-[359px]:flex-col max-[359px]:items-stretch"
                 >
-                  <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
-                  <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-600">
-                    {{ toCents(choice.priceModifier) > 0 ? '+' : ''
-                    }}{{ formatPrice(choice.priceModifier) }}
+                  <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. Under 360px the stepper drops below the name, which keeps the full row width (words wrap at spaces, never mid-word). -->
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-sm text-neutral-900 break-words">{{
+                      choice.name
+                    }}</span>
+                    <span
+                      v-if="toCents(choice.priceModifier) !== 0"
+                      class="block whitespace-nowrap text-xs text-neutral-600"
+                    >
+                      {{ toCents(choice.priceModifier) > 0 ? '+' : ''
+                      }}{{ formatPrice(choice.priceModifier) }}
+                    </span>
                   </span>
                   <QuantityStepper
                     size="sm"
+                    class="max-[359px]:self-end"
+                    :name="choice.name"
                     :value="selectedChoiceQuantities[choice.id] ?? 0"
                     :dec-disabled="!((selectedChoiceQuantities[choice.id] ?? 0) > 0)"
                     :inc-disabled="!canIncrement(choice)"
@@ -168,8 +178,13 @@
           >
             {{ $t('menu.unavailable') }}
           </p>
-          <div class="flex items-center justify-between gap-4">
+          <!-- Under 480px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
+          <div
+            class="flex items-center justify-between gap-4 max-[479px]:flex-col max-[479px]:items-stretch"
+          >
             <QuantityStepper
+              class="max-[479px]:self-center"
+              :name="p.name"
               :value="quantity"
               :dec-disabled="quantity === 1"
               :inc-disabled="quantity === maxQuantity"
@@ -179,7 +194,7 @@
 
             <UiButton
               size="lg"
-              class="flex-1"
+              class="flex-1 max-[479px]:flex-none"
               data-testid="product-modal-add-to-cart"
               :disabled="!canOrder"
               @click="addToCart"
@@ -220,12 +235,16 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
 import { print } from 'graphql'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { toCents } from '#engine/utils/money'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { brand } from '#brand/brand'
+import { choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
@@ -233,6 +252,7 @@ const cartItemAdded = useEventBus(cartItemAddedKey)
 
 const { trackEvent } = useTracking()
 const { t } = useI18n()
+const { policyParams } = useOrderingPolicy()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 
@@ -359,8 +379,8 @@ if (editItem?.selectedChoices?.length) {
 }
 
 const choiceGroupDisplayName = (group: ProductChoiceGroup) => {
-  if (p?.category?.slug === 'menu-plateau') return t('menu.soup')
-  return group.name
+  const key = choiceGroupLabelKey(brand.choiceGroupLabels, p?.category?.slug, 1)
+  return key ? t(key) : group.name
 }
 
 // The button stays clickable while choices are missing so a click can point at
@@ -389,7 +409,7 @@ const groupTagClass = (group: ProductChoiceGroup) => {
 
 const flagFirstIncompleteGroup = (group: ProductChoiceGroup) => {
   showGroupErrors.value = true
-  groupElements.get(group.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  groupElements.get(group.id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' })
   shakingGroupId.value = group.id
   if (shakeTimeout) clearTimeout(shakeTimeout)
   shakeTimeout = setTimeout(() => {

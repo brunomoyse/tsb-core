@@ -24,11 +24,11 @@
         <!-- Kanji watermark -->
         <span
           v-if="japaneseAccents"
-          class="absolute bottom-0 right-2 text-8xl leading-none pointer-events-none select-none text-primary-500/[0.04]"
+          class="absolute bottom-0 right-2 text-8xl leading-none pointer-events-none select-none text-primary-500/[0.04] after:content-[attr(data-glyph)]"
+          data-glyph="注文"
           style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', serif"
           aria-hidden="true"
-          >注文</span
-        >
+        />
         <NuxtLinkLocale
           to="/me/orders"
           class="text-xs font-medium text-neutral-600 hover:text-primary-700 transition inline-flex items-center gap-1 group"
@@ -94,13 +94,15 @@
             v-for="order in activeOrders"
             :id="`order-card-${order.id}`"
             :key="order.id"
-            class="active-card relative bg-white rounded-xl border-l-[3px] border-l-primary-400"
+            :class="[
+              'active-card relative bg-white rounded-xl border-l-[3px] border-l-primary-400',
+              japaneseAccents ? 'active-card-seigaiha' : '',
+            ]"
           >
             <!-- Card header -->
             <button
               type="button"
               :aria-expanded="isExpanded(order.id)"
-              :aria-label="$t('me.orders.toggleOrder')"
               class="relative z-[1] w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
               @click="toggleOrder(order.id)"
             >
@@ -148,7 +150,7 @@
                     {{ $t(`cart.${order.type.toLowerCase()}`) }}
                   </span>
                   <span
-                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-primary-400 status-pulse" />
                     {{ getStatus(getTrackedOrder(order).status) }}
@@ -233,10 +235,9 @@
                   v-if="order.address"
                   class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80"
                 >
-                  <span
-                    class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium"
-                    >{{ $t('checkout.deliveryAddress') }}</span
-                  >
+                  <span class="text-xs text-neutral-600 uppercase tracking-widest font-medium">{{
+                    $t('checkout.deliveryAddress')
+                  }}</span>
                   <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">
                     {{ formatAddress(order.address) }}
                   </p>
@@ -253,10 +254,10 @@
                     <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0"
                       >x{{ item.quantity }}</span
                     >
-                    <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
+                    <span class="text-xs text-neutral-700 flex-1 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
-                        class="block text-[11px] text-neutral-600 truncate leading-tight"
+                        class="block text-xs text-neutral-600 truncate leading-tight"
                       >
                         {{ orderItemMeta(item) }}
                       </span>
@@ -343,7 +344,6 @@
             <button
               type="button"
               :aria-expanded="isExpanded(order.id)"
-              :aria-label="$t('me.orders.toggleOrder')"
               class="w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
               @click="toggleOrder(order.id)"
             >
@@ -394,7 +394,7 @@
                     {{ $t(`cart.${order.type.toLowerCase()}`) }}
                   </span>
                   <span
-                    class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                    class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
                     :class="statusBadgeClass(order.status)"
                   >
                     {{ getStatus(order.status) }}
@@ -458,7 +458,7 @@
                   "
                   class="mb-3 p-3 bg-red-50/70 rounded-lg border border-red-100/80"
                 >
-                  <span class="text-[10px] text-red-700 uppercase tracking-widest font-medium">{{
+                  <span class="text-xs text-red-700 uppercase tracking-widest font-medium">{{
                     $t('orderCompleted.cancellationReasonLabel')
                   }}</span>
                   <p class="mt-0.5 text-sm text-red-700">
@@ -471,10 +471,9 @@
                   v-if="order.address"
                   class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80"
                 >
-                  <span
-                    class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium"
-                    >{{ $t('checkout.deliveryAddress') }}</span
-                  >
+                  <span class="text-xs text-neutral-600 uppercase tracking-widest font-medium">{{
+                    $t('checkout.deliveryAddress')
+                  }}</span>
                   <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">
                     {{ formatAddress(order.address) }}
                   </p>
@@ -491,10 +490,10 @@
                     <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0"
                       >x{{ item.quantity }}</span
                     >
-                    <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
+                    <span class="text-xs text-neutral-700 flex-1 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
-                        class="block text-[11px] text-neutral-600 truncate leading-tight"
+                        class="block text-xs text-neutral-600 truncate leading-tight"
                       >
                         {{ orderItemMeta(item) }}
                       </span>
@@ -573,7 +572,7 @@
                 <!-- Arigatou micro-text -->
                 <span
                   v-if="japaneseAccents && isOrderSuccess(order.status)"
-                  class="block text-right mt-2 text-[10px] text-neutral-600 italic select-none pointer-events-none"
+                  class="block text-right mt-2 text-xs text-neutral-600 italic select-none pointer-events-none"
                   style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif"
                   aria-hidden="true"
                   >ありがとう</span
@@ -672,7 +671,6 @@
 import { computed, ref } from 'vue'
 import { formatDateTime, formatTime } from '#engine/utils/datetime'
 import { isOrderCompleted, useOrderTracking } from '#engine/composables/useOrderTracking'
-import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import LoadError from '#engine/components/LoadError.vue'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
@@ -681,18 +679,19 @@ import { formatAddress } from '#engine/utils/utils'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 import { print } from 'graphql/index'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
 import { useReorder } from '#engine/composables/useReorder'
 
-const { showProductCode = false, japaneseAccents = false } = useAppConfig().brand
-const { t, locale } = useI18n()
+const { japaneseAccents = false } = useAppConfig().brand
+const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 const formatDate = (iso: string) => formatDateTime(iso, dateLocale.value)
 
@@ -774,34 +773,7 @@ const {
   },
 })
 
-interface OrderItemLike {
-  product: {
-    code: string | null
-    name: string
-    category?: { name: string } | null
-    choices?: { id: string; name: string }[] | null
-  }
-  choice?: { name: string } | null
-  selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemParts = (item: OrderItemLike) =>
-  orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-
-const orderItemMeta = (item: OrderItemLike): string | undefined => {
-  const parts = orderItemParts(item)
-  // The internal menu code ("E1") only shows for brands that print it.
-  const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-  return meta || undefined
-}
-
-const orderItemName = (item: OrderItemLike): string => orderItemParts(item).name
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemMeta, orderItemName, orderItemChoice } = useOrderItemLabel()
 
 // ── Active / Past split ──
 
@@ -987,8 +959,10 @@ const accordionAfterLeave = (el: Element) => {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
-.reorder-btn:hover svg {
-  animation: spin-once 500ms ease;
+@media (hover: hover) {
+  .reorder-btn:hover svg {
+    animation: spin-once 500ms ease;
+  }
 }
 
 @keyframes spin-once {
@@ -1001,20 +975,22 @@ const accordionAfterLeave = (el: Element) => {
 }
 
 /* ── Hanko seal hover intensification ── */
-.past-card:hover .hanko-seal {
-  color: theme('colors.primary.500 / 45%');
-  border-color: theme('colors.primary.500 / 35%');
-  transition:
-    color 300ms ease,
-    border-color 300ms ease;
-}
-.past-card:hover .hanko-seal::before {
-  border-color: theme('colors.primary.500 / 22%');
-  transition: border-color 300ms ease;
+@media (hover: hover) {
+  .past-card:hover .hanko-seal {
+    color: theme('colors.primary.500 / 45%');
+    border-color: theme('colors.primary.500 / 35%');
+    transition:
+      color 300ms ease,
+      border-color 300ms ease;
+  }
+  .past-card:hover .hanko-seal::before {
+    border-color: theme('colors.primary.500 / 22%');
+    transition: border-color 300ms ease;
+  }
 }
 
-/* ── Seigaiha wave pattern on active cards ── */
-.active-card::before {
+/* ── Seigaiha wave pattern on active cards (brands with japaneseAccents only) ── */
+.active-card-seigaiha::before {
   content: '';
   position: absolute;
   top: 0;

@@ -96,7 +96,13 @@
         <p>{{ errorMessage }}</p>
       </div>
 
-      <UiButton block :disabled="loading" data-testid="login-submit" type="submit">
+      <UiButton
+        block
+        :disabled="loading"
+        :loading="loading"
+        data-testid="login-submit"
+        type="submit"
+      >
         {{ $t('login.sendCode') }}
       </UiButton>
     </form>
@@ -141,6 +147,7 @@
       <UiButton
         block
         :disabled="loading || code.length < 6"
+        :loading="loading"
         data-testid="login-verify"
         type="submit"
       >
@@ -186,6 +193,7 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
 import StepIndicator from '#engine/components/global/StepIndicator.vue'
 import { isValidEmail } from '#engine/lib/validators'
+import { authErrorKey, classifyAuthError } from '#engine/utils/authErrors'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
@@ -293,15 +301,7 @@ const validateEmailOnBlur = () => {
  * field), 5xx, 429, and unknown errors each get their own message so the user
  * knows what to try next.
  */
-const formatError = (error: unknown, fallback: string): string => {
-  const err = error as { response?: { status?: number }; statusCode?: number; message?: string }
-  const status = err?.response?.status ?? err?.statusCode
-
-  if (status === 429) return t('notify.errors.tooManyRequests')
-  if (status === undefined) return t('notify.errors.networkError')
-  if (status >= 500) return t('notify.errors.serverError')
-  return t(fallback)
-}
+const formatError = (error: unknown, fallback: string): string => t(authErrorKey(error, fallback))
 
 /*
  * Synchronous in-flight flags. The reactive `loading` ref drives the UI,
@@ -417,19 +417,10 @@ const onSubmitCode = async () => {
   } catch (error: unknown) {
     loading.value = false
     reportError(error, 'auth.otpVerify')
-    const err = error as { response?: { status?: number }; statusCode?: number }
-    const status = err?.response?.status ?? err?.statusCode
-    if (status === 429) {
-      trackEvent('login_error', { error_type: 'rate_limited' })
-      errorMessage.value = t('notify.errors.tooManyRequests')
-    } else if (status === undefined) {
-      errorMessage.value = t('notify.errors.networkError')
-    } else if (status >= 500) {
-      errorMessage.value = t('notify.errors.serverError')
-    } else {
-      trackEvent('login_error', { error_type: 'invalid_code' })
-      errorMessage.value = t('notify.errors.invalidCode')
-    }
+    const kind = classifyAuthError(error)
+    if (kind === 'rateLimited') trackEvent('login_error', { error_type: 'rate_limited' })
+    else if (kind === 'rejected') trackEvent('login_error', { error_type: 'invalid_code' })
+    errorMessage.value = t(authErrorKey(error, 'notify.errors.invalidCode'))
   } finally {
     /*
      * Always release the in-flight flag so retries can re-fire. The
@@ -536,10 +527,10 @@ const startIdpFlow = async (provider: string) => {
   } catch (error: unknown) {
     loading.value = false
     reportError(error, 'auth.idpStart')
-    const err = error as { response?: { status?: number }; statusCode?: number }
-    const status = err?.response?.status ?? err?.statusCode
     errorMessage.value =
-      status === 429 ? t('notify.errors.tooManyRequests') : t('notify.errors.oauthFailed')
+      classifyAuthError(error) === 'rateLimited'
+        ? t('notify.errors.tooManyRequests')
+        : t('notify.errors.oauthFailed')
   }
 }
 

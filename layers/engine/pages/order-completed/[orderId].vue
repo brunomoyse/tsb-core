@@ -94,18 +94,19 @@
     <div
       v-else-if="resolvingPayment"
       data-testid="order-completed-verifying"
+      role="status"
       class="flex flex-col items-center justify-center w-full max-w-md mt-16 gap-3"
     >
       <div
         class="w-8 h-8 border-2 border-neutral-300 border-t-primary-400 rounded-full animate-spin"
       />
-      <p class="text-sm text-neutral-600">
+      <h1 class="text-sm text-neutral-600">
         {{
           order
             ? $t('orderCompleted.payment.verifying', 'Verifying your payment…')
             : $t('orderCompleted.loading')
         }}
-      </p>
+      </h1>
     </div>
 
     <template v-else>
@@ -159,11 +160,10 @@
         <!-- Japanese thank you -->
         <p
           v-if="japaneseAccents"
-          class="mt-2 text-primary-300/50 text-xs tracking-[0.25em] oc-stagger-2"
+          class="mt-2 text-primary-300/50 text-xs tracking-[0.25em] oc-stagger-2 after:content-[attr(data-glyph)]"
+          data-glyph="ありがとうございます"
           aria-hidden="true"
-        >
-          ありがとうございます
-        </p>
+        />
 
         <!-- Estimated time badge -->
         <div
@@ -209,9 +209,13 @@
                 class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-colors hover:bg-tsb-one"
               >
                 <div class="flex-1 min-w-0 pr-3">
-                  <p class="text-sm font-medium text-neutral-900 truncate">
+                  <p class="text-sm font-medium text-neutral-900 break-words">
+                    <!-- The separator is followed by a real space: that is where a long line wraps (never mid-word). -->
                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                      <span v-if="i > 0" class="text-neutral-400 font-normal mx-1">·</span>
+                      <template v-if="i > 0"
+                        ><span class="text-neutral-400 font-normal ml-1" aria-hidden="true">·</span
+                        >{{ ' ' }}</template
+                      >
                       <span :class="part.muted ? 'text-neutral-600 font-normal' : ''">{{
                         part.text
                       }}</span>
@@ -224,11 +228,7 @@
                     >
                   </p>
                 </div>
-                <span
-                  class="text-xs font-semibold text-neutral-600 bg-neutral-100 rounded-full px-2.5 py-0.5 shrink-0"
-                >
-                  x{{ item.quantity }}
-                </span>
+                <span class="qty-pill"> x{{ item.quantity }} </span>
               </div>
             </div>
           </div>
@@ -333,18 +333,15 @@
 import { computed, watch } from 'vue'
 import { definePageMeta, ref, useRoute } from '#imports'
 import { formatDate, formatTime, isSameBrusselsDay } from '#engine/utils/datetime'
-import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import OrderStatusTimeline from '#engine/components/order/OrderStatusTimeline.vue'
 
 import { useIntervalFn, useNow } from '@vueuse/core'
 import { useOrderCompleted } from '#engine/composables/useOrderCompleted'
 import { useTracking } from '#engine/composables/useTracking'
 
-const {
-  showProductCode = false,
-  japaneseAccents = false,
-  orderCompletedImage,
-} = useAppConfig().brand
+const { japaneseAccents = false, orderCompletedImage } = useAppConfig().brand
 const heroImage = orderCompletedImage ?? {
   avif: '/images/tsb-takeaway-bag.avif',
   webp: '/images/tsb-takeaway-bag.webp',
@@ -380,35 +377,11 @@ const {
   liveUpdate,
 } = useOrderCompleted(orderId)
 
-interface OrderItemLike {
-  product: {
-    code: string | null
-    name: string
-    category?: { name: string } | null
-    choices?: { id: string; name: string }[] | null
-  }
-  choice?: { name: string } | null
-  selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
-  const parts = orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-  const segments: { text: string; muted: boolean }[] = []
-  if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true })
-  if (parts.category) segments.push({ text: parts.category, muted: true })
-  segments.push({ text: parts.name, muted: false })
-  return segments
-}
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemSegments, orderItemChoice } = useOrderItemLabel()
 
 // Schema.org Order structured data
 const config = useRuntimeConfig()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const paymentProblemTitle = computed(() =>
   paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Title`) : '',
@@ -416,8 +389,7 @@ const paymentProblemTitle = computed(() =>
 const paymentProblemBody = computed(() =>
   paymentOutcome.value ? t(`orderCompleted.payment.${paymentOutcome.value}Body`) : '',
 )
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 watch(
   order,

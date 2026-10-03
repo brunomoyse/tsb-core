@@ -1,5 +1,5 @@
 # Build context is the monorepo root. Keep it lean: everything the Dockerfile
-# needs is COPYed explicitly (package manifests, layers/, apps/tokyosushi/).
+# needs is COPYed explicitly (package manifests, layers/, apps/<APP>/).
 **/node_modules
 **/.output
 **/.nuxt

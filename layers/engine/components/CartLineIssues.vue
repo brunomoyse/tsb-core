@@ -20,7 +20,7 @@
           type="button"
           :data-testid="`cart-line-issue-action-${action}`"
           :class="[
-            'min-h-9 rounded-md px-2.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+            'min-h-11 rounded-md px-3 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
             index === 0
               ? 'bg-amber-700 text-white hover:bg-amber-800'
               : 'text-amber-900 underline underline-offset-2 hover:text-amber-800',
@@ -45,6 +45,7 @@ import type { CartItem } from '#engine/types'
 import { formatCents } from '#engine/lib/price'
 import { lineTotalCents } from '#engine/utils/pricing'
 import { quoteLineByKey } from '#engine/utils/orderQuote'
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { toCents } from '#engine/utils/money'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
@@ -109,7 +110,7 @@ const chooseSlot = async () => {
   const picker = import.meta.client ? document.getElementById(SLOT_PICKER_ID) : null
   if (picker) {
     // Already on the checkout page: bring the picker into view.
-    picker.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    picker.scrollIntoView({ behavior: scrollBehavior(), block: 'center' })
     window.setTimeout(() => picker.focus({ preventScroll: true }), 250)
     return
   }

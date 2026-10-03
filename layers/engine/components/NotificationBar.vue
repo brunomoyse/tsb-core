@@ -23,7 +23,7 @@
           <button
             v-if="action"
             type="button"
-            class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            class="flex-shrink-0 min-h-11 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="invokeAction"
           >
             {{ action.label }}
@@ -32,7 +32,7 @@
           <slot v-else-if="cookieConsent" name="action">
             <button
               type="button"
-              class="flex-shrink-0 min-h-9 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="flex-shrink-0 min-h-11 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               @click="close"
               :aria-label="$t('cookies.acceptAria')"
             >
@@ -201,15 +201,16 @@ onMounted(async () => {
 
 .progress-bar {
   width: 100%;
+  transform-origin: left;
   animation: toast-progress linear forwards;
 }
 
 @keyframes toast-progress {
   from {
-    width: 100%;
+    transform: scaleX(1);
   }
   to {
-    width: 0;
+    transform: scaleX(0);
   }
 }
 </style>

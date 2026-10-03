@@ -6,7 +6,8 @@
     v-bind="forwardedAttrs"
     :class="[
       'inline-flex min-h-11 items-center gap-1.5 rounded-xl font-medium transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 max-w-full',
-      compact ? 'px-2.5 py-1.5 text-[11px]' : 'px-3 py-2 text-xs',
+      'text-xs',
+      compact ? 'px-2.5 py-1.5' : 'px-3 py-2',
       stateClasses,
       $attrs.class as string | undefined,
     ]"
@@ -16,7 +17,7 @@
       v-if="state === 'inZone' || state === 'outOfZone'"
       :class="[
         'w-1.5 h-1.5 rounded-full shrink-0',
-        state === 'inZone' ? 'bg-emerald-500' : 'bg-primary-500',
+        state === 'inZone' ? 'bg-emerald-500' : 'bg-red-600',
       ]"
       aria-hidden="true"
     />
@@ -56,6 +57,7 @@ import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 defineOptions({ inheritAttrs: false })
 
@@ -72,6 +74,7 @@ const forwardedAttrs = computed(() => {
 const open = ref(false)
 const cartStore = useCartStore()
 const { t } = useI18n()
+const { policy } = useOrderingPolicy()
 // SSR-safe: cart store hydrates from localStorage post-mount; render 'notSet' until then.
 const isMounted = useMounted()
 
@@ -81,7 +84,7 @@ const state = computed<ChipState>(() => {
   if (!isMounted.value) return 'notSet'
   if (cartStore.collectionOption === 'PICKUP') return 'pickup'
   if (!cartStore.address) return 'notSet'
-  return deliveryZoneStatus(cartStore.address) === 'ok' ? 'inZone' : 'outOfZone'
+  return deliveryZoneStatus(policy.value, cartStore.address) === 'ok' ? 'inZone' : 'outOfZone'
 })
 
 const distanceKm = computed(() =>
@@ -112,7 +115,7 @@ const stateClasses = computed(() => {
     case 'inZone':
       return 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
     case 'outOfZone':
-      return 'bg-primary-50 text-primary-800 border border-primary-200 hover:bg-primary-100'
+      return 'bg-red-50 text-red-800 border border-red-200 hover:bg-red-100'
     case 'pickup':
       return 'bg-tsb-four text-primary-700 border border-primary-200/60 hover:bg-primary-100'
     default:

@@ -12,19 +12,19 @@
       </Head>
 
       <Body class="bg-ygf-bg overflow-x-hidden">
-        <NuxtLoadingIndicator color="#F58220" :height="2" />
+        <NuxtLoadingIndicator color="var(--ygf-orange)" :height="2" />
         <a
           href="#main-content"
           class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           {{ $t('common.skipToContent') }}
         </a>
-        <div class="min-h-screen flex flex-col" data-app-root>
+        <div class="min-h-dvh flex flex-col" data-app-root>
           <!-- display:contents — a plain <header> box would be TopNavbar's
                  containing block, exactly nav-height, so sticky couldn't stick. -->
           <header class="contents">
             <MobileNavbar />
-            <div class="mobile-only h-20" />
+            <div class="mobile-only h-[var(--nav-h)]" />
             <TopNavbar />
           </header>
 
@@ -39,7 +39,7 @@
                 <div class="space-y-3">
                   <img
                     src="/images/logos/logo-white.svg"
-                    :alt="`${brand.name} logo`"
+                    :alt="$t('common.logoAlt', { name: brand.name })"
                     width="120"
                     height="40"
                     class="h-10 w-auto"
@@ -48,25 +48,35 @@
                   <address class="not-italic text-sm leading-relaxed">
                     {{ brand.address.street }}<br />
                     {{ brand.address.postal }} {{ brand.address.city }}<br />
-                    <a :href="telHref(brand.phone)" class="hover:text-white transition-colors">{{
-                      brand.phone
-                    }}</a>
+                    <a
+                      :href="telHref(brand.phone)"
+                      class="inline-flex min-h-11 items-center hover:text-white transition-colors"
+                      >{{ brand.phone }}</a
+                    >
                   </address>
                 </div>
 
-                <nav :aria-label="$t('nav.secondary')" class="flex flex-col gap-2 text-sm">
-                  <NuxtLinkLocale class="hover:text-white transition-colors" to="/concept">{{
-                    $t('mkt.nav.concept')
-                  }}</NuxtLinkLocale>
-                  <NuxtLinkLocale class="hover:text-white transition-colors" to="/about">{{
-                    $t('mkt.nav.about')
-                  }}</NuxtLinkLocale>
-                  <NuxtLinkLocale class="hover:text-white transition-colors" to="/terms">{{
-                    $t('footer.terms')
-                  }}</NuxtLinkLocale>
-                  <NuxtLinkLocale class="hover:text-white transition-colors" to="/privacy">{{
-                    $t('footer.privacy')
-                  }}</NuxtLinkLocale>
+                <nav :aria-label="$t('nav.secondary')" class="flex flex-col gap-0 text-sm">
+                  <NuxtLinkLocale
+                    class="inline-flex min-h-11 items-center hover:text-white transition-colors"
+                    to="/concept"
+                    >{{ $t('mkt.nav.concept') }}</NuxtLinkLocale
+                  >
+                  <NuxtLinkLocale
+                    class="inline-flex min-h-11 items-center hover:text-white transition-colors"
+                    to="/about"
+                    >{{ $t('mkt.nav.about') }}</NuxtLinkLocale
+                  >
+                  <NuxtLinkLocale
+                    class="inline-flex min-h-11 items-center hover:text-white transition-colors"
+                    to="/terms"
+                    >{{ $t('footer.terms') }}</NuxtLinkLocale
+                  >
+                  <NuxtLinkLocale
+                    class="inline-flex min-h-11 items-center hover:text-white transition-colors"
+                    to="/privacy"
+                    >{{ $t('footer.privacy') }}</NuxtLinkLocale
+                  >
                 </nav>
 
                 <!-- Branded QR tiles from the YGF kit, labeled like the
@@ -129,7 +139,7 @@
                   href="https://nuagemagique.dev"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="hover:text-white/80 transition-colors"
+                  class="inline-flex min-h-11 items-center hover:text-white/80 transition-colors"
                   >nuagemagique.dev</a
                 >
               </div>

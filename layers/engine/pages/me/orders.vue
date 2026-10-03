@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import LoadError from '#engine/components/LoadError.vue'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
@@ -9,7 +10,6 @@ import { formatDateTime } from '#engine/utils/datetime'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'
 
-const { showProductCode = false } = useAppConfig().brand
 import { print } from 'graphql/index'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -19,12 +19,11 @@ import { useReorder } from '#engine/composables/useReorder'
 
 definePageMeta({ public: false })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()
 
-const dateLocaleMap: Record<string, string> = { fr: 'fr-BE', en: 'en-GB', zh: 'zh-CN', nl: 'nl-BE' }
-const dateLocale = computed(() => dateLocaleMap[locale.value] || 'fr-BE')
+const dateLocale = useDateLocale()
 
 useSeoMeta({
   title: t('schema.myOrders.title'),
@@ -79,31 +78,7 @@ const {
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
 const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))
 
-interface OrderItemLike {
-  product: {
-    code: string | null
-    name: string
-    category?: { name: string } | null
-    choices?: { id: string; name: string }[] | null
-  }
-  choice?: { name: string } | null
-  selections?: { choiceId: string; quantity: number }[] | null
-}
-
-const orderItemSegments = (item: OrderItemLike): { text: string; muted: boolean }[] => {
-  const parts = orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-  const segments: { text: string; muted: boolean }[] = []
-  if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true })
-  if (parts.category) segments.push({ text: parts.category, muted: true })
-  segments.push({ text: parts.name, muted: false })
-  return segments
-}
-
-const orderItemChoice = (item: OrderItemLike): string | undefined => orderItemChoiceText(item)
+const { orderItemSegments, orderItemChoice } = useOrderItemLabel()
 
 /* Live tracking (subscriptions, reconnect refetch, polling fallback, ?followOrder)
    is driven by watchers over the loaded orders: the query is client-only, so the
@@ -179,8 +154,8 @@ const getStatusColorClass = (status: string) => {
   const map: Record<string, string> = {
     DELIVERED: 'bg-green-50 text-green-800',
     PICKED_UP: 'bg-green-50 text-green-800',
-    CANCELLED: 'bg-primary-50 text-primary-700',
-    FAILED: 'bg-primary-50 text-primary-700',
+    CANCELLED: 'bg-red-50 text-red-700',
+    FAILED: 'bg-red-50 text-red-700',
   }
   return map[status] || 'bg-neutral-100 text-neutral-600'
 }
@@ -236,17 +211,16 @@ const getStatusColorClass = (status: string) => {
           type="button"
           :aria-expanded="isExpanded(order.id)"
           :aria-controls="`order-panel-${order.id}`"
-          :aria-label="$t('me.orders.toggleOrder')"
           class="w-full min-h-11 text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           @click="toggleOrder(order.id)"
         >
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-neutral-700 text-sm whitespace-nowrap">
+              <span class="font-semibold text-neutral-700 text-sm whitespace-nowrap">
                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
-              </h3>
+              </span>
               <span
-                class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
                 :class="
                   isOrderCompleted(order.status)
                     ? getStatusColorClass(order.status)
@@ -309,7 +283,7 @@ const getStatusColorClass = (status: string) => {
               "
               class="mb-3 p-3 bg-primary-50/70 rounded-xl"
             >
-              <span class="text-[11px] text-red-700 uppercase tracking-wider">{{
+              <span class="text-xs text-red-700 uppercase tracking-wider">{{
                 $t('orderCompleted.cancellationReasonLabel')
               }}</span>
               <p class="mt-0.5 text-sm text-red-700">
@@ -319,7 +293,7 @@ const getStatusColorClass = (status: string) => {
 
             <!-- Delivery Address -->
             <div v-if="order.address" class="mb-3 p-3 bg-white/60 rounded-xl">
-              <span class="text-[11px] text-neutral-600 uppercase tracking-wider">{{
+              <span class="text-xs text-neutral-600 uppercase tracking-wider">{{
                 $t('checkout.deliveryAddress')
               }}</span>
               <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">
@@ -334,9 +308,12 @@ const getStatusColorClass = (status: string) => {
                 :key="itemIdx"
                 class="flex items-center justify-between py-2 px-3 rounded-lg bg-white/60"
               >
-                <p class="text-sm text-neutral-800">
+                <p class="min-w-0 text-sm text-neutral-800 break-words">
                   <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                    <span v-if="i > 0" class="text-neutral-400 mx-1">·</span>
+                    <template v-if="i > 0"
+                      ><span class="text-neutral-400 ml-1" aria-hidden="true">·</span
+                      >{{ ' ' }}</template
+                    >
                     <span :class="part.muted ? 'text-neutral-600' : ''">{{ part.text }}</span>
                   </template>
                   <span
@@ -462,7 +439,9 @@ const getStatusColorClass = (status: string) => {
 /* Staggered entrance */
 .bento-cell {
   animation: bento-enter 0.5s ease-out both;
-  animation-delay: calc(var(--delay, 0) * 80ms);
+  animation-delay: calc(
+    min(var(--delay, 0), 8) * 40ms
+  ); /* capped: a long list must not make the last cell wait */
 }
 
 @keyframes bento-enter {

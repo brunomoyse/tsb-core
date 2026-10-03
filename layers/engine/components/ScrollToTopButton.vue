@@ -6,7 +6,7 @@
       type="button"
       @click="scrollToTop"
       :aria-label="t('common.toTop', 'Back to top')"
-      class="scroll-top-btn fixed right-4 z-30 w-10 h-10 bg-neutral-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
+      class="scroll-top-btn fixed right-4 z-30 w-11 h-11 bg-neutral-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
     >
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
+import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 
@@ -33,7 +34,7 @@ const onScroll = () => {
 }
 
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: scrollBehavior() })
 }
 
 onMounted(() => {

@@ -8,7 +8,7 @@
       data-testid="product-card"
       :data-product-id="product.id"
       :data-has-choices="hasChoices"
-      class="min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md"
+      class="isolate min-w-0 md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md"
     >
       <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
       <div
@@ -77,12 +77,13 @@
             aria-haspopup="dialog"
             data-testid="product-name"
             translate="no"
-            class="text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
+            class="relative max-w-full -my-2 py-2 text-black font-semibold text-sm text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
             :title="product.name"
             :aria-label="$t('menu.viewDetails', { name: product.name })"
             @click="emit('openProductModal')"
           >
-            {{ product.name }}
+            <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. -->
+            <span class="line-clamp-2">{{ product.name }}</span>
           </button>
           <span class="text-neutral-600 text-xs text-center">
             <template v-if="product?.pieceCount"
@@ -90,8 +91,7 @@
               {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template
             >
             <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
-              {{ product?.pieceCount || idx > 0 ? ' + ' : '' }}{{ group.maxSelections }}
-              {{ forcedChoiceGroupLabel(group) }}
+              {{ product?.pieceCount || idx > 0 ? ' + ' : '' }}{{ forcedChoiceGroupLabel(group) }}
             </template>
           </span>
         </div>
@@ -103,28 +103,28 @@
           class="flex justify-between items-center mt-1"
         >
           <template v-if="!stepperOpen">
-            <span class="text-black font-semibold text-sm">
+            <span class="text-black font-semibold text-base tabular-nums">
               {{ formatPrice(product.price) }}
             </span>
             <div>
               <button
                 v-if="!isInCart"
                 ref="addButtonRef"
-                :aria-label="$t('cart.addToCart')"
+                :aria-label="$t('cart.addNamed', { name: product.name })"
                 data-testid="product-add-to-cart"
-                class="flex items-center justify-center w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex items-center justify-center w-11 h-11 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                 type="button"
                 :disabled="orderingDisabled"
                 @click="addToCart"
               >
-                <img alt="" class="w-6 h-6" src="/icons/shopping-bag-icon.svg" />
+                <img alt="" aria-hidden="true" class="w-6 h-6" src="/icons/shopping-bag-icon.svg" />
               </button>
               <button
                 v-else
                 ref="countButtonRef"
-                class="flex items-center justify-center w-10 h-10 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer"
+                class="flex items-center justify-center w-11 h-11 rounded-xl bg-tsb-four text-primary-700 font-semibold border border-primary-200 hover:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 cursor-pointer"
                 type="button"
-                :aria-label="`${$t('nav.cart')}: ${cardQuantity}`"
+                :aria-label="$t('cart.inCartNamed', { name: product.name, count: cardQuantity })"
                 :class="{ 'animate-number-bounce': isQuantityBouncing }"
                 @click="showExpandedControls"
               >
@@ -136,6 +136,7 @@
             v-else
             ref="stepperRef"
             class="w-full"
+            :name="product.name"
             :value="cardQuantity"
             :bounce="isQuantityBouncing"
             :inc-disabled="cardQuantity >= MAX_ITEM_QUANTITY"
@@ -162,6 +163,8 @@ import { formatPrice } from '#engine/lib/price'
 import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
+import { brand } from '#brand/brand'
+import { choiceGroupCountLabel, choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
@@ -195,11 +198,20 @@ const forcedChoiceGroups = computed(() =>
     .toSorted((a, b) => a.sortOrder - b.sortOrder),
 )
 
-const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
-  if (product.category?.slug === 'menu-plateau') {
-    return t(group.maxSelections > 1 ? 'menu.soups' : 'menu.soup').toLowerCase()
-  }
-  return group.name.toLowerCase()
+// A brand label for the category ("2 soupes") wins; else the catalog's group name, with its option count for a pick-one group.
+const forcedChoiceGroupLabel = (group: {
+  name: string
+  maxSelections: number
+  choices?: { id: string }[]
+}) => {
+  const key = choiceGroupLabelKey(
+    brand.choiceGroupLabels,
+    product.category?.slug,
+    group.maxSelections,
+  )
+  return key
+    ? `${group.maxSelections} ${t(key).toLowerCase()}`
+    : choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0)
 }
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() =>

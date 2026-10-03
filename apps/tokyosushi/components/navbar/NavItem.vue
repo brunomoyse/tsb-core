@@ -1,9 +1,8 @@
 <template>
   <li>
     <component
-      :is="href ? 'a' : NuxtLinkLocale"
-      :to="href ? undefined : to"
-      :href="href"
+      :is="NuxtLinkLocale"
+      :to="to"
       :aria-label="ariaLabel || tooltipText"
       :aria-current="isActive ? 'page' : undefined"
       class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -51,17 +50,15 @@ import NavIcon from './NavIcon.vue'
 import { useRoute } from '#imports'
 
 interface NavItemProps {
-  /** Locale-less path, e.g. "/menu". Ignored when `href` is set. */
+  /** Locale-less path, e.g. "/menu". */
   to?: string
-  /** External target (e.g. a tel: link); renders a plain anchor. */
-  href?: string
   icon: string
   tooltipText?: string
   ariaLabel?: string
   badge?: number
 }
 
-const { to, href, icon, tooltipText, ariaLabel, badge = 0 } = defineProps<NavItemProps>()
+const { to, icon, tooltipText, ariaLabel, badge = 0 } = defineProps<NavItemProps>()
 
 const NuxtLinkLocale = resolveComponent('NuxtLinkLocale')
 
@@ -70,7 +67,7 @@ const route = useRoute()
 
 // Updated active state check using path
 const isActive = computed(() => {
-  if (href || !to) return false
+  if (!to) return false
   // Remove the first segment (locale) from route.path, e.g. "/fr/me" becomes "/me"
   const normalizedPath = route.path.replace(/^\/[^/]+/u, '')
   return normalizedPath === to || normalizedPath.startsWith(`${to}/`)

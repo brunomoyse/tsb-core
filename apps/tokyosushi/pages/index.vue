@@ -2,6 +2,7 @@
 import { RESTAURANT_TZ, getBrusselsParts, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useCartStore } from '#engine/stores/cart'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 definePageMeta({
   sitemap: { priority: 1, changefreq: 'daily' },
@@ -10,6 +11,7 @@ definePageMeta({
 const localizedUrl = useLocalizedUrl()
 const { t, locale } = useI18n()
 const cartStore = useCartStore()
+const { policyParams } = useOrderingPolicy()
 const { brand } = useAppConfig()
 const { phoneHref } = useBrandPhone()
 
@@ -71,7 +73,7 @@ const scrollToOpeningHours = () => {
 const firstFoldClass = computed(() => {
   const base =
     'flex flex-col gap-3 min-h-[34rem] sm:h-auto sm:gap-5 lg:block lg:relative lg:gap-0 lg:min-h-0'
-  return `${base} h-[calc(100dvh-5rem-1.5rem)]`
+  return `${base} h-[calc(100dvh-var(--nav-h)-1.5rem)]`
 })
 
 useJsonLd(
@@ -135,7 +137,7 @@ useHead({
     <!-- First fold: image card flexes on mobile; at lg the order panel floats as overlay on the image. -->
     <div :class="firstFoldClass">
       <div
-        class="relative flex-1 min-h-[clamp(11rem,30vh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl"
+        class="relative flex-1 min-h-[clamp(11rem,30dvh,14rem)] sm:h-96 lg:h-[32rem] lg:min-h-0 overflow-hidden rounded-2xl"
       >
         <picture>
           <source
@@ -151,7 +153,7 @@ useHead({
           <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
           <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
           <img
-            :alt="`${brand.name} Restaurant`"
+            :alt="$t('home.restaurantImageAlt', { name: brand.name })"
             class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
             src="/images/restaurant-illustrated.png"
             width="1024"
@@ -335,7 +337,7 @@ useHead({
           {{ $t('about.infoCards.freeDelivery') }}
         </p>
         <p class="text-neutral-600 text-sm leading-relaxed">
-          {{ $t('about.infoCards.freeDeliveryDesc') }}
+          {{ $t('about.infoCards.freeDeliveryDesc', policyParams) }}
         </p>
       </div>
       <div class="bg-tsb-two rounded-2xl p-5 text-center">
@@ -357,10 +359,10 @@ useHead({
           </svg>
         </div>
         <p class="font-semibold text-neutral-900 mb-1 text-[15px]">
-          {{ $t('about.infoCards.takeawayDiscount') }}
+          {{ $t('about.infoCards.takeawayDiscount', policyParams) }}
         </p>
         <p class="text-neutral-600 text-sm leading-relaxed">
-          {{ $t('about.infoCards.takeawayDiscountDesc') }}
+          {{ $t('about.infoCards.takeawayDiscountDesc', policyParams) }}
         </p>
       </div>
       <div class="bg-tsb-two rounded-2xl p-5 text-center">
@@ -612,8 +614,6 @@ useHead({
         </div>
         <!-- Cash -->
         <div
-          role="img"
-          aria-label="Cash"
           class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center gap-1"
         >
           <svg

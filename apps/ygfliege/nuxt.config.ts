@@ -3,15 +3,15 @@ import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Yangguofu Malatang Liège app — the main app for ygfliege.be. Extends the
-// shared engine layer and owns everything visual: pages, components, layouts,
-// theme, assets, copy, and the brand identity (brand.ts / app.config.ts /
-// locale overrides).
+// Shared engine layer and owns everything visual: pages, components, layouts,
+// Theme, assets, copy, and the brand identity (brand.ts / app.config.ts /
+// Locale overrides).
 //
 //   #engine → the shared layer (app files import engine code via this alias;
-//             engine-internal imports keep using ~/ which resolves per-layer).
+//             Engine-internal imports keep using ~/ which resolves per-layer).
 //   #brand  → this app's root, so engine files that import brand data
 //             (i18n.config.ts, server/routes/robots.txt.ts) and
-//             useAppConfig().brand resolve against this brand.
+//             UseAppConfig().brand resolve against this brand.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const appDir = fileURLToPath(new URL('.', import.meta.url))
@@ -25,16 +25,16 @@ export default defineNuxtConfig({
   },
 
   css: [
-    // main.css @imports components.css — the commerce vocabulary needs to
-    // share a PostCSS pass with the @tailwind directives, and every entry
-    // in this array is compiled independently.
+    // Main.css @imports components.css — the commerce vocabulary needs to
+    // Share a PostCSS pass with the @tailwind directives, and every entry
+    // In this array is compiled independently.
     '~/assets/css/main.css',
     // YGF design tokens (--ygf-* custom properties) + page background.
     '~/assets/css/brand.css',
   ],
 
   // Modules that are UI/brand concerns (theme + fonts). Engine registers the
-  // rest (i18n, pinia, sitemap, sentry); module arrays concat across layers.
+  // Rest (i18n, pinia, sitemap, sentry); module arrays concat across layers.
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/google-fonts'],
 
   $meta: {
@@ -56,6 +56,8 @@ export default defineNuxtConfig({
             'Yangguofu Malatang à Liège — composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.',
         },
         { name: 'theme-color', content: '#F58220' },
+        // Light only (no dark theme): stops Android auto-dark from inverting the UI.
+        { name: 'color-scheme', content: 'only light' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
@@ -66,7 +68,7 @@ export default defineNuxtConfig({
   },
 
   // Inter for body text, Noto Sans SC for headings + CJK, Noto Serif SC for
-  // the Chinese calligraphy accents (杨国福麻辣烫) — per GUIDELINES.md.
+  // The Chinese calligraphy accents (杨国福麻辣烫) — per GUIDELINES.md.
   googleFonts: {
     families: {
       Inter: [400, 500, 600, 700],
@@ -95,8 +97,8 @@ export default defineNuxtConfig({
   },
 
   // Per-subdirectory long cache headers for static assets. Nitro's
-  // public-asset handler sets Cache-Control directly; routeRules headers
-  // don't override it.
+  // Public-asset handler sets Cache-Control directly; routeRules headers
+  // Don't override it.
   nitro: {
     publicAssets: [
       { baseURL: '/images', dir: `${appDir}public/images`, maxAge: 60 * 60 * 24 * 365 },

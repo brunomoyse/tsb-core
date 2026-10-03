@@ -3,6 +3,12 @@
   "home": {
     "heroTagline": "麻辣烫 · 草本骨汤 · 列日"
   },
+  "error": {
+    "title404": "页面未找到",
+    "notFound": "看起来你迷路了…… 别担心，一碗热腾腾的麻辣烫在等着你！",
+    "title500": "厨房出了点小状况",
+    "serverError": "福仔正在厨房忙碌，但出了点问题。请稍后再试。"
+  },
   "schema": {
     "siteDescription": "在列日自选搭配你的麻辣烫 — 草本骨汤现点现煮",
     "cuisine": "中餐",
@@ -435,11 +441,6 @@
     "ingredientsSummary": "{count} 种食材"
   },
   "nav": {
-    "primary": "主导航",
-    "secondary": "页脚链接",
-    "callRestaurant": "致电餐厅"
-  },
-  "common": {
-    "clear": "清除"
+    "secondary": "页脚链接"
   }
 }

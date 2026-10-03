@@ -5,7 +5,7 @@
     aria-modal="true"
     aria-labelledby="bowl-composer-title"
     data-testid="bowl-composer"
-    class="bg-white w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
+    class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
     @click.stop
   >
     <!-- Header -->
@@ -116,7 +116,7 @@
           <button
             type="button"
             class="stepper-btn"
-            :aria-label="$t('cart.decreaseQty')"
+            :aria-label="$t('cart.decreaseQtyOf', { name: p?.name ?? $t('composer.title') })"
             :disabled="quantity <= 1"
             @click="quantity--"
           >
@@ -126,7 +126,7 @@
           <button
             type="button"
             class="stepper-btn"
-            :aria-label="$t('cart.increaseQty')"
+            :aria-label="$t('cart.increaseQtyOf', { name: p?.name ?? $t('composer.title') })"
             :disabled="quantity >= MAX_QUANTITY"
             @click="quantity++"
           >
@@ -251,7 +251,7 @@ const { data: dataProduct } = await useGqlQuery<{ product: Product }>(
 const p = dataProduct.value?.product
 
 // Kept as one object so ChoiceGroupPicker receives the whole selection API;
-// destructured alongside for local template use.
+// Destructured alongside for local template use.
 const choicesApi = useProductChoices(p, quantity)
 const {
   choiceGroups,

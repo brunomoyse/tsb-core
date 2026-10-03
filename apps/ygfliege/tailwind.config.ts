@@ -1,13 +1,19 @@
 import animate from 'tailwindcss-animate'
 
+/** Brand orange. GUIDELINES.md says #F58220; the franchisor's design kit uses #EB6100 and is awaiting a decision, so the
+ *  value stays this one. It is spelled once here for Tailwind; brand.css (--ygf-orange) and the theme-color meta in
+ *  nuxt.config.ts are the only other places, and the loading bar reads the CSS variable. See layers/engine/TOKENS.md. */
+const YGF_ORANGE = '#F58220'
+
 /** Yangguofu Malatang Liège theme. Palette, fonts, radii and warm shadows come
  *  from the official brand guide (malatang GUIDELINES.md). The shadcn tokens,
  *  keyframes and container settings are shared scaffolding (same as the other
  *  brand apps).
  *  @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ['class'],
-  safelist: ['dark'],
+  /* No dark theme: neither brand defines one (the page declares color-scheme: only light) and no `dark:` utility is used.
+       `hoverOnlyWhenSupported` wraps every `hover:` in @media (hover: hover), so a lift or tint does not stick after a tap. */
+  future: { hoverOnlyWhenSupported: true },
   prefix: '',
 
   theme: {
@@ -20,10 +26,10 @@ module.exports = {
     },
     extend: {
       // YGF brand tokens. `ygf` = primary orange scale + supporting
-      // neutrals; class names stay stable if hex values evolve.
+      // Neutrals; class names stay stable if hex values evolve.
       colors: {
         ygf: {
-          DEFAULT: '#F58220',
+          DEFAULT: YGF_ORANGE,
           light: '#FDBA74',
           dark: '#D96A10',
           bg: '#FFF7ED',
@@ -34,11 +40,25 @@ module.exports = {
           white: '#FFFFFF',
           success: '#2E8B57',
           // Success text/fill that passes AA: 5.33:1 on white, 4.65+ on the
-          // orange tints; #2E8B57 is 4.25 on white.
+          // Orange tints; #2E8B57 is 4.25 on white.
           'success-dark': '#1F7A4A',
           error: '#D32F2F',
           // Warm border tint, same value as --border-default.
           border: 'rgba(242, 123, 32, 0.12)',
+        },
+        // Warm neutrals replace Tailwind's default cool `gray` scale, so a stray gray-* utility reads as part of the brand.
+        // 400 is decor only (about 2.7:1 on white); 500 passes on white (4.8:1) but not on cream (4.43:1); use 600 and up for text.
+        gray: {
+          50: '#FAF8F5',
+          100: '#F5F1EC',
+          200: '#E8E2DA',
+          300: '#D6CEC4',
+          400: '#A39A90',
+          500: '#7A7168',
+          600: '#5F574F',
+          700: '#4A433D',
+          800: '#332E29',
+          900: '#1A1A1A',
         },
         // Neutral text/surface grays, matching --ygf-gray-* in brand.css
         // (intermediate steps interpolated).
@@ -54,14 +74,14 @@ module.exports = {
         },
         'ygf-orange': {
           // Bare `ygf-orange` utilities (ring-ygf-orange, etc.) need
-          // this DEFAULT; without it they silently emit nothing.
-          DEFAULT: '#F58220',
+          // This DEFAULT; without it they silently emit nothing.
+          DEFAULT: YGF_ORANGE,
           50: '#FFF7ED',
           100: '#FFEDD5',
           200: '#FED7AA',
           300: '#FDBA74',
           400: '#FB923C',
-          500: '#F58220',
+          500: YGF_ORANGE,
           600: '#D96A10',
           700: '#C2570C',
           800: '#9A3412',
@@ -76,9 +96,9 @@ module.exports = {
         // `border-subtle` — faintest warm hairline (--border-subtle).
         subtle: 'rgba(242, 123, 32, 0.08)',
         // Theme contract shared with every brand app: the engine layer's
-        // components only use these names (primary-N accent scale,
-        // neutral-N neutrals, tsb-one..four surfaces) and each brand
-        // maps them. red-* stays reserved for errors.
+        // Components only use these names (primary-N accent scale,
+        // Neutral-N neutrals, tsb-one..four surfaces) and each brand
+        // Maps them. red-* stays reserved for errors.
         neutral: {
           50: '#FAFAFA',
           100: '#F5F5F5',
@@ -92,10 +112,10 @@ module.exports = {
           900: '#1A1A1A',
         },
         tsb: {
-          one: { DEFAULT: '#FFF7ED' }, // page background
-          two: { DEFAULT: '#FDF5EC' }, // container surface (cream)
-          three: { DEFAULT: '#FDBA74' }, // decorative
-          four: { DEFAULT: '#FFEDD5' }, // selected / active
+          one: { DEFAULT: '#FFF7ED' }, // Page background
+          two: { DEFAULT: '#FDF5EC' }, // Container surface (cream)
+          three: { DEFAULT: '#FDBA74' }, // Decorative
+          four: { DEFAULT: '#FFEDD5' }, // Selected / active
         },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -108,47 +128,23 @@ module.exports = {
           200: '#FED7AA',
           300: '#FDBA74',
           400: '#FB923C',
-          500: '#F58220',
+          500: YGF_ORANGE,
           600: '#D96A10',
           700: '#C2570C',
           800: '#9A3412',
           900: '#7C2D12',
           // Bare `primary` (bg-primary, border-primary, ring-primary) is the
           // AA-safe orange: white on #F58220 is 2.59:1. The brand orange
-          // stays `ygf` / --ygf-orange (decor).
+          // Stays `ygf` / --ygf-orange (decor).
           DEFAULT: '#C2570C', // --ygf-orange-on-white
           foreground: 'hsl(var(--primary-foreground))',
           hover: '#9A3412',
           soft: '#FFEDD5',
         },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
       },
       // Contract overrides where the raw orange scale fails contrast: solid
-      // fills and text use the AA-safe "on-white" oranges (see brand.css),
-      // and neutral hairlines stay warm-tinted per the guide.
+      // Fills and text use the AA-safe "on-white" oranges (see brand.css),
+      // And neutral hairlines stay warm-tinted per the guide.
       backgroundColor: {
         primary: { 500: '#C2570C', 600: '#C2570C', 700: '#9A3412' },
       },
@@ -165,19 +161,32 @@ module.exports = {
         },
       },
       fontFamily: {
-        // Headings + CJK display (700/900 per guide).
-        display: ['"Noto Sans SC"', 'Inter', 'system-ui', 'sans-serif'],
+        // Headings: Inter for Latin (as ygfliege.be), Noto Sans SC for the CJK glyphs; zh headings switch to
+        // Noto Serif SC through the `:lang(zh)` rule in main.css.
+        display: ['Inter', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
         // Body text.
-        body: ['Inter', '"Noto Sans"', 'system-ui', 'sans-serif'],
+        body: ['Inter', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
         // Chinese calligraphy accents (杨国福麻辣烫).
         serifzh: ['"Noto Serif SC"', 'serif'],
+      },
+      /* One container width (the vitrine's --container-max, 1200px) for header, footer, menu and marketing sections:
+               the shared `max-w-7xl` / `max-w-6xl` wrappers resolve to it in this brand. */
+      maxWidth: {
+        '6xl': '1200px',
+        '7xl': '1200px',
+      },
+      /* 14px floor for secondary text (GUIDELINES.md §3.3): `text-xs` is 14px in this brand, so no engine or app template
+               can set body-adjacent text smaller. Logo compositions, legal footnotes and the like opt out with an explicit
+               rem value (e.g. text-[0.75rem]). The arbitrary 10/11px sizes are lifted in main.css. */
+      fontSize: {
+        xs: ['0.875rem', { lineHeight: '1.25rem' }],
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
         // Brand radii per guide: cards 12px, large surfaces 24px,
-        // pill buttons 48px.
+        // Pill buttons 48px.
         'ygf-sm': '6px',
         'ygf-card': '12px',
         'ygf-lg': '24px',
@@ -185,6 +194,13 @@ module.exports = {
       },
       // Warm orange-tinted shadows — the guide forbids cold gray shadows.
       boxShadow: {
+        // Tailwind's default scale, re-tinted warm: a stray `shadow-md` inherits the brand, never a grey shadow.
+        DEFAULT: '0 2px 8px rgba(242, 123, 32, 0.08)',
+        sm: '0 1px 4px rgba(242, 123, 32, 0.06)',
+        md: '0 4px 20px rgba(242, 123, 32, 0.08)',
+        lg: '0 8px 30px rgba(242, 123, 32, 0.10)',
+        xl: '0 12px 40px rgba(242, 123, 32, 0.12)',
+        '2xl': '0 20px 60px rgba(242, 123, 32, 0.16)',
         'ygf-sm': '0 2px 8px rgba(242, 123, 32, 0.06)',
         'ygf-md': '0 4px 20px rgba(242, 123, 32, 0.08)',
         'ygf-lg': '0 8px 40px rgba(242, 123, 32, 0.12)',

@@ -3,7 +3,7 @@
     <button
       type="button"
       :data-testid="decTestid"
-      :aria-label="$t('cart.decreaseQty')"
+      :aria-label="name ? $t('cart.decreaseQtyOf', { name }) : $t('cart.decreaseQty')"
       :disabled="decDisabled"
       :class="BUTTON"
       @click="emit('decrement')"
@@ -22,7 +22,7 @@
       ref="incButton"
       type="button"
       :data-testid="incTestid"
-      :aria-label="$t('cart.increaseQty')"
+      :aria-label="name ? $t('cart.increaseQtyOf', { name }) : $t('cart.increaseQty')"
       :disabled="incDisabled"
       :class="BUTTON"
       @click="emit('increment')"
@@ -52,8 +52,11 @@ const {
   decDisabled = false,
   incDisabled = false,
   bounce = false,
+  name = undefined,
 } = defineProps<{
   value: number
+  /** What the stepper changes ("Increase quantity of {name}"): without it every stepper on a page is announced the same. */
+  name?: string
   size?: keyof typeof ICON
   decDisabled?: boolean
   incDisabled?: boolean

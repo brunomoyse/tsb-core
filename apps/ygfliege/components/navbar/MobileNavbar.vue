@@ -5,26 +5,8 @@
     class="mobile-only bg-white text-gray-700 fixed z-50 h-20 w-full"
   >
     <div class="relative px-4 flex items-center h-full mx-auto">
-      <!-- Mobile Logo -->
-      <div class="flex items-center shrink-0">
-        <Logo
-          :aria-label="$t('nav.home')"
-          :alt="logoAlt"
-          class="list-none"
-          icon="/images/logos/logo-color.svg"
-          to="/"
-          :size="56"
-        />
-      </div>
-
-      <div
-        v-if="typeof currentRoute.name === 'string' && currentRoute.name?.startsWith('menu')"
-        class="absolute left-1/2 -translate-x-1/2 min-w-0 max-w-[148px]"
-      >
-        <ClientOnly>
-          <DeliveryZoneChip compact class="min-w-0 w-full" />
-        </ClientOnly>
-      </div>
+      <!-- Logo with its name (never the circle alone, GUIDELINES.md §2.2) -->
+      <BrandLockup />
 
       <!-- Right part -->
       <div class="flex items-center ml-auto shrink-0">
@@ -56,7 +38,7 @@
             ref="menuRef"
             :inert="!isMenuOpen"
             :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
-            class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto"
+            class="fixed top-[var(--nav-h)] left-0 w-full h-[calc(100dvh-var(--nav-h))] p-4 overflow-y-auto"
           >
             <!-- Top Section -->
             <div class="flex flex-col items-center space-y-6 mt-4">
@@ -64,7 +46,6 @@
                 <li>
                   <Logo
                     :aria-label="$t('nav.home')"
-                    :alt="logoAlt"
                     class="mb-6"
                     icon="/images/logos/logo-white.svg"
                     to="/"
@@ -95,26 +76,9 @@
 
                 <LanguagePicker
                   :label="$t('nav.language')"
-                  alt="Translate Icon"
                   class="justify-center"
                   icon="/icons/translate-icon.svg"
-                  tooltipText="Change Language"
                 />
-
-                <!-- Divider -->
-                <li class="w-full border-t border-white/20 my-2"></li>
-
-                <!-- Phone (tap-to-call) -->
-                <li>
-                  <a
-                    :href="telHref(brand.phone)"
-                    :aria-label="$t('nav.callRestaurant')"
-                    class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-                    @click="closeMenu"
-                  >
-                    <span class="text-base font-medium">{{ nationalPhone(brand.phone) }}</span>
-                  </a>
-                </li>
               </ul>
             </div>
 
@@ -128,27 +92,19 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch } from '#imports'
+import { computed, ref, watch } from '#imports'
+import BrandLockup from './BrandLockup.vue'
 import CartButton from '#engine/components/cart/CartButton.vue'
-const DeliveryZoneChip = defineAsyncComponent(
-  () => import('#engine/components/delivery/DeliveryZoneChip.vue'),
-)
 import LanguagePicker from './LanguagePicker.vue'
-import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { nationalPhone, telHref } from '#engine/utils/phone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useMediaQuery, useMounted } from '@vueuse/core'
-import { useRoute } from 'vue-router'
 
-const currentRoute = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const { brand } = useAppConfig()
-const logoAlt = `${brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 
@@ -184,7 +140,7 @@ const onEscape = (event: KeyboardEvent) => {
   if (!isMenuOpen.value) return
   const target = event.target as HTMLElement | null
   if (
-    target?.closest('[role="listbox"]') ||
+    target?.closest('[data-language-panel]') ||
     (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')
   )
     return
@@ -192,10 +148,10 @@ const onEscape = (event: KeyboardEvent) => {
 }
 
 /*
- * `.mobile-only` hides this whole navbar from 641px up (rotating a phone to landscape): the hamburger is gone, so an open menu
+ * `.mobile-only` hides this whole navbar from 640px up (rotating a phone to landscape): the hamburger is gone, so an open menu
  * must close or its scroll lock would stay on a page nobody can unlock.
  */
-const isWide = useMediaQuery('(min-width: 641px)')
+const isWide = useMediaQuery('(min-width: 640px)')
 watch(isWide, (wide) => {
   if (wide) closeMenu()
 })
@@ -224,33 +180,28 @@ watch(
 .hamburger span {
   position: absolute;
   left: 50%;
+  top: 50%;
   width: 24px;
   height: 2px;
   border-radius: 9999px;
   background-color: currentColor;
-  transform: translateX(-50%);
+  /* The bars move with transform only (the old top transition animated layout). */
+  transform: translate(-50%, calc(-50% - 8px));
   transition:
     transform 0.3s ease,
-    opacity 0.3s ease,
-    top 0.3s ease;
-}
-
-.hamburger span:nth-child(1) {
-  top: calc(50% - 8px);
+    opacity 0.3s ease;
 }
 
 .hamburger span:nth-child(2) {
-  top: 50%;
   transform: translate(-50%, -50%);
 }
 
 .hamburger span:nth-child(3) {
-  top: calc(50% + 8px);
+  transform: translate(-50%, calc(-50% + 8px));
 }
 
 /* Transform the hamburger into an X when active */
 .hamburger-active span:nth-child(1) {
-  top: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -260,7 +211,6 @@ watch(
 }
 
 .hamburger-active span:nth-child(3) {
-  top: 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
@@ -271,7 +221,7 @@ watch(
        white link text clears WCAG AA (4.50:1 vs 2.59:1). */
   background-color: var(--ygf-orange-on-white);
   color: var(--ygf-white);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -306,8 +256,8 @@ watch(
   opacity: 0;
   transform: translateX(-10px);
   transition:
-    opacity 0.2s ease-out,
-    transform 0.2s ease-out;
+    opacity var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
   transition-delay: 0s;
 }
 
@@ -315,8 +265,8 @@ watch(
   opacity: 1;
   transform: translateX(0);
   transition:
-    opacity 0.2s ease-out,
-    transform 0.2s ease-out;
+    opacity var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
 }
 .menu-open li:nth-child(1) {
   transition-delay: 0.05s;

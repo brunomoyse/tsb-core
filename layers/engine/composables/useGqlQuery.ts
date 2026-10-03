@@ -2,6 +2,7 @@
 import type { AsyncData, NuxtApp } from 'nuxt/app'
 import { type DocumentNode, print } from 'graphql'
 import { useAsyncData, useNuxtApp } from '#imports'
+import type { Ref } from 'vue'
 import { gqlQueryKey } from '../utils/gqlQueryKey'
 import { useI18n } from 'vue-i18n'
 
@@ -18,6 +19,19 @@ interface Options {
    * keys, so there is nothing to join): the layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
    */
   dedupe?: 'cancel' | 'defer'
+  /**
+   * An older document for a backend that does not know a field of the main one (a newer field added to a shared query).
+   * The main document is asked first; when the error says the backend does not know it (`isUnsupported`), `unsupported`
+   * is set (shared, so it is remembered for the whole app) and `query` is asked instead, now and on every later run.
+   * The cache key stays the main document's. `variables` are what the legacy document is asked with (the main
+   * document's by default): a document must not be sent a variable it does not declare, which a server rejects.
+   */
+  legacy?: {
+    query: string | DocumentNode
+    variables?: Vars
+    isUnsupported: (err: unknown) => boolean
+    unsupported: Ref<boolean>
+  }
 }
 
 /*
@@ -50,8 +64,23 @@ export async function useGqlQuery<T>(
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
   const { $gqlFetch } = useNuxtApp()
   const { locale } = useI18n()
-  const getVars = () => (typeof variables === 'function' ? variables() : variables)
-  const handler = () => $gqlFetch<T>(printIfAst(rawQuery), { variables: getVars() })
+  const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
+  const getVars = () => evaluate(variables)
+  const ask = (document: string | DocumentNode, vars: Vars = variables) =>
+    $gqlFetch<T>(printIfAst(document), { variables: evaluate(vars) })
+  const { legacy } = opts
+  const handler = async (): Promise<T> => {
+    if (!legacy) return ask(rawQuery)
+    if (!legacy.unsupported.value) {
+      try {
+        return await ask(rawQuery)
+      } catch (err) {
+        if (!legacy.isUnsupported(err)) throw err
+        legacy.unsupported.value = true
+      }
+    }
+    return ask(legacy.query, legacy.variables ?? variables)
+  }
 
   /*
    * The key is the document, the evaluated variables and the locale (audit R3), and it is a getter: Nuxt 4 watches a

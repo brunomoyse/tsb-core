@@ -1,18 +1,27 @@
 <template>
-  <div v-if="!recovering" class="err-page">
-    <!-- Background kanji watermark -->
-    <span class="err-kanji" aria-hidden="true">{{ bgKanji }}</span>
+  <!-- Fuzi (福仔) the mascot, as GUIDELINES.md §2 asks for the 404, over a warm glow. No sakura, no kanji, no red.
+         The picture is decorative: the title says what happened. The float is gentle and stops under prefers-reduced-motion. -->
+  <main v-if="!recovering" class="err-page">
+    <span class="err-glow" aria-hidden="true" />
 
     <div class="err-layout">
-      <!-- Massive error number -->
-      <div class="err-number-col">
-        <span class="err-num font-display font-bold" aria-hidden="true">{{ statusCode }}</span>
+      <div class="err-number-col" aria-hidden="true">
+        <picture>
+          <source srcset="/images/mascot/fuzi-noodles-400.avif" type="image/avif" />
+          <source srcset="/images/mascot/fuzi-noodles-400.webp" type="image/webp" />
+          <img
+            src="/images/mascot/fuzi-noodles-700.png"
+            alt=""
+            width="260"
+            height="245"
+            class="err-fuzi"
+          />
+        </picture>
+        <span class="err-num">{{ statusCode }}</span>
       </div>
 
-      <!-- Red rule divider -->
       <span class="err-rule" aria-hidden="true" />
 
-      <!-- Content -->
       <div class="err-content">
         <span class="sr-only">
           {{ $t('error.title' + statusCode, $t('error.titleGeneric')) }} — {{ statusCode }}
@@ -35,36 +44,61 @@
             <span class="err-sep" aria-hidden="true">&middot;</span>
           </template>
           <button type="button" class="err-link" @click="goHome">
-            <span class="err-arrow err-arrow-back" aria-hidden="true">&larr;</span>
+            <svg
+              class="err-arrow err-arrow-back"
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 12H5M11 18l-6-6 6-6" />
+            </svg>
             {{ $t('error.homeButton') }}
           </button>
           <span class="err-sep" aria-hidden="true">&middot;</span>
           <button type="button" class="err-link" @click="goMenu">
             {{ $t('error.menuButton') }}
-            <span class="err-arrow err-arrow-next" aria-hidden="true">&rarr;</span>
+            <svg
+              class="err-arrow err-arrow-next"
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </button>
         </nav>
-
-        <!-- Cherry blossom accent -->
-        <div class="err-blossom" aria-hidden="true">
-          <span v-for="n in 5" :key="n" class="err-petal" />
-          <span class="err-pistil" />
-        </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { clearError, computed, ref, reloadNuxtApp, useLocalePath } from '#imports'
+import { clearError, computed, ref, reloadNuxtApp, useHead, useLocalePath } from '#imports'
 import type { NuxtError } from '#app'
 import { useI18n } from 'vue-i18n'
+import { useLocaleHead } from '#i18n'
 
 const { error } = defineProps<{
   error: NuxtError
 }>()
 
 const { t } = useI18n()
+
+// The error page replaces the layout, which is what sets the document language (WCAG 3.1.1): same ISO code as the layout (zh-CN, fr-BE...).
+const localeHead = useLocaleHead()
+useHead({ htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') } })
 
 const statusCode = computed(() => error?.statusCode || 500)
 
@@ -94,19 +128,6 @@ const errorMessage = computed(() => {
   }
 })
 
-const bgKanji = computed(() => {
-  switch (error?.statusCode) {
-    case 404:
-      return '空'
-    case 403:
-      return '禁'
-    case 500:
-      return '乱'
-    default:
-      return '誤'
-  }
-})
-
 // Locale-prefixed targets: "/" and "/menu" would land on the default locale whatever language the visitor is reading.
 const localePath = useLocalePath()
 const goHome = () => clearError({ redirect: localePath('/') })
@@ -131,314 +152,158 @@ const retry = async () => {
 /* ===== Page ===== */
 .err-page {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, #f8f7f5 0%, #f6f5f2 50%, #efece7 100%);
+  background: var(--ygf-cream);
   overflow: hidden;
   padding: 2rem;
 }
 
-/* ===== Background kanji ===== */
-.err-kanji {
+.err-glow {
   position: absolute;
-  font-size: clamp(18rem, 38vw, 34rem);
-  line-height: 1;
-  color: #ebe8e2;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', 'Songti SC', serif;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, rgba(245, 130, 32, 0.1) 0%, transparent 55%);
   pointer-events: none;
-  user-select: none;
-  z-index: 0;
-  max-width: none;
 }
 
-/* ===== Layout ===== */
+/* ===== Layout (centred, like the vitrine's 404) ===== */
 .err-layout {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  gap: 1.5rem;
+  text-align: center;
 }
 
-/* ===== Number ===== */
 .err-number-col {
-  animation: err-ink 1s ease-out both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.err-fuzi {
+  display: block;
+  width: min(60vw, 260px);
+  height: auto;
+  max-width: none;
+  animation: err-float 4s ease-in-out infinite;
 }
 
 .err-num {
   display: block;
-  font-size: clamp(5rem, 13vw, 9rem);
+  margin-top: 0.25rem;
+  font-size: clamp(3.5rem, 9vw, 5.5rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.04em;
-  color: #1a1714;
-  max-width: none;
+  color: var(--ygf-orange-light);
 }
 
-@keyframes err-ink {
-  from {
-    opacity: 0;
-    filter: blur(12px);
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
-  }
-}
-
-/* ===== Red rule ===== */
 .err-rule {
   display: block;
-  width: 2px;
-  height: 140px;
+  width: 40px;
+  height: 2px;
   flex-shrink: 0;
-  background: #dc2626;
+  background: var(--ygf-orange);
   border-radius: 1px;
-  transform-origin: center;
-  animation: err-rule-v 0.6s 0.6s ease-out both;
-}
-
-@keyframes err-rule-v {
-  from {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  to {
-    transform: scaleY(1);
-    opacity: 1;
-  }
 }
 
 /* ===== Content ===== */
 .err-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  max-width: 340px;
+  align-items: center;
+  max-width: 420px;
 }
 
 .err-title {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1714;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ygf-black);
   line-height: 1.2;
   margin: 0 0 0.75rem;
-  animation: err-slide-in 0.5s 1s ease-out both;
 }
 
 .err-desc {
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.65;
-  color: #78716c;
-  margin: 0 0 1.75rem;
-  animation: err-slide-in 0.5s 1.2s ease-out both;
-}
-
-@keyframes err-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  color: var(--ygf-gray-600);
+  margin: 0 0 1.5rem;
 }
 
 /* ===== Navigation ===== */
 .err-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  animation: err-slide-in 0.5s 1.5s ease-out both;
+  justify-content: center;
+  gap: 0.25rem 0.75rem;
 }
 
 .err-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0.5rem;
   background: none;
   border: none;
-  padding: 0.25rem 0;
-  font-size: 0.875rem;
-  font-family: 'Montserrat', sans-serif;
-  color: #78716c;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ygf-orange-text);
   cursor: pointer;
-  position: relative;
-  transition: color 0.25s ease;
-}
-
-.err-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: #dc2626;
-  transition: width 0.3s ease;
-}
-
-.err-link:hover {
-  color: #dc2626;
-}
-
-.err-link:hover::after {
-  width: 100%;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
 }
 
 .err-arrow {
-  display: inline-block;
-  transition: transform 0.25s ease;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
-.err-link:hover .err-arrow-back {
-  transform: translateX(-3px);
-}
+@media (hover: hover) {
+  .err-link:hover {
+    text-decoration-color: currentColor;
+  }
 
-.err-link:hover .err-arrow-next {
-  transform: translateX(3px);
+  .err-link:hover .err-arrow-back {
+    transform: translateX(-3px);
+  }
+
+  .err-link:hover .err-arrow-next {
+    transform: translateX(3px);
+  }
 }
 
 .err-sep {
-  color: #d1d5db;
+  color: var(--ygf-gray-400);
   font-size: 1.1rem;
   line-height: 1;
 }
 
-/* ===== Cherry blossom ===== */
-.err-blossom {
-  position: relative;
-  width: 28px;
-  height: 28px;
-  margin-top: 2.5rem;
-  align-self: flex-end;
-  opacity: 0;
-  animation:
-    err-bloom 0.5s 2s ease-out forwards,
-    err-spin 50s 2.5s linear infinite;
-}
-
-.err-petal {
-  position: absolute;
-  width: 9px;
-  height: 13px;
-  background: linear-gradient(135deg, #fce4ec 30%, #f48fb1);
-  border-radius: 50%;
-  left: calc(50% - 4.5px);
-  bottom: 50%;
-  transform-origin: center bottom;
-  opacity: 0.75;
-}
-
-.err-petal:nth-child(1) {
-  transform: rotate(0deg);
-}
-.err-petal:nth-child(2) {
-  transform: rotate(72deg);
-}
-.err-petal:nth-child(3) {
-  transform: rotate(144deg);
-}
-.err-petal:nth-child(4) {
-  transform: rotate(216deg);
-}
-.err-petal:nth-child(5) {
-  transform: rotate(288deg);
-}
-
-.err-pistil {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: #fff8e1;
-  border-radius: 50%;
-  top: calc(50% - 2.5px);
-  left: calc(50% - 2.5px);
-  box-shadow: 0 0 4px rgba(255, 248, 225, 0.5);
-}
-
-@keyframes err-bloom {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes err-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ===== Mobile ===== */
-@media (max-width: 767px) {
-  .err-layout {
-    flex-direction: column;
-    gap: 1.5rem;
-    text-align: center;
-  }
-
-  .err-rule {
-    width: 40px;
-    height: 2px;
-    animation: err-rule-h 0.6s 0.6s ease-out both;
-  }
-
-  .err-content {
-    align-items: center;
-  }
-
-  .err-title,
-  .err-desc,
-  .err-nav {
-    animation-name: err-slide-up;
-  }
-
-  .err-blossom {
-    align-self: center;
-  }
-}
-
-@keyframes err-rule-h {
-  from {
-    transform: scaleX(0);
-    opacity: 0;
-  }
-  to {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-
-@keyframes err-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
+@keyframes err-float {
+  0%,
+  100% {
     transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
   }
 }
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-  .err-number-col,
-  .err-rule,
-  .err-title,
-  .err-desc,
-  .err-nav,
-  .err-blossom {
-    animation: none !important;
-    opacity: 1 !important;
-    filter: none !important;
+  .err-fuzi {
+    animation: none;
   }
 }
 </style>

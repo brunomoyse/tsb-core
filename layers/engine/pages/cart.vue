@@ -29,10 +29,15 @@
         data-cart-line
         class="relative overflow-hidden rounded-2xl"
       >
-        <!-- Delete action (revealed on swipe) -->
-        <div class="absolute inset-y-0 right-0 flex items-center bg-red-500 rounded-2xl">
+        <!-- Delete action (revealed on swipe; inset by 1px at rest, so its rounded corners leave no red fringe around the card's): a pointer-only shortcut. The explicit remove button below is the keyboard and screen-reader way, so this one stays out of the tab order and the accessibility tree (audit A17). -->
+        <div
+          class="absolute flex items-center bg-red-500 rounded-2xl"
+          :class="getSwipeOffset(item) === 0 ? 'inset-y-px right-px' : 'inset-y-0 right-0'"
+          aria-hidden="true"
+        >
           <button
             type="button"
+            tabindex="-1"
             :aria-label="$t('cart.removeNamed', { name: item.product.name })"
             class="h-full px-6 flex items-center justify-center text-white font-medium text-sm"
             @click="handleRemoveItem(item)"
@@ -62,7 +67,7 @@
         >
           <!-- IMAGE — square, rounded, no crop -->
           <div
-            class="w-[68px] h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
+            class="w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
           >
             <picture>
               <source :srcset="itemImage(item.product).avif" type="image/avif" />
@@ -85,7 +90,7 @@
             <!-- Row 1: Metadata (small, gray, truncated) -->
             <p
               v-if="itemLabelMeta(item)"
-              class="text-[11px] text-neutral-600 truncate leading-tight mb-0.5"
+              class="text-xs text-neutral-600 truncate leading-tight mb-0.5"
             >
               {{ itemLabelMeta(item) }}
             </p>
@@ -100,32 +105,33 @@
               ({{ itemChoice(item) }})
             </p>
 
-            <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">
+            <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">
               {{ $t('cart.customizedItemHint') }}
             </p>
             <!-- What the server quote says about this line, with the way out -->
             <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
             <!-- Row 4: Price + Quantity stepper + remove -->
-            <div class="flex items-center justify-between mt-1.5 gap-2">
-              <div class="min-w-0 flex flex-col leading-tight">
+            <div class="flex flex-wrap items-center justify-between mt-1.5 gap-x-2 gap-y-1">
+              <!-- shrink-0: the price never overlaps the stepper; on a very narrow phone the controls wrap below it. -->
+              <div class="shrink-0 flex flex-col leading-tight">
                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
                   {{ formatCents(getItemLineTotalCents(item)) }}
                 </span>
                 <span
                   v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null"
-                  class="text-[11px] text-neutral-600 tabular-nums"
+                  class="text-xs text-neutral-600 tabular-nums"
                 >
                   {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                 </span>
               </div>
 
-              <div class="flex items-center gap-1">
+              <div class="ml-auto flex items-center gap-1">
                 <!-- Stepper: compact pill -->
                 <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                   <button
                     type="button"
-                    :aria-label="$t('cart.decreaseQty')"
+                    :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                     :disabled="!canChangeQuantity(item)"
                     :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -149,7 +155,7 @@
                   </span>
                   <button
                     type="button"
-                    :aria-label="$t('cart.increaseQty')"
+                    :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
                     class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                     :disabled="!canChangeQuantity(item)"
                     :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -202,13 +208,13 @@
     <!-- ═══ ORDER SUMMARY ═══ -->
     <div v-if="hasLines" class="px-4 pb-4">
       <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
-        <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
+        <div v-if="hasBreakdown" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('cart.subtotal') }}</span>
           <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
         </div>
         <div
           v-if="cartStore.collectionOption === 'DELIVERY'"
-          class="flex justify-between text-neutral-600"
+          class="flex justify-between gap-3 text-neutral-600"
         >
           <span>{{ $t('cart.deliveryFee') }}</span>
           <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
@@ -218,7 +224,7 @@
             v-else-if="deliveryFeeCents === -1"
             class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right"
           >
-            {{ $t(deliveryUnavailableKey) }}
+            {{ $t(deliveryUnavailableKey, policyParams) }}
             <button
               type="button"
               data-testid="cart-out-of-zone-switch-to-pickup"
@@ -230,30 +236,32 @@
           </span>
           <span
             v-else-if="deliveryFeeCents === 0"
-            class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide"
+            class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide"
           >
             {{ $t('checkout.free') }}
           </span>
           <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
         </div>
-        <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="pickupDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span>{{ $t('cart.pickupDiscount') }}</span>
           <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
         </div>
-        <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="couponDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span
             >{{ $t('coupon.discount')
             }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span
           >
-          <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
+          <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
         </div>
-        <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
+        <div v-if="onlineFeeCents > 0" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('cart.onlineFee') }}</span>
           <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
         </div>
-        <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
+        <div
+          class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
+        >
           <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span
               data-testid="cart-page-total"
               class="font-bold text-lg text-neutral-900 tabular-nums"
@@ -291,10 +299,17 @@
       ref="checkoutBarRef"
       class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
     >
-      <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
-        <span class="flex items-center gap-2">
+      <!-- Narrow phones: tighter padding and a label that may wrap, so the full label and the price always show. -->
+      <UiButton
+        to="/checkout"
+        size="lg"
+        block
+        class="justify-between gap-3 max-[400px]:px-4"
+        :disabled="!canCheckout"
+      >
+        <span class="flex min-w-0 items-center gap-2 whitespace-normal text-left">
           <svg
-            class="w-5 h-5"
+            class="w-5 h-5 shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -309,7 +324,9 @@
           </svg>
           {{ $t('cart.checkout') }}
         </span>
-        <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
+        <span class="shrink-0 font-bold text-base tabular-nums">{{
+          formatCents(payableCents)
+        }}</span>
       </UiButton>
       <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-800">
         {{ $t('cart.orderingUnavailable') }}
@@ -357,26 +374,25 @@
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
 import { PRODUCT_PHOTO_WIDTHS, productPhoto } from '#brand/data/productPhotos'
-import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { canChangeLineQuantity, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, reactive, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useTracking } from '#engine/composables/useTracking'
-
-const { showProductCode = false } = useAppConfig().brand
 
 definePageMeta({ public: true })
 
@@ -435,6 +451,7 @@ const {
   amountToDeliveryMinimumCents,
   switchToPickup,
 } = useCartTotals()
+const { policyParams } = useOrderingPolicy()
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
 useOrderQuote()
 // The delivery minimum blocks the CTA here exactly as it does in SideCart and at checkout.
@@ -449,46 +466,6 @@ watch(
 )
 
 const cartPageMinHeightClass = 'min-h-[100dvh]'
-
-const itemLabelParts = (item: CartItem) =>
-  orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-  const parts = itemLabelParts(item)
-  const bits: string[] = []
-  if (showProductCode && parts.code) bits.push(parts.code)
-  if (parts.category) bits.push(parts.category)
-  if (item.product.pieceCount) {
-    const suffix = item.product.pieceCount === 1 ? t('menu.pc') : t('menu.pcs')
-    bits.push(`${item.product.pieceCount} ${suffix}`)
-  }
-  return bits.length > 0 ? bits.join(' · ') : undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-  (item.selectedChoices?.length ?? 0) > 0
-    ? (item.selectedChoices ?? [])
-        .map((selection) => {
-          const choice = item.product.choices.find(
-            (productChoice) => productChoice.id === selection.choiceId,
-          )
-          if (!choice) return ''
-          return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-        })
-        .filter(Boolean)
-        .join(', ') || undefined
-    : orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-      }).choice
 
 // ── Cart mutations: every removal (the remove button, swipe, the last unit going down) goes through the shared undo flow
 // Removing a line with the keyboard keeps focus on the page: on the next line, or on the "menu" link of the empty state.
@@ -521,7 +498,7 @@ const swipingItemKey = ref<string | null>(null)
 const canChangeQuantity = (item: CartItem): boolean =>
   canChangeLineQuantity(item.selectedChoices, item.quantity)
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel({ pieces: true })
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 

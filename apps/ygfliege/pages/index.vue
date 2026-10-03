@@ -2,14 +2,14 @@
 import { computed } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
 // Phosphor icons (same set as the vitrine site) — raw SVGs, tinted via
-// currentColor. Never emojis or hand-drawn paths.
+// CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
 import leafIcon from '~/assets/icons/leaf.svg?raw'
 import scalesIcon from '~/assets/icons/scales.svg?raw'
 
 // Marketing homepage ported from the ygfliege.be Vike site (hero, broth
-// selector, broth story, steps, video band, why, gallery, CTA) with the shop's
-// live ordering status wired into the hero.
+// Selector, broth story, steps, video band, why, gallery, CTA) with the shop's
+// Live ordering status wired into the hero.
 definePageMeta({
   public: true,
   sitemap: { priority: 1, changefreq: 'weekly' },
@@ -19,7 +19,7 @@ const { t, locale } = useI18n()
 const { brand } = useAppConfig()
 
 // Live ordering status for the hero; lazy so the page renders without waiting
-// on the config query.
+// On the config query.
 const {
   config: restaurantConfig,
   status: availability,
@@ -69,19 +69,14 @@ useSeoMeta({
       >
         <div class="text-center lg:text-left">
           <h1
-            v-reveal
             class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-ygf-black leading-tight"
           >
             {{ $t('mkt.hero.slogan') }}
           </h1>
-          <p
-            v-reveal="1"
-            class="mt-5 text-gray-600 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0"
-          >
+          <p class="mt-5 text-gray-600 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
             {{ $t('mkt.hero.subtitle') }}
           </p>
           <div
-            v-reveal="2"
             class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
           >
             <NuxtLinkLocale
@@ -96,14 +91,14 @@ useSeoMeta({
               class="inline-flex items-center gap-2 text-sm font-medium rounded-full px-4 py-2"
               :class="
                 orderingStatus === 'open'
-                  ? 'bg-emerald-50 text-emerald-700'
+                  ? 'bg-ygf-success/10 text-ygf-success-dark'
                   : 'bg-ygf-orange-50 text-ygf-orange-text'
               "
             >
               <span
                 class="w-2 h-2 rounded-full"
                 :class="
-                  orderingStatus === 'open' ? 'bg-emerald-500 animate-pulse' : 'bg-ygf-orange-400'
+                  orderingStatus === 'open' ? 'bg-ygf-success animate-pulse' : 'bg-ygf-orange-400'
                 "
               />
               <template v-if="orderingStatus === 'open'">{{ $t('home.status.open') }}</template>

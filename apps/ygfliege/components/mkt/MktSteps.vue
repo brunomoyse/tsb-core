@@ -4,7 +4,7 @@
       v-for="step in steps"
       :key="step.num"
       v-reveal="step.num"
-      class="bg-white rounded-ygf-card shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-300 overflow-hidden"
+      class="bg-white rounded-ygf-card shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-normal overflow-hidden"
     >
       <MktPicture
         :src="`/images/steps/step-${step.num}`"
@@ -35,9 +35,9 @@
 
 <script setup lang="ts">
 // 4-step "how it works" grid. The home and concept pages use different locale
-// namespaces for the same structure, hence keyPrefix.
+// Namespaces for the same structure, hence keyPrefix.
 defineProps<{
-  /** e.g. "mkt.home.steps" or "mkt.concept" */
+  /** E.g. "mkt.home.steps" or "mkt.concept" */
   keyPrefix: string
 }>()
 

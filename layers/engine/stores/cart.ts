@@ -7,6 +7,7 @@ import type {
   ProductChoice,
   ProductChoiceSelection,
 } from '#engine/types'
+import { brandOffersDelivery, defaultCollectionOption } from '#engine/utils/deliveryMode'
 import {
   lineSignature,
   matchesLine,
@@ -97,7 +98,8 @@ const defaultState = (): CartState => ({
   products: [],
   isCartVisible: false,
   droppedOnHydrate: 0,
-  collectionOption: 'DELIVERY',
+  // A takeaway-only brand starts on PICKUP (useDeliveryMode has the rule, plugins/delivery-mode.ts enforces it).
+  collectionOption: defaultCollectionOption(brandOffersDelivery(brand.deliveryEnabled)),
   couponCode: null,
   couponDiscountCents: 0,
   paymentOption: 'ONLINE',

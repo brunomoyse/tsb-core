@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useNotificationsStore } from '#engine/stores/notifications'
 
+// `white`: a white card with a hairline, for a brand whose page is cream (default: the tinted container surface).
+const { surface = 'tint' } = defineProps<{ surface?: 'tint' | 'white' }>()
+
 const { t } = useI18n()
 const { $api } = useNuxtApp()
 const notifications = useNotificationsStore()
@@ -160,7 +163,12 @@ function resetForm() {
 </script>
 
 <template>
-  <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full">
+  <div
+    :class="[
+      surface === 'white' ? 'bg-white border border-neutral-200' : 'bg-tsb-two',
+      'rounded-2xl p-6 sm:p-8 h-full',
+    ]"
+  >
     <!-- Header -->
     <div class="mb-5">
       <h2 class="font-semibold text-neutral-900 mb-1 flex items-center gap-2 text-[15px]">
@@ -239,6 +247,7 @@ function resetForm() {
             id="feedback-name"
             v-model="name"
             type="text"
+            autocomplete="name"
             maxlength="100"
             :placeholder="$t('feedback.namePlaceholder')"
             class="w-full bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-neutral-900 placeholder-neutral-500 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none"
@@ -252,6 +261,7 @@ function resetForm() {
             id="feedback-email"
             v-model="email"
             type="email"
+            autocomplete="email"
             maxlength="255"
             :placeholder="$t('feedback.emailPlaceholder')"
             class="w-full bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-neutral-900 placeholder-neutral-500 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none"
@@ -260,17 +270,18 @@ function resetForm() {
       </div>
 
       <!-- Service type pills -->
-      <div>
-        <label class="block text-xs font-medium text-neutral-600 mb-2">{{
-          $t('feedback.serviceType')
-        }}</label>
+      <fieldset>
+        <legend class="block text-xs font-medium text-neutral-600 mb-2 p-0">
+          {{ $t('feedback.serviceType') }}
+        </legend>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="st in serviceTypes"
             :key="st"
             type="button"
+            :aria-pressed="serviceType === st"
             :class="[
-              'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border',
+              'px-4 py-2 min-h-11 rounded-xl text-sm font-medium transition-all duration-300 border',
               serviceType === st
                 ? 'bg-tsb-four text-primary-700 border-primary-200'
                 : 'bg-white border-neutral-200 text-neutral-600 hover:bg-tsb-four/40',
@@ -280,20 +291,21 @@ function resetForm() {
             {{ $t(`feedback.serviceTypes.${st}`) }}
           </button>
         </div>
-      </div>
+      </fieldset>
 
       <!-- Feedback type pills -->
-      <div>
-        <label class="block text-xs font-medium text-neutral-600 mb-2">{{
-          $t('feedback.feedbackType')
-        }}</label>
+      <fieldset>
+        <legend class="block text-xs font-medium text-neutral-600 mb-2 p-0">
+          {{ $t('feedback.feedbackType') }}
+        </legend>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="ft in feedbackTypes"
             :key="ft"
             type="button"
+            :aria-pressed="feedbackType === ft"
             :class="[
-              'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border',
+              'px-4 py-2 min-h-11 rounded-xl text-sm font-medium transition-all duration-300 border',
               feedbackType === ft
                 ? 'bg-tsb-four text-primary-700 border-primary-200'
                 : 'bg-white border-neutral-200 text-neutral-600 hover:bg-tsb-four/40',
@@ -303,7 +315,7 @@ function resetForm() {
             {{ $t(`feedback.feedbackTypes.${ft}`) }}
           </button>
         </div>
-      </div>
+      </fieldset>
 
       <!-- Message textarea -->
       <div>

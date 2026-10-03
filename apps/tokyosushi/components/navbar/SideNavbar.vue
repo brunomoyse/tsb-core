@@ -1,14 +1,14 @@
 <template>
   <nav
     :aria-label="$t('nav.sidebar')"
-    class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100vh-4rem)] fixed left-8 top-8 z-40"
+    class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100dvh-4rem)] fixed left-8 top-8 z-40"
   >
     <!-- Top Navigation Items -->
     <ul class="flex flex-col items-center space-y-6 mt-6">
       <li>
         <Logo
           :tooltipText="$t('nav.home')"
-          :alt="logoAlt"
+          :aria-label="$t('nav.home')"
           icon="/images/tsb-black-font-100.png"
           to="/"
         />
@@ -36,7 +36,6 @@
         v-if="isMounted && cartStore.totalItems > 0 && !isMenuPage"
         class="hidden lg:block"
         :tooltipText="cartLabel"
-        alt="Cart Icon"
         icon="/icons/shopping-bag-icon.svg"
         :badge="cartStore.totalItems"
         to="cart"
@@ -56,14 +55,6 @@
           />
         </svg>
       </li>
-      <!-- Phone (tap-to-call), same entry as the mobile menu -->
-      <NavItem
-        :tooltipText="phoneLabel"
-        :ariaLabel="$t('nav.callRestaurant')"
-        icon="/icons/contact-icon.svg"
-        :href="phoneHref"
-        class="hidden [@media(min-height:800px)]:block"
-      />
       <ClientOnly>
         <NavItem
           v-for="item in visibleNavItems('account', Boolean(authStore.user))"
@@ -81,12 +72,10 @@
 
 <script lang="ts" setup>
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
-import Logo from './Logo.vue'
 import NavItem from './NavItem.vue'
 import NavItemButton from './NavItemButton.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
@@ -96,12 +85,10 @@ import { visibleNavItems } from './navItems'
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
-const logoAlt = `${useAppConfig().brand.name} logo`
-const { phoneHref, phoneLabel } = useBrandPhone()
+// The menu page shows the SideCart from lg up: no second cart button beside it.
+const isMenuPage = computed(() => route.path.endsWith('/menu'))
 // The cart and checkout pages already show the cart; no shortcut there.
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
-// The menu page shows the SideCart on desktop, so the nav cart link is hidden there.
-const isMenuPage = computed(() => /\/menu$/u.test(route.path))
 // "Cart, 3 items": the count is part of the accessible name.
 const { t } = useI18n()
 const cartLabel = computed(() =>

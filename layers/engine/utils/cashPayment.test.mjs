@@ -1,7 +1,7 @@
 // Run: `vp test run layers/engine/utils/cashPayment.test.mjs`.
 
+import { evaluateCashAmount, sanitizeCashAmount } from './cashPayment.ts'
 import assert from 'node:assert/strict'
-import { evaluateCashAmount } from './cashPayment.ts'
 import { test } from 'vite-plus/test'
 
 test('an empty amount is fine: the field is optional', () => {
@@ -29,4 +29,15 @@ test('exactly the total needs no change', () => {
 test('above the total reports the change due', () => {
   assert.deepEqual(evaluateCashAmount('50', 3050), { kind: 'change', changeCents: 1950 })
   assert.deepEqual(evaluateCashAmount('50.00', 3050), { kind: 'change', changeCents: 1950 })
+})
+
+test('sanitizeCashAmount keeps digits and two decimals, accepts a comma, and says null for nothing', () => {
+  assert.equal(sanitizeCashAmount('25,5'), '25.5')
+  assert.equal(sanitizeCashAmount('25.567'), '25.56')
+  assert.equal(sanitizeCashAmount('abc'), null)
+  assert.equal(sanitizeCashAmount(''), null)
+  assert.equal(sanitizeCashAmount(null), null)
+  assert.equal(sanitizeCashAmount(undefined), null)
+  assert.equal(sanitizeCashAmount(30), '30')
+  assert.equal(sanitizeCashAmount('.5'), '.5')
 })

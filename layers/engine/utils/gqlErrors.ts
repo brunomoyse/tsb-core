@@ -1,4 +1,6 @@
+import { DEFAULT_ORDERING_POLICY, type OrderingPolicy, deliveryMaxKm } from './orderingPolicy.ts'
 import { GQL_HTTP_ERROR, GQL_NETWORK_ERROR, unwrapGqlError } from './gqlError.ts'
+import { centsToEuros } from './money.ts'
 
 /*
  * The single code -> i18n key table for backend errors (tsb-service
@@ -15,12 +17,12 @@ export interface GqlErrorDescriptor {
   params?: Record<string, unknown>
 }
 
-/** Mirror of the delivery minimum the backend enforces (also sent as `extensions.minimum`). */
-const DEFAULT_DELIVERY_MINIMUM_EUR = 25
-/** Mirror of the delivery radius (km) in the backend, for the "too far" message. */
-const DELIVERY_RADIUS_KM = 9
-
-type Describe = (ext: Record<string, unknown>) => GqlErrorDescriptor
+/*
+ * The numbers a message quotes (the delivery minimum, the radius) come from the ordering policy the backend
+ * serves (`useOrderingPolicy()`), so a change made there reaches the copy; the caller passes it in, this file
+ * stays plain TypeScript. The backend's own `extensions.minimum` wins for the minimum when it sends one.
+ */
+type Describe = (ext: Record<string, unknown>, policy: OrderingPolicy) => GqlErrorDescriptor
 
 const key =
   (value: string): Describe =>
@@ -54,17 +56,18 @@ const CODE_TABLE: Record<string, Describe> = {
   PRICE_CHANGED: key('notify.errors.priceChanged'),
 
   // Delivery
-  DELIVERY_MINIMUM_NOT_MET: (ext) => ({
+  DELIVERY_MINIMUM_NOT_MET: (ext, policy) => ({
     key: 'cart.minimumDelivery',
     params: {
-      amount: Number(ext.minimum) > 0 ? Number(ext.minimum) : DEFAULT_DELIVERY_MINIMUM_EUR,
+      amount:
+        Number(ext.minimum) > 0 ? Number(ext.minimum) : centsToEuros(policy.deliveryMinimumCents),
     },
   }),
   ADDRESS_REQUIRED: key('notify.errors.addressRequired'),
   ADDRESS_UNRESOLVABLE: key('notify.errors.addressLookupFailed'),
-  DELIVERY_OUT_OF_ZONE: () => ({
+  DELIVERY_OUT_OF_ZONE: (_ext, policy) => ({
     key: 'notify.errors.deliveryAddressTooFar',
-    params: { distance: DELIVERY_RADIUS_KM },
+    params: { distance: deliveryMaxKm(policy) },
   }),
   DELIVERY_AREA_EXCLUDED: key('notify.errors.deliveryAddressExcluded'),
   DELIVERY_UNAVAILABLE: key('notify.errors.deliveryUnavailable'),
@@ -94,7 +97,7 @@ const CODE_TABLE: Record<string, Describe> = {
 /** Every i18n key the table can produce (the locale test checks them in all four languages). */
 export const GQL_ERROR_KEYS: string[] = [
   ...new Set([
-    ...Object.values(CODE_TABLE).map((describe) => describe({}).key),
+    ...Object.values(CODE_TABLE).map((describe) => describe({}, DEFAULT_ORDERING_POLICY).key),
     'notify.errors.serverError',
   ]),
 ]
@@ -151,8 +154,9 @@ const legacyCodeOf = (message: string): string | null => {
 /**
  * The translated message to show for a failed GraphQL call, or null when nothing specific is
  * known: the caller then shows its own generic text for the action (never the backend message).
+ * `policy` is the ordering policy (`useOrderingPolicy().policy`) the numbers of the message come from.
  */
-export function describeGqlError(raw: unknown): GqlErrorDescriptor | null {
+export function describeGqlError(raw: unknown, policy: OrderingPolicy): GqlErrorDescriptor | null {
   const err = unwrapGqlError(raw)
   if (!err) return null
 
@@ -162,7 +166,7 @@ export function describeGqlError(raw: unknown): GqlErrorDescriptor | null {
   }
 
   const code = err.code ?? legacyCodeOf(err.message)
-  return code ? describeErrorCode(code, err.extensions) : null
+  return code ? describeErrorCode(code, policy, err.extensions) : null
 }
 
 /**
@@ -171,10 +175,11 @@ export function describeGqlError(raw: unknown): GqlErrorDescriptor | null {
  */
 export function describeErrorCode(
   code: string,
+  policy: OrderingPolicy,
   extensions: Record<string, unknown> = {},
 ): GqlErrorDescriptor | null {
   const describe = CODE_TABLE[code]
-  return describe ? describe(extensions) : null
+  return describe ? describe(extensions, policy) : null
 }
 
 export interface CouponValidationResult {
@@ -184,8 +189,11 @@ export interface CouponValidationResult {
 }
 
 /** The message for a coupon the backend refused (`valid: false`), same rules as `describeGqlError`. */
-export function describeCouponRefusal(result: CouponValidationResult): GqlErrorDescriptor {
+export function describeCouponRefusal(
+  result: CouponValidationResult,
+  policy: OrderingPolicy,
+): GqlErrorDescriptor {
   const code = result.errorCode ?? (result.errorMessage ? legacyCodeOf(result.errorMessage) : null)
   const describe = code ? CODE_TABLE[code] : undefined
-  return describe ? describe({}) : { key: 'coupon.invalid' }
+  return describe ? describe({}, policy) : { key: 'coupon.invalid' }
 }

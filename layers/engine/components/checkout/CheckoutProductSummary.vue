@@ -74,7 +74,7 @@
               </span>
             </div>
 
-            <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">
+            <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">
               {{ $t('cart.customizedItemHint') }}
             </p>
             <!-- What the server quote says about this line, with the way out -->
@@ -84,7 +84,7 @@
             <div class="flex items-center justify-between mt-1.5">
               <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                 <button
-                  :aria-label="$t('cart.decreaseQty')"
+                  :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
                   class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                   :disabled="!canChangeQuantity(item)"
                   :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -107,7 +107,7 @@
                   {{ item.quantity }}
                 </span>
                 <button
-                  :aria-label="$t('cart.increaseQty')"
+                  :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
                   class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
                   :disabled="!canChangeQuantity(item)"
                   :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
@@ -127,7 +127,7 @@
                 </button>
               </div>
               <button
-                :aria-label="$t('cart.removeItem')"
+                :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                 class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors"
                 @click="handleRemoveFromCart(item)"
               >
@@ -156,60 +156,68 @@
 
       <!-- Price summary -->
       <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
-        <div class="flex justify-between text-neutral-600">
+        <div class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
           <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
         </div>
         <div
           v-if="cartStore.collectionOption === 'DELIVERY'"
-          class="flex justify-between text-neutral-600 relative"
+          class="flex justify-between gap-3 text-neutral-600 relative"
         >
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 shrink-0">
             <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
-            <button
-              ref="tooltipButtonRef"
-              type="button"
-              :aria-label="$t('checkout.deliveryFee')"
-              :aria-expanded="showTooltip"
-              class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-600 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-full relative"
-              @click.stop="showTooltip = !showTooltip"
+            <span
+              class="relative inline-flex"
               @mouseenter="showTooltip = true"
               @mouseleave="showTooltip = false"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-3.5 w-3.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+              <button
+                ref="tooltipButtonRef"
+                type="button"
+                :aria-label="$t('checkout.deliveryFee')"
+                :aria-expanded="showTooltip"
+                :aria-describedby="showTooltip ? 'delivery-fee-tooltip' : undefined"
+                class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-600 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-full relative"
+                @click.stop="showTooltip = !showTooltip"
               >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <!-- Beside the button, not inside it: the button's name stays "Delivery fee", the text is its description. -->
               <div
                 v-if="showTooltip"
+                id="delivery-fee-tooltip"
                 role="tooltip"
-                class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-neutral-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
+                class="absolute left-0 bottom-8 min-w-[260px] max-w-xs p-3 bg-neutral-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
               >
-                {{ $t('checkout.deliveryFeeInfo') }}
+                {{ deliveryFeeInfo }}
                 <div class="absolute top-full left-3 -mt-1">
                   <div
                     class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-neutral-800"
                   />
                 </div>
               </div>
-            </button>
+            </span>
           </div>
-          <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic">{{
+          <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-right">{{
             $t('checkout.tbd')
           }}</span>
           <span
             v-else-if="deliveryFeeCents === -1"
             class="text-red-700 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right"
           >
-            {{ $t(deliveryUnavailableKey) }}
+            {{ $t(deliveryUnavailableKey, policyParams) }}
             <button
               type="button"
               data-testid="cart-out-of-zone-switch-to-pickup"
@@ -226,22 +234,27 @@
           >
           <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
         </div>
-        <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="pickupDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span>{{ $t('checkout.discount') }}</span>
           <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
         </div>
-        <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
+        <div
+          v-if="cartStore.couponDiscountCents > 0"
+          class="flex justify-between gap-3 text-green-800"
+        >
           <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
           <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
         </div>
-        <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
+        <div v-if="onlineFeeCents > 0" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('checkout.transactionFee') }}</span>
           <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
         </div>
         <!-- Total -->
-        <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
+        <div
+          class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
+        >
           <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-700 tabular-nums">{{
               formatCents(payableCents)
             }}</span></span
@@ -255,24 +268,41 @@
 
 <script lang="ts" setup>
 import * as productImage from '#engine/utils/productImage'
-import { canChangeLineQuantity, cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { canChangeLineQuantity, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
+import { deliveryFeeRows } from '#engine/utils/orderingPolicy'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useRuntimeConfig } from '#imports'
 
-const { showProductCode = false } = useAppConfig().brand
-
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
+const { t } = useI18n()
+const { policy, policyParams } = useOrderingPolicy()
+// The fee grid tooltip: one line per distance band of the API's policy (the first band is "less than X km").
+const deliveryFeeInfo = computed(() =>
+  t('checkout.deliveryFeeInfo', {
+    tiers: deliveryFeeRows(policy.value)
+      .map((row) =>
+        t(row.fromKm === null ? 'checkout.deliveryFeeTierFirst' : 'checkout.deliveryFeeTier', {
+          from: row.fromKm,
+          to: row.toKm,
+          fee: row.feeCents === 0 ? t('checkout.free') : formatCents(row.feeCents),
+        }),
+      )
+      .join('\n'),
+  }),
+)
 const { impact: hapticImpact } = useHaptics()
 const {
   getItemLineTotalCents,
@@ -337,44 +367,9 @@ watch(
 const canChangeQuantity = (item: CartItem): boolean =>
   canChangeLineQuantity(item.selectedChoices, item.quantity)
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
-
-const itemLabelParts = (item: CartItem) =>
-  orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-  const parts = itemLabelParts(item)
-  // The internal menu code ("E1") only shows for brands that print it.
-  const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-  return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-  (item.selectedChoices?.length ?? 0) > 0
-    ? (item.selectedChoices ?? [])
-        .map((selection) => {
-          const choice = item.product.choices.find(
-            (productChoice) => productChoice.id === selection.choiceId,
-          )
-          if (!choice) return ''
-          return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-        })
-        .filter(Boolean)
-        .join(', ') || undefined
-    : orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-      }).choice
 
 const handleIncrementQuantity = (item: CartItem) => {
   cartStore.incrementQuantity(item.product, {

@@ -3,14 +3,14 @@ import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tokyo Sushi Bar app — the main app. Extends the shared engine layer and owns
-// everything visual: pages, components, layouts, theme, assets, copy, and the
-// brand identity (brand.ts / app.config.ts / locale overrides).
+// Everything visual: pages, components, layouts, theme, assets, copy, and the
+// Brand identity (brand.ts / app.config.ts / locale overrides).
 //
 //   #engine → the shared layer (app files import engine code via this alias;
-//             engine-internal imports keep using ~/ which resolves per-layer).
+//             Engine-internal imports keep using ~/ which resolves per-layer).
 //   #brand  → this app's root, so engine files that import brand data
 //             (i18n.config.ts, server/routes/robots.txt.ts & llms.txt.ts) and
-//             useAppConfig().brand resolve against this brand.
+//             UseAppConfig().brand resolve against this brand.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const appDir = fileURLToPath(new URL('.', import.meta.url))
@@ -25,13 +25,12 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/css/main.css',
-    '~/assets/css/sakura.css',
     // Brand display font (@font-face Channel) + html background.
     '~/assets/css/brand.css',
   ],
 
   // Modules that are UI/brand concerns (theme + fonts). Engine registers the
-  // rest (i18n, pinia, sitemap, sentry); module arrays concat across layers.
+  // Rest (i18n, pinia, sitemap, sentry); module arrays concat across layers.
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/google-fonts'],
 
   $meta: {
@@ -52,6 +51,9 @@ export default defineNuxtConfig({
           content:
             'Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.',
         },
+        // Light only (no dark theme): stops Android auto-dark from inverting the UI. theme-color is the page background (site.webmanifest agrees).
+        { name: 'color-scheme', content: 'only light' },
+        { name: 'theme-color', content: '#F6F5F2' },
       ],
       link: [
         // Favicon: light theme (black logo)
@@ -128,9 +130,9 @@ export default defineNuxtConfig({
   },
 
   // Per-subdirectory long cache headers for static assets (logos, hero images,
-  // display font, icons). Nitro's public-asset handler sets Cache-Control
-  // directly; routeRules headers don't override it. All public assets live
-  // under this app.
+  // Display font, icons). Nitro's public-asset handler sets Cache-Control
+  // Directly; routeRules headers don't override it. All public assets live
+  // Under this app.
   nitro: {
     publicAssets: [
       { baseURL: '/images', dir: `${appDir}public/images`, maxAge: 60 * 60 * 24 * 365 },

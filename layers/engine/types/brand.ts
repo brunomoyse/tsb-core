@@ -1,7 +1,7 @@
 // BrandConfig is the per-restaurant identity consumed across the app via
 // `useAppConfig().brand`. Each brand app supplies one of these from its own
-// root (`apps/<brand>/brand.ts` → `apps/<brand>/app.config.ts`), reachable in
-// engine server routes via the `#brand` alias. Non-secret, build-time data.
+// Root (`apps/<brand>/brand.ts` → `apps/<brand>/app.config.ts`), reachable in
+// Engine server routes via the `#brand` alias. Non-secret, build-time data.
 
 /**
  * A free extra the customer can attach to an order at checkout (cutlery, condiments).
@@ -47,6 +47,11 @@ export interface BrandConfig {
    */
   legalName: string
   /**
+   * Legal form as it prefixes the name in running legal text ("la SRL Tokyo Sushi Bar").
+   * Omit until the form is confirmed: the text then uses the plain trading name.
+   */
+  legalForm?: string
+  /**
    * VAT / company registration number. Omit until the real number is known:
    * the legal pages then drop the line rather than publishing a placeholder,
    * which would be a false company identifier on a public site.
@@ -82,9 +87,14 @@ export interface BrandConfig {
   mapsUrl: string
   /** Year the restaurant opened; drives "X years" copy on the homepage. */
   foundingYear: number
+  /**
+   * What the restaurant sells, as it reads in running text ("plats japonais" in the terms of sale).
+   * `fr` is required (the legal pages are French); the other languages are for copy that is translated.
+   */
+  dishesLabel: { fr: string; en?: string; nl?: string; zh?: string }
   /** Legal representatives listed on the terms page. Omit when unconfirmed. */
   administrators?: string[]
-  /** schema.org servesCuisine value(s), e.g. ["Japanese", "Sushi"]. */
+  /** Schema.org servesCuisine value(s), e.g. ["Japanese", "Sushi"]. */
   cuisine: string | string[]
   /** Whether the restaurant takes table bookings (by phone): the schema.org acceptsReservations. */
   acceptsReservations: boolean
@@ -96,7 +106,7 @@ export interface BrandConfig {
   openingHours?: BrandOpeningHours
   /** Logo as a path under public/ (square, at least 112x112 px): the schema.org `logo`. */
   logo: string
-  /** schema.org priceRange value, e.g. "€€". */
+  /** Schema.org priceRange value, e.g. "€€". */
   priceRange: string
   /**
    * Whether home delivery is offered. Defaults to true when omitted. Set
@@ -104,6 +114,11 @@ export interface BrandConfig {
    * toggles ("available soon") and the cart is kept on PICKUP.
    */
   deliveryEnabled?: boolean
+  /**
+   * Whether the brand publishes a customer mobile app. The privacy policy describes the app (push notifications, live
+   * activities, device tokens) only when it does; a brand without one gets the web-only text.
+   */
+  hasMobileApp: boolean
   /**
    * Real, publicly verifiable review aggregate. Omit entirely for a brand
    * with no reviews yet — schema.org then drops aggregateRating rather than
@@ -123,6 +138,12 @@ export interface BrandConfig {
    */
   showProductCode?: boolean
   /**
+   * Display names for the choice groups of a category's products, by category slug, as i18n keys: the group of a
+   * "menu-plateau" product is shown as its soup ("1 soupe", "2 soupes") whatever the catalog calls it. Omit for
+   * a brand that shows the catalog's group names.
+   */
+  choiceGroupLabels?: Record<string, { one: string; other: string }>
+  /**
    * Decorative Japanese accents (kanji watermarks, hanko seal, torii
    * divider, falling petals) in the shared shop components. Off by default.
    */
@@ -140,4 +161,9 @@ export interface BrandConfig {
    * neither shown nor sent: a persisted cart's other entries are dropped on load.
    */
   orderExtras: OrderExtraConfig[]
+  /**
+   * Slug of the category whose cheap products are sold as paid extras at the checkout (sauce cups, rice, ...).
+   * Omit for a brand without paid extras: the section is then not offered.
+   */
+  paidExtrasCategorySlug?: string
 }
