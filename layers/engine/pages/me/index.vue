@@ -814,7 +814,7 @@ const updateNotificationPref = async (
           role="dialog"
           aria-modal="true"
           aria-labelledby="edit-address-title"
-          class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4"
+          class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[92dvh] overflow-y-auto overscroll-contain"
           @click.stop
           @keydown.esc="closeAddressModal"
         >

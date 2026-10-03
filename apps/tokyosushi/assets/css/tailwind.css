@@ -141,6 +141,23 @@
   .stepper--sm .stepper-btn {
     @apply h-11 w-11 rounded-lg;
   }
+
+  /* Product card: price and add button. The card is the container, so the layout follows ITS width, not what the content happens
+     to need: narrow (a small phone's two columns) = price row, then the button below it; wide enough for the widest price beside the
+     44px button = one row. */
+  .card-buy {
+    container-type: inline-size;
+  }
+
+  .card-buy-row {
+    @apply flex flex-col items-stretch gap-1;
+  }
+
+  @container (min-width: 8.5rem) {
+    .card-buy-row {
+      @apply flex-row items-center justify-between;
+    }
+  }
 }
 
 @layer utilities {

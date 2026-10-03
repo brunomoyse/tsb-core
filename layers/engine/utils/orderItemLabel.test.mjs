@@ -75,6 +75,11 @@ test('cartLineMeta: the code only shows for a brand that has codes, compact join
   assert.equal(cartLineMeta({ product: { name: 'x' } }, { showProductCode: true }), undefined)
 })
 
+test('cartLineMeta: `spaced` spaces the separator without the piece count', () => {
+  assert.equal(cartLineMeta(line(), { showProductCode: true, spaced: true }), 'E1 · Entrées')
+  assert.equal(cartLineMeta(line(), { showProductCode: false, spaced: true }), 'Entrées')
+})
+
 test('cartLineMeta: the cart page adds the piece count and spaces the separator', () => {
   const pieces = { one: 'pc', many: 'pcs' }
   assert.equal(cartLineMeta(line(), { showProductCode: true, pieces }), 'E1 · Entrées · 6 pcs')

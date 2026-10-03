@@ -1,10 +1,13 @@
 <template>
   <nav
     :aria-label="$t('nav.sidebar')"
-    class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100dvh-4rem)] fixed left-8 top-8 z-40"
+    class="hidden sm:flex flex-col justify-between items-center bg-tsb-two rounded-2xl w-[110px] h-[calc(100dvh-4rem)] fixed left-8 top-8 z-40 [@media(max-height:36rem)]:top-2 [@media(max-height:36rem)]:h-[calc(100dvh-1rem)] [@media(max-height:36rem)]:overflow-y-auto"
   >
+    <!-- A phone held sideways (under 36rem tall, from 640px wide): the rail is tighter and scrolls, so every entry stays reachable. -->
     <!-- Top Navigation Items -->
-    <ul class="flex flex-col items-center space-y-6 mt-6">
+    <ul
+      class="flex flex-col items-center gap-6 mt-6 shrink-0 [@media(max-height:36rem)]:gap-1 [@media(max-height:36rem)]:mt-2"
+    >
       <li>
         <Logo
           :tooltipText="$t('nav.home')"
@@ -43,7 +46,9 @@
     </ul>
 
     <!-- Bottom Navigation Items -->
-    <ul class="flex flex-col items-center space-y-6 mb-6">
+    <ul
+      class="flex flex-col items-center gap-6 mb-6 shrink-0 [@media(max-height:36rem)]:gap-1 [@media(max-height:36rem)]:mb-2 [@media(max-height:36rem)]:mt-1"
+    >
       <!-- Decorative wave accent -->
       <li aria-hidden="true" class="pb-1">
         <svg class="w-8 h-4 text-primary-300/30" viewBox="0 0 40 16" fill="none">

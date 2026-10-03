@@ -19,7 +19,7 @@
         <h2
           id="product-modal-title"
           translate="no"
-          class="section-title text-xl sm:text-2xl truncate"
+          class="section-title text-xl sm:text-2xl break-words"
         >
           {{ p?.name }}
         </h2>
@@ -193,7 +193,10 @@
     </div>
 
     <!-- Footer rail -->
-    <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5">
+    <footer
+      v-if="p"
+      class="border-t border-ygf-orange-100 bg-ygf-cream px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-8 sm:py-5"
+    >
       <p v-if="!p.isAvailable" class="text-sm text-neutral-600 mb-3">
         {{ $t('menu.unavailable') }}
       </p>

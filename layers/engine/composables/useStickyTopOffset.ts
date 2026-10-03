@@ -18,7 +18,7 @@ const VARIABLE = '--sticky-top-h'
 export const stickyBottom = (el: HTMLElement): number =>
   (Number.parseFloat(getComputedStyle(el).top) || 0) + el.offsetHeight
 
-export function useStickyTopOffset(target: Ref<HTMLElement | null | undefined>): void {
+export function useStickyTopOffset(target: Readonly<Ref<HTMLElement | null | undefined>>): void {
   if (!import.meta.client) return
 
   let observer: ResizeObserver | null = null

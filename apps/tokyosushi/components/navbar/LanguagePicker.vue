@@ -95,7 +95,9 @@ import NavIcon from './NavIcon.vue'
 import { useLanguagePicker } from '#engine/composables/useLanguagePicker'
 
 const PLACEMENTS = {
-  right: 'left-full bottom-0 ml-2',
+  // Under 36rem tall the rail scrolls (SideNavbar) and would clip the list, so it is fixed beside the rail there.
+  right:
+    'left-full bottom-0 ml-2 [@media(max-height:36rem)]:fixed [@media(max-height:36rem)]:left-[9.5rem] [@media(max-height:36rem)]:bottom-2 [@media(max-height:36rem)]:ml-0',
   'bottom-end': 'right-0 top-full mt-1',
   'top-center': 'left-1/2 -translate-x-1/2 bottom-full mb-1',
 } as const

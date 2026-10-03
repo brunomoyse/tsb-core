@@ -18,6 +18,7 @@ export function useCartItemLabel(options: { pieces?: boolean } = {}) {
     itemLabelMeta: (item: CartItem): string | undefined =>
       cartLineMeta(item, {
         showProductCode,
+        spaced: true,
         pieces: options.pieces ? { one: t('menu.pc'), many: t('menu.pcs') } : undefined,
       }),
     itemLabelName: (item: CartItem): string => item.product.name,

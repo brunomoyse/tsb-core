@@ -170,19 +170,26 @@
         class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6"
         :aria-label="$t('checkout.stepCheckout')"
       >
-        <NuxtLinkLocale
-          to="/menu"
-          class="inline-flex min-h-11 items-center text-primary-700 hover:text-primary-800 font-medium"
-        >
-          {{ $t('checkout.stepMenu') }}
-        </NuxtLinkLocale>
-        <template v-for="(step, idx) in visibleSteps" :key="step.key">
+        <!-- Each step carries its own trailing separator, so when the trail wraps a "〉" is never left alone at the start of a line. -->
+        <span class="inline-flex items-center gap-x-2 whitespace-nowrap">
+          <NuxtLinkLocale
+            to="/menu"
+            class="inline-flex min-h-11 items-center text-primary-700 hover:text-primary-800 font-medium"
+          >
+            {{ $t('checkout.stepMenu') }}
+          </NuxtLinkLocale>
           <span
             class="text-lg leading-none"
-            :class="idx < currentStepIndex ? 'text-primary-300' : 'text-neutral-300'"
+            :class="currentStepIndex > 0 ? 'text-primary-300' : 'text-neutral-300'"
             aria-hidden="true"
             >〉</span
           >
+        </span>
+        <span
+          v-for="(step, idx) in visibleSteps"
+          :key="step.key"
+          class="inline-flex items-center gap-x-2 whitespace-nowrap"
+        >
           <span
             :class="[
               idx === currentStepIndex
@@ -195,7 +202,14 @@
           >
             {{ step.label }}
           </span>
-        </template>
+          <span
+            v-if="idx < visibleSteps.length - 1"
+            class="text-lg leading-none"
+            :class="idx + 1 < currentStepIndex ? 'text-primary-300' : 'text-neutral-300'"
+            aria-hidden="true"
+            >〉</span
+          >
+        </span>
       </nav>
 
       <!-- Delivery zone gate: before we ask anonymous users to log in, confirm the address is deliverable.
@@ -266,16 +280,21 @@
           ref="payBarRef"
           class="fixed left-0 right-0 sm:left-[var(--side-rail-width,0px)] bottom-0 z-30 lg:hidden bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
+          <!--
+            [label | total]: the total never shrinks or wraps (whitespace-nowrap), the label takes what is left and wraps onto a
+            second line instead of pushing the total out of the button (uppercase YGF label + a 4-digit total at 320 px).
+            The button's own side padding is tightened on phones to give both more room.
+          -->
           <UiButton
             data-testid="checkout-place-order"
             size="lg"
             block
-            class="justify-between"
+            class="justify-between gap-3 px-3 min-[400px]:px-4 sm:px-6"
             :disabled="!isOrderingAvailable || cartStore.products.length === 0 || isOrderBlocked"
             :loading="isCheckoutProcessing"
             @click="handleCheckout"
           >
-            <span class="shrink-0">
+            <span class="min-w-0 flex-1 whitespace-normal text-left leading-tight">
               <template v-if="isCheckoutProcessing">{{ $t('checkout.processing') }}</template>
               <template v-else>
                 {{
@@ -285,14 +304,14 @@
                 }}
               </template>
             </span>
-            <!-- min-w-0 + truncate: the "updating" hint gives way instead of pushing the total off the button (uppercase YGF label at 390 px). -->
-            <span class="flex min-w-0 flex-col items-end leading-tight">
-              <span class="ml-auto font-bold text-base tabular-nums">{{
+            <!-- w-0 min-w-full on the hint: it truncates inside the width of the total instead of widening the column. -->
+            <span class="flex shrink-0 flex-col items-end leading-tight">
+              <span class="whitespace-nowrap font-bold text-base tabular-nums">{{
                 formatCents(payableCents)
               }}</span>
               <span
                 v-if="isQuotePending"
-                class="max-w-full truncate text-xs font-normal opacity-80"
+                class="w-0 min-w-full truncate text-right text-xs font-normal opacity-80"
                 data-testid="checkout-quote-updating"
                 >{{ $t('cart.quoteUpdating') }}</span
               >
@@ -353,7 +372,7 @@
       </div>
     </Teleport>
 
-    <!-- Address Modal -->
+    <!-- Address Modal: a sheet that scrolls inside the screen, with the suggestions in its flow (not floating past its bottom edge) -->
     <div
       v-if="showAddressModal"
       class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
@@ -364,7 +383,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="address-modal-title"
-        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative"
+        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative max-h-[92dvh] overflow-y-auto overscroll-contain"
         @click.stop
         @keydown.esc="guardedCloseAddressModal"
       >

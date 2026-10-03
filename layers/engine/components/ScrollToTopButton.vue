@@ -2,7 +2,7 @@
 <template>
   <Transition name="fade-up">
     <button
-      v-show="showButton && !isCartVisible"
+      v-show="showButton && !isCartVisible && !coversControls"
       type="button"
       @click="scrollToTop"
       :aria-label="t('common.toTop', 'Back to top')"
@@ -21,10 +21,20 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 const cartStore = useCartStore()
 
 const isCartVisible = computed(() => cartStore.isCartVisible)
+
+/*
+ * On the pages whose bottom-right corner is working space the button would sit on top of the controls: the "add"
+ * buttons of the right-hand column of the menu, the pay and quantity controls of the cart and the checkout. They
+ * are the pages people use with the thumb, they are short enough or have their own navigation (the sticky category
+ * bar of the menu), and they carry a bottom bar of their own.
+ */
+const route = useRoute()
+const coversControls = computed(() => /\/(?:menu|cart|checkout)\/?$/u.test(route.path))
 
 const { t } = useI18n()
 const showButton = ref(false)

@@ -31,7 +31,7 @@
       >
         <!-- Delete action (revealed on swipe; inset by 1px at rest, so its rounded corners leave no red fringe around the card's): a pointer-only shortcut. The explicit remove button below is the keyboard and screen-reader way, so this one stays out of the tab order and the accessibility tree (audit A17). -->
         <div
-          class="absolute flex items-center bg-red-500 rounded-2xl"
+          class="absolute flex items-center bg-red-600 rounded-2xl"
           :class="getSwipeOffset(item) === 0 ? 'inset-y-px right-px' : 'inset-y-0 right-0'"
           aria-hidden="true"
         >
@@ -57,9 +57,14 @@
           </button>
         </div>
 
-        <!-- Card content (slides on swipe) -->
+        <!--
+          Card content (slides on swipe). One fixed structure whatever the text or the amounts, no wrapping flex. A phone
+          (below sm): the picture on the left, the information on the right, and the controls (stepper + bin) always on
+          their own row under the information (beside the price they only fitted sometimes, so lines wrapped differently
+          from one product to the next). From sm up there is room for [picture | information | controls] on one row.
+        -->
         <div
-          class="relative bg-white border border-neutral-100 px-3 py-2.5 flex items-center gap-3 transition-transform duration-200 ease-out touch-pan-y"
+          class="relative bg-white border border-neutral-100 px-3 py-2.5 grid grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-1.5 items-center transition-transform duration-200 ease-out touch-pan-y"
           :style="{ transform: `translateX(${getSwipeOffset(item)}px)` }"
           @touchstart="onTouchStart($event, item)"
           @touchmove="onTouchMove($event, item)"
@@ -67,7 +72,7 @@
         >
           <!-- IMAGE — square, rounded, no crop -->
           <div
-            class="w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
+            class="row-span-2 sm:row-span-1 w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
           >
             <picture>
               <source :srcset="itemImage(item.product).avif" type="image/avif" />
@@ -85,121 +90,121 @@
             </picture>
           </div>
 
-          <!-- INFO + CONTROLS -->
-          <div class="flex-1 min-w-0">
-            <!-- Row 1: Metadata (small, gray, truncated) -->
+          <!-- INFO -->
+          <div class="min-w-0">
+            <!-- Row 1: Metadata (small, gray, wraps) -->
             <p
               v-if="itemLabelMeta(item)"
-              class="text-xs text-neutral-600 truncate leading-tight mb-0.5"
+              class="text-xs text-neutral-600 break-words leading-tight mb-0.5"
             >
               {{ itemLabelMeta(item) }}
             </p>
 
-            <!-- Row 2: Product name (bold, wraps up to 2 lines) -->
-            <p class="text-[15px] font-semibold text-neutral-900 leading-tight line-clamp-2 pr-1">
+            <!-- Row 2: Product name (bold, wraps in full: this is where the customer checks what was ordered) -->
+            <p class="text-[15px] font-semibold text-neutral-900 leading-tight break-words pr-1">
               {{ itemLabelName(item) }}
             </p>
 
             <!-- Row 3: Choice (red) -->
-            <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 truncate">
+            <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
               ({{ itemChoice(item) }})
             </p>
+
+            <!-- Row 4: Price -->
+            <div class="mt-1.5 flex flex-col leading-tight">
+              <span class="text-[15px] font-bold text-neutral-900 tabular-nums whitespace-nowrap">
+                {{ formatCents(getItemLineTotalCents(item)) }}
+              </span>
+              <span
+                v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null"
+                class="text-xs text-neutral-600 tabular-nums whitespace-nowrap"
+              >
+                {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
+              </span>
+            </div>
 
             <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">
               {{ $t('cart.customizedItemHint') }}
             </p>
             <!-- What the server quote says about this line, with the way out -->
             <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
+          </div>
 
-            <!-- Row 4: Price + Quantity stepper + remove -->
-            <div class="flex flex-wrap items-center justify-between mt-1.5 gap-x-2 gap-y-1">
-              <!-- shrink-0: the price never overlaps the stepper; on a very narrow phone the controls wrap below it. -->
-              <div class="shrink-0 flex flex-col leading-tight">
-                <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
-                  {{ formatCents(getItemLineTotalCents(item)) }}
-                </span>
-                <span
-                  v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null"
-                  class="text-xs text-neutral-600 tabular-nums"
+          <!-- CONTROLS: the row under the information on a phone (stepper at the start, bin at the end), the column beside it from sm up (stepper and bin side by side) -->
+          <div
+            class="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-start"
+          >
+            <!-- Stepper: compact pill -->
+            <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
+              <button
+                type="button"
+                :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
+                class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                :disabled="!canChangeQuantity(item)"
+                :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
+                @click="handleDecrementQuantity(item)"
+              >
+                <svg
+                  class="w-3.5 h-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
                 >
-                  {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
-                </span>
-              </div>
-
-              <div class="ml-auto flex items-center gap-1">
-                <!-- Stepper: compact pill -->
-                <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
-                  <button
-                    type="button"
-                    :aria-label="$t('cart.decreaseQtyOf', { name: item.product.name })"
-                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
-                    :disabled="!canChangeQuantity(item)"
-                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
-                    @click="handleDecrementQuantity(item)"
-                  >
-                    <svg
-                      class="w-3.5 h-3.5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                  </button>
-                  <span
-                    class="w-6 text-center text-sm font-semibold text-neutral-800 tabular-nums select-none"
-                  >
-                    {{ item.quantity }}
-                  </span>
-                  <button
-                    type="button"
-                    :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
-                    class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
-                    :disabled="!canChangeQuantity(item)"
-                    :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
-                    @click="handleIncrementQuantity(item)"
-                  >
-                    <svg
-                      class="w-3.5 h-3.5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                    >
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Explicit remove -->
-                <button
-                  type="button"
-                  :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                  data-cart-remove
-                  class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  @click="handleRemoveItem(item)"
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <span
+                class="w-6 text-center text-sm font-semibold text-neutral-800 tabular-nums select-none"
+              >
+                {{ item.quantity }}
+              </span>
+              <button
+                type="button"
+                :aria-label="$t('cart.increaseQtyOf', { name: item.product.name })"
+                class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-700 active:bg-neutral-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:bg-transparent"
+                :disabled="!canChangeQuantity(item)"
+                :title="!canChangeQuantity(item) ? $t('cart.customizedItemHint') : undefined"
+                @click="handleIncrementQuantity(item)"
+              >
+                <svg
+                  class="w-3.5 h-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <polyline points="3 6 5 6 21 6" />
-                    <path
-                      d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
-                    />
-                  </svg>
-                </button>
-              </div>
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
             </div>
+
+            <!-- Explicit remove -->
+            <button
+              type="button"
+              :aria-label="$t('cart.removeNamed', { name: item.product.name })"
+              data-cart-remove
+              class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              @click="handleRemoveItem(item)"
+            >
+              <svg
+                class="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path
+                  d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -299,17 +304,19 @@
       ref="checkoutBarRef"
       class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
     >
-      <!-- Narrow phones: tighter padding and a label that may wrap, so the full label and the price always show. -->
+      <!-- Narrow phones: tighter padding, no bag icon under 360 px and a label that may wrap, so the full label and the price always show. -->
       <UiButton
         to="/checkout"
         size="lg"
         block
-        class="justify-between gap-3 max-[400px]:px-4"
+        class="justify-between gap-3 max-[400px]:px-3"
         :disabled="!canCheckout"
       >
-        <span class="flex min-w-0 items-center gap-2 whitespace-normal text-left">
+        <span
+          class="flex min-w-0 flex-1 items-center gap-2 whitespace-normal text-left leading-tight"
+        >
           <svg
-            class="w-5 h-5 shrink-0"
+            class="w-5 h-5 shrink-0 max-[359px]:hidden"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -324,7 +331,7 @@
           </svg>
           {{ $t('cart.checkout') }}
         </span>
-        <span class="shrink-0 font-bold text-base tabular-nums">{{
+        <span class="shrink-0 whitespace-nowrap font-bold text-base tabular-nums">{{
           formatCents(payableCents)
         }}</span>
       </UiButton>

@@ -11,7 +11,7 @@
         type="button"
         data-testid="floating-cart-bar"
         data-cart-trigger
-        class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between transition-all duration-300 ease-out active:scale-[0.985] active:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
+        class="w-full min-h-14 text-white px-4 py-3 flex items-center justify-between gap-3 transition-all duration-300 ease-out active:scale-[0.985] active:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
         @click="cartStore.toggleCartVisibility"
       >
         <div class="flex items-center gap-3 min-w-0">
@@ -20,13 +20,19 @@
           >
             {{ cartStore.totalItems }}
           </span>
-          <span class="text-sm font-semibold truncate">
-            {{ $t('cart.viewCart') }} · {{ cartStore.totalItems }}
-            {{ cartStore.totalItems > 1 ? $t('cart.items') : $t('cart.item') }}
+          <!-- Under 400 px the count already shows in the badge: the words stay for screen readers only. The label wraps (two lines at most) rather than being cut short next to the price. -->
+          <span class="min-w-0 text-sm font-semibold leading-tight line-clamp-2">
+            {{ $t('cart.viewCart')
+            }}<span class="max-[399px]:sr-only">
+              · {{ cartStore.totalItems }}
+              {{ cartStore.totalItems > 1 ? $t('cart.items') : $t('cart.item') }}</span
+            >
           </span>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <span class="font-semibold tabular-nums">{{ formatCents(payableCents) }}</span>
+          <span class="font-semibold tabular-nums whitespace-nowrap">{{
+            formatCents(payableCents)
+          }}</span>
           <svg
             class="w-4 h-4 opacity-80"
             viewBox="0 0 24 24"

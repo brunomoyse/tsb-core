@@ -4,14 +4,8 @@ import { toCamelCase } from '#engine/utils/utils'
 import { useAnnouncer } from '#engine/composables/useAnnouncer'
 import { useI18n } from 'vue-i18n'
 
-const DELIVERY_STATUSES = [
-  'PENDING',
-  'CONFIRMED',
-  'PREPARING',
-  'AWAITING_PICK_UP',
-  'OUT_FOR_DELIVERY',
-  'DELIVERED',
-]
+// A delivery has no "awaiting pick-up" step (that is the pick-up order's counter step): a delivery order the kitchen has finished (AWAITING_PICK_UP) still reads as "preparing" until it is out for delivery.
+const DELIVERY_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'OUT_FOR_DELIVERY', 'DELIVERED']
 const PICKUP_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'PICKED_UP']
 
 export type TimelineStepState = 'done' | 'current' | 'upcoming'
@@ -36,10 +30,12 @@ export function useOrderStatusTimeline(order: MaybeRefOrGetter<Order>) {
   const { t } = useI18n()
   const { announce } = useAnnouncer()
 
-  const statuses = computed(() =>
-    toValue(order).type === 'DELIVERY' ? DELIVERY_STATUSES : PICKUP_STATUSES,
-  )
-  const currentIndex = computed(() => statuses.value.indexOf(toValue(order).status))
+  const isDelivery = computed(() => toValue(order).type === 'DELIVERY')
+  const statuses = computed(() => (isDelivery.value ? DELIVERY_STATUSES : PICKUP_STATUSES))
+  // The step an order status falls on in this timeline.
+  const stepOf = (status: string): string =>
+    isDelivery.value && status === 'AWAITING_PICK_UP' ? 'PREPARING' : status
+  const currentIndex = computed(() => statuses.value.indexOf(stepOf(toValue(order).status)))
   const completed = computed(() => ['DELIVERED', 'PICKED_UP'].includes(toValue(order).status))
 
   const titleOf = (status: string): string =>
@@ -77,7 +73,7 @@ export function useOrderStatusTimeline(order: MaybeRefOrGetter<Order>) {
     () => toValue(order).status,
     (next, previous) => {
       if (next === previous || !next) return
-      announce(t('orderStatus.changed', { status: titleOf(next) }))
+      announce(t('orderStatus.changed', { status: titleOf(stepOf(next)) }))
     },
   )
 

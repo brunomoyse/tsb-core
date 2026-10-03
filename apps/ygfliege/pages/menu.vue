@@ -77,11 +77,18 @@
                  tab strip that used to live here were removed deliberately: the
                  menu is ~30 products across 6 short sections, so scanning beats
                  filtering, and a tab nav over so little content is chrome. -->
-      <section ref="stickyHeader" class="sticky z-20 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
+      <!-- From 640px up this block (the search) sticks. On a phone it dissolves (`contents`) and only the category strip below
+           sticks: search + zone chip + strip took two rows more than the strip is worth, so the search scrolls away. -->
+      <section
+        ref="stickyBlock"
+        class="contents sm:block sm:sticky sm:z-20 sm:pt-6 sm:bg-ygf-bg sm:top-16"
+      >
         <!-- Aligned to the same max-w-7xl container as the product grid
                      so the controls don't stretch full-bleed on wide screens. -->
         <!-- Under ~360px the chip drops under the search instead of squeezing the input. -->
-        <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3 max-[359px]:flex-wrap">
+        <section
+          class="max-w-7xl mx-auto mb-4 px-4 pt-4 sm:pt-0 flex items-center gap-3 max-[359px]:flex-wrap"
+        >
           <!-- Search Bar (labeled) -->
           <div
             class="relative flex flex-1 max-[359px]:basis-full sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg"
@@ -137,8 +144,9 @@
                      ~10k px tall and needs a way to jump. -->
         <nav
           v-if="displayedCategories.length > 1"
+          ref="categoryBar"
           :aria-label="$t('mkt.menu.categoriesNav')"
-          class="sm:hidden max-w-7xl mx-auto px-4 pb-3"
+          class="sm:hidden sticky top-[80px] z-20 bg-ygf-bg max-w-7xl mx-auto px-4 pt-1 pb-3"
         >
           <div ref="chipRowRef" class="flex gap-2 overflow-x-auto no-scrollbar">
             <button
@@ -146,13 +154,14 @@
               :key="cat.id"
               type="button"
               translate="no"
-              class="chip shrink-0"
+              class="chip shrink-0 max-w-[calc(100%-1rem)]"
               :class="{ 'chip-selected': activeCategoryId === cat.id }"
+              :title="cat.name"
               :aria-current="activeCategoryId === cat.id ? 'true' : undefined"
               :data-chip-category="cat.id"
               @click="scrollToCategory(cat.id)"
             >
-              {{ cat.name }}
+              <span class="truncate">{{ cat.name }}</span>
             </button>
           </div>
         </nav>
@@ -347,7 +356,7 @@ import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
-import { useDebounce, useEventBus, useMounted } from '@vueuse/core'
+import { useDebounce, useEventBus, useMediaQuery, useMounted } from '@vueuse/core'
 import LoadError from '#engine/components/LoadError.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
@@ -523,7 +532,11 @@ watch(liveProduct, (val) => {
 // A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
 const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
-const stickyHeader = ref<HTMLElement | null>(null)
+// The sticky element at the current breakpoint: the search block from 640px up, the category strip alone on a phone (it is absent with fewer than two categories).
+const stickyBlock = ref<HTMLElement | null>(null)
+const categoryBar = ref<HTMLElement | null>(null)
+const isPhone = useMediaQuery('(max-width: 639.98px)')
+const stickyHeader = computed(() => (isPhone.value ? categoryBar.value : stickyBlock.value))
 
 const searchInputRef = ref<HTMLInputElement | null>(null)
 

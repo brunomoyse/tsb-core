@@ -17,7 +17,7 @@
         <h2
           id="bowl-composer-title"
           translate="no"
-          class="section-title text-xl sm:text-2xl truncate"
+          class="section-title text-xl sm:text-2xl break-words"
         >
           {{ p?.name ?? $t('composer.title') }}
         </h2>
@@ -99,7 +99,7 @@
     <!-- Summary rail -->
     <footer
       v-if="p"
-      class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5 space-y-3"
+      class="border-t border-ygf-orange-100 bg-ygf-cream px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-8 sm:py-5 space-y-3"
     >
       <!-- polite, not assertive: the total updates on every tap and would -->
       <!-- otherwise interrupt a screen reader mid-sentence. -->
@@ -111,8 +111,9 @@
         </template>
       </p>
 
-      <div class="flex items-center gap-3 sm:gap-4">
-        <div class="stepper shrink-0">
+      <!-- Under 480px the stepper sits above a full-width button (as in the product modal): side by side, the button ran past the screen edge at 320px. -->
+      <div class="flex items-center gap-3 sm:gap-4 max-[479px]:flex-col max-[479px]:items-stretch">
+        <div class="stepper shrink-0 max-[479px]:self-center">
           <button
             type="button"
             class="stepper-btn"
@@ -137,7 +138,7 @@
         <button
           type="button"
           data-testid="bowl-composer-add-to-cart"
-          class="btn btn-primary flex-1 justify-center"
+          class="btn btn-primary flex-1 justify-center max-[479px]:flex-none"
           :disabled="!canAddToCart"
           @click="addToCart"
         >

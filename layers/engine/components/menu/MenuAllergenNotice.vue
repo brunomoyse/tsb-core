@@ -21,9 +21,12 @@
       </svg>
       <span class="flex-1 min-w-0">
         {{ $t('menu.allergenNoticeShort') }}
-        <a :href="phoneHref" class="underline font-medium text-amber-900 whitespace-nowrap">{{
-          phoneLabel
-        }}</a>
+        <!-- The vertical padding makes the link a 44px target; the negative margin keeps it from growing the line. -->
+        <a
+          :href="phoneHref"
+          class="inline-block py-3.5 -my-3.5 align-middle underline font-medium text-amber-900 whitespace-nowrap"
+          >{{ phoneLabel }}</a
+        >
       </span>
       <button
         type="button"

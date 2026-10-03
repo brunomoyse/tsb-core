@@ -215,19 +215,20 @@ const getStatusColorClass = (status: string) => {
           @click="toggleOrder(order.id)"
         >
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
+            <!-- flex-wrap: on a narrow phone a long status ("Klaar om af te halen") drops under the order type instead of running into the total. -->
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span class="font-semibold text-neutral-700 text-sm whitespace-nowrap">
                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
               </span>
               <span
-                class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
+                class="inline-block max-w-full px-2 py-0.5 rounded-full text-xs font-medium"
                 :class="
                   isOrderCompleted(order.status)
                     ? getStatusColorClass(order.status)
                     : 'text-primary-700 bg-tsb-four'
                 "
               >
-                {{ getStatus(getTrackedOrder(order).status) }}
+                {{ getStatus(getTrackedOrder(order).status, order.type) }}
               </span>
             </div>
             <p class="mt-0.5 text-xs text-neutral-600 tabular-nums">
@@ -306,7 +307,7 @@ const getStatusColorClass = (status: string) => {
               <div
                 v-for="(item, itemIdx) in order.items"
                 :key="itemIdx"
-                class="flex items-center justify-between py-2 px-3 rounded-lg bg-white/60"
+                class="flex items-center justify-between py-2 px-3 rounded-lg bg-white/60 max-[400px]:flex-col max-[400px]:items-stretch max-[400px]:gap-1"
               >
                 <p class="min-w-0 text-sm text-neutral-800 break-words">
                   <template v-for="(part, i) in orderItemSegments(item)" :key="i">
@@ -323,7 +324,10 @@ const getStatusColorClass = (status: string) => {
                     >{{ orderItemChoice(item) }}</span
                   >
                 </p>
-                <div class="flex items-center gap-2 ml-3 flex-shrink-0">
+                <!-- Under 400 px the quantity and the price sit under the name (beside it, the name was squeezed to a few letters per line). -->
+                <div
+                  class="flex items-center gap-2 ml-3 flex-shrink-0 max-[400px]:ml-0 max-[400px]:justify-end"
+                >
                   <span class="text-xs font-medium text-neutral-600 tabular-nums"
                     >x{{ item.quantity }}</span
                   >

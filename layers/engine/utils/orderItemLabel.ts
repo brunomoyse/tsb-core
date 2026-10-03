@@ -73,9 +73,11 @@ export interface CartLineMetaOptions {
   showProductCode: boolean
   /**
    * The piece count suffix ("6 pcs") that closes the line on the cart page; absent elsewhere.
-   * With it the parts are joined with " · ", without it with "·" (the compact lines of the drawers and the checkout).
+   * With it the parts are joined with " · ", without it with "·" (the compact single lines of the order lists).
    */
   pieces?: { one: string; many: string }
+  /** Join with " · " even without the piece count: the cart surfaces wrap this line, and an unspaced "A1·Category" can only break inside a word. */
+  spaced?: boolean
 }
 
 /** The small line above a cart item's name: `code · category · pieces`, whatever the brand and the surface show. */
@@ -96,7 +98,9 @@ export function cartLineMeta(
       `${item.product.pieceCount} ${item.product.pieceCount === 1 ? options.pieces.one : options.pieces.many}`,
     )
   }
-  return bits.length > 0 ? bits.join(options.pieces ? ' · ' : '·') : undefined
+  return bits.length > 0
+    ? bits.join(options.pieces || options.spaced === true ? ' · ' : '·')
+    : undefined
 }
 
 /** The choices of a cart line, like the order lines show them ("Tonkotsu, Corn x2"). */
