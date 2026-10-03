@@ -119,14 +119,35 @@ const rootRef = ref<HTMLElement | null>(null)
 
 /*
  * A toast raised while a dialog is open (an address sheet, a confirmation) would sit over the dialog's own fields at
- * the bottom of the screen. It goes to the top instead, over the dimmed page. The cart sheet is the exception: it
- * publishes its height and the toast floats above it (the Undo for a removed line has to stay next to the list).
+ * the bottom of the screen. It goes to the top instead, over the dimmed page, as long as the dialog leaves room for it
+ * there. When it does not (a landscape phone, a small phone's tall sheet: the dialog reaches the top of the screen),
+ * the top is the dialog's header and its close button, so the toast stays at the bottom, which only ever hides content
+ * the customer can scroll to. The cart sheet is the exception: it publishes its height and the toast floats above it
+ * (the Undo for a removed line has to stay next to the list).
  */
 const aboveDialog = ref(false)
-const dialogOpen = (): boolean =>
-  [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].some(
-    (dialog) => dialog.id !== 'cart-mobile',
-  )
+const openDialog = (): Element | undefined =>
+  [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')]
+    .filter((dialog) => dialog.id !== 'cart-mobile')
+    .at(-1)
+// Does the toast, placed at the top of the screen, end above the dialog's top edge? (a margin of 0.5rem is kept)
+const clearsDialog = (): boolean => {
+  const dialog = openDialog()
+  const toast = rootRef.value
+  if (!dialog || !toast) return true
+  return toast.getBoundingClientRect().bottom + 8 <= dialog.getBoundingClientRect().top
+}
+// A sheet that is still sliding in is lower than it will be: the placement is checked again once it has settled.
+const SHEET_SETTLE_MS = 450
+const placeAboveDialog = async () => {
+  if (cookieConsent || !openDialog()) return
+  aboveDialog.value = true
+  await nextTick()
+  if (!clearsDialog()) aboveDialog.value = false
+  setTimeout(() => {
+    if (aboveDialog.value && !clearsDialog()) aboveDialog.value = false
+  }, SHEET_SETTLE_MS)
+}
 
 /*
  * Announcing the toast to screen readers is ToastAnnouncer's job (a live region that is always mounted);
@@ -172,13 +193,13 @@ const invokeAction = () => {
 }
 
 onMounted(async () => {
-  aboveDialog.value = !cookieConsent && dialogOpen()
   // For cookie consent, only show if not already accepted.
   if (cookieConsent && !localStorage.getItem('cookiesAccepted')) {
     visible.value = true
   }
   if (!cookieConsent) {
     visible.value = true
+    await placeAboveDialog()
     if (variant === 'error') hapticNotification('Error')
     else if (variant === 'success') hapticNotification('Success')
     // A toast that replaced the one being read starts with its clock held (the pause outlives the replacement). If the pointer or focus is on this new toast, it keeps the hold; if not, the clock runs.
