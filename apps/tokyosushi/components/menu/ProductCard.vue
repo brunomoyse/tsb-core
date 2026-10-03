@@ -6,7 +6,7 @@
              data-testid="product-card"
              :data-product-id="product.id"
              :data-has-choices="hasChoices"
-             class="min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
+             class="isolate min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md">
             <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
             <div class="flex-1 min-h-0 flex justify-center items-center p-2 cursor-pointer relative" @contextmenu.prevent @click="emit('openProductModal')">
                 <!-- Dietary badges -->

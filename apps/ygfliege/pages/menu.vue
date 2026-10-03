@@ -43,7 +43,7 @@
                  tab strip that used to live here were removed deliberately: the
                  menu is ~30 products across 6 short sections, so scanning beats
                  filtering, and a tab nav over so little content is chrome. -->
-            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
+            <section ref="stickyHeader" class="sticky z-20 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
                 <!-- Aligned to the same max-w-7xl container as the product grid
                      so the controls don't stretch full-bleed on wide screens. -->
                 <!-- Under ~360px the chip drops under the search instead of squeezing the input. -->
