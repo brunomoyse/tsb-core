@@ -36,7 +36,7 @@
                         @click="handleOrderType(option.value)">
                     <img alt="" :src="option.icon" class="w-4 h-4 shrink-0"/>
                     <span>{{ option.label }}</span>
-                    <span v-if="option.value === 'PICKUP'" class="rounded-full bg-tsb-four px-1 py-0.5 text-[10px] font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort') }}</span>
+                    <span v-if="option.value === 'PICKUP' && policyParams.rate > 0" class="rounded-full bg-tsb-four px-1 py-0.5 text-[10px] font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort', policyParams) }}</span>
                 </button>
             </div>
         </header>

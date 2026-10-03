@@ -317,7 +317,7 @@
     "items": "artikelen",
     "orderingUnavailable": "Bestellen niet beschikbaar",
     "editItem": "Wijzigen",
-    "pickupDiscountShort": "-10%",
+    "pickupDiscountShort": "-{rate}%",
     "undo": "Ongedaan maken",
     "removedUndo": "“{name}” verwijderd",
     "eachSuffix": "per stuk",

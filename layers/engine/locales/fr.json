@@ -321,7 +321,7 @@
     "eachSuffix": "pièce",
     "deliveryTbd": "Livraison calculée au paiement",
     "editItem": "Modifier",
-    "pickupDiscountShort": "-10 %",
+    "pickupDiscountShort": "-{rate} %",
     "onlineFee": "Frais de paiement en ligne",
     "addForDelivery": "Ajoutez encore {amount} pour la livraison.",
     "quoteUpdating": "Mise à jour des prix…",

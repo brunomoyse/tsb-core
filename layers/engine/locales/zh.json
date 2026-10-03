@@ -321,7 +321,7 @@
     "eachSuffix": "每份",
     "deliveryTbd": "运费将在结账时计算",
     "editItem": "修改",
-    "pickupDiscountShort": "-10%",
+    "pickupDiscountShort": "-{rate}%",
     "onlineFee": "在线支付手续费",
     "addForDelivery": "再添加 {amount} 即可配送。",
     "quoteUpdating": "正在更新价格…",
