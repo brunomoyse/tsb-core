@@ -346,14 +346,12 @@ definePageMeta({
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
-import BowlComposer from '~/components/menu/BowlComposer.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
-import ProductModal from '~/components/menu/ProductModal.vue'
-import SideCart from '#engine/components/cart/SideCart.vue'
+import { whenIdle } from '#engine/utils/whenIdle'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMediaQuery, useMounted } from '@vueuse/core'
@@ -377,6 +375,23 @@ import { telHref } from '#engine/utils/phone'
 import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
+
+/*
+ * The product modal, the bowl composer and the desktop cart are not part of the first paint (the overlays open on a tap,
+ * the cart only has something to show once the cart store has hydrated): their code is its own chunk, fetched when the
+ * browser is idle (audit PR 6.2, P12) so the first tap does not wait for it.
+ */
+const loadProductModal = () => import('~/components/menu/ProductModal.vue')
+const loadBowlComposer = () => import('~/components/menu/BowlComposer.vue')
+const ProductModal = defineAsyncComponent(loadProductModal)
+const BowlComposer = defineAsyncComponent(loadBowlComposer)
+const SideCart = defineAsyncComponent(() => import('#engine/components/cart/SideCart.vue'))
+onMounted(() => {
+  whenIdle(() => {
+    void loadProductModal()
+    void loadBowlComposer()
+  })
+})
 
 const { brand } = useAppConfig()
 const route = useRoute()

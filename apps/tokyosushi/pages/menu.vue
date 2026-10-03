@@ -397,16 +397,15 @@ definePageMeta({
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
-import ProductModal from '~/components/menu/ProductModal.vue'
 import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
-import SideCart from '#engine/components/cart/SideCart.vue'
+import { whenIdle } from '#engine/utils/whenIdle'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -426,6 +425,20 @@ import {
   searchProducts,
 } from '#engine/utils/menuCatalog'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
+
+/*
+ * The product modal and the desktop cart are not part of the first paint (the modal opens on a tap, the cart only has
+ * something to show once the cart store has hydrated): their code is its own chunk, fetched when the browser is idle
+ * (audit PR 6.2, P12) so the first tap does not wait for it.
+ */
+const loadProductModal = () => import('~/components/menu/ProductModal.vue')
+const ProductModal = defineAsyncComponent(loadProductModal)
+const SideCart = defineAsyncComponent(() => import('#engine/components/cart/SideCart.vue'))
+onMounted(() => {
+  whenIdle(() => {
+    void loadProductModal()
+  })
+})
 
 const { selection: hapticSelection } = useHaptics()
 const route = useRoute()
