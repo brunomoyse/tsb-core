@@ -32,7 +32,7 @@
             />
 
             <!-- Sticky Categories Header -->
-            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0">
+            <section ref="stickyHeader" class="sticky z-20 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0">
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
@@ -255,7 +255,7 @@
         <!-- Desktop Cart Sidebar -->
         <aside
             v-if="hasCartItems"
-            class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:shrink-0"
+            class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:min-w-[18.5rem] lg:shrink-0"
         >
             <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
         </aside>

@@ -73,6 +73,8 @@ import { visibleNavItems } from './navItems'
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const route = useRoute()
+// The menu page shows the SideCart from lg up: no second cart button beside it.
+const isMenuPage = computed(() => route.path.endsWith('/menu'))
 // The cart and checkout pages already show the cart; no shortcut there.
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
 // "Cart, 3 items": the count is part of the accessible name.

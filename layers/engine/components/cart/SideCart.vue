@@ -51,7 +51,7 @@
                 <div v-for="(item, lineIndex) in cartStore.products" :key="lineKeys[lineIndex]"
                      data-testid="cart-item"
                      data-cart-line
-                     class="group relative grid grid-cols-[auto_1fr] gap-4 p-3 bg-white rounded-xl"
+                     class="group relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 p-3 bg-white rounded-xl"
                      :class="{ 'animate-cart-flash': highlightedKey === getItemKey(item) }">
                     <!-- Product Image -->
                     <button
@@ -80,15 +80,16 @@
                         </picture>
                     </button>
 
-                    <!-- Product Details -->
-                    <div class="flex flex-col justify-between gap-2">
+                    <!-- Product details: `contents`, so the title and price sit beside the picture while the line's controls
+                         take the full width of the line (they do not fit beside the picture in a narrow column) -->
+                    <div class="contents">
                         <!-- Product Info and Price -->
-                        <div class="flex justify-between items-start gap-2">
+                        <div class="flex min-w-0 justify-between items-start gap-2">
                             <div class="flex flex-col min-w-0 flex-1">
                                 <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                                     {{ itemLabelMeta(item) }}
                                 </p>
-                                <h3 class="text-sm font-medium text-neutral-900 leading-snug line-clamp-2">
+                                <h3 class="text-sm font-medium text-neutral-900 leading-snug line-clamp-2 break-words">
                                     {{ itemLabelName(item) }}
                                 </h3>
                                 <span v-if="itemChoice(item)" class="text-xs text-primary-700">
@@ -105,10 +106,10 @@
                         </div>
 
                         <!-- What the server quote says about this line, with the way out -->
-                        <CartLineIssues :item="item" :line-key="lineKeys[lineIndex]" />
+                        <CartLineIssues class="col-span-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
                         <!-- Quantity Controls and Remove -->
-                        <div class="flex items-center justify-between mt-auto">
+                        <div class="col-span-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                             <!-- Customized lines carry per-line selections, so they are edited in the modal -->
                             <div v-if="hasChoices(item)" class="flex items-center gap-2">
                                 <span data-testid="cart-item-quantity" class="min-w-6 text-center text-sm font-semibold tabular-nums text-primary-700">×{{ item.quantity }}</span>
@@ -148,9 +149,9 @@
                     <span>{{ $t('cart.subtotal') }}:</span>
                     <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
                 </div>
-                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center text-sm text-neutral-600">
-                    <span>{{ $t('cart.deliveryFee') }}:</span>
-                    <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
+                <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between items-center gap-x-3 text-sm text-neutral-600">
+                    <span class="shrink-0 whitespace-nowrap">{{ $t('cart.deliveryFee') }}:</span>
+                    <span v-if="!cartStore.address?.distance" class="min-w-0 text-right text-neutral-600 italic text-xs">
                         {{ $t('cart.deliveryTbd') }}
                     </span>
                     <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right">
