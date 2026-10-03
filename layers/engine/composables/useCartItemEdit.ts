@@ -8,4 +8,4 @@ import { useState } from '#imports'
  * the line on confirm, then clears it.
  */
 export const useCartItemEdit = (): Ref<CartItem | null> =>
-    useState<CartItem | null>('cart-item-edit', () => null)
+  useState<CartItem | null>('cart-item-edit', () => null)

@@ -9,8 +9,17 @@ import { test } from 'node:test'
 
 test('roundCentsToNearest10 matches the euro helper rule', () => {
   const cases = [
-    [2440, 2440], [2441, 2440], [2444, 2440], [2445, 2450], [2449, 2450],
-    [1295, 1300], [9995, 10000], [0, 0], [3, 0], [-268, -270], [-1, 0],
+    [2440, 2440],
+    [2441, 2440],
+    [2444, 2440],
+    [2445, 2450],
+    [2449, 2450],
+    [1295, 1300],
+    [9995, 10000],
+    [0, 0],
+    [3, 0],
+    [-268, -270],
+    [-1, 0],
   ]
   for (const [input, expected] of cases) {
     assert.strictEqual(roundCentsToNearest10(input), expected, `round(${input})`)
@@ -47,7 +56,12 @@ test('delivery fee still unknown (or out of zone, -1 mapped to 0) counts as 0', 
 test('coupon stacks with the pickup discount', () => {
   // 40.00 − 4.00 − 5.00 + 0.30 = 31.30
   assert.strictEqual(
-    computePayableCents({ subtotalCents: 4000, pickupDiscountCents: 400, couponDiscountCents: 500, onlineFeeCents: 30 }),
+    computePayableCents({
+      subtotalCents: 4000,
+      pickupDiscountCents: 400,
+      couponDiscountCents: 500,
+      onlineFeeCents: 30,
+    }),
     3130,
   )
 })
@@ -64,7 +78,12 @@ test('a coupon larger than the basket leaves exactly the online fee, never less'
 test('the discount may eat the delivery fee too (backend clamps against subtotal + fee)', () => {
   // 25.00 + 2.00 = 27.00 total, coupon 30.00 → clamped to 0, + 0.30
   assert.strictEqual(
-    computePayableCents({ subtotalCents: 2500, deliveryFeeCents: 200, couponDiscountCents: 3000, onlineFeeCents: 30 }),
+    computePayableCents({
+      subtotalCents: 2500,
+      deliveryFeeCents: 200,
+      couponDiscountCents: 3000,
+      onlineFeeCents: 30,
+    }),
     30,
   )
 })
@@ -104,12 +123,21 @@ test('pickupDiscountCents: only discountable lines count, but the threshold uses
 })
 
 test('pickupDiscountCents: 160,45 € gives 16,10 € like the backend (the float maths gave 16,00 €)', () => {
-  assert.strictEqual(pickupDiscountCents([{ totalCents: 16045, isDiscountable: true }], 16045), 1610)
+  assert.strictEqual(
+    pickupDiscountCents([{ totalCents: 16045, isDiscountable: true }], 16045),
+    1610,
+  )
   // The same basket split over several lines (the backend sums 10 % of each line exactly).
-  assert.strictEqual(pickupDiscountCents([
-    { totalCents: 8000, isDiscountable: true },
-    { totalCents: 8045, isDiscountable: true },
-  ], 16045), 1610)
+  assert.strictEqual(
+    pickupDiscountCents(
+      [
+        { totalCents: 8000, isDiscountable: true },
+        { totalCents: 8045, isDiscountable: true },
+      ],
+      16045,
+    ),
+    1610,
+  )
   // 10 % of 24,42 € = 2,442 € -> 2,44 -> 2,40 ; 24,45 € -> 2,445 -> 2,45 (half up) -> 2,50 (tie to the restaurant).
   assert.strictEqual(pickupDiscountCents([{ totalCents: 2442, isDiscountable: true }], 2442), 240)
   assert.strictEqual(pickupDiscountCents([{ totalCents: 2445, isDiscountable: true }], 2445), 250)

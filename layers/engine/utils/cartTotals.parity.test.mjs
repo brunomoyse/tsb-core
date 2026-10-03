@@ -49,12 +49,21 @@ const align = (a, b) => {
   const exp = Math.min(a.exp, b.exp)
   return [a.coef * pow10(a.exp - exp), b.coef * pow10(b.exp - exp), exp]
 }
-const add = (a, b) => { const [x, y, exp] = align(a, b); return dec(x + y, exp) }
-const sub = (a, b) => { const [x, y, exp] = align(a, b); return dec(x - y, exp) }
+const add = (a, b) => {
+  const [x, y, exp] = align(a, b)
+  return dec(x + y, exp)
+}
+const sub = (a, b) => {
+  const [x, y, exp] = align(a, b)
+  return dec(x - y, exp)
+}
 const mul = (a, b) => dec(a.coef * b.coef, a.exp + b.exp)
-const cmp = (a, b) => { const [x, y] = align(a, b); return x < y ? -1 : x > y ? 1 : 0 }
+const cmp = (a, b) => {
+  const [x, y] = align(a, b)
+  return x < y ? -1 : x > y ? 1 : 0
+}
 const roundHalfAwayDiv = (num, den) => {
-  const negative = (num < 0n) !== (den < 0n)
+  const negative = num < 0n !== den < 0n
   const n = num < 0n ? -num : num
   const d = den < 0n ? -den : den
   const q = (2n * n + d) / (2n * d)
@@ -85,7 +94,9 @@ const roundToNearest10Cents = (d) => {
   const negative = cents < 0
   if (negative) cents = -cents
   const last = cents % 10
-  if (last === 0) { /* Already .x0 */ } else if (last <= 4) cents -= last
+  if (last === 0) {
+    /* Already .x0 */
+  } else if (last <= 4) cents -= last
   else cents += 10 - last
   return dec(negative ? -cents : cents, -2)
 }
@@ -117,7 +128,10 @@ function backendCreateOrder(cart) {
   let total = dec(0)
   const lines = []
   for (const line of cart.lines) {
-    const selections = line.selections.map((s) => ({ modifier: fromString(s.modifier), quantity: s.quantity }))
+    const selections = line.selections.map((s) => ({
+      modifier: fromString(s.modifier),
+      quantity: s.quantity,
+    }))
     const lineTotal = priceLine(fromString(line.price), line.qty, selections)
     total = add(total, lineTotal)
     lines.push({ lineTotal, isDiscountable: line.isDiscountable })
@@ -135,13 +149,15 @@ function backendCreateOrder(cart) {
   let takeawayDiscount = dec(0)
   if (cart.type === 'PICKUP' && cmp(total, dec(20)) >= 0) {
     for (const item of lines) {
-      if (item.isDiscountable) takeawayDiscount = add(takeawayDiscount, mul(item.lineTotal, fromString('0.10')))
+      if (item.isDiscountable)
+        takeawayDiscount = add(takeawayDiscount, mul(item.lineTotal, fromString('0.10')))
     }
     takeawayDiscount = roundToNearest10Cents(takeawayDiscount)
   }
 
   let couponDiscount = dec(0)
-  if (cart.couponGranted) couponDiscount = roundToNearest10Cents(couponGrantedDecimal(cart.couponGranted, total))
+  if (cart.couponGranted)
+    couponDiscount = roundToNearest10Cents(couponGrantedDecimal(cart.couponGranted, total))
 
   const totalDiscount = add(takeawayDiscount, couponDiscount)
   if (cmp(totalDiscount, total) > 0) {
@@ -159,7 +175,13 @@ function backendCreateOrder(cart) {
   const wasNegative = goods.coef < 0n
   if (wasNegative) goods = dec(0)
   if (cart.online) goods = add(goods, TRANSACTION_FEE)
-  return { totalPrice: roundToNearest10Cents(goods), takeawayDiscount, couponDiscount, fee, wasNegative }
+  return {
+    totalPrice: roundToNearest10Cents(goods),
+    takeawayDiscount,
+    couponDiscount,
+    fee,
+    wasNegative,
+  }
 }
 
 // Go: Coupon.CalculateDiscount(orderAmount = total incl. delivery fee, as passed by CreateOrder)
@@ -194,7 +216,8 @@ function randomCart(rand) {
   const lines = Array.from({ length: int(1, 8) }, () => {
     // Mostly the shop's real price shapes (.x0 / .x5 / .x9) and some arbitrary cents.
     const shape = int(1, 6)
-    const priceCents = shape <= 3 ? int(1, 400) * 10 : shape <= 5 ? int(1, 400) * 10 + 5 : int(50, 4500)
+    const priceCents =
+      shape <= 3 ? int(1, 400) * 10 : shape <= 5 ? int(1, 400) * 10 + 5 : int(50, 4500)
     const qty = int(1, 10) <= 7 ? int(1, 4) : int(1, 99)
     const choiceCount = pick([0, 0, 1, 2, 3])
     const choices = Array.from({ length: choiceCount }, (_, i) => ({
@@ -206,7 +229,11 @@ function randomCart(rand) {
       qty,
       isDiscountable: rand() < 0.7,
       choices,
-      selections: choices.map((c) => ({ choiceId: c.id, modifier: c.modifier, quantity: int(1, qty * 3) })),
+      selections: choices.map((c) => ({
+        choiceId: c.id,
+        modifier: c.modifier,
+        quantity: int(1, qty * 3),
+      })),
     }
   })
 
@@ -220,8 +247,16 @@ function randomCart(rand) {
     couponGranted: null,
   }
   const r = rand()
-  if (r < 0.25) cart.couponGranted = { kind: 'percentage', value: pick(['5', '10', '15', '20', '25', '33.33', '100']) }
-  else if (r < 0.4) cart.couponGranted = { kind: 'fixed', value: eur(pick([100, 250, 500, 1000, 1500, 2000, 5000, 20000, 12345])) }
+  if (r < 0.25)
+    cart.couponGranted = {
+      kind: 'percentage',
+      value: pick(['5', '10', '15', '20', '25', '33.33', '100']),
+    }
+  else if (r < 0.4)
+    cart.couponGranted = {
+      kind: 'fixed',
+      value: eur(pick([100, 250, 500, 1000, 1500, 2000, 5000, 20000, 12345])),
+    }
   return cart
 }
 
@@ -234,8 +269,14 @@ function grantedCouponCents(cart, backend) {
   // Recompute against `total` (goods + fee) exactly like the resolver: undo the later maths via the lines.
   let total = dec(0)
   for (const line of cart.lines) {
-    total = add(total, priceLine(fromString(line.price), line.qty,
-      line.selections.map((s) => ({ modifier: fromString(s.modifier), quantity: s.quantity }))))
+    total = add(
+      total,
+      priceLine(
+        fromString(line.price),
+        line.qty,
+        line.selections.map((s) => ({ modifier: fromString(s.modifier), quantity: s.quantity })),
+      ),
+    )
   }
   total = add(total, backend.fee)
   return centsOf(couponGrantedDecimal(cart.couponGranted, total))
@@ -273,10 +314,12 @@ test('10,000 random carts: the engine total equals the backend total_price', () 
     if (probe.error) {
       // The backend rejects it (below the delivery minimum / outside the zone / excluded postcode).
       const engine = computeCartTotals(engineInput(cart, 0))
-      const deliveryBlocked = cart.type === 'DELIVERY'
-        && (cart.distance >= 9000 || EXCLUDED_POSTCODES.has(cart.postcode))
+      const deliveryBlocked =
+        cart.type === 'DELIVERY' && (cart.distance >= 9000 || EXCLUDED_POSTCODES.has(cart.postcode))
       assert.ok(
-        probe.error === 'minimum' ? !engine.isMinimumReached : deliveryBlocked && engine.deliveryFeeCents === -1,
+        probe.error === 'minimum'
+          ? !engine.isMinimumReached
+          : deliveryBlocked && engine.deliveryFeeCents === -1,
         `cart ${n}: backend rejects (${probe.error}) but the engine does not flag it`,
       )
       rejected++
@@ -293,11 +336,19 @@ test('10,000 random carts: the engine total equals the backend total_price', () 
     assert.ok(expectedCents >= 0, `cart ${n}: the backend total is never negative`)
     assert.strictEqual(engine.payableCents, expectedCents, `cart ${n}: ${JSON.stringify(cart)}`)
     if (backend.wasNegative) clamped++
-    assert.strictEqual(engine.pickupDiscountCents, cart.type === 'PICKUP' ? centsOf(probeTakeaway(cart)) : 0,
-      `cart ${n}: pickup discount`)
+    assert.strictEqual(
+      engine.pickupDiscountCents,
+      cart.type === 'PICKUP' ? centsOf(probeTakeaway(cart)) : 0,
+      `cart ${n}: pickup discount`,
+    )
     if (engine.pickupDiscountCents > 0) pickupDiscounts++
     if (cart.couponGranted) withCoupon++
-    if (cart.couponGranted && engine.pickupDiscountCents + engine.couponDiscountCents > engine.subtotalCents + Math.max(engine.deliveryFeeCents, 0)) scaled++
+    if (
+      cart.couponGranted &&
+      engine.pickupDiscountCents + engine.couponDiscountCents >
+        engine.subtotalCents + Math.max(engine.deliveryFeeCents, 0)
+    )
+      scaled++
     compared++
   }
 
@@ -308,31 +359,39 @@ test('10,000 random carts: the engine total equals the backend total_price', () 
   assert.ok(pickupDiscounts > 1000, 'pickup discounts not exercised')
   assert.ok(scaled > 20, `discount scaling not exercised (${scaled})`)
   assert.ok(clamped > 0, 'the negative-total clamp is not exercised')
-  console.log(`parity: ${compared} compared, ${rejected} rejected, ${withCoupon} with coupon, ${scaled} scaled, ${clamped} carts clamped at 0`)
+  console.log(
+    `parity: ${compared} compared, ${rejected} rejected, ${withCoupon} with coupon, ${scaled} scaled, ${clamped} carts clamped at 0`,
+  )
 })
 
 // The pickup discount alone, as the backend computes it before any scaling (L344-L356).
 function probeTakeaway(cart) {
   let total = dec(0)
   const lines = cart.lines.map((line) => {
-    const lt = priceLine(fromString(line.price), line.qty,
-      line.selections.map((s) => ({ modifier: fromString(s.modifier), quantity: s.quantity })))
+    const lt = priceLine(
+      fromString(line.price),
+      line.qty,
+      line.selections.map((s) => ({ modifier: fromString(s.modifier), quantity: s.quantity })),
+    )
     total = add(total, lt)
     return { lt, isDiscountable: line.isDiscountable }
   })
   if (cmp(total, dec(20)) < 0) return dec(0)
   let discount = dec(0)
-  for (const l of lines) if (l.isDiscountable) discount = add(discount, mul(l.lt, fromString('0.10')))
+  for (const l of lines)
+    if (l.isDiscountable) discount = add(discount, mul(l.lt, fromString('0.10')))
   return roundToNearest10Cents(discount)
 }
 
 test('audit M13 example: one 24.15 € item × 3 on pickup gets a 7.30 € discount (was 7.20 €)', () => {
   const input = {
-    lines: [{
-      quantity: 3,
-      product: { price: '24.15', isDiscountable: true, choices: [] },
-      selectedChoices: [],
-    }],
+    lines: [
+      {
+        quantity: 3,
+        product: { price: '24.15', isDiscountable: true, choices: [] },
+        selectedChoices: [],
+      },
+    ],
     collectionOption: 'PICKUP',
     paymentOption: 'CASH',
   }
@@ -347,7 +406,11 @@ test('audit M13 example: one 24.15 € item × 3 on pickup gets a 7.30 € disco
   // Same cart through the backend reference.
   const cart = {
     lines: [{ price: '24.15', qty: 3, isDiscountable: true, choices: [], selections: [] }],
-    type: 'PICKUP', online: false, distance: 0, postcode: '4000', couponGranted: null,
+    type: 'PICKUP',
+    online: false,
+    distance: 0,
+    postcode: '4000',
+    couponGranted: null,
   }
   const backend = backendCreateOrder(cart)
   assert.strictEqual(centsOf(backend.takeawayDiscount), 730)

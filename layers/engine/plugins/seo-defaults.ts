@@ -7,20 +7,20 @@ import { defineNuxtPlugin, useAppConfig, useRuntimeConfig, useSeoMeta } from '#i
  * page-specific image with its own size); a page that sets og:image replaces this one.
  */
 export default defineNuxtPlugin(() => {
-    const baseUrl = (useRuntimeConfig().public.baseUrl as string).replace(/\/$/u, '')
-    const { brand } = useAppConfig()
-    const image = `${baseUrl}${OG_IMAGE_PATH}`
-    const alt = `${brand.name}, ${brand.address.city}`
+  const baseUrl = (useRuntimeConfig().public.baseUrl as string).replace(/\/$/u, '')
+  const { brand } = useAppConfig()
+  const image = `${baseUrl}${OG_IMAGE_PATH}`
+  const alt = `${brand.name}, ${brand.address.city}`
 
-    useSeoMeta({
-        ogSiteName: brand.name,
-        ogImage: image,
-        ogImageType: 'image/jpeg',
-        ogImageWidth: OG_IMAGE_WIDTH,
-        ogImageHeight: OG_IMAGE_HEIGHT,
-        ogImageAlt: alt,
-        twitterCard: 'summary_large_image',
-        twitterImage: image,
-        twitterImageAlt: alt,
-    })
+  useSeoMeta({
+    ogSiteName: brand.name,
+    ogImage: image,
+    ogImageType: 'image/jpeg',
+    ogImageWidth: OG_IMAGE_WIDTH,
+    ogImageHeight: OG_IMAGE_HEIGHT,
+    ogImageAlt: alt,
+    twitterCard: 'summary_large_image',
+    twitterImage: image,
+    twitterImageAlt: alt,
+  })
 })

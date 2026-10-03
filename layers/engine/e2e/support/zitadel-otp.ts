@@ -33,36 +33,49 @@ let cachedUserKey: Buffer | null = null
  * test output and logs.
  */
 function psql(sql: string): string {
-    const dbEnv = getDbEnv()
-    return execFileSync(
-        'psql',
-        ['-h', dbEnv.DB_HOST, '-p', dbEnv.DB_PORT, '-U', dbEnv.DB_USER, '-d', dbEnv.ZITADEL_DB, '-t', '-A', '-F', '|'],
-        { encoding: 'utf-8', input: sql, env: { ...process.env, PGPASSWORD: dbEnv.DB_PASS } },
-    ).trim()
+  const dbEnv = getDbEnv()
+  return execFileSync(
+    'psql',
+    [
+      '-h',
+      dbEnv.DB_HOST,
+      '-p',
+      dbEnv.DB_PORT,
+      '-U',
+      dbEnv.DB_USER,
+      '-d',
+      dbEnv.ZITADEL_DB,
+      '-t',
+      '-A',
+      '-F',
+      '|',
+    ],
+    { encoding: 'utf-8', input: sql, env: { ...process.env, PGPASSWORD: dbEnv.DB_PASS } },
+  ).trim()
 }
 
 function decryptAesCfb(blob: Buffer, key: Buffer): Buffer {
-    if (blob.length < IV_SIZE) {
-        throw new Error(`ciphertext too short: ${blob.length}`)
-    }
-    const iv = blob.subarray(0, IV_SIZE)
-    const ct = blob.subarray(IV_SIZE)
-    const algo = `aes-${key.length * 8}-cfb`
-    const decipher = createDecipheriv(algo, key, iv)
-    return Buffer.concat([decipher.update(ct), decipher.final()])
+  if (blob.length < IV_SIZE) {
+    throw new Error(`ciphertext too short: ${blob.length}`)
+  }
+  const iv = blob.subarray(0, IV_SIZE)
+  const ct = blob.subarray(IV_SIZE)
+  const algo = `aes-${key.length * 8}-cfb`
+  const decipher = createDecipheriv(algo, key, iv)
+  return Buffer.concat([decipher.update(ct), decipher.final()])
 }
 
 function loadUserKey(): Buffer {
-    if (cachedUserKey) return cachedUserKey
-    const encrypted = psql("SELECT key FROM system.encryption_keys WHERE id = 'userKey'")
-    if (!encrypted) throw new Error('userKey not found in system.encryption_keys')
-    const wrapped = Buffer.from(encrypted, 'base64url')
-    const plain = decryptAesCfb(wrapped, Buffer.from(getDbEnv().ZITADEL_MASTERKEY))
-    if (plain.length !== 16 && plain.length !== 24 && plain.length !== 32) {
-        throw new Error(`decrypted userKey has unexpected length: ${plain.length}`)
-    }
-    cachedUserKey = plain
-    return plain
+  if (cachedUserKey) return cachedUserKey
+  const encrypted = psql("SELECT key FROM system.encryption_keys WHERE id = 'userKey'")
+  if (!encrypted) throw new Error('userKey not found in system.encryption_keys')
+  const wrapped = Buffer.from(encrypted, 'base64url')
+  const plain = decryptAesCfb(wrapped, Buffer.from(getDbEnv().ZITADEL_MASTERKEY))
+  if (plain.length !== 16 && plain.length !== 24 && plain.length !== 32) {
+    throw new Error(`decrypted userKey has unexpected length: ${plain.length}`)
+  }
+  cachedUserKey = plain
+  return plain
 }
 
 /*
@@ -74,42 +87,44 @@ function loadUserKey(): Buffer {
  * for the same user (codes are valid 5 min in zitadel default config).
  */
 export async function waitForOtpFromZitadel(
-    email: string,
-    opts: { timeoutMs?: number; pollMs?: number; after?: Date } = {},
+  email: string,
+  opts: { timeoutMs?: number; pollMs?: number; after?: Date } = {},
 ): Promise<string> {
-    const timeoutMs = opts.timeoutMs ?? 20_000
-    const pollMs = opts.pollMs ?? 500
-    const after = opts.after ?? new Date()
-    const afterIso = after.toISOString()
-    const deadline = Date.now() + timeoutMs
-    const userKey = loadUserKey()
+  const timeoutMs = opts.timeoutMs ?? 20_000
+  const pollMs = opts.pollMs ?? 500
+  const after = opts.after ?? new Date()
+  const afterIso = after.toISOString()
+  const deadline = Date.now() + timeoutMs
+  const userKey = loadUserKey()
 
+  /*
+   * Resolve user id once up front. If the address is brand new the lookup
+   * may return empty on the first poll because the placeholder-account
+   * creation in tsb-service races the OTP request slightly — keep retrying
+   * until either id or deadline.
+   */
+  let userId = ''
+  while (Date.now() < deadline) {
+    userId = psql(
+      `SELECT user_id FROM projections.users14_humans WHERE lower(email) = lower('${email.replace(/'/gu, "''")}') LIMIT 1`,
+    )
+    if (userId) break
+    await new Promise<void>((r) => {
+      setTimeout(r, pollMs)
+    })
+  }
+  if (!userId) {
+    throw new Error(`No zitadel user found for email ${email} within ${timeoutMs}ms`)
+  }
+
+  while (Date.now() < deadline) {
     /*
-     * Resolve user id once up front. If the address is brand new the lookup
-     * may return empty on the first poll because the placeholder-account
-     * creation in tsb-service races the OTP request slightly — keep retrying
-     * until either id or deadline.
+     * Join via session aggregate id: the user.checked event tells us
+     * which session belongs to the user; the otp.email.challenged event
+     * on that same session carries the encrypted code.
      */
-    let userId = ''
-    while (Date.now() < deadline) {
-        userId = psql(
-            `SELECT user_id FROM projections.users14_humans WHERE lower(email) = lower('${email.replace(/'/gu, "''")}') LIMIT 1`,
-        )
-        if (userId) break
-        await new Promise<void>((r) => { setTimeout(r, pollMs) })
-    }
-    if (!userId) {
-        throw new Error(`No zitadel user found for email ${email} within ${timeoutMs}ms`)
-    }
-
-    while (Date.now() < deadline) {
-        /*
-         * Join via session aggregate id: the user.checked event tells us
-         * which session belongs to the user; the otp.email.challenged event
-         * on that same session carries the encrypted code.
-         */
-        const rows = psql(
-            `SELECT c.payload->'code'->>'Crypted'
+    const rows = psql(
+      `SELECT c.payload->'code'->>'Crypted'
              FROM eventstore.events2 uc
              JOIN eventstore.events2 c
                ON c.aggregate_type = 'session'
@@ -122,17 +137,19 @@ export async function waitForOtpFromZitadel(
                AND uc.created_at > '${afterIso}'
              ORDER BY c.created_at DESC
              LIMIT 1`,
-        )
-        if (rows) {
-            const crypted = Buffer.from(rows, 'base64')
-            const plain = decryptAesCfb(crypted, userKey).toString('utf-8')
-            if (/^\d{4,10}$/u.test(plain)) return plain
-            throw new Error(`Decrypted OTP failed sanity check: ${JSON.stringify(plain)}`)
-        }
-        await new Promise<void>((r) => { setTimeout(r, pollMs) })
-    }
-
-    throw new Error(
-        `Timed out after ${timeoutMs}ms waiting for zitadel otp event for ${email} (userID=${userId}, after=${afterIso})`,
     )
+    if (rows) {
+      const crypted = Buffer.from(rows, 'base64')
+      const plain = decryptAesCfb(crypted, userKey).toString('utf-8')
+      if (/^\d{4,10}$/u.test(plain)) return plain
+      throw new Error(`Decrypted OTP failed sanity check: ${JSON.stringify(plain)}`)
+    }
+    await new Promise<void>((r) => {
+      setTimeout(r, pollMs)
+    })
+  }
+
+  throw new Error(
+    `Timed out after ${timeoutMs}ms waiting for zitadel otp event for ${email} (userID=${userId}, after=${afterIso})`,
+  )
 }

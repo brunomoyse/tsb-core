@@ -11,11 +11,11 @@ import { tryUseNuxtApp } from '#app'
  * locale switch re-renders the prices), the default locale outside of any Nuxt context.
  */
 const currentLocale = (): string | undefined => {
-    try {
-        return (tryUseNuxtApp()?.$i18n as { locale?: { value?: string } } | undefined)?.locale?.value
-    } catch {
-        return undefined
-    }
+  try {
+    return (tryUseNuxtApp()?.$i18n as { locale?: { value?: string } } | undefined)?.locale?.value
+  } catch {
+    return undefined
+  }
 }
 
 /** Formats an amount in INTEGER CENTS ("2415" → "24,15 €" in fr-BE). */

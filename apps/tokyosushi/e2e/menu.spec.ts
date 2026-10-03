@@ -1,4 +1,7 @@
-import { dismissCookieConsent, waitForNuxtHydration } from '../../../layers/engine/e2e/support/hydration'
+import {
+  dismissCookieConsent,
+  waitForNuxtHydration,
+} from '../../../layers/engine/e2e/support/hydration'
 import { expect, test } from '@playwright/test'
 import { SEL } from '../../../layers/engine/e2e/support/selectors'
 
@@ -93,7 +96,9 @@ test.describe('Menu browsing', () => {
     const addButton = page.locator(SEL.productModalAddToCart)
     if (await addButton.isEnabled()) {
       await addButton.click()
-      await expect(page.locator('[data-testid="product-modal-group"][data-invalid="true"]').first()).toBeVisible()
+      await expect(
+        page.locator('[data-testid="product-modal-group"][data-invalid="true"]').first(),
+      ).toBeVisible()
       await expect(page.locator(SEL.productModal)).toBeVisible()
     }
 

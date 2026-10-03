@@ -6,6 +6,6 @@
 export const MAX_SEARCH_LENGTH = 100
 
 export const searchFromQuery = (q: unknown): string => {
-    const value = Array.isArray(q) ? q[0] : q
-    return typeof value === 'string' ? value.trim().slice(0, MAX_SEARCH_LENGTH) : ''
+  const value = Array.isArray(q) ? q[0] : q
+  return typeof value === 'string' ? value.trim().slice(0, MAX_SEARCH_LENGTH) : ''
 }

@@ -4,10 +4,5 @@
   "compilerOptions": {
     "types": ["pinia-plugin-persistedstate"]
   },
-  "include": [
-    "./**/*.ts",
-    "./**/*.d.ts",
-    "./**/*.tsx",
-    "./**/*.vue"
-  ]
+  "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.tsx", "./**/*.vue"]
 }

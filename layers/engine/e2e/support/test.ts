@@ -57,7 +57,10 @@ export const test = base.extend<BrandOptions & { authenticatedPage: Page }>({
   authenticatedPage: async ({ page, context }, use, testInfo) => {
     const state = loadAuthState(testInfo.config.configFile)
     if (!state) {
-      base.skip(true, 'No e2e auth state: set this brand\'s e2e user email (E2E_USER_EMAIL for tokyosushi, YGF_E2E_USER_EMAIL for ygfliege) plus the DB_* and ZITADEL_* vars from support/db-env.ts so globalSetup can capture a session')
+      base.skip(
+        true,
+        "No e2e auth state: set this brand's e2e user email (E2E_USER_EMAIL for tokyosushi, YGF_E2E_USER_EMAIL for ygfliege) plus the DB_* and ZITADEL_* vars from support/db-env.ts so globalSetup can capture a session",
+      )
       return
     }
 

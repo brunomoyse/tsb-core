@@ -17,7 +17,8 @@ import { SEL } from './support/selectors'
  * instead). Those tests skip explicitly on mobile projects with a reason.
  */
 
-const isMobile = (testInfo: { project: { use: { isMobile?: boolean } } }) => testInfo.project.use.isMobile === true
+const isMobile = (testInfo: { project: { use: { isMobile?: boolean } } }) =>
+  testInfo.project.use.isMobile === true
 
 /*
  * Brands with `deliveryEnabled: false` (pickup-only) render the delivery toggle disabled, and
@@ -25,7 +26,10 @@ const isMobile = (testInfo: { project: { use: { isMobile?: boolean } } }) => tes
  * rather than on the brand name, so a brand that turns delivery on gets the tests back.
  */
 async function deliveryAvailable(page: Page) {
-  return page.locator(SEL.cartOptionDelivery).isEnabled({ timeout: 2_000 }).catch(() => false)
+  return page
+    .locator(SEL.cartOptionDelivery)
+    .isEnabled({ timeout: 2_000 })
+    .catch(() => false)
 }
 
 /* Helper: find and click the first enabled add-to-cart button among simple products */
@@ -59,7 +63,10 @@ test.describe('Cart operations', () => {
   })
 
   test('Toggle pickup/delivery changes total', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'pickup/delivery toggle lives in SideCart only; mobile picks this on /checkout')
+    test.skip(
+      isMobile(testInfo),
+      'pickup/delivery toggle lives in SideCart only; mobile picks this on /checkout',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
@@ -79,7 +86,10 @@ test.describe('Cart operations', () => {
       }
     }
     test.skip(addedCount === 0, 'No available products')
-    test.skip(!(await deliveryAvailable(page)), 'Brand is pickup-only: no delivery/pickup toggle to exercise')
+    test.skip(
+      !(await deliveryAvailable(page)),
+      'Brand is pickup-only: no delivery/pickup toggle to exercise',
+    )
 
     // Default is DELIVERY — get the total
     const deliveryTotal = await page.locator(SEL.cartTotal).textContent()
@@ -104,7 +114,10 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     await expect(page.locator(SEL.cartItem)).toBeVisible()
-    test.skip(!(await deliveryAvailable(page)), 'Brand is pickup-only: the minimum order applies to delivery only')
+    test.skip(
+      !(await deliveryAvailable(page)),
+      'Brand is pickup-only: the minimum order applies to delivery only',
+    )
 
     // Minimum warning should be visible (single product likely below €20)
     await expect(page.locator(SEL.cartMinimumWarning)).toBeVisible()
@@ -136,7 +149,10 @@ test.describe('Cart operations', () => {
   })
 
   test('Remove product from cart', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'mobile has no dedicated remove button — items are dropped by decrementing past 1, which would belong to a different test')
+    test.skip(
+      isMobile(testInfo),
+      'mobile has no dedicated remove button — items are dropped by decrementing past 1, which would belong to a different test',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
@@ -153,7 +169,9 @@ test.describe('Cart operations', () => {
     await expect(page.locator(SEL.cartItem)).not.toBeVisible()
   })
 
-  test('Adding, stepping and removing are announced to screen readers', async ({ page }, testInfo) => {
+  test('Adding, stepping and removing are announced to screen readers', async ({
+    page,
+  }, testInfo) => {
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
@@ -163,7 +181,9 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     // A persistent role=status region (see ToastAnnouncer): name, count and total.
-    await expect(page.locator(SEL.announcerPolite)).toContainText(/ajouté au panier, 1 article, total/u)
+    await expect(page.locator(SEL.announcerPolite)).toContainText(
+      /ajouté au panier, 1 article, total/u,
+    )
 
     await openCartIfMobile(page)
     const cart = visibleCart(page)
@@ -177,8 +197,13 @@ test.describe('Cart operations', () => {
     await expect(page.locator(SEL.toastAnnouncerPolite)).toContainText(/retiré/u)
   })
 
-  test('Removing the last line with the keyboard keeps focus on the page', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'the mobile sheet is covered by the focus fallback to its close button')
+  test('Removing the last line with the keyboard keeps focus on the page', async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      isMobile(testInfo),
+      'the mobile sheet is covered by the focus fallback to its close button',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
@@ -255,7 +280,10 @@ test.describe('Cart operations', () => {
   })
 
   test('Checkout link is aria-disabled below minimum order', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'mobile checkout link is gated only on isOrderingAvailable, not on isMinimumReached')
+    test.skip(
+      isMobile(testInfo),
+      'mobile checkout link is gated only on isOrderingAvailable, not on isMinimumReached',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
@@ -266,14 +294,20 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     const warning = page.locator(SEL.cartMinimumWarning)
-    test.skip(!(await warning.isVisible({ timeout: 2_000 }).catch(() => false)), 'First product already meets minimum')
+    test.skip(
+      !(await warning.isVisible({ timeout: 2_000 }).catch(() => false)),
+      'First product already meets minimum',
+    )
 
     const checkoutLink = page.locator(SEL.cartCheckoutLink)
     await expect(checkoutLink).toHaveAttribute('aria-disabled', 'true')
   })
 
   test('Switching to pickup from the minimum notice clears it', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'asserted on the SideCart; CartMobile and /cart render the same notice')
+    test.skip(
+      isMobile(testInfo),
+      'asserted on the SideCart; CartMobile and /cart render the same notice',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
@@ -284,7 +318,10 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     const warning = page.locator(SEL.cartMinimumWarning)
-    test.skip(!(await warning.isVisible({ timeout: 2_000 }).catch(() => false)), 'First product already meets minimum')
+    test.skip(
+      !(await warning.isVisible({ timeout: 2_000 }).catch(() => false)),
+      'First product already meets minimum',
+    )
 
     await page.locator(SEL.cartSwitchToPickup).click()
     await expect(warning).toBeHidden()
@@ -292,7 +329,10 @@ test.describe('Cart operations', () => {
   })
 
   test('SideCart and /cart show the same payable total', async ({ page }, testInfo) => {
-    test.skip(isMobile(testInfo), 'SideCart is desktop only; CartMobile shares the same computed total')
+    test.skip(
+      isMobile(testInfo),
+      'SideCart is desktop only; CartMobile shares the same computed total',
+    )
 
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)

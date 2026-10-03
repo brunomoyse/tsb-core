@@ -8,64 +8,64 @@ import { createError, defineEventHandler, readRawBody, setResponseStatus } from 
  */
 
 export default defineEventHandler(async (event) => {
-    const envelope = await readRawBody(event, false)
-    if (!envelope || envelope.length === 0) {
-        throw createError({ statusCode: 400, statusMessage: 'Empty envelope' })
-    }
+  const envelope = await readRawBody(event, false)
+  if (!envelope || envelope.length === 0) {
+    throw createError({ statusCode: 400, statusMessage: 'Empty envelope' })
+  }
 
-    const text = envelope.toString('utf-8')
-    const newlineIdx = text.indexOf('\n')
-    if (newlineIdx === -1) {
-        throw createError({ statusCode: 400, statusMessage: 'Malformed envelope' })
-    }
+  const text = envelope.toString('utf-8')
+  const newlineIdx = text.indexOf('\n')
+  if (newlineIdx === -1) {
+    throw createError({ statusCode: 400, statusMessage: 'Malformed envelope' })
+  }
 
-    let header: { dsn?: string }
-    try {
-        header = JSON.parse(text.slice(0, newlineIdx))
-    } catch {
-        throw createError({ statusCode: 400, statusMessage: 'Invalid envelope header' })
-    }
+  let header: { dsn?: string }
+  try {
+    header = JSON.parse(text.slice(0, newlineIdx))
+  } catch {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid envelope header' })
+  }
 
-    if (!header.dsn) {
-        throw createError({ statusCode: 400, statusMessage: 'Missing DSN' })
-    }
+  if (!header.dsn) {
+    throw createError({ statusCode: 400, statusMessage: 'Missing DSN' })
+  }
 
-    const cfg = useRuntimeConfig(event)
-    const allowedDsn = cfg.public.sentryDsn as string
-    if (!allowedDsn) {
-        throw createError({ statusCode: 503, statusMessage: 'Sentry disabled' })
-    }
+  const cfg = useRuntimeConfig(event)
+  const allowedDsn = cfg.public.sentryDsn as string
+  if (!allowedDsn) {
+    throw createError({ statusCode: 503, statusMessage: 'Sentry disabled' })
+  }
 
-    let incoming: URL
-    let allowed: URL
-    try {
-        incoming = new URL(header.dsn)
-        allowed = new URL(allowedDsn)
-    } catch {
-        throw createError({ statusCode: 400, statusMessage: 'Invalid DSN' })
-    }
+  let incoming: URL
+  let allowed: URL
+  try {
+    incoming = new URL(header.dsn)
+    allowed = new URL(allowedDsn)
+  } catch {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid DSN' })
+  }
 
-    // Only forward envelopes targeted at the configured DSN.
-    // Prevents this endpoint from being used as an open proxy to arbitrary Sentry projects.
-    if (incoming.hostname !== allowed.hostname || incoming.pathname !== allowed.pathname) {
-        throw createError({ statusCode: 403, statusMessage: 'DSN mismatch' })
-    }
+  // Only forward envelopes targeted at the configured DSN.
+  // Prevents this endpoint from being used as an open proxy to arbitrary Sentry projects.
+  if (incoming.hostname !== allowed.hostname || incoming.pathname !== allowed.pathname) {
+    throw createError({ statusCode: 403, statusMessage: 'DSN mismatch' })
+  }
 
-    const projectId = incoming.pathname.replace(/^\//u, '')
-    const ingestUrl = `https://${incoming.hostname}/api/${projectId}/envelope/`
+  const projectId = incoming.pathname.replace(/^\//u, '')
+  const ingestUrl = `https://${incoming.hostname}/api/${projectId}/envelope/`
 
-    try {
-        await $fetch(ingestUrl, {
-            method: 'POST',
-            body: envelope,
-            headers: { 'content-type': 'application/x-sentry-envelope' },
-            responseType: 'text',
-            timeout: 5000,
-        })
-    } catch {
-        // Sentry ingest is best-effort — never surface failures to the client.
-    }
+  try {
+    await $fetch(ingestUrl, {
+      method: 'POST',
+      body: envelope,
+      headers: { 'content-type': 'application/x-sentry-envelope' },
+      responseType: 'text',
+      timeout: 5000,
+    })
+  } catch {
+    // Sentry ingest is best-effort — never surface failures to the client.
+  }
 
-    setResponseStatus(event, 204)
-    return ''
+  setResponseStatus(event, 204)
+  return ''
 })

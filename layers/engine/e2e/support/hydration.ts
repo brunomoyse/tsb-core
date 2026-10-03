@@ -34,7 +34,10 @@ export async function waitForNuxtHydration(page: Page) {
    * Hide it for the duration of the test — has no effect in prod (the
    * element doesn't exist) or if devtools is already disabled.
    */
-  await page.addStyleTag({ content: '#nuxt-devtools-container, nuxt-devtools-frame { display: none !important; }' })
+  await page
+    .addStyleTag({
+      content: '#nuxt-devtools-container, nuxt-devtools-frame { display: none !important; }',
+    })
     .catch(() => undefined)
 }
 

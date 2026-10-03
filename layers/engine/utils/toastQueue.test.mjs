@@ -17,7 +17,10 @@ test('the first toast is shown at once, the next ones wait their turn in order',
   state = enqueueToast(state, toast('three'))
   assert.equal(state.current.message, 'one')
   assert.equal(state.currentChanged, false)
-  assert.deepEqual(state.queue.map((t) => t.message), ['two', 'three'])
+  assert.deepEqual(
+    state.queue.map((t) => t.message),
+    ['two', 'three'],
+  )
   state = advanceToast(state)
   assert.equal(state.current.message, 'two')
   state = advanceToast(state)
@@ -28,8 +31,14 @@ test('the first toast is shown at once, the next ones wait their turn in order',
 })
 
 test('a toast of the same group replaces the one showing and restarts its timer', () => {
-  let state = enqueueToast(empty(), toast('removed A', { group: 'cart-removal', action: { label: 'Undo' } }))
-  state = enqueueToast(state, toast('2 removed', { group: 'cart-removal', action: { label: 'Undo' } }))
+  let state = enqueueToast(
+    empty(),
+    toast('removed A', { group: 'cart-removal', action: { label: 'Undo' } }),
+  )
+  state = enqueueToast(
+    state,
+    toast('2 removed', { group: 'cart-removal', action: { label: 'Undo' } }),
+  )
   assert.equal(state.current.message, '2 removed')
   assert.equal(state.currentChanged, true)
   assert.deepEqual(state.queue, [])
@@ -37,11 +46,20 @@ test('a toast of the same group replaces the one showing and restarts its timer'
 
 test('a toast of the same group replaces the waiting one, not the showing one', () => {
   let state = enqueueToast(empty(), toast('unrelated'))
-  state = enqueueToast(state, toast('removed A', { group: 'cart-removal', action: { label: 'Undo' } }))
-  state = enqueueToast(state, toast('2 removed', { group: 'cart-removal', action: { label: 'Undo' } }))
+  state = enqueueToast(
+    state,
+    toast('removed A', { group: 'cart-removal', action: { label: 'Undo' } }),
+  )
+  state = enqueueToast(
+    state,
+    toast('2 removed', { group: 'cart-removal', action: { label: 'Undo' } }),
+  )
   assert.equal(state.current.message, 'unrelated')
   assert.equal(state.currentChanged, false)
-  assert.deepEqual(state.queue.map((t) => t.message), ['2 removed'])
+  assert.deepEqual(
+    state.queue.map((t) => t.message),
+    ['2 removed'],
+  )
 })
 
 test('the same message is not announced twice, while showing or waiting', () => {
@@ -51,7 +69,10 @@ test('the same message is not announced twice, while showing or waiting', () => 
   assert.deepEqual(state.queue, [])
   state = enqueueToast(state, toast('other'))
   state = enqueueToast(state, toast('other'))
-  assert.deepEqual(state.queue.map((t) => t.message), ['other'])
+  assert.deepEqual(
+    state.queue.map((t) => t.message),
+    ['other'],
+  )
   // A different variant is a different announcement.
   state = enqueueToast(state, toast('other', { variant: 'error' }))
   assert.equal(state.queue.length, 2)
@@ -60,7 +81,10 @@ test('the same message is not announced twice, while showing or waiting', () => 
 test('toasts with an action are never collapsed into identical ones', () => {
   let state = enqueueToast(empty(), toast('removed X', { action: { label: 'Undo' } }))
   state = enqueueToast(state, toast('removed X', { action: { label: 'Undo' } }))
-  assert.deepEqual(state.queue.map((t) => t.message), ['removed X'])
+  assert.deepEqual(
+    state.queue.map((t) => t.message),
+    ['removed X'],
+  )
 })
 
 test('the queue is bounded; toasts with an action are dropped last', () => {
@@ -70,11 +94,15 @@ test('the queue is bounded; toasts with an action are dropped last', () => {
   assert.equal(state.queue.length, MAX_QUEUED_TOASTS)
   assert.equal(state.queue[0].message, 'undo me')
   assert.equal(state.queue.at(-1).message, `filler ${MAX_QUEUED_TOASTS - 1}`)
-  assert.equal(state.queue.some((t) => t.message === 'filler 0'), false)
+  assert.equal(
+    state.queue.some((t) => t.message === 'filler 0'),
+    false,
+  )
 
   // Only action toasts waiting: the oldest of them goes.
   let full = enqueueToast(empty(), toast('shown'))
-  for (let i = 0; i < MAX_QUEUED_TOASTS + 1; i++) full = enqueueToast(full, toast(`undo ${i}`, { action: { label: 'Undo' } }))
+  for (let i = 0; i < MAX_QUEUED_TOASTS + 1; i++)
+    full = enqueueToast(full, toast(`undo ${i}`, { action: { label: 'Undo' } }))
   assert.equal(full.queue.length, MAX_QUEUED_TOASTS)
   assert.equal(full.queue[0].message, 'undo 1')
 })

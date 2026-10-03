@@ -1,107 +1,119 @@
 <template>
-    <!-- Pick-one with official broth photography, when every choice maps -->
-    <div v-if="!isMulti && photoSlugs" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <button
-            v-for="choice in sorted"
-            :key="choice.id"
-            type="button"
-            :data-testid="`${prefix}-choice-${choice.id}`"
-            :aria-pressed="api.quantityOf(choice) > 0"
-            class="card card-interactive text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            :class="{ 'card-selected': api.quantityOf(choice) > 0 }"
-            @click="api.selectExclusive(choice)"
+  <!-- Pick-one with official broth photography, when every choice maps -->
+  <div v-if="!isMulti && photoSlugs" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+    <button
+      v-for="choice in sorted"
+      :key="choice.id"
+      type="button"
+      :data-testid="`${prefix}-choice-${choice.id}`"
+      :aria-pressed="api.quantityOf(choice) > 0"
+      class="card card-interactive text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      :class="{ 'card-selected': api.quantityOf(choice) > 0 }"
+      @click="api.selectExclusive(choice)"
+    >
+      <MktPicture
+        :src="`/images/broths/${photoSlugs[choice.id]}`"
+        :widths="[480, 800]"
+        :fallback-width="800"
+        :fallback-height="600"
+        :alt="choice.name"
+        sizes="(min-width: 1024px) 260px, 45vw"
+        img-class="w-full aspect-[4/3] object-cover"
+      />
+      <span class="block px-3 py-3 space-y-1">
+        <span class="flex items-center justify-between gap-2">
+          <span translate="no" class="text-sm font-semibold text-ygf-black">{{ choice.name }}</span>
+          <span
+            v-if="toCents(choice.priceModifier) !== 0"
+            class="text-xs text-ygf-orange-800 whitespace-nowrap"
+          >
+            {{ modifierLabel(choice) }}
+          </span>
+        </span>
+        <!-- Chili count, mirroring the official menu's spice legend -->
+        <span
+          v-if="spiceLevelOf(choice) > 0"
+          class="flex items-center gap-0.5"
+          role="img"
+          :aria-label="$t('menu.spicy')"
+          :title="$t('menu.spicy')"
         >
-            <MktPicture
-                :src="`/images/broths/${photoSlugs[choice.id]}`"
-                :widths="[480, 800]"
-                :fallback-width="800"
-                :fallback-height="600"
-                :alt="choice.name"
-                sizes="(min-width: 1024px) 260px, 45vw"
-                img-class="w-full aspect-[4/3] object-cover"
-            />
-            <span class="block px-3 py-3 space-y-1">
-                <span class="flex items-center justify-between gap-2">
-                    <span translate="no" class="text-sm font-semibold text-ygf-black">{{ choice.name }}</span>
-                    <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-ygf-orange-800 whitespace-nowrap">
-                        {{ modifierLabel(choice) }}
-                    </span>
-                </span>
-                <!-- Chili count, mirroring the official menu's spice legend -->
-                <span
-                    v-if="spiceLevelOf(choice) > 0"
-                    class="flex items-center gap-0.5"
-                    role="img"
-                    :aria-label="$t('menu.spicy')"
-                    :title="$t('menu.spicy')"
-                >
-                    <img
-                        v-for="n in spiceLevelOf(choice)"
-                        :key="n"
-                        src="https://api.iconify.design/ph/pepper-fill.svg?color=%23D42B2B"
-                        alt=""
-                        aria-hidden="true"
-                        class="w-3.5 h-3.5"
-                    />
-                </span>
-            </span>
-        </button>
-    </div>
+          <img
+            v-for="n in spiceLevelOf(choice)"
+            :key="n"
+            src="https://api.iconify.design/ph/pepper-fill.svg?color=%23D42B2B"
+            alt=""
+            aria-hidden="true"
+            class="w-3.5 h-3.5"
+          />
+        </span>
+      </span>
+    </button>
+  </div>
 
-    <!-- Pick-one, text chips (spice level, or any group without photo coverage) -->
-    <div v-else-if="!isMulti" class="flex flex-wrap gap-2">
-        <button
-            v-for="choice in sorted"
-            :key="choice.id"
-            type="button"
-            :data-testid="`${prefix}-choice-${choice.id}`"
-            :aria-pressed="api.quantityOf(choice) > 0"
-            class="chip min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            @click="api.selectExclusive(choice)"
-        >
-            <span translate="no">{{ choice.name }}</span>
-            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs opacity-80">
-                {{ modifierLabel(choice) }}
-            </span>
-        </button>
-    </div>
+  <!-- Pick-one, text chips (spice level, or any group without photo coverage) -->
+  <div v-else-if="!isMulti" class="flex flex-wrap gap-2">
+    <button
+      v-for="choice in sorted"
+      :key="choice.id"
+      type="button"
+      :data-testid="`${prefix}-choice-${choice.id}`"
+      :aria-pressed="api.quantityOf(choice) > 0"
+      class="chip min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      @click="api.selectExclusive(choice)"
+    >
+      <span translate="no">{{ choice.name }}</span>
+      <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs opacity-80">
+        {{ modifierLabel(choice) }}
+      </span>
+    </button>
+  </div>
 
-    <!-- Multi-select: stepper rows (the composer's ingredient catalogue) -->
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-        <div
-            v-for="choice in sorted"
-            :key="choice.id"
-            :data-testid="`${prefix}-choice-${choice.id}`"
-            class="flex items-center gap-3 rounded-ygf-card border px-3 py-2 transition-colors"
-            :class="api.quantityOf(choice) > 0
-                ? 'border-primary bg-ygf-orange-50'
-                : 'border-ygf-orange-100 bg-white'"
+  <!-- Multi-select: stepper rows (the composer's ingredient catalogue) -->
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+    <div
+      v-for="choice in sorted"
+      :key="choice.id"
+      :data-testid="`${prefix}-choice-${choice.id}`"
+      class="flex items-center gap-3 rounded-ygf-card border px-3 py-2 transition-colors"
+      :class="
+        api.quantityOf(choice) > 0
+          ? 'border-primary bg-ygf-orange-50'
+          : 'border-ygf-orange-100 bg-white'
+      "
+    >
+      <span translate="no" class="flex-1 text-sm text-ygf-black">{{ choice.name }}</span>
+      <span
+        v-if="toCents(choice.priceModifier) !== 0"
+        class="text-xs text-neutral-600 whitespace-nowrap"
+      >
+        {{ modifierLabel(choice) }}
+      </span>
+      <div class="stepper shrink-0">
+        <button
+          type="button"
+          :data-testid="`${prefix}-choice-dec-${choice.id}`"
+          class="stepper-btn"
+          :aria-label="$t('cart.decreaseQty')"
+          :disabled="api.quantityOf(choice) === 0"
+          @click="api.decrementChoice(choice)"
         >
-            <span translate="no" class="flex-1 text-sm text-ygf-black">{{ choice.name }}</span>
-            <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-600 whitespace-nowrap">
-                {{ modifierLabel(choice) }}
-            </span>
-            <div class="stepper shrink-0">
-                <button
-                    type="button"
-                    :data-testid="`${prefix}-choice-dec-${choice.id}`"
-                    class="stepper-btn"
-                    :aria-label="$t('cart.decreaseQty')"
-                    :disabled="api.quantityOf(choice) === 0"
-                    @click="api.decrementChoice(choice)"
-                >&minus;</button>
-                <span class="stepper-value text-sm">{{ api.quantityOf(choice) }}</span>
-                <button
-                    type="button"
-                    :data-testid="`${prefix}-choice-inc-${choice.id}`"
-                    class="stepper-btn"
-                    :aria-label="$t('cart.increaseQty')"
-                    :disabled="!api.canIncrement(choice)"
-                    @click="api.incrementChoice(choice)"
-                >+</button>
-            </div>
-        </div>
+          &minus;
+        </button>
+        <span class="stepper-value text-sm">{{ api.quantityOf(choice) }}</span>
+        <button
+          type="button"
+          :data-testid="`${prefix}-choice-inc-${choice.id}`"
+          class="stepper-btn"
+          :aria-label="$t('cart.increaseQty')"
+          :disabled="!api.canIncrement(choice)"
+          @click="api.incrementChoice(choice)"
+        >
+          +
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -127,25 +139,24 @@ import type { ProductChoicesApi } from '#engine/composables/useProductChoices'
  * buttons, so pick-one variants must never render them.
  */
 const { group, prefix, api } = defineProps<{
-    group: ProductChoiceGroup
-    prefix: string
-    api: ProductChoicesApi
+  group: ProductChoiceGroup
+  prefix: string
+  api: ProductChoicesApi
 }>()
 
 const isMulti = computed(() => group.maxSelections > 1)
 
-const sorted = computed(() =>
-    group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder))
+const sorted = computed(() => group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder))
 
 const photoSlugs = computed(() => (isMulti.value ? null : brothPhotoSlugs(group.choices)))
 
 const modifierLabel = (choice: ProductChoice) =>
-    `${toCents(choice.priceModifier) > 0 ? '+' : ''}${formatPrice(choice.priceModifier)}`
+  `${toCents(choice.priceModifier) > 0 ? '+' : ''}${formatPrice(choice.priceModifier)}`
 
 /** Chili count for a photo-card choice (0 = none, 1 = mild, 3 = pick-your-heat). */
 const spiceLevelOf = (choice: ProductChoice): number => {
-    const slug = photoSlugs.value?.[choice.id]
-    if (!slug) return 0
-    return BROTHS.find((broth) => broth.slug === slug)?.spiceLevel ?? 0
+  const slug = photoSlugs.value?.[choice.id]
+  if (!slug) return 0
+  return BROTHS.find((broth) => broth.slug === slug)?.spiceLevel ?? 0
 }
 </script>

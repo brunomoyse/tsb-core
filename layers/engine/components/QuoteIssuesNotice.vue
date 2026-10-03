@@ -1,11 +1,17 @@
 <template>
-    <div v-if="messages.length > 0 || showLineIssues" role="alert" aria-live="polite" data-testid="checkout-quote-issues" class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-        <p class="font-semibold mb-1">{{ $t('checkout.quoteIssuesTitle') }}</p>
-        <ul class="list-disc pl-5 space-y-0.5">
-            <li v-if="showLineIssues">{{ $t('checkout.quoteLineIssues') }}</li>
-            <li v-for="message in messages" :key="message">{{ message }}</li>
-        </ul>
-    </div>
+  <div
+    v-if="messages.length > 0 || showLineIssues"
+    role="alert"
+    aria-live="polite"
+    data-testid="checkout-quote-issues"
+    class="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800"
+  >
+    <p class="font-semibold mb-1">{{ $t('checkout.quoteIssuesTitle') }}</p>
+    <ul class="list-disc pl-5 space-y-0.5">
+      <li v-if="showLineIssues">{{ $t('checkout.quoteLineIssues') }}</li>
+      <li v-for="message in messages" :key="message">{{ message }}</li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -29,19 +35,22 @@ const quoteStore = useQuoteStore()
 const ALREADY_SHOWN_ELSEWHERE = new Set(['DELIVERY_MINIMUM_NOT_MET'])
 
 const messages = computed(() => {
-    const quote = quoteStore.freshQuote
-    if (!quote) return []
-    const texts = blockingOrderIssues(quote)
-        .filter((issue) => !ALREADY_SHOWN_ELSEWHERE.has(issue.code))
-        .map((issue) => {
-            const described = describeErrorCode(issue.code, issue.minimum ? { minimum: issue.minimum } : {})
-            return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
-        })
-    return [...new Set(texts)]
+  const quote = quoteStore.freshQuote
+  if (!quote) return []
+  const texts = blockingOrderIssues(quote)
+    .filter((issue) => !ALREADY_SHOWN_ELSEWHERE.has(issue.code))
+    .map((issue) => {
+      const described = describeErrorCode(
+        issue.code,
+        issue.minimum ? { minimum: issue.minimum } : {},
+      )
+      return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
+    })
+  return [...new Set(texts)]
 })
 
 const showLineIssues = computed(() => {
-    const quote = quoteStore.freshQuote
-    return quote ? hasLineIssues(quote) : false
+  const quote = quoteStore.freshQuote
+  return quote ? hasLineIssues(quote) : false
 })
 </script>

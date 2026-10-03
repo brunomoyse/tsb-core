@@ -29,7 +29,15 @@ export function findUserIdByEmail(email: string): string {
 }
 
 export type SeededOrderStatus =
-  'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'PICKED_UP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'FAILED'
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PREPARING'
+  | 'AWAITING_PICK_UP'
+  | 'PICKED_UP'
+  | 'OUT_FOR_DELIVERY'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'FAILED'
 
 export interface SeedOrderInput {
   userId: string
@@ -60,27 +68,31 @@ export function seedOrder(input: SeedOrderInput): string {
   const fee = input.online ? 0.3 : 0
   const total = input.withItem ? (25 + fee).toFixed(2) : '25.00'
   psql(
-    `INSERT INTO orders (id, user_id, order_status, order_type, is_online_payment, total_price, takeaway_discount, coupon_discount, transaction_fee, language, is_test, created_at) `
-    + `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, ${total}, 0, 0, ${fee.toFixed(2)}, 'fr', TRUE, NOW() - INTERVAL '${Math.trunc(input.createdMinutesAgo ?? 0)} minutes')`,
+    `INSERT INTO orders (id, user_id, order_status, order_type, is_online_payment, total_price, takeaway_discount, coupon_discount, transaction_fee, language, is_test, created_at) ` +
+      `VALUES ('${id}', '${input.userId}', '${input.status}', 'PICKUP', ${input.online ? 'TRUE' : 'FALSE'}, ${total}, 0, 0, ${fee.toFixed(2)}, 'fr', TRUE, NOW() - INTERVAL '${Math.trunc(input.createdMinutesAgo ?? 0)} minutes')`,
   )
   if (input.withItem) {
     // Table `order_product` (singular). `vat_rate_applied` is NOT NULL since 20260425120000; the id defaults.
     psql(
-      `INSERT INTO order_product (order_id, product_id, unit_price, quantity, total_price, vat_rate_applied) `
-      + `SELECT '${id}', id, 12.50, 2, 25.00, 6.00 FROM products ORDER BY created_at LIMIT 1`,
+      `INSERT INTO order_product (order_id, product_id, unit_price, quantity, total_price, vat_rate_applied) ` +
+        `SELECT '${id}', id, 12.50, 2, 25.00, 6.00 FROM products ORDER BY created_at LIMIT 1`,
     )
   }
   if (input.online) {
     psql(
-      `INSERT INTO mollie_payments (mollie_payment_id, status, order_id, amount, method, mode) `
-      + `VALUES ('tr_e2e_${id.replace(/-/gu, '')}', '${input.paymentStatus ?? 'open'}', '${id}', 25.30, 'bancontact', 'test')`,
+      `INSERT INTO mollie_payments (mollie_payment_id, status, order_id, amount, method, mode) ` +
+        `VALUES ('tr_e2e_${id.replace(/-/gu, '')}', '${input.paymentStatus ?? 'open'}', '${id}', 25.30, 'bancontact', 'test')`,
     )
   }
   return id
 }
 
 /** Simulates the Mollie webhook landing: order moves to `status`, payment to `paymentStatus`. */
-export function settleOrder(orderId: string, status: SeededOrderStatus, paymentStatus: string): void {
+export function settleOrder(
+  orderId: string,
+  status: SeededOrderStatus,
+  paymentStatus: string,
+): void {
   psql(`UPDATE mollie_payments SET status = '${paymentStatus}' WHERE order_id = '${orderId}'`)
   psql(`UPDATE orders SET order_status = '${status}', updated_at = NOW() WHERE id = '${orderId}'`)
 }

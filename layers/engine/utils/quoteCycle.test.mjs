@@ -11,15 +11,42 @@ const DEBOUNCE = 400
 // A store with the same contract as the Pinia quote store (stores/quote.ts).
 const makeStore = () => {
   const store = {
-    quote: null, quoteKey: '', lineKeys: [], wantedKey: '', settledKey: '', error: null, unsupported: false,
-    want(key) { store.wantedKey = key; if (key === '') store.clear() },
-    resolve(key, lineKeys, quote) { Object.assign(store, { quote, quoteKey: key, lineKeys, settledKey: key, error: null }) },
-    fail(key, error) { store.settledKey = key; store.error = error },
-    reuse(key) { store.settledKey = key; store.error = null },
-    markUnsupported() { store.unsupported = true; store.wantedKey = ''; store.clear() },
-    clear() { Object.assign(store, { quote: null, quoteKey: '', lineKeys: [], settledKey: '', error: null }) },
-    get pending() { return store.wantedKey !== '' && store.wantedKey !== store.settledKey },
-    get fresh() { return store.quote !== null && store.quoteKey === store.wantedKey },
+    quote: null,
+    quoteKey: '',
+    lineKeys: [],
+    wantedKey: '',
+    settledKey: '',
+    error: null,
+    unsupported: false,
+    want(key) {
+      store.wantedKey = key
+      if (key === '') store.clear()
+    },
+    resolve(key, lineKeys, quote) {
+      Object.assign(store, { quote, quoteKey: key, lineKeys, settledKey: key, error: null })
+    },
+    fail(key, error) {
+      store.settledKey = key
+      store.error = error
+    },
+    reuse(key) {
+      store.settledKey = key
+      store.error = null
+    },
+    markUnsupported() {
+      store.unsupported = true
+      store.wantedKey = ''
+      store.clear()
+    },
+    clear() {
+      Object.assign(store, { quote: null, quoteKey: '', lineKeys: [], settledKey: '', error: null })
+    },
+    get pending() {
+      return store.wantedKey !== '' && store.wantedKey !== store.settledKey
+    },
+    get fresh() {
+      return store.quote !== null && store.quoteKey === store.wantedKey
+    },
   }
   return store
 }
@@ -27,23 +54,25 @@ const makeStore = () => {
 // A transport whose answers the test releases by hand, in any order.
 const makeTransport = ({ ignoreAbort = false } = {}) => {
   const calls = []
-  const send = (input, signal) => new Promise((resolve, reject) => {
-    const call = { input, aborted: false, resolve: (quote) => resolve(quote), reject }
-    signal.addEventListener('abort', () => {
-      call.aborted = true
-      // A real fetch rejects; `ignoreAbort` models a transport that still delivers the old answer.
-      if (!ignoreAbort) reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+  const send = (input, signal) =>
+    new Promise((resolve, reject) => {
+      const call = { input, aborted: false, resolve: (quote) => resolve(quote), reject }
+      signal.addEventListener('abort', () => {
+        call.aborted = true
+        // A real fetch rejects; `ignoreAbort` models a transport that still delivers the old answer.
+        if (!ignoreAbort) reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+      })
+      calls.push(call)
     })
-    calls.push(call)
-  })
   return { calls, send }
 }
 
 const req = (key, lines = [key]) => ({ key, input: { key }, lineKeys: lines })
 const answer = (tag) => ({ lines: [], total: tag, issues: [], coupon: null })
-const flush = () => new Promise((resolve) => {
-  setImmediate(resolve)
-})
+const flush = () =>
+  new Promise((resolve) => {
+    setImmediate(resolve)
+  })
 
 const setup = ({ ignoreAbort, ...extra } = {}) => {
   mock.timers.enable({ apis: ['setTimeout'] })
@@ -118,7 +147,10 @@ test('an out-of-order answer is ignored: the slow old request never overwrites t
   assert.equal(store.quote.total, 'C')
   assert.equal(store.quoteKey, 'C')
   assert.equal(store.fresh, true)
-  assert.deepEqual(events.quotes.map(([key]) => key), ['A', 'C'])
+  assert.deepEqual(
+    events.quotes.map(([key]) => key),
+    ['A', 'C'],
+  )
 })
 
 test('an answer for inputs the cart has already left is dropped, not shown', async (t) => {
@@ -189,7 +221,14 @@ test('an old backend: the validation error is detected once, then the cycle neve
   t.after(() => mock.timers.reset())
   cycle.request(req('A'))
   mock.timers.tick(0)
-  transport.calls[0].reject(new GqlError([{ message: 'Cannot query field "quoteOrder" on type "Query".', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }]))
+  transport.calls[0].reject(
+    new GqlError([
+      {
+        message: 'Cannot query field "quoteOrder" on type "Query".',
+        extensions: { code: 'GRAPHQL_VALIDATION_FAILED' },
+      },
+    ]),
+  )
   await flush()
   assert.equal(store.unsupported, true)
   assert.equal(store.pending, false)
@@ -255,7 +294,11 @@ test('a request that never answers times out: the cycle settles as failed, so no
   assert.equal(store.fresh, false)
   assert.equal(store.quote, null, 'no quote: surfaces use the client totals')
   assert.equal(events.errors.length, 1)
-  assert.equal(events.errors[0].code, 'NETWORK_ERROR', 'a timeout is a transient failure, not a server fault')
+  assert.equal(
+    events.errors[0].code,
+    'NETWORK_ERROR',
+    'a timeout is a transient failure, not a server fault',
+  )
   // The next change tries again.
   cycle.request(req('B'))
   mock.timers.tick(DEBOUNCE)
@@ -304,7 +347,10 @@ test('refresh() asks again for the current inputs even though they are already a
   assert.equal((await refreshed).total, 'A2')
   assert.equal(store.quote.total, 'A2')
   assert.equal(store.pending, false)
-  assert.deepEqual(events.quotes, [['A', 'A1'], ['A', 'A2']])
+  assert.deepEqual(events.quotes, [
+    ['A', 'A1'],
+    ['A', 'A2'],
+  ])
 })
 
 test('refresh() resolves null (callers carry on as before) when it fails, times out, or has nothing to ask', async (t) => {
@@ -338,7 +384,14 @@ test('refresh() on an old backend marks it unsupported and resolves null', async
   transport.calls[0].resolve(answer('A'))
   await flush()
   const refreshed = cycle.refresh()
-  transport.calls[1].reject(new GqlError([{ message: 'Cannot query field "quoteOrder" on type "Query".', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }]))
+  transport.calls[1].reject(
+    new GqlError([
+      {
+        message: 'Cannot query field "quoteOrder" on type "Query".',
+        extensions: { code: 'GRAPHQL_VALIDATION_FAILED' },
+      },
+    ]),
+  )
   assert.equal(await refreshed, null)
   assert.equal(store.unsupported, true)
 })
@@ -348,7 +401,9 @@ test('RATE_LIMITED is a transient failure: totals fall back to the client and no
   t.after(() => mock.timers.reset())
   cycle.request(req('A'))
   mock.timers.tick(0)
-  transport.calls[0].reject(new GqlError([{ message: 'slow down', extensions: { code: 'RATE_LIMITED' } }]))
+  transport.calls[0].reject(
+    new GqlError([{ message: 'slow down', extensions: { code: 'RATE_LIMITED' } }]),
+  )
   await flush()
   assert.equal(store.pending, false)
   assert.equal(store.fresh, false)

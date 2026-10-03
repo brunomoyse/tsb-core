@@ -8,10 +8,10 @@ import { useI18n } from 'vue-i18n'
  * does not know shows the caller's own generic key. The raw backend message is never displayed.
  */
 export function useGqlErrorMessage() {
-    const { t } = useI18n()
+  const { t } = useI18n()
 
-    return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
-        const described = describeGqlError(err)
-        return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
-    }
+  return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
+    const described = describeGqlError(err)
+    return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
+  }
 }

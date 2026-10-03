@@ -1,45 +1,47 @@
 <template>
-    <div class="relative pl-4">
-        <!-- Vertical line (decoration: kept out of the list, whose only children are its steps) -->
-        <div class="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-neutral-200" aria-hidden="true" />
-        <ol role="list" :aria-label="$t('orderStatus.label')">
-            <li
-                v-for="(step, index) in steps"
-                :key="step.status"
-                class="relative flex items-center"
-                :class="index > 0 ? 'mt-3.5' : ''"
-                :aria-current="step.state === 'current' ? 'step' : undefined"
-            >
-                <!-- Dot -->
-                <div class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center" aria-hidden="true">
-                    <div
-                        v-if="step.state === 'current'"
-                        class="w-[7px] h-[7px] rounded-full bg-primary-600 stone-ripple"
-                    />
-                    <div
-                        v-else-if="step.state === 'done'"
-                        class="w-[7px] h-[7px] rounded-full bg-emerald-500"
-                    />
-                    <div
-                        v-else
-                        class="w-[7px] h-[7px] rounded-full border border-neutral-300 bg-white"
-                    />
-                </div>
+  <div class="relative pl-4">
+    <!-- Vertical line (decoration: kept out of the list, whose only children are its steps) -->
+    <div class="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-neutral-200" aria-hidden="true" />
+    <ol role="list" :aria-label="$t('orderStatus.label')">
+      <li
+        v-for="(step, index) in steps"
+        :key="step.status"
+        class="relative flex items-center"
+        :class="index > 0 ? 'mt-3.5' : ''"
+        :aria-current="step.state === 'current' ? 'step' : undefined"
+      >
+        <!-- Dot -->
+        <div
+          class="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <div
+            v-if="step.state === 'current'"
+            class="w-[7px] h-[7px] rounded-full bg-primary-600 stone-ripple"
+          />
+          <div
+            v-else-if="step.state === 'done'"
+            class="w-[7px] h-[7px] rounded-full bg-emerald-500"
+          />
+          <div v-else class="w-[7px] h-[7px] rounded-full border border-neutral-300 bg-white" />
+        </div>
 
-                <!-- Label -->
-                <span
-                    class="text-sm leading-tight"
-                    :class="step.state === 'current'
-                        ? 'font-semibold text-neutral-900'
-                        : step.state === 'done'
-                            ? 'text-neutral-600'
-                            : 'text-neutral-600'"
-                >
-                    {{ step.title }}<span v-if="step.srSuffix" class="sr-only">, {{ step.srSuffix }}</span>
-                </span>
-            </li>
-        </ol>
-    </div>
+        <!-- Label -->
+        <span
+          class="text-sm leading-tight"
+          :class="
+            step.state === 'current'
+              ? 'font-semibold text-neutral-900'
+              : step.state === 'done'
+                ? 'text-neutral-600'
+                : 'text-neutral-600'
+          "
+        >
+          {{ step.title }}<span v-if="step.srSuffix" class="sr-only">, {{ step.srSuffix }}</span>
+        </span>
+      </li>
+    </ol>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -54,19 +56,25 @@ const { steps } = useOrderStatusTimeline(() => order)
 
 <style scoped>
 .stone-ripple {
-    animation: ripple 2s ease-out infinite;
+  animation: ripple 2s ease-out infinite;
 }
 
 @keyframes ripple {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-    70% { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .stone-ripple {
-        animation: none;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
-    }
+  .stone-ripple {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  }
 }
 </style>

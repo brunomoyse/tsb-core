@@ -11,7 +11,9 @@ test.describe('Checkout options', () => {
      * for one brand, chopsticks/cutlery for another), so toggle whatever the
      * brand renders. The sauce checkbox has its own test below.
      */
-    const toggles = page.locator('input[type="checkbox"][data-testid^="order-extra-"]:not([data-testid="order-extra-sauce"])')
+    const toggles = page.locator(
+      'input[type="checkbox"][data-testid^="order-extra-"]:not([data-testid="order-extra-sauce"])',
+    )
     // count() doesn't wait: let the extras card render first.
     await expect(toggles.first()).toBeVisible()
     const count = await toggles.count()
@@ -29,7 +31,10 @@ test.describe('Checkout options', () => {
 
   test('Soy sauce pill selection', async ({ authenticatedPage: page }) => {
     await addProductsAndGoToCheckout(page)
-    test.skip(await page.locator('#add-sauce').count() === 0, 'Brand does not offer the sauce extra')
+    test.skip(
+      (await page.locator('#add-sauce').count()) === 0,
+      'Brand does not offer the sauce extra',
+    )
 
     /*
      * "None" is the unchecked state of the #add-sauce checkbox; pills
@@ -60,7 +65,9 @@ test.describe('Checkout options', () => {
     await expect(textarea).toHaveValue('No spicy please')
   })
 
-  test('Payment method toggle switches between online and cash', async ({ authenticatedPage: page }) => {
+  test('Payment method toggle switches between online and cash', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     const online = page.locator(SEL.paymentOnline)
@@ -91,14 +98,19 @@ test.describe('Checkout options', () => {
     expect(optionCount).toBeGreaterThanOrEqual(1)
   })
 
-  test('Cash payment without acknowledgement is rejected by validation', async ({ authenticatedPage: page }) => {
+  test('Cash payment without acknowledgement is rejected by validation', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     /*
      * Race the closed banner — if the kitchen is shut the place-order button
      * never renders and the validation we want to test doesn't fire.
      */
-    await page.locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`).first().waitFor({ timeout: 10_000 })
+    await page
+      .locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`)
+      .first()
+      .waitFor({ timeout: 10_000 })
     if (await page.locator(SEL.checkoutRestaurantClosed).isVisible()) {
       test.skip(true, 'Restaurant is currently closed')
       return
@@ -119,7 +131,9 @@ test.describe('Checkout options', () => {
     await expect(page).toHaveURL(/\/checkout(?:[/?#]|$)/u)
   })
 
-  test('Delivery mode shows address prompt, pickup hides it', async ({ authenticatedPage: page }) => {
+  test('Delivery mode shows address prompt, pickup hides it', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     /*

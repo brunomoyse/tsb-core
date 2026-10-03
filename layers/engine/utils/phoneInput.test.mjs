@@ -12,10 +12,19 @@ test('nothing typed is empty (no error to show)', async () => {
 })
 
 test('valid numbers come back in E.164, Belgian national or international', async () => {
-  assert.deepEqual(await classifyPhoneInput('0470 12 34 56'), { kind: 'valid', e164: '+32470123456' })
+  assert.deepEqual(await classifyPhoneInput('0470 12 34 56'), {
+    kind: 'valid',
+    e164: '+32470123456',
+  })
   assert.deepEqual(await classifyPhoneInput('04 222 98 88'), { kind: 'valid', e164: '+3242229888' })
-  assert.deepEqual(await classifyPhoneInput('+33 6 12 34 56 78'), { kind: 'valid', e164: '+33612345678' })
-  assert.deepEqual(await classifyPhoneInput('0032 470 12 34 56'), { kind: 'valid', e164: '+32470123456' })
+  assert.deepEqual(await classifyPhoneInput('+33 6 12 34 56 78'), {
+    kind: 'valid',
+    e164: '+33612345678',
+  })
+  assert.deepEqual(await classifyPhoneInput('0032 470 12 34 56'), {
+    kind: 'valid',
+    e164: '+32470123456',
+  })
 })
 
 test('a Belgian number typed slowly is incomplete, never "add the country code"', async () => {

@@ -4,17 +4,17 @@ import { useRuntimeConfig } from '#imports'
 const PRODUCTION_BASE_URL = `https://${brand.domain}`
 
 export default defineEventHandler((event) => {
-    // Same source as the sitemap and robots.txt: the public runtime config's baseUrl.
-    const baseUrl = String(useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
-    const isProduction = baseUrl === PRODUCTION_BASE_URL
+  // Same source as the sitemap and robots.txt: the public runtime config's baseUrl.
+  const baseUrl = String(useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
+  const isProduction = baseUrl === PRODUCTION_BASE_URL
 
-    if (!isProduction) {
-        throw createError({ statusCode: 404, statusMessage: 'Not Found' })
-    }
+  if (!isProduction) {
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+  }
 
-    setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
+  setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
 
-    return `# ${brand.name}
+  return `# ${brand.name}
 
 > Restaurant de malatang (麻辣烫) à Liège (Belgique), franchise Yangguofu. Composez votre bol : bouillon aux herbes cuit à la minute, produits frais. Livraison et à emporter, commande en ligne.
 

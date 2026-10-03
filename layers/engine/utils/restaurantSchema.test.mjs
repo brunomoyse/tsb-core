@@ -24,7 +24,8 @@ const brand = (over = {}) => ({
   openingHours: { monday: { open: '11:30', close: '22:00' } },
   ...over,
 })
-const build = (input) => buildRestaurantSchema({ brand: brand(), baseUrl: 'https://shop.be', locale: 'fr', ...input })
+const build = (input) =>
+  buildRestaurantSchema({ brand: brand(), baseUrl: 'https://shop.be', locale: 'fr', ...input })
 const restaurant = (schema) => schema['@graph'].find((n) => n['@type'] === 'Restaurant')
 
 test('a Restaurant node with the fields Google requires', () => {
@@ -32,7 +33,16 @@ test('a Restaurant node with the fields Google requires', () => {
   assert.equal(schema['@context'], 'https://schema.org')
   const r = restaurant(JSON.parse(JSON.stringify(schema)))
   assert.equal(r['@type'], 'Restaurant')
-  for (const key of ['name', 'address', 'image', 'telephone', 'servesCuisine', 'priceRange', 'openingHoursSpecification']) assert.ok(r[key], key)
+  for (const key of [
+    'name',
+    'address',
+    'image',
+    'telephone',
+    'servesCuisine',
+    'priceRange',
+    'openingHoursSpecification',
+  ])
+    assert.ok(r[key], key)
   assert.equal(r.address['@type'], 'PostalAddress')
   assert.equal(r.address.addressCountry, 'BE')
   assert.equal(r.geo['@type'], 'GeoCoordinates')
@@ -43,7 +53,7 @@ test('a Restaurant node with the fields Google requires', () => {
 test('no custom Offer, and nothing from another brand', () => {
   const json = JSON.stringify(build({}))
   assert.ok(!/Offer|discount|pickup/iu.test(json))
-  assert.equal(build({}) ['@graph'].length, 1)
+  assert.equal(build({})['@graph'].length, 1)
 })
 
 test('cuisine, price, reservations and logo come from the brand', () => {
@@ -51,26 +61,54 @@ test('cuisine, price, reservations and logo come from the brand', () => {
   assert.deepEqual(r.servesCuisine, ['Chinese', 'Malatang'])
   assert.equal(r.acceptsReservations, false)
   assert.equal(r.logo, 'https://shop.be/icon-512.png')
-  assert.equal(restaurant(build({ brand: brand({ acceptsReservations: true }) })).acceptsReservations, true)
+  assert.equal(
+    restaurant(build({ brand: brand({ acceptsReservations: true }) })).acceptsReservations,
+    true,
+  )
 })
 
 test('the menu URL is localized', () => {
   // Only a reference to the Menu node of the menu page (which owns the name, description and sections).
-  assert.deepEqual(restaurant(build({ locale: 'nl' })).hasMenu, { '@id': 'https://shop.be/nl/menu#menu' })
-  assert.deepEqual(restaurant(build({ locale: 'zh' })).hasMenu, { '@id': 'https://shop.be/zh/menu#menu' })
+  assert.deepEqual(restaurant(build({ locale: 'nl' })).hasMenu, {
+    '@id': 'https://shop.be/nl/menu#menu',
+  })
+  assert.deepEqual(restaurant(build({ locale: 'zh' })).hasMenu, {
+    '@id': 'https://shop.be/zh/menu#menu',
+  })
 })
 
 test('the live opening hours win over the brand fallback', () => {
-  const live = { monday: { open: '12:00', close: '14:00', dinnerOpen: '18:00', dinnerClose: '21:30' }, tuesday: null, saturday: { open: '12:00', close: '14:00', dinnerOpen: '18:00', dinnerClose: '21:30' } }
+  const live = {
+    monday: { open: '12:00', close: '14:00', dinnerOpen: '18:00', dinnerClose: '21:30' },
+    tuesday: null,
+    saturday: { open: '12:00', close: '14:00', dinnerOpen: '18:00', dinnerClose: '21:30' },
+  }
   const spec = restaurant(build({ openingHours: live })).openingHoursSpecification
   assert.deepEqual(spec, [
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Saturday'], opens: '12:00', closes: '14:00' },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Saturday'], opens: '18:00', closes: '21:30' },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Saturday'],
+      opens: '12:00',
+      closes: '14:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Saturday'],
+      opens: '18:00',
+      closes: '21:30',
+    },
   ])
 })
 
 test('the brand hours are the fallback when the config is missing or empty', () => {
-  const expected = [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday'], opens: '11:30', closes: '22:00' }]
+  const expected = [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday'],
+      opens: '11:30',
+      closes: '22:00',
+    },
+  ]
   assert.deepEqual(restaurant(build({})).openingHoursSpecification, expected)
   assert.deepEqual(restaurant(build({ openingHours: {} })).openingHoursSpecification, expected)
   assert.deepEqual(restaurant(build({ openingHours: null })).openingHoursSpecification, expected)
@@ -89,10 +127,13 @@ test('days with the same hours are grouped; a malformed or closed day is skipped
     thursday: null,
     friday: { open: '10:00', close: '18:00' },
   })
-  assert.deepEqual(spec.map((s) => [s.dayOfWeek, s.opens, s.closes]), [
-    [['Monday', 'Tuesday'], '09:00', '17:00'],
-    [['Friday'], '10:00', '18:00'],
-  ])
+  assert.deepEqual(
+    spec.map((s) => [s.dayOfWeek, s.opens, s.closes]),
+    [
+      [['Monday', 'Tuesday'], '09:00', '17:00'],
+      [['Friday'], '10:00', '18:00'],
+    ],
+  )
 })
 
 test('the review aggregate is only emitted for a brand that has one', () => {

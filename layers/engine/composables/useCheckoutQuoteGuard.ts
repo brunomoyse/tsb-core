@@ -25,32 +25,32 @@ export const QUOTE_RECHECK_INTERVAL_MS = 60_000
  * The interval and the listener are VueUse's: they stop with the page.
  */
 export function useCheckoutQuoteGuard() {
-    const { t } = useI18n()
-    const notifications = useNotificationsStore()
+  const { t } = useI18n()
+  const notifications = useNotificationsStore()
 
-    if (import.meta.client) {
-        const isVisible = () => document.visibilityState === 'visible'
-        useIntervalFn(() => {
-            if (isVisible()) requestQuoteRefresh(QUOTE_RECHECK_INTERVAL_MS / 2)
-        }, QUOTE_RECHECK_INTERVAL_MS)
-        useEventListener(document, 'visibilitychange', () => {
-            if (isVisible()) requestQuoteRefresh()
-        })
-    }
+  if (import.meta.client) {
+    const isVisible = () => document.visibilityState === 'visible'
+    useIntervalFn(() => {
+      if (isVisible()) requestQuoteRefresh(QUOTE_RECHECK_INTERVAL_MS / 2)
+    }, QUOTE_RECHECK_INTERVAL_MS)
+    useEventListener(document, 'visibilitychange', () => {
+      if (isVisible()) requestQuoteRefresh()
+    })
+  }
 
-    /** True when the order may be created now. `displayedPayableCents` is what the customer sees BEFORE the refresh. */
-    const confirmBeforeOrder = async (displayedPayableCents: number): Promise<boolean> => {
-        const quote = await refreshQuote()
-        if (!quote) return true
-        if (recheckQuote(quote, displayedPayableCents) === 'ok') return true
-        notifications.notify({
-            message: t('checkout.quoteChanged'),
-            persistent: false,
-            duration: 7000,
-            variant: 'warning',
-        })
-        return false
-    }
+  /** True when the order may be created now. `displayedPayableCents` is what the customer sees BEFORE the refresh. */
+  const confirmBeforeOrder = async (displayedPayableCents: number): Promise<boolean> => {
+    const quote = await refreshQuote()
+    if (!quote) return true
+    if (recheckQuote(quote, displayedPayableCents) === 'ok') return true
+    notifications.notify({
+      message: t('checkout.quoteChanged'),
+      persistent: false,
+      duration: 7000,
+      variant: 'warning',
+    })
+    return false
+  }
 
-    return { confirmBeforeOrder }
+  return { confirmBeforeOrder }
 }

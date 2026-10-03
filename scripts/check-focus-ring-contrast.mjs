@@ -22,37 +22,44 @@ const roots = [join(repoRoot, 'layers/engine'), join(repoRoot, 'apps')]
 const skipDirs = new Set(['node_modules', '.nuxt', '.output', '.data'])
 
 // e.g. focus-visible:ring-neutral-300, focus:ring-primary-300/50, focus-visible:ring-amber-300
-const paleFocusRing = /(?:group-)?focus(?:-visible|-within)?:ring-[a-z]+(?:-[a-z]+)*-[1-4]00(?:\/\d+)?(?![\w-])/u
+const paleFocusRing =
+  /(?:group-)?focus(?:-visible|-within)?:ring-[a-z]+(?:-[a-z]+)*-[1-4]00(?:\/\d+)?(?![\w-])/u
 
 async function* walk(dir) {
-    let entries
-    try { entries = await readdir(dir, { withFileTypes: true }) } catch { return }
-    for (const e of entries) {
-        if (skipDirs.has(e.name)) continue
-        const p = join(dir, e.name)
-        if (e.isDirectory()) yield* walk(p)
-        else yield p
-    }
+  let entries
+  try {
+    entries = await readdir(dir, { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const e of entries) {
+    if (skipDirs.has(e.name)) continue
+    const p = join(dir, e.name)
+    if (e.isDirectory()) yield* walk(p)
+    else yield p
+  }
 }
 
 const problems = []
 for (const root of roots) {
-    for await (const file of walk(root)) {
-        if (extname(file) !== '.vue') continue
-        const rel = relative(repoRoot, file)
-        const lines = (await readFile(file, 'utf8')).split('\n')
-        lines.forEach((text, i) => {
-            if (text.includes('ring-contrast-ok')) return
-            const m = paleFocusRing.exec(text)
-            if (m) problems.push(`${rel}:${i + 1}  ${m[0]}`)
-        })
-    }
+  for await (const file of walk(root)) {
+    if (extname(file) !== '.vue') continue
+    const rel = relative(repoRoot, file)
+    const lines = (await readFile(file, 'utf8')).split('\n')
+    lines.forEach((text, i) => {
+      if (text.includes('ring-contrast-ok')) return
+      const m = paleFocusRing.exec(text)
+      if (m) problems.push(`${rel}:${i + 1}  ${m[0]}`)
+    })
+  }
 }
 
 if (problems.length) {
-    console.error(`focus-ring-contrast: ${problems.length} focus ring(s) below 3:1:\n`)
-    for (const p of problems) console.error(`  ${p}`)
-    console.error('\nFix: use focus-visible:ring-ring (+ focus-visible:ring-offset-2 on filled controls).')
-    process.exit(1)
+  console.error(`focus-ring-contrast: ${problems.length} focus ring(s) below 3:1:\n`)
+  for (const p of problems) console.error(`  ${p}`)
+  console.error(
+    '\nFix: use focus-visible:ring-ring (+ focus-visible:ring-offset-2 on filled controls).',
+  )
+  process.exit(1)
 }
 console.log('focus-ring-contrast: no pale focus rings ✓')

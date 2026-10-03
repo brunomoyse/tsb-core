@@ -1,11 +1,22 @@
 <template>
-    <!-- Always mounted and visually hidden: a live region only announces text that is written into it AFTER it exists, so the toast itself (mounted together with its text, and with a fresh key per toast) cannot be the live region. -->
-    <div class="sr-only" data-testid="toast-announcer">
-        <div role="status" aria-live="polite" aria-atomic="true" data-testid="toast-announcer-polite">{{ polite }}</div>
-        <div role="alert" aria-live="assertive" aria-atomic="true" data-testid="toast-announcer-assertive">{{ assertive }}</div>
-        <!-- Everything else the page has to say (cart changes, order status): useAnnouncer(). A region of its own, so a toast raised at the same moment does not overwrite it. -->
-        <div role="status" aria-live="polite" aria-atomic="true" data-testid="announcer-polite">{{ status }}</div>
+  <!-- Always mounted and visually hidden: a live region only announces text that is written into it AFTER it exists, so the toast itself (mounted together with its text, and with a fresh key per toast) cannot be the live region. -->
+  <div class="sr-only" data-testid="toast-announcer">
+    <div role="status" aria-live="polite" aria-atomic="true" data-testid="toast-announcer-polite">
+      {{ polite }}
     </div>
+    <div
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-testid="toast-announcer-assertive"
+    >
+      {{ assertive }}
+    </div>
+    <!-- Everything else the page has to say (cart changes, order status): useAnnouncer(). A region of its own, so a toast raised at the same moment does not overwrite it. -->
+    <div role="status" aria-live="polite" aria-atomic="true" data-testid="announcer-polite">
+      {{ status }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -25,13 +36,13 @@ const assertive = ref('')
 const status = ref('')
 
 const announce = async (): Promise<void> => {
-    polite.value = ''
-    assertive.value = ''
-    const { current } = notifications
-    if (!current) return
-    await nextTick()
-    if (current.variant === 'error') assertive.value = current.message
-    else polite.value = current.message
+  polite.value = ''
+  assertive.value = ''
+  const { current } = notifications
+  if (!current) return
+  await nextTick()
+  if (current.variant === 'error') assertive.value = current.message
+  else polite.value = current.message
 }
 
 watch(() => notifications.seq, announce)
@@ -39,11 +50,11 @@ watch(() => notifications.seq, announce)
 /* The useAnnouncer() messages: cleared and then set on the next tick, like the toasts, so a repeated sentence is read again. */
 const { announcement } = useAnnouncer()
 const say = async (): Promise<void> => {
-    status.value = ''
-    if (!announcement.value.message) return
-    const { message } = announcement.value
-    await nextTick()
-    status.value = message
+  status.value = ''
+  if (!announcement.value.message) return
+  const { message } = announcement.value
+  await nextTick()
+  status.value = message
 }
 watch(() => announcement.value.seq, say)
 // The cart is described from here on (the component is client-only, so a cart restored from localStorage is never announced).

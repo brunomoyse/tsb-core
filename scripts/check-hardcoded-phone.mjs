@@ -30,39 +30,47 @@ const telLiteral = /tel:[+0]|\+32\s?\d/u
 const localeNumber = /(?<![\w.-])(?:\+32 ?|0)\d{1,2} \d{3} \d{2} \d{2}(?!\d)/u
 
 async function* walk(dir) {
-    let entries
-    try { entries = await readdir(dir, { withFileTypes: true }) } catch { return }
-    for (const e of entries) {
-        if (skipDirs.has(e.name)) continue
-        const p = join(dir, e.name)
-        if (e.isDirectory()) yield* walk(p)
-        else yield p
-    }
+  let entries
+  try {
+    entries = await readdir(dir, { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const e of entries) {
+    if (skipDirs.has(e.name)) continue
+    const p = join(dir, e.name)
+    if (e.isDirectory()) yield* walk(p)
+    else yield p
+  }
 }
 
 const problems = []
 for (const root of roots) {
-    for await (const file of walk(root)) {
-        const ext = extname(file)
-        const isLocale = ext === '.json' && file.includes(`${join('locales', '')}`)
-        const isCode = ext === '.vue' || ext === '.ts'
-        if (!isCode && !isLocale) continue
-        const rel = relative(repoRoot, file)
-        if (allowedFiles.some(re => re.test(rel))) continue
-        const lines = (await readFile(file, 'utf8')).split('\n')
-        lines.forEach((text, i) => {
-            const hit = (isCode && (telLiteral.test(text) || localeNumber.test(text))) || (isLocale && localeNumber.test(text))
-            if (hit) {
-                problems.push(`${rel}:${i + 1}  ${text.trim().slice(0, 120)}`)
-            }
-        })
-    }
+  for await (const file of walk(root)) {
+    const ext = extname(file)
+    const isLocale = ext === '.json' && file.includes(`${join('locales', '')}`)
+    const isCode = ext === '.vue' || ext === '.ts'
+    if (!isCode && !isLocale) continue
+    const rel = relative(repoRoot, file)
+    if (allowedFiles.some((re) => re.test(rel))) continue
+    const lines = (await readFile(file, 'utf8')).split('\n')
+    lines.forEach((text, i) => {
+      const hit =
+        (isCode && (telLiteral.test(text) || localeNumber.test(text))) ||
+        (isLocale && localeNumber.test(text))
+      if (hit) {
+        problems.push(`${rel}:${i + 1}  ${text.trim().slice(0, 120)}`)
+      }
+    })
+  }
 }
 
 if (problems.length) {
-    console.error(`hardcoded-phone: ${problems.length} hard-coded phone number(s):\n`)
-    for (const p of problems) console.error(`  ${p}`)
-    console.error('\nFix: use brand.phone + telHref(brand.phone) in templates, or the __PHONE__ token in locale strings.')
-    process.exit(1)
+  console.error(`hardcoded-phone: ${problems.length} hard-coded phone number(s):\n`)
+  for (const p of problems) console.error(`  ${p}`)
+  console.error(
+    '\nFix: use brand.phone + telHref(brand.phone) in templates, or the __PHONE__ token in locale strings.',
+  )
+  process.exit(1)
 }
 console.log('hardcoded-phone: no hard-coded phone numbers ✓')

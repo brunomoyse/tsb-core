@@ -9,14 +9,14 @@ import { useGqlMutation } from '#imports'
 import { useI18n } from 'vue-i18n'
 
 const VALIDATE_COUPON = gql`
-    query ValidateCoupon($code: String!, $orderAmount: String!) {
-        validateCoupon(code: $code, orderAmount: $orderAmount) {
-            valid
-            discountAmount
-            errorMessage
-            errorCode
-        }
+  query ValidateCoupon($code: String!, $orderAmount: String!) {
+    validateCoupon(code: $code, orderAmount: $orderAmount) {
+      valid
+      discountAmount
+      errorMessage
+      errorCode
     }
+  }
 `
 
 /*
@@ -25,19 +25,21 @@ const VALIDATE_COUPON = gql`
  * once without it, and remember it so later attempts go straight to the old query.
  */
 const VALIDATE_COUPON_LEGACY = gql`
-    query ValidateCoupon($code: String!, $orderAmount: String!) {
-        validateCoupon(code: $code, orderAmount: $orderAmount) {
-            valid
-            discountAmount
-            errorMessage
-        }
+  query ValidateCoupon($code: String!, $orderAmount: String!) {
+    validateCoupon(code: $code, orderAmount: $orderAmount) {
+      valid
+      discountAmount
+      errorMessage
     }
+  }
 `
 let serverHasErrorCode = true
 
 const isMissingErrorCodeField = (err: unknown): boolean => {
-    const gqlError = unwrapGqlError(err)
-    return Boolean(gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') && /errorCode/u.test(gqlError.message))
+  const gqlError = unwrapGqlError(err)
+  return Boolean(
+    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') && /errorCode/u.test(gqlError.message),
+  )
 }
 
 /**
@@ -52,49 +54,51 @@ const isMissingErrorCodeField = (err: unknown): boolean => {
  * code" about a code that was not even checked.
  */
 export function useCouponCode() {
-    const cartStore = useCartStore()
-    const { t } = useI18n()
-    const { mutate: validate } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
-    const { mutate: validateLegacy } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON_LEGACY)
+  const cartStore = useCartStore()
+  const { t } = useI18n()
+  const { mutate: validate } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
+  const { mutate: validateLegacy } = useGqlMutation<{ validateCoupon: CouponValidation }>(
+    VALIDATE_COUPON_LEGACY,
+  )
 
-    const request = async (code: string): Promise<CouponValidation> => {
-        // The coupon is checked against the goods subtotal; the backend rechecks it on the real order.
-        const variables = { code, orderAmount: centsToDecimalString(cartStore.subtotalCents) }
-        if (serverHasErrorCode) {
-            try {
-                return (await validate(variables)).validateCoupon
-            } catch (err: unknown) {
-                if (!isMissingErrorCodeField(err)) throw err
-                serverHasErrorCode = false
-            }
-        }
-        return (await validateLegacy(variables)).validateCoupon
+  const request = async (code: string): Promise<CouponValidation> => {
+    // The coupon is checked against the goods subtotal; the backend rechecks it on the real order.
+    const variables = { code, orderAmount: centsToDecimalString(cartStore.subtotalCents) }
+    if (serverHasErrorCode) {
+      try {
+        return (await validate(variables)).validateCoupon
+      } catch (err: unknown) {
+        if (!isMissingErrorCodeField(err)) throw err
+        serverHasErrorCode = false
+      }
     }
+    return (await validateLegacy(variables)).validateCoupon
+  }
 
-    const apply = async (rawCode: string): Promise<string | null> => {
-        const code = rawCode.trim()
-        if (!code) return null
-        try {
-            const validation = await request(code)
-            if (validation.valid) {
-                cartStore.couponCode = code
-                cartStore.couponDiscountCents = toCents(validation.discountAmount)
-                return null
-            }
-            const refusal = describeCouponRefusal(validation)
-            return t(refusal.key, refusal.params ?? {})
-        } catch (err: unknown) {
-            reportError(err, 'coupon.validate')
-            const described = describeGqlError(err)
-            // Not a refusal of the code: the request itself failed, so the generic "try again", not "invalid code".
-            return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
-        }
+  const apply = async (rawCode: string): Promise<string | null> => {
+    const code = rawCode.trim()
+    if (!code) return null
+    try {
+      const validation = await request(code)
+      if (validation.valid) {
+        cartStore.couponCode = code
+        cartStore.couponDiscountCents = toCents(validation.discountAmount)
+        return null
+      }
+      const refusal = describeCouponRefusal(validation)
+      return t(refusal.key, refusal.params ?? {})
+    } catch (err: unknown) {
+      reportError(err, 'coupon.validate')
+      const described = describeGqlError(err)
+      // Not a refusal of the code: the request itself failed, so the generic "try again", not "invalid code".
+      return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
     }
+  }
 
-    const remove = () => {
-        cartStore.couponCode = null
-        cartStore.couponDiscountCents = 0
-    }
+  const remove = () => {
+    cartStore.couponCode = null
+    cartStore.couponDiscountCents = 0
+  }
 
-    return { apply, remove }
+  return { apply, remove }
 }

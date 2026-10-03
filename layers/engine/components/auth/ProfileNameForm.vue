@@ -1,67 +1,63 @@
 <template>
-    <form class="space-y-4" @submit.prevent="onSubmit">
-        <div>
-            <h2 class="text-lg font-semibold text-neutral-900">
-                {{ $t('login.profileTitle') }}
-            </h2>
-            <p class="text-sm text-neutral-600 mt-1">
-                {{ $t('login.profileSubtitle') }}
-            </p>
-        </div>
+  <form class="space-y-4" @submit.prevent="onSubmit">
+    <div>
+      <h2 class="text-lg font-semibold text-neutral-900">
+        {{ $t('login.profileTitle') }}
+      </h2>
+      <p class="text-sm text-neutral-600 mt-1">
+        {{ $t('login.profileSubtitle') }}
+      </p>
+    </div>
 
-        <div>
-            <label class="field-label" for="auth-firstname">
-                {{ $t('form.firstName') }}
-            </label>
-            <input
-                id="auth-firstname"
-                ref="firstNameInputRef"
-                v-model="firstName"
-                :placeholder="$t('form.firstNamePlaceholder')"
-                autocomplete="given-name"
-                class="field"
-                maxlength="60"
-                name="firstName"
-                required
-                type="text"
-            >
-        </div>
+    <div>
+      <label class="field-label" for="auth-firstname">
+        {{ $t('form.firstName') }}
+      </label>
+      <input
+        id="auth-firstname"
+        ref="firstNameInputRef"
+        v-model="firstName"
+        :placeholder="$t('form.firstNamePlaceholder')"
+        autocomplete="given-name"
+        class="field"
+        maxlength="60"
+        name="firstName"
+        required
+        type="text"
+      />
+    </div>
 
-        <div>
-            <label class="field-label" for="auth-lastname">
-                {{ $t('form.lastName') }}
-            </label>
-            <input
-                id="auth-lastname"
-                v-model="lastName"
-                :placeholder="$t('form.lastNamePlaceholder')"
-                autocomplete="family-name"
-                class="field"
-                maxlength="60"
-                name="lastName"
-                required
-                type="text"
-            >
-        </div>
+    <div>
+      <label class="field-label" for="auth-lastname">
+        {{ $t('form.lastName') }}
+      </label>
+      <input
+        id="auth-lastname"
+        v-model="lastName"
+        :placeholder="$t('form.lastNamePlaceholder')"
+        autocomplete="family-name"
+        class="field"
+        maxlength="60"
+        name="lastName"
+        required
+        type="text"
+      />
+    </div>
 
-        <div
-            v-if="errorMessage"
-            aria-atomic="true"
-            aria-live="assertive"
-            class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake"
-            role="alert"
-        >
-            {{ errorMessage }}
-        </div>
+    <div
+      v-if="errorMessage"
+      aria-atomic="true"
+      aria-live="assertive"
+      class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 animate-shake"
+      role="alert"
+    >
+      {{ errorMessage }}
+    </div>
 
-        <UiButton
-            block
-            :disabled="loading || !firstName.trim() || !lastName.trim()"
-            type="submit"
-        >
-            {{ $t('login.completeSignup') }}
-        </UiButton>
-    </form>
+    <UiButton block :disabled="loading || !firstName.trim() || !lastName.trim()" type="submit">
+      {{ $t('login.completeSignup') }}
+    </UiButton>
+  </form>
 </template>
 
 <script lang="ts" setup>
@@ -76,12 +72,12 @@ import { nextTick, onMounted, ref } from 'vue'
  *    placeholder. See components/auth/AuthFlow.vue and pages/auth/idp/callback.vue.
  */
 defineProps<{
-    loading?: boolean
-    errorMessage?: string
+  loading?: boolean
+  errorMessage?: string
 }>()
 
 const emit = defineEmits<{
-    submit: [payload: { firstName: string; lastName: string }]
+  submit: [payload: { firstName: string; lastName: string }]
 }>()
 
 const firstName = ref('')
@@ -89,12 +85,12 @@ const lastName = ref('')
 const firstNameInputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(async () => {
-    await nextTick()
-    firstNameInputRef.value?.focus()
+  await nextTick()
+  firstNameInputRef.value?.focus()
 })
 
 const onSubmit = () => {
-    if (!firstName.value.trim() || !lastName.value.trim()) return
-    emit('submit', { firstName: firstName.value.trim(), lastName: lastName.value.trim() })
+  if (!firstName.value.trim() || !lastName.value.trim()) return
+  emit('submit', { firstName: firstName.value.trim(), lastName: lastName.value.trim() })
 }
 </script>

@@ -22,59 +22,65 @@ export { toCents }
 
 /** A selection with its price modifier. `quantity` is the TOTAL on the line, not per unit. */
 export interface PricedSelection {
-    modifier: MoneyLike
-    quantity: number
+  modifier: MoneyLike
+  quantity: number
 }
 
 /** What the line helpers need from a cart item (structurally satisfied by `CartItem`). */
 export interface PriceableLine {
-    quantity: number
-    product: {
-        price: MoneyLike
-        choices?: { id: string; priceModifier: MoneyLike }[] | null
-    }
-    selectedChoices?: { choiceId: string; quantity: number }[] | null
-    /** Legacy single choice, only used when `selectedChoices` is empty. */
-    selectedChoice?: { priceModifier: MoneyLike } | null
+  quantity: number
+  product: {
+    price: MoneyLike
+    choices?: { id: string; priceModifier: MoneyLike }[] | null
+  }
+  selectedChoices?: { choiceId: string; quantity: number }[] | null
+  /** Legacy single choice, only used when `selectedChoices` is empty. */
+  selectedChoice?: { priceModifier: MoneyLike } | null
 }
 
 export interface PricedLine {
-    /** Authoritative line amount in cents. */
-    lineTotalCents: number
-    /**
-     * The line total divided by qty, rounded half-up to the cent: what the backend stores in
-     * order_product.unit_price. Display-only: unitPriceCents × qty can differ
-     * from lineTotalCents by a few cents, so never multiply it back.
-     */
-    unitPriceCents: number
+  /** Authoritative line amount in cents. */
+  lineTotalCents: number
+  /**
+   * The line total divided by qty, rounded half-up to the cent: what the backend stores in
+   * order_product.unit_price. Display-only: unitPriceCents × qty can differ
+   * from lineTotalCents by a few cents, so never multiply it back.
+   */
+  unitPriceCents: number
 }
 
 /** The formula itself. Negative modifiers are clamped to 0 (a choice never discounts). */
-export function priceLine(base: MoneyLike, qty: number, selections: PricedSelection[] = []): PricedLine {
-    let lineTotalCents = toCents(base) * qty
-    for (const selection of selections) {
-        lineTotalCents += Math.max(toCents(selection.modifier), 0) * selection.quantity
-    }
-    const unitPriceCents = qty > 0 ? Math.floor((2 * lineTotalCents + qty) / (2 * qty)) : toCents(base)
-    return { lineTotalCents, unitPriceCents }
+export function priceLine(
+  base: MoneyLike,
+  qty: number,
+  selections: PricedSelection[] = [],
+): PricedLine {
+  let lineTotalCents = toCents(base) * qty
+  for (const selection of selections) {
+    lineTotalCents += Math.max(toCents(selection.modifier), 0) * selection.quantity
+  }
+  const unitPriceCents =
+    qty > 0 ? Math.floor((2 * lineTotalCents + qty) / (2 * qty)) : toCents(base)
+  return { lineTotalCents, unitPriceCents }
 }
 
 const selectionsOf = (item: PriceableLine): PricedSelection[] => {
-    const selections = item.selectedChoices ?? []
-    if (selections.length > 0) {
-        const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
-        return selections.flatMap((selection) => {
-            const choice = choiceMap.get(selection.choiceId)
-            return choice ? [{ modifier: choice.priceModifier, quantity: selection.quantity }] : []
-        })
-    }
-    // Legacy single choice (pre multi-select carts): it applies to every unit of the line.
-    if (item.selectedChoice) return [{ modifier: item.selectedChoice.priceModifier, quantity: item.quantity }]
-    return []
+  const selections = item.selectedChoices ?? []
+  if (selections.length > 0) {
+    const choiceMap = new Map((item.product.choices ?? []).map((choice) => [choice.id, choice]))
+    return selections.flatMap((selection) => {
+      const choice = choiceMap.get(selection.choiceId)
+      return choice ? [{ modifier: choice.priceModifier, quantity: selection.quantity }] : []
+    })
+  }
+  // Legacy single choice (pre multi-select carts): it applies to every unit of the line.
+  if (item.selectedChoice)
+    return [{ modifier: item.selectedChoice.priceModifier, quantity: item.quantity }]
+  return []
 }
 
 export const priceCartLine = (item: PriceableLine): PricedLine =>
-    priceLine(item.product.price, item.quantity, selectionsOf(item))
+  priceLine(item.product.price, item.quantity, selectionsOf(item))
 
 /** Line amount in cents — sum these, divide once. */
 export const lineTotalCents = (item: PriceableLine): number => priceCartLine(item).lineTotalCents
@@ -90,6 +96,6 @@ export const unitPriceCents = (item: PriceableLine): number => priceCartLine(ite
  * null. Use it for "2 × €13.50" sub-lines, which must never contradict the total.
  */
 export const exactUnitPriceCents = (item: PriceableLine): number | null => {
-    const { lineTotalCents: total } = priceCartLine(item)
-    return item.quantity > 0 && total % item.quantity === 0 ? total / item.quantity : null
+  const { lineTotalCents: total } = priceCartLine(item)
+  return item.quantity > 0 && total % item.quantity === 0 ? total / item.quantity : null
 }

@@ -1,19 +1,19 @@
 <template>
-    <picture>
-        <source :srcset="srcset('avif')" :sizes="sizes" type="image/avif" />
-        <source :srcset="srcset('webp')" :sizes="sizes" type="image/webp" />
-        <img
-            :src="`${src}-${fallbackWidth}.png`"
-            :alt="alt"
-            :sizes="sizes"
-            :width="fallbackWidth"
-            :height="fallbackHeight"
-            :loading="eager ? 'eager' : 'lazy'"
-            :fetchpriority="eager ? 'high' : undefined"
-            :class="classes"
-            decoding="async"
-        />
-    </picture>
+  <picture>
+    <source :srcset="srcset('avif')" :sizes="sizes" type="image/avif" />
+    <source :srcset="srcset('webp')" :sizes="sizes" type="image/webp" />
+    <img
+      :src="`${src}-${fallbackWidth}.png`"
+      :alt="alt"
+      :sizes="sizes"
+      :width="fallbackWidth"
+      :height="fallbackHeight"
+      :loading="eager ? 'eager' : 'lazy'"
+      :fetchpriority="eager ? 'high' : undefined"
+      :class="classes"
+      decoding="async"
+    />
+  </picture>
 </template>
 
 <script setup lang="ts">
@@ -30,24 +30,27 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
-    /** Extension-less base path, e.g. "/images/broths/beef-bone" */
-    src: string
-    /** Available widths, e.g. [480, 800, 1200] */
-    widths: number[]
-    /** Width that has the .png fallback file */
-    fallbackWidth: number
-    /** Height of that .png fallback file: read it from the asset (`file x-800.png`), do not guess. */
-    fallbackHeight: number
-    alt: string
-    sizes?: string
-    eager?: boolean
-    imgClass?: string
+  /** Extension-less base path, e.g. "/images/broths/beef-bone" */
+  src: string
+  /** Available widths, e.g. [480, 800, 1200] */
+  widths: number[]
+  /** Width that has the .png fallback file */
+  fallbackWidth: number
+  /** Height of that .png fallback file: read it from the asset (`file x-800.png`), do not guess. */
+  fallbackHeight: number
+  alt: string
+  sizes?: string
+  eager?: boolean
+  imgClass?: string
 }>()
 
 // A height utility of the caller (h-full, sm:h-64, ...; not max-h-/min-h-) replaces the default h-auto.
 const HEIGHT_UTILITY = /(?:^|\s)(?:[\w[\]-]+:)*!?h-/u
-const classes = computed(() => (props.imgClass && HEIGHT_UTILITY.test(props.imgClass) ? props.imgClass : ['h-auto', props.imgClass]))
+const classes = computed(() =>
+  props.imgClass && HEIGHT_UTILITY.test(props.imgClass)
+    ? props.imgClass
+    : ['h-auto', props.imgClass],
+)
 
-const srcset = (ext: string) =>
-    props.widths.map((w) => `${props.src}-${w}.${ext} ${w}w`).join(', ')
+const srcset = (ext: string) => props.widths.map((w) => `${props.src}-${w}.${ext} ${w}w`).join(', ')
 </script>

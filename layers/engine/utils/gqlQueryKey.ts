@@ -13,24 +13,28 @@ import { hash } from 'ohash'
  * are the same query.
  */
 const stable = (value: unknown): unknown => {
-    if (Array.isArray(value)) return value.map(stable)
-    if (value && typeof value === 'object') {
-        const out: Record<string, unknown> = {}
-        for (const k of Object.keys(value as Record<string, unknown>).sort()) {
-            const v = (value as Record<string, unknown>)[k]
-            if (v !== undefined) out[k] = stable(v)
-        }
-        return out
+  if (Array.isArray(value)) return value.map(stable)
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {}
+    for (const k of Object.keys(value as Record<string, unknown>).sort()) {
+      const v = (value as Record<string, unknown>)[k]
+      if (v !== undefined) out[k] = stable(v)
     }
-    return value
+    return out
+  }
+  return value
 }
 
 export const gqlVariablesKey = (variables: Record<string, unknown> | undefined | null): string => {
-    const stableVars = stable(variables ?? {}) as Record<string, unknown>
-    return Object.keys(stableVars).length === 0 ? '' : hash(JSON.stringify(stableVars))
+  const stableVars = stable(variables ?? {}) as Record<string, unknown>
+  return Object.keys(stableVars).length === 0 ? '' : hash(JSON.stringify(stableVars))
 }
 
-export const gqlQueryKey = (query: string, variables: Record<string, unknown> | undefined | null, locale: string): string => {
-    const varsKey = gqlVariablesKey(variables)
-    return `gql:${hash(query)}${varsKey ? `:${varsKey}` : ''}:${locale}`
+export const gqlQueryKey = (
+  query: string,
+  variables: Record<string, unknown> | undefined | null,
+  locale: string,
+): string => {
+  const varsKey = gqlVariablesKey(variables)
+  return `gql:${hash(query)}${varsKey ? `:${varsKey}` : ''}:${locale}`
 }

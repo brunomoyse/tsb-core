@@ -5,11 +5,11 @@ const env = process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'productio
 const release = process.env.SENTRY_RELEASE
 
 if (dsn) {
-    Sentry.init({
-        dsn,
-        environment: env,
-        release,
-        tracesSampleRate: 0.1,
-        sendDefaultPii: false,
-    })
+  Sentry.init({
+    dsn,
+    environment: env,
+    release,
+    tracesSampleRate: 0.1,
+    sendDefaultPii: false,
+  })
 }

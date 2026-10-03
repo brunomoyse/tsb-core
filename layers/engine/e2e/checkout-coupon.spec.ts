@@ -25,7 +25,9 @@ test.describe('Coupon input', () => {
     await expect(page.locator(SEL.couponError)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('Invalid coupon shows error and never applies a discount pill', async ({ authenticatedPage: page }) => {
+  test('Invalid coupon shows error and never applies a discount pill', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     await page.locator(SEL.couponInput).fill('DEFINITELY_NOT_REAL_42')
@@ -43,7 +45,9 @@ test.describe('Coupon input', () => {
     await expect(page.locator(SEL.couponRemove)).toHaveCount(0)
   })
 
-  test('Clearing input after error hides error on new attempt', async ({ authenticatedPage: page }) => {
+  test('Clearing input after error hides error on new attempt', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     // Trigger error

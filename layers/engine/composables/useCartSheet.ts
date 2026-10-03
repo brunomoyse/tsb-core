@@ -17,52 +17,64 @@ const TRIGGER_SELECTOR = '[data-cart-trigger]'
 
 const isRendered = (el: Element): boolean => el.getClientRects().length > 0
 
-export function useCartSheet(panelRef: Ref<HTMLElement | null>, closeButtonRef: Ref<HTMLElement | null>) {
-    const cartStore = useCartStore()
-    const isDesktop = useMediaQuery('(min-width: 1024px)')
-    const isSheetOpen = computed(() => cartStore.isCartVisible && !isDesktop.value)
+export function useCartSheet(
+  panelRef: Ref<HTMLElement | null>,
+  closeButtonRef: Ref<HTMLElement | null>,
+) {
+  const cartStore = useCartStore()
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const isSheetOpen = computed(() => cartStore.isCartVisible && !isDesktop.value)
 
-    // The opener is read the moment the sheet opens (sync, before the render makes the page inert and drops focus to <body>).
-    let opener: HTMLElement | null = null
-    /*
-     * The sheet also closes because the visitor followed a link in it (Checkout, a line issue): the opener belongs to the page they
-     * left, so focus must not jump to the cart trigger of the new one. The navigation guard fires in the click that closed the sheet,
-     * before the leave transition ends and long before the new page has rendered.
-     */
-    const route = useRoute()
-    const router = useRouter()
-    let openedPath = ''
-    let navigatedAway = false
-    watch(() => cartStore.isCartVisible, (visible) => {
-        if (!visible) return
-        const focused = document.activeElement as HTMLElement | null
-        opener = focused && focused !== document.body ? focused : null
-        openedPath = route.path
-        navigatedAway = false
-    }, { flush: 'sync' })
-    if (import.meta.client) {
-        const removeGuard = router.beforeEach((to) => {
-            if (openedPath && to.path !== openedPath) navigatedAway = true
-        })
-        onScopeDispose(removeGuard)
-    }
-
-    const returnTarget = (): HTMLElement | null | false => {
-        if (navigatedAway || (openedPath && route.path !== openedPath)) return false
-        if (opener?.isConnected && isRendered(opener)) return opener
-        // Safari does not focus a button on click: fall back to whichever cart trigger is on screen.
-        return Array.from(document.querySelectorAll<HTMLElement>(TRIGGER_SELECTOR)).find(isRendered) ?? null
-    }
-
-    useBodyScrollLock(isSheetOpen)
-    useInertBackground(isSheetOpen)
-    // Active from when the panel is in the DOM until its leave transition has finished, so focus returns once the page is reachable again.
-    useFocusTrap(computed(() => (isDesktop.value ? null : panelRef.value)), {
-        initialFocus: () => closeButtonRef.value,
-        returnFocus: returnTarget,
-        onEscape: () => cartStore.setCartVisibility(false),
-        companions: () => Array.from(document.querySelectorAll('[data-focus-trap-companion]')),
+  // The opener is read the moment the sheet opens (sync, before the render makes the page inert and drops focus to <body>).
+  let opener: HTMLElement | null = null
+  /*
+   * The sheet also closes because the visitor followed a link in it (Checkout, a line issue): the opener belongs to the page they
+   * left, so focus must not jump to the cart trigger of the new one. The navigation guard fires in the click that closed the sheet,
+   * before the leave transition ends and long before the new page has rendered.
+   */
+  const route = useRoute()
+  const router = useRouter()
+  let openedPath = ''
+  let navigatedAway = false
+  watch(
+    () => cartStore.isCartVisible,
+    (visible) => {
+      if (!visible) return
+      const focused = document.activeElement as HTMLElement | null
+      opener = focused && focused !== document.body ? focused : null
+      openedPath = route.path
+      navigatedAway = false
+    },
+    { flush: 'sync' },
+  )
+  if (import.meta.client) {
+    const removeGuard = router.beforeEach((to) => {
+      if (openedPath && to.path !== openedPath) navigatedAway = true
     })
+    onScopeDispose(removeGuard)
+  }
 
-    return { isSheetOpen }
+  const returnTarget = (): HTMLElement | null | false => {
+    if (navigatedAway || (openedPath && route.path !== openedPath)) return false
+    if (opener?.isConnected && isRendered(opener)) return opener
+    // Safari does not focus a button on click: fall back to whichever cart trigger is on screen.
+    return (
+      Array.from(document.querySelectorAll<HTMLElement>(TRIGGER_SELECTOR)).find(isRendered) ?? null
+    )
+  }
+
+  useBodyScrollLock(isSheetOpen)
+  useInertBackground(isSheetOpen)
+  // Active from when the panel is in the DOM until its leave transition has finished, so focus returns once the page is reachable again.
+  useFocusTrap(
+    computed(() => (isDesktop.value ? null : panelRef.value)),
+    {
+      initialFocus: () => closeButtonRef.value,
+      returnFocus: returnTarget,
+      onEscape: () => cartStore.setCartVisibility(false),
+      companions: () => Array.from(document.querySelectorAll('[data-focus-trap-companion]')),
+    },
+  )
+
+  return { isSheetOpen }
 }

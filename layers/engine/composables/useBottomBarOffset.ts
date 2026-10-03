@@ -15,41 +15,45 @@ const VARIABLE = '--bottom-bar-h'
 const heights = new Map<symbol, number>()
 
 const publish = (): void => {
-    const tallest = Math.max(0, ...heights.values())
-    const root = document.documentElement
-    if (tallest > 0) root.style.setProperty(VARIABLE, `${tallest}px`)
-    else root.style.removeProperty(VARIABLE)
+  const tallest = Math.max(0, ...heights.values())
+  const root = document.documentElement
+  if (tallest > 0) root.style.setProperty(VARIABLE, `${tallest}px`)
+  else root.style.removeProperty(VARIABLE)
 }
 
 export function useBottomBarOffset(target: Ref<HTMLElement | null | undefined>): void {
-    if (!import.meta.client) return
+  if (!import.meta.client) return
 
-    const id = Symbol('bottom-bar')
-    let observer: ResizeObserver | null = null
+  const id = Symbol('bottom-bar')
+  let observer: ResizeObserver | null = null
 
-    const measure = (el: HTMLElement): void => {
-        // A bar hidden at this breakpoint (display: none) measures 0 and does not count.
-        const height = el.offsetHeight
-        if (height > 0) heights.set(id, height)
-        else heights.delete(id)
-        publish()
-    }
+  const measure = (el: HTMLElement): void => {
+    // A bar hidden at this breakpoint (display: none) measures 0 and does not count.
+    const height = el.offsetHeight
+    if (height > 0) heights.set(id, height)
+    else heights.delete(id)
+    publish()
+  }
 
-    const stop = watch(target, (el) => {
-        observer?.disconnect()
-        observer = null
-        heights.delete(id)
-        publish()
-        if (!el) return
-        measure(el)
-        observer = new ResizeObserver(() => measure(el))
-        observer.observe(el)
-    }, { immediate: true, flush: 'post' })
+  const stop = watch(
+    target,
+    (el) => {
+      observer?.disconnect()
+      observer = null
+      heights.delete(id)
+      publish()
+      if (!el) return
+      measure(el)
+      observer = new ResizeObserver(() => measure(el))
+      observer.observe(el)
+    },
+    { immediate: true, flush: 'post' },
+  )
 
-    onBeforeUnmount(() => {
-        stop()
-        observer?.disconnect()
-        heights.delete(id)
-        publish()
-    })
+  onBeforeUnmount(() => {
+    stop()
+    observer?.disconnect()
+    heights.delete(id)
+    publish()
+  })
 }

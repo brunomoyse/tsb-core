@@ -10,19 +10,19 @@ import { useState } from '#imports'
  * itself mounts after hydration.
  */
 export interface Announcement {
-    message: string
-    /** Bumped on every call, so identical messages still trigger the watcher. */
-    seq: number
+  message: string
+  /** Bumped on every call, so identical messages still trigger the watcher. */
+  seq: number
 }
 
 export function useAnnouncer() {
-    const state = useState<Announcement>('a11y-announcement', () => ({ message: '', seq: 0 }))
+  const state = useState<Announcement>('a11y-announcement', () => ({ message: '', seq: 0 }))
 
-    /** Polite announcement: waits for the screen reader to finish what it is saying. */
-    const announce = (message: string): void => {
-        if (!message) return
-        state.value = { message, seq: state.value.seq + 1 }
-    }
+  /** Polite announcement: waits for the screen reader to finish what it is saying. */
+  const announce = (message: string): void => {
+    if (!message) return
+    state.value = { message, seq: state.value.seq + 1 }
+  }
 
-    return { announcement: state, announce }
+  return { announcement: state, announce }
 }

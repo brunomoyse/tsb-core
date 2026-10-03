@@ -1,15 +1,15 @@
 export interface OrderItemLabelInput {
-    code?: string | null;
-    categoryName?: string | null;
-    productName: string;
-    choiceName?: string | null;
+  code?: string | null
+  categoryName?: string | null
+  productName: string
+  choiceName?: string | null
 }
 
 export interface OrderItemLabelParts {
-    code?: string;
-    category?: string;
-    name: string;
-    choice?: string;
+  code?: string
+  category?: string
+  name: string
+  choice?: string
 }
 
 /**
@@ -17,20 +17,20 @@ export interface OrderItemLabelParts {
  * optional `choice`.
  */
 export function orderItemLabelParts(input: OrderItemLabelInput): OrderItemLabelParts {
-    const code = input.code?.trim() || undefined;
-    const rawCategory = input.categoryName?.trim() || undefined;
-    return {
-        code,
-        category: rawCategory,
-        name: input.productName,
-        choice: input.choiceName?.trim() || undefined,
-    };
+  const code = input.code?.trim() || undefined
+  const rawCategory = input.categoryName?.trim() || undefined
+  return {
+    code,
+    category: rawCategory,
+    name: input.productName,
+    choice: input.choiceName?.trim() || undefined,
+  }
 }
 
 export interface OrderItemChoiceInput {
-    choice?: { name: string } | null;
-    selections?: { choiceId: string; quantity: number }[] | null;
-    product?: { choices?: { id: string; name: string }[] | null };
+  choice?: { name: string } | null
+  selections?: { choiceId: string; quantity: number }[] | null
+  product?: { choices?: { id: string; name: string }[] | null }
 }
 
 /**
@@ -40,18 +40,18 @@ export interface OrderItemChoiceInput {
  * existed fall back to their single `choice`.
  */
 export function orderItemChoiceText(item: OrderItemChoiceInput): string | undefined {
-    const selections = item.selections ?? [];
-    if (selections.length > 0) {
-        const names = new Map((item.product?.choices ?? []).map((choice) => [choice.id, choice.name]));
-        const text = selections
-            .map((selection) => {
-                const name = names.get(selection.choiceId);
-                if (!name) return '';
-                return selection.quantity > 1 ? `${name} x${selection.quantity}` : name;
-            })
-            .filter(Boolean)
-            .join(', ');
-        if (text) return text;
-    }
-    return item.choice?.name?.trim() || undefined;
+  const selections = item.selections ?? []
+  if (selections.length > 0) {
+    const names = new Map((item.product?.choices ?? []).map((choice) => [choice.id, choice.name]))
+    const text = selections
+      .map((selection) => {
+        const name = names.get(selection.choiceId)
+        if (!name) return ''
+        return selection.quantity > 1 ? `${name} x${selection.quantity}` : name
+      })
+      .filter(Boolean)
+      .join(', ')
+    if (text) return text
+  }
+  return item.choice?.name?.trim() || undefined
 }

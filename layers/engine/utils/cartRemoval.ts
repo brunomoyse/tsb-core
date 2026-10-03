@@ -15,7 +15,7 @@ export const REMOVAL_TOAST_GROUP = 'cart-removal'
  * (it expired, was closed or its Undo was used).
  */
 export const nextRemovalBatch = <T>(batch: readonly T[], removed: T, toastAlive: boolean): T[] =>
-    toastAlive ? [...batch, removed] : [removed]
+  toastAlive ? [...batch, removed] : [removed]
 
 /** Which message the toast shows for a batch: the line's name, or the count of lines. */
 export const removalToastMessage = (count: number): 'one' | 'many' => (count <= 1 ? 'one' : 'many')

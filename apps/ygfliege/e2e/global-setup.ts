@@ -15,8 +15,8 @@ import { forceOrderingOpen } from '../../../layers/engine/e2e/support/restaurant
 import { ygfDb } from './db-target'
 
 export default async function globalSetup(config: FullConfig) {
-    forceOrderingOpen(ygfDb(), config.configFile)
-    console.log('ygfliege e2e setup: ordering forced open 24/7 (previous config backed up)')
+  forceOrderingOpen(ygfDb(), config.configFile)
+  console.log('ygfliege e2e setup: ordering forced open 24/7 (previous config backed up)')
 
-    await captureAuthState(config, process.env.YGF_E2E_USER_EMAIL, 'ygfliege e2e setup')
+  await captureAuthState(config, process.env.YGF_E2E_USER_EMAIL, 'ygfliege e2e setup')
 }

@@ -8,15 +8,15 @@ import { watch } from 'vue'
 // toggles with an "available soon" label; this is the belt-and-braces layer
 // underneath, covering rehydrated state and resetState().
 export default defineNuxtPlugin(() => {
-    const { brand } = useAppConfig()
-    if (brand.deliveryEnabled !== false) return
+  const { brand } = useAppConfig()
+  if (brand.deliveryEnabled !== false) return
 
-    const cartStore = useCartStore()
-    watch(
-        () => cartStore.collectionOption,
-        (option) => {
-            if (option === 'DELIVERY') cartStore.collectionOption = 'PICKUP'
-        },
-        { immediate: true },
-    )
+  const cartStore = useCartStore()
+  watch(
+    () => cartStore.collectionOption,
+    (option) => {
+      if (option === 'DELIVERY') cartStore.collectionOption = 'PICKUP'
+    },
+    { immediate: true },
+  )
 })

@@ -1,35 +1,35 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "daily"
+      interval: 'daily'
     ignore:
-      - dependency-name: "@types/node"
-        update-types: ["version-update:semver-major"]
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       oxc-toolchain:
         patterns:
-          - "@oxc-*"
+          - '@oxc-*'
       esbuild-platforms:
         patterns:
-          - "@esbuild/*"
+          - '@esbuild/*'
       rollup-platforms:
         patterns:
-          - "@rollup/*"
+          - '@rollup/*'
       tailwindcss-platforms:
         patterns:
-          - "@tailwindcss/oxide-*"
+          - '@tailwindcss/oxide-*'
       lightningcss-platforms:
         patterns:
-          - "lightningcss-*"
+          - 'lightningcss-*'
       capacitor:
         patterns:
-          - "@capacitor/*"
-  - package-ecosystem: "docker"
-    directory: "/"
+          - '@capacitor/*'
+  - package-ecosystem: 'docker'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     ignore:
-      - dependency-name: "node"
-        update-types: ["version-update:semver-major"]
+      - dependency-name: 'node'
+        update-types: ['version-update:semver-major']

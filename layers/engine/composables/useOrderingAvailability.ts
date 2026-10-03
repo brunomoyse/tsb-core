@@ -16,53 +16,63 @@ import { useRestaurantConfig } from './useRestaurantConfig'
  *  - isLoading / loadFailed: no config yet, with / without a failed request (retry with `retry`).
  */
 export async function useOrderingAvailability(options: { lazy?: boolean } = {}) {
-    /*
-     * Everything that needs the component instance is registered BEFORE the first await (see the
-     * note in useRestaurantConfig): the clock only exists so a slot that falls inside the
-     * preparation window stops counting on a stale config, without waiting for a refetch.
-     */
-    const nowMs = ref(Date.now())
-    if (import.meta.client) useIntervalFn(() => { nowMs.value = Date.now() }, 30_000)
+  /*
+   * Everything that needs the component instance is registered BEFORE the first await (see the
+   * note in useRestaurantConfig): the clock only exists so a slot that falls inside the
+   * preparation window stops counting on a stale config, without waiting for a refetch.
+   */
+  const nowMs = ref(Date.now())
+  if (import.meta.client)
+    useIntervalFn(() => {
+      nowMs.value = Date.now()
+    }, 30_000)
 
-    const { config, pending, error, refresh } = await useRestaurantConfig(options)
+  const { config, pending, error, refresh } = await useRestaurantConfig(options)
 
-    const current = computed(() => config.value?.restaurantConfig ?? null)
-    const isLoaded = computed(() => current.value !== null)
-    const loadFailed = computed(() => !isLoaded.value && !pending.value && Boolean(error.value))
-    const isLoading = computed(() => !isLoaded.value && !loadFailed.value)
+  const current = computed(() => config.value?.restaurantConfig ?? null)
+  const isLoaded = computed(() => current.value !== null)
+  const loadFailed = computed(() => !isLoaded.value && !pending.value && Boolean(error.value))
+  const isLoading = computed(() => !isLoaded.value && !loadFailed.value)
 
-    const status = computed(() => (isLoaded.value ? orderingStatus(current.value, nowMs.value) : null))
-    const isAvailable = computed(() => canPlaceOrder(current.value, nowMs.value))
-    const isClosed = computed(() => isLoaded.value && !isAvailable.value)
-    const isPreorderOnly = computed(() => status.value === 'preorder')
-    /** Ordering is switched off by the restaurant (the config says so, as opposed to not having a config). */
-    const isOrderingDisabled = computed(() => status.value === 'disabled')
-    /** "HH:MM" (restaurant time) of the first slot a pre-order can be booked for. */
-    const firstSlotLabel = computed(() =>
-        bookableSlots(current.value?.availableSlotsToday, current.value?.preparationMinutes, nowMs.value)[0]?.label ?? null,
-    )
-    /** The slot time to advertise ("order now for 19:00"), only while pre-ordering is what is on offer. */
-    const preorderTime = computed(() => (isPreorderOnly.value ? firstSlotLabel.value : null))
+  const status = computed(() =>
+    isLoaded.value ? orderingStatus(current.value, nowMs.value) : null,
+  )
+  const isAvailable = computed(() => canPlaceOrder(current.value, nowMs.value))
+  const isClosed = computed(() => isLoaded.value && !isAvailable.value)
+  const isPreorderOnly = computed(() => status.value === 'preorder')
+  /** Ordering is switched off by the restaurant (the config says so, as opposed to not having a config). */
+  const isOrderingDisabled = computed(() => status.value === 'disabled')
+  /** "HH:MM" (restaurant time) of the first slot a pre-order can be booked for. */
+  const firstSlotLabel = computed(
+    () =>
+      bookableSlots(
+        current.value?.availableSlotsToday,
+        current.value?.preparationMinutes,
+        nowMs.value,
+      )[0]?.label ?? null,
+  )
+  /** The slot time to advertise ("order now for 19:00"), only while pre-ordering is what is on offer. */
+  const preorderTime = computed(() => (isPreorderOnly.value ? firstSlotLabel.value : null))
 
-    const retry = async (): Promise<void> => {
-        await refresh()
-    }
+  const retry = async (): Promise<void> => {
+    await refresh()
+  }
 
-    return {
-        config,
-        refresh,
-        retry,
-        pending,
-        error,
-        isLoaded,
-        isLoading,
-        loadFailed,
-        status,
-        isAvailable,
-        isClosed,
-        isPreorderOnly,
-        isOrderingDisabled,
-        firstSlotLabel,
-        preorderTime,
-    }
+  return {
+    config,
+    refresh,
+    retry,
+    pending,
+    error,
+    isLoaded,
+    isLoading,
+    loadFailed,
+    status,
+    isAvailable,
+    isClosed,
+    isPreorderOnly,
+    isOrderingDisabled,
+    firstSlotLabel,
+    preorderTime,
+  }
 }
