@@ -10,9 +10,9 @@
       :data-has-choices="hasChoices"
       class="card card-interactive isolate w-full h-full min-h-[260px] flex flex-col"
     >
-      <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
+      <!-- Product Image (flexible: grows/shrinks to fill remaining space). Top-aligned: when a neighbour's stepper wraps under its price the row grows, and a centred image would slide down. -->
       <div
-        class="flex-1 min-h-0 flex justify-center items-center p-3 bg-ygf-orange-50/40 cursor-pointer relative"
+        class="flex-1 min-h-0 flex justify-center items-start p-3 bg-ygf-orange-50/40 cursor-pointer relative"
         @contextmenu.prevent
         @click="emit('openProductModal')"
       >
@@ -111,7 +111,7 @@
           :class="brandPhoto.cover ? 'absolute inset-3' : undefined"
         />
         <!-- Visible from the first paint, with or without JavaScript (it used to be opacity-0 until onMounted saw it loaded, which kept it out of the LCP): the shimmer is only a background behind it, hence "relative" so the image paints over it. -->
-        <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-center">
+        <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-start">
           <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif" />
           <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp" />
           <img
@@ -147,7 +147,7 @@
             <span
               data-testid="product-name"
               translate="no"
-              class="block text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
+              class="text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
               :title="product.name"
             >
               {{ product.name }}

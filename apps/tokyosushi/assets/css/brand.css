@@ -25,6 +25,8 @@ html {
   --ring: 0 72.2% 50.6%; /* red-600: focus ring, 4.8:1 on white and >= 4.07:1 on the tsb surfaces (WCAG 1.4.11) */
   /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
   --side-rail-width: 142px;
+  /* Side padding of <main> on phones (the layout's px-4); engine pages that need the full width pull their wrapper out by it. YGF has none (var unset = 0). */
+  --main-gutter: 1rem;
 
   --radius-control: 0.75rem; /* buttons, inputs, cards */
   --radius-container: 1rem; /* modals, panels */

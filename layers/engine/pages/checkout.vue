@@ -1,5 +1,6 @@
 <template>
-  <div class="max-w-7xl mx-auto p-4">
+  <!-- On a phone the wrapper reaches the screen edges (past the layout's own padding, --main-gutter): the cards need the width for the time slot, the phone and the promo fields. -->
+  <div class="max-w-7xl mx-auto p-4 max-sm:mx-[calc(var(--main-gutter,0px)*-1)]">
     <!-- Restaurant Closed Banner: only for a loaded config that says nothing can be ordered -->
     <div
       v-if="isOrderingClosed"
@@ -210,7 +211,7 @@
         <div
           v-if="showStickyBar && cartStore.products.length > 0"
           ref="stickyBarRef"
-          class="sticky top-[var(--nav-h,0px)] z-20 lg:hidden -mx-4 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-neutral-200/60 transition-all"
+          class="sticky top-[var(--nav-h,0px)] z-20 lg:hidden -mx-4 max-w-none px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-neutral-200/60 transition-all"
         >
           <div class="flex items-center justify-between text-sm">
             <span class="text-neutral-600">

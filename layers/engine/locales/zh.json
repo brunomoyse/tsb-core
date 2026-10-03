@@ -168,7 +168,7 @@
     "email": "电子邮件",
     "emailPlaceholder": "请输入您的电子邮件地址",
     "phone": "电话",
-    "phonePlaceholder": "请输入您的电话号码",
+    "phonePlaceholder": "电话号码",
     "invalidPhone": "电话号码无效",
     "address": {
       "label": "地址",
@@ -390,6 +390,7 @@
     "addressCommentPlaceholder": "例如：请敲门两次",
     "preferredTime": "首选时间",
     "asapDelivery": "尽快（预计40-60分钟）",
+    "asapDeliveryShort": "尽快（40-60分钟）",
     "asapPickup": "尽快",
     "asapUnavailableWhileClosed": "餐厅关闭时无法选择“尽快”，请选择今天的固定时间。",
     "noRemainingSlotsToday": "今天已没有可用时间段。",

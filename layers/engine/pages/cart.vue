@@ -208,13 +208,13 @@
     <!-- ═══ ORDER SUMMARY ═══ -->
     <div v-if="hasLines" class="px-4 pb-4">
       <div class="bg-white rounded-2xl border border-neutral-100 px-4 py-3 space-y-1 text-sm">
-        <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
+        <div v-if="hasBreakdown" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('cart.subtotal') }}</span>
           <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
         </div>
         <div
           v-if="cartStore.collectionOption === 'DELIVERY'"
-          class="flex justify-between text-neutral-600"
+          class="flex justify-between gap-3 text-neutral-600"
         >
           <span>{{ $t('cart.deliveryFee') }}</span>
           <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
@@ -242,24 +242,26 @@
           </span>
           <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
         </div>
-        <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="pickupDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span>{{ $t('cart.pickupDiscount') }}</span>
           <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
         </div>
-        <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="couponDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span
             >{{ $t('coupon.discount')
             }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span
           >
           <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
         </div>
-        <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
+        <div v-if="onlineFeeCents > 0" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('cart.onlineFee') }}</span>
           <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
         </div>
-        <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
+        <div
+          class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
+        >
           <span class="font-bold text-neutral-900">{{ $t('cart.total') }}</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span
               data-testid="cart-page-total"
               class="font-bold text-lg text-neutral-900 tabular-nums"
@@ -297,10 +299,17 @@
       ref="checkoutBarRef"
       class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
     >
-      <UiButton to="/checkout" size="lg" block class="justify-between" :disabled="!canCheckout">
-        <span class="flex items-center gap-2">
+      <!-- Narrow phones: tighter padding and a label that may wrap, so the full label and the price always show. -->
+      <UiButton
+        to="/checkout"
+        size="lg"
+        block
+        class="justify-between gap-3 max-[400px]:px-4"
+        :disabled="!canCheckout"
+      >
+        <span class="flex min-w-0 items-center gap-2 whitespace-normal text-left">
           <svg
-            class="w-5 h-5"
+            class="w-5 h-5 shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -315,7 +324,9 @@
           </svg>
           {{ $t('cart.checkout') }}
         </span>
-        <span class="font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
+        <span class="shrink-0 font-bold text-base tabular-nums">{{
+          formatCents(payableCents)
+        }}</span>
       </UiButton>
       <p v-if="isClosed" class="mt-2 text-center text-sm text-amber-800">
         {{ $t('cart.orderingUnavailable') }}

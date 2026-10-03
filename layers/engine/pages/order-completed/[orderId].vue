@@ -209,13 +209,12 @@
                 class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-colors hover:bg-tsb-one"
               >
                 <div class="flex-1 min-w-0 pr-3">
-                  <p class="text-sm font-medium text-neutral-900 [overflow-wrap:anywhere]">
+                  <p class="text-sm font-medium text-neutral-900 break-words">
+                    <!-- The separator is followed by a real space: that is where a long line wraps (never mid-word). -->
                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                      <span
-                        v-if="i > 0"
-                        class="text-neutral-400 font-normal mx-1"
-                        aria-hidden="true"
-                        >·</span
+                      <template v-if="i > 0"
+                        ><span class="text-neutral-400 font-normal ml-1" aria-hidden="true">·</span
+                        >{{ ' ' }}</template
                       >
                       <span :class="part.muted ? 'text-neutral-600 font-normal' : ''">{{
                         part.text

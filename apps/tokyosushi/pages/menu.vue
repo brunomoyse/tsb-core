@@ -8,7 +8,7 @@
       <div
         v-if="isClosed"
         data-testid="menu-restaurant-closed"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@
         v-else-if="isPreorderOnly && preorderTime"
         role="status"
         data-testid="menu-preorder-banner"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@
         v-else-if="configLoadFailed"
         :message="$t('ordering.loadFailed')"
         :busy="configPending"
-        class="mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900"
+        class="mx-0 sm:mx-4 mt-4 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900"
         @retry="retryConfig()"
       />
 
@@ -68,7 +68,7 @@
         class="sticky z-20 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0"
       >
         <!-- Search + Filter Section -->
-        <section class="mb-4 px-4 space-y-1.5">
+        <section class="mb-4 px-0 sm:px-4 space-y-1.5">
           <!-- Search Bar (full-width, labeled) -->
           <div
             class="relative flex items-center rounded-2xl bg-tsb-two h-[44px] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-tsb-one"
@@ -183,7 +183,7 @@
         </section>
 
         <!-- Categories Scroll -->
-        <section v-if="!searchValue.trim().length" class="relative mx-4 mb-2">
+        <section v-if="!searchValue.trim().length" class="relative mx-0 sm:mx-4 mb-2">
           <!-- Left gradient fade -->
           <div
             class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-tsb-one to-transparent z-10 pointer-events-none transition-opacity duration-300 flex items-center justify-start pl-1"
@@ -252,7 +252,10 @@
       />
 
       <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
-      <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
+      <section
+        v-if="!dataCategories && categoriesError"
+        class="max-w-7xl mx-auto px-0 sm:px-4 py-4"
+      >
         <LoadError
           :message="$t('menu.loadFailed')"
           :busy="categoriesPending"
@@ -263,10 +266,10 @@
       </section>
 
       <!-- Skeleton Loading State -->
-      <section v-else-if="!dataCategories" class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+      <section v-else-if="!dataCategories" class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
         <div v-for="i in 3" :key="i" class="space-y-4">
-          <div class="h-6 w-32 bg-neutral-200 rounded animate-pulse ml-4"></div>
-          <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
+          <div class="h-6 w-32 bg-neutral-200 rounded animate-pulse ml-0 sm:ml-4"></div>
+          <div class="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4">
             <div
               v-for="j in 4"
               :key="j"
@@ -277,7 +280,7 @@
       </section>
 
       <!-- Products Grid -->
-      <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
+      <section v-else class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
         <div
           v-for="(cat, catIdx) in displayedCategories"
           :key="cat.id"
@@ -285,7 +288,7 @@
           class="space-y-4"
         >
           <!-- Category Title with Japanese bracket decoration -->
-          <div class="flex items-center gap-3 ml-4">
+          <div class="flex items-center gap-3 ml-0 sm:ml-4">
             <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true"
               >「</span
             >
@@ -303,13 +306,12 @@
           <!-- Product Cards -->
           <div
             v-if="cat.products.length"
-            class="grid grid-cols-2 gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
+            class="grid grid-cols-2 gap-3 sm:gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
           >
             <ProductCard
               :index="(cardOffsets[catIdx] ?? 0) + idx"
               :product="prod"
               :ordering-disabled="!isCartAddAvailable"
-              class="min-width-[200px]"
               v-for="(prod, idx) in cat.products"
               @openProductModal="openModal(prod.id)"
               :key="prod.id"
@@ -504,6 +506,9 @@ const PRODUCT_CATEGORIES = gql`
           minSelections
           maxSelections
           sortOrder
+          choices {
+            id
+          }
         }
       }
     }

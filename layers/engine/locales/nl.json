@@ -168,7 +168,7 @@
     "email": "E-mail",
     "emailPlaceholder": "Voer uw e-mailadres in",
     "phone": "Telefoon",
-    "phonePlaceholder": "Voer uw telefoonnummer in",
+    "phonePlaceholder": "Telefoonnummer",
     "invalidPhone": "Ongeldig telefoonnummer",
     "address": {
       "label": "Adres",
@@ -391,6 +391,7 @@
     "addressCommentPlaceholder": "bv. Twee keer bellen",
     "preferredTime": "Gewenst tijdstip",
     "asapDelivery": "Zo snel mogelijk (40-60 min)",
+    "asapDeliveryShort": "ZSM (40-60 min)",
     "asapPickup": "Zo snel mogelijk",
     "asapUnavailableWhileClosed": "De optie \"zo snel mogelijk\" is niet beschikbaar buiten de openingsuren. Kies een vast tijdstip voor vandaag.",
     "noRemainingSlotsToday": "Er zijn geen beschikbare tijdsloten meer voor vandaag.",

@@ -53,8 +53,9 @@
     </div>
 
     <form v-if="!isCollapsed" class="mt-3" novalidate @submit.prevent="submit">
-      <div class="flex items-stretch gap-2">
-        <div class="relative flex-1 min-w-0">
+      <!-- Wraps: on a narrow phone the input keeps a usable width and Save drops below it. -->
+      <div class="flex flex-wrap items-stretch gap-2">
+        <div class="relative flex-1 basis-40 min-w-0">
           <input
             id="checkout-phone-input"
             ref="phoneInputRef"
@@ -67,7 +68,8 @@
             :aria-label="$t('form.phone')"
             :aria-invalid="phoneError ? 'true' : undefined"
             :aria-describedby="phoneError ? 'checkout-phone-error' : undefined"
-            class="w-full px-3 py-2.5 pr-9 bg-white border border-neutral-200 rounded-xl text-base sm:text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
+            :class="loading ? 'pr-9' : 'pr-3'"
+            class="w-full px-3 py-2.5 bg-white border border-neutral-200 rounded-xl text-base sm:text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
             @input="onInput"
             @blur="onBlur"
           />

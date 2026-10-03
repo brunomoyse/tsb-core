@@ -226,7 +226,7 @@
         </div>
         <div class="flex justify-between items-center text-lg font-medium border-t pt-2">
           <span>{{ $t('cart.total') }}:</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span data-testid="cart-total" class="tabular-nums">{{
               formatCents(payableCents)
             }}</span></span

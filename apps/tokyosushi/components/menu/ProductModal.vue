@@ -136,11 +136,11 @@
                   v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
                   :key="choice.id"
                   :data-testid="'product-modal-choice-' + choice.id"
-                  class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200"
+                  class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200 max-[359px]:flex-col max-[359px]:items-stretch"
                 >
-                  <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. -->
+                  <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. Under 360px the stepper drops below the name, which keeps the full row width (words wrap at spaces, never mid-word). -->
                   <span class="min-w-0 flex-1">
-                    <span class="block text-sm text-neutral-900 [overflow-wrap:anywhere]">{{
+                    <span class="block text-sm text-neutral-900 break-words">{{
                       choice.name
                     }}</span>
                     <span
@@ -153,6 +153,7 @@
                   </span>
                   <QuantityStepper
                     size="sm"
+                    class="max-[359px]:self-end"
                     :name="choice.name"
                     :value="selectedChoiceQuantities[choice.id] ?? 0"
                     :dec-disabled="!((selectedChoiceQuantities[choice.id] ?? 0) > 0)"
@@ -177,8 +178,12 @@
           >
             {{ $t('menu.unavailable') }}
           </p>
-          <div class="flex items-center justify-between gap-4">
+          <!-- Under 360px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
+          <div
+            class="flex items-center justify-between gap-4 max-[359px]:flex-col max-[359px]:items-stretch"
+          >
             <QuantityStepper
+              class="max-[359px]:self-center"
               :name="p.name"
               :value="quantity"
               :dec-disabled="quantity === 1"
@@ -189,7 +194,7 @@
 
             <UiButton
               size="lg"
-              class="flex-1"
+              class="flex-1 max-[359px]:flex-none"
               data-testid="product-modal-add-to-cart"
               :disabled="!canOrder"
               @click="addToCart"

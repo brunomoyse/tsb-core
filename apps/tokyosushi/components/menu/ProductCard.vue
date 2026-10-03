@@ -8,7 +8,7 @@
       data-testid="product-card"
       :data-product-id="product.id"
       :data-has-choices="hasChoices"
-      class="isolate min-w-[140px] md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md"
+      class="isolate min-w-0 md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md"
     >
       <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
       <div
@@ -77,12 +77,13 @@
             aria-haspopup="dialog"
             data-testid="product-name"
             translate="no"
-            class="relative -my-2 py-2 text-black font-semibold text-sm line-clamp-2 text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
+            class="relative max-w-full -my-2 py-2 text-black font-semibold text-sm text-center mb-0.5 rounded-md hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-300"
             :title="product.name"
             :aria-label="$t('menu.viewDetails', { name: product.name })"
             @click="emit('openProductModal')"
           >
-            {{ product.name }}
+            <!-- The clamp sits on an inner box: line-clamp on the padded button clipped half of a third line. -->
+            <span class="line-clamp-2">{{ product.name }}</span>
           </button>
           <span class="text-neutral-600 text-xs text-center">
             <template v-if="product?.pieceCount"

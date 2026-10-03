@@ -156,15 +156,15 @@
 
       <!-- Price summary -->
       <div class="px-5 pt-3 pb-5 space-y-1.5 text-sm">
-        <div class="flex justify-between text-neutral-600">
+        <div class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('checkout.subtotal', 'Subtotal:') }}</span>
           <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
         </div>
         <div
           v-if="cartStore.collectionOption === 'DELIVERY'"
-          class="flex justify-between text-neutral-600 relative"
+          class="flex justify-between gap-3 text-neutral-600 relative"
         >
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 shrink-0">
             <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
             <span
               class="relative inline-flex"
@@ -210,7 +210,7 @@
               </div>
             </span>
           </div>
-          <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic">{{
+          <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-right">{{
             $t('checkout.tbd')
           }}</span>
           <span
@@ -234,22 +234,27 @@
           >
           <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
         </div>
-        <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
+        <div v-if="pickupDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
           <span>{{ $t('checkout.discount') }}</span>
           <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
         </div>
-        <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
+        <div
+          v-if="cartStore.couponDiscountCents > 0"
+          class="flex justify-between gap-3 text-green-800"
+        >
           <span>{{ $t('coupon.discount') }} ({{ cartStore.couponCode }})</span>
           <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
         </div>
-        <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
+        <div v-if="onlineFeeCents > 0" class="flex justify-between gap-3 text-neutral-600">
           <span>{{ $t('checkout.transactionFee') }}</span>
           <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
         </div>
         <!-- Total -->
-        <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
+        <div
+          class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
+        >
           <span class="font-bold text-neutral-900">{{ $t('checkout.total', 'Total:') }}</span>
-          <span class="inline-flex items-baseline gap-2"
+          <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
             ><QuoteUpdatingHint /><span class="font-bold text-lg text-primary-700 tabular-nums">{{
               formatCents(payableCents)
             }}</span></span

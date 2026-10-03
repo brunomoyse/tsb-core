@@ -308,9 +308,12 @@ const getStatusColorClass = (status: string) => {
                 :key="itemIdx"
                 class="flex items-center justify-between py-2 px-3 rounded-lg bg-white/60"
               >
-                <p class="text-sm text-neutral-800">
+                <p class="min-w-0 text-sm text-neutral-800 break-words">
                   <template v-for="(part, i) in orderItemSegments(item)" :key="i">
-                    <span v-if="i > 0" class="text-neutral-400 mx-1" aria-hidden="true">·</span>
+                    <template v-if="i > 0"
+                      ><span class="text-neutral-400 ml-1" aria-hidden="true">·</span
+                      >{{ ' ' }}</template
+                    >
                     <span :class="part.muted ? 'text-neutral-600' : ''">{{ part.text }}</span>
                   </template>
                   <span

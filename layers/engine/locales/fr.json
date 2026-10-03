@@ -168,7 +168,7 @@
     "email": "E-mail",
     "emailPlaceholder": "Entrez votre adresse e-mail",
     "phone": "Téléphone",
-    "phonePlaceholder": "Entrez votre numéro de téléphone",
+    "phonePlaceholder": "Numéro de téléphone",
     "invalidPhone": "Numéro de téléphone invalide",
     "address": {
       "label": "Adresse",
@@ -391,6 +391,7 @@
     "addressCommentPlaceholder": "ex. Sonnez deux fois",
     "preferredTime": "Heure souhaitée",
     "asapDelivery": "Dès que possible (40-60 min)",
+    "asapDeliveryShort": "Au plus vite (40-60 min)",
     "asapPickup": "Dès que possible",
     "asapUnavailableWhileClosed": "Le mode « dès que possible » n'est pas disponible pendant la fermeture. Veuillez choisir une heure fixe pour aujourd'hui.",
     "noRemainingSlotsToday": "Il n'y a plus de créneaux disponibles aujourd'hui.",

@@ -200,9 +200,9 @@
         <article
           v-if="composerProduct && !searchValue.trim().length"
           data-testid="composer-hero"
-          class="card card-interactive grid sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
+          class="card card-interactive grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
         >
-          <div class="p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
+          <div class="min-w-0 p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
             <span class="section-label">{{ $t('composer.eyebrow') }}</span>
             <h2 translate="no" class="section-title text-2xl sm:text-3xl">
               {{ composerProduct.name }}
@@ -211,7 +211,7 @@
             <button
               type="button"
               data-testid="composer-hero-cta"
-              class="btn btn-primary mt-2"
+              class="btn btn-primary mt-2 max-w-full whitespace-normal text-center"
               :disabled="!isCartAddAvailable || !composerProduct.isAvailable"
               @click="openModal(composerProduct.id)"
             >

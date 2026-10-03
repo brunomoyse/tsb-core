@@ -197,8 +197,9 @@
       <p v-if="!p.isAvailable" class="text-sm text-neutral-600 mb-3">
         {{ $t('menu.unavailable') }}
       </p>
-      <div class="flex items-center gap-3 sm:gap-4">
-        <div class="stepper shrink-0">
+      <!-- Under 360px the stepper sits above a full-width button: beside it the label and price were clipped. -->
+      <div class="flex items-center gap-3 sm:gap-4 max-[359px]:flex-col max-[359px]:items-stretch">
+        <div class="stepper shrink-0 max-[359px]:self-center">
           <button
             type="button"
             class="stepper-btn"
@@ -223,7 +224,7 @@
         <button
           type="button"
           data-testid="product-modal-add-to-cart"
-          class="btn btn-primary flex-1 justify-center"
+          class="btn btn-primary flex-1 justify-center max-[359px]:flex-none max-[400px]:px-4"
           :disabled="!canAddToCart"
           @click="addToCart"
         >

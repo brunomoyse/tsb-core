@@ -1,5 +1,9 @@
 <template>
-  <section id="checkout-payment-extras" tabindex="-1" class="card p-5 w-full mx-auto space-y-6">
+  <section
+    id="checkout-payment-extras"
+    tabindex="-1"
+    class="card p-4 sm:p-5 w-full mx-auto space-y-6"
+  >
     <h2 class="text-lg font-bold text-neutral-900">
       {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
     </h2>
@@ -115,26 +119,20 @@
                 : 'accent-primary-700 text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2',
             ]"
           />
+          <!-- The checked box is the only tick: a second check mark beside the text read as a duplicate. -->
           <span
-            v-if="cashAcknowledgedModel"
-            class="inline-flex items-center gap-1.5 text-sm text-neutral-700 font-medium"
+            :class="[
+              'text-sm font-medium',
+              cashAcknowledgedModel
+                ? 'text-neutral-700'
+                : showCashAckError
+                  ? 'text-red-800'
+                  : 'text-amber-900',
+            ]"
           >
-            <svg
-              class="w-4 h-4 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            {{ $t('checkout.cashAcknowledged') }}
-          </span>
-          <span
-            v-else
-            :class="['text-sm font-medium', showCashAckError ? 'text-red-800' : 'text-amber-900']"
-          >
-            {{ $t('checkout.cashAcknowledge') }}
+            {{
+              $t(cashAcknowledgedModel ? 'checkout.cashAcknowledged' : 'checkout.cashAcknowledge')
+            }}
           </span>
         </label>
 
@@ -221,7 +219,7 @@
             id="chopsticks"
             data-testid="order-extra-chopsticks"
             v-model="addChopsticks"
-            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="chopsticks" class="text-neutral-700 font-medium">
             {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
@@ -237,7 +235,7 @@
             id="cutlery"
             data-testid="order-extra-cutlery"
             v-model="addCutlery"
-            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="cutlery" class="text-neutral-700 font-medium">
             {{ $t('checkout.addCutlery') }}
@@ -255,7 +253,7 @@
             data-testid="order-extra-wasabi"
             v-model="addWasabi"
             :disabled="isLocked('wasabi')"
-            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="wasabi" class="text-neutral-700 font-medium">
             {{ $t('checkout.addWasabi') }}
@@ -273,7 +271,7 @@
             data-testid="order-extra-ginger"
             v-model="addGinger"
             :disabled="isLocked('ginger')"
-            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="ginger" class="text-neutral-700 font-medium">
             {{ $t('checkout.addGinger') }}
@@ -285,14 +283,14 @@
           class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
           :class="isLocked('sauce') ? 'opacity-60 cursor-not-allowed' : ''"
         >
-          <div class="flex items-center gap-4 shrink-0">
+          <div class="flex min-w-0 max-w-full items-center gap-4">
             <input
               type="checkbox"
               id="add-sauce"
               data-testid="order-extra-sauce"
               :checked="addSauce"
               :disabled="isLocked('sauce')"
-              class="h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+              class="h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
               @change="addSauce = !addSauce"
             />
             <label for="add-sauce" class="text-neutral-700 font-medium">

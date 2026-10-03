@@ -1,12 +1,12 @@
 <template>
-  <section class="card p-5 w-full mx-auto space-y-6">
+  <section class="card p-4 sm:p-5 w-full mx-auto space-y-6">
     <h2 class="text-lg font-bold text-neutral-900">
       {{ $t('checkout.collection', 'Delivery / Pickup') }}
     </h2>
 
     <!-- Delivery/Pickup Options -->
     <div
-      class="flex gap-4 mb-6"
+      class="flex gap-3 sm:gap-4 mb-6"
       role="radiogroup"
       :aria-label="$t('checkout.collection')"
       @keydown="onRadioKeydown"
@@ -29,7 +29,7 @@
         :disabled="option.disabled"
         @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
         :class="[
-          'flex-1 border rounded-lg p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+          'flex-1 min-w-0 border rounded-lg p-3 sm:p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
           option.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md',
           cartStore.collectionOption === option.value
             ? 'border-primary bg-tsb-four'
@@ -193,6 +193,7 @@ import type { BrandConfig } from '#engine/types/brand'
 import CheckoutPhoneCapture from '#engine/components/checkout/CheckoutPhoneCapture.vue'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
 import { bookableSlots } from '#engine/utils/orderingAvailability'
+import { useMediaQuery } from '@vueuse/core'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
@@ -399,10 +400,13 @@ const addressExtra = computed({
   },
 })
 
-// ASAP label
+// ASAP label. A <select> option cannot wrap, and the full delivery wording is wider than the field on a 320 px phone.
+const narrowScreen = useMediaQuery('(max-width: 399px)')
 const asapLabel = computed(() =>
   cartStore.collectionOption === 'DELIVERY'
-    ? t('checkout.asapDelivery', 'ASAP (± 40 min)')
+    ? narrowScreen.value
+      ? t('checkout.asapDeliveryShort', 'ASAP (40-60 min)')
+      : t('checkout.asapDelivery', 'ASAP (± 40 min)')
     : t('checkout.asapPickup', 'ASAP (± 30 min)'),
 )
 
