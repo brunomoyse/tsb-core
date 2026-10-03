@@ -67,6 +67,7 @@ const CODE_TABLE: Record<string, Describe> = {
     params: { distance: DELIVERY_RADIUS_KM },
   }),
   DELIVERY_AREA_EXCLUDED: key('notify.errors.deliveryAddressExcluded'),
+  DELIVERY_UNAVAILABLE: key('notify.errors.deliveryUnavailable'),
 
   // Coupons
   COUPON_INVALID: key('coupon.invalid'),

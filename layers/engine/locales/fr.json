@@ -514,6 +514,7 @@
       "addressRequired": "Une adresse est requise pour une livraison.",
       "deliveryAddressTooFar": "L'adresse de livraison est trop éloignée. Max {distance} km.",
       "deliveryAddressExcluded": "Nous ne livrons pas dans votre zone.",
+      "deliveryUnavailable": "La livraison n'est pas disponible : seules les commandes à emporter sont acceptées.",
       "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
       "codeExpired": "Le code a expiré. Demandez-en un nouveau.",
       "emailNotVerified": "Veuillez vérifier votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour le lien de vérification.",

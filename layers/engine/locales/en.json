@@ -514,6 +514,7 @@
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
       "deliveryAddressExcluded": "We don't deliver to your area.",
+      "deliveryUnavailable": "Delivery is not available: only takeaway orders are accepted.",
       "invalidCode": "Invalid or expired code. Please try again.",
       "codeExpired": "The code has expired. Request a new one.",
       "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
