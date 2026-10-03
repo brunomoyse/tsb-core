@@ -444,7 +444,8 @@
     "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order.",
     "quoteChanged": "Prices or availability changed: please review your order.",
     "cashAmountTooLow": "That is less than the total ({total}). Enter at least {total}, or leave the field empty.",
-    "cashChangeDue": "Change due: {amount}"
+    "cashChangeDue": "Change due: {amount}",
+    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more"
   },
   "orderCompleted": {
     "title": "Order Completed",

@@ -444,7 +444,8 @@
     "quoteLineIssues": "Certains articles ne peuvent plus être commandés tels quels : vérifiez les lignes signalées dans votre commande.",
     "quoteChanged": "Les prix ou la disponibilité ont changé : veuillez vérifier votre commande.",
     "cashAmountTooLow": "Ce montant est inférieur au total ({total}). Indiquez au moins {total}, ou laissez le champ vide.",
-    "cashChangeDue": "Monnaie à rendre : {amount}"
+    "cashChangeDue": "Monnaie à rendre : {amount}",
+    "paidExtraIncreaseAria": "{name}, {count} ajouté, {price} pièce : en ajouter un de plus | {name}, {count} ajoutés, {price} pièce : en ajouter un de plus"
   },
   "orderCompleted": {
     "title": "Commande reçue",

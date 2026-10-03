@@ -444,7 +444,8 @@
     "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling.",
     "quoteChanged": "Prijzen of beschikbaarheid zijn gewijzigd: controleer uw bestelling.",
     "cashAmountTooLow": "Dit bedrag is lager dan het totaal ({total}). Geef minstens {total} in, of laat het veld leeg.",
-    "cashChangeDue": "Terug te geven wisselgeld: {amount}"
+    "cashChangeDue": "Terug te geven wisselgeld: {amount}",
+    "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",

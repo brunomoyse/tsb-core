@@ -59,6 +59,8 @@ export const brand: BrandConfig = {
     japaneseAccents: true,
     faqQuestions: ['delivery', 'hours', 'halal', 'discount', 'payment', 'allergens', 'invoice', 'freshness', 'parking'],
     // Hot dishes ("tokyo-hot") are not eaten with wasabi, ginger or soy sauce.
+    // Cheap products of this category are offered as paid extras at the checkout.
+    paidExtrasCategorySlug: 'accompagnement',
     orderExtras: [
         { name: 'chopsticks', preselected: true },
         { name: 'wasabi', preselected: true, unavailableWhenCartOnlyIn: ['tokyo-hot'] },

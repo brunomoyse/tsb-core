@@ -261,7 +261,6 @@
                             v-if="extra.quantity === 0"
                             type="button"
                             :disabled="!extra.isAvailable"
-                            :aria-pressed="false"
                             :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
                             @click="incrementPaidExtra(extra.code)"
                             class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-700 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-neutral-400"
@@ -281,7 +280,7 @@
                             <button
                                 type="button"
                                 :disabled="!extra.isAvailable || extra.quantity >= MAX_ITEM_QUANTITY"
-                                :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
+                                :aria-label="$t('checkout.paidExtraIncreaseAria', { name: extra.label, count: extra.quantity, price: formatCents(extra.priceCents) }, extra.quantity)"
                                 @click="incrementPaidExtra(extra.code)"
                                 class="inline-flex items-center gap-2 rounded-l-full border border-primary-300 bg-tsb-four text-primary-700 font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -295,7 +294,7 @@
                             </button>
                             <button
                                 type="button"
-                                :aria-label="`${extra.label} — ${$t('cart.decreaseQty')}`"
+                                :aria-label="$t('cart.decreaseQtyOf', { name: extra.label })"
                                 @click="decrementPaidExtra(extra.code)"
                                 class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-primary-300 bg-tsb-four text-primary-700 hover:bg-primary-100 transition-colors active:scale-[0.97]"
                             >
@@ -363,10 +362,12 @@
 <script lang="ts" setup>
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
-import { centsToEuros, toCents } from '#engine/utils/money'
+import { centsToEuros } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
 import { evaluateCashAmount, sanitizeCashAmount } from '#engine/utils/cashPayment'
+import { isCategoryBySlugUnsupportedError, paidExtrasOf } from '#engine/utils/paidExtras'
+import { brand } from '#brand/brand'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
@@ -399,66 +400,91 @@ const { hasOfferedExtras, isOffered, isLocked, addChopsticks, addCutlery, addWas
 
 const ORDER_COMMENT_MAX = 500
 
-const PAID_EXTRA_PRICE_MAX_CENTS = 100
-
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
-const EXTRA_PRODUCTS_QUERY = `
+/*
+ * Only what the extras chips and the cart line of an extra read: the cart keeps a snapshot of the product
+ * (name, code, slug, price, flags, category), the chip shows its name, price and availability. No description,
+ * dietary flags or choices: an extra is a plain line.
+ */
+const EXTRA_PRODUCT_FIELDS = `
+    id
+    name
+    price
+    code
+    slug
+    pieceCount
+    isVisible
+    isAvailable
+    isDiscountable
+    isLunchOnly
+    category {
+        id
+        name
+        slug
+    }
+`
+
+/** The extras category alone: tsb-service answers only that category's products. */
+const EXTRA_CATEGORY_QUERY = `
+    query CheckoutPaidExtraCategory($slug: String!) {
+        productCategoryBySlug(slug: $slug) {
+            id
+            name
+            slug
+            products {
+                ${EXTRA_PRODUCT_FIELDS}
+            }
+        }
+    }
+`
+
+/*
+ * ROLLOUT FALLBACK, remove once tsb-service with `productCategoryBySlug` runs in production: an older service
+ * has no such field and answers GRAPHQL_VALIDATION_FAILED naming it. The whole menu is then fetched and filtered
+ * (what the checkout always did), and the choice is remembered so later runs go straight to it.
+ */
+const EXTRA_PRODUCTS_LEGACY_QUERY = `
     query CheckoutPaidExtraProducts {
         productCategories {
             id
             name
             slug
             products {
-                id
-                name
-                description
-                price
-                code
-                slug
-                pieceCount
-                isVisible
-                isAvailable
-                isHalal
-                isLunchOnly
-                isSpicy
-                isVegetarian
-                isDiscountable
-                category {
-                    id
-                    name
-                    slug
-                }
-                choices {
-                    id
-                    productId
-                    priceModifier
-                    sortOrder
-                    name
-                }
+                ${EXTRA_PRODUCT_FIELDS}
             }
         }
     }
 `
 
-const { data: paidExtrasProductsData } = await useGqlQuery<{ productCategories: ProductCategory[] }>(
-    EXTRA_PRODUCTS_QUERY,
-    {},
-    { immediate: true, cache: true, lazy: true },
+const paidExtrasSlug = brand.paidExtrasCategorySlug
+const bySlugUnsupported = useState<boolean>('paid-extras-by-slug-unsupported', () => false)
+const { data: paidExtrasProductsData } = await useGqlQuery<{
+    productCategoryBySlug?: ProductCategory | null
+    productCategories?: ProductCategory[]
+}>(
+    EXTRA_CATEGORY_QUERY,
+    { slug: paidExtrasSlug ?? '' },
+    {
+        immediate: Boolean(paidExtrasSlug),
+        cache: true,
+        lazy: true,
+        legacy: { query: EXTRA_PRODUCTS_LEGACY_QUERY, variables: {}, isUnsupported: isCategoryBySlugUnsupportedError, unsupported: bySlugUnsupported },
+    },
 )
 
-const accompagnementCategory = computed<ProductCategory | null>(() => {
-    const categories = paidExtrasProductsData.value?.productCategories ?? []
-    return categories.find((c) => c.slug === 'accompagnement') ?? null
+// Either answer: the category itself, or (an older backend) the one of the whole menu that has the slug.
+const paidExtrasCategory = computed<ProductCategory | null>(() => {
+    if (!paidExtrasSlug) return null
+    const answer = paidExtrasProductsData.value
+    const category = answer?.productCategoryBySlug ?? answer?.productCategories?.find((c) => c.slug === paidExtrasSlug)
+    if (!category) return null
+    // The query leaves out what a plain extra never has; the cart reads `choices` of every line it holds.
+    return { ...category, products: (category.products ?? []).map((product) => ({ ...product, choices: [], choiceGroups: [] })) }
 })
 
 const getPaidProduct = (code: string): Product | undefined =>
-    accompagnementCategory.value?.products?.find((p) => p.code === code)
-
-const paidExtraQuantity = (code: string): number =>
-    cartStore.products
-        .filter((item) => item.product.code === code && (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0))
-        .reduce((sum, item) => sum + item.quantity, 0)
+    paidExtrasCategory.value?.products?.find((p) => p.code === code)
 
 const incrementPaidExtra = (code: string): void => {
     const product = getPaidProduct(code)
@@ -472,27 +498,7 @@ const decrementPaidExtra = (code: string): void => {
     cartStore.decrementQuantity(product)
 }
 
-const paidExtras = computed(() => {
-    const products = accompagnementCategory.value?.products ?? []
-    return products
-        .filter((p) => {
-            const priceCents = toCents(p.price)
-            return (
-                p.isVisible &&
-                p.code !== null &&
-                priceCents > 0 &&
-                priceCents <= PAID_EXTRA_PRICE_MAX_CENTS
-            )
-        })
-        .map((p) => ({
-            code: p.code as string,
-            label: p.name,
-            priceCents: toCents(p.price),
-            isAvailable: p.isAvailable,
-            quantity: paidExtraQuantity(p.code as string),
-        }))
-        .sort((a, b) => a.priceCents - b.priceCents || a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
-})
+const paidExtras = computed(() => paidExtrasOf(paidExtrasCategory.value?.products ?? [], cartStore.products))
 
 const emit = defineEmits<{
     checkout: []

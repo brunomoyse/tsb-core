@@ -156,4 +156,9 @@ export interface BrandConfig {
      * neither shown nor sent: a persisted cart's other entries are dropped on load.
      */
     orderExtras: OrderExtraConfig[]
+    /**
+     * Slug of the category whose cheap products are sold as paid extras at the checkout (sauce cups, rice, ...).
+     * Omit for a brand without paid extras: the section is then not offered.
+     */
+    paidExtrasCategorySlug?: string
 }

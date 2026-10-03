@@ -81,6 +81,8 @@ export const brand: BrandConfig = {
     },
     faqQuestions: ['what', 'spicy', 'vegan', 'hours', 'delivery', 'payment', 'allergens'],
     // Malatang takeaway: chopsticks and cutlery, not pre-ticked. No wasabi, ginger or soy sauce.
+    // Cheap products of this category are offered as paid extras at the checkout.
+    paidExtrasCategorySlug: 'accompagnement',
     orderExtras: [
         { name: 'chopsticks', preselected: false },
         { name: 'cutlery', preselected: false },
