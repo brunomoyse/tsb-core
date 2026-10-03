@@ -254,7 +254,7 @@
                     class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-0.5 py-1.5 max-[400px]:grid-cols-[auto_minmax(0,1fr)]"
                     :class="idx > 0 ? 'receipt-divider' : ''"
                   >
-                    <span class="text-neutral-600 tabular-nums text-xs min-w-5 text-right"
+                    <span class="text-neutral-600 tabular-nums text-xs w-7 text-right"
                       >x{{ item.quantity }}</span
                     >
                     <span class="text-xs text-neutral-700 min-w-0">
@@ -493,7 +493,7 @@
                     class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-0.5 py-1.5 max-[400px]:grid-cols-[auto_minmax(0,1fr)]"
                     :class="idx > 0 ? 'receipt-divider' : ''"
                   >
-                    <span class="text-neutral-600 tabular-nums text-xs min-w-5 text-right"
+                    <span class="text-neutral-600 tabular-nums text-xs w-7 text-right"
                       >x{{ item.quantity }}</span
                     >
                     <span class="text-xs text-neutral-700 min-w-0">
