@@ -180,7 +180,7 @@
                     v-for="(cat, catIdx) in displayedCategories"
                     :key="cat.id"
                     :id="`category-${cat.id}`"
-                    class="space-y-4 scroll-mt-52 sm:scroll-mt-36"
+                    class="space-y-4"
                 >
                     <!-- Category heading. The 「 」 brackets that used to frame
                          this were Tokyo Sushi's Japanese motif — wrong for a
@@ -298,6 +298,8 @@ import { baseCategories as baseCategoriesOf, displayedCategories as displayedCat
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
+import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
+import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 
 const { brand } = useAppConfig()
 const route = useRoute()
@@ -483,7 +485,9 @@ const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value
 
 // Mobile category chip nav (scrollspy + jump); ids follow search filtering.
 const categorySectionIds = computed(() => displayedCategories.value.map(cat => cat.id))
-const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(categorySectionIds)
+const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(categorySectionIds, { header: stickyHeader })
+// The sticky header publishes the bottom edge it covers (--sticky-top-h), so a focused card or a chip jump clears it.
+useStickyTopOffset(stickyHeader)
 
 /**
  * Watchers

@@ -3,10 +3,7 @@
         <!-- Main Content -->
         <div
             ref="contentContainer"
-            class="w-full sm:w-[calc(100vw-142px)]"
-            :class="hasCartItems
-        ? 'lg:w-[calc(67vw-71px)]'
-        : 'lg:w-[calc(100vw-142px)]'"
+            class="w-full min-w-0 flex-1"
         >
             <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
             <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
@@ -35,7 +32,7 @@
             />
 
             <!-- Sticky Categories Header -->
-            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[80px] sm:top-0">
+            <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-8 sm:py-0 bg-tsb-one top-[var(--nav-h)] sm:top-0">
                 <!-- Search + Filter Section -->
                 <section class="mb-4 px-4 space-y-1.5">
                     <!-- Search Bar (full-width, labeled) -->
@@ -148,7 +145,7 @@
                         @mouseup="stopDrag"
                         @mouseleave="stopDrag"
                         :class="[
-                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth snap-x snap-mandatory',
+                          'flex overflow-x-auto gap-2 py-1 no-scrollbar scroll-smooth motion-reduce:scroll-auto snap-x snap-mandatory',
                           isDragging ? 'cursor-grabbing' : 'cursor-grab'
                         ]"
                     >
@@ -156,7 +153,7 @@
                             v-for="cat in displayedCategories"
                             :key="cat.id"
                             :id="`category-card-${cat.id}`"
-                            :active="activeCategory === cat.id"
+                            :active="activeCategoryId === cat.id"
                             :category="{ id: cat.id, name: cat.name, order: cat.order } as ProductCategory"
                             class="snap-center"
                             @select="scrollToCategory"
@@ -269,7 +266,7 @@
         <!-- Desktop Cart Sidebar -->
         <aside
             v-if="hasCartItems"
-            class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[calc(30vw-71px)]"
+            class="hidden lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)] lg:block lg:w-[28%] lg:shrink-0"
         >
             <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
         </aside>
@@ -312,6 +309,8 @@ import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
 import ProductModal from '~/components/menu/ProductModal.vue'
 import SideCart from '#engine/components/cart/SideCart.vue'
+import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
+import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
@@ -466,10 +465,7 @@ watch(liveProduct, (val) => {
 // A shared link or the home page's SearchAction opens the menu with ?q=<term> already in the box.
 const searchValue = ref(searchFromQuery(route.query.q))
 const debouncedSearchValue = useDebounce(searchValue, 300)
-const activeCategory = ref<string>('')
-const scrollContainer = ref<HTMLElement | null>(null)
 const isDragging = ref(false)
-const isScrollingToCategory = ref(false)
 const dragStartX = ref(0)
 const scrollStartX = ref(0)
 const canScrollLeft = ref(false)
@@ -524,6 +520,13 @@ const displayedCategories = computed<ProductCategory[]>(() => displayedCategorie
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() => categoryCardOffsets(displayedCategories.value.map(cat => cat.products.length)))
 
+// Category scroll-spy and jump (engine composable shared with the other brand): the band starts under the sticky header, a jump lands under it through the page's scroll-padding-top.
+const categorySectionIds = computed(() => displayedCategories.value.map(cat => cat.id))
+const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(categorySectionIds, { header: stickyHeader, selectFirst: true })
+const scrollContainer = chipRowRef
+// The sticky header publishes the bottom edge it covers, so a focused card or a jump clears it.
+useStickyTopOffset(stickyHeader)
+
 /**
  * Utility: Update Arrow Visibility
  */
@@ -556,27 +559,6 @@ const stopDrag = () => {
 }
 
 /**
- * Scroll-to-Category Method
- */
-const scrollToCategory = (categoryId: string) => {
-    const element = document.getElementById(`category-${categoryId}`)
-    if (!element || !stickyHeader.value) return
-
-    // Suppress observer during programmatic scroll and set active immediately
-    isScrollingToCategory.value = true
-    activeCategory.value = categoryId
-
-    const headerHeight = stickyHeader.value.offsetHeight
-    const navbarHeight = window.innerWidth < 640 ? 80 : 0 // H-20 on mobile web only
-    const gap = 16
-    const position = element.getBoundingClientRect().top + window.scrollY - headerHeight - navbarHeight - gap
-    window.scrollTo({ top: Math.max(0, position), behavior: 'smooth' })
-
-    // Re-enable observer after smooth scroll completes
-    setTimeout(() => { isScrollingToCategory.value = false }, 600)
-}
-
-/**
  * Watchers
  */
 // Track search queries
@@ -587,24 +569,6 @@ watch(debouncedSearchValue, (newVal, oldVal) => {
     } else if (oldVal && oldVal.trim().length > 0) {
         trackEvent('search_cleared')
     }
-})
-
-// Initialize active category when list changes
-watch(displayedCategories, cats => {
-    if (!activeCategory.value && cats.length) activeCategory.value = cats[0]!.id
-}, { immediate: true })
-
-// Center active card on change
-watch(activeCategory, newVal => {
-    nextTick(() => {
-        if (!scrollContainer.value || !newVal) return
-        const card = document.getElementById(`category-card-${newVal}`)
-        if (!card) return
-
-        const container = scrollContainer.value
-        const scrollPosition = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.offsetWidth / 2)
-        container.scrollTo({ left: scrollPosition, behavior: 'smooth' })
-    })
 })
 
 /**
@@ -692,42 +656,12 @@ watch(() => cartStore.products.length, (newLen, oldLen) => {
 // A server-side listener would pin every rendered request (heap leak, 2026-10).
 if (import.meta.client) useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
-/**
- * IntersectionObserver: Scroll Spy
- */
-let observer: IntersectionObserver | null = null
-
 onMounted(() => {
-    observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !isScrollingToCategory.value) {
-                activeCategory.value = entry.target.id.replace('category-', '')
-            }
-        })
-    }, {
-        threshold: 0.1,
-        rootMargin: '-80px 0px -40% 0px'
-    })
-
-    // Observe each category section
-    const observeSections = () => {
-        observer!.disconnect()
-        nextTick(() => {
-            displayedCategories.value.forEach(cat => {
-                const el = document.getElementById(`category-${cat.id}`)
-                if (el) observer!.observe(el)
-            })
-        })
-    }
-
-    observeSections()
-    watch(displayedCategories, observeSections, { deep: true })
     updateScrollButtons()
     scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
 })
 
 onUnmounted(() => {
-    observer?.disconnect()
     scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
 })
 </script>
