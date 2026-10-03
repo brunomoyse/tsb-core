@@ -106,9 +106,10 @@
               class="relative z-[1] w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
               @click="toggleOrder(order.id)"
             >
-              <!-- Type icon -->
+              <!-- Type icon (decorative; gone under 400 px, where the status and the date need the width) -->
               <div
-                class="w-9 h-9 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0"
+                class="w-9 h-9 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0 max-[400px]:hidden"
+                aria-hidden="true"
               >
                 <!-- Moped icon for delivery (Tabler Icons) -->
                 <svg
@@ -145,12 +146,13 @@
 
               <!-- Info -->
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
+                <!-- flex-wrap: on a narrow phone a long status drops under the order type instead of running into the total. -->
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span class="text-sm font-medium text-neutral-800 whitespace-nowrap">
                     {{ $t(`cart.${order.type.toLowerCase()}`) }}
                   </span>
                   <span
-                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0"
+                    class="inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-primary-400 status-pulse" />
                     {{ getStatus(getTrackedOrder(order).status) }}
@@ -245,16 +247,17 @@
 
                 <!-- Receipt items -->
                 <div class="space-y-0">
+                  <!-- [qty | name | price]; under 400 px the price drops under the name (a third column squeezed the name to a few letters per line). -->
                   <div
                     v-for="(item, idx) in order.items"
                     :key="idx"
-                    class="flex items-baseline gap-2 py-1.5"
+                    class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-0.5 py-1.5 max-[400px]:grid-cols-[auto_minmax(0,1fr)]"
                     :class="idx > 0 ? 'receipt-divider' : ''"
                   >
-                    <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0"
+                    <span class="text-neutral-600 tabular-nums text-xs min-w-5 text-right"
                       >x{{ item.quantity }}</span
                     >
-                    <span class="text-xs text-neutral-700 flex-1 min-w-0">
+                    <span class="text-xs text-neutral-700 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
                         class="block text-xs text-neutral-600 truncate leading-tight"
@@ -271,9 +274,10 @@
                         >{{ orderItemChoice(item) }}</span
                       >
                     </span>
-                    <span class="text-xs text-neutral-600 tabular-nums flex-shrink-0">{{
-                      formatPrice(item.totalPrice)
-                    }}</span>
+                    <span
+                      class="text-xs text-neutral-600 tabular-nums whitespace-nowrap max-[400px]:col-start-2"
+                      >{{ formatPrice(item.totalPrice) }}</span
+                    >
                   </div>
                 </div>
 
@@ -347,10 +351,11 @@
               class="w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
               @click="toggleOrder(order.id)"
             >
-              <!-- Type icon -->
+              <!-- Type icon (decorative; gone under 400 px, where the status and the date need the width) -->
               <div
-                class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 max-[400px]:hidden"
                 :class="iconBgClass(order.status)"
+                aria-hidden="true"
               >
                 <!-- Moped icon for delivery (Tabler Icons) -->
                 <svg
@@ -389,12 +394,12 @@
 
               <!-- Info -->
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span class="text-sm font-medium text-neutral-700 whitespace-nowrap">
                     {{ $t(`cart.${order.type.toLowerCase()}`) }}
                   </span>
                   <span
-                    class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
+                    class="inline-block max-w-full px-2 py-0.5 rounded-full text-xs font-medium"
                     :class="statusBadgeClass(order.status)"
                   >
                     {{ getStatus(order.status) }}
@@ -481,16 +486,17 @@
 
                 <!-- Receipt items -->
                 <div class="space-y-0">
+                  <!-- [qty | name | price]; under 400 px the price drops under the name (a third column squeezed the name to a few letters per line). -->
                   <div
                     v-for="(item, idx) in order.items"
                     :key="idx"
-                    class="flex items-baseline gap-2 py-1.5"
+                    class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-0.5 py-1.5 max-[400px]:grid-cols-[auto_minmax(0,1fr)]"
                     :class="idx > 0 ? 'receipt-divider' : ''"
                   >
-                    <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0"
+                    <span class="text-neutral-600 tabular-nums text-xs min-w-5 text-right"
                       >x{{ item.quantity }}</span
                     >
-                    <span class="text-xs text-neutral-700 flex-1 min-w-0">
+                    <span class="text-xs text-neutral-700 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
                         class="block text-xs text-neutral-600 truncate leading-tight"
@@ -507,9 +513,10 @@
                         >{{ orderItemChoice(item) }}</span
                       >
                     </span>
-                    <span class="text-xs text-neutral-600 tabular-nums flex-shrink-0">{{
-                      formatPrice(item.totalPrice)
-                    }}</span>
+                    <span
+                      class="text-xs text-neutral-600 tabular-nums whitespace-nowrap max-[400px]:col-start-2"
+                      >{{ formatPrice(item.totalPrice) }}</span
+                    >
                   </div>
                 </div>
 
