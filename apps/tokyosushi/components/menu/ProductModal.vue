@@ -58,8 +58,11 @@
 
         <!-- Details Section -->
         <div class="space-y-6">
-          <div class="flex items-center flex-col">
-            <p translate="no" class="text-lg text-neutral-600 mb-2">{{ p.category.name }}</p>
+          <!-- sm:px-8: from 640px the close button sits in the card's corner, over this first line; its side of the header is kept clear (both sides, so the centred text stays centred) -->
+          <div class="flex items-center flex-col sm:px-8">
+            <p translate="no" class="text-lg text-neutral-600 mb-2 text-center break-words">
+              {{ p.category.name }}
+            </p>
             <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-neutral-900">
               {{ p.name }}
             </h2>
