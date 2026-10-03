@@ -58,12 +58,13 @@
         </div>
 
         <!--
-          Card content (slides on swipe). One fixed structure whatever the text or the amounts: the picture on the left,
-          the information on the right, and the controls (stepper + bin) always on their own row under the information.
-          Beside the price they only fitted sometimes, so the line wrapped differently from one product to the next.
+          Card content (slides on swipe). One fixed structure whatever the text or the amounts, no wrapping flex. A phone
+          (below sm): the picture on the left, the information on the right, and the controls (stepper + bin) always on
+          their own row under the information (beside the price they only fitted sometimes, so lines wrapped differently
+          from one product to the next). From sm up there is room for [picture | information | controls] on one row.
         -->
         <div
-          class="relative bg-white border border-neutral-100 px-3 py-2.5 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 items-center transition-transform duration-200 ease-out touch-pan-y"
+          class="relative bg-white border border-neutral-100 px-3 py-2.5 grid grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-1.5 items-center transition-transform duration-200 ease-out touch-pan-y"
           :style="{ transform: `translateX(${getSwipeOffset(item)}px)` }"
           @touchstart="onTouchStart($event, item)"
           @touchmove="onTouchMove($event, item)"
@@ -71,7 +72,7 @@
         >
           <!-- IMAGE — square, rounded, no crop -->
           <div
-            class="row-span-2 w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
+            class="row-span-2 sm:row-span-1 w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
           >
             <picture>
               <source :srcset="itemImage(item.product).avif" type="image/avif" />
@@ -129,8 +130,10 @@
             <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
           </div>
 
-          <!-- CONTROLS: always the row under the information (stepper at the start, bin at the end; side by side from sm up) -->
-          <div class="col-start-2 flex items-center justify-between gap-1 sm:justify-start">
+          <!-- CONTROLS: the row under the information on a phone (stepper at the start, bin at the end), the column beside it from sm up (stepper and bin side by side) -->
+          <div
+            class="col-start-2 flex items-center justify-between gap-1 sm:col-start-3 sm:justify-start"
+          >
             <!-- Stepper: compact pill -->
             <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
               <button
