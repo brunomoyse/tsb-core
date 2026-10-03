@@ -28,12 +28,14 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, onMounted, ref, useRoute } from '#imports'
+import { definePageMeta, onMounted, ref, useRoute, useSeoMeta } from '#imports'
 import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 
 definePageMeta({ public: true })
+// Sign-in plumbing, not content: never indexed (audit PR 6.4, P15; the login pages say the same).
+useSeoMeta({ robots: 'noindex,nofollow' })
 
 const route = useRoute()
 const { t } = useI18n()

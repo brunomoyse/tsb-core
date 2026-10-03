@@ -214,7 +214,8 @@ const {
 // The restaurant's JSON-LD (hours from the live config), on every page.
 useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)
 
-const head = useLocaleHead()
+// Canonical + hreflang alternates (+ og:locale): one <link> each, keyed by id (checked in the built HTML, audit PR 6.4).
+const head = useLocaleHead({ seo: true })
 const notifications = useNotificationsStore()
 
 const title = computed(() =>

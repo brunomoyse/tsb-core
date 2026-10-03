@@ -198,14 +198,20 @@ export default defineNuxtConfig({
       changefreq: 'weekly',
       priority: 0.8,
     },
+    /*
+     * Private and transactional pages. Unprefixed on purpose: the module expands each pattern to every locale prefix
+     * itself, and the earlier `/**\/me`-style patterns matched none of /fr/me, /fr/checkout (checked in the generated
+     * sitemaps: cart, checkout, me and me/orders were listed). robots.txt and each page's robots meta agree with this list.
+     */
     exclude: [
       '/auth/**',
-      '/**/login',
-      '/**/checkout',
-      '/**/me',
-      '/**/me/**',
-      '/**/logout',
-      '/**/order-completed/**',
+      '/login',
+      '/logout',
+      '/cart',
+      '/checkout',
+      '/me',
+      '/me/**',
+      '/order-completed/**',
     ],
   },
 
