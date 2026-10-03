@@ -78,7 +78,7 @@
                             <!-- Phone (tap-to-call) -->
                             <li>
                                 <a :href="phoneHref"
-                                   :aria-label="callLabel"
+                                   :aria-label="$t('nav.callRestaurant')"
                                    class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                    @click="closeMenu">
                                     <NavIcon src="/icons/contact-icon.svg" class="w-5 h-5" />
@@ -109,7 +109,6 @@ import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
-import { useI18n } from 'vue-i18n'
 import { useMediaQuery, useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { visibleNavItems } from './navItems'
@@ -120,9 +119,6 @@ const cartStore = useCartStore()
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 const { phoneHref, phoneLabel } = useBrandPhone()
-const { t } = useI18n()
-// "Call the restaurant 04 12 34 56 78": the visible number is part of the link's name, with what it does.
-const callLabel = computed(() => `${t('nav.callRestaurant')} ${phoneLabel}`)
 
 const routeName = computed(() => (typeof currentRoute.name === 'string' ? currentRoute.name : ''))
 // Hidden on cart/checkout, which already show the cart.

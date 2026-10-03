@@ -44,7 +44,7 @@
                 </svg>
             </li>
             <!-- Phone (tap-to-call), same entry as the mobile menu -->
-            <NavItem :tooltipText="phoneLabel" :ariaLabel="callLabel" icon="/icons/contact-icon.svg" :href="phoneHref" class="hidden [@media(min-height:800px)]:block" />
+            <NavItem :tooltipText="phoneLabel" :ariaLabel="$t('nav.callRestaurant')" icon="/icons/contact-icon.svg" :href="phoneHref" class="hidden [@media(min-height:800px)]:block" />
             <ClientOnly>
                 <NavItem
                     v-for="item in visibleNavItems('account', Boolean(authStore.user))"
@@ -81,8 +81,6 @@ const { phoneHref, phoneLabel } = useBrandPhone()
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
 // "Cart, 3 items": the count is part of the accessible name.
 const { t } = useI18n()
-// "Call the restaurant 04 12 34 56 78": the visible number is part of the link's name, with what it does.
-const callLabel = computed(() => `${t('nav.callRestaurant')} ${phoneLabel}`)
 const cartLabel = computed(() => t('cart.buttonLabel', { count: cartStore.totalItems }, cartStore.totalItems))
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
