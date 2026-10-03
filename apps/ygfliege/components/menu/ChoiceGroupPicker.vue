@@ -79,21 +79,26 @@
       v-for="choice in sorted"
       :key="choice.id"
       :data-testid="`${prefix}-choice-${choice.id}`"
-      class="flex items-center gap-3 rounded-ygf-card border px-3 py-2 transition-colors"
+      class="flex items-center gap-3 rounded-ygf-card border px-3 py-2 transition-colors max-[359px]:flex-col max-[359px]:items-stretch max-[359px]:gap-1"
       :class="
         api.quantityOf(choice) > 0
           ? 'border-primary bg-ygf-orange-50'
           : 'border-ygf-orange-100 bg-white'
       "
     >
-      <span translate="no" class="flex-1 text-sm text-ygf-black">{{ choice.name }}</span>
-      <span
-        v-if="toCents(choice.priceModifier) !== 0"
-        class="text-xs text-neutral-600 whitespace-nowrap"
-      >
-        {{ modifierLabel(choice) }}
+      <!-- The price sits under the name (beside it, a long name was squeezed to one word a line and the stepper left its row). Under 360px the stepper drops below, keeping the row's full width for the name. -->
+      <span class="min-w-0 flex-1">
+        <span translate="no" class="block text-sm text-ygf-black break-words">{{
+          choice.name
+        }}</span>
+        <span
+          v-if="toCents(choice.priceModifier) !== 0"
+          class="block text-xs text-neutral-600 whitespace-nowrap"
+        >
+          {{ modifierLabel(choice) }}
+        </span>
       </span>
-      <div class="stepper shrink-0">
+      <div class="stepper stepper--sm shrink-0 max-[359px]:self-end">
         <button
           type="button"
           :data-testid="`${prefix}-choice-dec-${choice.id}`"
