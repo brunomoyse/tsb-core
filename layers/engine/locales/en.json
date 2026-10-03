@@ -551,6 +551,7 @@
       "sessionExpired": "Your session has expired. Please log in again.",
       "oauthFailed": "Login failed. Please try again.",
       "invalidEmail": "Please enter a valid email address.",
+      "undeliverableEmail": "We can't send a code to this address. Check that it is spelled correctly (for example \".com\", not \".coma\").",
       "networkError": "Can't reach the server. Check your connection and try again.",
       "serverError": "The server is temporarily unavailable. Please try again in a moment.",
       "orderTooManyItems": "Your cart has too many different products (50 maximum).",

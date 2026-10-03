@@ -6,8 +6,9 @@
 export type AuthErrorKind = 'rateLimited' | 'network' | 'server' | 'rejected'
 
 interface HttpLikeError {
-  response?: { status?: number }
+  response?: { status?: number; _data?: unknown }
   statusCode?: number
+  data?: unknown
 }
 
 export const httpStatusOf = (error: unknown): number | undefined => {
@@ -35,4 +36,15 @@ export function authErrorKey(error: unknown, rejectedKey: string): string {
     default:
       return rejectedKey
   }
+}
+
+/**
+ * The backend refused the address because it cannot receive the code (422 `invalid_email`): bad syntax
+ * or a domain that does not exist, such as "name@hotmail.coma". Shown on the email field itself.
+ */
+export function isUndeliverableEmailError(error: unknown): boolean {
+  const err = error as HttpLikeError | null | undefined
+  if (httpStatusOf(error) !== 422) return false
+  const body = (err?.data ?? err?.response?._data) as { error?: unknown } | null | undefined
+  return body?.error === 'invalid_email'
 }

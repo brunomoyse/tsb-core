@@ -1,6 +1,11 @@
 // Run: `vp test run layers/engine/utils/authErrors.test.mjs`.
 
-import { authErrorKey, classifyAuthError, httpStatusOf } from './authErrors.ts'
+import {
+  authErrorKey,
+  classifyAuthError,
+  httpStatusOf,
+  isUndeliverableEmailError,
+} from './authErrors.ts'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
 
@@ -30,4 +35,21 @@ test('each kind has its message, a refusal uses the one the screen gives', () =>
     authErrorKey({ statusCode: 400 }, 'notify.errors.invalidCode'),
     'notify.errors.invalidCode',
   )
+})
+
+test('a 422 invalid_email is an undeliverable address, nothing else is', () => {
+  assert.equal(
+    isUndeliverableEmailError({ statusCode: 422, data: { error: 'invalid_email' } }),
+    true,
+  )
+  assert.equal(
+    isUndeliverableEmailError({ response: { status: 422, _data: { error: 'invalid_email' } } }),
+    true,
+  )
+  assert.equal(isUndeliverableEmailError({ statusCode: 422, data: { error: 'other' } }), false)
+  assert.equal(
+    isUndeliverableEmailError({ statusCode: 400, data: { error: 'invalid_email' } }),
+    false,
+  )
+  assert.equal(isUndeliverableEmailError(new TypeError('Failed to fetch')), false)
 })

@@ -551,6 +551,7 @@
       "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
       "oauthFailed": "La connexion a échoué. Veuillez réessayer.",
       "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
+      "undeliverableEmail": "Impossible d'envoyer un code à cette adresse. Vérifiez qu'elle est bien écrite (par exemple « .com » et non « .coma »).",
       "networkError": "Connexion impossible. Vérifiez votre réseau et réessayez.",
       "serverError": "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants.",
       "orderTooManyItems": "Votre panier contient trop de produits différents (50 maximum).",

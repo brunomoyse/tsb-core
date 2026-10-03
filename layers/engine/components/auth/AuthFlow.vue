@@ -66,8 +66,10 @@
           ref="emailInputRef"
           v-model="email"
           :placeholder="$t('login.emailPlaceholder')"
-          :aria-invalid="emailFormatError ? 'true' : undefined"
-          :aria-describedby="emailFormatError ? 'auth-email-error' : undefined"
+          :aria-invalid="emailFormatError || emailUndeliverable ? 'true' : undefined"
+          :aria-describedby="
+            emailFormatError || emailUndeliverable ? 'auth-email-error' : undefined
+          "
           autocomplete="email"
           class="field"
           name="email"
@@ -76,12 +78,16 @@
           @blur="validateEmailOnBlur"
         />
         <p
-          v-if="emailFormatError"
+          v-if="emailFormatError || emailUndeliverable"
           id="auth-email-error"
           class="mt-1.5 text-xs text-red-700"
           role="alert"
         >
-          {{ $t('notify.errors.invalidEmail') }}
+          {{
+            emailUndeliverable
+              ? $t('notify.errors.undeliverableEmail')
+              : $t('notify.errors.invalidEmail')
+          }}
         </p>
       </div>
 
@@ -193,7 +199,11 @@ import { useRoute, useRuntimeConfig } from '#imports'
 import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
 import StepIndicator from '#engine/components/global/StepIndicator.vue'
 import { isValidEmail } from '#engine/lib/validators'
-import { authErrorKey, classifyAuthError } from '#engine/utils/authErrors'
+import {
+  authErrorKey,
+  classifyAuthError,
+  isUndeliverableEmailError,
+} from '#engine/utils/authErrors'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
@@ -231,6 +241,8 @@ const otpSessionToken = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 const emailFormatError = ref(false)
+// The backend refused the address as unable to receive the code (typo in the domain, e.g. ".coma").
+const emailUndeliverable = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null
 
@@ -286,6 +298,7 @@ const startCooldown = (seconds = 20) => {
 // Typing clears the format error, so Enter after correcting the address is never blocked by a stale error (audit M22); the format is checked again on blur and on submit.
 watch(email, () => {
   emailFormatError.value = false
+  emailUndeliverable.value = false
 })
 
 const validateEmailOnBlur = () => {
@@ -351,6 +364,13 @@ const onSubmitEmail = async () => {
     await nextTick()
     codeInputRef.value?.focus()
   } catch (error: unknown) {
+    if (isUndeliverableEmailError(error)) {
+      trackEvent('login_error', { error_type: 'undeliverable_email' })
+      emailUndeliverable.value = true
+      await nextTick()
+      emailInputRef.value?.focus()
+      return
+    }
     trackEvent('login_error', { error_type: 'request_failed' })
     errorMessage.value = formatError(error, 'notify.errors.requestFailed')
   } finally {

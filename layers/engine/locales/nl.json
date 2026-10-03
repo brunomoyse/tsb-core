@@ -551,6 +551,7 @@
       "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
       "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
       "invalidEmail": "Voer een geldig e-mailadres in.",
+      "undeliverableEmail": "We kunnen geen code naar dit adres sturen. Controleer of het juist geschreven is (bijvoorbeeld \".com\" en niet \".coma\").",
       "networkError": "Kan de server niet bereiken. Controleer uw verbinding en probeer het opnieuw.",
       "serverError": "De server is tijdelijk niet beschikbaar. Probeer het over enkele ogenblikken opnieuw.",
       "orderTooManyItems": "Uw winkelwagen bevat te veel verschillende producten (maximaal 50).",
