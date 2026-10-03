@@ -41,6 +41,9 @@ ENV BASE_URL=${BASE_URL} \
     SENTRY_PROJECT=${SENTRY_PROJECT} \
     SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
+# The image has no git; skip the Vite+ hook setup run by the `prepare` script.
+ENV VP_GIT_HOOKS=0
+
 # Copy workspace manifests first for dependency-install layer caching.
 COPY package.json package-lock.json ./
 COPY layers/engine/package.json ./layers/engine/package.json

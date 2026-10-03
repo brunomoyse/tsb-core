@@ -1,23 +1,26 @@
 {
   "name": "tsb-frontend",
   "private": true,
-  "type": "module",
   "workspaces": [
     "layers/*",
     "apps/*"
   ],
+  "type": "module",
   "scripts": {
     "dev": "npm run dev -w tokyosushi",
     "build": "npm run build -w tokyosushi",
     "generate": "npm run generate -w tokyosushi",
     "preview": "npm run preview -w tokyosushi",
-    "lint": "oxlint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs",
+    "lint": "vp lint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs",
+    "check": "vp check && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs",
+    "fmt": "vp fmt",
     "test:e2e": "npm run test:e2e:all",
     "test:e2e:tsb": "npm run test:e2e -w tokyosushi",
     "test:e2e:ygf": "npm run test:e2e -w ygfliege",
     "test:e2e:all": "npm run test:e2e:tsb; tsb=$?; npm run test:e2e:ygf && exit $tsb",
     "test:visual": "npm run test:visual -w tokyosushi; tsb=$?; npm run test:visual -w ygfliege && exit $tsb",
-    "test:visual:update": "npm run test:visual:update -w tokyosushi; tsb=$?; npm run test:visual:update -w ygfliege && exit $tsb"
+    "test:visual:update": "npm run test:visual:update -w tokyosushi; tsb=$?; npm run test:visual:update -w ygfliege && exit $tsb",
+    "prepare": "vp config"
   },
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
@@ -39,9 +42,9 @@
     "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.6",
     "oxc-parser": "^0.141.0",
-    "oxlint": "^1.85.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^6.0.3",
+    "vite-plus": "1.0.0",
     "vue-tsc": "^3.3.11"
   },
   "optionalDependencies": {
@@ -59,5 +62,15 @@
     "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3",
     "lightningcss-linux-arm64-gnu": "^1.33.0",
     "lightningcss-linux-x64-gnu": "^1.33.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": "11.19.0",
+      "onFail": "download"
+    }
   }
 }
