@@ -60,7 +60,7 @@ export const brand: BrandConfig = {
         sunday: { open: '11:30', close: '22:00' },
     },
     // Takeaway-only at launch: delivery toggles show "available soon" and the
-    // cart is forced to PICKUP (plugins/pickup-only.ts). Flip to true (or
+    // cart is forced to PICKUP (the engine plugin delivery-mode.ts). Flip to true (or
     // remove) when delivery starts.
     deliveryEnabled: false,
     // True keeps the privacy policy's app passages (push notifications, live activities, device tokens); false drops them.

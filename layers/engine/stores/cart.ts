@@ -1,6 +1,7 @@
 // Stores: cart.ts
 
 import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
+import { brandOffersDelivery, defaultCollectionOption } from '#engine/utils/deliveryMode'
 import { lineSignature, matchesLine, mergeIntoLine, rescaleSelections, sortSelections } from '#engine/utils/cartLines'
 import { parsePersistedCart, serializeCartState } from '#engine/utils/cartPersistence'
 import type { OrderExtraConfig } from '#engine/types/brand'
@@ -75,7 +76,8 @@ const defaultState = (): CartState => ({
     products: [],
     isCartVisible: false,
     droppedOnHydrate: 0,
-    collectionOption: 'DELIVERY',
+    // A takeaway-only brand starts on PICKUP (useDeliveryMode has the rule, plugins/delivery-mode.ts enforces it).
+    collectionOption: defaultCollectionOption(brandOffersDelivery(brand.deliveryEnabled)),
     couponCode: null,
     couponDiscountCents: 0,
     paymentOption: 'ONLINE',
