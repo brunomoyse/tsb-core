@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nuxt'
+import { isChunkLoadError } from '#engine/utils/chunkError'
 
 const cfg = useRuntimeConfig()
 
@@ -82,6 +83,15 @@ if (cfg.public.sentryDsn) {
       }
 
       const error = hint?.originalException
+
+      /*
+       * A lazy chunk failed to load (stale build or dropped connection): the engine's
+       * plugins/chunk-reload.client.ts reloads the page, so it is handled and not actionable.
+       */
+      if (isChunkLoadError(error)) {
+        return null
+      }
+
       if (
         error instanceof Error &&
         typeof error.stack === 'string' &&
