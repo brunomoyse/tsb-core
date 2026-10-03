@@ -1,5 +1,9 @@
 <template>
-  <section id="checkout-payment-extras" tabindex="-1" class="card p-5 w-full mx-auto space-y-6">
+  <section
+    id="checkout-payment-extras"
+    tabindex="-1"
+    class="card p-4 sm:p-5 w-full mx-auto space-y-6"
+  >
     <h2 class="text-lg font-bold text-neutral-900">
       {{ $t('checkout.extrasAndPayment', 'Extras & Payment') }}
     </h2>
@@ -109,32 +113,26 @@
             data-testid="cash-acknowledge"
             v-model="cashAcknowledgedModel"
             :class="[
-              'mt-0.5 h-5 w-5 rounded shrink-0 focus-visible:ring-2',
+              'mt-0.5 h-6 w-6 rounded shrink-0 focus-visible:ring-2',
               showCashAckError
-                ? 'text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
-                : 'text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2',
+                ? 'accent-primary-700 text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
+                : 'accent-primary-700 text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2',
             ]"
           />
+          <!-- The checked box is the only tick: a second check mark beside the text read as a duplicate. -->
           <span
-            v-if="cashAcknowledgedModel"
-            class="inline-flex items-center gap-1.5 text-sm text-neutral-700 font-medium"
+            :class="[
+              'text-sm font-medium',
+              cashAcknowledgedModel
+                ? 'text-neutral-700'
+                : showCashAckError
+                  ? 'text-red-800'
+                  : 'text-amber-900',
+            ]"
           >
-            <svg
-              class="w-4 h-4 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            {{ $t('checkout.cashAcknowledged') }}
-          </span>
-          <span
-            v-else
-            :class="['text-sm font-medium', showCashAckError ? 'text-red-800' : 'text-amber-900']"
-          >
-            {{ $t('checkout.cashAcknowledge') }}
+            {{
+              $t(cashAcknowledgedModel ? 'checkout.cashAcknowledged' : 'checkout.cashAcknowledge')
+            }}
           </span>
         </label>
 
@@ -221,7 +219,7 @@
             id="chopsticks"
             data-testid="order-extra-chopsticks"
             v-model="addChopsticks"
-            class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="chopsticks" class="text-neutral-700 font-medium">
             {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
@@ -237,7 +235,7 @@
             id="cutlery"
             data-testid="order-extra-cutlery"
             v-model="addCutlery"
-            class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="cutlery" class="text-neutral-700 font-medium">
             {{ $t('checkout.addCutlery') }}
@@ -255,7 +253,7 @@
             data-testid="order-extra-wasabi"
             v-model="addWasabi"
             :disabled="isLocked('wasabi')"
-            class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="wasabi" class="text-neutral-700 font-medium">
             {{ $t('checkout.addWasabi') }}
@@ -273,7 +271,7 @@
             data-testid="order-extra-ginger"
             v-model="addGinger"
             :disabled="isLocked('ginger')"
-            class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="ginger" class="text-neutral-700 font-medium">
             {{ $t('checkout.addGinger') }}
@@ -285,14 +283,14 @@
           class="flex items-center flex-wrap gap-x-4 gap-y-2 p-4 border border-neutral-200 rounded-lg bg-neutral-50 transition-opacity"
           :class="isLocked('sauce') ? 'opacity-60 cursor-not-allowed' : ''"
         >
-          <div class="flex items-center gap-4 shrink-0">
+          <div class="flex min-w-0 max-w-full items-center gap-4">
             <input
               type="checkbox"
               id="add-sauce"
               data-testid="order-extra-sauce"
               :checked="addSauce"
               :disabled="isLocked('sauce')"
-              class="h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+              class="h-6 w-6 shrink-0 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
               @change="addSauce = !addSauce"
             />
             <label for="add-sauce" class="text-neutral-700 font-medium">
@@ -308,7 +306,7 @@
               :aria-pressed="sauce === option.value"
               @click="sauce = option.value"
               :class="[
-                'px-3 py-1.5 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
+                'px-3.5 py-1.5 min-h-11 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
                 sauce === option.value
                   ? 'border-primary bg-tsb-four text-primary-700 font-medium'
                   : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400',
@@ -329,10 +327,8 @@
               v-if="extra.quantity === 0"
               type="button"
               :disabled="!extra.isAvailable"
-              :aria-pressed="false"
-              :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
               @click="incrementPaidExtra(extra.code)"
-              class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-700 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-neutral-400"
+              class="inline-flex min-h-11 items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-700 px-3.5 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-neutral-400"
               :class="!extra.isAvailable ? 'opacity-50 cursor-not-allowed' : ''"
             >
               <span>{{ extra.label }}</span>
@@ -346,13 +342,23 @@
               <button
                 type="button"
                 :disabled="!extra.isAvailable || extra.quantity >= MAX_ITEM_QUANTITY"
-                :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
+                :aria-label="
+                  $t(
+                    'checkout.paidExtraIncreaseAria',
+                    {
+                      name: extra.label,
+                      count: extra.quantity,
+                      price: formatCents(extra.priceCents),
+                    },
+                    extra.quantity,
+                  )
+                "
                 @click="incrementPaidExtra(extra.code)"
-                class="inline-flex items-center gap-2 rounded-l-full border border-primary-300 bg-tsb-four text-primary-700 font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                class="inline-flex min-h-11 items-center gap-2 rounded-l-full border border-primary-300 bg-tsb-four text-primary-700 font-medium px-3.5 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{{ extra.label }}</span>
                 <span
-                  class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-600 text-white text-[10px] font-semibold tabular-nums px-1.5"
+                  class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-600 text-white text-xs font-semibold tabular-nums px-1.5"
                   >×{{ extra.quantity }}</span
                 >
                 <span
@@ -363,9 +369,9 @@
               </button>
               <button
                 type="button"
-                :aria-label="`${extra.label} — ${$t('cart.decreaseQty')}`"
+                :aria-label="$t('cart.decreaseQtyOf', { name: extra.label })"
                 @click="decrementPaidExtra(extra.code)"
-                class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-primary-300 bg-tsb-four text-primary-700 hover:bg-primary-100 transition-colors active:scale-[0.97]"
+                class="inline-flex min-w-11 items-center justify-center px-2.5 rounded-r-full border border-l-0 border-primary-300 bg-tsb-four text-primary-700 hover:bg-primary-100 transition-colors active:scale-[0.97]"
               >
                 <span class="text-sm leading-none" aria-hidden="true">−</span>
               </button>
@@ -409,7 +415,7 @@
 
     <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
     <div v-if="!isMinimumReached" class="text-sm text-primary-700 text-center">
-      {{ $t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }) }}
+      {{ $t('cart.minimumDelivery', { amount: minimumAmount }) }}
     </div>
 
     <!-- Checkout Button (desktop only) -->
@@ -444,18 +450,23 @@
 <script lang="ts" setup>
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
-import { centsToEuros, toCents } from '#engine/utils/money'
+import { centsToEuros } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '#engine/components/checkout/CheckoutCouponInput.vue'
-import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
-import { evaluateCashAmount } from '#engine/utils/cashPayment'
+import { evaluateCashAmount, sanitizeCashAmount } from '#engine/utils/cashPayment'
+import { isCategoryBySlugUnsupportedError, paidExtrasOf } from '#engine/utils/paidExtras'
+import { brand } from '#brand/brand'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useGqlQuery, useState } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { useTracking } from '#engine/composables/useTracking'
+
+const { policy } = useOrderingPolicy()
+const minimumAmount = computed(() => centsToEuros(policy.value.deliveryMinimumCents))
 
 const {
   isMinimumReached = false,
@@ -495,68 +506,105 @@ const {
 
 const ORDER_COMMENT_MAX = 500
 
-const PAID_EXTRA_PRICE_MAX_CENTS = 100
-
 const isCartEmpty = computed(() => cartStore.products.length === 0)
 
-const EXTRA_PRODUCTS_QUERY = `
+/*
+ * Only what the extras chips and the cart line of an extra read: the cart keeps a snapshot of the product
+ * (name, code, slug, price, flags, category), the chip shows its name, price and availability. No description,
+ * dietary flags or choices: an extra is a plain line.
+ */
+const EXTRA_PRODUCT_FIELDS = `
+    id
+    name
+    price
+    code
+    slug
+    pieceCount
+    isVisible
+    isAvailable
+    isDiscountable
+    isLunchOnly
+    category {
+        id
+        name
+        slug
+    }
+`
+
+/** The extras category alone: tsb-service answers only that category's products. */
+const EXTRA_CATEGORY_QUERY = `
+    query CheckoutPaidExtraCategory($slug: String!) {
+        productCategoryBySlug(slug: $slug) {
+            id
+            name
+            slug
+            products {
+                ${EXTRA_PRODUCT_FIELDS}
+            }
+        }
+    }
+`
+
+/*
+ * ROLLOUT FALLBACK, remove once tsb-service with `productCategoryBySlug` runs in production: an older service
+ * has no such field and answers GRAPHQL_VALIDATION_FAILED naming it. The whole menu is then fetched and filtered
+ * (what the checkout always did), and the choice is remembered so later runs go straight to it.
+ */
+const EXTRA_PRODUCTS_LEGACY_QUERY = `
     query CheckoutPaidExtraProducts {
         productCategories {
             id
             name
             slug
             products {
-                id
-                name
-                description
-                price
-                code
-                slug
-                pieceCount
-                isVisible
-                isAvailable
-                isHalal
-                isLunchOnly
-                isSpicy
-                isVegetarian
-                isDiscountable
-                category {
-                    id
-                    name
-                    slug
-                }
-                choices {
-                    id
-                    productId
-                    priceModifier
-                    sortOrder
-                    name
-                }
+                ${EXTRA_PRODUCT_FIELDS}
             }
         }
     }
 `
 
+const paidExtrasSlug = brand.paidExtrasCategorySlug
+const bySlugUnsupported = useState<boolean>('paid-extras-by-slug-unsupported', () => false)
 const { data: paidExtrasProductsData } = await useGqlQuery<{
-  productCategories: ProductCategory[]
-}>(EXTRA_PRODUCTS_QUERY, {}, { immediate: true, cache: true, lazy: true })
+  productCategoryBySlug?: ProductCategory | null
+  productCategories?: ProductCategory[]
+}>(
+  EXTRA_CATEGORY_QUERY,
+  { slug: paidExtrasSlug ?? '' },
+  {
+    immediate: Boolean(paidExtrasSlug),
+    cache: true,
+    lazy: true,
+    legacy: {
+      query: EXTRA_PRODUCTS_LEGACY_QUERY,
+      variables: {},
+      isUnsupported: isCategoryBySlugUnsupportedError,
+      unsupported: bySlugUnsupported,
+    },
+  },
+)
 
-const accompagnementCategory = computed<ProductCategory | null>(() => {
-  const categories = paidExtrasProductsData.value?.productCategories ?? []
-  return categories.find((c) => c.slug === 'accompagnement') ?? null
+// Either answer: the category itself, or (an older backend) the one of the whole menu that has the slug.
+const paidExtrasCategory = computed<ProductCategory | null>(() => {
+  if (!paidExtrasSlug) return null
+  const answer = paidExtrasProductsData.value
+  const category =
+    answer?.productCategoryBySlug ??
+    answer?.productCategories?.find((c) => c.slug === paidExtrasSlug)
+  if (!category) return null
+  // The query leaves out what a plain extra never has; the cart reads `choices` of every line it holds.
+  return {
+    ...category,
+    products: (category.products ?? []).map((product) => ({
+      ...product,
+      choices: [],
+      choiceGroups: [],
+    })),
+  }
 })
 
 const getPaidProduct = (code: string): Product | undefined =>
-  accompagnementCategory.value?.products?.find((p) => p.code === code)
-
-const paidExtraQuantity = (code: string): number =>
-  cartStore.products
-    .filter(
-      (item) =>
-        item.product.code === code &&
-        (!item.selectedChoice || (item.selectedChoices?.length ?? 0) === 0),
-    )
-    .reduce((sum, item) => sum + item.quantity, 0)
+  paidExtrasCategory.value?.products?.find((p) => p.code === code)
 
 const incrementPaidExtra = (code: string): void => {
   const product = getPaidProduct(code)
@@ -570,28 +618,9 @@ const decrementPaidExtra = (code: string): void => {
   cartStore.decrementQuantity(product)
 }
 
-const paidExtras = computed(() => {
-  const products = accompagnementCategory.value?.products ?? []
-  return products
-    .filter((p) => {
-      const priceCents = toCents(p.price)
-      return (
-        p.isVisible && p.code !== null && priceCents > 0 && priceCents <= PAID_EXTRA_PRICE_MAX_CENTS
-      )
-    })
-    .map((p) => ({
-      code: p.code as string,
-      label: p.name,
-      priceCents: toCents(p.price),
-      isAvailable: p.isAvailable,
-      quantity: paidExtraQuantity(p.code as string),
-    }))
-    .sort(
-      (a, b) =>
-        a.priceCents - b.priceCents ||
-        a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
-    )
-})
+const paidExtras = computed(() =>
+  paidExtrasOf(paidExtrasCategory.value?.products ?? [], cartStore.products),
+)
 
 const emit = defineEmits<{
   checkout: []
@@ -606,14 +635,7 @@ const cashAcknowledgedModel = computed({
 const cashPaymentAmount = computed({
   get: () => cartStore.cashPaymentAmount ?? '',
   set: (value: string | number | null) => {
-    if (value === '' || value === null || value === undefined) {
-      cartStore.cashPaymentAmount = null
-      return
-    }
-    const raw = String(value).replace(',', '.')
-    const match = raw.match(/^(\d*)(\.\d{0,2})?/u)
-    const sanitized = match ? `${match[1] ?? ''}${match[2] ?? ''}` : ''
-    cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
+    cartStore.cashPaymentAmount = sanitizeCashAmount(value)
   },
 })
 

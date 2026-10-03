@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!recovering" class="err-page">
+  <main v-if="!recovering" class="err-page">
     <!-- Background kanji watermark -->
     <span class="err-kanji" aria-hidden="true">{{ bgKanji }}</span>
 
@@ -35,13 +35,39 @@
             <span class="err-sep" aria-hidden="true">&middot;</span>
           </template>
           <button type="button" class="err-link" @click="goHome">
-            <span class="err-arrow err-arrow-back" aria-hidden="true">&larr;</span>
+            <svg
+              class="err-arrow err-arrow-back"
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 12H5M11 18l-6-6 6-6" />
+            </svg>
             {{ $t('error.homeButton') }}
           </button>
           <span class="err-sep" aria-hidden="true">&middot;</span>
           <button type="button" class="err-link" @click="goMenu">
             {{ $t('error.menuButton') }}
-            <span class="err-arrow err-arrow-next" aria-hidden="true">&rarr;</span>
+            <svg
+              class="err-arrow err-arrow-next"
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </button>
         </nav>
 
@@ -52,19 +78,24 @@
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { clearError, computed, ref, reloadNuxtApp, useLocalePath } from '#imports'
+import { clearError, computed, ref, reloadNuxtApp, useHead, useLocalePath } from '#imports'
 import type { NuxtError } from '#app'
 import { useI18n } from 'vue-i18n'
+import { useLocaleHead } from '#i18n'
 
 const { error } = defineProps<{
   error: NuxtError
 }>()
 
 const { t } = useI18n()
+
+// The error page replaces the layout, which is what sets the document language (WCAG 3.1.1): same ISO code as the layout (zh-CN, fr-BE...).
+const localeHead = useLocaleHead()
+useHead({ htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') } })
 
 const statusCode = computed(() => error?.statusCode || 500)
 
@@ -131,7 +162,7 @@ const retry = async () => {
 /* ===== Page ===== */
 .err-page {
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,7 +198,7 @@ const retry = async () => {
 
 /* ===== Number ===== */
 .err-number-col {
-  animation: err-ink 1s ease-out both;
+  animation: err-ink 0.6s ease-out both;
 }
 
 .err-num {
@@ -202,7 +233,7 @@ const retry = async () => {
   background: #dc2626;
   border-radius: 1px;
   transform-origin: center;
-  animation: err-rule-v 0.6s 0.6s ease-out both;
+  animation: err-rule-v 0.5s 0.2s ease-out both;
 }
 
 @keyframes err-rule-v {
@@ -230,7 +261,7 @@ const retry = async () => {
   color: #1a1714;
   line-height: 1.2;
   margin: 0 0 0.75rem;
-  animation: err-slide-in 0.5s 1s ease-out both;
+  animation: err-slide-in 0.4s 0.2s ease-out both;
 }
 
 .err-desc {
@@ -238,7 +269,7 @@ const retry = async () => {
   line-height: 1.65;
   color: #78716c;
   margin: 0 0 1.75rem;
-  animation: err-slide-in 0.5s 1.2s ease-out both;
+  animation: err-slide-in 0.4s 0.3s ease-out both;
 }
 
 @keyframes err-slide-in {
@@ -257,7 +288,7 @@ const retry = async () => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  animation: err-slide-in 0.5s 1.5s ease-out both;
+  animation: err-slide-in 0.4s 0.4s ease-out both;
 }
 
 .err-link {
@@ -283,25 +314,29 @@ const retry = async () => {
   transition: width 0.3s ease;
 }
 
-.err-link:hover {
-  color: #dc2626;
-}
-
-.err-link:hover::after {
-  width: 100%;
-}
-
 .err-arrow {
   display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -2px;
   transition: transform 0.25s ease;
 }
 
-.err-link:hover .err-arrow-back {
-  transform: translateX(-3px);
-}
+@media (hover: hover) {
+  .err-link:hover {
+    color: #dc2626;
+  }
 
-.err-link:hover .err-arrow-next {
-  transform: translateX(3px);
+  .err-link:hover::after {
+    width: 100%;
+  }
+
+  .err-link:hover .err-arrow-back {
+    transform: translateX(-3px);
+  }
+
+  .err-link:hover .err-arrow-next {
+    transform: translateX(3px);
+  }
 }
 
 .err-sep {
@@ -388,7 +423,7 @@ const retry = async () => {
   .err-rule {
     width: 40px;
     height: 2px;
-    animation: err-rule-h 0.6s 0.6s ease-out both;
+    animation: err-rule-h 0.5s 0.2s ease-out both;
   }
 
   .err-content {

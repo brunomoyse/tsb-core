@@ -8,11 +8,11 @@
       data-testid="product-card"
       :data-product-id="product.id"
       :data-has-choices="hasChoices"
-      class="card card-interactive w-full h-full min-h-[260px] flex flex-col"
+      class="card card-interactive isolate w-full h-full min-h-[260px] flex flex-col"
     >
-      <!-- Product Image (flexible: grows/shrinks to fill remaining space) -->
+      <!-- Product Image (flexible: grows/shrinks to fill remaining space). Top-aligned: when a neighbour's stepper wraps under its price the row grows, and a centred image would slide down. -->
       <div
-        class="flex-1 min-h-0 flex justify-center items-center p-3 bg-ygf-orange-50/40 cursor-pointer relative"
+        class="flex-1 min-h-0 flex justify-center items-start p-3 bg-ygf-orange-50/40 cursor-pointer relative"
         @contextmenu.prevent
         @click="emit('openProductModal')"
       >
@@ -76,7 +76,7 @@
         <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
         <div
           v-if="product.isLunchOnly"
-          class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-[10px] font-semibold uppercase tracking-wide"
+          class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-xs font-semibold uppercase tracking-wide"
           :title="$t('menu.lunchOnly')"
         >
           {{ $t('menu.lunchOnlyShort') }}
@@ -111,7 +111,7 @@
           :class="brandPhoto.cover ? 'absolute inset-3' : undefined"
         />
         <!-- Visible from the first paint, with or without JavaScript (it used to be opacity-0 until onMounted saw it loaded, which kept it out of the LCP): the shimmer is only a background behind it, hence "relative" so the image paints over it. -->
-        <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-center">
+        <picture v-if="!brandPhoto" class="relative w-full h-full flex justify-center items-start">
           <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif" />
           <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp" />
           <img
@@ -141,13 +141,13 @@
           <button
             type="button"
             aria-haspopup="dialog"
-            class="self-start max-w-full rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            class="relative self-start max-w-full -my-2 py-2 rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="emit('openProductModal')"
           >
             <span
               data-testid="product-name"
               translate="no"
-              class="block text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
+              class="text-ygf-black font-semibold text-sm leading-snug line-clamp-2"
               :title="product.name"
             >
               {{ product.name }}
@@ -170,7 +170,7 @@
         <div
           v-if="product.isAvailable"
           ref="controlsRef"
-          class="flex justify-between items-center gap-1 sm:gap-2 mt-2"
+          class="flex flex-wrap justify-between items-center gap-x-1 gap-y-1 sm:gap-2 mt-2"
         >
           <span class="text-ygf-black font-bold text-base tabular-nums">
             {{ formatPrice(product.price) }}
@@ -179,7 +179,7 @@
           <button
             v-if="!isInCart"
             ref="addButtonRef"
-            :aria-label="$t('cart.addToCart')"
+            :aria-label="$t('cart.addNamed', { name: product.name })"
             data-testid="product-add-to-cart"
             type="button"
             class="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ygf-orange-200 bg-white text-ygf-orange-800 hover:bg-ygf-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
@@ -191,13 +191,13 @@
 
           <!-- A product with choices has no "plain" line to step: "+" opens the composer so the
                          new line gets its own selections, and "−" is left out (lines are edited in the cart). -->
-          <div v-else class="stepper stepper--sm">
+          <div v-else class="stepper stepper--sm ml-auto">
             <button
               v-if="!hasChoices"
               type="button"
               data-testid="product-card-decrement"
               class="stepper-btn"
-              :aria-label="$t('cart.decreaseQty')"
+              :aria-label="$t('cart.decreaseQtyOf', { name: product.name })"
               @click="decrement"
             >
               &minus;
@@ -212,7 +212,11 @@
               type="button"
               data-testid="product-card-increment"
               class="stepper-btn"
-              :aria-label="hasChoices ? $t('cart.addToCart') : $t('cart.increaseQty')"
+              :aria-label="
+                hasChoices
+                  ? $t('cart.addNamed', { name: product.name })
+                  : $t('cart.increaseQtyOf', { name: product.name })
+              "
               :disabled="!hasChoices && cardQuantity >= MAX_ITEM_QUANTITY"
               @click="increment"
             >
@@ -236,6 +240,7 @@ import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { choiceGroupCountLabel } from '#engine/utils/choiceGroupLabel'
 import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -270,25 +275,11 @@ const forcedChoiceGroups = computed(() =>
     .toSorted((a, b) => a.sortOrder - b.sortOrder),
 )
 
-/**
- * Card-subtitle label for a required choice group. Pick-one groups show how
- * many options there are to choose from — "niveau de piquant (3)" — because
- * "1 niveau de piquant" read as if the set had a single fixed spice level.
- * Multi-select groups keep the pick count ("20 ingrédients"). Group names are
- * DB translations, so option counts are appended rather than pluralised.
- */
 const forcedChoiceGroupLabel = (group: {
   name: string
   maxSelections: number
   choices?: { id: string }[]
-}) => {
-  const name = group.name.toLowerCase()
-  if (group.maxSelections === 1) {
-    const options = group.choices?.length ?? 0
-    return options > 1 ? `${name} (${options})` : name
-  }
-  return `${group.maxSelections} ${name}`
-}
+}) => choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0)
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() =>
   productImage.productImageBase(config.public.s3bucketUrl, product?.id),

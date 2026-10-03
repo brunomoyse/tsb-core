@@ -3,6 +3,7 @@
    these custom properties exist for ported marketing-page CSS and for values
    utilities can't express (warm borders, eases). */
 :root {
+  /* --nav-h (the fixed navbar height) is set on `html` in main.css: a :root declaration here would beat its 640px override. */
   /* Primary colors */
   --ygf-orange: #f58220;
   --ygf-orange-light: #fdba74;
@@ -36,6 +37,7 @@
   /* Functional colors */
   --ygf-red: #d42b2b;
   --ygf-success: #2e8b57;
+  --ygf-success-dark: #1f7a4a; /* success text/fill that passes AA (the success token) */
   --ygf-error: #d32f2f;
 
   /* Warm neutrals — the guide's body/secondary text grays. */
@@ -74,5 +76,7 @@
 }
 
 html {
-  background-color: #fff7ed;
+  /* White base; the cream (--ygf-cream) alternates on marketing sections (GUIDELINES.md §3.2) */
+  background-color: #ffffff;
+  color-scheme: only light;
 }

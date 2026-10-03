@@ -3,30 +3,20 @@
     :aria-label="$t('nav.primary')"
     class="hidden sm:block sticky top-0 z-40 bg-ygf-bg/95 backdrop-blur border-b border-ygf-orange-100"
   >
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center gap-8">
-      <!-- Logo, left-aligned per GUIDELINES.md §4.5 -->
-      <NuxtLinkLocale
-        to="/"
-        :aria-label="$t('nav.home')"
-        class="shrink-0 inline-flex items-center rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        <img
-          src="/images/logos/logo-color.svg"
-          :alt="logoAlt"
-          width="44"
-          height="44"
-          class="h-11 w-11"
-        />
-      </NuxtLinkLocale>
+    <div
+      class="max-w-7xl mx-auto px-3 md:px-4 lg:px-8 h-16 flex items-center gap-1 md:gap-2 lg:gap-8"
+    >
+      <!-- Logo with its name, left-aligned per GUIDELINES.md §4.5 (the circle is never shown without it, §2.2) -->
+      <BrandLockup />
 
       <!-- Primary destinations. Text labels, not icons: an icon-only rail
                  hides where things are, and the guide asks for 5–6 clear items. -->
-      <ul class="flex items-center gap-1">
+      <ul class="flex min-w-0 items-center lg:gap-1">
         <li v-for="item in navItems" :key="item.to">
           <NuxtLinkLocale
             :to="item.to"
             :aria-current="isActive(item.to) ? 'page' : undefined"
-            class="relative inline-flex items-center h-16 px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-inset"
+            class="relative inline-flex items-center h-16 px-1.5 md:px-2 lg:px-3 text-sm whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-inset"
             :class="
               isActive(item.to) ? 'text-ygf-orange-800' : 'text-ygf-black/70 hover:text-ygf-black'
             "
@@ -36,19 +26,19 @@
                              colour, so it isn't signalled by colour alone. -->
             <span
               aria-hidden="true"
-              class="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-ygf-orange-600 transition-transform duration-200 ease-out origin-center"
+              class="absolute inset-x-1.5 md:inset-x-2 lg:inset-x-3 bottom-0 h-0.5 rounded-full bg-ygf-orange-600 transition-transform duration-normal ease-brand-out origin-center"
               :class="isActive(item.to) ? 'scale-x-100' : 'scale-x-0'"
             />
           </NuxtLinkLocale>
         </li>
       </ul>
 
-      <div class="flex-1" />
+      <div class="flex-1 min-w-0" />
 
-      <div class="flex items-center gap-2">
-        <!-- Delivery zone: ordering-wide state, so it lives here rather
-                     than on the menu page's search row. -->
-        <DeliveryZoneChip class="hidden md:inline-flex" />
+      <div class="flex shrink-0 items-center gap-1 lg:gap-2">
+        <!-- Delivery zone: ordering-wide state, so it lives here from xl up; below, the row has no room for it and
+                     the menu page carries the chip beside its search. -->
+        <DeliveryZoneChip class="hidden xl:inline-flex" />
 
         <!-- Cart, on every page once the cart has items. Tablet: opens the cart drawer. -->
         <ClientOnly>
@@ -82,21 +72,26 @@
         <!-- LanguagePicker's root element is an <li>, so it needs a
                      list parent to stay valid HTML. -->
         <ul class="flex items-center">
-          <LanguagePicker
-            :tooltipText="$t('nav.language')"
-            alt=""
-            icon="/icons/translate-icon.svg"
-          />
+          <LanguagePicker :label="$t('nav.language')" icon="/icons/translate-icon.svg" />
         </ul>
 
         <ClientOnly>
-          <NuxtLinkLocale
-            v-if="!authStore.user"
-            to="auth-login"
-            class="btn btn-secondary !py-2 !px-5 text-sm"
-          >
-            {{ $t('nav.login') }}
-          </NuxtLinkLocale>
+          <template v-if="!authStore.user">
+            <!-- Below lg the row has no room for the labelled button: an icon with the same name. -->
+            <NuxtLinkLocale
+              to="auth-login"
+              :aria-label="$t('nav.login')"
+              class="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-full bg-white border border-ygf-orange-100 hover:bg-ygf-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <img src="/icons/account-circle-icon.svg" alt="" aria-hidden="true" class="w-5 h-5" />
+            </NuxtLinkLocale>
+            <NuxtLinkLocale
+              to="auth-login"
+              class="hidden lg:inline-flex btn btn-secondary !py-2 !px-5 text-sm"
+            >
+              {{ $t('nav.login') }}
+            </NuxtLinkLocale>
+          </template>
           <NuxtLinkLocale
             v-else
             to="me"
@@ -112,6 +107,7 @@
 </template>
 
 <script lang="ts" setup>
+import BrandLockup from '~/components/navbar/BrandLockup.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { computed } from 'vue'
@@ -131,7 +127,6 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoAlt = `${useAppConfig().brand.name} logo`
 
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()

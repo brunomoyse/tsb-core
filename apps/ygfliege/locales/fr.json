@@ -3,6 +3,12 @@
   "home": {
     "heroTagline": "Malatang · Bouillon aux herbes · Liège"
   },
+  "error": {
+    "title404": "Page introuvable",
+    "notFound": "On dirait que vous vous êtes un peu perdu... Pas de panique, un bon bol de malatang vous attend !",
+    "title500": "Souci en cuisine",
+    "serverError": "Fuzi s'active en cuisine, mais quelque chose n'a pas fonctionné. Réessayez dans un instant."
+  },
   "schema": {
     "siteDescription": "Composez votre bol de malatang à Liège — bouillon aux herbes cuit minute",
     "cuisine": "Chinoise",
@@ -435,11 +441,6 @@
     "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
   },
   "nav": {
-    "primary": "Navigation principale",
-    "secondary": "Liens de bas de page",
-    "callRestaurant": "Appeler le restaurant"
-  },
-  "common": {
-    "clear": "Effacer"
+    "secondary": "Liens de bas de page"
   }
 }

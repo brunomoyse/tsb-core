@@ -37,6 +37,25 @@ export function centsToDecimalString(cents: number): string {
 export const centsToEuros = (cents: number): number => cents / 100
 
 /**
+ * Rounds an amount in cents to the nearest multiple of `stepCents` (the backend's `totalRoundingStep`, 0,10 € = 10).
+ * Ties (half a step) always round up, so 0,05 € ties resolve in favour of the restaurant; negative amounts
+ * round symmetrically, away from zero on ties.
+ */
+export function roundCentsToStep(cents: number, stepCents: number): number {
+  if (!Number.isFinite(cents)) return cents
+  if (!Number.isFinite(stepCents) || stepCents <= 1)
+    return Math.round(cents) === 0 ? 0 : Math.round(cents)
+
+  const sign = cents < 0 ? -1 : 1
+  const abs = Math.round(Math.abs(cents))
+  const rest = abs % stepCents
+  const rounded = rest * 2 < stepCents ? abs - rest : abs + (stepCents - rest)
+
+  // Normalise -0 → 0 so callers comparing with === 0 behave intuitively.
+  return rounded === 0 ? 0 : sign * rounded
+}
+
+/**
  * Rounds an amount in cents to the nearest 0,10 €. Inputs whose last cent digit is 0 stay
  * unchanged; 1–4 round down, 5–9 round up — so 0,05 € ties always resolve in favour of the
  * restaurant (negative amounts round symmetrically, away from zero on ties).
@@ -49,17 +68,7 @@ export const centsToEuros = (cents: number): number => cents / 100
  *
  * Idempotent: roundCentsToNearest10(roundCentsToNearest10(x)) === roundCentsToNearest10(x).
  */
-export function roundCentsToNearest10(cents: number): number {
-  if (!Number.isFinite(cents)) return cents
-
-  const sign = cents < 0 ? -1 : 1
-  const abs = Math.round(Math.abs(cents))
-  const last = abs % 10
-  const rounded = last === 0 ? abs : last <= 4 ? abs - last : abs + (10 - last)
-
-  // Normalise -0 → 0 so callers comparing with === 0 behave intuitively.
-  return rounded === 0 ? 0 : sign * rounded
-}
+export const roundCentsToNearest10 = (cents: number): number => roundCentsToStep(cents, 10)
 
 /**
  * The Intl locale each app locale formats euros with (V11): Belgian conventions for the two

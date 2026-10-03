@@ -1,7 +1,7 @@
-import { DELIVERY_MINIMUM_CENTS, TRANSACTION_FEE_CENTS } from '../lib/fees.ts'
 import { OUT_OF_ZONE, deliveryFeeCentsForDistance, isExcludedPostcode } from '../lib/delivery.ts'
 import { type PriceableLine, lineTotalCents } from './pricing.ts'
 import { amountToMinimumCents, computePayableCents, pickupDiscountCents } from './payable.ts'
+import type { OrderingPolicy } from './orderingPolicy.ts'
 
 /*
  * Every cart total, as pure integer-cents maths: the composable `useCartTotals` only wraps this in
@@ -24,6 +24,8 @@ export interface CartTotalsInput {
   paymentOption: 'ONLINE' | 'CASH'
   /** What validateCoupon granted, in cents (0 without a coupon). */
   couponDiscountCents?: number
+  /** The backend's ordering rules (`useOrderingPolicy()`): zone, fees, minimum, pickup discount, rounding. */
+  policy: OrderingPolicy
 }
 
 export interface CartTotalsCents {
@@ -33,7 +35,7 @@ export interface CartTotalsCents {
   /** 0 for pickup or while the address is unknown; OUT_OF_ZONE (-1) when it cannot be delivered. */
   deliveryFeeCents: number
   couponDiscountCents: number
-  /** The PSP surcharge when the payment option is ONLINE, else 0. */
+  /** The PSP surcharge (policy.onlinePaymentFeeCents) when the payment option is ONLINE, else 0. */
   onlineFeeCents: number
   /** What the customer pays (the amount Mollie is asked for). */
   payableCents: number
@@ -44,6 +46,7 @@ export interface CartTotalsCents {
 }
 
 export function computeCartTotals(input: CartTotalsInput): CartTotalsCents {
+  const { policy } = input
   const lines = input.lines.map((item) => ({
     totalCents: lineTotalCents(item),
     isDiscountable: Boolean(item.product.isDiscountable),
@@ -52,17 +55,17 @@ export function computeCartTotals(input: CartTotalsInput): CartTotalsCents {
 
   // Integer cents, same rule as the backend (see pickupDiscountCents).
   const pickupDiscount =
-    input.collectionOption === 'PICKUP' ? pickupDiscountCents(lines, subtotalCents) : 0
+    input.collectionOption === 'PICKUP' ? pickupDiscountCents(lines, subtotalCents, policy) : 0
 
   let deliveryFeeCents = 0
   if (input.collectionOption === 'DELIVERY' && input.address) {
-    deliveryFeeCents = isExcludedPostcode(input.address.postcode)
+    deliveryFeeCents = isExcludedPostcode(policy, input.address.postcode)
       ? OUT_OF_ZONE
-      : deliveryFeeCentsForDistance(input.address.distance)
+      : deliveryFeeCentsForDistance(policy, input.address.distance)
   }
 
   const couponDiscountCents = Math.max(input.couponDiscountCents ?? 0, 0)
-  const onlineFeeCents = input.paymentOption === 'ONLINE' ? TRANSACTION_FEE_CENTS : 0
+  const onlineFeeCents = input.paymentOption === 'ONLINE' ? policy.onlinePaymentFeeCents : 0
   const isDelivery = input.collectionOption === 'DELIVERY'
 
   return {
@@ -78,11 +81,12 @@ export function computeCartTotals(input: CartTotalsInput): CartTotalsCents {
       // OUT_OF_ZONE and "not known yet" both count as 0, like the backend before the address resolves.
       deliveryFeeCents: isDelivery ? Math.max(deliveryFeeCents, 0) : 0,
       onlineFeeCents,
+      roundingStepCents: policy.totalRoundingStepCents,
     }),
     hasBreakdown: isDelivery || pickupDiscount > 0 || couponDiscountCents > 0 || onlineFeeCents > 0,
-    isMinimumReached: isDelivery ? subtotalCents >= DELIVERY_MINIMUM_CENTS : true,
+    isMinimumReached: isDelivery ? subtotalCents >= policy.deliveryMinimumCents : true,
     amountToDeliveryMinimumCents: isDelivery
-      ? amountToMinimumCents(subtotalCents, DELIVERY_MINIMUM_CENTS)
+      ? amountToMinimumCents(subtotalCents, policy.deliveryMinimumCents)
       : 0,
   }
 }

@@ -9,7 +9,6 @@
       <div class="flex items-center shrink-0">
         <Logo
           :aria-label="$t('nav.home')"
-          :alt="logoAlt"
           class="list-none"
           icon="/images/tsb-black-font-100.png"
           to="/"
@@ -56,7 +55,7 @@
             ref="menuRef"
             :inert="!isMenuOpen"
             :class="isMenuOpen ? 'menu-open' : 'menu-closed'"
-            class="fixed top-20 left-0 w-full h-[calc(100vh-5rem)] p-4 overflow-y-auto bg-tsb-two"
+            class="fixed top-20 left-0 w-full h-[calc(100dvh-5rem)] p-4 overflow-y-auto bg-tsb-two"
           >
             <ul class="flex flex-col items-center space-y-4 w-full mt-4">
               <MobileNavItem
@@ -78,22 +77,6 @@
                 />
               </ClientOnly>
 
-              <!-- Divider -->
-              <li class="w-full border-t border-neutral-300/60 my-2"></li>
-
-              <!-- Phone (tap-to-call) -->
-              <li>
-                <a
-                  :href="phoneHref"
-                  :aria-label="$t('nav.callRestaurant')"
-                  class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  @click="closeMenu"
-                >
-                  <NavIcon src="/icons/contact-icon.svg" class="w-5 h-5" />
-                  <span class="text-sm font-medium">{{ phoneLabel }}</span>
-                </a>
-              </li>
-
               <li><LanguagePicker placement="top-center" /></li>
             </ul>
           </div>
@@ -110,12 +93,9 @@ const DeliveryZoneChip = defineAsyncComponent(
   () => import('#engine/components/delivery/DeliveryZoneChip.vue'),
 )
 import LanguagePicker from './LanguagePicker.vue'
-import Logo from './Logo.vue'
 import MobileNavItem from './MobileNavItem.vue'
-import NavIcon from './NavIcon.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -126,10 +106,8 @@ import { visibleNavItems } from './navItems'
 const currentRoute = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoAlt = `${useAppConfig().brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
-const { phoneHref, phoneLabel } = useBrandPhone()
 
 const routeName = computed(() => (typeof currentRoute.name === 'string' ? currentRoute.name : ''))
 // Hidden on cart/checkout, which already show the cart.
@@ -172,7 +150,7 @@ const onEscape = (event: KeyboardEvent) => {
   if (!isMenuOpen.value) return
   const target = event.target as HTMLElement | null
   if (
-    target?.closest('[role="listbox"]') ||
+    target?.closest('[data-language-panel]') ||
     (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')
   )
     return
@@ -180,10 +158,10 @@ const onEscape = (event: KeyboardEvent) => {
 }
 
 /*
- * `.mobile-only` hides this whole navbar from 641px up (rotating a phone to landscape): the hamburger is gone, so an open menu
+ * `.mobile-only` hides this whole navbar from 640px up (rotating a phone to landscape): the hamburger is gone, so an open menu
  * must close or its scroll lock would stay on a page nobody can unlock.
  */
-const isWide = useMediaQuery('(min-width: 641px)')
+const isWide = useMediaQuery('(min-width: 640px)')
 watch(isWide, (wide) => {
   if (wide) closeMenu()
 })
@@ -212,33 +190,28 @@ watch(
 .hamburger span {
   position: absolute;
   left: 50%;
+  top: 50%;
   width: 24px;
   height: 2px;
   border-radius: 9999px;
   background-color: currentColor;
-  transform: translateX(-50%);
+  /* The bars move with transform only (the old top transition animated layout). */
+  transform: translate(-50%, calc(-50% - 8px));
   transition:
     transform 0.3s ease,
-    opacity 0.3s ease,
-    top 0.3s ease;
-}
-
-.hamburger span:nth-child(1) {
-  top: calc(50% - 8px);
+    opacity 0.3s ease;
 }
 
 .hamburger span:nth-child(2) {
-  top: 50%;
   transform: translate(-50%, -50%);
 }
 
 .hamburger span:nth-child(3) {
-  top: calc(50% + 8px);
+  transform: translate(-50%, calc(-50% + 8px));
 }
 
 /* Transform the hamburger into an X when active */
 .hamburger-active span:nth-child(1) {
-  top: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -248,7 +221,6 @@ watch(
 }
 
 .hamburger-active span:nth-child(3) {
-  top: 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 

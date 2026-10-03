@@ -1,12 +1,12 @@
 <template>
-  <section class="card p-5 w-full mx-auto space-y-6">
+  <section class="card p-4 sm:p-5 w-full mx-auto space-y-6">
     <h2 class="text-lg font-bold text-neutral-900">
       {{ $t('checkout.collection', 'Delivery / Pickup') }}
     </h2>
 
     <!-- Delivery/Pickup Options -->
     <div
-      class="flex gap-4 mb-6"
+      class="flex gap-3 sm:gap-4 mb-6"
       role="radiogroup"
       :aria-label="$t('checkout.collection')"
       @keydown="onRadioKeydown"
@@ -29,7 +29,7 @@
         :disabled="option.disabled"
         @click="setDeliveryOption(option.value as 'DELIVERY' | 'PICKUP')"
         :class="[
-          'flex-1 border rounded-lg p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+          'flex-1 min-w-0 border rounded-lg p-3 sm:p-4 flex flex-col items-center transition-all text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
           option.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md',
           cartStore.collectionOption === option.value
             ? 'border-primary bg-tsb-four'
@@ -78,7 +78,7 @@
           {{ $t('checkout.notDeliverableArea') }}
         </p>
         <p v-else-if="zoneStatus === 'tooFar'" class="mt-2 text-sm text-primary-700 font-medium">
-          {{ $t('checkout.tooFar') }}
+          {{ $t('checkout.tooFar', policyParams) }}
         </p>
         <p v-else-if="cartStore.address.distance" class="mt-2 text-sm text-neutral-600">
           {{
@@ -175,7 +175,7 @@
           v-model="preferredReadyTime"
           id="checkout-preferred-time"
           data-testid="checkout-preferred-time"
-          class="field mt-1 block text-base sm:text-sm"
+          class="field mt-1 block min-h-11 text-base sm:text-sm"
         >
           <option v-if="isOpen" value="ASAP">{{ asapLabel }}</option>
           <option v-for="slot in availableFixedSlots" :key="slot.value" :value="slot.value">
@@ -193,12 +193,15 @@ import type { BrandConfig } from '#engine/types/brand'
 import CheckoutPhoneCapture from '#engine/components/checkout/CheckoutPhoneCapture.vue'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
 import { bookableSlots } from '#engine/utils/orderingAvailability'
+import { useMediaQuery } from '@vueuse/core'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { getBrusselsParts } from '#engine/utils/datetime'
 import { useAppConfig } from '#imports'
 import { useCartStore } from '#engine/stores/cart'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
 interface OpeningHourEntry {
@@ -223,8 +226,9 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const cartStore = useCartStore()
+const { policy, policyParams } = useOrderingPolicy()
 const zoneStatus = computed(() =>
-  cartStore.address ? deliveryZoneStatus(cartStore.address) : 'ok',
+  cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : 'ok',
 )
 const { trackEvent } = useTracking()
 
@@ -233,13 +237,13 @@ const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
 // Delivery/Pickup options. A takeaway-only brand (brand.deliveryEnabled
 // False) keeps delivery visible but disabled ("available soon").
-const { deliveryEnabled = true } = useAppConfig().brand
-const collectionOptions = [
+const { deliveryEnabled } = useDeliveryMode()
+const collectionOptions = computed(() => [
   {
     value: 'DELIVERY',
     label: t('cart.delivery'),
     icon: '/icons/moped-icon.svg',
-    disabled: !deliveryEnabled,
+    disabled: !deliveryEnabled.value,
   },
   {
     value: 'PICKUP',
@@ -247,9 +251,9 @@ const collectionOptions = [
     icon: '/icons/shopping-bag-icon.svg',
     disabled: false,
   },
-]
+])
 const setDeliveryOption = (v: 'DELIVERY' | 'PICKUP') => {
-  if (v === 'DELIVERY' && !deliveryEnabled) return
+  if (v === 'DELIVERY' && !deliveryEnabled.value) return
   trackEvent('collection_option_changed', { option: v })
   cartStore.collectionOption = v
 }
@@ -260,7 +264,7 @@ const onRadioKeydown = (e: KeyboardEvent) => {
   const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
   if (!keys.includes(e.key)) return
   e.preventDefault()
-  const options = collectionOptions
+  const options = collectionOptions.value
   const currentIdx = options.findIndex((o) => o.value === cartStore.collectionOption)
   const safeCurrent = currentIdx === -1 ? 0 : currentIdx
   let nextIdx = safeCurrent
@@ -310,8 +314,8 @@ const availableFixedSlots = computed<RestaurantTimeSlot[]>(
   () =>
     bookableSlots(
       availableSlotsToday,
-      preparationMinutes,
-      now.value.getTime(),
+      { preparationMinutes, nowMs: now.value.getTime() },
+      policy.value,
     ) as RestaurantTimeSlot[],
 )
 
@@ -396,10 +400,13 @@ const addressExtra = computed({
   },
 })
 
-// ASAP label
+// ASAP label. A <select> option cannot wrap, and the full delivery wording is wider than the field on a 320 px phone.
+const narrowScreen = useMediaQuery('(max-width: 399px)')
 const asapLabel = computed(() =>
   cartStore.collectionOption === 'DELIVERY'
-    ? t('checkout.asapDelivery', 'ASAP (± 40 min)')
+    ? narrowScreen.value
+      ? t('checkout.asapDeliveryShort', 'ASAP (40-60 min)')
+      : t('checkout.asapDelivery', 'ASAP (± 40 min)')
     : t('checkout.asapPickup', 'ASAP (± 30 min)'),
 )
 

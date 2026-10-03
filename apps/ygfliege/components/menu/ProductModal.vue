@@ -5,7 +5,7 @@
     aria-modal="true"
     aria-labelledby="product-modal-title"
     data-testid="product-modal"
-    class="bg-white w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-3xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
+    class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-3xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
     @click.stop
   >
     <!-- Header -->
@@ -83,7 +83,7 @@
               ref="imageElement"
               :alt="p.name"
               :src="`${productImageBaseSrc}.png`"
-              class="object-contain w-full h-full transition-opacity duration-500"
+              class="object-contain w-full h-full transition-opacity duration-slow"
               :class="[!p.isAvailable ? 'grayscale' : '']"
               @error="handleProductImageError"
             />
@@ -137,7 +137,7 @@
               v-if="p.isDiscountable"
               class="chip chip-static !bg-emerald-50 !border-emerald-200 !text-emerald-800"
             >
-              {{ $t('menu.pickupDiscountBadge') }}
+              {{ $t('menu.pickupDiscountBadge', policyParams) }}
             </span>
           </div>
 
@@ -197,12 +197,13 @@
       <p v-if="!p.isAvailable" class="text-sm text-neutral-600 mb-3">
         {{ $t('menu.unavailable') }}
       </p>
-      <div class="flex items-center gap-3 sm:gap-4">
-        <div class="stepper shrink-0">
+      <!-- Under 480px the stepper sits above a full-width button: beside it the label and price were clipped. -->
+      <div class="flex items-center gap-3 sm:gap-4 max-[479px]:flex-col max-[479px]:items-stretch">
+        <div class="stepper shrink-0 max-[479px]:self-center">
           <button
             type="button"
             class="stepper-btn"
-            :aria-label="$t('cart.decreaseQty')"
+            :aria-label="$t('cart.decreaseQtyOf', { name: p.name })"
             :disabled="quantity <= 1"
             @click="quantity--"
           >
@@ -212,7 +213,7 @@
           <button
             type="button"
             class="stepper-btn"
-            :aria-label="$t('cart.increaseQty')"
+            :aria-label="$t('cart.increaseQtyOf', { name: p.name })"
             :disabled="quantity >= maxQuantity"
             @click="quantity++"
           >
@@ -223,7 +224,7 @@
         <button
           type="button"
           data-testid="product-modal-add-to-cart"
-          class="btn btn-primary flex-1 justify-center"
+          class="btn btn-primary flex-1 justify-center max-[479px]:flex-none"
           :disabled="!canAddToCart"
           @click="addToCart"
         >
@@ -238,6 +239,7 @@
 </template>
 
 <script setup lang="ts">
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import * as productImage from '#engine/utils/productImage'
 import type { Product } from '#engine/types'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -270,6 +272,7 @@ import { useTracking } from '#engine/composables/useTracking'
 const cartItemAdded = useEventBus(cartItemAddedKey)
 
 const { trackEvent } = useTracking()
+const { policyParams } = useOrderingPolicy()
 const cartStore = useCartStore()
 const config = useRuntimeConfig()
 
@@ -298,8 +301,8 @@ const brandPhoto = computed(() => productPhoto(p?.slug))
 
 const openLightbox = (id: string, name: string) => {
   // ImageLightbox appends .avif/.webp/.png itself; the largest brand asset
-  // may lack .png, but the avif/webp <source>s always win in supporting
-  // browsers.
+  // May lack .png, but the avif/webp <source>s always win in supporting
+  // Browsers.
   lightboxSrc.value = brandPhoto.value
     ? `${brandPhoto.value.base}-${Math.max(...(brandPhoto.value.widths ?? PRODUCT_PHOTO_WIDTHS))}`
     : productImage.productImageBase(config.public.s3bucketUrl, id, 'classic')
@@ -365,7 +368,7 @@ const { data: dataProduct } = await useGqlQuery<{
 const p = dataProduct.value?.product
 
 // Selection state, gating and pricing are shared with BowlComposer so both
-// surfaces produce an identical cart payload.
+// Surfaces produce an identical cart payload.
 const choicesApi = useProductChoices(p, quantity)
 const {
   choiceGroups,

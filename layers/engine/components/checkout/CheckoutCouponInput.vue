@@ -44,14 +44,15 @@
 
     <!-- Input state -->
     <div v-else>
-      <div class="flex gap-2">
+      <!-- Wraps: on a narrow phone the placeholder keeps the full input width and Apply drops below it. -->
+      <div class="flex flex-wrap gap-2">
         <input
           ref="inputRef"
           v-model="couponInput"
           type="text"
           data-testid="coupon-input"
           :aria-label="$t('coupon.title')"
-          class="field flex-1 text-base sm:text-sm disabled:opacity-50"
+          class="field flex-1 basis-40 min-w-0 text-base sm:text-sm disabled:opacity-50"
           :placeholder="$t('coupon.placeholder')"
           :disabled="isValidating"
           @keyup.enter="applyCoupon"

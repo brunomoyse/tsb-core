@@ -1,5 +1,10 @@
 <template>
-  <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 scroll-mt-6 h-full flex flex-col">
+  <div
+    :class="[
+      surface === 'white' ? 'bg-white border border-neutral-200' : 'bg-tsb-two',
+      'rounded-2xl p-6 sm:p-8 h-full flex flex-col',
+    ]"
+  >
     <component
       :is="as"
       class="font-semibold text-neutral-900 mb-4 flex items-center gap-2 text-[15px]"
@@ -53,8 +58,10 @@
 </template>
 
 <script setup lang="ts">
-const { as = 'h3' } = defineProps<{
+// `white`: a white card with a hairline, for a brand whose page is cream (default: the tinted container surface).
+const { as = 'h3', surface = 'tint' } = defineProps<{
   as?: 'h2' | 'h3'
+  surface?: 'tint' | 'white'
 }>()
 
 const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })

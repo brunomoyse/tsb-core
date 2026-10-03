@@ -20,7 +20,9 @@
     "keepEditing": "继续编辑",
     "retry": "重试",
     "saving": "正在保存…",
-    "required": "必填"
+    "required": "必填",
+    "logoAlt": "{name} 标志",
+    "clear": "清除"
   },
   "nav": {
     "home": "首页",
@@ -34,10 +36,10 @@
     "language": "选择语言",
     "toggleMenu": "切换菜单",
     "sidebar": "主导航",
-    "callRestaurant": "致电餐厅",
     "searchLabel": "搜索菜单",
     "clearSearch": "清除搜索",
-    "currentLanguage": "语言：{language}"
+    "currentLanguage": "语言：{language}",
+    "primary": "主导航"
   },
   "home": {
     "heroTagline": "日本餐厅 · 列日",
@@ -48,7 +50,8 @@
       "onsiteOnly": "营业中 · 仅限堂食",
       "preorder": "休息中 · 现在可预订 {time}",
       "closed": "休息中"
-    }
+    },
+    "restaurantImageAlt": "{name} 餐厅插图"
   },
   "contact": {
     "title": "联系我们",
@@ -63,7 +66,8 @@
     "reservationNotice": "我们不接受通过电子邮件进行的预订。如需预订餐桌，请致电我们。",
     "weekdays": "周一 - 周五",
     "weekends": "周六 - 周日",
-    "closedTuesday": "周二休息"
+    "closedTuesday": "周二休息",
+    "mapTitle": "地图：{name} 的位置"
   },
   "about": {
     "ourStoryTitle": "我们的故事",
@@ -78,9 +82,9 @@
     "cash": "现金",
     "infoCards": {
       "freeDelivery": "免费配送",
-      "freeDeliveryDesc": "满25欧元免费配送，超出范围按距离收取配送费。",
-      "takeawayDiscount": "自取享9折",
-      "takeawayDiscountDesc": "满20欧元自取订单，所有可折扣商品享受10%折扣。",
+      "freeDeliveryDesc": "满{deliveryMinimum}欧元免费配送，超出范围按距离收取配送费。",
+      "takeawayDiscount": "自取立减{rate}%",
+      "takeawayDiscountDesc": "满{pickupMinimum}欧元自取订单，所有可折扣商品享受{rate}%折扣。",
       "freshDaily": "每日新鲜",
       "freshDailyDesc": "我们的鱼每天早上由厨师现场切割，保证无可挑剔的品质。"
     }
@@ -118,7 +122,7 @@
     "discountable": "可折扣",
     "yes": "是",
     "no": "否",
-    "pickupDiscountBadge": "自取享9折",
+    "pickupDiscountBadge": "自取立减{rate}%",
     "restaurantClosed": "餐厅目前已关闭。",
     "restaurantClosedDetails": "您可以浏览菜单，但暂时无法下单。",
     "choice": "选项",
@@ -164,7 +168,7 @@
     "email": "电子邮件",
     "emailPlaceholder": "请输入您的电子邮件地址",
     "phone": "电话",
-    "phonePlaceholder": "请输入您的电话号码",
+    "phonePlaceholder": "电话号码",
     "invalidPhone": "电话号码无效",
     "address": {
       "label": "地址",
@@ -178,7 +182,8 @@
       "selected": "已选择地址：{address}",
       "cleared": "地址已清除"
     },
-    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
+    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）",
+    "phoneCountry": "电话号码所属国家/地区"
   },
   "me": {
     "greeting": "你好",
@@ -193,7 +198,6 @@
       "loading": "加载订单中...",
       "empty": "没有找到订单",
       "total": "总计",
-      "toggleOrder": "展开订单详情",
       "downloadInvoice": "下载发票",
       "status": {
         "details": {
@@ -281,7 +285,7 @@
       "currentAddress": "当前地址",
       "change": "修改",
       "distanceOk": "该地址在配送范围内",
-      "distanceTooFar": "该地址超出我们 9 公里的配送范围",
+      "distanceTooFar": "该地址超出我们 {distance} 公里的配送范围",
       "distanceValue": "距离：{km} 公里",
       "switchToPickup": "改为自取",
       "confirm": "确认",
@@ -321,7 +325,7 @@
     "eachSuffix": "每份",
     "deliveryTbd": "运费将在结账时计算",
     "editItem": "修改",
-    "pickupDiscountShort": "-10%",
+    "pickupDiscountShort": "-{rate}%",
     "onlineFee": "在线支付手续费",
     "addForDelivery": "再添加 {amount} 即可配送。",
     "quoteUpdating": "正在更新价格…",
@@ -343,7 +347,11 @@
     "announce": {
       "added": "已将{name}加入购物车，共 {count} 件商品，总计 {total}",
       "quantity": "{name}，数量 {quantity}"
-    }
+    },
+    "increaseQtyOf": "增加{name}的数量",
+    "decreaseQtyOf": "减少{name}的数量",
+    "addNamed": "将{name}加入购物车",
+    "inCartNamed": "{name}：购物车中有 {count} 件，修改数量"
   },
   "checkout": {
     "title": "结账",
@@ -368,7 +376,9 @@
     "emptyCart": "您的购物车为空。",
     "subtotal": "小计：",
     "deliveryFee": "配送费：",
-    "deliveryFeeInfo": "配送费按距离计算：\n• 3公里以内：免费\n• 3-4公里：1€\n• 4-5公里：2€\n• 5-6公里：3€\n• 6-7公里：4€\n• 7-8公里：5€\n• 8-9公里：6€",
+    "deliveryFeeInfo": "配送费按距离计算：\n{tiers}",
+    "deliveryFeeTierFirst": "• {to}公里以内：{fee}",
+    "deliveryFeeTier": "• {from}-{to}公里：{fee}",
     "transactionFee": "交易费：",
     "total": "总计：",
     "collection": "取货/配送",
@@ -380,6 +390,7 @@
     "addressCommentPlaceholder": "例如：请敲门两次",
     "preferredTime": "首选时间",
     "asapDelivery": "尽快（预计40-60分钟）",
+    "asapDeliveryShort": "尽快（40-60分钟）",
     "asapPickup": "尽快",
     "asapUnavailableWhileClosed": "餐厅关闭时无法选择“尽快”，请选择今天的固定时间。",
     "noRemainingSlotsToday": "今天已没有可用时间段。",
@@ -423,7 +434,7 @@
     "stepPayment": "付款",
     "itemCount": "{count} 件商品",
     "opensAt": "营业时间：{time}",
-    "tooFar": "超出配送范围（最远9公里）",
+    "tooFar": "超出配送范围（最远{distance}公里）",
     "notDeliverableArea": "我们不配送到您所在的区域。",
     "tbd": "待定",
     "optional": "（选填）",
@@ -439,7 +450,8 @@
     "quoteLineIssues": "部分商品已无法按原样下单，请查看订单中被标记的行。",
     "quoteChanged": "价格或供应情况已变更，请检查您的订单。",
     "cashAmountTooLow": "该金额低于订单总额（{total}）。请至少填写 {total}，或将此栏留空。",
-    "cashChangeDue": "应找零：{amount}"
+    "cashChangeDue": "应找零：{amount}",
+    "paidExtraIncreaseAria": "{name}，已添加 {count} 件，每件 {price}：再加一件"
   },
   "orderCompleted": {
     "title": "订单完成",
@@ -514,7 +526,7 @@
       "addressRequired": "需要地址。",
       "deliveryAddressTooFar": "配送地址过远。请检查您的地址或选择自取。({distance}km)",
       "deliveryAddressExcluded": "我们不配送到您所在的区域。",
-      "deliveryUnavailable": "暂不提供外送服务，仅接受自取订单。",
+      "deliveryUnavailable": "暂不提供配送，请选择自取。",
       "invalidCode": "验证码无效或已过期。请重试。",
       "codeExpired": "验证码已过期。请重新获取。",
       "emailNotVerified": "请先验证您的邮箱地址再登录。请查看收件箱中的验证链接。",
@@ -694,7 +706,7 @@
       },
       "discount": {
         "question": "自取订单有折扣吗？",
-        "answer": "有的！选择自取选项时，所有可折扣商品享受 10% 折扣。折扣会在结账时自动应用。"
+        "answer": "有的！选择自取选项时，所有可折扣商品享受 {rate}% 折扣。折扣会在结账时自动应用。"
       },
       "payment": {
         "question": "你们接受什么付款方式？",

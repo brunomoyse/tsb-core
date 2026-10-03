@@ -3,8 +3,9 @@ import colors from 'tailwindcss/colors'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ['class'],
-  safelist: ['dark'],
+  /* No dark theme: neither brand defines one (the page declares color-scheme: only light) and no `dark:` utility is used.
+       `hoverOnlyWhenSupported` wraps every `hover:` in @media (hover: hover), so a lift or tint does not stick after a tap. */
+  future: { hoverOnlyWhenSupported: true },
   prefix: '',
 
   theme: {
@@ -17,8 +18,8 @@ module.exports = {
     },
     extend: {
       // Brand theme tokens (tsb-* palette + `channel` display font). A
-      // second brand app redefines these hex values / display font; the
-      // tsb-* class names stay stable across brands.
+      // Second brand app redefines these hex values / display font; the
+      // Tsb-* class names stay stable across brands.
       fontFamily: {
         sans: ['Montserrat', 'Arial', 'Helvetica', 'sans-serif'],
         channel: ['Channel', 'sans-serif'],
@@ -36,11 +37,11 @@ module.exports = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         // Theme contract shared with every brand app (the engine layer's
-        // components only use these names, never a literal hue):
-        //   primary-50..900  brand accent scale (red here)
-        //   neutral-50..900  text/surface/border neutrals (gray here)
-        //   tsb-one..four    page, container, decorative, selected
-        // red-* stays reserved for errors and destructive actions.
+        // Components only use these names, never a literal hue):
+        //   Primary-50..900  brand accent scale (red here)
+        //   Neutral-50..900  text/surface/border neutrals (gray here)
+        //   Tsb-one..four    page, container, decorative, selected
+        // Red-* stays reserved for errors and destructive actions.
         primary: {
           ...colors.red,
           DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
@@ -49,30 +50,6 @@ module.exports = {
           soft: 'hsl(var(--primary-soft) / <alpha-value>)',
         },
         neutral: colors.gray,
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
       },
       borderRadius: {
         lg: 'var(--radius)',

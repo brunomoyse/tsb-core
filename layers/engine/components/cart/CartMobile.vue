@@ -19,7 +19,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-heading"
-        class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85vh] rounded-t-2xl shadow-2xl"
+        class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85dvh] rounded-t-2xl shadow-2xl"
       >
         <!-- Drag Handle -->
         <div class="flex justify-center pt-3 pb-1">
@@ -56,12 +56,12 @@
             :key="lineKeys[lineIndex]"
             data-testid="cart-item"
             data-cart-line
-            class="grid grid-cols-6 gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
+            class="grid grid-cols-[4rem_minmax(0,1fr)_auto] max-[379px]:grid-cols-[4rem_minmax(0,1fr)] gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
           >
             <!-- IMAGE -->
             <button
               type="button"
-              class="col-span-1 flex items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="flex shrink-0 items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :aria-label="$t('common.viewPhoto', { name: item.product.name })"
               aria-haspopup="dialog"
               @click="openLightbox(item.product.id, item.product.name)"
@@ -83,7 +83,7 @@
             </button>
 
             <!-- PRODUCT INFO -->
-            <div class="col-span-3 flex flex-col justify-center text-sm min-w-0">
+            <div class="flex flex-col justify-center text-sm min-w-0">
               <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
                 {{ itemLabelMeta(item) }}
               </span>
@@ -102,9 +102,12 @@
               </span>
             </div>
 
-            <!-- QTY CONTROLS -->
+            <!-- QTY CONTROLS (under 380px they drop below the name: beside it the name column was ~40px wide) -->
             <!-- Customized lines carry per-line selections, so they are edited in the modal -->
-            <div v-if="hasChoices(item)" class="col-span-2 flex flex-col items-end gap-1">
+            <div
+              v-if="hasChoices(item)"
+              class="flex flex-col items-end gap-1 max-[379px]:col-start-2 max-[379px]:flex-row max-[379px]:flex-wrap max-[379px]:items-center max-[379px]:justify-between"
+            >
               <span
                 data-testid="cart-item-quantity"
                 class="text-sm font-semibold tabular-nums text-primary-700"
@@ -123,7 +126,7 @@
                 data-testid="cart-item-remove"
                 data-cart-remove
                 :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                class="min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @click="removeWithUndo(item)"
               >
                 {{ $t('cart.removeItem') }}
@@ -131,7 +134,8 @@
             </div>
             <QuantityStepper
               v-else
-              class="col-span-2 justify-self-end"
+              class="justify-self-end max-[379px]:col-start-2 max-[379px]:justify-self-start"
+              :name="item.product.name"
               :value="item.quantity"
               :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
               dec-testid="cart-item-decrement"
@@ -141,7 +145,7 @@
               @increment="handleIncrementQuantity(item)"
             />
             <!-- What the server quote says about this line, with the way out -->
-            <CartLineIssues class="col-span-6" :item="item" :line-key="lineKeys[lineIndex]" />
+            <CartLineIssues class="col-span-full" :item="item" :line-key="lineKeys[lineIndex]" />
           </li>
 
           <!-- EMPTY STATE -->
@@ -160,13 +164,13 @@
           class="p-4 border-t border-neutral-200 bg-white rounded-b-none"
         >
           <div class="space-y-1.5 text-sm mb-4">
-            <div v-if="hasBreakdown" class="flex justify-between text-neutral-600">
+            <div v-if="hasBreakdown" class="flex justify-between gap-3 text-neutral-600">
               <span>{{ $t('cart.subtotal') }}</span>
               <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
             </div>
             <div
               v-if="cartStore.collectionOption === 'DELIVERY'"
-              class="flex justify-between text-neutral-600"
+              class="flex justify-between gap-3 text-neutral-600"
             >
               <span>{{ $t('cart.deliveryFee') }}</span>
               <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic text-xs">
@@ -176,7 +180,7 @@
                 v-else-if="deliveryFeeCents === -1"
                 class="text-red-700 font-medium text-xs inline-flex flex-wrap items-center justify-end gap-x-2 text-right"
               >
-                {{ $t(deliveryUnavailableKey) }}
+                {{ $t(deliveryUnavailableKey, policyParams) }}
                 <button
                   type="button"
                   data-testid="cart-out-of-zone-switch-to-pickup"
@@ -188,30 +192,32 @@
               </span>
               <span
                 v-else-if="deliveryFeeCents === 0"
-                class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide"
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide"
               >
                 {{ $t('checkout.free') }}
               </span>
               <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>
             </div>
-            <div v-if="pickupDiscountCents > 0" class="flex justify-between text-green-800">
+            <div v-if="pickupDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
               <span>{{ $t('cart.pickupDiscount') }}</span>
               <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
             </div>
-            <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-800">
+            <div v-if="couponDiscountCents > 0" class="flex justify-between gap-3 text-green-800">
               <span
                 >{{ $t('coupon.discount')
                 }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span
               >
               <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
             </div>
-            <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
+            <div v-if="onlineFeeCents > 0" class="flex justify-between gap-3 text-neutral-600">
               <span>{{ $t('cart.onlineFee') }}</span>
               <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
             </div>
-            <div class="flex justify-between items-baseline pt-2 mt-1 border-t border-neutral-100">
+            <div
+              class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
+            >
               <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
-              <span class="inline-flex items-baseline gap-2"
+              <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
                 ><QuoteUpdatingHint /><span
                   data-testid="cart-total"
                   class="text-lg font-semibold text-neutral-900 tabular-nums"
@@ -271,23 +277,22 @@ import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch 
 import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
-import { cartLineKey, cartLineKeys } from '#engine/utils/cartLines'
+import { cartLineKeys } from '#engine/utils/cartLines'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
-import { orderItemLabelParts } from '#engine/utils/orderItemLabel'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { until } from '@vueuse/core'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartSheet } from '#engine/composables/useCartSheet'
 import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
+import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
-
-const { showProductCode = false } = useAppConfig().brand
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{
   isOrderingAvailable?: boolean
@@ -323,6 +328,7 @@ const {
   amountToDeliveryMinimumCents,
   switchToPickup,
 } = useCartTotals()
+const { policyParams } = useOrderingPolicy()
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
 useOrderQuote({ active: () => cartStore.isCartVisible })
 
@@ -354,47 +360,12 @@ watch(
   { flush: 'post' },
 )
 
-const getItemKey = (item: CartItem): string => cartLineKey(item)
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 
 const hasChoices = (item: CartItem): boolean =>
   (item.selectedChoices?.length ?? 0) > 0 || Boolean(item.selectedChoice)
-
-const itemLabelParts = (item: CartItem) =>
-  orderItemLabelParts({
-    code: item.product.code,
-    categoryName: item.product.category?.name,
-    productName: item.product.name,
-  })
-
-const itemLabelMeta = (item: CartItem): string | undefined => {
-  const parts = itemLabelParts(item)
-  // The internal menu code ("E1") only shows for brands that print it.
-  const meta = [showProductCode ? parts.code : null, parts.category].filter(Boolean).join('·')
-  return meta || undefined
-}
-
-const itemLabelName = (item: CartItem): string => itemLabelParts(item).name
-
-const itemChoice = (item: CartItem): string | undefined =>
-  (item.selectedChoices?.length ?? 0) > 0
-    ? (item.selectedChoices ?? [])
-        .map((selection) => {
-          const choice = item.product.choices.find(
-            (productChoice) => productChoice.id === selection.choiceId,
-          )
-          if (!choice) return ''
-          return selection.quantity > 1 ? `${choice.name} x${selection.quantity}` : choice.name
-        })
-        .filter(Boolean)
-        .join(', ') || undefined
-    : orderItemLabelParts({
-        code: item.product.code,
-        categoryName: item.product.category?.name,
-        productName: item.product.name,
-        choiceName: item.selectedChoice?.name,
-      }).choice
 
 const handleIncrementQuantity = (cartItem: CartItem): void => {
   impact('Light')

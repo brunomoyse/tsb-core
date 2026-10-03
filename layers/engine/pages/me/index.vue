@@ -13,6 +13,12 @@ import { EUROPEAN_COUNTRIES } from '#engine/utils/europeanCountries'
 import OrdersWidget from '#engine/components/me/OrdersWidget.vue'
 import UserForm from '#engine/components/form/UserForm.vue'
 import { formatAddress } from '#engine/utils/utils'
+import {
+  hasActiveOrder,
+  profileFullName,
+  profileInitials,
+  splitStoredPhone,
+} from '#engine/utils/profile'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
@@ -80,17 +86,9 @@ useSeoMeta({
 
 // ── Display computed ──
 
-const initials = computed(() => {
-  const f = authStore.user?.firstName?.[0] || ''
-  const l = authStore.user?.lastName?.[0] || ''
-  return (f + l).toUpperCase() || '?'
-})
+const initials = computed(() => profileInitials(authStore.user))
 
-const fullName = computed(() => {
-  const first = authStore.user?.firstName || ''
-  const last = authStore.user?.lastName || ''
-  return `${first} ${last}`.trim() || '–'
-})
+const fullName = computed(() => profileFullName(authStore.user))
 
 // ── Profile edit logic ──
 
@@ -129,13 +127,6 @@ const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELET
  * is never blocked (App Store 5.1.1(v)); the order keeps its denormalized data
  * and is fulfilled regardless, but the customer loses tracking once anonymized.
  */
-const ACTIVE_ORDER_STATUSES = [
-  'PENDING',
-  'CONFIRMED',
-  'PREPARING',
-  'AWAITING_PICK_UP',
-  'OUT_FOR_DELIVERY',
-]
 const MY_ACTIVE_ORDERS = print(gql`
   query {
     myOrders(first: 5) {
@@ -147,9 +138,7 @@ const MY_ACTIVE_ORDERS = print(gql`
 const { data: activeOrdersData } = await useGqlQuery<{
   myOrders: { id: string; status: string }[]
 }>(MY_ACTIVE_ORDERS, {}, { server: false })
-const hasActiveOrder = computed(() =>
-  (activeOrdersData.value?.myOrders ?? []).some((o) => ACTIVE_ORDER_STATUSES.includes(o.status)),
-)
+const hasActiveOrderInProgress = computed(() => hasActiveOrder(activeOrdersData.value?.myOrders))
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -172,18 +161,9 @@ const openModal = () => {
   userInitialValues.value.lastName = authStore.user?.lastName || ''
   userInitialValues.value.email = authStore.user?.email || ''
 
-  const storedPhone = authStore.user?.phoneNumber || ''
-  if (storedPhone) {
-    const matchingCountry = countries.find((country) => storedPhone.startsWith(country.prefix))
-    if (matchingCountry) {
-      userInitialValues.value.selectedCountry = matchingCountry.code
-      userInitialValues.value.phoneLocal = storedPhone.substring(matchingCountry.prefix.length)
-    } else {
-      userInitialValues.value.phoneLocal = storedPhone
-    }
-  } else {
-    userInitialValues.value.phoneLocal = ''
-  }
+  const { phoneLocal, selectedCountry } = splitStoredPhone(authStore.user?.phoneNumber, countries)
+  userInitialValues.value.phoneLocal = phoneLocal
+  if (selectedCountry) userInitialValues.value.selectedCountry = selectedCountry
 
   userInitialValues.value.address = authStore.user?.address || null
   userInitialValues.value.addressConfirmed = Boolean(authStore.user?.address)
@@ -375,11 +355,10 @@ const updateNotificationPref = async (
       <!-- Japanese greeting: ようこそ (welcome) -->
       <p
         v-if="japaneseAccents"
-        class="mt-1 text-xs text-primary-300/40 tracking-[0.25em]"
+        class="mt-1 text-xs text-primary-300/40 tracking-[0.25em] after:content-[attr(data-glyph)]"
+        data-glyph="ようこそ"
         aria-hidden="true"
-      >
-        ようこそ
-      </p>
+      />
     </div>
 
     <!-- Bento Grid -->
@@ -389,7 +368,9 @@ const updateNotificationPref = async (
         <div
           class="bg-tsb-two rounded-2xl p-6 sm:p-7 h-full flex flex-col items-center justify-center text-center"
         >
-          <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4">
+          <div
+            class="w-16 h-16 rounded-full bg-white ring-1 ring-primary-200 flex items-center justify-center mb-4"
+          >
             <span class="text-xl font-bold text-primary-700">{{ initials }}</span>
           </div>
           <h2 class="font-semibold text-neutral-900 text-base">{{ fullName }}</h2>
@@ -566,6 +547,8 @@ const updateNotificationPref = async (
                 type="button"
                 role="switch"
                 :aria-checked="notifyMarketing"
+                aria-labelledby="me-notifyMarketing-label"
+                aria-describedby="me-notifyMarketing-desc"
                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="notifyMarketing ? 'bg-primary-600' : 'bg-neutral-200'"
                 @click="toggleNotifyMarketing"
@@ -575,11 +558,11 @@ const updateNotificationPref = async (
                   :class="notifyMarketing ? 'translate-x-[22px]' : 'translate-x-0.5'"
                 />
               </button>
-              <span class="text-sm text-neutral-700">{{
+              <span id="me-notifyMarketing-label" class="text-sm text-neutral-700">{{
                 t('me.notifications.marketingLabel')
               }}</span>
             </div>
-            <p class="text-xs text-neutral-600 mt-1.5">
+            <p id="me-notifyMarketing-desc" class="text-xs text-neutral-600 mt-1.5">
               {{ t('me.notifications.marketingDescription') }}
             </p>
           </div>
@@ -591,6 +574,8 @@ const updateNotificationPref = async (
                 type="button"
                 role="switch"
                 :aria-checked="notifyOrderUpdates"
+                aria-labelledby="me-notifyOrderUpdates-label"
+                aria-describedby="me-notifyOrderUpdates-desc"
                 class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="notifyOrderUpdates ? 'bg-primary-600' : 'bg-neutral-200'"
                 @click="toggleNotifyOrderUpdates"
@@ -600,11 +585,11 @@ const updateNotificationPref = async (
                   :class="notifyOrderUpdates ? 'translate-x-[22px]' : 'translate-x-0.5'"
                 />
               </button>
-              <span class="text-sm text-neutral-700">{{
+              <span id="me-notifyOrderUpdates-label" class="text-sm text-neutral-700">{{
                 t('me.notifications.orderUpdatesLabel')
               }}</span>
             </div>
-            <p class="text-xs text-neutral-600 mt-1.5">
+            <p id="me-notifyOrderUpdates-desc" class="text-xs text-neutral-600 mt-1.5">
               {{ t('me.notifications.orderUpdatesDescription') }}
             </p>
           </div>
@@ -637,6 +622,7 @@ const updateNotificationPref = async (
               v-for="lang in languages"
               :key="lang.code"
               :to="switchLocalePath(lang.code)"
+              :aria-current="locale === lang.code ? 'true' : undefined"
               :class="[
                 'inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 locale === lang.code
@@ -721,7 +707,7 @@ const updateNotificationPref = async (
 
           <!-- Soft warning when an order is still in progress (deletion not blocked) -->
           <div
-            v-if="hasActiveOrder"
+            v-if="hasActiveOrderInProgress"
             class="mb-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
           >
             <span aria-hidden="true">⚠️</span>
@@ -747,7 +733,7 @@ const updateNotificationPref = async (
             <input
               v-model="acceptDelete"
               type="checkbox"
-              class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 accent-primary-600 text-primary-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
             />
             <span class="text-sm text-neutral-600">{{
               t('me.profile.deleteConfirmCheckbox')
@@ -930,7 +916,9 @@ const updateNotificationPref = async (
 /* ── Staggered entrance ── */
 .bento-cell {
   animation: bento-enter 0.5s ease-out both;
-  animation-delay: calc(var(--delay, 0) * 80ms);
+  animation-delay: calc(
+    min(var(--delay, 0), 8) * 40ms
+  ); /* capped: a long list must not make the last cell wait */
   min-width: 0;
 }
 

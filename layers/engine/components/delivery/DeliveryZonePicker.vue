@@ -38,7 +38,7 @@
           <path d="M6 9l3 0" />
         </svg>
         {{ $t('delivery.modal.deliveryTab') }}
-        <span v-if="!deliveryEnabled" class="basis-full text-[11px] font-normal">
+        <span v-if="!deliveryEnabled" class="basis-full text-xs font-normal">
           {{ $t('delivery.comingSoon') }}
         </span>
       </button>
@@ -111,7 +111,7 @@
         :class="
           inZone
             ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-            : 'bg-primary-50 border-primary-200 text-primary-800'
+            : 'bg-red-50 border-red-200 text-red-800'
         "
         role="status"
         aria-live="polite"
@@ -119,7 +119,7 @@
         <div class="flex items-start gap-3">
           <span
             class="shrink-0 inline-flex w-7 h-7 items-center justify-center rounded-full"
-            :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-primary-100 text-primary-700'"
+            :class="inZone ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
             aria-hidden="true"
           >
             <svg
@@ -154,7 +154,7 @@
                   ? $t('delivery.modal.distanceOk')
                   : zoneStatus === 'excluded'
                     ? $t('checkout.notDeliverableArea')
-                    : $t('delivery.modal.distanceTooFar')
+                    : $t('delivery.modal.distanceTooFar', policyParams)
               }}
             </p>
             <p class="text-xs mt-1 opacity-80">
@@ -213,6 +213,8 @@ import { brand } from '#brand/brand'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'
 import { useCartStore } from '#engine/stores/cart'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
 const { showCancel = true } = defineProps<{
@@ -230,8 +232,9 @@ const { trackEvent } = useTracking()
 const replaceAddress = ref(false)
 
 // Distance AND postcode (4610 is excluded whatever its distance): same rule as the checkout gate.
+const { policy, policyParams } = useOrderingPolicy()
 const zoneStatus = computed(() =>
-  cartStore.address ? deliveryZoneStatus(cartStore.address) : null,
+  cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : null,
 )
 const inZone = computed(() => zoneStatus.value === 'ok')
 
@@ -245,10 +248,10 @@ const canConfirm = computed(() => {
 })
 
 const restaurantAddress = `${brand.address.street}\n${brand.address.postal} ${brand.address.city}`
-const deliveryEnabled = brand.deliveryEnabled !== false
+const { deliveryEnabled } = useDeliveryMode()
 
 const setMode = (mode: 'DELIVERY' | 'PICKUP') => {
-  if (mode === 'DELIVERY' && !deliveryEnabled) return
+  if (mode === 'DELIVERY' && !deliveryEnabled.value) return
   if (cartStore.collectionOption === mode) return
   trackEvent('collection_option_changed', { option: mode, source: 'delivery_zone_picker' })
   cartStore.collectionOption = mode
@@ -260,7 +263,7 @@ const handleAddressUpdate = (address: Address | null) => {
   if (address) {
     trackEvent('delivery_address_resolved', {
       distance_m: address.distance ?? 0,
-      in_zone: deliveryZoneStatus(address) === 'ok',
+      in_zone: deliveryZoneStatus(policy.value, address) === 'ok',
     })
   }
 }

@@ -16,6 +16,7 @@ import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useNuxtApp } from '#imports'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useQuoteStore } from '#engine/stores/quote'
 
 /*
@@ -81,6 +82,7 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
   // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
   const gqlFetch = (useNuxtApp() as unknown as { $gqlFetch: GqlFetch }).$gqlFetch
   const { t } = useI18n()
+  const { policy } = useOrderingPolicy()
 
   const quoteKey = computed(() =>
     cartStore.products.length > 0
@@ -98,7 +100,10 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
         cartStore.couponDiscountCents = verdict.discountCents
     } else if (verdict.kind === 'refused') {
       const code = cartStore.couponCode ?? ''
-      const refusal = describeCouponRefusal({ valid: false, errorCode: verdict.errorCode })
+      const refusal = describeCouponRefusal(
+        { valid: false, errorCode: verdict.errorCode },
+        policy.value,
+      )
       cartStore.couponCode = null
       cartStore.couponDiscountCents = 0
       notifications.notify({
@@ -140,8 +145,12 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
         ).quoteOrder,
       // Only against the quote of the CURRENT cart: a coupon removal re-quotes right after.
       isCurrent: (request) => request.key === quoteStore.wantedKey,
-      onQuote: (quote) => reconcileCoupon(quote, t as Translate),
-      onError: (err) => reportError(err, 'cart.quote'),
+      onQuote: (quote) => {
+        reconcileCoupon(quote, t as Translate)
+      },
+      onError: (err) => {
+        reportError(err, 'cart.quote')
+      },
     })
     consumers += 1
     watch([quoteKey, () => toValue(options.active ?? true)], schedule, { immediate: true })

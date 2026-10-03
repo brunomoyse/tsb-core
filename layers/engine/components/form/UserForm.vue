@@ -23,7 +23,7 @@
         id="lastName"
         v-model="lastName"
         :placeholder="$t('form.lastNamePlaceholder')"
-        autocomplete="name"
+        autocomplete="family-name"
         class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
         required
         type="text"
@@ -53,6 +53,7 @@
         <select
           id="country"
           v-model="selectedCountry"
+          :aria-label="$t('form.phoneCountry')"
           class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
         >
           <option v-for="country in countries" :key="country.code" :value="country.code">
@@ -63,11 +64,14 @@
           id="phone"
           v-model="phoneLocal"
           :placeholder="$t('form.phonePlaceholder')"
+          autocomplete="tel-national"
+          :aria-invalid="phoneError ? 'true' : undefined"
+          :aria-describedby="phoneError ? 'phone-error' : undefined"
           class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
           type="tel"
         />
       </div>
-      <p v-if="phoneError" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
+      <p v-if="phoneError" id="phone-error" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
     </div>
 
     <AddressAutocomplete
@@ -225,24 +229,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid theme('colors.neutral.200');
-  border-radius: 0.375rem;
-  background: white;
-}
-li {
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-li:hover {
-  background-color: theme('colors.neutral.100');
-}
 input,
 select,
 textarea {

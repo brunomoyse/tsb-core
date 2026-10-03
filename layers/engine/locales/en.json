@@ -20,7 +20,9 @@
     "keepEditing": "Keep editing",
     "retry": "Try again",
     "saving": "Saving…",
-    "required": "required"
+    "required": "required",
+    "logoAlt": "{name} logo",
+    "clear": "Clear"
   },
   "nav": {
     "home": "Home",
@@ -34,10 +36,10 @@
     "language": "Select Language",
     "toggleMenu": "Toggle menu",
     "sidebar": "Main navigation",
-    "callRestaurant": "Call the restaurant",
     "searchLabel": "Search the menu",
     "clearSearch": "Clear search",
-    "currentLanguage": "Language: {language}"
+    "currentLanguage": "Language: {language}",
+    "primary": "Main navigation"
   },
   "home": {
     "heroTagline": "Japanese restaurant · Liège",
@@ -48,7 +50,8 @@
       "onsiteOnly": "Open · dine-in only",
       "preorder": "Closed · order now for {time}",
       "closed": "Closed"
-    }
+    },
+    "restaurantImageAlt": "Illustration of the {name} restaurant"
   },
   "contact": {
     "title": "Contact Us",
@@ -63,7 +66,8 @@
     "reservationNotice": "Reservations by email are not taken into account. To book a table, please call us by phone.",
     "weekdays": "Monday - Friday",
     "weekends": "Saturday - Sunday",
-    "closedTuesday": "Closed on Tuesdays"
+    "closedTuesday": "Closed on Tuesdays",
+    "mapTitle": "Map: location of {name}"
   },
   "about": {
     "ourStoryTitle": "Our Story",
@@ -78,9 +82,9 @@
     "cash": "Cash",
     "infoCards": {
       "freeDelivery": "Free delivery",
-      "freeDeliveryDesc": "Free from 25 EUR, with delivery fees based on distance beyond.",
-      "takeawayDiscount": "Takeaway -10%",
-      "takeawayDiscountDesc": "10% discount on eligible items from 20 EUR for all pickup orders.",
+      "freeDeliveryDesc": "Free from {deliveryMinimum} EUR, with delivery fees based on distance beyond.",
+      "takeawayDiscount": "Takeaway -{rate}%",
+      "takeawayDiscountDesc": "{rate}% discount on eligible items from {pickupMinimum} EUR for all pickup orders.",
       "freshDaily": "Fresh daily",
       "freshDailyDesc": "Our fish is cut fresh every morning by our chef for uncompromising quality."
     }
@@ -118,7 +122,7 @@
     "discountable": "Discountable",
     "yes": "Yes",
     "no": "No",
-    "pickupDiscountBadge": "10% off on pickup",
+    "pickupDiscountBadge": "{rate}% off on pickup",
     "restaurantClosed": "The restaurant is currently closed.",
     "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable.",
     "choice": "Choice",
@@ -164,7 +168,7 @@
     "email": "Email",
     "emailPlaceholder": "Enter your email address",
     "phone": "Phone",
-    "phonePlaceholder": "Enter your phone number",
+    "phonePlaceholder": "Phone number",
     "invalidPhone": "Invalid phone number",
     "address": {
       "label": "Address",
@@ -178,7 +182,8 @@
       "selected": "Address selected: {address}",
       "cleared": "Address cleared"
     },
-    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)"
+    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)",
+    "phoneCountry": "Phone number country"
   },
   "me": {
     "greeting": "Hello",
@@ -193,7 +198,6 @@
       "loading": "Loading orders...",
       "empty": "No orders found",
       "total": "Total",
-      "toggleOrder": "Toggle order details",
       "downloadInvoice": "Download invoice",
       "status": {
         "details": {
@@ -281,7 +285,7 @@
       "currentAddress": "Current address",
       "change": "Change",
       "distanceOk": "We deliver to this address",
-      "distanceTooFar": "This address is outside our 9 km delivery zone",
+      "distanceTooFar": "This address is outside our {distance} km delivery zone",
       "distanceValue": "Distance: {km} km",
       "switchToPickup": "Switch to pickup",
       "confirm": "Confirm",
@@ -321,7 +325,7 @@
     "eachSuffix": "each",
     "deliveryTbd": "Delivery calculated at checkout",
     "editItem": "Edit",
-    "pickupDiscountShort": "-10%",
+    "pickupDiscountShort": "-{rate}%",
     "onlineFee": "Online payment fee",
     "addForDelivery": "Add {amount} more to qualify for delivery.",
     "quoteUpdating": "Updating prices…",
@@ -343,7 +347,11 @@
     "announce": {
       "added": "{name} added to cart, {count} item, total {total} | {name} added to cart, {count} items, total {total}",
       "quantity": "{name}, quantity {quantity}"
-    }
+    },
+    "increaseQtyOf": "Increase quantity of {name}",
+    "decreaseQtyOf": "Decrease quantity of {name}",
+    "addNamed": "Add {name} to the cart",
+    "inCartNamed": "{name}: {count} in the cart, change quantity"
   },
   "checkout": {
     "title": "Checkout",
@@ -368,7 +376,9 @@
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
     "deliveryFee": "Delivery Fee:",
-    "deliveryFeeInfo": "Delivery fees based on distance:\n• Less than 3 km: Free\n• 3-4 km: €1\n• 4-5 km: €2\n• 5-6 km: €3\n• 6-7 km: €4\n• 7-8 km: €5\n• 8-9 km: €6",
+    "deliveryFeeInfo": "Delivery fees based on distance:\n{tiers}",
+    "deliveryFeeTierFirst": "• Less than {to} km: {fee}",
+    "deliveryFeeTier": "• {from}-{to} km: {fee}",
     "transactionFee": "Transaction fee:",
     "discount": "Pick-up discount",
     "total": "Total:",
@@ -381,6 +391,7 @@
     "addressCommentPlaceholder": "e.g. Ring the bell twice",
     "preferredTime": "Preferred Time",
     "asapDelivery": "ASAP (40-60 min)",
+    "asapDeliveryShort": "ASAP (40-60 min)",
     "asapPickup": "ASAP",
     "asapUnavailableWhileClosed": "ASAP is unavailable while closed. Please select a fixed time for today.",
     "noRemainingSlotsToday": "No remaining time slots for today.",
@@ -423,7 +434,7 @@
     "stepPayment": "Payment",
     "itemCount": "{count} item | {count} items",
     "opensAt": "Opens at {time}",
-    "tooFar": "Too far for delivery (max 9 km)",
+    "tooFar": "Too far for delivery (max {distance} km)",
     "notDeliverableArea": "We don't deliver to your area.",
     "tbd": "To be determined",
     "optional": "(optional)",
@@ -439,7 +450,8 @@
     "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order.",
     "quoteChanged": "Prices or availability changed: please review your order.",
     "cashAmountTooLow": "That is less than the total ({total}). Enter at least {total}, or leave the field empty.",
-    "cashChangeDue": "Change due: {amount}"
+    "cashChangeDue": "Change due: {amount}",
+    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more"
   },
   "orderCompleted": {
     "title": "Order Completed",
@@ -514,7 +526,7 @@
       "addressRequired": "Address is required.",
       "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
       "deliveryAddressExcluded": "We don't deliver to your area.",
-      "deliveryUnavailable": "Delivery is not available: only takeaway orders are accepted.",
+      "deliveryUnavailable": "Delivery isn't available — please choose pickup.",
       "invalidCode": "Invalid or expired code. Please try again.",
       "codeExpired": "The code has expired. Request a new one.",
       "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
@@ -694,7 +706,7 @@
       },
       "discount": {
         "question": "Is there a discount for pickup orders?",
-        "answer": "Yes! Enjoy 10% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
+        "answer": "Yes! Enjoy {rate}% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
       },
       "payment": {
         "question": "What payment methods do you accept?",

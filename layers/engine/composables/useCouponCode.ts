@@ -7,6 +7,7 @@ import { unwrapGqlError } from '#engine/utils/gqlError'
 import { useCartStore } from '#engine/stores/cart'
 import { useGqlMutation } from '#imports'
 import { useI18n } from 'vue-i18n'
+import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
 const VALIDATE_COUPON = gql`
   query ValidateCoupon($code: String!, $orderAmount: String!) {
@@ -56,6 +57,7 @@ const isMissingErrorCodeField = (err: unknown): boolean => {
 export function useCouponCode() {
   const cartStore = useCartStore()
   const { t } = useI18n()
+  const { policy } = useOrderingPolicy()
   const { mutate: validate } = useGqlMutation<{ validateCoupon: CouponValidation }>(VALIDATE_COUPON)
   const { mutate: validateLegacy } = useGqlMutation<{ validateCoupon: CouponValidation }>(
     VALIDATE_COUPON_LEGACY,
@@ -85,11 +87,11 @@ export function useCouponCode() {
         cartStore.couponDiscountCents = toCents(validation.discountAmount)
         return null
       }
-      const refusal = describeCouponRefusal(validation)
+      const refusal = describeCouponRefusal(validation, policy.value)
       return t(refusal.key, refusal.params ?? {})
     } catch (err: unknown) {
       reportError(err, 'coupon.validate')
-      const described = describeGqlError(err)
+      const described = describeGqlError(err, policy.value)
       // Not a refusal of the code: the request itself failed, so the generic "try again", not "invalid code".
       return t(described?.key ?? 'notify.errors.requestFailed', described?.params ?? {})
     }

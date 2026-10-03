@@ -3,6 +3,12 @@
   "home": {
     "heroTagline": "Malatang · Herbal broth · Liège"
   },
+  "error": {
+    "title404": "Page not found",
+    "notFound": "Looks like you got lost... But don't worry, a steaming bowl of malatang is waiting for you!",
+    "title500": "Trouble in the kitchen",
+    "serverError": "Fuzi is busy in the kitchen, but something went wrong. Please try again in a moment."
+  },
   "schema": {
     "siteDescription": "Build your own malatang bowl in Liège — herbal broth cooked to order",
     "cuisine": "Chinese",
@@ -435,11 +441,6 @@
     "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients"
   },
   "nav": {
-    "primary": "Main navigation",
-    "secondary": "Footer links",
-    "callRestaurant": "Call the restaurant"
-  },
-  "common": {
-    "clear": "Clear"
+    "secondary": "Footer links"
   }
 }

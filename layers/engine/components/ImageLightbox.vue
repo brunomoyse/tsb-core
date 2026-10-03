@@ -41,13 +41,13 @@
         </p>
 
         <!-- Image -->
-        <picture class="max-w-[90vw] max-h-[75vh] bg-white rounded-2xl p-3">
+        <picture class="max-w-[90vw] max-h-[75dvh] bg-white rounded-2xl p-3">
           <source :srcset="`${src}.avif`" type="image/avif" />
           <source :srcset="`${src}.webp`" type="image/webp" />
           <img
             :src="`${src}.png`"
             :alt="alt"
-            class="max-w-full max-h-[75vh] object-contain"
+            class="max-w-full max-h-[75dvh] object-contain"
             @error="onImageError"
           />
         </picture>

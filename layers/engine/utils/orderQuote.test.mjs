@@ -19,6 +19,7 @@ import { GqlError } from './gqlError.ts'
 import assert from 'node:assert/strict'
 import { buildQuoteInput } from './orderPayload.ts'
 import { computeCartTotals } from './cartTotals.ts'
+import { DEFAULT_ORDERING_POLICY as policy } from './orderingPolicy.ts'
 import { test } from 'vite-plus/test'
 
 const line = (overrides = {}) => ({
@@ -54,6 +55,7 @@ test('totals: the server numbers in the shape every cart surface reads', () => {
       total: '23.40',
     }),
     'PICKUP',
+    policy,
   )
   assert.deepEqual(totals, {
     subtotalCents: 2850,
@@ -86,10 +88,12 @@ test('totals agree with the client maths on a cart both can price', () => {
     collectionOption: 'PICKUP',
     paymentOption: 'ONLINE',
     couponDiscountCents: 0,
+    policy,
   })
   const server = totalsFromQuote(
     quote({ subtotal: '28.50', pickupDiscount: '2.50', onlineFee: '0.30', total: '26.30' }),
     'PICKUP',
+    policy,
   )
   assert.deepEqual(server, client)
 })
@@ -98,6 +102,7 @@ test('delivery: the fee, the minimum from the issue, and the out-of-zone sentine
   const near = totalsFromQuote(
     quote({ subtotal: '30.00', deliveryFee: '2.00', total: '32.00' }),
     'DELIVERY',
+    policy,
   )
   assert.equal(near.deliveryFeeCents, 200)
   assert.equal(near.isMinimumReached, true)
@@ -109,6 +114,7 @@ test('delivery: the fee, the minimum from the issue, and the out-of-zone sentine
       issues: [{ code: 'DELIVERY_MINIMUM_NOT_MET', minimum: '25' }],
     }),
     'DELIVERY',
+    policy,
   )
   assert.equal(short.isMinimumReached, false)
   assert.equal(short.amountToDeliveryMinimumCents, 700)
@@ -116,12 +122,14 @@ test('delivery: the fee, the minimum from the issue, and the out-of-zone sentine
   const far = totalsFromQuote(
     quote({ issues: [{ code: 'DELIVERY_OUT_OF_ZONE', minimum: null }] }),
     'DELIVERY',
+    policy,
   )
   assert.equal(far.deliveryFeeCents, -1)
   assert.equal(
     totalsFromQuote(
       quote({ issues: [{ code: 'DELIVERY_AREA_EXCLUDED', minimum: null }] }),
       'DELIVERY',
+      policy,
     ).deliveryFeeCents,
     -1,
   )
@@ -131,6 +139,7 @@ test('delivery: the fee, the minimum from the issue, and the out-of-zone sentine
     totalsFromQuote(
       quote({ issues: [{ code: 'DELIVERY_MINIMUM_NOT_MET', minimum: '25' }] }),
       'PICKUP',
+      policy,
     ).isMinimumReached,
     true,
   )
@@ -384,18 +393,21 @@ test('the request key changes with everything that is priced, and with the sessi
 test('the reason a delivery address is refused: the fresh quote wins over the client rule', () => {
   const issue = (code) => quote({ issues: [{ code, minimum: null }] })
   // No quote: the client's rule (the excluded postcode list).
-  assert.equal(deliveryUnavailableKey(null, '4610'), 'checkout.notDeliverableArea')
-  assert.equal(deliveryUnavailableKey(null, '4000'), 'checkout.tooFar')
+  assert.equal(deliveryUnavailableKey(null, '4610', policy), 'checkout.notDeliverableArea')
+  assert.equal(deliveryUnavailableKey(null, '4000', policy), 'checkout.tooFar')
   // The server says "excluded" for a postcode the client does not know.
   assert.equal(
-    deliveryUnavailableKey(issue('DELIVERY_AREA_EXCLUDED'), '4000'),
+    deliveryUnavailableKey(issue('DELIVERY_AREA_EXCLUDED'), '4000', policy),
     'checkout.notDeliverableArea',
   )
   // The server says "too far" for a postcode the client lists as excluded: the server's reason is shown.
-  assert.equal(deliveryUnavailableKey(issue('DELIVERY_OUT_OF_ZONE'), '4610'), 'checkout.tooFar')
+  assert.equal(
+    deliveryUnavailableKey(issue('DELIVERY_OUT_OF_ZONE'), '4610', policy),
+    'checkout.tooFar',
+  )
   // A quote with unrelated issues falls back to the client rule.
   assert.equal(
-    deliveryUnavailableKey(issue('DELIVERY_MINIMUM_NOT_MET'), '4610'),
+    deliveryUnavailableKey(issue('DELIVERY_MINIMUM_NOT_MET'), '4610', policy),
     'checkout.notDeliverableArea',
   )
 })

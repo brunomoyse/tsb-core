@@ -1,6 +1,7 @@
 import { bookableSlots, canPlaceOrder, orderingStatus } from '#engine/utils/orderingAvailability'
 import { computed, ref } from 'vue'
 import { useIntervalFn } from '@vueuse/core'
+import { useOrderingPolicy } from './useOrderingPolicy'
 import { useRestaurantConfig } from './useRestaurantConfig'
 
 /**
@@ -22,6 +23,7 @@ export async function useOrderingAvailability(options: { lazy?: boolean } = {}) 
    * preparation window stops counting on a stale config, without waiting for a refetch.
    */
   const nowMs = ref(Date.now())
+  const { policy } = useOrderingPolicy()
   if (import.meta.client)
     useIntervalFn(() => {
       nowMs.value = Date.now()
@@ -35,9 +37,9 @@ export async function useOrderingAvailability(options: { lazy?: boolean } = {}) 
   const isLoading = computed(() => !isLoaded.value && !loadFailed.value)
 
   const status = computed(() =>
-    isLoaded.value ? orderingStatus(current.value, nowMs.value) : null,
+    isLoaded.value ? orderingStatus(current.value, nowMs.value, policy.value) : null,
   )
-  const isAvailable = computed(() => canPlaceOrder(current.value, nowMs.value))
+  const isAvailable = computed(() => canPlaceOrder(current.value, nowMs.value, policy.value))
   const isClosed = computed(() => isLoaded.value && !isAvailable.value)
   const isPreorderOnly = computed(() => status.value === 'preorder')
   /** Ordering is switched off by the restaurant (the config says so, as opposed to not having a config). */
@@ -47,8 +49,8 @@ export async function useOrderingAvailability(options: { lazy?: boolean } = {}) 
     () =>
       bookableSlots(
         current.value?.availableSlotsToday,
-        current.value?.preparationMinutes,
-        nowMs.value,
+        { preparationMinutes: current.value?.preparationMinutes, nowMs: nowMs.value },
+        policy.value,
       )[0]?.label ?? null,
   )
   /** The slot time to advertise ("order now for 19:00"), only while pre-ordering is what is on offer. */

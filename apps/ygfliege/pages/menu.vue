@@ -77,13 +77,14 @@
                  tab strip that used to live here were removed deliberately: the
                  menu is ~30 products across 6 short sections, so scanning beats
                  filtering, and a tab nav over so little content is chrome. -->
-      <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
+      <section ref="stickyHeader" class="sticky z-20 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
         <!-- Aligned to the same max-w-7xl container as the product grid
                      so the controls don't stretch full-bleed on wide screens. -->
-        <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3">
+        <!-- Under ~360px the chip drops under the search instead of squeezing the input. -->
+        <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3 max-[359px]:flex-wrap">
           <!-- Search Bar (labeled) -->
           <div
-            class="relative flex flex-1 sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg"
+            class="relative flex flex-1 max-[359px]:basis-full sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +110,7 @@
               v-show="searchValue.length > 0"
               @click.stop="clearSearch"
               :aria-label="$t('common.clear')"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-ygf-black transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="absolute right-0 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-neutral-600 hover:text-ygf-black transition-colors rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <svg
                 class="w-5 h-5"
@@ -119,11 +120,16 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
+          <!-- Delivery zone on a phone: the header carries the logo with its name, so the chip sits beside the search (the desktop header, from xl up, shows it). -->
+          <ClientOnly>
+            <DeliveryZoneChip compact class="xl:hidden shrink-0 max-w-[9.5rem]" />
+          </ClientOnly>
         </section>
 
         <!-- Mobile-only category jump-nav. On desktop 3–4 sections fit
@@ -153,38 +159,13 @@
       </section>
 
       <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-      <div v-if="showAllergenNotice" class="max-w-7xl mx-auto mb-2 px-4">
-        <div
-          class="h-7 px-2.5 bg-amber-50 border border-amber-200 rounded-full flex items-center gap-1.5 text-amber-800 text-[11px]"
-        >
-          <span aria-hidden="true" class="text-[11px]">&#x26A0;&#xFE0F;</span>
-          <span class="flex-1 truncate">
-            {{ $t('menu.allergenNoticeShort') }}
-            <a :href="telHref(brand.phone)" class="underline font-medium text-amber-900">{{
-              brand.phone
-            }}</a>
-          </span>
-          <button
-            type="button"
-            @click="dismissAllergenNotice"
-            class="p-0.5 hover:bg-amber-100 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-            :aria-label="$t('common.close')"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-3 w-3"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <MenuAllergenNotice
+        contained
+        :show="showAllergenNotice"
+        :phone-href="telHref(brand.phone)"
+        :phone-label="brand.phone"
+        @dismiss="dismissAllergenNotice"
+      />
 
       <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
       <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
@@ -219,9 +200,9 @@
         <article
           v-if="composerProduct && !searchValue.trim().length"
           data-testid="composer-hero"
-          class="card card-interactive grid sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
+          class="card card-interactive grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
         >
-          <div class="p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
+          <div class="min-w-0 p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
             <span class="section-label">{{ $t('composer.eyebrow') }}</span>
             <h2 translate="no" class="section-title text-2xl sm:text-3xl">
               {{ composerProduct.name }}
@@ -230,7 +211,7 @@
             <button
               type="button"
               data-testid="composer-hero-cta"
-              class="btn btn-primary mt-2"
+              class="btn btn-primary mt-2 max-w-full whitespace-normal text-center"
               :disabled="!isCartAddAvailable || !composerProduct.isAvailable"
               @click="openModal(composerProduct.id)"
             >
@@ -253,7 +234,7 @@
           v-for="(cat, catIdx) in displayedCategories"
           :key="cat.id"
           :id="`category-${cat.id}`"
-          class="space-y-4 scroll-mt-52 sm:scroll-mt-36"
+          class="space-y-4"
         >
           <!-- Category heading. The 「 」 brackets that used to frame
                          this were Tokyo Sushi's Japanese motif — wrong for a
@@ -308,7 +289,7 @@
     <!-- Desktop Cart Sidebar -->
     <aside
       v-if="hasCartItems"
-      class="hidden lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:block lg:w-1/3 lg:pr-4"
+      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:block lg:w-1/3 lg:pr-4"
     >
       <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
     </aside>
@@ -316,7 +297,7 @@
     <ClientOnly>
       <Transition name="modal-backdrop">
         <div
-          v-if="route.query.product"
+          v-if="routedProductId"
           class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center sm:p-4 backdrop-blur-sm"
           @click.self="closeModal"
         >
@@ -325,16 +306,16 @@
                              fixed set stays on the ordinary product modal. -->
             <BowlComposer
               v-if="routedProductIsComposer"
-              :key="`${route.query.product}-${modalAttempt}`"
-              :product="route.query.product as string"
+              :key="`${routedProductId}-${modalAttempt}`"
+              :product="routedProductId"
               :ordering-disabled="!isCartAddAvailable"
               @close="closeModal"
               @retry="modalAttempt++"
             />
             <ProductModal
               v-else
-              :key="`${route.query.product}-${modalAttempt}`"
-              :product="route.query.product as string"
+              :key="`${routedProductId}-${modalAttempt}`"
+              :product="routedProductId"
               :ordering-disabled="!isCartAddAvailable"
               @close="closeModal"
               @retry="modalAttempt++"
@@ -357,6 +338,7 @@ import type { Product, ProductCategory } from '#engine/types'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
+import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
 import BowlComposer from '~/components/menu/BowlComposer.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import ProductModal from '~/components/menu/ProductModal.vue'
@@ -373,12 +355,26 @@ import { useTracking } from '#engine/composables/useTracking'
 import { buildMenuSchema } from '#engine/utils/menuSchema'
 import { inLanguageTag } from '#engine/utils/seoDefaults'
 import { searchFromQuery } from '#engine/utils/menuSearch'
+import {
+  baseCategories as baseCategoriesOf,
+  displayedCategories as displayedCategoriesOf,
+  flattenProducts,
+  isComposerProduct,
+  searchProducts,
+} from '#engine/utils/menuCatalog'
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
+import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
+import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
+import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 
 const { brand } = useAppConfig()
 const route = useRoute()
+// The product open in the modal: only a plain `?product=<id>` (a repeated or empty parameter opens nothing).
+const routedProductId = computed(() =>
+  typeof route.query.product === 'string' && route.query.product ? route.query.product : null,
+)
 const router = useRouter()
 const { trackEvent } = useTracking()
 const showAllergenNotice = ref(true)
@@ -419,7 +415,7 @@ const closeModal = () => {
 }
 
 // Lock body scroll when modal is open (shared, nesting-safe lock: a lightbox over the modal keeps it locked)
-useBodyScrollLock(() => Boolean(route.query.product))
+useBodyScrollLock(() => Boolean(routedProductId.value))
 
 /**
  * GraphQL Query
@@ -539,79 +535,39 @@ const clearSearch = () => {
 /**
  * Computed: Categories & Products
  */
-// Base categories with live updates merged and only visible products, sorted
+// The menu's catalogue rules are pure (engine, utils/menuCatalog.ts): live updates merged, only visible products, the search.
 const baseCategories = computed(() =>
-  (dataCategories.value?.productCategories ?? [])
-    .map((cat) => ({
-      ...cat,
-      products: cat.products
-        .map((p) => {
-          const live = liveProductData.value[p.id]
-          return live ? ({ ...p, ...live } as Product) : p
-        })
-        .filter((p) => p.isVisible),
-    }))
-    .filter((cat) => cat.products.length)
-    .toSorted((a, b) => a.order - b.order),
+  baseCategoriesOf(dataCategories.value?.productCategories ?? [], liveProductData.value),
 )
 
 // All products flattened for search
-const allProducts = computed<Product[]>(() =>
-  baseCategories.value.flatMap((cat) => cat.products.map((p) => ({ ...p, category: cat }))),
-)
+const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.value))
 
-/**
- * The build-your-own-bowl product, detected by shape rather than by id: any
- * product with a choice group allowing more than one pick is a composer. The
- * category query already returns minSelections/maxSelections, so this needs no
- * extra round trip, and adding a second composer to the menu needs no code
- * change here.
- */
-const isComposerProduct = (p: Product) =>
-  p.choiceGroups?.some((group) => group.maxSelections > 1) ?? false
-
+// The build-your-own-bowl product is detected by shape (`isComposerProduct`), so a second composer on the menu needs no code change here.
 const composerProduct = computed(() => allProducts.value.find(isComposerProduct) ?? null)
 
 /** Whether the product currently open in the route query is a composer. */
 const routedProductIsComposer = computed(() => {
-  const id = route.query.product
-  if (typeof id !== 'string') return false
+  const id = routedProductId.value
+  if (id === null) return false
   const p = allProducts.value.find((product) => product.id === id)
   return p ? isComposerProduct(p) : false
 })
 
 // Filtered list based on search query (all words must match)
-const filteredProducts = computed(() => {
-  const q = debouncedSearchValue.value.trim().toLowerCase()
-  if (!q) return allProducts.value
-  const words = q.split(/\s+/u)
-  return allProducts.value.filter((p) => {
-    const haystack = [p.name, p.code, p.category.name].filter(Boolean).join(' ').toLowerCase()
-    return words.every((w) => haystack.includes(w))
-  })
-})
+const filteredProducts = computed(() =>
+  searchProducts(allProducts.value, debouncedSearchValue.value),
+)
 
-// Categories displayed, grouping search-filtered products. Composer products
-// are excluded from the grid: the hero banner is their single entry point, and
-// a card would show the bare base price (2,50 €) as if it were the full price.
-const displayedCategories = computed<ProductCategory[]>(() => {
-  const q = debouncedSearchValue.value.trim().toLowerCase()
-  if (!q) {
-    return baseCategories.value
-      .map((cat) => ({ ...cat, products: cat.products.filter((p) => !isComposerProduct(p)) }))
-      .filter((cat) => cat.products.length)
-  }
-  const grouped = Map.groupBy(
-    filteredProducts.value.filter((p) => !isComposerProduct(p)),
-    (prod) => prod.category.id,
-  )
-  return Array.from(grouped.entries())
-    .map(([, products]) => ({
-      ...products[0]!.category,
-      products,
-    }))
-    .toSorted((a, b) => a.order - b.order)
-})
+// Categories displayed. Composer products are excluded from the grid: the hero banner is their single entry point, and
+// A card would show the bare base price (2,50 €) as if it were the full price.
+const displayedCategories = computed<ProductCategory[]>(() =>
+  displayedCategoriesOf(baseCategories.value, allProducts.value, {
+    query: debouncedSearchValue.value,
+    filters: new Set<string>(),
+    excludeComposer: true,
+  }),
+)
 
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() =>
@@ -620,8 +576,12 @@ const cardOffsets = computed(() =>
 
 // Mobile category chip nav (scrollspy + jump); ids follow search filtering.
 const categorySectionIds = computed(() => displayedCategories.value.map((cat) => cat.id))
-const { activeCategoryId, chipRowRef, scrollToCategory } =
-  useMenuCategoryScrollspy(categorySectionIds)
+const { activeCategoryId, chipRowRef, scrollToCategory } = useMenuCategoryScrollspy(
+  categorySectionIds,
+  { header: stickyHeader },
+)
+// The sticky header publishes the bottom edge it covers (--sticky-top-h), so a focused card or a chip jump clears it.
+useStickyTopOffset(stickyHeader)
 
 /**
  * Watchers
