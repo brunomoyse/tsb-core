@@ -56,20 +56,22 @@
               <div class="min-w-0">
                 <p
                   v-if="itemLabelMeta(item)"
-                  class="text-xs text-neutral-600 truncate leading-tight mb-0.5"
+                  class="text-xs text-neutral-600 break-words leading-tight mb-0.5"
                 >
                   {{ itemLabelMeta(item) }}
                 </p>
                 <p
-                  class="text-[15px] font-semibold text-neutral-900 leading-tight line-clamp-2 pr-1"
+                  class="text-[15px] font-semibold text-neutral-900 leading-tight break-words pr-1"
                 >
                   {{ itemLabelName(item) }}
                 </p>
-                <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 truncate">
+                <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
                   ({{ itemChoice(item) }})
                 </p>
               </div>
-              <span class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums">
+              <span
+                class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums whitespace-nowrap"
+              >
                 {{ formatCents(getItemLineTotalCents(item)) }}
               </span>
             </div>
