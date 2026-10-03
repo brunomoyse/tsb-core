@@ -51,26 +51,22 @@
 
           <!-- Info + controls -->
           <div class="flex-1 min-w-0">
-            <!-- Row 1: Name + price -->
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <p
-                  v-if="itemLabelMeta(item)"
-                  class="text-xs text-neutral-600 break-words leading-tight mb-0.5"
-                >
-                  {{ itemLabelMeta(item) }}
-                </p>
-                <p
-                  class="text-[15px] font-semibold text-neutral-900 leading-tight break-words pr-1"
-                >
-                  {{ itemLabelName(item) }}
-                </p>
-                <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
-                  ({{ itemChoice(item) }})
-                </p>
-              </div>
+            <!-- Row 1: the name in the full width of the column, the price under it (as on /cart): beside the name it left the name ~70-95px on the 3-column desktop checkout and at 320 px -->
+            <div class="min-w-0">
+              <p
+                v-if="itemLabelMeta(item)"
+                class="text-xs text-neutral-600 break-words leading-tight mb-0.5"
+              >
+                {{ itemLabelMeta(item) }}
+              </p>
+              <p class="text-[15px] font-semibold text-neutral-900 leading-tight break-words">
+                {{ itemLabelName(item) }}
+              </p>
+              <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
+                ({{ itemChoice(item) }})
+              </p>
               <span
-                class="text-[15px] font-bold text-neutral-900 shrink-0 tabular-nums whitespace-nowrap"
+                class="mt-1 block text-[15px] font-bold text-neutral-900 tabular-nums whitespace-nowrap"
               >
                 {{ formatCents(getItemLineTotalCents(item)) }}
               </span>
