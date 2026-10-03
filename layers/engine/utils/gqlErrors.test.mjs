@@ -1,17 +1,33 @@
 // GqlError, the code -> i18n map and the Sentry filter.
-// Run: `node --test layers/engine/utils/gqlErrors.test.mjs`.
+// Run: `vp test run layers/engine/utils/gqlErrors.test.mjs`.
 
 import { DEFAULT_ORDERING_POLICY, orderingPolicyFromApi } from './orderingPolicy.ts'
-import { GQL_ERROR_KEYS, GQL_KNOWN_CODES, describeCouponRefusal, describeErrorCode, describeGqlError } from './gqlErrors.ts'
-import { GqlError, isAbortError, isReportableError, operationNameOf, toGqlError, unwrapGqlError } from './gqlError.ts'
+import {
+  GQL_ERROR_KEYS,
+  GQL_KNOWN_CODES,
+  describeCouponRefusal,
+  describeErrorCode,
+  describeGqlError,
+} from './gqlErrors.ts'
+import {
+  GqlError,
+  isAbortError,
+  isReportableError,
+  operationNameOf,
+  toGqlError,
+  unwrapGqlError,
+} from './gqlError.ts'
 import { existsSync, readFileSync } from 'node:fs'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const POLICY = DEFAULT_ORDERING_POLICY
 
 const response = (code, message = 'raw backend text', extra = {}) =>
-  new GqlError([{ message, path: ['createOrder'], extensions: { ...(code ? { code } : {}), ...extra } }], { operationName: 'CreateOrder' })
+  new GqlError(
+    [{ message, path: ['createOrder'], extensions: { ...(code ? { code } : {}), ...extra } }],
+    { operationName: 'CreateOrder' },
+  )
 
 test('GqlError is a real Error carrying code, extensions, errors and operation', () => {
   const err = response('PRODUCT_NOT_FOUND', 'product Salmon not found', { productId: 'p1' })
@@ -33,7 +49,10 @@ test('an error without extensions has a null code (old backend)', () => {
 })
 
 test('transport failures become GqlErrors that keep the status and the cause', () => {
-  const http = GqlError.fromTransport(Object.assign(new Error('502 Bad Gateway'), { status: 502 }), 'Menu')
+  const http = GqlError.fromTransport(
+    Object.assign(new Error('502 Bad Gateway'), { status: 502 }),
+    'Menu',
+  )
   assert.equal(http.code, 'HTTP_ERROR')
   assert.equal(http.status, 502)
   assert.equal(http.operationName, 'Menu')
@@ -74,34 +93,68 @@ test('every known code maps to a translated key, never to the raw message', () =
 })
 
 test('parameters of the backend flow into the message', () => {
-  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET', 'x', { minimum: '30' }), POLICY), {
-    key: 'cart.minimumDelivery',
-    params: { amount: 30 },
+  assert.deepEqual(
+    describeGqlError(response('DELIVERY_MINIMUM_NOT_MET', 'x', { minimum: '30' }), POLICY),
+    {
+      key: 'cart.minimumDelivery',
+      params: { amount: 30 },
+    },
+  )
+  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET'), POLICY).params, {
+    amount: 25,
   })
-  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET'), POLICY).params, { amount: 25 })
-  assert.deepEqual(describeGqlError(response('DELIVERY_OUT_OF_ZONE'), POLICY).params, { distance: 9 })
+  assert.deepEqual(describeGqlError(response('DELIVERY_OUT_OF_ZONE'), POLICY).params, {
+    distance: 9,
+  })
 })
 
 test('the delivery minimum and radius quoted come from the policy passed in, not from constants', () => {
-  const served = orderingPolicyFromApi({ deliveryMinimum: '30.00', deliveryMaxDistanceKm: 7.5, deliveryFeeTiers: [{ upToKm: 7.5, fee: '1.00' }] })
-  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET'), served).params, { amount: 30 })
-  assert.deepEqual(describeGqlError(response('DELIVERY_OUT_OF_ZONE'), served).params, { distance: 7.5 })
+  const served = orderingPolicyFromApi({
+    deliveryMinimum: '30.00',
+    deliveryMaxDistanceKm: 7.5,
+    deliveryFeeTiers: [{ upToKm: 7.5, fee: '1.00' }],
+  })
+  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET'), served).params, {
+    amount: 30,
+  })
+  assert.deepEqual(describeGqlError(response('DELIVERY_OUT_OF_ZONE'), served).params, {
+    distance: 7.5,
+  })
   // The backend's own figure still wins for the minimum.
-  assert.deepEqual(describeGqlError(response('DELIVERY_MINIMUM_NOT_MET', 'x', { minimum: '35' }), served).params, { amount: 35 })
-  assert.deepEqual(describeErrorCode('DELIVERY_OUT_OF_ZONE', served), { key: 'notify.errors.deliveryAddressTooFar', params: { distance: 7.5 } })
+  assert.deepEqual(
+    describeGqlError(response('DELIVERY_MINIMUM_NOT_MET', 'x', { minimum: '35' }), served).params,
+    { amount: 35 },
+  )
+  assert.deepEqual(describeErrorCode('DELIVERY_OUT_OF_ZONE', served), {
+    key: 'notify.errors.deliveryAddressTooFar',
+    params: { distance: 7.5 },
+  })
 })
 
 test('a bare code (an issue of a quote) is described like the error that carries it', () => {
-  assert.deepEqual(describeErrorCode('DELIVERY_MINIMUM_NOT_MET', POLICY, { minimum: '30' }), { key: 'cart.minimumDelivery', params: { amount: 30 } })
-  assert.deepEqual(describeErrorCode('PRICE_CHANGED', POLICY), { key: 'notify.errors.priceChanged' })
-  assert.deepEqual(describeErrorCode('LUNCH_SLOT_REQUIRED', POLICY), { key: 'notify.errors.lunchOnlyRequiresLunchSlot' })
+  assert.deepEqual(describeErrorCode('DELIVERY_MINIMUM_NOT_MET', POLICY, { minimum: '30' }), {
+    key: 'cart.minimumDelivery',
+    params: { amount: 30 },
+  })
+  assert.deepEqual(describeErrorCode('PRICE_CHANGED', POLICY), {
+    key: 'notify.errors.priceChanged',
+  })
+  assert.deepEqual(describeErrorCode('LUNCH_SLOT_REQUIRED', POLICY), {
+    key: 'notify.errors.lunchOnlyRequiresLunchSlot',
+  })
   assert.equal(describeErrorCode('SOMETHING_NEW', POLICY), null)
 })
 
 test('a non-2xx response that still carries GraphQL errors keeps their codes', () => {
   const fetchError = Object.assign(new Error('[POST] 422'), {
     status: 422,
-    data: { errors: [{ message: 'Cannot query field', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } }, { message: 'second' }, 'garbage'] },
+    data: {
+      errors: [
+        { message: 'Cannot query field', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } },
+        { message: 'second' },
+        'garbage',
+      ],
+    },
   })
   const err = GqlError.fromTransport(fetchError, 'Q')
   assert.equal(err.code, 'GRAPHQL_VALIDATION_FAILED')
@@ -109,20 +162,40 @@ test('a non-2xx response that still carries GraphQL errors keeps their codes', (
   assert.equal(err.errors.length, 2)
   assert.ok(err.cause === fetchError)
   // No GraphQL body: still the transport error it was.
-  assert.equal(GqlError.fromTransport(Object.assign(new Error('x'), { status: 502, data: { error: 'bad gateway' } })).code, 'HTTP_ERROR')
+  assert.equal(
+    GqlError.fromTransport(
+      Object.assign(new Error('x'), { status: 502, data: { error: 'bad gateway' } }),
+    ).code,
+    'HTTP_ERROR',
+  )
 })
 
 test('an unknown code or a non GqlError has no specific message (the caller shows its generic one)', () => {
-  assert.equal(describeGqlError(response('SOMETHING_NEW_FROM_A_NEWER_BACKEND', 'English text'), POLICY), null)
+  assert.equal(
+    describeGqlError(response('SOMETHING_NEW_FROM_A_NEWER_BACKEND', 'English text'), POLICY),
+    null,
+  )
   assert.equal(describeGqlError(new Error('plain'), POLICY), null)
   assert.equal(describeGqlError(undefined, POLICY), null)
 })
 
 test('transport errors: offline, rate limit, server error', () => {
-  assert.equal(describeGqlError(GqlError.fromTransport(new TypeError('Failed to fetch')), POLICY).key, 'notify.errors.networkError')
-  assert.equal(describeGqlError(GqlError.fromTransport({ status: 503, message: 'x' }), POLICY).key, 'notify.errors.serverError')
-  assert.equal(describeGqlError(GqlError.fromTransport({ status: 429, message: 'x' }), POLICY).key, 'notify.errors.tooManyRequests')
-  assert.equal(describeGqlError(GqlError.fromTransport({ status: 400, message: 'x' }), POLICY), null)
+  assert.equal(
+    describeGqlError(GqlError.fromTransport(new TypeError('Failed to fetch')), POLICY).key,
+    'notify.errors.networkError',
+  )
+  assert.equal(
+    describeGqlError(GqlError.fromTransport({ status: 503, message: 'x' }), POLICY).key,
+    'notify.errors.serverError',
+  )
+  assert.equal(
+    describeGqlError(GqlError.fromTransport({ status: 429, message: 'x' }), POLICY).key,
+    'notify.errors.tooManyRequests',
+  )
+  assert.equal(
+    describeGqlError(GqlError.fromTransport({ status: 400, message: 'x' }), POLICY),
+    null,
+  )
 })
 
 test('rollout fallback: an old backend sends English text without a code', () => {
@@ -134,27 +207,69 @@ test('rollout fallback: an old backend sends English text without a code', () =>
     ['you already have an active order using a coupon', 'notify.errors.couponAlreadyActive'],
     ['invalid coupon: invalid or expired coupon', 'coupon.invalid'],
     ['invalid coupon: minimum order amount of 30 not met', 'notify.errors.couponMinOrderNotMet'],
-    ['preferred ready time is no longer available — it is within the minimum preparation window', 'notify.errors.slotTooSoon'],
-    ['product "Salmon" is only available for a weekday lunch slot', 'notify.errors.lunchOnlyRequiresLunchSlot'],
+    [
+      'preferred ready time is no longer available — it is within the minimum preparation window',
+      'notify.errors.slotTooSoon',
+    ],
+    [
+      'product "Salmon" is only available for a weekday lunch slot',
+      'notify.errors.lunchOnlyRequiresLunchSlot',
+    ],
     ['product 1234 not found', 'notify.errors.productNotFound'],
-    ['invalid number of selections for group Broth on product Ramen: expected between 1 and 1, got 0', 'notify.errors.selectionInvalid'],
+    [
+      'invalid number of selections for group Broth on product Ramen: expected between 1 and 1, got 0',
+      'notify.errors.selectionInvalid',
+    ],
     ['failed to create payment: mollie said no', 'notify.errors.paymentFailed'],
   ]
   for (const [message, key] of cases) {
     assert.equal(describeGqlError(response(null, message), POLICY).key, key, message)
   }
   // A code always wins over the text.
-  assert.equal(describeGqlError(response('PAYMENT_FAILED', 'product 1 not found'), POLICY).key, 'notify.errors.paymentFailed')
+  assert.equal(
+    describeGqlError(response('PAYMENT_FAILED', 'product 1 not found'), POLICY).key,
+    'notify.errors.paymentFailed',
+  )
 })
 
 test('coupon refusals: code first, old-backend text second, generic last', () => {
-  assert.equal(describeCouponRefusal({ valid: false, errorCode: 'COUPON_MIN_ORDER_NOT_MET', errorMessage: 'x' }, POLICY).key, 'notify.errors.couponMinOrderNotMet')
-  assert.equal(describeCouponRefusal({ valid: false, errorCode: 'COUPON_RATE_LIMITED' }, POLICY).key, 'notify.errors.tooManyRequests')
-  assert.equal(describeCouponRefusal({ valid: false, errorMessage: 'minimum order amount of 30 not met' }, POLICY).key, 'notify.errors.couponMinOrderNotMet')
-  assert.equal(describeCouponRefusal({ valid: false, errorMessage: 'too many attempts, please try again in a minute' }, POLICY).key, 'notify.errors.tooManyRequests')
-  assert.equal(describeCouponRefusal({ valid: false, errorMessage: 'invalid or expired coupon' }, POLICY).key, 'coupon.invalid')
+  assert.equal(
+    describeCouponRefusal(
+      { valid: false, errorCode: 'COUPON_MIN_ORDER_NOT_MET', errorMessage: 'x' },
+      POLICY,
+    ).key,
+    'notify.errors.couponMinOrderNotMet',
+  )
+  assert.equal(
+    describeCouponRefusal({ valid: false, errorCode: 'COUPON_RATE_LIMITED' }, POLICY).key,
+    'notify.errors.tooManyRequests',
+  )
+  assert.equal(
+    describeCouponRefusal(
+      { valid: false, errorMessage: 'minimum order amount of 30 not met' },
+      POLICY,
+    ).key,
+    'notify.errors.couponMinOrderNotMet',
+  )
+  assert.equal(
+    describeCouponRefusal(
+      { valid: false, errorMessage: 'too many attempts, please try again in a minute' },
+      POLICY,
+    ).key,
+    'notify.errors.tooManyRequests',
+  )
+  assert.equal(
+    describeCouponRefusal({ valid: false, errorMessage: 'invalid or expired coupon' }, POLICY).key,
+    'coupon.invalid',
+  )
   assert.equal(describeCouponRefusal({ valid: false }, POLICY).key, 'coupon.invalid')
-  assert.equal(describeCouponRefusal({ valid: false, errorCode: 'NEW_UNKNOWN_CODE', errorMessage: 'English' }, POLICY).key, 'coupon.invalid')
+  assert.equal(
+    describeCouponRefusal(
+      { valid: false, errorCode: 'NEW_UNKNOWN_CODE', errorMessage: 'English' },
+      POLICY,
+    ).key,
+    'coupon.invalid',
+  )
 })
 
 test('what Sentry gets: our faults only, never the customer’s input, offline or aborts', () => {
@@ -170,7 +285,10 @@ test('what Sentry gets: our faults only, never the customer’s input, offline o
   assert.equal(isReportableError(new TypeError('x is not a function')), true)
   // REST failures: 4xx is the customer's input, 5xx is ours, a FetchError without status is offline.
   assert.equal(isReportableError(Object.assign(new Error('401'), { statusCode: 401 })), false)
-  assert.equal(isReportableError(Object.assign(new Error('x'), { response: { status: 422 } })), false)
+  assert.equal(
+    isReportableError(Object.assign(new Error('x'), { response: { status: 422 } })),
+    false,
+  )
   assert.equal(isReportableError(Object.assign(new Error('x'), { status: 503 })), true)
   assert.equal(isReportableError(Object.assign(new Error('x'), { name: 'FetchError' })), false)
   const abort = Object.assign(new Error('aborted'), { name: 'AbortError' })
@@ -180,10 +298,17 @@ test('what Sentry gets: our faults only, never the customer’s input, offline o
 
 test('an abort wrapped by ofetch (FetchError -> cause AbortError) or by the transport is still an abort', () => {
   const abort = Object.assign(new Error('aborted'), { name: 'AbortError' })
-  const fetchError = Object.assign(new Error('[POST] "/graphql": <no response> aborted'), { name: 'FetchError', cause: abort })
+  const fetchError = Object.assign(new Error('[POST] "/graphql": <no response> aborted'), {
+    name: 'FetchError',
+    cause: abort,
+  })
   assert.equal(isAbortError(fetchError), true)
   assert.equal(isReportableError(fetchError), false)
-  assert.equal(isAbortError(GqlError.fromTransport(fetchError)), true, 'GqlError -> FetchError -> AbortError')
+  assert.equal(
+    isAbortError(GqlError.fromTransport(fetchError)),
+    true,
+    'GqlError -> FetchError -> AbortError',
+  )
   assert.equal(isAbortError(Object.assign(new Error('x'), { cause: new Error('y') })), false)
   assert.equal(isAbortError(new Error('x')), false)
   assert.equal(isAbortError(null), false)
@@ -194,9 +319,18 @@ test('an abort wrapped by ofetch (FetchError -> cause AbortError) or by the tran
 })
 
 test('RATE_LIMITED and COUPON_CHECK_FAILED have messages; the throttle is not an error to report', () => {
-  assert.equal(describeGqlError(response('RATE_LIMITED'), POLICY).key, 'notify.errors.tooManyRequests')
-  assert.equal(describeGqlError(response('COUPON_CHECK_FAILED'), POLICY).key, 'notify.errors.couponCheckFailed')
-  assert.equal(describeCouponRefusal({ valid: false, errorCode: 'COUPON_CHECK_FAILED' }, POLICY).key, 'notify.errors.couponCheckFailed')
+  assert.equal(
+    describeGqlError(response('RATE_LIMITED'), POLICY).key,
+    'notify.errors.tooManyRequests',
+  )
+  assert.equal(
+    describeGqlError(response('COUPON_CHECK_FAILED'), POLICY).key,
+    'notify.errors.couponCheckFailed',
+  )
+  assert.equal(
+    describeCouponRefusal({ valid: false, errorCode: 'COUPON_CHECK_FAILED' }, POLICY).key,
+    'notify.errors.couponCheckFailed',
+  )
   assert.equal(isReportableError(response('RATE_LIMITED')), false)
 })
 
@@ -214,7 +348,9 @@ const flatten = (node, prefix = '', out = {}) => {
 
 for (const lang of ['fr', 'en', 'nl', 'zh']) {
   test(`every error message key exists in the ${lang} locale`, () => {
-    const messages = flatten(JSON.parse(readFileSync(new URL(`../locales/${lang}.json`, import.meta.url), 'utf8')))
+    const messages = flatten(
+      JSON.parse(readFileSync(new URL(`../locales/${lang}.json`, import.meta.url), 'utf8')),
+    )
     for (const key of GQL_ERROR_KEYS) {
       assert.equal(typeof messages[key], 'string', `${lang}: missing ${key}`)
       assert.notEqual(messages[key].trim(), '', `${lang}: empty ${key}`)
@@ -226,11 +362,20 @@ for (const lang of ['fr', 'en', 'nl', 'zh']) {
 // Parity with the backend: every code of tsb-service's apperr/codes.go is known here.
 // Only runs in the workspace layout (tsb-core next to tsb-service), skipped in a lone checkout.
 // ---------------------------------------------------------------------------------------------
-const goCodes = new URL('../../../../tsb-service/internal/api/graphql/apperr/codes.go', import.meta.url)
-test('the code table covers every code of tsb-service apperr/codes.go', { skip: !existsSync(goCodes) }, () => {
-  const source = readFileSync(goCodes, 'utf8')
-  const codes = [...source.matchAll(/Code\w+\s+Code = "(?<code>[A-Z_]+)"/gu)].map((m) => m.groups.code)
-  assert.ok(codes.length > 20, 'codes.go not parsed')
-  const missing = codes.filter((code) => !GQL_KNOWN_CODES.includes(code))
-  assert.deepEqual(missing, [], 'codes the backend sends that the web does not translate')
-})
+const goCodes = new URL(
+  '../../../../tsb-service/internal/api/graphql/apperr/codes.go',
+  import.meta.url,
+)
+test(
+  'the code table covers every code of tsb-service apperr/codes.go',
+  { skip: !existsSync(goCodes) },
+  () => {
+    const source = readFileSync(goCodes, 'utf8')
+    const codes = [...source.matchAll(/Code\w+\s+Code = "(?<code>[A-Z_]+)"/gu)].map(
+      (m) => m.groups.code,
+    )
+    assert.ok(codes.length > 20, 'codes.go not parsed')
+    const missing = codes.filter((code) => !GQL_KNOWN_CODES.includes(code))
+    assert.deepEqual(missing, [], 'codes the backend sends that the web does not translate')
+  },
+)

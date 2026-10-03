@@ -1,4 +1,4 @@
-import type { CartItem } from '@/types'
+import type { CartItem } from '#engine/types'
 import type { Ref } from 'vue'
 import { useState } from '#imports'
 
@@ -8,4 +8,4 @@ import { useState } from '#imports'
  * the line on confirm, then clears it.
  */
 export const useCartItemEdit = (): Ref<CartItem | null> =>
-    useState<CartItem | null>('cart-item-edit', () => null)
+  useState<CartItem | null>('cart-item-edit', () => null)

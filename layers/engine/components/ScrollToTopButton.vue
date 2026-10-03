@@ -1,18 +1,18 @@
 <!-- components/ScrollToTopButton.vue -->
 <template>
-    <Transition name="fade-up">
-        <button
-            v-show="showButton && !isCartVisible"
-            type="button"
-            @click="scrollToTop"
-            :aria-label="t('common.toTop', 'Back to top')"
-            class="scroll-top-btn fixed right-4 z-30 w-11 h-11 bg-neutral-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
-        >
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-            </svg>
-        </button>
-    </Transition>
+  <Transition name="fade-up">
+    <button
+      v-show="showButton && !isCartVisible"
+      type="button"
+      @click="scrollToTop"
+      :aria-label="t('common.toTop', 'Back to top')"
+      class="scroll-top-btn fixed right-4 z-30 w-11 h-11 bg-neutral-800/70 backdrop-blur-sm text-white rounded-full shadow-md flex items-center justify-center transition-all active:scale-95"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -30,36 +30,41 @@ const { t } = useI18n()
 const showButton = ref(false)
 
 const onScroll = () => {
-    showButton.value = window.scrollY > 300
+  showButton.value = window.scrollY > 300
 }
 
 const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: scrollBehavior() })
+  window.scrollTo({ top: 0, behavior: scrollBehavior() })
 }
 
 onMounted(() => {
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
 })
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('scroll', onScroll)
 })
 </script>
 
 <style scoped>
 /* Above the fixed bottom bar when there is one (its height is published by useBottomBarOffset), else above the safe area. */
 .scroll-top-btn {
-    bottom: min(calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem), calc(100dvh - 8rem));
+  bottom: min(
+    calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem),
+    calc(100dvh - 8rem)
+  );
 }
 
 .fade-up-enter-active,
 .fade-up-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .fade-up-enter-from,
 .fade-up-leave-to {
-    opacity: 0;
-    transform: translateY(8px);
+  opacity: 0;
+  transform: translateY(8px);
 }
 </style>

@@ -1,5 +1,5 @@
 // The persisted cart: slim versioned shape, migration of the v0 / v1 shapes, lines that cannot be recovered.
-// Run: `node --test layers/engine/utils/cartPersistence.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartPersistence.test.mjs`.
 
 import {
   CART_SCHEMA_VERSION,
@@ -12,29 +12,104 @@ import {
 import assert from 'node:assert/strict'
 import { lineTotalCents } from './pricing.ts'
 import { orderItemPayload } from './orderPayload.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const MAX = 99
 
 // A whole Product as the menu query returns it (what v0 / v1 carts persisted per line).
 const wholeProduct = (overrides = {}) => ({
-  id: 'bowl', categoryId: 'cat-bowls', code: 'M12', slug: 'malatang-bowl', name: 'Malatang bowl', description: 'A long marketing description '.repeat(5),
-  price: '10.00', pieceCount: null, isAvailable: true, isVisible: true, isDiscountable: true, isLunchOnly: false,
-  isHalal: false, isSpicy: true, isVegetarian: false,
-  category: { id: 'cat-bowls', name: 'Bowls', order: 2, slug: 'bowls', products: [{ id: 'x', name: 'many other products' }] },
+  id: 'bowl',
+  categoryId: 'cat-bowls',
+  code: 'M12',
+  slug: 'malatang-bowl',
+  name: 'Malatang bowl',
+  description: 'A long marketing description '.repeat(5),
+  price: '10.00',
+  pieceCount: null,
+  isAvailable: true,
+  isVisible: true,
+  isDiscountable: true,
+  isLunchOnly: false,
+  isHalal: false,
+  isSpicy: true,
+  isVegetarian: false,
+  category: {
+    id: 'cat-bowls',
+    name: 'Bowls',
+    order: 2,
+    slug: 'bowls',
+    products: [{ id: 'x', name: 'many other products' }],
+  },
   choices: [
-    { id: 'broth-a', productId: 'bowl', choiceGroupId: 'broths', priceModifier: '0.00', sortOrder: 1, name: 'Mild' },
-    { id: 'broth-b', productId: 'bowl', choiceGroupId: 'broths', priceModifier: '1.50', sortOrder: 2, name: 'Spicy' },
-    { id: 'noodle', productId: 'bowl', choiceGroupId: 'noodles', priceModifier: '0.50', sortOrder: 3, name: 'Glass noodles' },
+    {
+      id: 'broth-a',
+      productId: 'bowl',
+      choiceGroupId: 'broths',
+      priceModifier: '0.00',
+      sortOrder: 1,
+      name: 'Mild',
+    },
+    {
+      id: 'broth-b',
+      productId: 'bowl',
+      choiceGroupId: 'broths',
+      priceModifier: '1.50',
+      sortOrder: 2,
+      name: 'Spicy',
+    },
+    {
+      id: 'noodle',
+      productId: 'bowl',
+      choiceGroupId: 'noodles',
+      priceModifier: '0.50',
+      sortOrder: 3,
+      name: 'Glass noodles',
+    },
   ],
-  choiceGroups: [{ id: 'broths', productId: 'bowl', minSelections: 1, maxSelections: 1, sortOrder: 1, name: 'Broth', choices: [] }],
+  choiceGroups: [
+    {
+      id: 'broths',
+      productId: 'bowl',
+      minSelections: 1,
+      maxSelections: 1,
+      sortOrder: 1,
+      name: 'Broth',
+      choices: [],
+    },
+  ],
   ...overrides,
 })
-const tea = (overrides = {}) => wholeProduct({ id: 'tea', code: 'D1', slug: 'green-tea', name: 'Green tea', price: '3.50', isDiscountable: false, choices: [], choiceGroups: [], category: { id: 'cat-drinks', name: 'Drinks', order: 5, slug: 'drinks', products: [] }, categoryId: 'cat-drinks', ...overrides })
+const tea = (overrides = {}) =>
+  wholeProduct({
+    id: 'tea',
+    code: 'D1',
+    slug: 'green-tea',
+    name: 'Green tea',
+    price: '3.50',
+    isDiscountable: false,
+    choices: [],
+    choiceGroups: [],
+    category: { id: 'cat-drinks', name: 'Drinks', order: 5, slug: 'drinks', products: [] },
+    categoryId: 'cat-drinks',
+    ...overrides,
+  })
 
-const v1Line = (product, quantity, selectedChoices) => ({ product, quantity, selectedChoices, selectedChoice: null })
+const v1Line = (product, quantity, selectedChoices) => ({
+  product,
+  quantity,
+  selectedChoices,
+  selectedChoice: null,
+})
 const v1Cart = (products, extra = {}) => ({
-  products, collectionOption: 'PICKUP', couponCode: null, couponDiscountCents: 0, paymentOption: 'CASH', address: null, orderExtra: [], orderNote: null, ...extra,
+  products,
+  collectionOption: 'PICKUP',
+  couponCode: null,
+  couponDiscountCents: 0,
+  paymentOption: 'CASH',
+  address: null,
+  orderExtra: [],
+  orderNote: null,
+  ...extra,
 })
 
 test('the persisted line is slim: identity, selections and a minimal snapshot', () => {
@@ -46,7 +121,13 @@ test('the persisted line is slim: identity, selections and a minimal snapshot', 
     selections: [{ groupId: 'broths', choiceId: 'broth-b', quantity: 2 }],
     choiceId: null,
     snapshot: {
-      name: 'Malatang bowl', code: 'M12', slug: 'malatang-bowl', priceCents: 1000, pieceCount: null, isDiscountable: true, isLunchOnly: false,
+      name: 'Malatang bowl',
+      code: 'M12',
+      slug: 'malatang-bowl',
+      priceCents: 1000,
+      pieceCount: null,
+      isDiscountable: true,
+      isLunchOnly: false,
       category: { id: 'cat-bowls', name: 'Bowls', slug: 'bowls' },
       // Only the SELECTED choice, with its price as cents.
       choices: [{ id: 'broth-b', groupId: 'broths', priceModifierCents: 150, name: 'Spicy' }],
@@ -54,12 +135,18 @@ test('the persisted line is slim: identity, selections and a minimal snapshot', 
   })
   const wire = JSON.stringify(persisted)
   assert.ok(!wire.includes('description'))
-  assert.ok(wire.length < JSON.stringify(line).length / 2, `slim: ${wire.length} vs ${JSON.stringify(line).length}`)
+  assert.ok(
+    wire.length < JSON.stringify(line).length / 2,
+    `slim: ${wire.length} vs ${JSON.stringify(line).length}`,
+  )
 })
 
 test('a slim line renders and prices exactly like the whole one', () => {
   const lines = [
-    v1Line(wholeProduct(), 2, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 2 }, { groupId: 'noodles', choiceId: 'noodle', quantity: 2 }]),
+    v1Line(wholeProduct(), 2, [
+      { groupId: 'broths', choiceId: 'broth-b', quantity: 2 },
+      { groupId: 'noodles', choiceId: 'noodle', quantity: 2 },
+    ]),
     v1Line(tea(), 3, []),
   ]
   for (const line of lines) {
@@ -77,7 +164,10 @@ test('a slim line renders and prices exactly like the whole one', () => {
 
 test('serialize then parse is lossless for the cart state, and writes the version', () => {
   const state = v1Cart(
-    [v1Line(wholeProduct(), 1, [{ groupId: 'broths', choiceId: 'broth-a', quantity: 1 }]), v1Line(tea(), 2, [])],
+    [
+      v1Line(wholeProduct(), 1, [{ groupId: 'broths', choiceId: 'broth-a', quantity: 1 }]),
+      v1Line(tea(), 2, []),
+    ],
     { couponCode: 'TOKYO10', couponDiscountCents: 250, addressExtra: 'ring twice' },
   )
   const json = serializeCartState(state)
@@ -91,7 +181,13 @@ test('serialize then parse is lossless for the cart state, and writes the versio
   assert.equal(back.couponCode, 'TOKYO10')
   assert.equal(back.couponDiscountCents, 250)
   assert.equal(back.addressExtra, 'ring twice')
-  assert.deepEqual(back.products.map((l) => [l.product.id, l.quantity, lineTotalCents(l)]), [['bowl', 1, 1000], ['tea', 2, 700]])
+  assert.deepEqual(
+    back.products.map((l) => [l.product.id, l.quantity, lineTotalCents(l)]),
+    [
+      ['bowl', 1, 1000],
+      ['tea', 2, 700],
+    ],
+  )
   // Stable: writing the migrated state again gives the same bytes.
   assert.equal(serializeCartState(back), json)
 })
@@ -112,9 +208,14 @@ test('v1 (no version, whole products) migrates to the slim shape without changin
 
 test('Phase 1: a legacy choice stored per unit is scaled to the line quantity, duplicate lines merge', () => {
   const [, choice] = wholeProduct().choices
-  const legacy = { ...v1Line(wholeProduct(), 3, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 1 }]), selectedChoice: choice }
+  const legacy = {
+    ...v1Line(wholeProduct(), 3, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 1 }]),
+    selectedChoice: choice,
+  }
   const { state } = migratePersistedCart(v1Cart([legacy]), MAX)
-  assert.deepEqual(state.products[0].selectedChoices, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 3 }])
+  assert.deepEqual(state.products[0].selectedChoices, [
+    { groupId: 'broths', choiceId: 'broth-b', quantity: 3 },
+  ])
   assert.equal(state.products[0].selectedChoice.id, 'broth-b')
   // 3 × 10.00 + 3 × 1.50
   assert.equal(lineTotalCents(state.products[0]), 3450)
@@ -136,7 +237,9 @@ test('v0: no selectedChoices at all, only the single selectedChoice, and a euro 
   }
   const { state, dropped } = migratePersistedCart(v0, MAX)
   assert.equal(dropped, 0)
-  assert.deepEqual(state.products[0].selectedChoices, [{ groupId: 'noodles', choiceId: 'noodle', quantity: 2 }])
+  assert.deepEqual(state.products[0].selectedChoices, [
+    { groupId: 'noodles', choiceId: 'noodle', quantity: 2 },
+  ])
   // Phase 2.1: euros become integer cents, the old key is gone.
   assert.equal(state.couponDiscountCents, 350)
   assert.ok(!('couponDiscount' in state))
@@ -146,7 +249,10 @@ test('v0: no selectedChoices at all, only the single selectedChoice, and a euro 
 test('v0: a legacy choice without a group stays the legacy single choice (no selection with an empty groupId)', () => {
   const [, , noodle] = wholeProduct().choices
   const { choiceGroupId: _group, ...groupless } = noodle
-  const v0 = { products: [{ product: wholeProduct(), quantity: 2, selectedChoice: groupless }], collectionOption: 'PICKUP' }
+  const v0 = {
+    products: [{ product: wholeProduct(), quantity: 2, selectedChoice: groupless }],
+    collectionOption: 'PICKUP',
+  }
   const { state, dropped } = migratePersistedCart(v0, MAX)
   assert.equal(dropped, 0)
   const [line] = state.products
@@ -163,11 +269,28 @@ test('v0: a legacy choice without a group stays the legacy single choice (no sel
 
 test('the coupon amount: cents win when valid, garbage becomes 0, and no code means no discount', () => {
   const base = { products: [], couponCode: 'X' }
-  assert.equal(migratePersistedCart({ ...base, couponDiscountCents: 250 }, MAX).state.couponDiscountCents, 250)
-  assert.equal(migratePersistedCart({ ...base, couponDiscountCents: -5 }, MAX).state.couponDiscountCents, 0)
-  assert.equal(migratePersistedCart({ ...base, couponDiscountCents: 2.5 }, MAX).state.couponDiscountCents, 0)
-  assert.equal(migratePersistedCart({ ...base, couponDiscountCents: 'x', couponDiscount: 1.2 }, MAX).state.couponDiscountCents, 120)
-  assert.equal(migratePersistedCart({ products: [], couponCode: null, couponDiscountCents: 500 }, MAX).state.couponDiscountCents, 0)
+  assert.equal(
+    migratePersistedCart({ ...base, couponDiscountCents: 250 }, MAX).state.couponDiscountCents,
+    250,
+  )
+  assert.equal(
+    migratePersistedCart({ ...base, couponDiscountCents: -5 }, MAX).state.couponDiscountCents,
+    0,
+  )
+  assert.equal(
+    migratePersistedCart({ ...base, couponDiscountCents: 2.5 }, MAX).state.couponDiscountCents,
+    0,
+  )
+  assert.equal(
+    migratePersistedCart({ ...base, couponDiscountCents: 'x', couponDiscount: 1.2 }, MAX).state
+      .couponDiscountCents,
+    120,
+  )
+  assert.equal(
+    migratePersistedCart({ products: [], couponCode: null, couponDiscountCents: 500 }, MAX).state
+      .couponDiscountCents,
+    0,
+  )
 })
 
 test('lines that cannot be recovered are dropped and counted; the good ones survive', () => {
@@ -180,7 +303,11 @@ test('lines that cannot be recovered are dropped and counted; the good ones surv
     { product: { ...tea(), price: null }, quantity: 1, selectedChoices: [] }, // Cannot be priced
     { product: { ...tea(), price: 'free' }, quantity: 1, selectedChoices: [] },
     { product: tea(), quantity: 1, selectedChoices: [{ groupId: 'g', quantity: 1 }] }, // Selection without a choice
-    { product: tea(), quantity: 1, selectedChoices: [{ groupId: 'g', choiceId: 'c', quantity: 0 }] },
+    {
+      product: tea(),
+      quantity: 1,
+      selectedChoices: [{ groupId: 'g', choiceId: 'c', quantity: 0 }],
+    },
     'garbage',
     null,
     // The v2 lines
@@ -197,12 +324,27 @@ test('lines that cannot be recovered are dropped and counted; the good ones surv
 })
 
 test('quantities are clamped to 1..max, fractions truncated', () => {
-  const { state } = migratePersistedCart(v1Cart([v1Line(tea(), 250, []), v1Line(wholeProduct({ id: 'x' }), 0, []), v1Line(wholeProduct({ id: 'y' }), 2.9, [])]), MAX)
-  assert.deepEqual(state.products.map((l) => l.quantity), [99, 1, 2])
+  const { state } = migratePersistedCart(
+    v1Cart([
+      v1Line(tea(), 250, []),
+      v1Line(wholeProduct({ id: 'x' }), 0, []),
+      v1Line(wholeProduct({ id: 'y' }), 2.9, []),
+    ]),
+    MAX,
+  )
+  assert.deepEqual(
+    state.products.map((l) => l.quantity),
+    [99, 1, 2],
+  )
 })
 
 test('a cart written by a NEWER build is not guessed at: its lines are dropped, the rest is kept', () => {
-  const future = { version: CART_SCHEMA_VERSION + 1, products: [{ whatever: true }, { productId: 'p' }], collectionOption: 'PICKUP', couponCode: null }
+  const future = {
+    version: CART_SCHEMA_VERSION + 1,
+    products: [{ whatever: true }, { productId: 'p' }],
+    collectionOption: 'PICKUP',
+    couponCode: null,
+  }
   const { state, dropped, from } = migratePersistedCart(future, MAX)
   assert.equal(from, CART_SCHEMA_VERSION + 1)
   assert.equal(dropped, 2)
@@ -221,13 +363,25 @@ test('garbage in storage gives an empty cart instead of a failed page', () => {
 
 test('a saved cart with a product that is gone keeps the line (the server flags it, not the migration)', () => {
   // The migration cannot know the menu: an unavailable / deleted product is the QUOTE's job (PRODUCT_UNAVAILABLE / PRODUCT_NOT_FOUND).
-  const { state, dropped } = migratePersistedCart(v1Cart([v1Line(wholeProduct({ id: 'deleted-last-week', isAvailable: false }), 1, [])]), MAX)
+  const { state, dropped } = migratePersistedCart(
+    v1Cart([v1Line(wholeProduct({ id: 'deleted-last-week', isAvailable: false }), 1, [])]),
+    MAX,
+  )
   assert.equal(dropped, 0)
   assert.equal(state.products.length, 1)
 })
 
 test('migrating twice changes nothing (idempotent)', () => {
-  const first = migratePersistedCart(v1Cart([v1Line(wholeProduct(), 2, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 2 }]), v1Line(tea(), 1, [])], { couponCode: 'A', couponDiscountCents: 100 }), MAX)
+  const first = migratePersistedCart(
+    v1Cart(
+      [
+        v1Line(wholeProduct(), 2, [{ groupId: 'broths', choiceId: 'broth-b', quantity: 2 }]),
+        v1Line(tea(), 1, []),
+      ],
+      { couponCode: 'A', couponDiscountCents: 100 },
+    ),
+    MAX,
+  )
   const json = serializeCartState(first.state)
   const second = parsePersistedCart(json, MAX)
   assert.equal(second.dropped, 0)

@@ -8,30 +8,30 @@ import { useI18n } from 'vue-i18n'
 
 type Vars = Record<string, unknown> | (() => Record<string, unknown>)
 interface Options {
-    immediate?: boolean
-    cache?: boolean
-    server?: boolean
-    // When true, returns immediately without blocking on the initial fetch; callers rely on the returned `pending` ref to render a loading state.
-    lazy?: boolean
-    /**
-     * What a second caller of the same query does while the first is still in flight: 'cancel' (Nuxt's default) aborts it and
-     * asks again, 'defer' joins it. Only for queries without variables (two callers with different variables are different
-     * keys, so there is nothing to join): the layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
-     */
-    dedupe?: 'cancel' | 'defer'
-    /**
-     * An older document for a backend that does not know a field of the main one (a newer field added to a shared query).
-     * The main document is asked first; when the error says the backend does not know it (`isUnsupported`), `unsupported`
-     * is set (shared, so it is remembered for the whole app) and `query` is asked instead, now and on every later run.
-     * The cache key stays the main document's. `variables` are what the legacy document is asked with (the main
-     * document's by default): a document must not be sent a variable it does not declare, which a server rejects.
-     */
-    legacy?: {
-        query: string | DocumentNode
-        variables?: Vars
-        isUnsupported: (err: unknown) => boolean
-        unsupported: Ref<boolean>
-    }
+  immediate?: boolean
+  cache?: boolean
+  server?: boolean
+  // When true, returns immediately without blocking on the initial fetch; callers rely on the returned `pending` ref to render a loading state.
+  lazy?: boolean
+  /**
+   * What a second caller of the same query does while the first is still in flight: 'cancel' (Nuxt's default) aborts it and
+   * asks again, 'defer' joins it. Only for queries without variables (two callers with different variables are different
+   * keys, so there is nothing to join): the layout and several components of one page ask for the same restaurantConfig, and the server answered it 2-3 times per render.
+   */
+  dedupe?: 'cancel' | 'defer'
+  /**
+   * An older document for a backend that does not know a field of the main one (a newer field added to a shared query).
+   * The main document is asked first; when the error says the backend does not know it (`isUnsupported`), `unsupported`
+   * is set (shared, so it is remembered for the whole app) and `query` is asked instead, now and on every later run.
+   * The cache key stays the main document's. `variables` are what the legacy document is asked with (the main
+   * document's by default): a document must not be sent a variable it does not declare, which a server rejects.
+   */
+  legacy?: {
+    query: string | DocumentNode
+    variables?: Vars
+    isUnsupported: (err: unknown) => boolean
+    unsupported: Ref<boolean>
+  }
 }
 
 /*
@@ -48,53 +48,61 @@ interface Options {
  * bypasses the cache and goes to the network.
  */
 type GetCachedData<T> = (key: string, nuxtApp: NuxtApp, ctx: { cause: string }) => T | undefined
-const freshExceptWhenHydrating = (key: string, nuxtApp: NuxtApp, ctx: { cause: string }): unknown =>
-    ctx.cause === 'initial' && (nuxtApp.isHydrating || import.meta.server) ? nuxtApp.payload.data[key] : undefined
+const freshExceptWhenHydrating = (
+  key: string,
+  nuxtApp: NuxtApp,
+  ctx: { cause: string },
+): unknown =>
+  ctx.cause === 'initial' && (nuxtApp.isHydrating || import.meta.server)
+    ? nuxtApp.payload.data[key]
+    : undefined
 
 export async function useGqlQuery<T>(
-    rawQuery: string | DocumentNode,
-    variables: Vars = {},
-    opts: Options = { immediate: true, cache: false },
+  rawQuery: string | DocumentNode,
+  variables: Vars = {},
+  opts: Options = { immediate: true, cache: false },
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
-    const { $gqlFetch } = useNuxtApp()
-    const { locale } = useI18n()
-    const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
-    const getVars = () => evaluate(variables)
-    const ask = (document: string | DocumentNode, vars: Vars = variables) => $gqlFetch<T>(printIfAst(document), { variables: evaluate(vars) })
-    const { legacy } = opts
-    const handler = async (): Promise<T> => {
-        if (!legacy) return ask(rawQuery)
-        if (!legacy.unsupported.value) {
-            try {
-                return await ask(rawQuery)
-            } catch (err) {
-                if (!legacy.isUnsupported(err)) throw err
-                legacy.unsupported.value = true
-            }
-        }
-        return ask(legacy.query, legacy.variables ?? variables)
+  const { $gqlFetch } = useNuxtApp()
+  const { locale } = useI18n()
+  const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
+  const getVars = () => evaluate(variables)
+  const ask = (document: string | DocumentNode, vars: Vars = variables) =>
+    $gqlFetch<T>(printIfAst(document), { variables: evaluate(vars) })
+  const { legacy } = opts
+  const handler = async (): Promise<T> => {
+    if (!legacy) return ask(rawQuery)
+    if (!legacy.unsupported.value) {
+      try {
+        return await ask(rawQuery)
+      } catch (err) {
+        if (!legacy.isUnsupported(err)) throw err
+        legacy.unsupported.value = true
+      }
     }
+    return ask(legacy.query, legacy.variables ?? variables)
+  }
 
-    /*
-     * The key is the document, the evaluated variables and the locale (audit R3), and it is a getter: Nuxt 4 watches a
-     * reactive key and, when it changes (variables from a getter, or the language), starts the query under the new key
-     * (keeping the previous data on screen until the answer arrives). That replaces the two watchers that used to
-     * `refresh()` one shared slot, and it keeps a slow answer for the old variables from landing on the new ones.
-     * Locale in the key also stops SSR/cached payloads bleeding across languages.
-     */
-    const query = printIfAst(rawQuery)
-    const key = () => gqlQueryKey(query, getVars(), locale.value)
+  /*
+   * The key is the document, the evaluated variables and the locale (audit R3), and it is a getter: Nuxt 4 watches a
+   * reactive key and, when it changes (variables from a getter, or the language), starts the query under the new key
+   * (keeping the previous data on screen until the answer arrives). That replaces the two watchers that used to
+   * `refresh()` one shared slot, and it keeps a slow answer for the old variables from landing on the new ones.
+   * Locale in the key also stops SSR/cached payloads bleeding across languages.
+   */
+  const query = printIfAst(rawQuery)
+  const key = () => gqlQueryKey(query, getVars(), locale.value)
 
-    const asyncData = await useAsyncData<T>(key, handler, {
-        immediate: opts.immediate,
-        ...(opts.lazy ? { lazy: true } : {}),
-        ...(opts.dedupe ? { dedupe: opts.dedupe } : {}),
-        ...(opts.server === false ? { server: false } : {}),
-        ...(opts.cache ? {} : { getCachedData: freshExceptWhenHydrating as GetCachedData<T> }),
-    })
+  const asyncData = await useAsyncData<T>(key, handler, {
+    immediate: opts.immediate,
+    ...(opts.lazy ? { lazy: true } : {}),
+    ...(opts.dedupe ? { dedupe: opts.dedupe } : {}),
+    ...(opts.server === false ? { server: false } : {}),
+    ...(opts.cache ? {} : { getCachedData: freshExceptWhenHydrating as GetCachedData<T> }),
+  })
 
-    return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & { refetch: () => Promise<void> }
+  return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & {
+    refetch: () => Promise<void>
+  }
 }
 
-const printIfAst = (q: string | DocumentNode): string =>
-    typeof q === 'string' ? q : print(q)
+const printIfAst = (q: string | DocumentNode): string => (typeof q === 'string' ? q : print(q))

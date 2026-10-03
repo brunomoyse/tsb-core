@@ -14,23 +14,23 @@ export type PaymentOutcome = 'paid' | 'canceled' | 'failed' | 'expired' | 'aband
 
 /** Map a raw Mollie `payment.status` to a user-facing outcome. */
 export function outcomeFromPaymentStatus(status: string | null | undefined): PaymentOutcome {
-    switch (status) {
-        case 'paid':
-        case 'authorized':
-            return 'paid'
-        case 'canceled':
-            return 'canceled'
-        case 'failed':
-            return 'failed'
-        case 'expired':
-            return 'expired'
-        // `open` / `pending` / unknown → not finalised yet.
-        default:
-            return 'abandoned'
-    }
+  switch (status) {
+    case 'paid':
+    case 'authorized':
+      return 'paid'
+    case 'canceled':
+      return 'canceled'
+    case 'failed':
+      return 'failed'
+    case 'expired':
+      return 'expired'
+    // `open` / `pending` / unknown → not finalised yet.
+    default:
+      return 'abandoned'
+  }
 }
 
 /** Any outcome other than a confirmed payment needs the problem screen. */
 export function isPaymentProblem(outcome: PaymentOutcome): boolean {
-    return outcome !== 'paid'
+  return outcome !== 'paid'
 }

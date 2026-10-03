@@ -5,79 +5,51 @@ on:
     branches: [main]
 
 jobs:
-  lint:
-    name: Lint
+  check:
+    name: Vite+ check and unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
+          node-version: '24'
+          cache: true
 
-      - name: Install dependencies
-        run: npm ci
+      - name: vp check (format, lint, type check) and repo guard scripts
+        run: vp run check
 
-      - name: Run oxlint, SSR-safety and locale-parity checks
-        run: npm run lint
-
-      - name: Run engine unit tests
-        run: node --test layers/engine/utils/*.test.mjs
+      - name: Engine unit tests (vp test)
+        run: vp test run
 
   typecheck:
     name: Typecheck (${{ matrix.app }})
     runs-on: ubuntu-latest
-    # Ratchet: the codebase had never been type-checked, so the baseline is not
-    # zero. The job fails if an app's "error TS" count rises above its baseline.
-    # Baselines should only ever go DOWN: lower the number in the same PR that
-    # fixes errors, and replace this ratchet with a plain `nuxi typecheck` once
-    # an app reaches zero.
+    # vue-tsc also checks Vue templates, which vp check does not.
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - app: tokyosushi
-            baseline: 103
-          - app: ygfliege
-            baseline: 120
+        app: [tokyosushi, ygfliege]
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
-      ZITADEL_AUTHORITY: https://zitadel.localhost
-      ZITADEL_CLIENT_ID: ci-dummy-client-id
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
+          node-version: '24'
+          cache: true
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck (ratchet)
+      - name: Typecheck
         working-directory: apps/${{ matrix.app }}
-        shell: bash
-        env:
-          BASELINE: ${{ matrix.baseline }}
-        run: |
-          # `nuxi typecheck` exits non-zero while errors exist; the count below is the gate.
-          npx nuxi typecheck > typecheck.log 2>&1 || true
-          cat typecheck.log
-          n=$(grep -c 'error TS' typecheck.log || true)
-          echo "::notice title=typecheck ${{ matrix.app }}::${n} TypeScript errors (baseline ${BASELINE})"
-          if [ "$n" -gt "$BASELINE" ]; then
-            echo "::error::${n} TypeScript errors exceeds the ${{ matrix.app }} baseline of ${BASELINE}. Fix the new errors; do not raise the baseline."
-            exit 1
-          fi
+        run: vp exec nuxi typecheck
 
   build:
     name: Build (${{ matrix.app }})
@@ -90,20 +62,15 @@ jobs:
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
-      ZITADEL_AUTHORITY: https://zitadel.localhost
-      ZITADEL_CLIENT_ID: ci-dummy-client-id
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+          node-version: '24'
+          cache: true
 
       - name: Build
         run: npm run build -w ${{ matrix.app }}
@@ -117,25 +84,20 @@ jobs:
       API_BASE_URL: https://localhost/api/v1
       S3_BUCKET_URL: https://localhost
       GRAPHQL_WS_URL: wss://localhost/api/v1/graphql
-      ZITADEL_AUTHORITY: https://zitadel.localhost
-      ZITADEL_CLIENT_ID: ci-dummy-client-id
       E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
       E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+          node-version: '24'
+          cache: true
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: vp exec playwright install --with-deps chromium
 
       - name: Run E2E tests
         run: npm run test:e2e

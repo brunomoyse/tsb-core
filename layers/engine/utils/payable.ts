@@ -20,30 +20,33 @@ import { roundCentsToStep } from './money.ts'
  * Every cart / checkout surface shows this one number (audit finding M3).
  */
 export interface PayableInput {
-    subtotalCents: number
-    /** Already rounded to 0,10 € by the caller or not: it is snapped here as the backend does. */
-    pickupDiscountCents?: number
-    couponDiscountCents?: number
-    /** 0 for pickup, or for delivery while the fee is still unknown. Never negative. */
-    deliveryFeeCents?: number
-    /** The PSP surcharge, only when paying online. */
-    onlineFeeCents?: number
-    /** `policy.totalRoundingStepCents`: every amount is snapped to a multiple of it. */
-    roundingStepCents: number
+  subtotalCents: number
+  /** Already rounded to 0,10 € by the caller or not: it is snapped here as the backend does. */
+  pickupDiscountCents?: number
+  couponDiscountCents?: number
+  /** 0 for pickup, or for delivery while the fee is still unknown. Never negative. */
+  deliveryFeeCents?: number
+  /** The PSP surcharge, only when paying online. */
+  onlineFeeCents?: number
+  /** `policy.totalRoundingStepCents`: every amount is snapped to a multiple of it. */
+  roundingStepCents: number
 }
 
 export function computePayableCents(input: PayableInput): number {
-    const goodsAndDelivery = input.subtotalCents + Math.max(input.deliveryFeeCents ?? 0, 0)
-    const discounts =
-        roundCentsToStep(Math.max(input.pickupDiscountCents ?? 0, 0), input.roundingStepCents) +
-        roundCentsToStep(Math.max(input.couponDiscountCents ?? 0, 0), input.roundingStepCents)
-    const afterDiscounts = Math.max(goodsAndDelivery - discounts, 0)
-    return roundCentsToStep(afterDiscounts + Math.max(input.onlineFeeCents ?? 0, 0), input.roundingStepCents)
+  const goodsAndDelivery = input.subtotalCents + Math.max(input.deliveryFeeCents ?? 0, 0)
+  const discounts =
+    roundCentsToStep(Math.max(input.pickupDiscountCents ?? 0, 0), input.roundingStepCents) +
+    roundCentsToStep(Math.max(input.couponDiscountCents ?? 0, 0), input.roundingStepCents)
+  const afterDiscounts = Math.max(goodsAndDelivery - discounts, 0)
+  return roundCentsToStep(
+    afterDiscounts + Math.max(input.onlineFeeCents ?? 0, 0),
+    input.roundingStepCents,
+  )
 }
 
 /** What is still missing for the delivery minimum, in cents (0 once reached). */
 export function amountToMinimumCents(subtotalCents: number, minimumCents: number): number {
-    return Math.max(minimumCents - subtotalCents, 0)
+  return Math.max(minimumCents - subtotalCents, 0)
 }
 
 /**
@@ -55,13 +58,21 @@ export function amountToMinimumCents(subtotalCents: number, minimumCents: number
  * exact 16.10 €.
  */
 export function pickupDiscountCents(
-    lines: { totalCents: number; isDiscountable: boolean }[],
-    subtotalCents: number,
-    policy: Pick<OrderingPolicy, 'pickupDiscountMinimumCents' | 'pickupDiscountRateBp' | 'totalRoundingStepCents'>,
+  lines: { totalCents: number; isDiscountable: boolean }[],
+  subtotalCents: number,
+  policy: Pick<
+    OrderingPolicy,
+    'pickupDiscountMinimumCents' | 'pickupDiscountRateBp' | 'totalRoundingStepCents'
+  >,
 ): number {
-    if (subtotalCents < policy.pickupDiscountMinimumCents) return 0
-    const discountableCents = lines.reduce((sum, line) => (line.isDiscountable ? sum + line.totalCents : sum), 0)
-    // Basis points of an integer number of cents: round half up to the cent.
-    const discountCents = Math.floor((discountableCents * policy.pickupDiscountRateBp + 5_000) / 10_000)
-    return roundCentsToStep(discountCents, policy.totalRoundingStepCents)
+  if (subtotalCents < policy.pickupDiscountMinimumCents) return 0
+  const discountableCents = lines.reduce(
+    (sum, line) => (line.isDiscountable ? sum + line.totalCents : sum),
+    0,
+  )
+  // Basis points of an integer number of cents: round half up to the cent.
+  const discountCents = Math.floor(
+    (discountableCents * policy.pickupDiscountRateBp + 5_000) / 10_000,
+  )
+  return roundCentsToStep(discountCents, policy.totalRoundingStepCents)
 }

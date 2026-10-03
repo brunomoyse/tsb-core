@@ -1,9 +1,9 @@
 // Card-subtitle labels of required choice groups.
-// Run: `node --test layers/engine/utils/choiceGroupLabel.test.mjs`.
+// Run: `vp test run layers/engine/utils/choiceGroupLabel.test.mjs`.
 
 import { choiceGroupCountLabel, choiceGroupLabelKey } from './choiceGroupLabel.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('a pick-one group shows how many options there are, not "1 sauce"', () => {
   assert.equal(choiceGroupCountLabel('Sauce', 1, 4), 'sauce (4)')

@@ -12,33 +12,38 @@ const route = useRoute()
 const { trackEvent, resetUser } = useTracking()
 
 onMounted(async () => {
-    trackEvent('user_logged_out')
-    resetUser()
-    authStore.clearUser()
+  trackEvent('user_logged_out')
+  resetUser()
+  authStore.clearUser()
 
-    const { useOidc } = await import('#engine/composables/useOidc')
+  const { useOidc } = await import('#engine/composables/useOidc')
 
-    // Front-channel logout: Zitadel already ended the session and notified us via
-    // A logout_token query param. Just clear local state and redirect — do NOT
-    // Call signOut() or we loop back into Zitadel's end-session endpoint.
-    if (route.query.logout_token) {
-        const { removeUser } = useOidc()
-        try { await removeUser() } catch { /* Best-effort cleanup */ }
-        const redirectTarget = typeof route.query.post_logout_redirect === 'string'
-            ? route.query.post_logout_redirect
-            : localePath('/')
-        window.location.replace(redirectTarget)
-        return
-    }
-
-    // User-initiated logout: end OIDC session at Zitadel (triggers redirect to post_logout_redirect_uri)
-    const { signOut } = useOidc()
+  // Front-channel logout: Zitadel already ended the session and notified us via
+  // A logout_token query param. Just clear local state and redirect — do NOT
+  // Call signOut() or we loop back into Zitadel's end-session endpoint.
+  if (route.query.logout_token) {
+    const { removeUser } = useOidc()
     try {
-        await signOut()
-    } catch (err: unknown) {
-        // If Zitadel unreachable, navigate home anyway
-        reportError(err, 'auth.signOut')
-        navigateTo(localePath('/'))
+      await removeUser()
+    } catch {
+      /* Best-effort cleanup */
     }
+    const redirectTarget =
+      typeof route.query.post_logout_redirect === 'string'
+        ? route.query.post_logout_redirect
+        : localePath('/')
+    window.location.replace(redirectTarget)
+    return
+  }
+
+  // User-initiated logout: end OIDC session at Zitadel (triggers redirect to post_logout_redirect_uri)
+  const { signOut } = useOidc()
+  try {
+    await signOut()
+  } catch (err: unknown) {
+    // If Zitadel unreachable, navigate home anyway
+    reportError(err, 'auth.signOut')
+    navigateTo(localePath('/'))
+  }
 })
 </script>

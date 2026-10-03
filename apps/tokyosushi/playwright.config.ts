@@ -38,7 +38,12 @@ export default defineConfig<BrandOptions>({
     { name: 'brand-desktop', testDir: './e2e', use: desktop },
     { name: 'brand-mobile', testDir: './e2e', use: mobile, testMatch: ['smoke.spec.ts'] },
     { name: 'engine-desktop', testDir: engineDir, use: desktop },
-    { name: 'engine-mobile', testDir: engineDir, use: mobile, testMatch: ['cart.spec.ts', 'visual.spec.ts'] },
+    {
+      name: 'engine-mobile',
+      testDir: engineDir,
+      use: mobile,
+      testMatch: ['cart.spec.ts', 'visual.spec.ts'],
+    },
   ],
   webServer: {
     command: 'npm run dev',

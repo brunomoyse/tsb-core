@@ -117,11 +117,11 @@ jobs:
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
             --fail --max-time 300
 
-# ── ygfliege (second brand) ──────────────────────────────────────────────────
-# Dormant until the YGF_* repo/environment vars are created (no-op otherwise).
-# Test image on push to main; production image on `ygf-v*` tags.
-# The test image is multi-arch: the home server (asahi) is arm64, so an
-# amd64-only image would not start there.
+  # ── ygfliege (second brand) ──────────────────────────────────────────────────
+  # Dormant until the YGF_* repo/environment vars are created (no-op otherwise).
+  # Test image on push to main; production image on `ygf-v*` tags.
+  # The test image is multi-arch: the home server (asahi) is arm64, so an
+  # amd64-only image would not start there.
 
   build_ygfliege_amd64:
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
@@ -260,7 +260,7 @@ jobs:
             --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
             --push
 
-# ── Production release (tag push v*) ────────────────────────────────────────
+  # ── Production release (tag push v*) ────────────────────────────────────────
 
   build_production:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -333,7 +333,7 @@ jobs:
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m
 
-# ── Rollback (manual trigger) ────────────────────────────────────────────────
+  # ── Rollback (manual trigger) ────────────────────────────────────────────────
 
   rollback:
     if: github.event_name == 'workflow_dispatch'

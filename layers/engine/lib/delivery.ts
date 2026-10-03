@@ -10,7 +10,7 @@ export const OUT_OF_ZONE = -1
 
 /** Postcodes we never deliver to, regardless of distance. */
 export const isExcludedPostcode = (policy: OrderingPolicy, postcode?: string | null): boolean =>
-    policy.excludedPostcodes.includes((postcode ?? '').trim())
+  policy.excludedPostcodes.includes((postcode ?? '').trim())
 
 /**
  * The fee in CENTS for a distance in meters: the first tier the distance is under (a distance on a bound pays
@@ -18,14 +18,19 @@ export const isExcludedPostcode = (policy: OrderingPolicy, postcode?: string | n
  * in the backend.
  */
 export const deliveryFeeCentsForDistance = (policy: OrderingPolicy, distance: number): number => {
-    if (distance >= policy.deliveryMaxMeters) return OUT_OF_ZONE
-    const tier = policy.deliveryFeeTiers.find((candidate) => distance < candidate.upToMeters)
-    return tier ? tier.feeCents : OUT_OF_ZONE
+  if (distance >= policy.deliveryMaxMeters) return OUT_OF_ZONE
+  const tier = policy.deliveryFeeTiers.find((candidate) => distance < candidate.upToMeters)
+  return tier ? tier.feeCents : OUT_OF_ZONE
 }
 
 // True when the address is eligible for delivery (within zone and not excluded).
-export const isDeliverable = (policy: OrderingPolicy, distance: number, postcode?: string | null): boolean =>
-    deliveryFeeCentsForDistance(policy, distance) !== OUT_OF_ZONE && !isExcludedPostcode(policy, postcode)
+export const isDeliverable = (
+  policy: OrderingPolicy,
+  distance: number,
+  postcode?: string | null,
+): boolean =>
+  deliveryFeeCentsForDistance(policy, distance) !== OUT_OF_ZONE &&
+  !isExcludedPostcode(policy, postcode)
 
 export type DeliveryZoneStatus = 'ok' | 'tooFar' | 'excluded'
 
@@ -35,9 +40,9 @@ export type DeliveryZoneStatus = 'ok' | 'tooFar' | 'excluded'
  * distance alone.
  */
 export const deliveryZoneStatus = (
-    policy: OrderingPolicy,
-    address: { distance?: number | null, postcode?: string | null },
+  policy: OrderingPolicy,
+  address: { distance?: number | null; postcode?: string | null },
 ): DeliveryZoneStatus => {
-    if (isExcludedPostcode(policy, address.postcode)) return 'excluded'
-    return isDeliverable(policy, address.distance ?? 0, address.postcode) ? 'ok' : 'tooFar'
+  if (isExcludedPostcode(policy, address.postcode)) return 'excluded'
+  return isDeliverable(policy, address.distance ?? 0, address.postcode) ? 'ok' : 'tooFar'
 }

@@ -1,11 +1,17 @@
 import { type ComputedRef, computed } from 'vue'
-import { deliveryUnavailableKey, isQuoteBlocking, isQuoteUsableForTotals, quoteRequestKey, totalsFromQuote } from '#engine/utils/orderQuote'
+import {
+  deliveryUnavailableKey,
+  isQuoteBlocking,
+  isQuoteUsableForTotals,
+  quoteRequestKey,
+  totalsFromQuote,
+} from '#engine/utils/orderQuote'
 import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
-import type { CartItem } from '@/types'
+import type { CartItem } from '#engine/types'
 import { buildQuoteInput } from '#engine/utils/orderPayload'
 import { computeCartTotals } from '#engine/utils/cartTotals'
 import { useAuthStore } from '#engine/stores/auth'
-import { useCartStore } from '@/stores/cart'
+import { useCartStore } from '#engine/stores/cart'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useQuoteStore } from '#engine/stores/quote'
 import { useTracking } from '#engine/composables/useTracking'
@@ -31,90 +37,101 @@ import { useTracking } from '#engine/composables/useTracking'
  */
 
 export interface CartTotals {
-    /** Line amount in cents: base × qty + Σ(modifier × selection qty). See #engine/utils/pricing. */
-    getItemLineTotalCents: (item: CartItem) => number
-    /** Per-unit price in cents, only when it multiplies back to the line total exactly (else null). */
-    getItemExactUnitCents: (item: CartItem) => number | null
-    subtotalCents: ComputedRef<number>
-    pickupDiscountCents: ComputedRef<number>
-    /** 0 for pickup / unknown address, -1 (OUT_OF_ZONE) when the address cannot be delivered to. */
-    deliveryFeeCents: ComputedRef<number>
-    /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far); the fresh quote's verdict wins over the client's rule. */
-    deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
-    couponDiscountCents: ComputedRef<number>
-    /** The online payment fee (policy) when the selected payment option is ONLINE, else 0. */
-    onlineFeeCents: ComputedRef<number>
-    /** What the customer pays: subtotal − discounts (clamped ≥ 0) + delivery fee + online fee. */
-    payableCents: ComputedRef<number>
-    hasBreakdown: ComputedRef<boolean>
-    isMinimumReached: ComputedRef<boolean>
-    /** Delivery only: how much more the basket needs to reach the minimum (0 when reached / pickup). */
-    amountToDeliveryMinimumCents: ComputedRef<number>
-    /** The totals above are the server's quote (true), not the client's maths. */
-    isQuoted: ComputedRef<boolean>
-    /** A quote of the current cart is on its way: the totals shown may still move ("updating…"). */
-    isQuotePending: ComputedRef<boolean>
-    /** The order cannot be placed now: the quote is pending, or the fresh quote reports blocking issues. */
-    isOrderBlocked: ComputedRef<boolean>
-    /** Switches the order to pickup (the "or switch to pickup" action of the minimum notice). */
-    switchToPickup: () => void
+  /** Line amount in cents: base × qty + Σ(modifier × selection qty). See #engine/utils/pricing. */
+  getItemLineTotalCents: (item: CartItem) => number
+  /** Per-unit price in cents, only when it multiplies back to the line total exactly (else null). */
+  getItemExactUnitCents: (item: CartItem) => number | null
+  subtotalCents: ComputedRef<number>
+  pickupDiscountCents: ComputedRef<number>
+  /** 0 for pickup / unknown address, -1 (OUT_OF_ZONE) when the address cannot be delivered to. */
+  deliveryFeeCents: ComputedRef<number>
+  /** The i18n key that explains WHY the address is refused when deliveryFeeCents is -1 (excluded postcode vs too far); the fresh quote's verdict wins over the client's rule. */
+  deliveryUnavailableKey: ComputedRef<'checkout.notDeliverableArea' | 'checkout.tooFar'>
+  couponDiscountCents: ComputedRef<number>
+  /** The online payment fee (policy) when the selected payment option is ONLINE, else 0. */
+  onlineFeeCents: ComputedRef<number>
+  /** What the customer pays: subtotal − discounts (clamped ≥ 0) + delivery fee + online fee. */
+  payableCents: ComputedRef<number>
+  hasBreakdown: ComputedRef<boolean>
+  isMinimumReached: ComputedRef<boolean>
+  /** Delivery only: how much more the basket needs to reach the minimum (0 when reached / pickup). */
+  amountToDeliveryMinimumCents: ComputedRef<number>
+  /** The totals above are the server's quote (true), not the client's maths. */
+  isQuoted: ComputedRef<boolean>
+  /** A quote of the current cart is on its way: the totals shown may still move ("updating…"). */
+  isQuotePending: ComputedRef<boolean>
+  /** The order cannot be placed now: the quote is pending, or the fresh quote reports blocking issues. */
+  isOrderBlocked: ComputedRef<boolean>
+  /** Switches the order to pickup (the "or switch to pickup" action of the minimum notice). */
+  switchToPickup: () => void
 }
 
 export function useCartTotals(): CartTotals {
-    const cartStore = useCartStore()
-    const { trackEvent } = useTracking()
+  const cartStore = useCartStore()
+  const { trackEvent } = useTracking()
 
-    const quoteStore = useQuoteStore()
-    const authStore = useAuthStore()
-    const { policy } = useOrderingPolicy()
+  const quoteStore = useQuoteStore()
+  const authStore = useAuthStore()
+  const { policy } = useOrderingPolicy()
 
-    /*
-     * The quote counts only when it answers the cart as it is RIGHT NOW: compared with the key of
-     * the current cart, not with the last key the cycle was asked for (the cycle learns of a change
-     * a tick later, and a surface that is not asking, e.g. a closed drawer, never does).
-     */
-    const currentQuote = computed(() => {
-        if (cartStore.products.length === 0 || quoteStore.quote === null) return null
-        const key = quoteRequestKey(buildQuoteInput(cartStore), Boolean(authStore.user))
-        return quoteStore.quoteKey === key ? quoteStore.quote : null
-    })
+  /*
+   * The quote counts only when it answers the cart as it is RIGHT NOW: compared with the key of
+   * the current cart, not with the last key the cycle was asked for (the cycle learns of a change
+   * a tick later, and a surface that is not asking, e.g. a closed drawer, never does).
+   */
+  const currentQuote = computed(() => {
+    if (cartStore.products.length === 0 || quoteStore.quote === null) return null
+    const key = quoteRequestKey(buildQuoteInput(cartStore), Boolean(authStore.user))
+    return quoteStore.quoteKey === key ? quoteStore.quote : null
+  })
 
-    const clientTotals = computed(() => computeCartTotals({
-        lines: cartStore.products,
-        collectionOption: cartStore.collectionOption,
-        address: cartStore.address,
-        paymentOption: cartStore.paymentOption,
-        couponDiscountCents: cartStore.couponDiscountCents,
-        policy: policy.value,
-    }))
-    const quote = computed(() => {
-        const fresh = currentQuote.value
-        return fresh && isQuoteUsableForTotals(fresh) ? fresh : null
-    })
-    const totals = computed(() => quote.value ? totalsFromQuote(quote.value, cartStore.collectionOption, policy.value) : clientTotals.value)
+  const clientTotals = computed(() =>
+    computeCartTotals({
+      lines: cartStore.products,
+      collectionOption: cartStore.collectionOption,
+      address: cartStore.address,
+      paymentOption: cartStore.paymentOption,
+      couponDiscountCents: cartStore.couponDiscountCents,
+      policy: policy.value,
+    }),
+  )
+  const quote = computed(() => {
+    const fresh = currentQuote.value
+    return fresh && isQuoteUsableForTotals(fresh) ? fresh : null
+  })
+  const totals = computed(() =>
+    quote.value
+      ? totalsFromQuote(quote.value, cartStore.collectionOption, policy.value)
+      : clientTotals.value,
+  )
 
-    const switchToPickup = () => {
-        if (cartStore.collectionOption === 'PICKUP') return
-        trackEvent('cart_collection_option_changed', { from: cartStore.collectionOption, to: 'PICKUP' })
-        cartStore.collectionOption = 'PICKUP'
-    }
+  const switchToPickup = () => {
+    if (cartStore.collectionOption === 'PICKUP') return
+    trackEvent('cart_collection_option_changed', { from: cartStore.collectionOption, to: 'PICKUP' })
+    cartStore.collectionOption = 'PICKUP'
+  }
 
-    return {
-        getItemLineTotalCents: lineTotalCents,
-        getItemExactUnitCents: exactUnitPriceCents,
-        subtotalCents: computed(() => totals.value.subtotalCents),
-        pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
-        deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
-        deliveryUnavailableKey: computed(() => deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode, policy.value)),
-        couponDiscountCents: computed(() => totals.value.couponDiscountCents),
-        onlineFeeCents: computed(() => totals.value.onlineFeeCents),
-        payableCents: computed(() => totals.value.payableCents),
-        hasBreakdown: computed(() => totals.value.hasBreakdown),
-        isMinimumReached: computed(() => totals.value.isMinimumReached),
-        amountToDeliveryMinimumCents: computed(() => totals.value.amountToDeliveryMinimumCents),
-        isQuoted: computed(() => quote.value !== null),
-        isQuotePending: computed(() => quoteStore.pending),
-        isOrderBlocked: computed(() => quoteStore.pending || (currentQuote.value !== null && isQuoteBlocking(currentQuote.value))),
-        switchToPickup,
-    }
+  return {
+    getItemLineTotalCents: lineTotalCents,
+    getItemExactUnitCents: exactUnitPriceCents,
+    subtotalCents: computed(() => totals.value.subtotalCents),
+    pickupDiscountCents: computed(() => totals.value.pickupDiscountCents),
+    deliveryFeeCents: computed(() => totals.value.deliveryFeeCents),
+    deliveryUnavailableKey: computed(() =>
+      deliveryUnavailableKey(currentQuote.value, cartStore.address?.postcode, policy.value),
+    ),
+    couponDiscountCents: computed(() => totals.value.couponDiscountCents),
+    onlineFeeCents: computed(() => totals.value.onlineFeeCents),
+    payableCents: computed(() => totals.value.payableCents),
+    hasBreakdown: computed(() => totals.value.hasBreakdown),
+    isMinimumReached: computed(() => totals.value.isMinimumReached),
+    amountToDeliveryMinimumCents: computed(() => totals.value.amountToDeliveryMinimumCents),
+    isQuoted: computed(() => quote.value !== null),
+    isQuotePending: computed(() => quoteStore.pending),
+    isOrderBlocked: computed(
+      () =>
+        quoteStore.pending || (currentQuote.value !== null && isQuoteBlocking(currentQuote.value)),
+    ),
+    switchToPickup,
+  }
 }

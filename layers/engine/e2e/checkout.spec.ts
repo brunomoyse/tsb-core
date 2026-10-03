@@ -3,7 +3,9 @@ import { SEL } from './support/selectors'
 import { addProductsAndGoToCheckout, ensurePhoneNumber } from './support/cart.helpers'
 
 test.describe('Checkout flows', () => {
-  test('Cash order happy path lands on /order-completed and appears in /me/orders', async ({ authenticatedPage: page }) => {
+  test('Cash order happy path lands on /order-completed and appears in /me/orders', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     /*
@@ -11,7 +13,10 @@ test.describe('Checkout flows', () => {
      * checkout page renders either the closed banner or the place-order
      * button; race them and skip if the kitchen is shut.
      */
-    await page.locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`).first().waitFor({ timeout: 10_000 })
+    await page
+      .locator(`${SEL.checkoutRestaurantClosed}, ${SEL.checkoutPlaceOrder}`)
+      .first()
+      .waitFor({ timeout: 10_000 })
     if (await page.locator(SEL.checkoutRestaurantClosed).isVisible()) {
       test.skip(true, 'Restaurant is currently closed')
       return

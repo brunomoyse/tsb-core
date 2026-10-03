@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/profile.test.mjs`.
+// Run: `vp test run layers/engine/utils/profile.test.mjs`.
 
 import { hasActiveOrder, profileFullName, profileInitials, splitStoredPhone } from './profile.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('initials and full name, with placeholders when the name is missing', () => {
   assert.equal(profileInitials({ firstName: 'ada', lastName: 'lovelace' }), 'AL')
@@ -20,11 +20,21 @@ test('an order in progress is a warning, a finished one is not', () => {
   assert.equal(hasActiveOrder(undefined), false)
 })
 
-const countries = [{ code: 'BE', prefix: '+32' }, { code: 'FR', prefix: '+33' }, { code: 'LU', prefix: '+352' }]
+const countries = [
+  { code: 'BE', prefix: '+32' },
+  { code: 'FR', prefix: '+33' },
+  { code: 'LU', prefix: '+352' },
+]
 
 test('a stored number splits into country and local part', () => {
-  assert.deepEqual(splitStoredPhone('+32470123456', countries), { phoneLocal: '470123456', selectedCountry: 'BE' })
-  assert.deepEqual(splitStoredPhone('+33612345678', countries), { phoneLocal: '612345678', selectedCountry: 'FR' })
+  assert.deepEqual(splitStoredPhone('+32470123456', countries), {
+    phoneLocal: '470123456',
+    selectedCountry: 'BE',
+  })
+  assert.deepEqual(splitStoredPhone('+33612345678', countries), {
+    phoneLocal: '612345678',
+    selectedCountry: 'FR',
+  })
 })
 
 test('an unknown prefix keeps the whole number and the current country; no number is empty', () => {

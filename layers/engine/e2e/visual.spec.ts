@@ -47,8 +47,18 @@ const fakeProduct = (n: number, name: string, price: string) => ({
 
 const seededCart = {
   products: [
-    { product: fakeProduct(1, 'Produit test A', '12.50'), quantity: 2, selectedChoices: [], selectedChoice: null },
-    { product: fakeProduct(2, 'Produit test B', '8.00'), quantity: 1, selectedChoices: [], selectedChoice: null },
+    {
+      product: fakeProduct(1, 'Produit test A', '12.50'),
+      quantity: 2,
+      selectedChoices: [],
+      selectedChoice: null,
+    },
+    {
+      product: fakeProduct(2, 'Produit test B', '8.00'),
+      quantity: 1,
+      selectedChoices: [],
+      selectedChoice: null,
+    },
   ],
   collectionOption: 'PICKUP',
   couponCode: null,
@@ -106,7 +116,10 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
     await page.goto('/fr/checkout')
     await expect(page.getByText('Produit test A').first()).toBeVisible({ timeout: 15_000 })
     // Time slots follow the clock; paid extras are live menu data from the API.
-    await snap(page, 'checkout-pickup', [page.getByTestId('checkout-preferred-time'), page.getByTestId('checkout-paid-extras')])
+    await snap(page, 'checkout-pickup', [
+      page.getByTestId('checkout-preferred-time'),
+      page.getByTestId('checkout-paid-extras'),
+    ])
   })
 
   test('faq', async ({ page }) => {
@@ -140,7 +153,10 @@ test.describe('Engine pages look right per brand', { tag: '@visual' }, () => {
     await expect(page).toHaveURL(/\/fr\/me(?:[/?#]|$)/u, { timeout: 15_000 })
     // Recent orders change with every e2e run that places an order: masking hides their
     // content, and a fixed height keeps the rest of the page from shifting as the list grows.
-    await page.addStyleTag({ content: '[data-testid="orders-widget"] { height: 320px !important; overflow: hidden !important; }' })
+    await page.addStyleTag({
+      content:
+        '[data-testid="orders-widget"] { height: 320px !important; overflow: hidden !important; }',
+    })
     await snap(page, 'me', [page.getByTestId('orders-widget')])
   })
 })

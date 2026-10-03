@@ -19,15 +19,18 @@ export const MIN_BAND_HEIGHT = 96
  * short viewport (a phone in landscape) still has a band: the bottom inset never goes negative.
  */
 export const bandRootMargin = (headerBottom: number, viewportHeight: number): string => {
-    const top = Math.max(0, Math.round(headerBottom)) + 8
-    const band = Math.max(MIN_BAND_HEIGHT, Math.round(viewportHeight * 0.2))
-    const bottom = Math.max(0, viewportHeight - top - band)
-    return `-${top}px 0px -${bottom}px 0px`
+  const top = Math.max(0, Math.round(headerBottom)) + 8
+  const band = Math.max(MIN_BAND_HEIGHT, Math.round(viewportHeight * 0.2))
+  const bottom = Math.max(0, viewportHeight - top - band)
+  return `-${top}px 0px -${bottom}px 0px`
 }
 
 /** The topmost category (menu order) among those crossing the band, or null when none does. */
-export const topmostInBand = (orderedIds: readonly string[], inBand: ReadonlySet<string>): string | null =>
-    orderedIds.find(id => inBand.has(id)) ?? null
+export const topmostInBand = (
+  orderedIds: readonly string[],
+  inBand: ReadonlySet<string>,
+): string | null => orderedIds.find((id) => inBand.has(id)) ?? null
 
 /** The id of a category section element (`category-<id>`), the inverse of the DOM id the menu page gives each section. */
-export const categoryIdFromSection = (elementId: string): string => elementId.replace('category-', '')
+export const categoryIdFromSection = (elementId: string): string =>
+  elementId.replace('category-', '')

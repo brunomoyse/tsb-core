@@ -9,7 +9,10 @@ import { waitForNuxtHydration } from './hydration'
  * already open: the floating bar disappears once the panel is visible.
  */
 export async function openCartIfMobile(page: Page): Promise<void> {
-  const sideCartVisible = await page.locator(SEL.sideCart).isVisible({ timeout: 500 }).catch(() => false)
+  const sideCartVisible = await page
+    .locator(SEL.sideCart)
+    .isVisible({ timeout: 500 })
+    .catch(() => false)
   if (sideCartVisible) return
   const bar = page.locator(SEL.floatingCartBar)
   if (await bar.isVisible({ timeout: 2_000 }).catch(() => false)) {

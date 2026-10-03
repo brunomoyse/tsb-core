@@ -2,148 +2,156 @@
 import { type DocumentNode, print } from 'graphql'
 import { GqlError, type GqlErrorEntry, isAbortError, operationNameOf } from '#engine/utils/gqlError'
 import {
-    defineNuxtPlugin,
-    navigateTo,
-    useCookie,
-    useLocalePath,
-    useRequestEvent,
-    useRuntimeConfig,
+  defineNuxtPlugin,
+  navigateTo,
+  useCookie,
+  useLocalePath,
+  useRequestEvent,
+  useRuntimeConfig,
 } from '#imports'
 
 interface GqlOptions {
-    variables?: Record<string, unknown>
-    signal?: AbortSignal
+  variables?: Record<string, unknown>
+  signal?: AbortSignal
 }
 
 interface GqlResponse {
-    data?: unknown
-    errors?: GqlErrorEntry[]
+  data?: unknown
+  errors?: GqlErrorEntry[]
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
-    const cfg     = useRuntimeConfig()
-    const httpURL = cfg.public.graphqlHttp as string
-    const localePath = useLocalePath()
+  const cfg = useRuntimeConfig()
+  const httpURL = cfg.public.graphqlHttp
+  const localePath = useLocalePath()
 
-    /** Get access token from OIDC client (client-side only) */
-    const getOidcToken = async (): Promise<string | null> => {
-        if (import.meta.server) return null
-        const { useOidc } = await import('~/composables/useOidc')
-        const { getAccessToken } = useOidc()
-        return getAccessToken()
+  /** Get access token from OIDC client (client-side only) */
+  const getOidcToken = async (): Promise<string | null> => {
+    if (import.meta.server) return null
+    const { useOidc } = await import('#engine/composables/useOidc')
+    const { getAccessToken } = useOidc()
+    return getAccessToken()
+  }
+
+  /**
+   * Typed helper: POST /graphql with Bearer token. Every failure is a `GqlError` (see
+   * utils/gqlError.ts): the GraphQL `errors` of the response, or the failed HTTP request.
+   */
+  const gqlFetch = async <T = unknown>(
+    query: string | DocumentNode,
+    { variables = {}, signal }: GqlOptions = {},
+  ): Promise<T> => {
+    const queryText = typeof query === 'string' ? query : print(query)
+    const operationName = operationNameOf(queryText)
+    const body = { query: queryText, variables }
+    // An aborted request is control flow, not a failure: it keeps its AbortError identity.
+    const failure = (err: unknown): unknown =>
+      isAbortError(err) ? err : GqlError.fromTransport(err, operationName)
+
+    let res: GqlResponse
+
+    // 1) Try the HTTP-level fetch (and 401→refresh→retry)
+    try {
+      res = await doFetch(body, signal)
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'status' in err &&
+        (err as { status: number }).status === 401
+      ) {
+        const ok = await attemptRefresh()
+        if (!ok) throw failure(err)
+        try {
+          res = await doFetch(body, signal)
+        } catch (retryErr: unknown) {
+          throw failure(retryErr)
+        }
+      } else {
+        throw failure(err)
+      }
     }
 
-    /**
-     * Typed helper: POST /graphql with Bearer token. Every failure is a `GqlError` (see
-     * utils/gqlError.ts): the GraphQL `errors` of the response, or the failed HTTP request.
-     */
-    const gqlFetch = async <T = unknown>(
-        query: string | DocumentNode,
-        { variables = {}, signal }: GqlOptions = {},
-    ): Promise<T> => {
-        const queryText = typeof query === 'string' ? query : print(query)
-        const operationName = operationNameOf(queryText)
-        const body = { query: queryText, variables }
-        // An aborted request is control flow, not a failure: it keeps its AbortError identity.
-        const failure = (err: unknown): unknown => (isAbortError(err) ? err : GqlError.fromTransport(err, operationName))
-
-        let res: GqlResponse
-
-        // 1) Try the HTTP-level fetch (and 401→refresh→retry)
-        try {
+    // 2) Handle GraphQL-level errors
+    if (res.errors?.length) {
+      const unauth = res.errors.find((e) => e.extensions?.code === 'UNAUTHENTICATED')
+      if (unauth) {
+        const ok = await attemptRefresh()
+        if (ok) {
+          try {
             res = await doFetch(body, signal)
-        } catch (err: unknown) {
-            if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 401) {
-                const ok = await attemptRefresh()
-                if (!ok) throw failure(err)
-                try {
-                    res = await doFetch(body, signal)
-                } catch (retryErr: unknown) {
-                    throw failure(retryErr)
-                }
-            } else {
-                throw failure(err)
-            }
-        }
-
-        // 2) Handle GraphQL-level errors
-        if (res.errors?.length) {
-            const unauth = res.errors.find(
-                (e) => e.extensions?.code === 'UNAUTHENTICATED'
-            )
-            if (unauth) {
-                const ok = await attemptRefresh()
-                if (ok) {
-                    try {
-                        res = await doFetch(body, signal)
-                    } catch (retryErr: unknown) {
-                        throw failure(retryErr)
-                    }
-                    if (res.errors?.length) {
-                        throw new GqlError(res.errors, { operationName })
-                    }
-                    return res.data as T
-                }
-            }
+          } catch (retryErr: unknown) {
+            throw failure(retryErr)
+          }
+          if (res.errors?.length) {
             throw new GqlError(res.errors, { operationName })
+          }
+          return res.data as T
         }
-
-        return res.data as T
+      }
+      throw new GqlError(res.errors, { operationName })
     }
 
-    /*
-     * The language the page is rendered in, read at call time: on the server it is the route's locale for THIS request
-     * (a first visit or a crawler on /en/menu has no i18n_redirected cookie yet, and the cookie of an earlier visit may
-     * name another language), on the client it follows a locale switch immediately. The cookie is only a fallback.
-     */
-    const currentLocale = (): string => nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
+    return res.data as T
+  }
 
-    /** Low-level POST that returns the raw { data, errors } */
-    const doFetch = async (body: { query: string; variables: Record<string, unknown> }, signal?: AbortSignal): Promise<GqlResponse> =>
-        await $fetch(httpURL, {
-            method: 'POST',
-            body,
-            credentials: 'omit',
-            signal,
-            headers: await buildHeaders(currentLocale()),
-        })
+  /*
+   * The language the page is rendered in, read at call time: on the server it is the route's locale for THIS request
+   * (a first visit or a crawler on /en/menu has no i18n_redirected cookie yet, and the cookie of an earlier visit may
+   * name another language), on the client it follows a locale switch immediately. The cookie is only a fallback.
+   */
+  const currentLocale = (): string =>
+    nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
 
-    /** Build the JSON headers + attach Bearer token or forward cookies for SSR */
-    const buildHeaders = async (locale: string) => {
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'Accept-Language': locale,
-        }
-        if (import.meta.server) {
-            // SSR: forward cookies if available (for Accept-Language, session context)
-            const ev = useRequestEvent()
-            const cook = ev?.node.req.headers.cookie
-            if (cook) headers.cookie = cook
-        } else {
-            // Client-side: attach OIDC Bearer token
-            const token = await getOidcToken()
-            if (token) {
-                headers.Authorization = `Bearer ${token}`
-            }
-        }
-        return headers
+  /** Low-level POST that returns the raw { data, errors } */
+  const doFetch = async (
+    body: { query: string; variables: Record<string, unknown> },
+    signal?: AbortSignal,
+  ): Promise<GqlResponse> =>
+    $fetch<GqlResponse, string>(httpURL, {
+      method: 'POST',
+      body,
+      credentials: 'omit',
+      signal,
+      headers: await buildHeaders(currentLocale()),
+    })
+
+  /** Build the JSON headers + attach Bearer token or forward cookies for SSR */
+  const buildHeaders = async (locale: string) => {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept-Language': locale,
     }
-
-    /** Attempt OIDC silent renewal (coalesced inside useOidc). */
-    const attemptRefresh = async (): Promise<boolean> => {
-        try {
-            if (import.meta.server) return false
-            const { useOidc } = await import('~/composables/useOidc')
-            const { silentRenew } = useOidc()
-            const user = await silentRenew()
-            return Boolean(user)
-        } catch (err: unknown) {
-            // Expected when the session is over (not reported): send the customer back to log in.
-            if (import.meta.dev) console.warn('[gqlFetch] silent renew failed', err)
-            navigateTo(`${localePath('auth-login')}?session=expired`)
-            return false
-        }
+    if (import.meta.server) {
+      // SSR: forward cookies if available (for Accept-Language, session context)
+      const ev = useRequestEvent()
+      const cook = ev?.node.req.headers.cookie
+      if (cook) headers.cookie = cook
+    } else {
+      // Client-side: attach OIDC Bearer token
+      const token = await getOidcToken()
+      if (token) {
+        headers.Authorization = `Bearer ${token}`
+      }
     }
+    return headers
+  }
 
-    return { provide: { gqlFetch } }
+  /** Attempt OIDC silent renewal (coalesced inside useOidc). */
+  const attemptRefresh = async (): Promise<boolean> => {
+    try {
+      if (import.meta.server) return false
+      const { useOidc } = await import('#engine/composables/useOidc')
+      const { silentRenew } = useOidc()
+      const user = await silentRenew()
+      return Boolean(user)
+    } catch (err: unknown) {
+      // Expected when the session is over (not reported): send the customer back to log in.
+      if (import.meta.dev) console.warn('[gqlFetch] silent renew failed', err)
+      void navigateTo(`${localePath('auth-login')}?session=expired`)
+      return false
+    }
+  }
+
+  return { provide: { gqlFetch } }
 })

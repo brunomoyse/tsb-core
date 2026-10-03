@@ -1,74 +1,78 @@
 <template>
-    <div class="mx-auto max-w-3xl px-6 py-10">
-        <!-- Header -->
-        <header class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ brand.name }}</p>
-            <PageTitle class="mt-1">
-                {{ t('accountDeletion.title') }}
-            </PageTitle>
-            <p class="mt-3 text-sm text-neutral-600">{{ t('accountDeletion.lastUpdated') }}</p>
-        </header>
+  <div class="mx-auto max-w-3xl px-6 py-10">
+    <!-- Header -->
+    <header class="mb-10 text-center">
+      <p class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ brand.name }}</p>
+      <PageTitle class="mt-1">
+        {{ t('accountDeletion.title') }}
+      </PageTitle>
+      <p class="mt-3 text-sm text-neutral-600">{{ t('accountDeletion.lastUpdated') }}</p>
+    </header>
 
-        <!-- Body -->
-        <div class="space-y-10 text-[15px] leading-relaxed text-neutral-700">
-            <section>
-                <p>{{ t('accountDeletion.intro') }}</p>
-            </section>
+    <!-- Body -->
+    <div class="space-y-10 text-[15px] leading-relaxed text-neutral-700">
+      <section>
+        <p>{{ t('accountDeletion.intro') }}</p>
+      </section>
 
-            <!-- How to delete (in-app, self-service) -->
-            <section>
-                <h2 class="ad-heading">{{ t('accountDeletion.howTitle') }}</h2>
-                <p>{{ t('accountDeletion.howBody') }}</p>
-            </section>
+      <!-- How to delete (in-app, self-service) -->
+      <section>
+        <h2 class="ad-heading">{{ t('accountDeletion.howTitle') }}</h2>
+        <p>{{ t('accountDeletion.howBody') }}</p>
+      </section>
 
-            <!-- Fallback: can't sign in -->
-            <section>
-                <h2 class="ad-heading">{{ t('accountDeletion.fallbackTitle') }}</h2>
-                <p>{{ t('accountDeletion.fallbackBody') }}</p>
+      <!-- Fallback: can't sign in -->
+      <section>
+        <h2 class="ad-heading">{{ t('accountDeletion.fallbackTitle') }}</h2>
+        <p>{{ t('accountDeletion.fallbackBody') }}</p>
 
-                <div class="mt-5 rounded-xl border border-neutral-200 bg-neutral-50 p-5 text-center">
-                    <a
-                        :href="mailtoHref"
-                        class="text-lg font-semibold text-primary-700 underline break-all"
-                    >{{ deletionEmail }}</a>
-                </div>
-            </section>
-
-            <!-- Data deleted -->
-            <section>
-                <h2 class="ad-heading">{{ t('accountDeletion.dataTitle') }}</h2>
-                <p>{{ t('accountDeletion.dataIntro') }}</p>
-                <ul class="ad-list">
-                    <li v-for="(item, i) in dataItems" :key="i">{{ item }}</li>
-                </ul>
-            </section>
-
-            <!-- Data retained -->
-            <section>
-                <h2 class="ad-heading">{{ t('accountDeletion.retainTitle') }}</h2>
-                <p>{{ t('accountDeletion.retainBody') }}</p>
-            </section>
-
-            <!-- Processing time -->
-            <section>
-                <h2 class="ad-heading">{{ t('accountDeletion.timingTitle') }}</h2>
-                <p>{{ t('accountDeletion.timingBody') }}</p>
-                <p class="mt-2">{{ t('accountDeletion.contactBody') }}</p>
-            </section>
+        <div class="mt-5 rounded-xl border border-neutral-200 bg-neutral-50 p-5 text-center">
+          <a
+            :href="mailtoHref"
+            class="text-lg font-semibold text-primary-700 underline break-all"
+            >{{ deletionEmail }}</a
+          >
         </div>
+      </section>
 
-        <!-- Footer -->
-        <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
-            <p>{{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }} {{ brand.address.city }}, Belgique</p>
-        </footer>
+      <!-- Data deleted -->
+      <section>
+        <h2 class="ad-heading">{{ t('accountDeletion.dataTitle') }}</h2>
+        <p>{{ t('accountDeletion.dataIntro') }}</p>
+        <ul class="ad-list">
+          <li v-for="(item, i) in dataItems" :key="i">{{ item }}</li>
+        </ul>
+      </section>
+
+      <!-- Data retained -->
+      <section>
+        <h2 class="ad-heading">{{ t('accountDeletion.retainTitle') }}</h2>
+        <p>{{ t('accountDeletion.retainBody') }}</p>
+      </section>
+
+      <!-- Processing time -->
+      <section>
+        <h2 class="ad-heading">{{ t('accountDeletion.timingTitle') }}</h2>
+        <p>{{ t('accountDeletion.timingBody') }}</p>
+        <p class="mt-2">{{ t('accountDeletion.contactBody') }}</p>
+      </section>
     </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-neutral-200 pt-6 text-center text-sm text-neutral-600">
+      <p>
+        {{ brand.name }} &middot; {{ brand.address.street }} &middot; {{ brand.address.postal }}
+        {{ brand.address.city }}, Belgique
+      </p>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
-    public: true,
-    sitemap: { priority: 0.5, changefreq: 'yearly' },
+  public: true,
+  sitemap: { priority: 0.5, changefreq: 'yearly' },
 })
 
 const localizedUrl = useLocalizedUrl()
@@ -77,42 +81,45 @@ const { brand } = useAppConfig()
 
 const { deletionEmail } = brand
 const mailtoHref = computed(
-    () => `mailto:${deletionEmail}?subject=${encodeURIComponent(t('accountDeletion.emailSubject'))}`,
+  () => `mailto:${deletionEmail}?subject=${encodeURIComponent(t('accountDeletion.emailSubject'))}`,
 )
 
 // Resolve the message array: tm() returns raw entries, rt() turns each into a string.
 const dataItems = computed(() =>
-    (tm('accountDeletion.dataItems') as unknown[]).map((m) => rt(m as string)),
+  (tm('accountDeletion.dataItems') as unknown[]).map((m) => rt(m as string)),
 )
 
-useJsonLd([
+useJsonLd(
+  [
     {
-        '@type': 'WebPage',
-        name: t('schema.accountDeletion.title'),
-        description: t('schema.accountDeletion.description'),
+      '@type': 'WebPage',
+      name: t('schema.accountDeletion.title'),
+      description: t('schema.accountDeletion.description'),
     },
     breadcrumbList([
-        { name: t('schema.breadcrumb.home'), item: localizedUrl() },
-        { name: t('schema.breadcrumb.accountDeletion'), item: localizedUrl('/account-deletion') },
+      { name: t('schema.breadcrumb.home'), item: localizedUrl() },
+      { name: t('schema.breadcrumb.accountDeletion'), item: localizedUrl('/account-deletion') },
     ]),
-], 'page-jsonld')
+  ],
+  'page-jsonld',
+)
 
 useSeoMeta({
-    title: t('schema.accountDeletion.title'),
-    ogType: 'article',
-    ogTitle: t('schema.accountDeletion.title'),
-    description: t('schema.accountDeletion.description'),
-    ogDescription: t('schema.accountDeletion.description'),
-    ...useLocaleSeoMeta(),
+  title: t('schema.accountDeletion.title'),
+  ogType: 'article',
+  ogTitle: t('schema.accountDeletion.title'),
+  description: t('schema.accountDeletion.description'),
+  ogDescription: t('schema.accountDeletion.description'),
+  ...useLocaleSeoMeta(),
 })
 </script>
 
 <style scoped>
 .ad-heading {
-    @apply mb-3 text-lg font-semibold text-neutral-900;
+  @apply mb-3 text-lg font-semibold text-neutral-900;
 }
 
 .ad-list {
-    @apply mt-2 list-disc space-y-1 pl-5;
+  @apply mt-2 list-disc space-y-1 pl-5;
 }
 </style>

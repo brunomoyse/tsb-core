@@ -1,7 +1,12 @@
 <template>
-    <span v-if="pending" data-testid="quote-updating" role="status" class="text-xs font-normal text-neutral-600 whitespace-nowrap">
-        {{ $t('cart.quoteUpdating') }}
-    </span>
+  <span
+    v-if="pending"
+    data-testid="quote-updating"
+    role="status"
+    class="text-xs font-normal text-neutral-600 whitespace-nowrap"
+  >
+    {{ $t('cart.quoteUpdating') }}
+  </span>
 </template>
 
 <script lang="ts" setup>

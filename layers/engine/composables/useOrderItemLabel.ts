@@ -6,13 +6,13 @@ import { useAppConfig } from '#imports'
  * name line and the choices. The brand decides whether the menu code shows (`brand.showProductCode`), exactly as on the cart surfaces.
  */
 export function useOrderItemLabel() {
-    const { showProductCode = false } = useAppConfig().brand
+  const { showProductCode = false } = useAppConfig().brand
 
-    type Item = Parameters<typeof orderLineSegments>[0]
-    return {
-        orderItemMeta: (item: Item): string | undefined => cartLineMeta(item, { showProductCode }),
-        orderItemName: (item: Item): string => item.product.name,
-        orderItemSegments: (item: Item) => orderLineSegments(item, showProductCode),
-        orderItemChoice: (item: Item): string | undefined => orderItemChoiceText(item),
-    }
+  type Item = Parameters<typeof orderLineSegments>[0]
+  return {
+    orderItemMeta: (item: Item): string | undefined => cartLineMeta(item, { showProductCode }),
+    orderItemName: (item: Item): string => item.product.name,
+    orderItemSegments: (item: Item) => orderLineSegments(item, showProductCode),
+    orderItemChoice: (item: Item): string | undefined => orderItemChoiceText(item),
+  }
 }

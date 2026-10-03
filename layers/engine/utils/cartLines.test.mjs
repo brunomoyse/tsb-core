@@ -1,12 +1,23 @@
 // Quantity changes on cart lines with choice selections (audit PR 1.4).
-// Run: `node --test layers/engine/utils/cartLines.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartLines.test.mjs`.
 
 import {
-  addSelections, canChangeLineQuantity, cartLineKey, cartLineKeys, compareSelections, lineSignature, matchesLine, mergeIntoLine,
-  migratePersistedLines, perUnitSelections, rescaleSelections, selectionsSignature, sortSelections,
+  addSelections,
+  canChangeLineQuantity,
+  cartLineKey,
+  cartLineKeys,
+  compareSelections,
+  lineSignature,
+  matchesLine,
+  mergeIntoLine,
+  migratePersistedLines,
+  perUnitSelections,
+  rescaleSelections,
+  selectionsSignature,
+  sortSelections,
 } from './cartLines.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const broth = (quantity) => ({ groupId: 'g-broth', choiceId: 'c-tomato', quantity })
 const spice = (quantity) => ({ groupId: 'g-spice', choiceId: 'c-mild', quantity })
@@ -19,7 +30,16 @@ test('perUnitSelections divides every selection by the line quantity', () => {
 
 test('perUnitSelections is null when the composition is not uniform per unit', () => {
   // Two bowls, one broth A and one broth B: each choice appears once for two units.
-  assert.strictEqual(perUnitSelections([{ groupId: 'g', choiceId: 'a', quantity: 1 }, { groupId: 'g', choiceId: 'b', quantity: 1 }], 2), null)
+  assert.strictEqual(
+    perUnitSelections(
+      [
+        { groupId: 'g', choiceId: 'a', quantity: 1 },
+        { groupId: 'g', choiceId: 'b', quantity: 1 },
+      ],
+      2,
+    ),
+    null,
+  )
   assert.strictEqual(perUnitSelections([broth(5)], 2), null)
 })
 
@@ -83,25 +103,42 @@ test('merging via rescale: adding a bowl to a line equals the rescaled sum of bo
 test('addSelections sums identical non-uniform lines choice by choice', () => {
   const a = { groupId: 'g', choiceId: 'a', quantity: 1 }
   const b = { groupId: 'g', choiceId: 'b', quantity: 1 }
-  assert.deepStrictEqual(addSelections([a, b], [a, b]), [{ ...a, quantity: 2 }, { ...b, quantity: 2 }])
+  assert.deepStrictEqual(addSelections([a, b], [a, b]), [
+    { ...a, quantity: 2 },
+    { ...b, quantity: 2 },
+  ])
 })
 
 test('mergeIntoLine: a plain line just adds quantity, capped', () => {
-  assert.deepStrictEqual(mergeIntoLine({ quantity: 2, selections: [] }, { quantity: 3, selections: [] }, 99), { quantity: 5, selections: [] })
-  assert.deepStrictEqual(mergeIntoLine({ quantity: 98, selections: [] }, { quantity: 3, selections: [] }, 99), { quantity: 99, selections: [] })
+  assert.deepStrictEqual(
+    mergeIntoLine({ quantity: 2, selections: [] }, { quantity: 3, selections: [] }, 99),
+    { quantity: 5, selections: [] },
+  )
+  assert.deepStrictEqual(
+    mergeIntoLine({ quantity: 98, selections: [] }, { quantity: 3, selections: [] }, 99),
+    { quantity: 99, selections: [] },
+  )
 })
 
 test('mergeIntoLine: a uniform line keeps its selections in step with the quantity', () => {
   // One bowl (broth 1, spice 1) + 2 more bowls (broth 2, spice 2) → 3 bowls, broth 3, spice 3.
   assert.deepStrictEqual(
-    mergeIntoLine({ quantity: 1, selections: [broth(1), spice(1)] }, { quantity: 2, selections: [broth(2), spice(2)] }, 99),
+    mergeIntoLine(
+      { quantity: 1, selections: [broth(1), spice(1)] },
+      { quantity: 2, selections: [broth(2), spice(2)] },
+      99,
+    ),
     { quantity: 3, selections: [broth(3), spice(3)] },
   )
 })
 
 test('mergeIntoLine: the cap rescales the selections too, never leaves them behind', () => {
   assert.deepStrictEqual(
-    mergeIntoLine({ quantity: 98, selections: [broth(98)] }, { quantity: 5, selections: [broth(5)] }, 99),
+    mergeIntoLine(
+      { quantity: 98, selections: [broth(98)] },
+      { quantity: 5, selections: [broth(5)] },
+      99,
+    ),
     { quantity: 99, selections: [broth(99)] },
   )
 })
@@ -111,9 +148,18 @@ test('mergeIntoLine: identical non-uniform lines add up, and refuse to exceed th
   const b = { groupId: 'g', choiceId: 'b', quantity: 1 }
   assert.deepStrictEqual(
     mergeIntoLine({ quantity: 2, selections: [a, b] }, { quantity: 2, selections: [a, b] }, 99),
-    { quantity: 4, selections: [{ ...a, quantity: 2 }, { ...b, quantity: 2 }] },
+    {
+      quantity: 4,
+      selections: [
+        { ...a, quantity: 2 },
+        { ...b, quantity: 2 },
+      ],
+    },
   )
-  assert.strictEqual(mergeIntoLine({ quantity: 98, selections: [a, b] }, { quantity: 2, selections: [a, b] }, 99), null)
+  assert.strictEqual(
+    mergeIntoLine({ quantity: 98, selections: [a, b] }, { quantity: 2, selections: [a, b] }, 99),
+    null,
+  )
 })
 
 // Group order and choice order disagree here: group 'g-a' sorts before 'g-b', choice 'z' after 'a'.
@@ -128,14 +174,25 @@ test('one canonical order: by group then choice, independent of locale', () => {
 
 test('selectionsSignature does not depend on the order the selections come in', () => {
   assert.strictEqual(selectionsSignature([gaZ(2), gbA(2)]), selectionsSignature([gbA(2), gaZ(2)]))
-  assert.notStrictEqual(selectionsSignature([gaZ(2), gbA(2)]), selectionsSignature([gaZ(2), gbA(1)]))
+  assert.notStrictEqual(
+    selectionsSignature([gaZ(2), gbA(2)]),
+    selectionsSignature([gaZ(2), gbA(1)]),
+  )
 })
 
 test('merge then remove/increment finds the line (audit PR 1.4 review)', () => {
   // Two identical non-uniform lines (2 bowls, one of each choice) merge into one with summed selections.
-  const stored = sortSelections([gbA(1), gaZ(1)]) // what the store keeps (canonical)
-  const merged = mergeIntoLine({ quantity: 2, selections: stored }, { quantity: 2, selections: stored }, 99)
-  const line = { product: { id: 'p1' }, quantity: merged.quantity, selectedChoices: merged.selections }
+  const stored = sortSelections([gbA(1), gaZ(1)]) // What the store keeps (canonical)
+  const merged = mergeIntoLine(
+    { quantity: 2, selections: stored },
+    { quantity: 2, selections: stored },
+    99,
+  )
+  const line = {
+    product: { id: 'p1' },
+    quantity: merged.quantity,
+    selectedChoices: merged.selections,
+  }
   assert.strictEqual(line.quantity, 4)
   // The cart surfaces hand the line's own selections back, in whatever order: it must still be found.
   for (const selections of [line.selectedChoices, [...line.selectedChoices].reverse()]) {
@@ -162,7 +219,9 @@ const legacyLine = (quantity, selQuantity = 1, id = 'p1') => ({
 test('migratePersistedLines rescales a legacy per-unit choice to the line quantity', () => {
   const [line] = migratePersistedLines([legacyLine(3)], 99)
   assert.strictEqual(line.quantity, 3)
-  assert.deepStrictEqual(line.selectedChoices, [{ groupId: 'g-broth', choiceId: 'c-tomato', quantity: 3 }])
+  assert.deepStrictEqual(line.selectedChoices, [
+    { groupId: 'g-broth', choiceId: 'c-tomato', quantity: 3 },
+  ])
 })
 
 test('migratePersistedLines leaves already-correct and plain lines alone', () => {
@@ -177,13 +236,18 @@ test('migratePersistedLines merges lines that became the same line', () => {
   const lines = migratePersistedLines([legacyLine(1), legacyLine(2)], 99)
   assert.strictEqual(lines.length, 1)
   assert.strictEqual(lines[0].quantity, 3)
-  assert.deepStrictEqual(lines[0].selectedChoices, [{ groupId: 'g-broth', choiceId: 'c-tomato', quantity: 3 }])
+  assert.deepStrictEqual(lines[0].selectedChoices, [
+    { groupId: 'g-broth', choiceId: 'c-tomato', quantity: 3 },
+  ])
 })
 
 test('migratePersistedLines never drops units to respect the cap: it keeps two lines instead', () => {
   const lines = migratePersistedLines([legacyLine(60), legacyLine(60)], 99)
   assert.strictEqual(lines.length, 2)
-  assert.strictEqual(lines.reduce((n, l) => n + l.quantity, 0), 120)
+  assert.strictEqual(
+    lines.reduce((n, l) => n + l.quantity, 0),
+    120,
+  )
   // ...and the keys stay unique for v-for.
   assert.strictEqual(new Set(cartLineKeys(lines)).size, 2)
 })

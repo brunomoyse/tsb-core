@@ -11,14 +11,14 @@ import { watch } from 'vue'
  * an "available soon" label; this is the belt-and-braces layer underneath.
  */
 export default defineNuxtPlugin(() => {
-    const { deliveryEnabled } = useDeliveryMode()
-    const cartStore = useCartStore()
-    watch(
-        [() => cartStore.collectionOption, deliveryEnabled],
-        ([option, offered]) => {
-            const kept = enforcedCollectionOption(option, offered)
-            if (kept !== option) cartStore.collectionOption = kept
-        },
-        { immediate: true },
-    )
+  const { deliveryEnabled } = useDeliveryMode()
+  const cartStore = useCartStore()
+  watch(
+    [() => cartStore.collectionOption, deliveryEnabled],
+    ([option, offered]) => {
+      const kept = enforcedCollectionOption(option, offered)
+      if (kept !== option) cartStore.collectionOption = kept
+    },
+    { immediate: true },
+  )
 })

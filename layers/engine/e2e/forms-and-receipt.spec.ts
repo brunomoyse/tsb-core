@@ -18,7 +18,9 @@ const centsIn = (text: string): number => {
 }
 
 test.describe('Checkout phone capture', () => {
-  test('is validated on blur, never while typing, and saves only on Enter or Save', async ({ authenticatedPage: page }) => {
+  test('is validated on blur, never while typing, and saves only on Enter or Save', async ({
+    authenticatedPage: page,
+  }) => {
     await addProductsAndGoToCheckout(page)
 
     const capture = page.locator('#checkout-phone-capture')
@@ -65,26 +67,36 @@ test.describe('Checkout phone capture', () => {
  * the test account or create an order are answered by the test: `updateMe` echoes the number, `createOrder`
  * fails on purpose, so nothing real is written. Everything else (quote, config) goes to the API.
  */
-interface PhoneOrderCalls { updateMe: string[]; createOrder: number; log: string[] }
+interface PhoneOrderCalls {
+  updateMe: string[]
+  createOrder: number
+  log: string[]
+}
 
 async function stubPhoneAndOrderMutations(page: Page): Promise<PhoneOrderCalls> {
   const calls: PhoneOrderCalls = { updateMe: [], createOrder: 0, log: [] }
   await page.route('**/graphql', async (route: Route) => {
     const body = route.request().postData() ?? ''
     if (route.request().method() === 'POST' && body.includes('updateMe(')) {
-      const input = (JSON.parse(body) as { variables?: { input?: { phoneNumber?: string } } }).variables?.input
+      const input = (JSON.parse(body) as { variables?: { input?: { phoneNumber?: string } } })
+        .variables?.input
       calls.updateMe.push(input?.phoneNumber ?? '')
       calls.log.push('updateMe')
       await route.fulfill({
         contentType: 'application/json',
-        body: JSON.stringify({ data: { updateMe: { id: 'e2e', phoneNumber: input?.phoneNumber ?? null } } }),
+        body: JSON.stringify({
+          data: { updateMe: { id: 'e2e', phoneNumber: input?.phoneNumber ?? null } },
+        }),
       })
       return
     }
     if (route.request().method() === 'POST' && body.includes('createOrder(')) {
       calls.createOrder++
       calls.log.push('createOrder')
-      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ data: null, errors: [{ message: 'e2e: order not created' }] }) })
+      await route.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify({ data: null, errors: [{ message: 'e2e: order not created' }] }),
+      })
       return
     }
     await route.fallback()
@@ -94,7 +106,10 @@ async function stubPhoneAndOrderMutations(page: Page): Promise<PhoneOrderCalls> 
 
 async function openCashCheckout(page: Page): Promise<void> {
   await addProductsAndGoToCheckout(page)
-  await page.locator('[data-testid="checkout-restaurant-closed"], [data-testid="checkout-place-order"]').first().waitFor({ timeout: 10_000 })
+  await page
+    .locator('[data-testid="checkout-restaurant-closed"], [data-testid="checkout-place-order"]')
+    .first()
+    .waitFor({ timeout: 10_000 })
   if (await page.locator('[data-testid="checkout-restaurant-closed"]').isVisible()) {
     test.skip(true, 'Restaurant is currently closed')
     return
@@ -115,7 +130,9 @@ async function openPhoneEditor(page: Page) {
 }
 
 test.describe('Pay with an unsaved phone number', () => {
-  test('a valid number typed but not saved is saved first and the order goes on with it', async ({ authenticatedPage: page }) => {
+  test('a valid number typed but not saved is saved first and the order goes on with it', async ({
+    authenticatedPage: page,
+  }) => {
     const calls = await stubPhoneAndOrderMutations(page)
     await openCashCheckout(page)
     const { capture, input } = await openPhoneEditor(page)
@@ -132,7 +149,9 @@ test.describe('Pay with an unsaved phone number', () => {
     await expect(capture.locator('[data-testid="checkout-phone-input"]')).toHaveCount(0)
   })
 
-  test('an incomplete number blocks the order and the field says why', async ({ authenticatedPage: page }) => {
+  test('an incomplete number blocks the order and the field says why', async ({
+    authenticatedPage: page,
+  }) => {
     const calls = await stubPhoneAndOrderMutations(page)
     await openCashCheckout(page)
     const { input } = await openPhoneEditor(page)
@@ -150,7 +169,9 @@ test.describe('Pay with an unsaved phone number', () => {
 })
 
 test.describe('Product modal with choices', () => {
-  test('a quantity of 2 keeps the choices valid and the button shows the line total', async ({ page }) => {
+  test('a quantity of 2 keeps the choices valid and the button shows the line total', async ({
+    page,
+  }) => {
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
@@ -181,7 +202,9 @@ test.describe('Product modal with choices', () => {
     expect(await incs.count()).toBeGreaterThan(0)
 
     // Only products whose groups are all pick-one are scaled for the customer; others need their own picks.
-    const counters = await modal.locator('span.text-xs.font-semibold.whitespace-nowrap').allInnerTexts()
+    const counters = await modal
+      .locator('span.text-xs.font-semibold.whitespace-nowrap')
+      .allInnerTexts()
     if (counters.some((counter) => !/\/1$/u.test(counter.trim()))) {
       test.skip(true, 'The first choice product has a multi-select group')
       return
@@ -212,15 +235,41 @@ test.describe('Order confirmation receipt', () => {
     return findUserIdByEmail(email)
   }
 
-  const cases: { label: string; online: boolean; status: SeededOrderStatus; payment: RegExp; total: RegExp }[] = [
-    { label: 'cash pickup', online: false, status: 'CONFIRMED', payment: /Espèces au retrait/u, total: /25,00/u },
-    { label: 'paid online', online: true, status: 'CONFIRMED', payment: /Payé en ligne/u, total: /25,30/u },
+  const cases: {
+    label: string
+    online: boolean
+    status: SeededOrderStatus
+    payment: RegExp
+    total: RegExp
+  }[] = [
+    {
+      label: 'cash pickup',
+      online: false,
+      status: 'CONFIRMED',
+      payment: /Espèces au retrait/u,
+      total: /25,00/u,
+    },
+    {
+      label: 'paid online',
+      online: true,
+      status: 'CONFIRMED',
+      payment: /Payé en ligne/u,
+      total: /25,30/u,
+    },
   ]
 
   cases.forEach(({ label, online, status, payment, total }) => {
-    test(`${label}: rows add up to the total, payment method and pickup point`, async ({ authenticatedPage: page }) => {
+    test(`${label}: rows add up to the total, payment method and pickup point`, async ({
+      authenticatedPage: page,
+    }) => {
       // The seeded order is a pickup order with one 25,00 € item (see helpers/db.ts seedOrder, withItem): 25,00 € cash, 25,30 € online (0,30 € fee).
-      orderId = seedOrder({ userId: userId(), status, online, paymentStatus: online ? 'paid' : undefined, withItem: true })
+      orderId = seedOrder({
+        userId: userId(),
+        status,
+        online,
+        paymentStatus: online ? 'paid' : undefined,
+        withItem: true,
+      })
       await page.goto(`/fr/order-completed/${orderId}`)
 
       const receipt = page.locator('[data-testid="order-receipt"]')
@@ -232,8 +281,11 @@ test.describe('Order confirmation receipt', () => {
       await expect(receipt.locator('[data-testid="receipt-payment"]')).toContainText(payment)
       // No delivery row on a pickup order; the pickup point is the restaurant.
       await expect(receipt.locator('[data-testid="receipt-delivery"]')).toHaveCount(0)
-      await expect(receipt.locator('[data-testid="receipt-destination"]')).toContainText(/Rue de la Cathédrale 59/u)
-      if (online) await expect(receipt.locator('[data-testid="receipt-online-fee"]')).toContainText(/0,30/u)
+      await expect(receipt.locator('[data-testid="receipt-destination"]')).toContainText(
+        /Rue de la Cathédrale 59/u,
+      )
+      if (online)
+        await expect(receipt.locator('[data-testid="receipt-online-fee"]')).toContainText(/0,30/u)
       else await expect(receipt.locator('[data-testid="receipt-online-fee"]')).toHaveCount(0)
     })
   })

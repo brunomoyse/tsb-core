@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/authErrors.test.mjs`.
+// Run: `vp test run layers/engine/utils/authErrors.test.mjs`.
 
 import { authErrorKey, classifyAuthError, httpStatusOf } from './authErrors.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('the status comes from response.status or statusCode', () => {
   assert.equal(httpStatusOf({ response: { status: 429 } }), 429)
@@ -26,5 +26,8 @@ test('each kind has its message, a refusal uses the one the screen gives', () =>
   assert.equal(authErrorKey({ statusCode: 429 }, 'x'), 'notify.errors.tooManyRequests')
   assert.equal(authErrorKey({}, 'x'), 'notify.errors.networkError')
   assert.equal(authErrorKey({ statusCode: 502 }, 'x'), 'notify.errors.serverError')
-  assert.equal(authErrorKey({ statusCode: 400 }, 'notify.errors.invalidCode'), 'notify.errors.invalidCode')
+  assert.equal(
+    authErrorKey({ statusCode: 400 }, 'notify.errors.invalidCode'),
+    'notify.errors.invalidCode',
+  )
 })

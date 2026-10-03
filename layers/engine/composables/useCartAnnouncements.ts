@@ -18,24 +18,40 @@ import { useI18n } from 'vue-i18n'
  * the action ends, while delivery and the online fee depend on a server quote.
  */
 export function useCartAnnouncements(): void {
-    const cartStore = useCartStore()
-    const { announce } = useAnnouncer()
-    const { t } = useI18n()
+  const cartStore = useCartStore()
+  const { announce } = useAnnouncer()
+  const { t } = useI18n()
 
-    cartStore.$onAction(({ name, after }: { name: string; after: (callback: () => void) => void }) => {
-        if (name !== 'addProduct' && name !== 'incrementQuantity' && name !== 'decrementQuantity') return
-        const before = new Map<CartItem, number>(cartStore.products.map((item: CartItem): [CartItem, number] => [item, item.quantity]))
-        after(() => {
-            // Lines are mutated in place by the store, so identity tells a changed line from a new one.
-            const changed = cartStore.products.find((item: CartItem) => before.get(item) !== item.quantity)
-            if (!changed) return
-            const isNewLine = !before.has(changed)
-            const grew = isNewLine || changed.quantity > (before.get(changed) ?? 0)
-            const added = grew && (isNewLine || name === 'addProduct')
-            const count = cartStore.totalItems
-            announce(added
-                ? t('cart.announce.added', { name: changed.product.name, count, total: formatCents(cartStore.subtotalCents) }, count)
-                : t('cart.announce.quantity', { name: changed.product.name, quantity: changed.quantity }))
-        })
-    })
+  cartStore.$onAction(
+    ({ name, after }: { name: string; after: (callback: () => void) => void }) => {
+      if (name !== 'addProduct' && name !== 'incrementQuantity' && name !== 'decrementQuantity')
+        return
+      const before = new Map<CartItem, number>(
+        cartStore.products.map((item: CartItem): [CartItem, number] => [item, item.quantity]),
+      )
+      after(() => {
+        // Lines are mutated in place by the store, so identity tells a changed line from a new one.
+        const changed = cartStore.products.find(
+          (item: CartItem) => before.get(item) !== item.quantity,
+        )
+        if (!changed) return
+        const isNewLine = !before.has(changed)
+        const grew = isNewLine || changed.quantity > (before.get(changed) ?? 0)
+        const added = grew && (isNewLine || name === 'addProduct')
+        const count = cartStore.totalItems
+        announce(
+          added
+            ? t(
+                'cart.announce.added',
+                { name: changed.product.name, count, total: formatCents(cartStore.subtotalCents) },
+                count,
+              )
+            : t('cart.announce.quantity', {
+                name: changed.product.name,
+                quantity: changed.quantity,
+              }),
+        )
+      })
+    },
+  )
 }

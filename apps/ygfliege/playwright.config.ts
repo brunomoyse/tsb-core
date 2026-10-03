@@ -45,7 +45,12 @@ export default defineConfig<BrandOptions>({
   projects: [
     { name: 'brand-desktop', testDir: './e2e', use: desktop },
     { name: 'engine-desktop', testDir: engineDir, use: desktop },
-    { name: 'engine-mobile', testDir: engineDir, use: mobile, testMatch: ['cart.spec.ts', 'visual.spec.ts'] },
+    {
+      name: 'engine-mobile',
+      testDir: engineDir,
+      use: mobile,
+      testMatch: ['cart.spec.ts', 'visual.spec.ts'],
+    },
   ],
   webServer: {
     command: 'npm run dev -- --port 3001',

@@ -1,15 +1,17 @@
-// Run: `node --test layers/engine/utils/addressPrefill.test.mjs`.
+// Run: `vp test run layers/engine/utils/addressPrefill.test.mjs`.
 
 import assert from 'node:assert/strict'
 import { createAddressPrefill } from './addressPrefill.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const setup = (userAddress = null, cartAddress = null) => {
   const state = { user: userAddress, cart: cartAddress }
   const prefill = createAddressPrefill({
     userAddress: () => state.user,
     cartAddress: () => state.cart,
-    setCartAddress: (address) => { state.cart = address },
+    setCartAddress: (address) => {
+      state.cart = address
+    },
   })
   return { state, ...prefill }
 }

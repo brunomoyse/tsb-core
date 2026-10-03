@@ -6,6 +6,6 @@
  * CSS smooth scrolling needs no helper: Tailwind's `scroll-smooth` is paired with `motion-reduce:scroll-auto`.
  */
 export const scrollBehavior = (): ScrollBehavior => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'auto'
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'auto'
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
 }

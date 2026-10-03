@@ -7,21 +7,25 @@ import { toCents } from './money.ts'
  * let the order go with a short amount.
  */
 export type CashAmountState =
-    /** Nothing entered: the field is optional. */
-    | { kind: 'none' }
-    /** Less than what is due (or not an amount): must be corrected. */
-    | { kind: 'short'; missingCents: number }
-    | { kind: 'exact' }
-    /** More than due: the change the courier / counter has to bring back. */
-    | { kind: 'change'; changeCents: number }
+  /** Nothing entered: the field is optional. */
+  | { kind: 'none' }
+  /** Less than what is due (or not an amount): must be corrected. */
+  | { kind: 'short'; missingCents: number }
+  | { kind: 'exact' }
+  /** More than due: the change the courier / counter has to bring back. */
+  | { kind: 'change'; changeCents: number }
 
-export function evaluateCashAmount(raw: string | number | null | undefined, payableCents: number): CashAmountState {
-    const text = String(raw ?? '').trim()
-    if (text === '') return { kind: 'none' }
-    const amount = toCents(text.replace(',', '.'))
-    if (amount < payableCents || amount <= 0) return { kind: 'short', missingCents: Math.max(payableCents - amount, 0) }
-    if (amount === payableCents) return { kind: 'exact' }
-    return { kind: 'change', changeCents: amount - payableCents }
+export function evaluateCashAmount(
+  raw: string | number | null | undefined,
+  payableCents: number,
+): CashAmountState {
+  const text = String(raw ?? '').trim()
+  if (text === '') return { kind: 'none' }
+  const amount = toCents(text.replace(',', '.'))
+  if (amount < payableCents || amount <= 0)
+    return { kind: 'short', missingCents: Math.max(payableCents - amount, 0) }
+  if (amount === payableCents) return { kind: 'exact' }
+  return { kind: 'change', changeCents: amount - payableCents }
 }
 
 /**
@@ -29,9 +33,9 @@ export function evaluateCashAmount(raw: string | number | null | undefined, paya
  * decimals survive, and nothing left means no amount (null).
  */
 export function sanitizeCashAmount(value: string | number | null | undefined): string | null {
-    if (value === '' || value === null || value === undefined) return null
-    const raw = String(value).replace(',', '.')
-    const match = raw.match(/^(?<whole>\d*)(?<decimals>\.\d{0,2})?/u)
-    const sanitized = match ? `${match.groups?.whole ?? ''}${match.groups?.decimals ?? ''}` : ''
-    return sanitized === '' ? null : sanitized
+  if (value === '' || value === null || value === undefined) return null
+  const raw = String(value).replace(',', '.')
+  const match = /^(?<whole>\d*)(?<decimals>\.\d{0,2})?/u.exec(raw)
+  const sanitized = match ? `${match.groups?.whole ?? ''}${match.groups?.decimals ?? ''}` : ''
+  return sanitized === '' ? null : sanitized
 }

@@ -1,9 +1,15 @@
 // The menu's category scroll-spy band (audit PR 4.4).
-// Run: `node --test layers/engine/utils/menuScrollspy.test.mjs`.
+// Run: `vp test run layers/engine/utils/menuScrollspy.test.mjs`.
 
-import { DEFAULT_BAND_MARGIN, MIN_BAND_HEIGHT, bandRootMargin, categoryIdFromSection, topmostInBand } from './menuScrollspy.ts'
+import {
+  DEFAULT_BAND_MARGIN,
+  MIN_BAND_HEIGHT,
+  bandRootMargin,
+  categoryIdFromSection,
+  topmostInBand,
+} from './menuScrollspy.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('the band starts just under the header and is a fifth of the viewport tall', () => {
   // 900px viewport: band 180px, header bottom 200 -> top 208, bottom inset 900 - 208 - 180 = 512
@@ -12,7 +18,9 @@ test('the band starts just under the header and is a fifth of the viewport tall'
 
 test('a short viewport keeps a band of at least the minimum height', () => {
   const vh = 400
-  const [top, , bottom] = bandRootMargin(180, vh).split(' ').map(v => -parseInt(v, 10))
+  const [top, , bottom] = bandRootMargin(180, vh)
+    .split(' ')
+    .map((v) => -parseInt(v, 10))
   assert.equal(vh - top - bottom, MIN_BAND_HEIGHT)
 })
 

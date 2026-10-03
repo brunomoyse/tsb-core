@@ -9,11 +9,11 @@ import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
  * does not know shows the caller's own generic key. The raw backend message is never displayed.
  */
 export function useGqlErrorMessage() {
-    const { t } = useI18n()
-    const { policy } = useOrderingPolicy()
+  const { t } = useI18n()
+  const { policy } = useOrderingPolicy()
 
-    return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
-        const described = describeGqlError(err, policy.value)
-        return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
-    }
+  return (err: unknown, fallbackKey = 'notify.errors.requestFailed'): string => {
+    const described = describeGqlError(err, policy.value)
+    return described ? t(described.key, described.params ?? {}) : t(fallbackKey)
+  }
 }

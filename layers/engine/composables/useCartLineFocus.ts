@@ -12,33 +12,36 @@ import { nextTick } from 'vue'
  *  - focus was anywhere else, or still sits on a live element (the "−" of a line with several units): left alone.
  */
 export interface CartLineFocusOptions {
-    /** The surface that lists the lines (sheet, side cart, page). */
-    container: () => HTMLElement | null | undefined
-    /** Where focus goes when no line is left. */
-    fallback: () => HTMLElement | null | undefined
+  /** The surface that lists the lines (sheet, side cart, page). */
+  container: () => HTMLElement | null | undefined
+  /** Where focus goes when no line is left. */
+  fallback: () => HTMLElement | null | undefined
 }
 
 const LINE = '[data-cart-line]'
 const REMOVE = '[data-cart-remove]'
 
 export function useCartLineFocus(options: CartLineFocusOptions) {
-    /** Runs `action` (which removes or decrements a line) and repairs focus afterwards. */
-    const keepFocus = async (action: () => void): Promise<void> => {
-        const root = options.container()
-        const active = document.activeElement
-        const lines = root ? Array.from(root.querySelectorAll(LINE)) : []
-        const index = root && active && root.contains(active) ? lines.findIndex((line) => line.contains(active)) : -1
-        action()
-        if (index < 0) return
-        await nextTick()
-        const now = document.activeElement
-        if (now && now !== document.body && now.isConnected) return
-        // The surface itself may be gone (the menu drops the side cart with the last line): its detached lines are not candidates.
-        const remaining = root?.isConnected ? Array.from(root.querySelectorAll<HTMLElement>(LINE)) : []
-        const target = remaining.length
-            ? remaining[Math.min(index, remaining.length - 1)]?.querySelector<HTMLElement>(REMOVE)
-            : options.fallback()
-        target?.focus()
-    }
-    return { keepFocus }
+  /** Runs `action` (which removes or decrements a line) and repairs focus afterwards. */
+  const keepFocus = async (action: () => void): Promise<void> => {
+    const root = options.container()
+    const active = document.activeElement
+    const lines = root ? Array.from(root.querySelectorAll(LINE)) : []
+    const index =
+      root && active && root.contains(active)
+        ? lines.findIndex((line) => line.contains(active))
+        : -1
+    action()
+    if (index < 0) return
+    await nextTick()
+    const now = document.activeElement
+    if (now && now !== document.body && now.isConnected) return
+    // The surface itself may be gone (the menu drops the side cart with the last line): its detached lines are not candidates.
+    const remaining = root?.isConnected ? Array.from(root.querySelectorAll<HTMLElement>(LINE)) : []
+    const target = remaining.length
+      ? remaining[Math.min(index, remaining.length - 1)]?.querySelector<HTMLElement>(REMOVE)
+      : options.fallback()
+    target?.focus()
+  }
+  return { keepFocus }
 }

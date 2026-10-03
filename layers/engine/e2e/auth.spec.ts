@@ -17,7 +17,10 @@ import { waitForOtpFromZitadel } from './support/zitadel-otp'
  */
 
 test.beforeEach(async ({ context, loginAvailable }) => {
-  test.skip(!loginAvailable, 'Zitadel login is not set up for this brand locally (see the app global-setup)')
+  test.skip(
+    !loginAvailable,
+    'Zitadel login is not set up for this brand locally (see the app global-setup)',
+  )
   /*
    * Cookies only — oidc-client-ts keeps its PKCE/login state (stateStore) in
    * localStorage (see useOidc.ts), which must survive the Zitadel redirect chain.
@@ -60,7 +63,6 @@ test.describe('Authentication flows (OTP)', () => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
-
     await page.goto('/fr/auth/login')
     await waitForLoginPage(page, loginOrigin)
 
@@ -93,10 +95,13 @@ test.describe('Authentication flows (OTP)', () => {
     await expect(page.locator(SEL.loginSubmit)).toBeVisible()
   })
 
-  test('Resend code button is disabled during cooldown', async ({ page, e2eUserEmail, loginOrigin }) => {
+  test('Resend code button is disabled during cooldown', async ({
+    page,
+    e2eUserEmail,
+    loginOrigin,
+  }) => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
-
 
     await page.goto('/fr/auth/login')
     await waitForLoginPage(page, loginOrigin)

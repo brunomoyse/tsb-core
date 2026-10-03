@@ -8,11 +8,15 @@
 export type CollectionOption = 'DELIVERY' | 'PICKUP'
 
 /** The brand flag: delivery is offered unless the brand says `deliveryEnabled: false`. */
-export const brandOffersDelivery = (deliveryEnabled: boolean | undefined): boolean => deliveryEnabled !== false
+export const brandOffersDelivery = (deliveryEnabled: boolean | undefined): boolean =>
+  deliveryEnabled !== false
 
 /** The option a fresh cart starts on. */
-export const defaultCollectionOption = (deliveryOffered: boolean): CollectionOption => (deliveryOffered ? 'DELIVERY' : 'PICKUP')
+export const defaultCollectionOption = (deliveryOffered: boolean): CollectionOption =>
+  deliveryOffered ? 'DELIVERY' : 'PICKUP'
 
 /** The option to keep: DELIVERY is snapped back to PICKUP while delivery is not offered. */
-export const enforcedCollectionOption = (option: CollectionOption, deliveryOffered: boolean): CollectionOption =>
-    option === 'DELIVERY' && !deliveryOffered ? 'PICKUP' : option
+export const enforcedCollectionOption = (
+  option: CollectionOption,
+  deliveryOffered: boolean,
+): CollectionOption => (option === 'DELIVERY' && !deliveryOffered ? 'PICKUP' : option)

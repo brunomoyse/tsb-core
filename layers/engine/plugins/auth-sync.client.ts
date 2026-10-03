@@ -1,4 +1,4 @@
-import type { User } from '@/types'
+import type { User } from '#engine/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
@@ -18,26 +18,26 @@ import { reportError } from '#engine/utils/reportError'
  *   3. Both empty / both valid         → no-op.
  */
 const ME_QUERY = print(gql`
-    query AuthSyncMe {
-        me {
-            id
-            email
-            firstName
-            lastName
-            phoneNumber
-            notifyMarketing
-            notifyOrderUpdates
-            deletionRequestedAt
-            address {
-                id
-                streetName
-                houseNumber
-                municipalityName
-                postcode
-                distance
-            }
-        }
+  query AuthSyncMe {
+    me {
+      id
+      email
+      firstName
+      lastName
+      phoneNumber
+      notifyMarketing
+      notifyOrderUpdates
+      deletionRequestedAt
+      address {
+        id
+        streetName
+        houseNumber
+        municipalityName
+        postcode
+        distance
+      }
     }
+  }
 `)
 
 /*
@@ -53,60 +53,62 @@ const ME_QUERY = print(gql`
  * step settle when it finishes, instead of before the first render.
  */
 export default defineNuxtPlugin({
-    name: 'auth-sync',
-    parallel: true,
-    setup(nuxtApp) {
-        onNuxtReady(() => {
-            nuxtApp.runWithContext(syncAuth).catch((err: unknown) => reportError(err, 'auth.sync'))
-        })
-    },
+  name: 'auth-sync',
+  parallel: true,
+  setup(nuxtApp) {
+    onNuxtReady(() => {
+      nuxtApp.runWithContext(syncAuth).catch((err: unknown) => {
+        reportError(err, 'auth.sync')
+      })
+    })
+  },
 })
 
 async function syncAuth(): Promise<void> {
-    // Read before the first await: the Nuxt context only holds for the synchronous part.
-    const cfg = useRuntimeConfig()
-    const { useAuthStore } = await import('~/stores/auth')
-    const authStore = useAuthStore()
+  // Read before the first await: the Nuxt context only holds for the synchronous part.
+  const cfg = useRuntimeConfig()
+  const { useAuthStore } = await import('#engine/stores/auth')
+  const authStore = useAuthStore()
 
-    const { useOidc } = await import('~/composables/useOidc')
-    const { isAuthenticated, silentRenew, removeUser, getAccessToken } = useOidc()
+  const { useOidc } = await import('#engine/composables/useOidc')
+  const { isAuthenticated, silentRenew, removeUser, getAccessToken } = useOidc()
 
-    const oidcAuthed = await isAuthenticated()
+  const oidcAuthed = await isAuthenticated()
 
-    // Case 1: authStore says logged-in but OIDC token is gone/expired.
-    if (authStore.user && !oidcAuthed) {
-        const renewed = await silentRenew()
-        if (renewed) return
-        await removeUser()
-        authStore.clearUser()
+  // Case 1: authStore says logged-in but OIDC token is gone/expired.
+  if (authStore.user && !oidcAuthed) {
+    const renewed = await silentRenew()
+    if (renewed) return
+    await removeUser()
+    authStore.clearUser()
+    return
+  }
+
+  /*
+   * Case 2: OIDC token is valid but authStore is empty (post-release drift
+   * or partial logout). Repopulate from /me so the UI stops showing "Login"
+   * and /login stops bouncing the user to /menu.
+   */
+  if (!authStore.user && oidcAuthed) {
+    const token = await getAccessToken()
+    if (!token) return
+    const url = cfg.public.graphqlHttp
+    try {
+      const res = await $fetch<{ data?: { me: User }; errors?: unknown[] }>(url, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { query: ME_QUERY, variables: {} },
+      })
+      if (res?.data?.me) {
+        authStore.setUser(res.data.me)
         return
+      }
+      // Token accepted at HTTP layer but /me returned nothing or GraphQL errors — stale.
+      await removeUser()
+    } catch (err: unknown) {
+      // Backend rejected the token (revoked, user deleted, etc.): expected, not reported.
+      if (import.meta.dev) console.warn('[auth-sync] /me rejected the token', err)
+      await removeUser()
     }
-
-    /*
-     * Case 2: OIDC token is valid but authStore is empty (post-release drift
-     * or partial logout). Repopulate from /me so the UI stops showing "Login"
-     * and /login stops bouncing the user to /menu.
-     */
-    if (!authStore.user && oidcAuthed) {
-        const token = await getAccessToken()
-        if (!token) return
-        const url = cfg.public.graphqlHttp as string
-        try {
-            const res = await $fetch<{ data?: { me: User }; errors?: unknown[] }>(url, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${token}` },
-                body: { query: ME_QUERY, variables: {} },
-            })
-            if (res?.data?.me) {
-                authStore.setUser(res.data.me)
-                return
-            }
-            // Token accepted at HTTP layer but /me returned nothing or GraphQL errors — stale.
-            await removeUser()
-        } catch (err: unknown) {
-            // Backend rejected the token (revoked, user deleted, etc.): expected, not reported.
-            if (import.meta.dev) console.warn('[auth-sync] /me rejected the token', err)
-            await removeUser()
-        }
-    }
+  }
 }

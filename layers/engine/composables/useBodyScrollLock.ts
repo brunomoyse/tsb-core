@@ -9,31 +9,35 @@ let lockCount = 0
 let savedOverflow = ''
 
 export function lockBodyScroll(): () => void {
-    if (!import.meta.client) return () => {}
-    if (lockCount === 0) {
-        savedOverflow = document.body.style.overflow
-        document.body.style.overflow = 'hidden'
-    }
-    lockCount++
-    let released = false
-    return () => {
-        if (released) return
-        released = true
-        lockCount--
-        if (lockCount === 0) document.body.style.overflow = savedOverflow
-    }
+  if (!import.meta.client) return () => {}
+  if (lockCount === 0) {
+    savedOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  }
+  lockCount++
+  let released = false
+  return () => {
+    if (released) return
+    released = true
+    lockCount--
+    if (lockCount === 0) document.body.style.overflow = savedOverflow
+  }
 }
 
 export function useBodyScrollLock(active: MaybeRefOrGetter<boolean>): void {
-    if (!import.meta.client) return
-    let release: (() => void) | null = null
-    const stop = watch(() => toValue(active), (on) => {
-        release?.()
-        release = on ? lockBodyScroll() : null
-    }, { immediate: true })
-    onBeforeUnmount(() => {
-        stop()
-        release?.()
-        release = null
-    })
+  if (!import.meta.client) return
+  let release: (() => void) | null = null
+  const stop = watch(
+    () => toValue(active),
+    (on) => {
+      release?.()
+      release = on ? lockBodyScroll() : null
+    },
+    { immediate: true },
+  )
+  onBeforeUnmount(() => {
+    stop()
+    release?.()
+    release = null
+  })
 }

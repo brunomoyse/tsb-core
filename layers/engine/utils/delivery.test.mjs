@@ -1,9 +1,15 @@
-// Run: `node --test layers/engine/utils/delivery.test.mjs`.
+// Run: `vp test run layers/engine/utils/delivery.test.mjs`.
 
-import { OUT_OF_ZONE, deliveryFeeCentsForDistance, deliveryZoneStatus, isDeliverable, isExcludedPostcode } from '../lib/delivery.ts'
+import {
+  OUT_OF_ZONE,
+  deliveryFeeCentsForDistance,
+  deliveryZoneStatus,
+  isDeliverable,
+  isExcludedPostcode,
+} from '../lib/delivery.ts'
 import { orderingPolicyFromApi, DEFAULT_ORDERING_POLICY as policy } from './orderingPolicy.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('an address inside the zone is deliverable', () => {
   assert.equal(isDeliverable(policy, 4200, '4000'), true)
@@ -42,7 +48,10 @@ test('the default fee grid: free under 3 km, +1 EUR per km, out of zone from 9 k
 test('a different policy drives the zone, the grid and the excluded postcodes', () => {
   const other = orderingPolicyFromApi({
     deliveryMaxDistanceKm: 6,
-    deliveryFeeTiers: [{ upToKm: 2, fee: '0.00' }, { upToKm: 6, fee: '3.50' }],
+    deliveryFeeTiers: [
+      { upToKm: 2, fee: '0.00' },
+      { upToKm: 6, fee: '3.50' },
+    ],
     excludedPostcodes: ['4000', '4020'],
   })
   assert.equal(deliveryFeeCentsForDistance(other, 1999), 0)
@@ -57,6 +66,9 @@ test('a different policy drives the zone, the grid and the excluded postcodes', 
 })
 
 test('a distance past the last tier is out of zone even when the radius is larger (as the backend)', () => {
-  const gap = orderingPolicyFromApi({ deliveryMaxDistanceKm: 10, deliveryFeeTiers: [{ upToKm: 5, fee: '1.00' }] })
+  const gap = orderingPolicyFromApi({
+    deliveryMaxDistanceKm: 10,
+    deliveryFeeTiers: [{ upToKm: 5, fee: '1.00' }],
+  })
   assert.equal(deliveryFeeCentsForDistance(gap, 7000), OUT_OF_ZONE)
 })

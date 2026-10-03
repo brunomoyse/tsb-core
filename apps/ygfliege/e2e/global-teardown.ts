@@ -8,10 +8,10 @@ import { restoreRestaurantConfig } from '../../../layers/engine/e2e/support/rest
 import { ygfDb } from './db-target'
 
 export default function globalTeardown(config: FullConfig) {
-    if (restoreRestaurantConfig(ygfDb(), config.configFile)) {
-        console.log('ygfliege e2e teardown: restaurant config restored')
-    } else {
-        console.warn('ygfliege e2e teardown: no backup found, skipping restore')
-    }
-    clearAuthState(config)
+  if (restoreRestaurantConfig(ygfDb(), config.configFile)) {
+    console.log('ygfliege e2e teardown: restaurant config restored')
+  } else {
+    console.warn('ygfliege e2e teardown: no backup found, skipping restore')
+  }
+  clearAuthState(config)
 }

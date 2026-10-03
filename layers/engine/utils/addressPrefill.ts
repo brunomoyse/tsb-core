@@ -6,31 +6,31 @@
  * from that user goes with it: no stale address stays in the cart behind the sign-in step.
  */
 export interface AddressPrefillIo<A extends { id: string }> {
-    userAddress: () => A | null | undefined
-    cartAddress: () => A | null | undefined
-    setCartAddress: (address: A | null) => void
+  userAddress: () => A | null | undefined
+  cartAddress: () => A | null | undefined
+  setCartAddress: (address: A | null) => void
 }
 
 export function createAddressPrefill<A extends { id: string }>(io: AddressPrefillIo<A>) {
-    let prefilled = false
-    let prefilledId: string | null = null
+  let prefilled = false
+  let prefilledId: string | null = null
 
-    /** Copies the user's address into an empty cart, once. */
-    const prefill = (): void => {
-        const address = io.userAddress()
-        if (prefilled || !address || io.cartAddress()) return
-        io.setCartAddress(address)
-        prefilled = true
-        prefilledId = address.id
-    }
+  /** Copies the user's address into an empty cart, once. */
+  const prefill = (): void => {
+    const address = io.userAddress()
+    if (prefilled || !address || io.cartAddress()) return
+    io.setCartAddress(address)
+    prefilled = true
+    prefilledId = address.id
+  }
 
-    /** Call when the user record changes: a dropped user takes the address it provided along, and the pre-fill may run again. */
-    const onUserChanged = (user: unknown): void => {
-        if (user || !prefilled) return
-        if (io.cartAddress()?.id === prefilledId) io.setCartAddress(null)
-        prefilled = false
-        prefilledId = null
-    }
+  /** Call when the user record changes: a dropped user takes the address it provided along, and the pre-fill may run again. */
+  const onUserChanged = (user: unknown): void => {
+    if (user || !prefilled) return
+    if (io.cartAddress()?.id === prefilledId) io.setCartAddress(null)
+    prefilled = false
+    prefilledId = null
+  }
 
-    return { prefill, onUserChanged }
+  return { prefill, onUserChanged }
 }

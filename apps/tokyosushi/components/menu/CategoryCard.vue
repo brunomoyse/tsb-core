@@ -1,40 +1,39 @@
 <template>
-    <button
-        :aria-pressed="active"
-        data-testid="category-card"
-        translate="no"
-        class="relative overflow-hidden shrink-0 min-h-11 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
-        :class="active
-            ? 'bg-tsb-four text-primary-900/80 font-semibold'
-            : 'text-neutral-600 font-medium hover:bg-tsb-four/40 hover:text-neutral-700'"
-        @click="handleClick"
-        :data-id="category.id"
-        :data-chip-category="category.id"
-    >
-        {{ category.name }}
-        <!-- Red accent bar clipped by rounded corners -->
-        <span
-            class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-primary-400 transition-all duration-300 ease-out origin-center"
-            :class="active ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'"
-        />
-    </button>
+  <button
+    :aria-pressed="active"
+    data-testid="category-card"
+    translate="no"
+    class="relative overflow-hidden shrink-0 min-h-11 rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap transition-all duration-300 ease-out select-none"
+    :class="
+      active
+        ? 'bg-tsb-four text-primary-900/80 font-semibold'
+        : 'text-neutral-600 font-medium hover:bg-tsb-four/40 hover:text-neutral-700'
+    "
+    @click="handleClick"
+    :data-id="category.id"
+    :data-chip-category="category.id"
+  >
+    {{ category.name }}
+    <!-- Red accent bar clipped by rounded corners -->
+    <span
+      class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-primary-400 transition-all duration-300 ease-out origin-center"
+      :class="active ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'"
+    />
+  </button>
 </template>
 
 <script setup lang="ts">
 import type { ProductCategory } from '#engine/types'
 
-const {
-    category,
-    active
-} = defineProps<{
-    category: ProductCategory;
-    active: boolean;
+const { category, active } = defineProps<{
+  category: ProductCategory
+  active: boolean
 }>()
 const emit = defineEmits<{
-    select: [id: string]
+  select: [id: string]
 }>()
 
 const handleClick = () => {
-    emit('select', category.id);
-};
+  emit('select', category.id)
+}
 </script>

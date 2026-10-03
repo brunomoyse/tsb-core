@@ -11,19 +11,25 @@ import { watch } from 'vue'
  * Waits for the app to be mounted: the translation function and the toast host exist by then.
  */
 export default defineNuxtPlugin((nuxtApp) => {
-    nuxtApp.hook('app:mounted', () => {
-        const cartStore = useCartStore(nuxtApp.$pinia as Parameters<typeof useCartStore>[0])
-        const notifications = useNotificationsStore(nuxtApp.$pinia as Parameters<typeof useNotificationsStore>[0])
-        const i18n = nuxtApp.$i18n as { t: (key: string) => string }
+  nuxtApp.hook('app:mounted', () => {
+    const cartStore = useCartStore(nuxtApp.$pinia as Parameters<typeof useCartStore>[0])
+    const notifications = useNotificationsStore(
+      nuxtApp.$pinia as Parameters<typeof useNotificationsStore>[0],
+    )
+    const i18n = nuxtApp.$i18n as { t: (key: string) => string }
 
-        watch(() => cartStore.droppedOnHydrate, (dropped) => {
-            if (dropped <= 0) return
-            notifications.notify({
-                message: i18n.t('cart.removedUnavailable'),
-                variant: 'warning',
-                duration: 8000,
-            })
-            cartStore.droppedOnHydrate = 0
-        }, { immediate: true })
-    })
+    watch(
+      () => cartStore.droppedOnHydrate,
+      (dropped) => {
+        if (dropped <= 0) return
+        notifications.notify({
+          message: i18n.t('cart.removedUnavailable'),
+          variant: 'warning',
+          duration: 8000,
+        })
+        cartStore.droppedOnHydrate = 0
+      },
+      { immediate: true },
+    )
+  })
 })

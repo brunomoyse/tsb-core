@@ -5,13 +5,13 @@ import type { BrandConfig } from '../types/brand.ts'
  * when the brand has none for this category and the catalog's group name is shown.
  */
 export function choiceGroupLabelKey(
-    labels: BrandConfig['choiceGroupLabels'],
-    categorySlug: string | null | undefined,
-    maxSelections: number,
+  labels: BrandConfig['choiceGroupLabels'],
+  categorySlug: string | null | undefined,
+  maxSelections: number,
 ): string | null {
-    const entry = categorySlug ? labels?.[categorySlug] : undefined
-    if (!entry) return null
-    return maxSelections > 1 ? entry.other : entry.one
+  const entry = categorySlug ? labels?.[categorySlug] : undefined
+  if (!entry) return null
+  return maxSelections > 1 ? entry.other : entry.one
 }
 
 /**
@@ -20,8 +20,12 @@ export function choiceGroupLabelKey(
  * single fixed level. Multi-select groups keep the pick count ("20 ingrédients"). Group names are DB translations, so
  * the option count is appended rather than pluralised.
  */
-export function choiceGroupCountLabel(name: string, maxSelections: number, optionCount: number): string {
-    const label = name.toLowerCase()
-    if (maxSelections === 1) return optionCount > 1 ? `${label} (${optionCount})` : label
-    return `${maxSelections} ${label}`
+export function choiceGroupCountLabel(
+  name: string,
+  maxSelections: number,
+  optionCount: number,
+): string {
+  const label = name.toLowerCase()
+  if (maxSelections === 1) return optionCount > 1 ? `${label} (${optionCount})` : label
+  return `${maxSelections} ${label}`
 }

@@ -10,22 +10,18 @@ type Vars = Record<string, unknown>
  * plus reactive data/loading/error for your UI. Failures throw (and `error` holds) a `GqlError`:
  * show `useGqlErrorMessage()(err)`, never `err.message`.
  */
-export function useGqlMutation<T = unknown>(
-    rawMutation: string | DocumentNode,
-) {
+export function useGqlMutation<T = unknown>(rawMutation: string | DocumentNode) {
   const { $gqlFetch } = useNuxtApp()
-  const data    = ref<T>()
+  const data = ref<T>()
   const loading = ref(false)
-  const error   = ref<unknown>()
+  const error = ref<unknown>()
 
   /** Call this and await the result */
   const mutate = async (variables: Vars = {}): Promise<T> => {
     loading.value = true
-    error.value   = undefined
+    error.value = undefined
     try {
-      const queryStr = typeof rawMutation === 'string'
-          ? rawMutation
-          : print(rawMutation)
+      const queryStr = typeof rawMutation === 'string' ? rawMutation : print(rawMutation)
 
       const res = await $gqlFetch<T>(queryStr, { variables })
       data.value = res

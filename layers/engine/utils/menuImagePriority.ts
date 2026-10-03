@@ -9,21 +9,22 @@ export const HIGH_PRIORITY_IMAGES = 2
 export const EAGER_IMAGES = 4
 
 export interface MenuImagePriority {
-    loading: 'eager' | 'lazy'
-    fetchpriority: 'high' | 'low' | undefined
+  loading: 'eager' | 'lazy'
+  fetchpriority: 'high' | 'low' | undefined
 }
 
 export const menuImagePriority = (pageIndex: number): MenuImagePriority => ({
-    loading: pageIndex < EAGER_IMAGES ? 'eager' : 'lazy',
-    fetchpriority: pageIndex < HIGH_PRIORITY_IMAGES ? 'high' : pageIndex < EAGER_IMAGES ? undefined : 'low',
+  loading: pageIndex < EAGER_IMAGES ? 'eager' : 'lazy',
+  fetchpriority:
+    pageIndex < HIGH_PRIORITY_IMAGES ? 'high' : pageIndex < EAGER_IMAGES ? undefined : 'low',
 })
 
 /** The position of each category's first card on the page, so a card's page index is `offsets[category] + indexInCategory`. */
 export const categoryCardOffsets = (counts: number[]): number[] => {
-    let total = 0
-    return counts.map((count) => {
-        const offset = total
-        total += count
-        return offset
-    })
+  let total = 0
+  return counts.map((count) => {
+    const offset = total
+    total += count
+    return offset
+  })
 }

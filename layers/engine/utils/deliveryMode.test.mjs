@@ -1,9 +1,13 @@
 // Takeaway-only mode (audit PR 4.4).
-// Run: `node --test layers/engine/utils/deliveryMode.test.mjs`.
+// Run: `vp test run layers/engine/utils/deliveryMode.test.mjs`.
 
-import { brandOffersDelivery, defaultCollectionOption, enforcedCollectionOption } from './deliveryMode.ts'
+import {
+  brandOffersDelivery,
+  defaultCollectionOption,
+  enforcedCollectionOption,
+} from './deliveryMode.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('delivery is offered unless the brand turns it off', () => {
   assert.equal(brandOffersDelivery(undefined), true)

@@ -1,30 +1,31 @@
 /* Tokyo Sushi Bar brand styling: decorative display font + page background.
    Lives in the brand layer so each white-label brand ships its own. */
 @font-face {
-    font-family: 'Channel';
-    src: url('/fonts/channel.woff2') format('woff2'),
-         url('/fonts/channel.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+  font-family: 'Channel';
+  src:
+    url('/fonts/channel.woff2') format('woff2'),
+    url('/fonts/channel.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 html {
-    background-color: #F6F5F2;
-    color-scheme: only light;
+  background-color: #f6f5f2;
+  color-scheme: only light;
 }
 
 /* Brand accent tokens (HSL channels), consumed as primary / primary-hover /
    primary-soft / ring in Tailwind and by the shared engine components. */
 :root {
-    --primary: 0 72.2% 50.6%;            /* red-600 */
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 73.7% 41.8%;      /* red-700 */
-    --primary-soft: 0 100% 96.9%;        /* tsb-four */
-    --ring: 0 72.2% 50.6%;                /* red-600: focus ring, 4.8:1 on white and >= 4.07:1 on the tsb surfaces (WCAG 1.4.11) */
-    /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
-    --side-rail-width: 142px;
+  --primary: 0 72.2% 50.6%; /* red-600 */
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 0 73.7% 41.8%; /* red-700 */
+  --primary-soft: 0 100% 96.9%; /* tsb-four */
+  --ring: 0 72.2% 50.6%; /* red-600: focus ring, 4.8:1 on white and >= 4.07:1 on the tsb surfaces (WCAG 1.4.11) */
+  /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
+  --side-rail-width: 142px;
 
-    --radius-control: 0.75rem;           /* buttons, inputs, cards */
-    --radius-container: 1rem;            /* modals, panels */
+  --radius-control: 0.75rem; /* buttons, inputs, cards */
+  --radius-container: 1rem; /* modals, panels */
 }

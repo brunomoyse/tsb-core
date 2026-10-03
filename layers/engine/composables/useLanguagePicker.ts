@@ -6,10 +6,10 @@ import { useTracking } from '#engine/composables/useTracking'
 
 /** Each language is named in itself, so the link carries its own `lang` (a screen reader reads "中文" with a Chinese voice). */
 const LANGUAGES = [
-    { code: 'fr', label: 'Français', short: 'FR' },
-    { code: 'en', label: 'English', short: 'EN' },
-    { code: 'nl', label: 'Nederlands', short: 'NL' },
-    { code: 'zh', label: '中文', short: '中文' },
+  { code: 'fr', label: 'Français', short: 'FR' },
+  { code: 'en', label: 'English', short: 'EN' },
+  { code: 'nl', label: 'Nederlands', short: 'NL' },
+  { code: 'zh', label: '中文', short: '中文' },
 ] as const
 
 /**
@@ -23,53 +23,66 @@ const LANGUAGES = [
  * which closes itself on Escape, leaves the key to an open picker.
  */
 export function useLanguagePicker(): {
-    open: Ref<boolean>
-    rootRef: Ref<HTMLElement | null>
-    buttonRef: Ref<HTMLElement | null>
-    panelId: string
-    languages: Readonly<Ref<{ code: string, label: string, short: string, to: string, current: boolean }[]>>
-    current: Readonly<Ref<{ code: string, label: string, short: string }>>
-    toggle: () => void
-    close: (restoreFocus?: boolean) => void
-    choose: (code: string) => void
+  open: Ref<boolean>
+  rootRef: Ref<HTMLElement | null>
+  buttonRef: Ref<HTMLElement | null>
+  panelId: string
+  languages: Readonly<
+    Ref<{ code: string; label: string; short: string; to: string; current: boolean }[]>
+  >
+  current: Readonly<Ref<{ code: string; label: string; short: string }>>
+  toggle: () => void
+  close: (restoreFocus?: boolean) => void
+  choose: (code: string) => void
 } {
-    const { locale, availableLocales } = useI18n()
-    const switchLocalePath = useSwitchLocalePath()
-    const { trackEvent } = useTracking()
+  const { locale, availableLocales } = useI18n()
+  const switchLocalePath = useSwitchLocalePath()
+  const { trackEvent } = useTracking()
 
-    const open = ref(false)
-    const rootRef = ref<HTMLElement | null>(null)
-    const buttonRef = ref<HTMLElement | null>(null)
-    const panelId = `language-panel-${useId()}`
+  const open = ref(false)
+  const rootRef = ref<HTMLElement | null>(null)
+  const buttonRef = ref<HTMLElement | null>(null)
+  const panelId = `language-panel-${useId()}`
 
-    const languages = computed(() => LANGUAGES
-        .filter((lang) => availableLocales.includes(lang.code))
-        .map((lang) => ({ ...lang, to: switchLocalePath(lang.code), current: lang.code === locale.value })))
+  const languages = computed(() =>
+    LANGUAGES.filter((lang) => availableLocales.includes(lang.code)).map((lang) => ({
+      ...lang,
+      to: switchLocalePath(lang.code),
+      current: lang.code === locale.value,
+    })),
+  )
 
-    const current = computed(() => LANGUAGES.find((lang) => lang.code === locale.value) ?? LANGUAGES[0])
+  const current = computed(
+    () => LANGUAGES.find((lang) => lang.code === locale.value) ?? LANGUAGES[0],
+  )
 
-    const close = (restoreFocus = false): void => {
-        const wasOpen = open.value
-        open.value = false
-        if (restoreFocus && wasOpen) void nextTick(() => buttonRef.value?.focus())
-    }
-    const toggle = (): void => { open.value = !open.value }
+  const close = (restoreFocus = false): void => {
+    const wasOpen = open.value
+    open.value = false
+    if (restoreFocus && wasOpen) void nextTick(() => buttonRef.value?.focus())
+  }
+  const toggle = (): void => {
+    open.value = !open.value
+  }
 
-    const choose = (code: string): void => {
-        if (code !== locale.value) trackEvent('language_changed', { from_locale: locale.value, to_locale: code })
-        close()
-    }
+  const choose = (code: string): void => {
+    if (code !== locale.value)
+      trackEvent('language_changed', { from_locale: locale.value, to_locale: code })
+    close()
+  }
 
-    if (import.meta.client) {
-        // Escape from the button or from a link in the list.
-        useEventListener(rootRef, 'keydown', (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && open.value) {
-                event.stopPropagation()
-                close(true)
-            }
-        })
-        onClickOutside(rootRef, () => { close() })
-    }
+  if (import.meta.client) {
+    // Escape from the button or from a link in the list.
+    useEventListener(rootRef, 'keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && open.value) {
+        event.stopPropagation()
+        close(true)
+      }
+    })
+    onClickOutside(rootRef, () => {
+      close()
+    })
+  }
 
-    return { open, rootRef, buttonRef, panelId, languages, current, toggle, close, choose }
+  return { open, rootRef, buttonRef, panelId, languages, current, toggle, close, choose }
 }

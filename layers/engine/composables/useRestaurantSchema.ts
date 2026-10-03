@@ -11,25 +11,25 @@ import { useI18n } from 'vue-i18n'
  * are the live ones; brand.ts is the fallback while they are not there (the API is down).
  */
 export function useRestaurantSchema(openingHours: () => OpeningHoursByDay | null | undefined) {
-    const config = useRuntimeConfig()
-    const { brand } = useAppConfig() as { brand: BrandConfig }
-    const { locale } = useI18n()
+  const config = useRuntimeConfig()
+  const { brand } = useAppConfig() as { brand: BrandConfig }
+  const { locale } = useI18n()
 
-    useHead(() => ({
-        script: [
-            {
-                type: 'application/ld+json',
-                innerHTML: JSON.stringify(
-                    buildRestaurantSchema({
-                        brand,
-                        baseUrl: (config.public.baseUrl as string).replace(/\/$/u, ''),
-                        locale: locale.value,
-                        openingHours: openingHours(),
-                    }),
-                ),
-                tagPosition: 'head',
-                key: 'tsb-jsonld',
-            },
-        ],
-    }))
+  useHead(() => ({
+    script: [
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(
+          buildRestaurantSchema({
+            brand,
+            baseUrl: (config.public.baseUrl as string).replace(/\/$/u, ''),
+            locale: locale.value,
+            openingHours: openingHours(),
+          }),
+        ),
+        tagPosition: 'head',
+        key: 'tsb-jsonld',
+      },
+    ],
+  }))
 }

@@ -1,6 +1,6 @@
 <template>
-    <!-- Bundled hugeicons glyph; inherits the parent's text color. -->
-    <span aria-hidden="true" class="diet-icon inline-flex shrink-0" v-html="ICONS[kind]" />
+  <!-- Bundled hugeicons glyph; inherits the parent's text color. -->
+  <span aria-hidden="true" class="diet-icon inline-flex shrink-0" v-html="ICONS[kind]" />
 </template>
 
 <script lang="ts" setup>
@@ -17,7 +17,7 @@ const { kind } = defineProps<{ kind: DietKind }>()
 
 <style scoped>
 .diet-icon :deep(svg) {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 </style>

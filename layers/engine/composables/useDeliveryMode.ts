@@ -9,8 +9,8 @@ import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
  * refused with DELIVERY_UNAVAILABLE when it is off).
  */
 export const useDeliveryMode = () => {
-    const { policy } = useOrderingPolicy()
-    const { deliveryEnabled: brandFlag = true } = useAppConfig().brand
-    const deliveryEnabled = computed(() => brandFlag !== false && policy.value.deliveryEnabled)
-    return { deliveryEnabled }
+  const { policy } = useOrderingPolicy()
+  const { deliveryEnabled: brandFlag = true } = useAppConfig().brand
+  const deliveryEnabled = computed(() => brandFlag && policy.value.deliveryEnabled)
+  return { deliveryEnabled }
 }

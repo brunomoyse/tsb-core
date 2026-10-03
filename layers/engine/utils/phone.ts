@@ -3,5 +3,5 @@
  * (whitespace stripped, as `brand.phone` is stored in international format).
  */
 export function telHref(phone: string): string {
-    return `tel:${phone.replace(/\s/gu, '')}`
+  return `tel:${phone.replace(/\s/gu, '')}`
 }

@@ -11,9 +11,15 @@ import { loginViaOtpAndCaptureState } from './auth-flow'
  * `email` undefined means this brand has no e2e auth configured: logged-in
  * specs then skip with a message naming the env vars to set.
  */
-export async function captureAuthState(config: FullConfig, email: string | undefined, label: string): Promise<void> {
+export async function captureAuthState(
+  config: FullConfig,
+  email: string | undefined,
+  label: string,
+): Promise<void> {
   if (!email) {
-    console.warn(`${label}: no e2e user email set, skipping auth state capture (authenticated tests will skip)`)
+    console.warn(
+      `${label}: no e2e user email set, skipping auth state capture (authenticated tests will skip)`,
+    )
     return
   }
 
@@ -26,7 +32,9 @@ export async function captureAuthState(config: FullConfig, email: string | undef
     const page = await ctx.newPage()
     const state = await loginViaOtpAndCaptureState(page, baseURL, email, loginOrigin)
     writeFileSync(authStateFile(config.configFile), JSON.stringify(state))
-    console.log(`${label}: captured OIDC state for ${email} (${state.entries.length} localStorage entries)`)
+    console.log(
+      `${label}: captured OIDC state for ${email} (${state.entries.length} localStorage entries)`,
+    )
   } catch (e) {
     console.error(`${label}: OTP login failed:`, e instanceof Error ? e.message : e)
     throw e

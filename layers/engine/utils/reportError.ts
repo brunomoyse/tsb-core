@@ -13,20 +13,24 @@ import { tryUseNuxtApp } from '#app'
  *
  * Fire and forget: it never throws and never blocks the caller.
  */
-export function reportError(error: unknown, context: string, extra?: Record<string, unknown>): void {
-    if (import.meta.dev) console.warn(`[${context}]`, error)
-    if (!isReportableError(error)) return
+export function reportError(
+  error: unknown,
+  context: string,
+  extra?: Record<string, unknown>,
+): void {
+  if (import.meta.dev) console.warn(`[${context}]`, error)
+  if (!isReportableError(error)) return
 
-    try {
-        const config = tryUseNuxtApp()?.$config as { public?: { sentryDsn?: string } } | undefined
-        if (!config?.public?.sentryDsn) return
-    } catch {
-        return
-    }
+  try {
+    const config = tryUseNuxtApp()?.$config as { public?: { sentryDsn?: string } } | undefined
+    if (!config?.public?.sentryDsn) return
+  } catch {
+    return
+  }
 
-    void import('@sentry/nuxt')
-        .then((Sentry) => {
-            Sentry.captureException(error, { tags: { context }, ...(extra ? { extra } : {}) })
-        })
-        .catch(() => undefined)
+  void import('@sentry/nuxt')
+    .then((Sentry) => {
+      Sentry.captureException(error, { tags: { context }, ...(extra ? { extra } : {}) })
+    })
+    .catch(() => undefined)
 }

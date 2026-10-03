@@ -21,32 +21,41 @@ const OUT_DIR = resolve(import.meta.dirname, '../public/images/dishes')
 
 const [source, slug] = process.argv.slice(2)
 if (!source || !slug || !/^[a-z0-9-]+$/u.test(slug)) {
-    console.error('Usage: node scripts/product-photo.mjs <source-image> <slug>')
-    console.error('       slug must be the product slug (kebab-case), e.g. raviolis-chinois')
-    process.exit(1)
+  console.error('Usage: node scripts/product-photo.mjs <source-image> <slug>')
+  console.error('       slug must be the product slug (kebab-case), e.g. raviolis-chinois')
+  process.exit(1)
 }
 if (!existsSync(source)) {
-    console.error(`Source image not found: ${source}`)
-    process.exit(1)
+  console.error(`Source image not found: ${source}`)
+  process.exit(1)
 }
 
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: ['ignore', 'ignore', 'inherit'] })
 
 const tmp = mkdtempSync(join(tmpdir(), 'product-photo-'))
 try {
-    for (const w of WIDTHS) {
-        const png = join(tmp, `${slug}-${w}.png`)
-        // Never upscale (`>`), keep aspect ratio, fit inside a square.
-        run('magick', [source, '-resize', `${w}x${w}>`, png])
-        run('cwebp', ['-quiet', '-q', '85', '-alpha_q', '90', png, '-o', join(OUT_DIR, `${slug}-${w}.webp`)])
-        run('avifenc', ['-q', '62', '--speed', '6', png, join(OUT_DIR, `${slug}-${w}.avif`)])
-        if (w === PNG_FALLBACK_WIDTH) {
-            run('magick', [png, '-strip', join(OUT_DIR, `${slug}-${w}.png`)])
-        }
-        console.log(`✓ ${slug}-${w}.{avif,webp}${w === PNG_FALLBACK_WIDTH ? ' + .png' : ''}`)
+  for (const w of WIDTHS) {
+    const png = join(tmp, `${slug}-${w}.png`)
+    // Never upscale (`>`), keep aspect ratio, fit inside a square.
+    run('magick', [source, '-resize', `${w}x${w}>`, png])
+    run('cwebp', [
+      '-quiet',
+      '-q',
+      '85',
+      '-alpha_q',
+      '90',
+      png,
+      '-o',
+      join(OUT_DIR, `${slug}-${w}.webp`),
+    ])
+    run('avifenc', ['-q', '62', '--speed', '6', png, join(OUT_DIR, `${slug}-${w}.avif`)])
+    if (w === PNG_FALLBACK_WIDTH) {
+      run('magick', [png, '-strip', join(OUT_DIR, `${slug}-${w}.png`)])
     }
+    console.log(`✓ ${slug}-${w}.{avif,webp}${w === PNG_FALLBACK_WIDTH ? ' + .png' : ''}`)
+  }
 } finally {
-    rmSync(tmp, { recursive: true, force: true })
+  rmSync(tmp, { recursive: true, force: true })
 }
 
 console.log(`\nDone → ${OUT_DIR}`)

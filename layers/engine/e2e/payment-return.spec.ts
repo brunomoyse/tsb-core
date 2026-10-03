@@ -1,4 +1,10 @@
-import { type SeededOrderStatus, deleteOrder, findUserIdByEmail, seedOrder, settleOrder } from './support/db'
+import {
+  type SeededOrderStatus,
+  deleteOrder,
+  findUserIdByEmail,
+  seedOrder,
+  settleOrder,
+} from './support/db'
 import { expect, test } from './support/test'
 import { type Page } from '@playwright/test'
 import { SEL } from './support/selectors'
@@ -22,54 +28,66 @@ import { SEL } from './support/selectors'
 const CART_KEY = 'cart'
 
 /* `pendingOrderId` is what the checkout stores on submit; null = a cart that was not checked out for this order. */
-const seededCart = (pendingOrderId: string | null) => JSON.stringify({
-  products: [{
-    product: {
-      id: '00000000-0000-4000-8000-0000000000e2',
-      categoryId: '00000000-0000-4000-8000-0000000000c1',
-      code: 'E2E1',
-      slug: 'e2e-seeded-product',
-      name: 'E2E seeded product',
-      description: null,
-      price: '12.50',
-      pieceCount: null,
-      choices: [],
-      isAvailable: true,
-      isDiscountable: true,
-      isHalal: false,
-      isLunchOnly: false,
-      isSpicy: false,
-      isVegetarian: false,
-      isVisible: true,
-      category: { id: '00000000-0000-4000-8000-0000000000c1', name: 'E2E', order: 1, slug: 'e2e', products: [] },
-    },
-    quantity: 2,
-    selectedChoices: [],
-    selectedChoice: null,
-  }],
-  collectionOption: 'PICKUP',
-  couponCode: null,
-  couponDiscountCents: 0,
-  paymentOption: 'ONLINE',
-  cashPaymentAmount: null,
-  address: null,
-  addressExtra: null,
-  orderExtra: [],
-  orderNote: null,
-  preferredReadyTime: null,
-  pendingOrderId,
-})
+const seededCart = (pendingOrderId: string | null) =>
+  JSON.stringify({
+    products: [
+      {
+        product: {
+          id: '00000000-0000-4000-8000-0000000000e2',
+          categoryId: '00000000-0000-4000-8000-0000000000c1',
+          code: 'E2E1',
+          slug: 'e2e-seeded-product',
+          name: 'E2E seeded product',
+          description: null,
+          price: '12.50',
+          pieceCount: null,
+          choices: [],
+          isAvailable: true,
+          isDiscountable: true,
+          isHalal: false,
+          isLunchOnly: false,
+          isSpicy: false,
+          isVegetarian: false,
+          isVisible: true,
+          category: {
+            id: '00000000-0000-4000-8000-0000000000c1',
+            name: 'E2E',
+            order: 1,
+            slug: 'e2e',
+            products: [],
+          },
+        },
+        quantity: 2,
+        selectedChoices: [],
+        selectedChoice: null,
+      },
+    ],
+    collectionOption: 'PICKUP',
+    couponCode: null,
+    couponDiscountCents: 0,
+    paymentOption: 'ONLINE',
+    cashPaymentAmount: null,
+    address: null,
+    addressExtra: null,
+    orderExtra: [],
+    orderNote: null,
+    preferredReadyTime: null,
+    pendingOrderId,
+  })
 
 /*
  * Seed once per tab: addInitScript re-runs on every navigation, and a second
  * run would resurrect a cart the page legitimately cleared.
  */
 async function seedCart(page: Page, pendingOrderId: string | null) {
-  await page.addInitScript((seed: { key: string; value: string }) => {
-    if (sessionStorage.getItem('e2e_cart_seeded')) return
-    sessionStorage.setItem('e2e_cart_seeded', '1')
-    localStorage.setItem(seed.key, seed.value)
-  }, { key: CART_KEY, value: seededCart(pendingOrderId) })
+  await page.addInitScript(
+    (seed: { key: string; value: string }) => {
+      if (sessionStorage.getItem('e2e_cart_seeded')) return
+      sessionStorage.setItem('e2e_cart_seeded', '1')
+      localStorage.setItem(seed.key, seed.value)
+    },
+    { key: CART_KEY, value: seededCart(pendingOrderId) },
+  )
 }
 
 const cartLineCount = (page: Page): Promise<number> =>
@@ -105,7 +123,9 @@ test.describe('Mollie return (full page load)', () => {
   ]
 
   problemCases.forEach(({ payment, status }) => {
-    test(`${payment} payment keeps the cart and offers a retry`, async ({ authenticatedPage: page }) => {
+    test(`${payment} payment keeps the cart and offers a retry`, async ({
+      authenticatedPage: page,
+    }) => {
       orderId = seedOrder({ userId: userId(), status, online: true, paymentStatus: payment })
       await seedCart(page, orderId)
 
@@ -124,8 +144,15 @@ test.describe('Mollie return (full page load)', () => {
     })
   })
 
-  test('a late webhook shows "verifying", never "payment failed", and clears the cart once paid', async ({ authenticatedPage: page }) => {
-    orderId = seedOrder({ userId: userId(), status: 'PENDING', online: true, paymentStatus: 'open' })
+  test('a late webhook shows "verifying", never "payment failed", and clears the cart once paid', async ({
+    authenticatedPage: page,
+  }) => {
+    orderId = seedOrder({
+      userId: userId(),
+      status: 'PENDING',
+      online: true,
+      paymentStatus: 'open',
+    })
     await seedCart(page, orderId)
 
     await page.goto(`/fr/order-completed/${orderId}`)
@@ -143,9 +170,16 @@ test.describe('Mollie return (full page load)', () => {
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
-  test('still pending after the verify window: neutral "awaiting confirmation", no retry, cart kept', async ({ authenticatedPage: page }) => {
+  test('still pending after the verify window: neutral "awaiting confirmation", no retry, cart kept', async ({
+    authenticatedPage: page,
+  }) => {
     test.setTimeout(120_000) // ~17 s verify window + the webhook step
-    orderId = seedOrder({ userId: userId(), status: 'PENDING', online: true, paymentStatus: 'open' })
+    orderId = seedOrder({
+      userId: userId(),
+      status: 'PENDING',
+      online: true,
+      paymentStatus: 'open',
+    })
     await seedCart(page, orderId)
 
     await page.goto(`/fr/order-completed/${orderId}`)
@@ -165,7 +199,12 @@ test.describe('Mollie return (full page load)', () => {
   })
 
   test('a paid online order clears the cart', async ({ authenticatedPage: page }) => {
-    orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid' })
+    orderId = seedOrder({
+      userId: userId(),
+      status: 'CONFIRMED',
+      online: true,
+      paymentStatus: 'paid',
+    })
     await seedCart(page, orderId)
 
     await page.goto(`/fr/order-completed/${orderId}`)
@@ -187,8 +226,15 @@ test.describe('Mollie return (full page load)', () => {
 
   /* Transitional, delete after 2026-11-15 together with the fallback in useOrderCompleted:
      a checkout that ran on the previous bundle left no pendingOrderId behind. */
-  test('transitional: a cart without pendingOrderId is cleared for an order created minutes ago', async ({ authenticatedPage: page }) => {
-    orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid' })
+  test('transitional: a cart without pendingOrderId is cleared for an order created minutes ago', async ({
+    authenticatedPage: page,
+  }) => {
+    orderId = seedOrder({
+      userId: userId(),
+      status: 'CONFIRMED',
+      online: true,
+      paymentStatus: 'paid',
+    })
     await seedCart(page, null)
 
     await page.goto(`/fr/order-completed/${orderId}`)
@@ -197,9 +243,17 @@ test.describe('Mollie return (full page load)', () => {
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
-  test('revisiting a paid order later does not clear a newer cart', async ({ authenticatedPage: page }) => {
+  test('revisiting a paid order later does not clear a newer cart', async ({
+    authenticatedPage: page,
+  }) => {
     // Older than the transitional 30-minute window, and the cart is not the one checked out for it.
-    orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: true, paymentStatus: 'paid', createdMinutesAgo: 45 })
+    orderId = seedOrder({
+      userId: userId(),
+      status: 'CONFIRMED',
+      online: true,
+      paymentStatus: 'paid',
+      createdMinutesAgo: 45,
+    })
     // The customer already started a new order: the cart is not the one checked out for `orderId`.
     await seedCart(page, null)
 

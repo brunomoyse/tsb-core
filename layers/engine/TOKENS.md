@@ -4,13 +4,13 @@ Everything in `layers/engine` is written once and must render correctly in every
 talks to the theme through **names**, never through a brand's literal colours. Each brand maps the names
 in its `tailwind.config.ts` (and `assets/css/*.css` for the HSL variables).
 
-| Name | Meaning |
-|---|---|
-| `primary-50 … 900` | brand accent scale (red for Tokyo Sushi, orange for YGF); `primary` / `primary-hover` / `primary-soft` are the CTA fill, its hover and a tint |
-| `neutral-50 … 900` | text, surface and border neutrals (gray for Tokyo Sushi, the YGF greys) |
-| `tsb-one … four` | page, container, decorative, selected |
-| `ring` | keyboard focus ring colour (`--ring`) |
-| `red`, `amber`, `green`, `emerald`, `blue` | the same meaning in every brand: error, warning, success, completed, halal |
+| Name                                       | Meaning                                                                                                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `primary-50 … 900`                         | brand accent scale (red for Tokyo Sushi, orange for YGF); `primary` / `primary-hover` / `primary-soft` are the CTA fill, its hover and a tint |
+| `neutral-50 … 900`                         | text, surface and border neutrals (gray for Tokyo Sushi, the YGF greys)                                                                       |
+| `tsb-one … four`                           | page, container, decorative, selected                                                                                                         |
+| `ring`                                     | keyboard focus ring colour (`--ring`)                                                                                                         |
+| `red`, `amber`, `green`, `emerald`, `blue` | the same meaning in every brand: error, warning, success, completed, halal                                                                    |
 
 `primary-*`/`neutral-*`/`tsb-*` class names stay stable; a brand may override a step where the raw scale
 fails contrast (YGF: `backgroundColor.primary`, `textColor.primary`, `borderColor.neutral`).
@@ -26,7 +26,7 @@ fails contrast (YGF: `backgroundColor.primary`, `textColor.primary`, `borderColo
   least 3:1 (WCAG 1.4.11). Never `ring-<colour>-100…400`.
 - Do not tell an error from the brand red by colour alone (Tokyo Sushi: red-600 vs red-700): pair it with
   an icon and the tinted box.
-- **Danger guidance.** In Tokyo Sushi the brand accent *is* red (`primary` = red-600), so a danger state has
+- **Danger guidance.** In Tokyo Sushi the brand accent _is_ red (`primary` = red-600), so a danger state has
   no colour of its own to hide behind: a CTA and an error would look alike. Anything that means "danger" (an
   error message, a refused payment, a destructive confirmation) is therefore never a bare red word or a red
   button: it is an alert icon plus a tinted box (`bg-red-50 border border-red-200 text-red-700`; `red-*` is

@@ -5,9 +5,9 @@
  * (Native haptics lived in the now-removed Capacitor build.)
  */
 export function useHaptics() {
-    const impact = async (_style: 'Light' | 'Medium' | 'Heavy' = 'Light') => {}
-    const notification = async (_type: 'Success' | 'Warning' | 'Error' = 'Success') => {}
-    const selection = async () => {}
+  const impact = async (_style: 'Light' | 'Medium' | 'Heavy' = 'Light') => {}
+  const notification = async (_type: 'Success' | 'Warning' | 'Error' = 'Success') => {}
+  const selection = async () => {}
 
-    return { impact, notification, selection }
+  return { impact, notification, selection }
 }

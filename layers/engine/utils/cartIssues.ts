@@ -10,21 +10,21 @@ import type { QuoteLine, QuoteLineIssue } from './orderQuote.ts'
  */
 
 export type LineIssueAction =
-    /** Remove the line from the cart. */
-    | 'remove'
-    /** Take today's price: the stored snapshot is rewritten and the quote asked again. */
-    | 'accept-price'
-    /** Go to the time slot picker of the checkout (lunch-only product, slot is not a weekday lunch slot). */
-    | 'choose-slot'
+  /** Remove the line from the cart. */
+  | 'remove'
+  /** Take today's price: the stored snapshot is rewritten and the quote asked again. */
+  | 'accept-price'
+  /** Go to the time slot picker of the checkout (lunch-only product, slot is not a weekday lunch slot). */
+  | 'choose-slot'
 
 export interface LineIssueView {
-    code: string
-    /** The vue-i18n key (engine locales, `cart.issues.*`). */
-    messageKey: string
-    /** Params of the message; money as integer cents (the component formats them). */
-    params: { fromCents?: number; toCents?: number }
-    /** In the order they are offered: the first is the primary one. */
-    actions: LineIssueAction[]
+  code: string
+  /** The vue-i18n key (engine locales, `cart.issues.*`). */
+  messageKey: string
+  /** Params of the message; money as integer cents (the component formats them). */
+  params: { fromCents?: number; toCents?: number }
+  /** In the order they are offered: the first is the primary one. */
+  actions: LineIssueAction[]
 }
 
 const REMOVE: LineIssueAction[] = ['remove']
@@ -35,50 +35,78 @@ const REMOVE: LineIssueAction[] = ['remove']
  * @param quotedLineTotalCents what the server now charges for the line (the "to")
  */
 export function describeLineIssue(
-    issue: QuoteLineIssue,
-    shownLineTotalCents: number,
-    quotedLineTotalCents: number,
+  issue: QuoteLineIssue,
+  shownLineTotalCents: number,
+  quotedLineTotalCents: number,
 ): LineIssueView {
-    switch (issue.code) {
-        case 'PRODUCT_NOT_FOUND':
-            return { code: issue.code, messageKey: 'cart.issues.notFound', params: {}, actions: REMOVE }
-        case 'PRODUCT_UNAVAILABLE':
-            return { code: issue.code, messageKey: 'cart.issues.unavailable', params: {}, actions: REMOVE }
-        case 'INVALID_QUANTITY':
-            return { code: issue.code, messageKey: 'cart.issues.invalidQuantity', params: {}, actions: REMOVE }
-        case 'SELECTION_INVALID':
-            // A choice that is gone or a group whose rules changed: the line has to be composed again from the menu.
-            return { code: issue.code, messageKey: 'cart.issues.selectionInvalid', params: {}, actions: REMOVE }
-        case 'LUNCH_SLOT_REQUIRED':
-            return { code: issue.code, messageKey: 'cart.issues.lunchOnly', params: {}, actions: ['choose-slot', 'remove'] }
-        case 'PRICE_CHANGED':
-            return {
-                code: issue.code,
-                messageKey: 'cart.issues.priceChanged',
-                params: { fromCents: shownLineTotalCents, toCents: quotedLineTotalCents },
-                actions: ['accept-price', 'remove'],
-            }
-        default:
-            // INVALID_PRICE, or a code a newer backend added: the line cannot be ordered as it is.
-            return { code: issue.code, messageKey: 'cart.issues.generic', params: {}, actions: REMOVE }
-    }
+  switch (issue.code) {
+    case 'PRODUCT_NOT_FOUND':
+      return { code: issue.code, messageKey: 'cart.issues.notFound', params: {}, actions: REMOVE }
+    case 'PRODUCT_UNAVAILABLE':
+      return {
+        code: issue.code,
+        messageKey: 'cart.issues.unavailable',
+        params: {},
+        actions: REMOVE,
+      }
+    case 'INVALID_QUANTITY':
+      return {
+        code: issue.code,
+        messageKey: 'cart.issues.invalidQuantity',
+        params: {},
+        actions: REMOVE,
+      }
+    case 'SELECTION_INVALID':
+      // A choice that is gone or a group whose rules changed: the line has to be composed again from the menu.
+      return {
+        code: issue.code,
+        messageKey: 'cart.issues.selectionInvalid',
+        params: {},
+        actions: REMOVE,
+      }
+    case 'LUNCH_SLOT_REQUIRED':
+      return {
+        code: issue.code,
+        messageKey: 'cart.issues.lunchOnly',
+        params: {},
+        actions: ['choose-slot', 'remove'],
+      }
+    case 'PRICE_CHANGED':
+      return {
+        code: issue.code,
+        messageKey: 'cart.issues.priceChanged',
+        params: { fromCents: shownLineTotalCents, toCents: quotedLineTotalCents },
+        actions: ['accept-price', 'remove'],
+      }
+    default:
+      // INVALID_PRICE, or a code a newer backend added: the line cannot be ordered as it is.
+      return { code: issue.code, messageKey: 'cart.issues.generic', params: {}, actions: REMOVE }
+  }
 }
 
 /** The issues of a line, the most blocking first (a gone product before a price change). */
-const PRIORITY = ['PRODUCT_NOT_FOUND', 'PRODUCT_UNAVAILABLE', 'INVALID_QUANTITY', 'SELECTION_INVALID', 'INVALID_PRICE', 'LUNCH_SLOT_REQUIRED', 'PRICE_CHANGED']
+const PRIORITY = [
+  'PRODUCT_NOT_FOUND',
+  'PRODUCT_UNAVAILABLE',
+  'INVALID_QUANTITY',
+  'SELECTION_INVALID',
+  'INVALID_PRICE',
+  'LUNCH_SLOT_REQUIRED',
+  'PRICE_CHANGED',
+]
 
 export function describeLineIssues(
-    issues: QuoteLineIssue[],
-    shownLineTotalCents: number,
-    quotedLineTotalCents: number,
+  issues: QuoteLineIssue[],
+  shownLineTotalCents: number,
+  quotedLineTotalCents: number,
 ): LineIssueView[] {
-    const rank = (code: string) => {
-        const index = PRIORITY.indexOf(code)
-        return index === -1 ? PRIORITY.length : index
-    }
-    return issues
-        .toSorted((a, b) => rank(a.code) - rank(b.code))
-        .map((issue) => describeLineIssue(issue, shownLineTotalCents, quotedLineTotalCents))
+  const rank = (code: string) => {
+    const index = PRIORITY.indexOf(code)
+    return index === -1 ? PRIORITY.length : index
+  }
+  return issues
+    .toSorted((a, b) => rank(a.code) - rank(b.code))
+    .map((issue) => describeLineIssue(issue, shownLineTotalCents, quotedLineTotalCents))
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -86,9 +114,9 @@ export function describeLineIssues(
 // ---------------------------------------------------------------------------------------------
 
 export interface SnapshotPricing {
-    price: string
-    /** Every choice the snapshot should carry: its own (repriced) and the ones the quote priced that it was missing. */
-    choices: { id: string; priceModifier: string; groupId?: string }[]
+  price: string
+  /** Every choice the snapshot should carry: its own (repriced) and the ones the quote priced that it was missing. */
+  choices: { id: string; priceModifier: string; groupId?: string }[]
 }
 
 /**
@@ -100,23 +128,33 @@ export interface SnapshotPricing {
  * quote has no price for the product.
  */
 export function quotedSnapshotPricing(
-    product: { choices: { id: string; priceModifier: string }[] },
-    quoteLine: Pick<QuoteLine, 'productPrice' | 'selections'>,
+  product: { choices: { id: string; priceModifier: string }[] },
+  quoteLine: Pick<QuoteLine, 'productPrice' | 'selections'>,
 ): SnapshotPricing | null {
-    if (quoteLine.productPrice === null) return null
-    const modifierOf = new Map(quoteLine.selections.map((selection) => [selection.choiceId, selection.priceModifier]))
-    const known = new Set(product.choices.map((choice) => choice.id))
-    const missing = quoteLine.selections
-        .filter((selection, index, all) => !known.has(selection.choiceId) && all.findIndex((other) => other.choiceId === selection.choiceId) === index)
-        .map((selection) => ({ id: selection.choiceId, priceModifier: selection.priceModifier, groupId: selection.groupId }))
-    return {
-        price: quoteLine.productPrice,
-        choices: [
-            ...product.choices.map((choice) => ({
-                id: choice.id,
-                priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier,
-            })),
-            ...missing,
-        ],
-    }
+  if (quoteLine.productPrice === null) return null
+  const modifierOf = new Map(
+    quoteLine.selections.map((selection) => [selection.choiceId, selection.priceModifier]),
+  )
+  const known = new Set(product.choices.map((choice) => choice.id))
+  const missing = quoteLine.selections
+    .filter(
+      (selection, index, all) =>
+        !known.has(selection.choiceId) &&
+        all.findIndex((other) => other.choiceId === selection.choiceId) === index,
+    )
+    .map((selection) => ({
+      id: selection.choiceId,
+      priceModifier: selection.priceModifier,
+      groupId: selection.groupId,
+    }))
+  return {
+    price: quoteLine.productPrice,
+    choices: [
+      ...product.choices.map((choice) => ({
+        id: choice.id,
+        priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier,
+      })),
+      ...missing,
+    ],
+  }
 }

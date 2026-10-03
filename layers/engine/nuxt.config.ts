@@ -3,13 +3,13 @@ import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared engine layer — brand-agnostic infrastructure extended by every brand
-// app under apps/*. Owns: modules, engine plugins, i18n plumbing, runtimeConfig,
-// security headers/CSP, sitemap, sentry (conditional), SSR.
+// App under apps/*. Owns: modules, engine plugins, i18n plumbing, runtimeConfig,
+// Security headers/CSP, sitemap, sentry (conditional), SSR.
 //
 // Brand apps (the *main* app) provide pages/components/layouts/theme/assets and
-// set the `#brand` alias to their own root. In a layer's nuxt.config, `~`
-// resolves to the *main app*, not this layer, so all engine-local paths are
-// built from import.meta.url.
+// Set the `#brand` alias to their own root. In a layer's nuxt.config, `~`
+// Resolves to the *main app*, not this layer, so all engine-local paths are
+// Built from import.meta.url.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /*
@@ -18,7 +18,14 @@ import { fileURLToPath } from 'node:url'
  * provider. A production build (`nuxt build` / `generate`) stops with the list of what is missing; dev servers and
  * `nuxi prepare` / `typecheck` do not need them.
  */
-const REQUIRED_PUBLIC_ENV = ['BASE_URL', 'API_BASE_URL', 'S3_BUCKET_URL', 'GRAPHQL_WS_URL', 'ZITADEL_AUTHORITY', 'ZITADEL_CLIENT_ID'] as const
+const REQUIRED_PUBLIC_ENV = [
+  'BASE_URL',
+  'API_BASE_URL',
+  'S3_BUCKET_URL',
+  'GRAPHQL_WS_URL',
+  'ZITADEL_AUTHORITY',
+  'ZITADEL_CLIENT_ID',
+] as const
 
 // Derive origins for CSP from environment variables (the API falls back to a local one for development only).
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
@@ -31,140 +38,162 @@ const turnstile = 'https://challenges.cloudflare.com'
 const sentryHost = 'https://*.ingest.de.sentry.io'
 
 const csp = `${[
-    "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
-    "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
-    "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiOrigin} ${wsOrigin}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
-    `frame-src 'self' ${osm}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${turnstile}`,
-    "worker-src 'self' blob:",
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
+  "font-src 'self' https://fonts.gstatic.com",
+  `connect-src 'self' ${apiOrigin} ${wsOrigin}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
+  `frame-src 'self' ${osm}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${turnstile}`,
+  "worker-src 'self' blob:",
 ].join('; ')};`
 
+const engineDir = fileURLToPath(new URL('./', import.meta.url))
+
 export default defineNuxtConfig({
-    ssr: true,
+  ssr: true,
 
-    hooks: {
-        ready: (nuxt) => {
-            // `_prepare` is `nuxi prepare` / `typecheck` (and the postinstall): types only, nothing is built.
-            // oxlint-disable-next-line no-underscore-dangle -- `_prepare` is Nuxt's own flag for `nuxi prepare` / `typecheck`.
-            if (nuxt.options.dev || nuxt.options._prepare) return
-            const missing = REQUIRED_PUBLIC_ENV.filter((name) => !process.env[name]?.trim())
-            if (missing.length > 0) {
-                throw new Error(
-                    `Missing required environment variable(s) for a production build: ${missing.join(', ')}. `
-                    + 'They are baked into the client bundle, so set them when building (Docker: --build-arg, CI: repository variables).',
-                )
-            }
-        },
+  hooks: {
+    ready: (nuxt) => {
+      // `_prepare` is `nuxi prepare` / `typecheck` (and the postinstall): types only, nothing is built.
+      // oxlint-disable-next-line no-underscore-dangle -- `_prepare` is Nuxt's own flag for `nuxi prepare` / `typecheck`.
+      if (nuxt.options.dev || nuxt.options._prepare) return
+      const missing = REQUIRED_PUBLIC_ENV.filter((name) => !process.env[name]?.trim())
+      if (missing.length > 0) {
+        throw new Error(
+          `Missing required environment variable(s) for a production build: ${missing.join(', ')}. ` +
+            'They are baked into the client bundle, so set them when building (Docker: --build-arg, CI: repository variables).',
+        )
+      }
     },
+  },
 
-    site: {
-        url: process.env.BASE_URL,
+  site: {
+    url: process.env.BASE_URL,
+  },
+
+  modules: [
+    '@nuxtjs/i18n',
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/sitemap',
+    /*
+     * Skip Sentry when no DSN is set at build time — including the module
+     * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
+     * own sentry.client/server.config.ts + org/project.
+     */
+    ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
+  ],
+
+  // Pinia store auto-import. The stores live in THIS layer, so point the
+  // Scanner at an absolute path — a brand app extending the engine has no
+  // Stores/ dir of its own, and pinia only scans the main app by default.
+  pinia: {
+    storesDirs: [fileURLToPath(new URL('./stores/**', import.meta.url))],
+  },
+
+  plugins: [
+    // Absolute paths: `~` in a layer config points at the main app, not here.
+    fileURLToPath(new URL('./plugins/gqlFetch', import.meta.url)),
+  ],
+
+  i18n: {
+    baseUrl: process.env.BASE_URL,
+    bundle: {
+      // @ts-expect-error i18n v10 option not yet in published types
+      optimizeTranslationDirective: false,
     },
-
-    modules: [
-        "@nuxtjs/i18n",
-        "@pinia/nuxt",
-        'pinia-plugin-persistedstate/nuxt',
-        '@nuxtjs/sitemap',
-        /*
-         * Skip Sentry when no DSN is set at build time — including the module
-         * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
-         * own sentry.client/server.config.ts + org/project.
-         */
-        ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
+    defaultLocale: 'fr',
+    locales: [
+      { code: 'fr', language: 'fr-BE' },
+      { code: 'en', language: 'en' },
+      { code: 'zh', language: 'zh-CN' },
+      { code: 'nl', language: 'nl-BE' },
     ],
-
-    // Pinia store auto-import. The stores live in THIS layer, so point the
-    // scanner at an absolute path — a brand app extending the engine has no
-    // stores/ dir of its own, and pinia only scans the main app by default.
-    pinia: {
-        storesDirs: [fileURLToPath(new URL('./stores/**', import.meta.url))],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'all',
     },
+    strategy: 'prefix',
+    // Base + #brand locale merge. Absolute path so the module resolves it
+    // From this layer regardless of which app extends it.
+    vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
+  },
 
-    plugins: [
-        // Absolute paths: `~` in a layer config points at the main app, not here.
-        fileURLToPath(new URL('./plugins/gqlFetch', import.meta.url)),
+  runtimeConfig: {
+    public: {
+      baseUrl: process.env.BASE_URL,
+      s3bucketUrl: process.env.S3_BUCKET_URL,
+      api: process.env.API_BASE_URL,
+      graphqlHttp: `${process.env.API_BASE_URL}/graphql`,
+      graphqlWs: process.env.GRAPHQL_WS_URL,
+      umamiHost: process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev',
+      umamiWebsiteId: process.env.UMAMI_WEBSITE_ID || '',
+      // Zitadel OIDC
+      zitadelAuthority: process.env.ZITADEL_AUTHORITY || '',
+      zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
+      zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      // Sentry (DSN is safe to expose client-side by design)
+      sentryDsn: process.env.SENTRY_DSN || '',
+      sentryEnvironment: process.env.SENTRY_ENVIRONMENT || 'production',
+      sentryRelease: process.env.SENTRY_RELEASE || '',
+    },
+  },
+
+  sitemap: {
+    autoLastmod: true,
+    defaults: {
+      changefreq: 'weekly',
+      priority: 0.8,
+    },
+    exclude: [
+      '/auth/**',
+      '/**/login',
+      '/**/checkout',
+      '/**/me',
+      '/**/me/**',
+      '/**/logout',
+      '/**/order-completed/**',
     ],
+  },
 
-    i18n: {
-        baseUrl: process.env.BASE_URL,
-        bundle: {
-            // @ts-expect-error i18n v10 option not yet in published types
-            optimizeTranslationDirective: false,
-        },
-        defaultLocale: 'fr',
-        locales: [
-            { code: 'fr', language: 'fr-BE' },
-            { code: 'en', language: 'en' },
-            { code: 'zh', language: 'zh-CN' },
-            { code: 'nl', language: 'nl-BE' },
-        ],
-        detectBrowserLanguage: {
-            useCookie: true,
-            cookieKey: 'i18n_redirected',
-            redirectOn: 'all',
-        },
-        strategy: 'prefix',
-        // Base + #brand locale merge. Absolute path so the module resolves it
-        // from this layer regardless of which app extends it.
-        vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
+  routeRules: {
+    '/**': {
+      headers: {
+        'X-Frame-Options': 'SAMEORIGIN',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+        'Content-Security-Policy': csp,
+      },
     },
-
-    runtimeConfig: {
-        public: {
-            baseUrl: process.env.BASE_URL,
-            s3bucketUrl: process.env.S3_BUCKET_URL,
-            api: process.env.API_BASE_URL,
-            graphqlHttp: `${process.env.API_BASE_URL}/graphql`,
-            graphqlWs: process.env.GRAPHQL_WS_URL,
-            umamiHost: process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev',
-            umamiWebsiteId: process.env.UMAMI_WEBSITE_ID || '',
-            // Zitadel OIDC
-            zitadelAuthority: process.env.ZITADEL_AUTHORITY || '',
-            zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
-            zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
-            turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
-            // Sentry (DSN is safe to expose client-side by design)
-            sentryDsn: process.env.SENTRY_DSN || '',
-            sentryEnvironment: process.env.SENTRY_ENVIRONMENT || 'production',
-            sentryRelease: process.env.SENTRY_RELEASE || '',
-        },
+    '/_nuxt/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
     },
+  },
 
-    sitemap: {
-        autoLastmod: true,
-        defaults: {
-            changefreq: 'weekly',
-            priority: 0.8,
-        },
-        exclude: [
-            '/auth/**',
-            '/**/login',
-            '/**/checkout',
-            '/**/me',
-            '/**/me/**',
-            '/**/logout',
-            '/**/order-completed/**',
-        ],
+  // Nuxt only adds layers under <rootDir>/layers to the generated tsconfigs, so
+  // Register this layer's files with the brand app's app/node/server projects
+  // (used by `vp check` type checking through layers/engine/tsconfig.json).
+  typescript: {
+    tsConfig: {
+      include: [`${engineDir}**/*`],
+      exclude: [`${engineDir}server/**`, `${engineDir}e2e/**`, `${engineDir}nuxt.config.ts`],
     },
-
-    routeRules: {
-        '/**': {
-            headers: {
-                'X-Frame-Options': 'SAMEORIGIN',
-                'X-Content-Type-Options': 'nosniff',
-                'Referrer-Policy': 'strict-origin-when-cross-origin',
-                'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-                'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
-                'Content-Security-Policy': csp,
-            },
-        },
-        '/_nuxt/**': {
-            headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
-        },
+    nodeTsConfig: {
+      include: [`${engineDir}nuxt.config.ts`, `${engineDir}types/nuxt-config.d.ts`],
     },
+  },
+  nitro: {
+    typescript: {
+      tsConfig: {
+        include: [`${engineDir}server/**/*`],
+      },
+    },
+  },
 
-    compatibilityDate: "2025-07-08", // Nuxt 4 RC release date
+  compatibilityDate: '2025-07-08', // Nuxt 4 RC release date
 })

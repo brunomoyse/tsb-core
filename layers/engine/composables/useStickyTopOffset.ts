@@ -15,32 +15,38 @@ import { type Ref, onBeforeUnmount, watch } from 'vue'
 const VARIABLE = '--sticky-top-h'
 
 /** The bottom edge of a sticky header measured from the top of the viewport: its stuck `top` plus its height. */
-export const stickyBottom = (el: HTMLElement): number => (Number.parseFloat(getComputedStyle(el).top) || 0) + el.offsetHeight
+export const stickyBottom = (el: HTMLElement): number =>
+  (Number.parseFloat(getComputedStyle(el).top) || 0) + el.offsetHeight
 
 export function useStickyTopOffset(target: Ref<HTMLElement | null | undefined>): void {
-    if (!import.meta.client) return
+  if (!import.meta.client) return
 
-    let observer: ResizeObserver | null = null
-    const root = document.documentElement
+  let observer: ResizeObserver | null = null
+  const root = document.documentElement
 
-    const stop = watch(target, (el) => {
-        observer?.disconnect()
-        observer = null
-        root.style.removeProperty(VARIABLE)
-        if (!el) return
-        const publish = (): void => {
-            // A header hidden at this breakpoint measures 0 and does not count.
-            if (el.offsetHeight > 0) root.style.setProperty(VARIABLE, `${Math.round(stickyBottom(el))}px`)
-            else root.style.removeProperty(VARIABLE)
-        }
-        publish()
-        observer = new ResizeObserver(publish)
-        observer.observe(el)
-    }, { immediate: true, flush: 'post' })
+  const stop = watch(
+    target,
+    (el) => {
+      observer?.disconnect()
+      observer = null
+      root.style.removeProperty(VARIABLE)
+      if (!el) return
+      const publish = (): void => {
+        // A header hidden at this breakpoint measures 0 and does not count.
+        if (el.offsetHeight > 0)
+          root.style.setProperty(VARIABLE, `${Math.round(stickyBottom(el))}px`)
+        else root.style.removeProperty(VARIABLE)
+      }
+      publish()
+      observer = new ResizeObserver(publish)
+      observer.observe(el)
+    },
+    { immediate: true, flush: 'post' },
+  )
 
-    onBeforeUnmount(() => {
-        stop()
-        observer?.disconnect()
-        root.style.removeProperty(VARIABLE)
-    })
+  onBeforeUnmount(() => {
+    stop()
+    observer?.disconnect()
+    root.style.removeProperty(VARIABLE)
+  })
 }

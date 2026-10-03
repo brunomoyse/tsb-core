@@ -43,7 +43,8 @@ export const centsToEuros = (cents: number): number => cents / 100
  */
 export function roundCentsToStep(cents: number, stepCents: number): number {
   if (!Number.isFinite(cents)) return cents
-  if (!Number.isFinite(stepCents) || stepCents <= 1) return Math.round(cents) === 0 ? 0 : Math.round(cents)
+  if (!Number.isFinite(stepCents) || stepCents <= 1)
+    return Math.round(cents) === 0 ? 0 : Math.round(cents)
 
   const sign = cents < 0 ? -1 : 1
   const abs = Math.round(Math.abs(cents))

@@ -21,21 +21,25 @@ import { useNotificationsStore } from '#engine/stores/notifications'
  */
 
 const messageKey = (state: PhoneInputState): string | null => {
-    switch (state.kind) {
-        case 'incomplete': return 'form.incompletePhone'
-        case 'needsCountryCode': return 'checkout.phoneCapture.addCountryPrefix'
-        case 'invalid': return 'form.invalidPhone'
-        default: return null
-    }
+  switch (state.kind) {
+    case 'incomplete':
+      return 'form.incompletePhone'
+    case 'needsCountryCode':
+      return 'checkout.phoneCapture.addCountryPrefix'
+    case 'invalid':
+      return 'form.invalidPhone'
+    default:
+      return null
+  }
 }
 
 const UPDATE_ME = gql`
-    mutation ($input: UpdateUserInput!) {
-        updateMe(input: $input) {
-            id
-            phoneNumber
-        }
+  mutation ($input: UpdateUserInput!) {
+    updateMe(input: $input) {
+      id
+      phoneNumber
     }
+  }
 `
 
 export type PhoneCommitResult = 'none' | 'saved' | 'invalid'
@@ -44,111 +48,128 @@ export type PhoneCommitResult = 'none' | 'saved' | 'invalid'
 let inflightSave: Promise<boolean> | null = null
 
 export function usePhoneCapture(phoneInputRef?: Ref<HTMLInputElement | null>) {
-    const { t } = useI18n()
-    const authStore = useAuthStore()
-    const notifications = useNotificationsStore()
-    const { mutate: mutationUpdateMe } = useGqlMutation<{ updateMe: Pick<User, 'id' | 'phoneNumber'> }>(UPDATE_ME)
+  const { t } = useI18n()
+  const authStore = useAuthStore()
+  const notifications = useNotificationsStore()
+  const { mutate: mutationUpdateMe } = useGqlMutation<{
+    updateMe: Pick<User, 'id' | 'phoneNumber'>
+  }>(UPDATE_ME)
 
-    const phoneLocal = useState('checkout-phone-draft', () => '')
-    const phoneError = useState('checkout-phone-error', () => '')
-    const isEditing = useState('checkout-phone-editing', () => false)
-    const loading = ref(false)
+  const phoneLocal = useState('checkout-phone-draft', () => '')
+  const phoneError = useState('checkout-phone-error', () => '')
+  const isEditing = useState('checkout-phone-editing', () => false)
+  const loading = ref(false)
 
-    const savedNumber = computed(() => authStore.user?.phoneNumber ?? '')
-    const saved = computed(() => Boolean(savedNumber.value))
-    // Collapsed: we have a saved number and the customer isn't actively editing.
-    const isCollapsed = computed(() => saved.value && !isEditing.value)
-    // The field is open and holds something that is not saved yet (a new number, or an edit of the saved one).
-    const hasUnsavedInput = computed(() => !isCollapsed.value && phoneLocal.value.trim() !== '')
+  const savedNumber = computed(() => authStore.user?.phoneNumber ?? '')
+  const saved = computed(() => Boolean(savedNumber.value))
+  // Collapsed: we have a saved number and the customer isn't actively editing.
+  const isCollapsed = computed(() => saved.value && !isEditing.value)
+  // The field is open and holds something that is not saved yet (a new number, or an edit of the saved one).
+  const hasUnsavedInput = computed(() => !isCollapsed.value && phoneLocal.value.trim() !== '')
 
-    // Lazy-load libphonenumber-js (~75KB) only when the customer actually edits or submits a number.
-    const startEditing = async () => {
-        const current = authStore.user?.phoneNumber ?? ''
-        phoneError.value = ''
-        if (current) {
-            const { parsePhoneNumberFromString } = await import('libphonenumber-js')
-            const parsed = parsePhoneNumberFromString(current)
-            if (parsed?.country === 'BE') phoneLocal.value = parsed.formatNational()
-            else if (parsed) phoneLocal.value = parsed.formatInternational()
-            else phoneLocal.value = current
-        } else {
-            phoneLocal.value = ''
-        }
-        isEditing.value = true
-        await nextTick()
-        phoneInputRef?.value?.focus()
+  // Lazy-load libphonenumber-js (~75KB) only when the customer actually edits or submits a number.
+  const startEditing = async () => {
+    const current = authStore.user?.phoneNumber ?? ''
+    phoneError.value = ''
+    if (current) {
+      const { parsePhoneNumberFromString } = await import('libphonenumber-js')
+      const parsed = parsePhoneNumberFromString(current)
+      if (parsed?.country === 'BE') phoneLocal.value = parsed.formatNational()
+      else if (parsed) phoneLocal.value = parsed.formatInternational()
+      else phoneLocal.value = current
+    } else {
+      phoneLocal.value = ''
     }
+    isEditing.value = true
+    await nextTick()
+    phoneInputRef?.value?.focus()
+  }
 
-    const cancelEditing = () => {
-        phoneError.value = ''
+  const cancelEditing = () => {
+    phoneError.value = ''
+    isEditing.value = false
+  }
+
+  // Typing: a stale error must not outlive the edit that fixes it.
+  const onInput = () => {
+    phoneError.value = ''
+  }
+
+  const validate = async (): Promise<PhoneInputState> => {
+    const state = await classifyPhoneInput(phoneLocal.value)
+    const key = messageKey(state)
+    // The capture was closed while the library loaded (Cancel): no stray error on a collapsed card.
+    phoneError.value = key && !isCollapsed.value ? t(key) : ''
+    return state
+  }
+
+  const onBlur = async () => {
+    // Left empty: nothing to scold (Save explains that a number is needed).
+    if (!phoneLocal.value.trim()) return
+    await validate()
+  }
+
+  // Resolves true when the number is saved (or already was), false when it is not valid or the save failed.
+  const submit = (): Promise<boolean> => {
+    if (inflightSave) return inflightSave
+    inflightSave = (async () => {
+      const state = await validate()
+      if (state.kind === 'empty') {
+        phoneError.value = t('checkout.phoneCapture.requiredBeforeOrder')
+        return false
+      }
+      if (state.kind !== 'valid') return false
+      // Same number as the saved one: nothing to send.
+      if (state.e164 === savedNumber.value) {
         isEditing.value = false
-    }
+        return true
+      }
+      loading.value = true
+      try {
+        const res = await mutationUpdateMe({ input: { phoneNumber: state.e164 } })
+        authStore.updateUser({ phoneNumber: res.updateMe.phoneNumber })
+        isEditing.value = false
+        notifications.notify({
+          message: t('checkout.phoneCapture.saved'),
+          persistent: false,
+          duration: 3000,
+          variant: 'success',
+        })
+        return true
+      } catch (err) {
+        reportError(err, 'checkout.savePhone')
+        phoneError.value = t('notify.errors.profileUpdateFailed')
+        return false
+      } finally {
+        loading.value = false
+      }
+    })().finally(() => {
+      inflightSave = null
+    })
+    return inflightSave
+  }
 
-    // Typing: a stale error must not outlive the edit that fixes it.
-    const onInput = () => { phoneError.value = '' }
-
-    const validate = async (): Promise<PhoneInputState> => {
-        const state = await classifyPhoneInput(phoneLocal.value)
-        const key = messageKey(state)
-        // The capture was closed while the library loaded (Cancel): no stray error on a collapsed card.
-        phoneError.value = key && !isCollapsed.value ? t(key) : ''
-        return state
-    }
-
-    const onBlur = async () => {
-        // Left empty: nothing to scold (Save explains that a number is needed).
-        if (!phoneLocal.value.trim()) return
-        await validate()
-    }
-
-    // Resolves true when the number is saved (or already was), false when it is not valid or the save failed.
-    const submit = (): Promise<boolean> => {
-        if (inflightSave) return inflightSave
-        inflightSave = (async () => {
-            const state = await validate()
-            if (state.kind === 'empty') {
-                phoneError.value = t('checkout.phoneCapture.requiredBeforeOrder')
-                return false
-            }
-            if (state.kind !== 'valid') return false
-            // Same number as the saved one: nothing to send.
-            if (state.e164 === savedNumber.value) {
-                isEditing.value = false
-                return true
-            }
-            loading.value = true
-            try {
-                const res = await mutationUpdateMe({ input: { phoneNumber: state.e164 } })
-                authStore.updateUser({ phoneNumber: res.updateMe.phoneNumber })
-                isEditing.value = false
-                notifications.notify({
-                    message: t('checkout.phoneCapture.saved'),
-                    persistent: false,
-                    duration: 3000,
-                    variant: 'success',
-                })
-                return true
-            } catch (err) {
-                reportError(err, 'checkout.savePhone')
-                phoneError.value = t('notify.errors.profileUpdateFailed')
-                return false
-            } finally {
-                loading.value = false
-            }
-        })().finally(() => { inflightSave = null })
-        return inflightSave
-    }
-
-    /* The checkout calls this before it validates the order. A typed-but-unsaved number is saved first, so Pay
+  /* The checkout calls this before it validates the order. A typed-but-unsaved number is saved first, so Pay
        uses what the customer sees. 'invalid' means the field keeps its error and the order must not go on. */
-    const commitPending = async (): Promise<PhoneCommitResult> => {
-        if (inflightSave) await inflightSave
-        if (!hasUnsavedInput.value) return 'none'
-        return (await submit()) ? 'saved' : 'invalid'
-    }
+  const commitPending = async (): Promise<PhoneCommitResult> => {
+    if (inflightSave) await inflightSave
+    if (!hasUnsavedInput.value) return 'none'
+    return (await submit()) ? 'saved' : 'invalid'
+  }
 
-    return {
-        phoneLocal, phoneError, loading, isCollapsed, saved, savedNumber, hasUnsavedInput,
-        startEditing, cancelEditing, onInput, onBlur, submit, commitPending,
-    }
+  return {
+    phoneLocal,
+    phoneError,
+    loading,
+    isCollapsed,
+    saved,
+    savedNumber,
+    hasUnsavedInput,
+    startEditing,
+    cancelEditing,
+    onInput,
+    onBlur,
+    submit,
+    commitPending,
+  }
 }

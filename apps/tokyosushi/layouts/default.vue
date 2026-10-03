@@ -1,102 +1,165 @@
 <template>
-    <div>
-        <Html :dir="head.htmlAttrs?.dir ?? 'ltr'" :lang="head.htmlAttrs?.lang ?? 'en'">
+  <div>
+    <Html :dir="head.htmlAttrs?.dir ?? 'ltr'" :lang="head.htmlAttrs?.lang ?? 'en'">
+      <Head>
+        <Title>{{ title }}</Title>
+        <template v-for="link in head.link" :key="link.id ?? link.href">
+          <Link v-bind="link" />
+        </template>
+        <template v-for="meta in head.meta" :key="meta.id ?? meta.property">
+          <Meta :id="meta.id" :property="meta.property" :content="String(meta.content)" />
+        </template>
+      </Head>
 
-        <Head>
-            <Title>{{ title }}</Title>
-            <template v-for="link in head.link" :key="link.hid">
-                <Link :id="link.hid" :href="link.href" :hreflang="link.hreflang" :rel="link.rel"/>
-            </template>
-            <template v-for="meta in head.meta" :key="meta.hid">
-                <Meta :id="meta.hid" :content="meta.content" :property="meta.property"/>
-            </template>
-        </Head>
-
-        <Body class="bg-tsb-one overflow-x-hidden">
+      <Body class="bg-tsb-one overflow-x-hidden">
         <NuxtLoadingIndicator color="hsl(var(--primary))" :height="2" />
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-neutral-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-            {{ $t('common.skipToContent') }}
+        <a
+          href="#main-content"
+          class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-neutral-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-screen flex flex-col" data-app-root>
-            <header>
-                <MobileNavbar/>
-                <div class="sm:hidden h-20"/>
-                <SideNavbar/>
-            </header>
+          <header>
+            <MobileNavbar />
+            <div class="sm:hidden h-20" />
+            <SideNavbar />
+          </header>
 
-            <main
-                id="main-content"
-                class="flex-1 bg-tsb-one px-4 sm:ml-[142px] overflow-x-clip pb-4"
+          <main id="main-content" class="flex-1 bg-tsb-one px-4 sm:ml-[142px] overflow-x-clip pb-4">
+            <slot />
+          </main>
+
+          <footer class="p-4 sm:ml-[142px] text-xs text-neutral-600">
+            <!-- Decorative seigaiha wave divider -->
+            <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
+              <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-neutral-200" />
+              <svg class="w-6 h-6 text-primary-300/60" viewBox="0 0 100 50" fill="none">
+                <path
+                  d="M0 50 C25 50 25 20 50 20 C75 20 75 50 100 50"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  fill="none"
+                />
+                <path
+                  d="M-25 50 C0 50 0 30 25 30 C50 30 50 50 75 50"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  opacity="0.5"
+                />
+                <path
+                  d="M25 50 C50 50 50 30 75 30 C100 30 100 50 125 50"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  opacity="0.5"
+                />
+              </svg>
+              <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-neutral-200" />
+            </div>
+
+            <div class="flex items-center justify-center gap-3">
+              <NuxtLinkLocale
+                class="inline-flex min-h-11 items-center text-neutral-600 hover:text-neutral-800 transition-colors"
+                to="/terms"
+              >
+                {{ $t('footer.terms') }}
+              </NuxtLinkLocale>
+              <span class="text-neutral-300" aria-hidden="true">|</span>
+              <NuxtLinkLocale
+                class="inline-flex min-h-11 items-center text-neutral-600 hover:text-neutral-800 transition-colors"
+                to="/privacy"
+              >
+                {{ $t('footer.privacy') }}
+              </NuxtLinkLocale>
+              <span class="text-neutral-300" aria-hidden="true">|</span>
+              <a
+                :href="brand.socials.instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                class="inline-flex h-11 w-11 items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 hover:text-neutral-600 transition-colors"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                  />
+                </svg>
+              </a>
+              <a
+                :href="brand.socials.facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                class="inline-flex h-11 w-11 items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 hover:text-neutral-600 transition-colors"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385h-3.047v-3.47h3.047v-2.642c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385c5.738-.9 10.126-5.864 10.126-11.854z"
+                  />
+                </svg>
+              </a>
+            </div>
+            <!-- Restaurant name -->
+            <p
+              class="text-center mt-2 text-[11px] text-neutral-600 tracking-[0.3em] font-light"
+              aria-hidden="true"
             >
-                <slot/>
-            </main>
-
-            <footer class="p-4 sm:ml-[142px] text-xs text-neutral-600">
-                <!-- Decorative seigaiha wave divider -->
-                <div class="flex items-center justify-center gap-3 mb-4" aria-hidden="true">
-                    <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-neutral-200" />
-                    <svg class="w-6 h-6 text-primary-300/60" viewBox="0 0 100 50" fill="none">
-                        <path d="M0 50 C25 50 25 20 50 20 C75 20 75 50 100 50" stroke="currentColor" stroke-width="3" fill="none"/>
-                        <path d="M-25 50 C0 50 0 30 25 30 C50 30 50 50 75 50" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
-                        <path d="M25 50 C50 50 50 30 75 30 C100 30 100 50 125 50" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
-                    </svg>
-                    <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-neutral-200" />
-                </div>
-
-                <div class="flex items-center justify-center gap-3">
-                    <NuxtLinkLocale class="inline-flex min-h-11 items-center text-neutral-600 hover:text-neutral-800 transition-colors" to="/terms">
-                        {{ $t('footer.terms') }}
-                    </NuxtLinkLocale>
-                    <span class="text-neutral-300" aria-hidden="true">|</span>
-                    <NuxtLinkLocale class="inline-flex min-h-11 items-center text-neutral-600 hover:text-neutral-800 transition-colors" to="/privacy">
-                        {{ $t('footer.privacy') }}
-                    </NuxtLinkLocale>
-                    <span class="text-neutral-300" aria-hidden="true">|</span>
-                    <a :href="brand.socials.instagram" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="inline-flex h-11 w-11 items-center justify-center">
-                        <svg class="w-4 h-4 hover:text-neutral-600 transition-colors" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    </a>
-                    <a :href="brand.socials.facebook" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="inline-flex h-11 w-11 items-center justify-center">
-                        <svg class="w-4 h-4 hover:text-neutral-600 transition-colors" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385h-3.047v-3.47h3.047v-2.642c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385c5.738-.9 10.126-5.864 10.126-11.854z"/></svg>
-                    </a>
-                </div>
-                <!-- Restaurant name -->
-                <p class="text-center mt-2 text-[11px] text-neutral-600 tracking-[0.3em] font-light" aria-hidden="true">{{ brand.name }}</p>
-                <div class="text-center mt-2 text-[10px] text-neutral-600">
-                    <a href="https://nuagemagique.dev" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center hover:text-neutral-700 transition-colors">nuagemagique.dev</a>
-                </div>
-            </footer>
+              {{ brand.name }}
+            </p>
+            <div class="text-center mt-2 text-[10px] text-neutral-600">
+              <a
+                href="https://nuagemagique.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-11 items-center hover:text-neutral-700 transition-colors"
+                >nuagemagique.dev</a
+              >
+            </div>
+          </footer>
         </div>
         <ClientOnly>
-            <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
-            <LazyCartFloatingCartBar v-if="isMenuPage" />
+          <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
+          <LazyCartFloatingCartBar v-if="isMenuPage" />
         </ClientOnly>
         <ClientOnly>
-            <ToastAnnouncer />
-            <LazyNotificationBar
-                v-if="notifications.current"
-                :key="notifications.seq"
-                :message="notifications.current.message"
-                :persistent="notifications.current.persistent"
-                :duration="notifications.current.duration"
-                :variant="notifications.current.variant"
-                :action="notifications.current.action"
-                @close="notifications.dismiss()"
-            />
-        </ClientOnly>
-
-        <ClientOnly>
-            <LazyReorderDialog primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2" secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-ring" />
+          <ToastAnnouncer />
+          <LazyNotificationBar
+            v-if="notifications.current"
+            :key="notifications.seq"
+            :message="notifications.current.message"
+            :persistent="notifications.current.persistent"
+            :duration="notifications.current.duration"
+            :variant="notifications.current.variant"
+            :action="notifications.current.action"
+            @close="notifications.dismiss()"
+          />
         </ClientOnly>
 
         <ClientOnly>
-            <LazyScrollToTopButton class="sm:hidden"/>
+          <LazyReorderDialog
+            primary-class="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-ring focus-visible:ring-offset-2"
+            secondary-class="bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-ring"
+          />
         </ClientOnly>
 
-
-        </Body>
-
-        </Html>
-    </div>
+        <ClientOnly>
+          <LazyScrollToTopButton class="sm:hidden" />
+        </ClientOnly>
+      </Body>
+    </Html>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -112,25 +175,29 @@ import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
 
 useHead({
-    link: [
-        {
-            rel: 'preload',
-            href: '/fonts/channel.woff2',
-            as: 'font',
-            type: 'font/woff2',
-            crossorigin: 'anonymous'
-        }
-    ]
+  link: [
+    {
+      rel: 'preload',
+      href: '/fonts/channel.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous',
+    },
+  ],
 })
 
 const route = useRoute()
-const {t} = useI18n()
+const { t } = useI18n()
 const { brand } = useAppConfig()
 
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).
 // Closed is only true once the config has loaded and says nothing can be ordered: while it loads (or if it failed) the drawer's checkout link stays enabled and checkout explains.
-const { config: restaurantConfig, isClosed, preorderTime } = await useOrderingAvailability({ lazy: true })
+const {
+  config: restaurantConfig,
+  isClosed,
+  preorderTime,
+} = await useOrderingAvailability({ lazy: true })
 
 // The restaurant's JSON-LD (hours from the live config), on every page.
 useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)
@@ -138,6 +205,8 @@ useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours
 const head = useLocaleHead()
 const notifications = useNotificationsStore()
 
-const title = computed(() => t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'))
+const title = computed(() =>
+  t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'),
+)
 const isMenuPage = computed(() => route.path.endsWith('/menu'))
 </script>

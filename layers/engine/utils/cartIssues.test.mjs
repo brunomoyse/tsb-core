@@ -1,15 +1,23 @@
 // What a cart line does with a quote issue (message + actions), and accepting a new price.
-// Run: `node --test layers/engine/utils/cartIssues.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartIssues.test.mjs`.
 
 import { describeLineIssue, describeLineIssues, quotedSnapshotPricing } from './cartIssues.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const issue = (code, currentPrice = null) => ({ code, currentPrice })
 
 test('a product that is gone or sold out can only be removed', () => {
-  for (const [code, key] of [['PRODUCT_NOT_FOUND', 'cart.issues.notFound'], ['PRODUCT_UNAVAILABLE', 'cart.issues.unavailable']]) {
-    assert.deepEqual(describeLineIssue(issue(code), 1000, 0), { code, messageKey: key, params: {}, actions: ['remove'] })
+  for (const [code, key] of [
+    ['PRODUCT_NOT_FOUND', 'cart.issues.notFound'],
+    ['PRODUCT_UNAVAILABLE', 'cart.issues.unavailable'],
+  ]) {
+    assert.deepEqual(describeLineIssue(issue(code), 1000, 0), {
+      code,
+      messageKey: key,
+      params: {},
+      actions: ['remove'],
+    })
   }
 })
 
@@ -30,8 +38,14 @@ test('a lunch-only product offers the slot picker first', () => {
 
 test('an invalid composition or quantity has to be removed and composed again from the menu', () => {
   assert.deepEqual(describeLineIssue(issue('SELECTION_INVALID'), 0, 0).actions, ['remove'])
-  assert.equal(describeLineIssue(issue('SELECTION_INVALID'), 0, 0).messageKey, 'cart.issues.selectionInvalid')
-  assert.equal(describeLineIssue(issue('INVALID_QUANTITY'), 0, 0).messageKey, 'cart.issues.invalidQuantity')
+  assert.equal(
+    describeLineIssue(issue('SELECTION_INVALID'), 0, 0).messageKey,
+    'cart.issues.selectionInvalid',
+  )
+  assert.equal(
+    describeLineIssue(issue('INVALID_QUANTITY'), 0, 0).messageKey,
+    'cart.issues.invalidQuantity',
+  )
 })
 
 test('every code has a way out: an unknown code from a newer backend or INVALID_PRICE falls back to remove', () => {
@@ -43,8 +57,15 @@ test('every code has a way out: an unknown code from a newer backend or INVALID_
 })
 
 test('several issues on one line: the one that matters most comes first', () => {
-  const views = describeLineIssues([issue('PRICE_CHANGED', '9.00'), issue('LUNCH_SLOT_REQUIRED'), issue('PRODUCT_UNAVAILABLE')], 900, 900)
-  assert.deepEqual(views.map((v) => v.code), ['PRODUCT_UNAVAILABLE', 'LUNCH_SLOT_REQUIRED', 'PRICE_CHANGED'])
+  const views = describeLineIssues(
+    [issue('PRICE_CHANGED', '9.00'), issue('LUNCH_SLOT_REQUIRED'), issue('PRODUCT_UNAVAILABLE')],
+    900,
+    900,
+  )
+  assert.deepEqual(
+    views.map((v) => v.code),
+    ['PRODUCT_UNAVAILABLE', 'LUNCH_SLOT_REQUIRED', 'PRICE_CHANGED'],
+  )
 })
 
 test('accepting a price: the product price and the modifiers of its choices move, nothing else', () => {

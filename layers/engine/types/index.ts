@@ -1,183 +1,198 @@
 // Types/index.ts
 
 export interface CouponValidation {
-    valid: boolean;
-    discountAmount: string;
-    /** English backend text: for logs only, never shown (see utils/gqlErrors.ts). */
-    errorMessage: string | null;
-    /** Stable refusal code (COUPON_INVALID, COUPON_MIN_ORDER_NOT_MET, COUPON_RATE_LIMITED); absent on an old backend. */
-    errorCode?: string | null;
+  valid: boolean
+  discountAmount: string
+  /** English backend text: for logs only, never shown (see utils/gqlErrors.ts). */
+  errorMessage: string | null
+  /** Stable refusal code (COUPON_INVALID, COUPON_MIN_ORDER_NOT_MET, COUPON_RATE_LIMITED); absent on an old backend. */
+  errorCode?: string | null
 }
 
 export interface ProductChoice {
-    id: string;
-    productId: string;
-    choiceGroupId?: string;
-    priceModifier: string;
-    sortOrder: number;
-    name: string;
+  id: string
+  productId: string
+  choiceGroupId?: string
+  priceModifier: string
+  sortOrder: number
+  name: string
 }
 
 export interface ProductChoiceGroup {
-    id: string;
-    productId: string;
-    minSelections: number;
-    maxSelections: number;
-    sortOrder: number;
-    name: string;
-    choices: ProductChoice[];
+  id: string
+  productId: string
+  minSelections: number
+  maxSelections: number
+  sortOrder: number
+  name: string
+  choices: ProductChoice[]
 }
 
 export interface ProductChoiceSelection {
-    groupId: string;
-    choiceId: string;
-    quantity: number;
+  groupId: string
+  choiceId: string
+  quantity: number
 }
 
 export interface Product {
-    categoryId: string;
-    choices: ProductChoice[];
-    choiceGroups?: ProductChoiceGroup[];
-    code: string | null;
-    id: string;
-    isAvailable: boolean;
-    isDiscountable: boolean;
-    isHalal: boolean;
-    isLunchOnly: boolean;
-    isSpicy: boolean;
-    isVegetarian: boolean;
-    isVisible: boolean
-    pieceCount: number | null;
-    price: string;
-    slug: string;
+  categoryId: string
+  choices: ProductChoice[]
+  choiceGroups?: ProductChoiceGroup[]
+  code: string | null
+  id: string
+  isAvailable: boolean
+  isDiscountable: boolean
+  isHalal: boolean
+  isLunchOnly: boolean
+  isSpicy: boolean
+  isVegetarian: boolean
+  isVisible: boolean
+  pieceCount: number | null
+  price: string
+  slug: string
 
-    description: string | null;
-    name: string;
+  description: string | null
+  name: string
 
-    category: ProductCategory;
+  category: ProductCategory
 }
 
 export interface ProductCategory {
-    id: string;
-    name: string;
-    order: number;
-    slug: string;
-    products: Product[];
+  id: string
+  name: string
+  order: number
+  slug: string
+  products: Product[]
 }
 
 export interface CartItem {
-    product: Product;
-    quantity: number;
-    selectedChoices: ProductChoiceSelection[];
-    selectedChoice: ProductChoice | null;
+  product: Product
+  quantity: number
+  selectedChoices: ProductChoiceSelection[]
+  selectedChoice: ProductChoice | null
 }
 
 export interface CartState {
-    address: Address | null;
-    addressExtra: string | null;
-    cashPaymentAmount: string | null;
-    collectionOption: OrderType;
-    couponCode: string | null;
-    /** What the applied coupon takes off, in integer cents (0 without a coupon). */
-    couponDiscountCents: number;
-    isCartVisible: boolean;
-    /** Transient (never persisted): how many lines of the saved cart could not be recovered at hydration; the notice plugin tells the customer once. */
-    droppedOnHydrate: number;
-    orderExtra: { name: string; options?: string[]; }[] | null;
-    orderNote: string | null;
-    /** The order the cart was just checked out for; only that order's confirmation may clear the cart. */
-    pendingOrderId: string | null;
-    paymentOption: 'ONLINE' | 'CASH';
-    preferredReadyTime: string | null;
-    products: CartItem[];
+  address: Address | null
+  addressExtra: string | null
+  cashPaymentAmount: string | null
+  collectionOption: OrderType
+  couponCode: string | null
+  /** What the applied coupon takes off, in integer cents (0 without a coupon). */
+  couponDiscountCents: number
+  isCartVisible: boolean
+  /** Transient (never persisted): how many lines of the saved cart could not be recovered at hydration; the notice plugin tells the customer once. */
+  droppedOnHydrate: number
+  orderExtra: { name: string; options?: string[] }[] | null
+  orderNote: string | null
+  /** The order the cart was just checked out for; only that order's confirmation may clear the cart. */
+  pendingOrderId: string | null
+  paymentOption: 'ONLINE' | 'CASH'
+  preferredReadyTime: string | null
+  products: CartItem[]
 }
 
 export interface NotificationAction {
-    label: string;
-    handler: () => void;
+  label: string
+  handler: () => void
 }
 
 export interface NotifyPayload {
-    message: string;
-    persistent?: boolean;
-    duration?: number;
-    variant?: string;
-    action?: NotificationAction;
-    /** A toast of the same group replaces the one showing (or waiting) instead of queueing behind it. */
-    group?: string;
+  message: string
+  persistent?: boolean
+  duration?: number
+  variant?: string
+  action?: NotificationAction
+  /** A toast of the same group replaces the one showing (or waiting) instead of queueing behind it. */
+  group?: string
 }
 
 export interface Notification {
-    id: number;
-    message: string;
-    persistent: boolean;
-    duration: number;
-    variant: string;
-    action?: NotificationAction;
-    group?: string;
+  id: number
+  message: string
+  persistent: boolean
+  duration: number
+  variant: string
+  action?: NotificationAction
+  group?: string
 }
 
 export interface LoginResponse {
-    user: User;
-    accessToken?: string;
-    refreshToken?: string;
+  user: User
+  accessToken?: string
+  refreshToken?: string
 }
 
 export interface User {
-    deletionRequestedAt: string | null;
-    email: string;
-    firstName: string;
-    id: string;
-    lastName: string;
-    notifyMarketing: boolean;
-    notifyOrderUpdates: boolean;
-    phoneNumber: string | null;
+  deletionRequestedAt: string | null
+  email: string
+  firstName: string
+  id: string
+  lastName: string
+  notifyMarketing: boolean
+  notifyOrderUpdates: boolean
+  phoneNumber: string | null
 
-    address: Address | null;
+  address: Address | null
 }
 
 export interface UpdateUserRequest {
-    addressPlaceId: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    phoneNumber: string | null;
+  addressPlaceId: string | null
+  firstName: string | null
+  lastName: string | null
+  phoneNumber: string | null
 }
 
-export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus;
+export type OrderStatus = OrderDeliveryStatus | OrderPickUpStatus
 
-export type OrderDeliveryStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'FAILED'
-export type OrderPickUpStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'AWAITING_PICK_UP' | 'PICKED_UP' | 'CANCELLED' | 'FAILED'
-export type OrderType = 'DELIVERY' | 'PICKUP';
-export type OrderCancellationReason = 'OUT_OF_STOCK' | 'KITCHEN_CLOSED' | 'DELIVERY_AREA' | 'OTHER';
+export type OrderDeliveryStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PREPARING'
+  | 'AWAITING_PICK_UP'
+  | 'OUT_FOR_DELIVERY'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'FAILED'
+export type OrderPickUpStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PREPARING'
+  | 'AWAITING_PICK_UP'
+  | 'PICKED_UP'
+  | 'CANCELLED'
+  | 'FAILED'
+export type OrderType = 'DELIVERY' | 'PICKUP'
+export type OrderCancellationReason = 'OUT_OF_STOCK' | 'KITCHEN_CLOSED' | 'DELIVERY_AREA' | 'OTHER'
 
 export interface Order {
-    addressExtra: string | null;
-    addressId: string | null;
-    cancellationReason: OrderCancellationReason | null;
-    couponCode: string | null;
-    createdAt: string;
-    deliveryFee: string | null;
-    /** Pickup discount + coupon discount (the API does not split them). */
-    discountAmount: string;
-    /** The online-payment fee; null/"0" for cash. */
-    transactionFee?: string | null;
-    estimatedReadyTime: string | null;
-    id: string;
-    isOnlinePayment: boolean;
-    orderExtra: { name: string | null; options: string[] | null }[] | null;
-    orderNote: string | null;
-    paymentID: string | null;
-    status: OrderStatus;
-    totalPrice: string;
-    cashPaymentAmount: string | null;
-    type: OrderType;
-    updatedAt: string;
-    userId: string;
+  addressExtra: string | null
+  addressId: string | null
+  cancellationReason: OrderCancellationReason | null
+  couponCode: string | null
+  createdAt: string
+  deliveryFee: string | null
+  /** Pickup discount + coupon discount (the API does not split them). */
+  discountAmount: string
+  /** The online-payment fee; null/"0" for cash. */
+  transactionFee?: string | null
+  estimatedReadyTime: string | null
+  id: string
+  isOnlinePayment: boolean
+  orderExtra: { name: string | null; options: string[] | null }[] | null
+  orderNote: string | null
+  paymentID: string | null
+  status: OrderStatus
+  totalPrice: string
+  cashPaymentAmount: string | null
+  type: OrderType
+  updatedAt: string
+  userId: string
 
-    address: Address | null;
-    customer: User | null;
-    items: OrderProduct[];
-    payment: MolliePayment | null;
+  address: Address | null
+  customer: User | null
+  items: OrderProduct[]
+  payment: MolliePayment | null
 }
 
 /**
@@ -188,54 +203,59 @@ export interface Order {
 export type OrderItemSelection = ProductChoiceSelection
 
 export interface OrderProduct {
-    quantity: number;
-    totalPrice: string;
-    unitPrice: string;
+  quantity: number
+  totalPrice: string
+  unitPrice: string
 
-    product: Product;
-    choice: ProductChoice | null;
-    selections?: OrderItemSelection[] | null;
+  product: Product
+  choice: ProductChoice | null
+  selections?: OrderItemSelection[] | null
 }
 
 export interface MolliePayment {
-    createdAt: string;
-    id: string;
-    links: { checkout: { href: string } } | null;
-    orderId: string;
-    paidAt: string | null;
-    status: string;
+  createdAt: string
+  id: string
+  links: { checkout: { href: string } } | null
+  orderId: string
+  paidAt: string | null
+  status: string
 }
 
 export interface CreateOrderRequest {
-    addressExtra: string | null;
-    addressPlaceId?: string | null;
-    couponCode?: string | null;
-    isOnlinePayment: boolean;
-    items: { productId: string; quantity: number; choiceId?: string; selections?: ProductChoiceSelection[]; }[]
-    orderExtra: { name: string; options?: string[] }[] | null;
-    orderNote: string | null;
-    orderType: OrderType;
-    preferredReadyTime: string | null;
-    cashPaymentAmount?: string | null;
-    // Custom Mollie redirect URL (native apps use custom URL scheme)
-    paymentRedirectUrl?: string;
+  addressExtra: string | null
+  addressPlaceId?: string | null
+  couponCode?: string | null
+  isOnlinePayment: boolean
+  items: {
+    productId: string
+    quantity: number
+    choiceId?: string
+    selections?: ProductChoiceSelection[]
+  }[]
+  orderExtra: { name: string; options?: string[] }[] | null
+  orderNote: string | null
+  orderType: OrderType
+  preferredReadyTime: string | null
+  cashPaymentAmount?: string | null
+  // Custom Mollie redirect URL (native apps use custom URL scheme)
+  paymentRedirectUrl?: string
 }
 export interface AddressSuggestion {
-    placeId: string;
-    description: string;
-    mainText: string;
-    secondaryText: string;
+  placeId: string
+  description: string
+  mainText: string
+  secondaryText: string
 }
 
 export interface Address {
-    id: string;
-    postcode: string;
-    municipalityName: string;
-    streetName: string;
-    houseNumber: string;
-    boxNumber?: string | null;
-    distance: number;
-    lat?: number | null;
-    lng?: number | null;
-    duration?: number | null;
+  id: string
+  postcode: string
+  municipalityName: string
+  streetName: string
+  houseNumber: string
+  boxNumber?: string | null
+  distance: number
+  lat?: number | null
+  lng?: number | null
+  duration?: number | null
 }

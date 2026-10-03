@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/cashPayment.test.mjs`.
+// Run: `vp test run layers/engine/utils/cashPayment.test.mjs`.
 
 import { evaluateCashAmount, sanitizeCashAmount } from './cashPayment.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('an empty amount is fine: the field is optional', () => {
   assert.deepEqual(evaluateCashAmount('', 3050), { kind: 'none' })

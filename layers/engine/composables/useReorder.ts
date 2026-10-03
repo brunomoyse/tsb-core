@@ -1,8 +1,13 @@
-import { type ReorderPlan, type ReorderSkipped, countUnits, planReorder } from '#engine/utils/reorder'
+import {
+  type ReorderPlan,
+  type ReorderSkipped,
+  countUnits,
+  planReorder,
+} from '#engine/utils/reorder'
 import { navigateTo, useCartStore, useLocalePath, useState } from '#imports'
-import type { Order } from '~/types'
+import type { Order } from '#engine/types'
 import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '~/stores/notifications'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 /*
  * "Re-order" of a past order (audit M16).
@@ -23,72 +28,79 @@ import { useNotificationsStore } from '~/stores/notifications'
  */
 
 interface ReorderPrompt {
-    plan: ReorderPlan
+  plan: ReorderPlan
 }
 
 export type ReorderMode = 'replace' | 'merge'
 
 export function useReorder() {
-    const cartStore = useCartStore()
-    const localePath = useLocalePath()
-    const { t } = useI18n()
-    const notifications = useNotificationsStore()
-    const prompt = useState<ReorderPrompt | null>('reorder-prompt', () => null)
-    // Shared with the checkout's cash amount field: a cleared amount is not "touched" any more.
-    const cashTouched = useState('checkout-cash-touched', () => false)
+  const cartStore = useCartStore()
+  const localePath = useLocalePath()
+  const { t } = useI18n()
+  const notifications = useNotificationsStore()
+  const prompt = useState<ReorderPrompt | null>('reorder-prompt', () => null)
+  // Shared with the checkout's cash amount field: a cleared amount is not "touched" any more.
+  const cashTouched = useState('checkout-cash-touched', () => false)
 
-    const skippedNames = (skipped: ReorderSkipped[]): string =>
-        skipped.map((entry) => `${entry.name} (${t(`reorder.reason.${entry.reason}`)})`).join(', ')
+  const skippedNames = (skipped: ReorderSkipped[]): string =>
+    skipped.map((entry) => `${entry.name} (${t(`reorder.reason.${entry.reason}`)})`).join(', ')
 
-    const apply = (plan: ReorderPlan, mode: ReorderMode) => {
-        if (mode === 'replace') {
-            // The lines (and what hangs off them: the coupon, a pending checkout), not the delivery settings.
-            cartStore.products = []
-            cartStore.couponCode = null
-            cartStore.couponDiscountCents = 0
-            cartStore.pendingOrderId = null
-            // The cash amount was typed for the old total.
-            cartStore.cashPaymentAmount = null
-            cashTouched.value = false
-        }
-        for (const line of plan.lines) {
-            cartStore.addProduct(line.product, line.quantity, {
-                choice: line.choice,
-                selections: line.selections,
-            })
-        }
-        const added = countUnits(plan.lines)
-        notifications.notify(plan.skipped.length > 0
-            ? { message: t('reorder.partial', { added, names: skippedNames(plan.skipped) }), variant: 'info', duration: 9000 }
-            : { message: t('reorder.success', { count: added }), variant: 'success' })
-        navigateTo(localePath('/checkout'))
+  const apply = (plan: ReorderPlan, mode: ReorderMode) => {
+    if (mode === 'replace') {
+      // The lines (and what hangs off them: the coupon, a pending checkout), not the delivery settings.
+      cartStore.products = []
+      cartStore.couponCode = null
+      cartStore.couponDiscountCents = 0
+      cartStore.pendingOrderId = null
+      // The cash amount was typed for the old total.
+      cartStore.cashPaymentAmount = null
+      cashTouched.value = false
     }
-
-    const reorder = (order: Order) => {
-        const plan = planReorder(order.items)
-        if (plan.lines.length === 0) {
-            notifications.notify({
-                message: plan.skipped.length > 0
-                    ? t('reorder.emptyWithNames', { names: skippedNames(plan.skipped) })
-                    : t('reorder.empty'),
-                variant: 'error',
-                duration: 9000,
-            })
-            return { added: 0, skipped: countUnits(plan.skipped) }
-        }
-        if (cartStore.products.length === 0) {
-            apply(plan, 'replace')
-        } else {
-            prompt.value = { plan }
-        }
-        return { added: countUnits(plan.lines), skipped: countUnits(plan.skipped) }
+    for (const line of plan.lines) {
+      cartStore.addProduct(line.product, line.quantity, {
+        choice: line.choice,
+        selections: line.selections,
+      })
     }
+    const added = countUnits(plan.lines)
+    notifications.notify(
+      plan.skipped.length > 0
+        ? {
+            message: t('reorder.partial', { added, names: skippedNames(plan.skipped) }),
+            variant: 'info',
+            duration: 9000,
+          }
+        : { message: t('reorder.success', { count: added }), variant: 'success' },
+    )
+    void navigateTo(localePath('/checkout'))
+  }
 
-    const resolve = (mode: ReorderMode | null) => {
-        const pending = prompt.value
-        prompt.value = null
-        if (pending && mode) apply(pending.plan, mode)
+  const reorder = (order: Order) => {
+    const plan = planReorder(order.items)
+    if (plan.lines.length === 0) {
+      notifications.notify({
+        message:
+          plan.skipped.length > 0
+            ? t('reorder.emptyWithNames', { names: skippedNames(plan.skipped) })
+            : t('reorder.empty'),
+        variant: 'error',
+        duration: 9000,
+      })
+      return { added: 0, skipped: countUnits(plan.skipped) }
     }
+    if (cartStore.products.length === 0) {
+      apply(plan, 'replace')
+    } else {
+      prompt.value = { plan }
+    }
+    return { added: countUnits(plan.lines), skipped: countUnits(plan.skipped) }
+  }
 
-    return { reorder, prompt, resolve }
+  const resolve = (mode: ReorderMode | null) => {
+    const pending = prompt.value
+    prompt.value = null
+    if (pending && mode) apply(pending.plan, mode)
+  }
+
+  return { reorder, prompt, resolve }
 }

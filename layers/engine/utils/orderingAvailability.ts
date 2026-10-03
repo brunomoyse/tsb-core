@@ -18,17 +18,17 @@ import type { OrderingPolicy } from './orderingPolicy.ts'
 export type SlotPolicy = Pick<OrderingPolicy, 'minimumPreparationMinutes'>
 
 export interface OrderingTimeSlot {
-    /** Wall-clock "HH:MM" in the restaurant's time zone. */
-    label: string
-    /** The exact instant (ISO 8601). */
-    value: string
+  /** Wall-clock "HH:MM" in the restaurant's time zone. */
+  label: string
+  /** The exact instant (ISO 8601). */
+  value: string
 }
 
 export interface OrderingConfigInput {
-    orderingEnabled?: boolean | null
-    isOrderingCurrentlyOpen?: boolean | null
-    availableSlotsToday?: OrderingTimeSlot[] | null
-    preparationMinutes?: number | null
+  orderingEnabled?: boolean | null
+  isOrderingCurrentlyOpen?: boolean | null
+  availableSlotsToday?: OrderingTimeSlot[] | null
+  preparationMinutes?: number | null
 }
 
 /**
@@ -45,9 +45,15 @@ const DEFAULT_PREPARATION_MINUTES = 30
  * `max(preparationMinutes, policy.minimumPreparationMinutes)`, and a slot exactly on the line is accepted).
  * A missing or malformed preparation time falls back to the 30 minute default.
  */
-export const preparationBufferMs = (preparationMinutes: number | null | undefined, policy: SlotPolicy): number => {
-    const minutes = typeof preparationMinutes === 'number' && Number.isFinite(preparationMinutes) ? preparationMinutes : DEFAULT_PREPARATION_MINUTES
-    return Math.max(minutes, policy.minimumPreparationMinutes) * 60_000
+export const preparationBufferMs = (
+  preparationMinutes: number | null | undefined,
+  policy: SlotPolicy,
+): number => {
+  const minutes =
+    typeof preparationMinutes === 'number' && Number.isFinite(preparationMinutes)
+      ? preparationMinutes
+      : DEFAULT_PREPARATION_MINUTES
+  return Math.max(minutes, policy.minimumPreparationMinutes) * 60_000
 }
 
 /**
@@ -55,22 +61,36 @@ export const preparationBufferMs = (preparationMinutes: number | null | undefine
  * order is placed, so the gate, the picker and the order never disagree on a stale config.
  */
 export function bookableSlots(
-    slots: OrderingTimeSlot[] | null | undefined,
-    { preparationMinutes, nowMs }: { preparationMinutes: number | null | undefined, nowMs: number },
-    policy: SlotPolicy,
+  slots: OrderingTimeSlot[] | null | undefined,
+  { preparationMinutes, nowMs }: { preparationMinutes: number | null | undefined; nowMs: number },
+  policy: SlotPolicy,
 ): OrderingTimeSlot[] {
-    const cutoff = nowMs + preparationBufferMs(preparationMinutes, policy)
-    return (slots ?? []).filter((slot) => new Date(slot.value).getTime() >= cutoff)
+  const cutoff = nowMs + preparationBufferMs(preparationMinutes, policy)
+  return (slots ?? []).filter((slot) => new Date(slot.value).getTime() >= cutoff)
 }
 
-export function orderingStatus(config: OrderingConfigInput | null | undefined, nowMs: number, policy: SlotPolicy): OrderingStatus {
-    if (!config?.orderingEnabled) return 'disabled'
-    if (config.isOrderingCurrentlyOpen) return 'open'
-    return bookableSlots(config.availableSlotsToday, { preparationMinutes: config.preparationMinutes, nowMs }, policy).length > 0 ? 'preorder' : 'closed'
+export function orderingStatus(
+  config: OrderingConfigInput | null | undefined,
+  nowMs: number,
+  policy: SlotPolicy,
+): OrderingStatus {
+  if (!config?.orderingEnabled) return 'disabled'
+  if (config.isOrderingCurrentlyOpen) return 'open'
+  return bookableSlots(
+    config.availableSlotsToday,
+    { preparationMinutes: config.preparationMinutes, nowMs },
+    policy,
+  ).length > 0
+    ? 'preorder'
+    : 'closed'
 }
 
 /** The one gate: ordering is enabled and either open or still bookable ahead today. */
-export const canPlaceOrder = (config: OrderingConfigInput | null | undefined, nowMs: number, policy: SlotPolicy): boolean => {
-    const status = orderingStatus(config, nowMs, policy)
-    return status === 'open' || status === 'preorder'
+export const canPlaceOrder = (
+  config: OrderingConfigInput | null | undefined,
+  nowMs: number,
+  policy: SlotPolicy,
+): boolean => {
+  const status = orderingStatus(config, nowMs, policy)
+  return status === 'open' || status === 'preorder'
 }

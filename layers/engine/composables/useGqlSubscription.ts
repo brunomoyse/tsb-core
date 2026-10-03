@@ -19,9 +19,9 @@ let wsClientPromise: Promise<Client> | null = null
  * the OS aggressively backgrounds tabs and severs the WebSocket.
  */
 interface Subscriber {
-    restart: () => void
-    setOffline: (value: boolean) => void
-    onReconnect: (() => void | Promise<void>) | null
+  restart: () => void
+  setOffline: (value: boolean) => void
+  onReconnect: (() => void | Promise<void>) | null
 }
 const subscribers = new Set<Subscriber>()
 
@@ -41,15 +41,15 @@ let proactivelyDisposed = false
  * recycleClient() call (e.g. on resume).
  */
 const disposeClient = () => {
-    /*
-     * The graphql-ws dispose() awaits any in-flight connect, which rejects with
-     * the raw WebSocket error Event when the network is down (phone waking
-     * up, tab hidden mid-reconnect). The client is being thrown away, so
-     * swallow it instead of surfacing an unhandled rejection in Sentry.
-     */
-    Promise.resolve(wsClient?.dispose()).catch(() => {})
-    wsClient = null
-    wsClientPromise = null
+  /*
+   * The graphql-ws dispose() awaits any in-flight connect, which rejects with
+   * the raw WebSocket error Event when the network is down (phone waking
+   * up, tab hidden mid-reconnect). The client is being thrown away, so
+   * swallow it instead of surfacing an unhandled rejection in Sentry.
+   */
+  Promise.resolve(wsClient?.dispose()).catch(() => {})
+  wsClient = null
+  wsClientPromise = null
 }
 
 /*
@@ -57,262 +57,274 @@ const disposeClient = () => {
  * onReconnect (typically a refetch of the underlying query). Callers coalesce their own refetch.
  */
 const notifyReconnected = () => {
-    Array.from(subscribers).forEach((s) => {
-        if (s.onReconnect) Promise.resolve(s.onReconnect()).catch((err: unknown) => reportError(err, 'gql.subscription.reconnect'))
-    })
+  Array.from(subscribers).forEach((s) => {
+    if (s.onReconnect)
+      Promise.resolve(s.onReconnect()).catch((err: unknown) => {
+        reportError(err, 'gql.subscription.reconnect')
+      })
+  })
 }
 
 const recycleClient = () => {
-    disposeClient()
-    // Snapshot in case a restart callback mutates the set.
-    Array.from(subscribers).forEach((s) => {
-        s.restart()
-    })
-    /*
-     * GraphQL subscriptions don't replay history — events emitted during the
-     * disconnect window are lost. Callers that need gap recovery pass an
-     * onReconnect callback that refetches the underlying query.
-     */
-    notifyReconnected()
+  disposeClient()
+  // Snapshot in case a restart callback mutates the set.
+  Array.from(subscribers).forEach((s) => {
+    s.restart()
+  })
+  /*
+   * GraphQL subscriptions don't replay history — events emitted during the
+   * disconnect window are lost. Callers that need gap recovery pass an
+   * onReconnect callback that refetches the underlying query.
+   */
+  notifyReconnected()
 }
 
 const handleOffline = () => {
-    wentOffline = true
-    subscribers.forEach((s) => s.setOffline(true))
+  wentOffline = true
+  subscribers.forEach((s) => {
+    s.setOffline(true)
+  })
 }
 
 const handleOnline = () => {
-    if (!wentOffline) return
-    wentOffline = false
-    subscribers.forEach((s) => s.setOffline(false))
-    recycleClient()
+  if (!wentOffline) return
+  wentOffline = false
+  subscribers.forEach((s) => {
+    s.setOffline(false)
+  })
+  recycleClient()
 }
 
 const handleVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') {
-        hiddenAt = Date.now()
-        /*
-         * After a short grace, proactively close the WS so the server sees
-         * a clean close frame before iOS suspends our WebView. The grace
-         * window avoids thrashing on quick tab switches.
-         */
-        if (suspendTimer) clearTimeout(suspendTimer)
-        suspendTimer = setTimeout(() => {
-            suspendTimer = null
-            proactivelyDisposed = true
-            disposeClient()
-        }, 2_000)
-        return
+  if (document.visibilityState === 'hidden') {
+    hiddenAt = Date.now()
+    /*
+     * After a short grace, proactively close the WS so the server sees
+     * a clean close frame before iOS suspends our WebView. The grace
+     * window avoids thrashing on quick tab switches.
+     */
+    if (suspendTimer) clearTimeout(suspendTimer)
+    suspendTimer = setTimeout(() => {
+      suspendTimer = null
+      proactivelyDisposed = true
+      disposeClient()
+    }, 2_000)
+    return
+  }
+  if (suspendTimer) {
+    clearTimeout(suspendTimer)
+    suspendTimer = null
+  }
+  if (document.visibilityState === 'visible') {
+    /*
+     * Recycle if we proactively closed the WS while hidden, OR if we
+     * stayed hidden ≥3s (likely the OS killed the socket silently).
+     */
+    if (proactivelyDisposed || Date.now() - hiddenAt > 3_000) {
+      proactivelyDisposed = false
+      recycleClient()
     }
-    if (suspendTimer) {
-        clearTimeout(suspendTimer)
-        suspendTimer = null
-    }
-    if (document.visibilityState === 'visible') {
-        /*
-         * Recycle if we proactively closed the WS while hidden, OR if we
-         * stayed hidden ≥3s (likely the OS killed the socket silently).
-         */
-        if (proactivelyDisposed || Date.now() - hiddenAt > 3_000) {
-            proactivelyDisposed = false
-            recycleClient()
-        }
-    }
+  }
 }
 
 const handlePageHide = () => {
-    if (suspendTimer) {
-        clearTimeout(suspendTimer)
-        suspendTimer = null
-    }
-    disposeClient()
+  if (suspendTimer) {
+    clearTimeout(suspendTimer)
+    suspendTimer = null
+  }
+  disposeClient()
 }
 
 const handlePageShow = (e: PageTransitionEvent) => {
-    // Restored from bfcache — visibilitychange may not fire, so recycle here.
-    if (e.persisted) recycleClient()
+  // Restored from bfcache — visibilitychange may not fire, so recycle here.
+  if (e.persisted) recycleClient()
 }
 
 const ensureGlobalListeners = () => {
-    if (globalListenersBound || !import.meta.client) return
-    globalListenersBound = true
-    window.addEventListener('offline', handleOffline)
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('pagehide', handlePageHide)
-    window.addEventListener('pageshow', handlePageShow)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+  if (globalListenersBound || !import.meta.client) return
+  globalListenersBound = true
+  window.addEventListener('offline', handleOffline)
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('pagehide', handlePageHide)
+  window.addEventListener('pageshow', handlePageShow)
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 }
 
 const getWsClient = (): Promise<Client> => {
-    if (wsClient) return Promise.resolve(wsClient)
-    if (!wsClientPromise) {
-        wsClientPromise = Promise.all([
-            import('graphql-ws'),
-            import('~/composables/useOidc'),
-        ]).then(([{ createClient }, { useOidc }]) => {
-            const cfg = useRuntimeConfig()
-            const { getAccessToken } = useOidc()
+  if (wsClient) return Promise.resolve(wsClient)
+  if (!wsClientPromise) {
+    wsClientPromise = Promise.all([
+      import('graphql-ws'),
+      import('#engine/composables/useOidc'),
+    ]).then(([{ createClient }, { useOidc }]) => {
+      const cfg = useRuntimeConfig()
+      const { getAccessToken } = useOidc()
 
+      /*
+       * Track the underlying WebSocket so the ping/pong timeout
+       * handler can force-close on silent drops. `keepAlive` only
+       * schedules pings — detection requires our own pong timer.
+       */
+      let activeSocket: WebSocket | null = null
+      let pongTimer: ReturnType<typeof setTimeout> | null = null
+
+      const client = createClient({
+        url: cfg.public.graphqlWs,
+        connectionParams: async () => {
+          const token = await getAccessToken()
+          return token ? { Authorization: `Bearer ${token}` } : {}
+        },
+        /*
+         * Ping every 12s. Combined with the pong watchdog below,
+         * detects silent drops (cellular handoff, Cloudflare Tunnel
+         * idle timeout) within ~17s instead of waiting for the next
+         * outbound message.
+         */
+        keepAlive: 12_000,
+        on: {
+          connected: (socket, _payload, wasRetry) => {
+            activeSocket = socket as WebSocket
             /*
-             * Track the underlying WebSocket so the ping/pong timeout
-             * handler can force-close on silent drops. `keepAlive` only
-             * schedules pings — detection requires our own pong timer.
+             * The socket was re-established by graphql-ws itself (network blip, server
+             * restart, pong timeout), which re-subscribed: the events of the gap are
+             * lost, so give every subscriber its gap-recovery callback too. The
+             * first connection of a client is not a reconnect, and recycleClient()
+             * (which creates a NEW client) notifies on its own.
              */
-            let activeSocket: WebSocket | null = null
-            let pongTimer: ReturnType<typeof setTimeout> | null = null
-
-            const client = createClient({
-                url: cfg.public.graphqlWs as string,
-                connectionParams: async () => {
-                    const token = await getAccessToken()
-                    return token ? { Authorization: `Bearer ${token}` } : {}
-                },
-                /*
-                 * Ping every 12s. Combined with the pong watchdog below,
-                 * detects silent drops (cellular handoff, Cloudflare Tunnel
-                 * idle timeout) within ~17s instead of waiting for the next
-                 * outbound message.
-                 */
-                keepAlive: 12_000,
-                on: {
-                    connected: (socket, _payload, wasRetry) => {
-                        activeSocket = socket as WebSocket
-                        /*
-                         * The socket was re-established by graphql-ws itself (network blip, server
-                         * restart, pong timeout), which re-subscribed: the events of the gap are
-                         * lost, so give every subscriber its gap-recovery callback too. The
-                         * first connection of a client is not a reconnect, and recycleClient()
-                         * (which creates a NEW client) notifies on its own.
-                         */
-                        if (wasRetry) notifyReconnected()
-                    },
-                    closed: () => {
-                        if (pongTimer) { clearTimeout(pongTimer); pongTimer = null }
-                        activeSocket = null
-                    },
-                    ping: (received) => {
-                        // We sent a ping; arm a 5s watchdog for the pong.
-                        if (received) return
-                        if (pongTimer) clearTimeout(pongTimer)
-                        pongTimer = setTimeout(() => {
-                            if (activeSocket?.readyState === WebSocket.OPEN) {
-                                activeSocket.close(4408, 'Pong timeout')
-                            }
-                        }, 5_000)
-                    },
-                    pong: (received) => {
-                        if (received && pongTimer) {
-                            clearTimeout(pongTimer)
-                            pongTimer = null
-                        }
-                    },
-                },
-                retryAttempts: Infinity,
-                /*
-                 * Plain exponential backoff, also after a session that failed to renew:
-                 * getAccessToken() then returns null (the stale user was wiped) and the
-                 * socket reconnects anonymously, which keeps the public feeds (open/closed,
-                 * availability) alive. Authenticated subscriptions simply fail as
-                 * unauthorized on their own; the backoff keeps that from becoming a tight loop.
-                 */
-                retryWait: async (retries) => {
-                    const delay = Math.min(1000 * 2 ** retries, 30_000)
-                    await new Promise<void>(resolve => { setTimeout(resolve, delay) })
-                },
-            })
-            wsClient = client
-            return client
-        })
-    }
-    return wsClientPromise
+            if (wasRetry) notifyReconnected()
+          },
+          closed: () => {
+            if (pongTimer) {
+              clearTimeout(pongTimer)
+              pongTimer = null
+            }
+            activeSocket = null
+          },
+          ping: (received) => {
+            // We sent a ping; arm a 5s watchdog for the pong.
+            if (received) return
+            if (pongTimer) clearTimeout(pongTimer)
+            pongTimer = setTimeout(() => {
+              if (activeSocket?.readyState === WebSocket.OPEN) {
+                activeSocket.close(4408, 'Pong timeout')
+              }
+            }, 5_000)
+          },
+          pong: (received) => {
+            if (received && pongTimer) {
+              clearTimeout(pongTimer)
+              pongTimer = null
+            }
+          },
+        },
+        retryAttempts: Infinity,
+        /*
+         * Plain exponential backoff, also after a session that failed to renew:
+         * getAccessToken() then returns null (the stale user was wiped) and the
+         * socket reconnects anonymously, which keeps the public feeds (open/closed,
+         * availability) alive. Authenticated subscriptions simply fail as
+         * unauthorized on their own; the backoff keeps that from becoming a tight loop.
+         */
+        retryWait: async (retries) => {
+          const delay = Math.min(1000 * 2 ** retries, 30_000)
+          await new Promise<void>((resolve) => {
+            setTimeout(resolve, delay)
+          })
+        },
+      })
+      wsClient = client
+      return client
+    })
+  }
+  return wsClientPromise
 }
 
 interface SubscriptionOptions {
-    /*
-     * Called after the shared WS client reconnects (cellular handoff, CF tunnel
-     * timeout, online event, visibility-driven recycle). The handler typically
-     * refetches the underlying query so events emitted during the disconnect
-     * window — which GraphQL subscriptions don't replay — are not lost.
-     */
-    onReconnect?: () => void | Promise<void>
+  /*
+   * Called after the shared WS client reconnects (cellular handoff, CF tunnel
+   * timeout, online event, visibility-driven recycle). The handler typically
+   * refetches the underlying query so events emitted during the disconnect
+   * window — which GraphQL subscriptions don't replay — are not lost.
+   */
+  onReconnect?: () => void | Promise<void>
 }
 
 export function useGqlSubscription<T = unknown>(
-    rawSub: string | DocumentNode,
-    variables: Record<string, unknown> = {},
-    options: SubscriptionOptions = {}
+  rawSub: string | DocumentNode,
+  variables: Record<string, unknown> = {},
+  options: SubscriptionOptions = {},
 ) {
-    const data  = ref<T>()
-    const error = ref<Error | null>(null)
-    let stop: () => void = () => {}
-    let disposed = false
+  const data = ref<T>()
+  const error = ref<Error | null>(null)
+  let stop: () => void = () => {}
+  let disposed = false
 
-    const startSubscription = () => {
+  const startSubscription = () => {
+    if (disposed) return
+    getWsClient()
+      .then((client) => {
         if (disposed) return
-        getWsClient()
-            .then((client) => {
-                if (disposed) return
-                stop = client.subscribe(
-                    {
-                        query: typeof rawSub === 'string' ? rawSub : print(rawSub),
-                        variables,
-                    },
-                    {
-                        next: (msg) => {
-                            if (msg.data !== undefined) data.value = msg.data as T
-                        },
-                        error: (e) => {
-                            error.value = toGqlError(e)
-                        },
-                        complete: () => {},
-                    }
-                )
-            })
-            .catch((e) => {
-                if (!disposed) error.value = toGqlError(e)
-            })
-    }
+        stop = client.subscribe(
+          {
+            query: typeof rawSub === 'string' ? rawSub : print(rawSub),
+            variables,
+          },
+          {
+            next: (msg) => {
+              if (msg.data !== undefined) data.value = msg.data as T
+            },
+            error: (e) => {
+              error.value = toGqlError(e)
+            },
+            complete: () => {},
+          },
+        )
+      })
+      .catch((e) => {
+        if (!disposed) error.value = toGqlError(e)
+      })
+  }
 
-    const subscriber: Subscriber = {
-        restart: () => {
-            /*
-             * Shared client was just torn down — the previous stop() targets
-             * a disposed client, so drop it and resubscribe against the next
-             * client created on demand.
-             */
-            stop = () => {}
-            error.value = null
-            startSubscription()
-        },
-        setOffline: (value) => {
-            error.value = value ? new Error('Lost internet connection') : null
-        },
-        onReconnect: options.onReconnect ?? null,
-    }
+  const subscriber: Subscriber = {
+    restart: () => {
+      /*
+       * Shared client was just torn down — the previous stop() targets
+       * a disposed client, so drop it and resubscribe against the next
+       * client created on demand.
+       */
+      stop = () => {}
+      error.value = null
+      startSubscription()
+    },
+    setOffline: (value) => {
+      error.value = value ? new Error('Lost internet connection') : null
+    },
+    onReconnect: options.onReconnect ?? null,
+  }
 
-    if (import.meta.client) {
-        ensureGlobalListeners()
-        subscribers.add(subscriber)
-        startSubscription()
-    }
+  if (import.meta.client) {
+    ensureGlobalListeners()
+    subscribers.add(subscriber)
+    startSubscription()
+  }
 
-    const cleanup = () => {
-        if (disposed) return
-        disposed = true
-        subscribers.delete(subscriber)
-        stop()
-    }
+  const cleanup = () => {
+    if (disposed) return
+    disposed = true
+    subscribers.delete(subscriber)
+    stop()
+  }
 
-    onScopeDispose(cleanup)
+  onScopeDispose(cleanup)
 
-    return {
-        data,
-        error,
-        stop: cleanup,
-        /*
-         * Retained for backward compatibility — global lifecycle is now
-         * handled internally, so this only tears down the local subscription.
-         */
-        closeAll: cleanup,
-    }
+  return {
+    data,
+    error,
+    stop: cleanup,
+    /*
+     * Retained for backward compatibility — global lifecycle is now
+     * handled internally, so this only tears down the local subscription.
+     */
+    closeAll: cleanup,
+  }
 }

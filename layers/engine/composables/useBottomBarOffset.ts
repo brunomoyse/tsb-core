@@ -22,46 +22,55 @@ const heights = new Map<symbol, number>()
 const reserved = new Set<symbol>()
 
 const publish = (): void => {
-    const tallest = Math.max(0, ...heights.values())
-    const pad = Math.max(0, ...[...reserved].map((id) => heights.get(id) ?? 0))
-    const root = document.documentElement
-    if (tallest > 0) root.style.setProperty(VARIABLE, `${tallest}px`)
-    else root.style.removeProperty(VARIABLE)
-    if (pad > 0) root.style.setProperty(PAD_VARIABLE, `${pad}px`)
-    else root.style.removeProperty(PAD_VARIABLE)
+  const tallest = Math.max(0, ...heights.values())
+  const pad = Math.max(0, ...[...reserved].map((id) => heights.get(id) ?? 0))
+  const root = document.documentElement
+  if (tallest > 0) root.style.setProperty(VARIABLE, `${tallest}px`)
+  else root.style.removeProperty(VARIABLE)
+  if (pad > 0) root.style.setProperty(PAD_VARIABLE, `${pad}px`)
+  else root.style.removeProperty(PAD_VARIABLE)
 }
 
-export function useBottomBarOffset(target: Ref<HTMLElement | null | undefined>, options: { reserveSpace?: boolean } = {}): void {
-    if (!import.meta.client) return
+export function useBottomBarOffset(
+  target: Ref<HTMLElement | null | undefined>,
+  options: { reserveSpace?: boolean } = {},
+): void {
+  if (!import.meta.client) return
 
-    const id = Symbol('bottom-bar')
-    if (options.reserveSpace) reserved.add(id)
-    let observer: ResizeObserver | null = null
+  const id = Symbol('bottom-bar')
+  if (options.reserveSpace) reserved.add(id)
+  let observer: ResizeObserver | null = null
 
-    const measure = (el: HTMLElement): void => {
-        // A bar hidden at this breakpoint (display: none) measures 0 and does not count.
-        const height = el.offsetHeight
-        if (height > 0) heights.set(id, height)
-        else heights.delete(id)
-        publish()
-    }
+  const measure = (el: HTMLElement): void => {
+    // A bar hidden at this breakpoint (display: none) measures 0 and does not count.
+    const height = el.offsetHeight
+    if (height > 0) heights.set(id, height)
+    else heights.delete(id)
+    publish()
+  }
 
-    const stop = watch(target, (el) => {
-        observer?.disconnect()
-        observer = null
-        heights.delete(id)
-        publish()
-        if (!el) return
+  const stop = watch(
+    target,
+    (el) => {
+      observer?.disconnect()
+      observer = null
+      heights.delete(id)
+      publish()
+      if (!el) return
+      measure(el)
+      observer = new ResizeObserver(() => {
         measure(el)
-        observer = new ResizeObserver(() => measure(el))
-        observer.observe(el)
-    }, { immediate: true, flush: 'post' })
+      })
+      observer.observe(el)
+    },
+    { immediate: true, flush: 'post' },
+  )
 
-    onBeforeUnmount(() => {
-        stop()
-        observer?.disconnect()
-        heights.delete(id)
-        reserved.delete(id)
-        publish()
-    })
+  onBeforeUnmount(() => {
+    stop()
+    observer?.disconnect()
+    heights.delete(id)
+    reserved.delete(id)
+    publish()
+  })
 }

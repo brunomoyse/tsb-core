@@ -81,32 +81,39 @@ const templates = { tokyosushi, ygfliege }
 const wanted = process.argv.slice(2)
 const apps = wanted.length ? wanted : Object.keys(templates)
 
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {})
+const browser = await chromium.launch(
+  process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
+)
 const work = await mkdtemp(join(tmpdir(), 'og-'))
 try {
-    for (const app of apps) {
-        if (!templates[app]) throw new Error(`Unknown app "${app}" (expected ${Object.keys(templates).join(', ')})`)
-        const file = join(work, `${app}.html`)
-        await writeFile(file, `<!doctype html><meta charset="utf-8">${templates[app]()}`)
-        const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1 })
-        await page.goto(pathToFileURL(file).href)
-        await page.evaluate(() => document.fonts.ready)
-        await page.waitForFunction(() => [...document.images].every((i) => i.complete))
-        let buffer
-        for (let quality = 86; quality >= 40; quality -= 4) {
-            buffer = await page.screenshot({ type: 'jpeg', quality })
-            if (buffer.length <= MAX_BYTES) {
-                console.log(`${app}: quality ${quality}`)
-                break
-            }
-        }
-        if (buffer.length > MAX_BYTES) throw new Error(`${app}: ${buffer.length} bytes is over the ${MAX_BYTES} budget`)
-        const out = join(root, 'apps', app, 'public', 'images', 'og-default.jpg')
-        await writeFile(out, buffer)
-        console.log(`${app}: ${out} (${(await stat(out)).size} bytes, ${WIDTH}x${HEIGHT})`)
-        await page.close()
+  for (const app of apps) {
+    if (!templates[app])
+      throw new Error(`Unknown app "${app}" (expected ${Object.keys(templates).join(', ')})`)
+    const file = join(work, `${app}.html`)
+    await writeFile(file, `<!doctype html><meta charset="utf-8">${templates[app]()}`)
+    const page = await browser.newPage({
+      viewport: { width: WIDTH, height: HEIGHT },
+      deviceScaleFactor: 1,
+    })
+    await page.goto(pathToFileURL(file).href)
+    await page.evaluate(() => document.fonts.ready)
+    await page.waitForFunction(() => [...document.images].every((i) => i.complete))
+    let buffer
+    for (let quality = 86; quality >= 40; quality -= 4) {
+      buffer = await page.screenshot({ type: 'jpeg', quality })
+      if (buffer.length <= MAX_BYTES) {
+        console.log(`${app}: quality ${quality}`)
+        break
+      }
     }
+    if (buffer.length > MAX_BYTES)
+      throw new Error(`${app}: ${buffer.length} bytes is over the ${MAX_BYTES} budget`)
+    const out = join(root, 'apps', app, 'public', 'images', 'og-default.jpg')
+    await writeFile(out, buffer)
+    console.log(`${app}: ${out} (${(await stat(out)).size} bytes, ${WIDTH}x${HEIGHT})`)
+    await page.close()
+  }
 } finally {
-    await browser.close()
-    await rm(work, { recursive: true, force: true })
+  await browser.close()
+  await rm(work, { recursive: true, force: true })
 }

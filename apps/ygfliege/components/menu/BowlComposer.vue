@@ -1,125 +1,154 @@
 <template>
-    <div
-        ref="panelRef"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="bowl-composer-title"
-        data-testid="bowl-composer"
-        class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
-        @click.stop
+  <div
+    ref="panelRef"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bowl-composer-title"
+    data-testid="bowl-composer"
+    class="bg-white w-full h-full sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-ygf-lg shadow-ygf-lg flex flex-col overflow-hidden"
+    @click.stop
+  >
+    <!-- Header -->
+    <header
+      class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60"
     >
-        <!-- Header -->
-        <header class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60">
-            <div class="min-w-0">
-                <span class="section-label">{{ $t('composer.eyebrow') }}</span>
-                <h2 id="bowl-composer-title" translate="no" class="section-title text-xl sm:text-2xl truncate">
-                    {{ p?.name ?? $t('composer.title') }}
-                </h2>
-            </div>
-            <button
-                type="button"
-                data-testid="bowl-composer-close"
-                :aria-label="$t('common.close')"
-                class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-neutral-600 hover:text-ygf-black hover:bg-white transition-colors"
-                @click="emit('close')"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </header>
+      <div class="min-w-0">
+        <span class="section-label">{{ $t('composer.eyebrow') }}</span>
+        <h2
+          id="bowl-composer-title"
+          translate="no"
+          class="section-title text-xl sm:text-2xl truncate"
+        >
+          {{ p?.name ?? $t('composer.title') }}
+        </h2>
+      </div>
+      <button
+        type="button"
+        data-testid="bowl-composer-close"
+        :aria-label="$t('common.close')"
+        class="shrink-0 w-11 h-11 -mr-2 -mt-1 inline-flex items-center justify-center rounded-full text-neutral-600 hover:text-ygf-black hover:bg-white transition-colors"
+        @click="emit('close')"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </header>
 
-        <!-- The product could not be loaded (or no longer exists): say so instead of an empty composer -->
-        <div v-if="!p" class="flex-1 px-5 py-8 sm:px-8">
-            <LoadError
-                :message="$t('menu.productLoadFailed')"
-                data-testid="bowl-composer-load-error"
-                class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
-                @retry="emit('retry')"
-            />
-        </div>
-
-        <!-- Steps -->
-        <div v-else class="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-10">
-            <section
-                v-for="(group, index) in choiceGroups"
-                :key="group.id"
-                :aria-labelledby="`bowl-composer-group-${group.id}`"
-                class="space-y-4"
-            >
-                <div class="flex items-baseline justify-between gap-4 flex-wrap">
-                    <div>
-                        <span class="section-label">{{ $t('composer.stepOf', { n: index + 1, total: choiceGroups.length }) }}</span>
-                        <h3 :id="`bowl-composer-group-${group.id}`" class="section-title text-lg sm:text-xl">
-                            {{ group.name }}
-                        </h3>
-                    </div>
-                    <!-- Live count so the 5/20 rule is legible before the CTA is reached. -->
-                    <p
-                        class="text-sm font-semibold tabular-nums"
-                        :class="isGroupSatisfied(group) ? 'text-ygf-success-dark' : 'text-ygf-orange-text'"
-                    >
-                        <template v-if="isMultiSelectGroup(group)">
-                            {{ $t('composer.selectedCount', {
-                                count: selectedCountIn(group),
-                                max: groupTargetMax(group),
-                            }) }}
-                        </template>
-                        <template v-else-if="!isGroupSatisfied(group)">{{ groupHint(group) }}</template>
-                        <template v-else>{{ $t('composer.chosen') }}</template>
-                    </p>
-                </div>
-
-                <ChoiceGroupPicker :group="group" prefix="bowl-composer" :api="choicesApi" />
-            </section>
-        </div>
-
-        <!-- Summary rail -->
-        <footer v-if="p" class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5 space-y-3">
-            <!-- polite, not assertive: the total updates on every tap and would -->
-            <!-- otherwise interrupt a screen reader mid-sentence. -->
-            <p aria-live="polite" class="text-sm text-ygf-black/70 min-h-5">
-                <template v-if="allGroupsSatisfied">{{ summaryLabel }}</template>
-                <template v-else-if="blockingGroup">
-                    <span translate="no" class="font-medium text-ygf-black">{{ blockingGroup.name }}</span>
-                    &nbsp;&middot;&nbsp;{{ groupHint(blockingGroup) }}
-                </template>
-            </p>
-
-            <div class="flex items-center gap-3 sm:gap-4">
-                <div class="stepper shrink-0">
-                    <button
-                        type="button"
-                        class="stepper-btn"
-                        :aria-label="$t('cart.decreaseQtyOf', { name: p?.name ?? $t('composer.title') })"
-                        :disabled="quantity <= 1"
-                        @click="quantity--"
-                    >&minus;</button>
-                    <span class="stepper-value">{{ quantity }}</span>
-                    <button
-                        type="button"
-                        class="stepper-btn"
-                        :aria-label="$t('cart.increaseQtyOf', { name: p?.name ?? $t('composer.title') })"
-                        :disabled="quantity >= MAX_QUANTITY"
-                        @click="quantity++"
-                    >+</button>
-                </div>
-
-                <button
-                    type="button"
-                    data-testid="bowl-composer-add-to-cart"
-                    class="btn btn-primary flex-1 justify-center"
-                    :disabled="!canAddToCart"
-                    @click="addToCart"
-                >
-                    <span>{{ $t('menu.addToCart') }}</span>
-                    <!-- Price only once the bowl is valid: before that, lineTotal
-                         is just the 2,50 € base and reads as the full price. -->
-                    <span v-if="canAddToCart" class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
-                </button>
-            </div>
-        </footer>
+    <!-- The product could not be loaded (or no longer exists): say so instead of an empty composer -->
+    <div v-if="!p" class="flex-1 px-5 py-8 sm:px-8">
+      <LoadError
+        :message="$t('menu.productLoadFailed')"
+        data-testid="bowl-composer-load-error"
+        class="px-4 py-3 bg-ygf-orange-50 border border-ygf-orange-200 rounded-lg text-ygf-black"
+        @retry="emit('retry')"
+      />
     </div>
+
+    <!-- Steps -->
+    <div v-else class="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-10">
+      <section
+        v-for="(group, index) in choiceGroups"
+        :key="group.id"
+        :aria-labelledby="`bowl-composer-group-${group.id}`"
+        class="space-y-4"
+      >
+        <div class="flex items-baseline justify-between gap-4 flex-wrap">
+          <div>
+            <span class="section-label">{{
+              $t('composer.stepOf', { n: index + 1, total: choiceGroups.length })
+            }}</span>
+            <h3 :id="`bowl-composer-group-${group.id}`" class="section-title text-lg sm:text-xl">
+              {{ group.name }}
+            </h3>
+          </div>
+          <!-- Live count so the 5/20 rule is legible before the CTA is reached. -->
+          <p
+            class="text-sm font-semibold tabular-nums"
+            :class="isGroupSatisfied(group) ? 'text-ygf-success-dark' : 'text-ygf-orange-text'"
+          >
+            <template v-if="isMultiSelectGroup(group)">
+              {{
+                $t('composer.selectedCount', {
+                  count: selectedCountIn(group),
+                  max: groupTargetMax(group),
+                })
+              }}
+            </template>
+            <template v-else-if="!isGroupSatisfied(group)">{{ groupHint(group) }}</template>
+            <template v-else>{{ $t('composer.chosen') }}</template>
+          </p>
+        </div>
+
+        <ChoiceGroupPicker :group="group" prefix="bowl-composer" :api="choicesApi" />
+      </section>
+    </div>
+
+    <!-- Summary rail -->
+    <footer
+      v-if="p"
+      class="border-t border-ygf-orange-100 bg-ygf-cream px-5 py-4 sm:px-8 sm:py-5 space-y-3"
+    >
+      <!-- polite, not assertive: the total updates on every tap and would -->
+      <!-- otherwise interrupt a screen reader mid-sentence. -->
+      <p aria-live="polite" class="text-sm text-ygf-black/70 min-h-5">
+        <template v-if="allGroupsSatisfied">{{ summaryLabel }}</template>
+        <template v-else-if="blockingGroup">
+          <span translate="no" class="font-medium text-ygf-black">{{ blockingGroup.name }}</span>
+          &nbsp;&middot;&nbsp;{{ groupHint(blockingGroup) }}
+        </template>
+      </p>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="stepper shrink-0">
+          <button
+            type="button"
+            class="stepper-btn"
+            :aria-label="$t('cart.decreaseQtyOf', { name: p?.name ?? $t('composer.title') })"
+            :disabled="quantity <= 1"
+            @click="quantity--"
+          >
+            &minus;
+          </button>
+          <span class="stepper-value">{{ quantity }}</span>
+          <button
+            type="button"
+            class="stepper-btn"
+            :aria-label="$t('cart.increaseQtyOf', { name: p?.name ?? $t('composer.title') })"
+            :disabled="quantity >= MAX_QUANTITY"
+            @click="quantity++"
+          >
+            +
+          </button>
+        </div>
+
+        <button
+          type="button"
+          data-testid="bowl-composer-add-to-cart"
+          class="btn btn-primary flex-1 justify-center"
+          :disabled="!canAddToCart"
+          @click="addToCart"
+        >
+          <span>{{ $t('menu.addToCart') }}</span>
+          <!-- Price only once the bowl is valid: before that, lineTotal
+                         is just the 2,50 € base and reads as the full price. -->
+          <span v-if="canAddToCart" class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
+        </button>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -153,9 +182,9 @@ import { useTracking } from '#engine/composables/useTracking'
  */
 
 const { product, orderingDisabled = false } = defineProps<{
-    /** Product id; the full record with choice names/prices is fetched here. */
-    product: string
-    orderingDisabled?: boolean
+  /** Product id; the full record with choice names/prices is fetched here. */
+  product: string
+  orderingDisabled?: boolean
 }>()
 
 const emit = defineEmits<{ close: []; retry: [] }>()
@@ -181,8 +210,18 @@ const PRODUCT_QUERY = gql`
       price
       slug
       isAvailable
-      category { name slug }
-      choices { id productId choiceGroupId priceModifier sortOrder name }
+      category {
+        name
+        slug
+      }
+      choices {
+        id
+        productId
+        choiceGroupId
+        priceModifier
+        sortOrder
+        name
+      }
       choiceGroups {
         id
         productId
@@ -190,101 +229,108 @@ const PRODUCT_QUERY = gql`
         maxSelections
         sortOrder
         name
-        choices { id productId choiceGroupId priceModifier sortOrder name }
+        choices {
+          id
+          productId
+          choiceGroupId
+          priceModifier
+          sortOrder
+          name
+        }
       }
     }
   }
 `
 
 const { data: dataProduct } = await useGqlQuery<{ product: Product }>(
-    print(PRODUCT_QUERY),
-    { id: product },
-    { immediate: true, cache: true },
+  print(PRODUCT_QUERY),
+  { id: product },
+  { immediate: true, cache: true },
 )
 
 const p = dataProduct.value?.product
 
 // Kept as one object so ChoiceGroupPicker receives the whole selection API;
-// destructured alongside for local template use.
+// Destructured alongside for local template use.
 const choicesApi = useProductChoices(p, quantity)
 const {
-    choiceGroups,
-    isMultiSelectGroup,
-    groupTargetMax,
-    selectedCountIn,
-    quantityOf,
-    selectionList,
-    selectedChoice,
-    displayPriceCents,
-    lineTotalCents,
-    isGroupSatisfied,
-    allGroupsSatisfied,
-    groupHint,
-    blockingGroup,
+  choiceGroups,
+  isMultiSelectGroup,
+  groupTargetMax,
+  selectedCountIn,
+  quantityOf,
+  selectionList,
+  selectedChoice,
+  displayPriceCents,
+  lineTotalCents,
+  isGroupSatisfied,
+  allGroupsSatisfied,
+  groupHint,
+  blockingGroup,
 } = choicesApi
 
 const canAddToCart = computed(() => {
-    if (orderingDisabled) return false
-    if (!p?.isAvailable) return false
-    return allGroupsSatisfied.value
+  if (orderingDisabled) return false
+  if (!p?.isAvailable) return false
+  return allGroupsSatisfied.value
 })
 
 /** "Bouillon tomate mijoté · 5 ingrédients · Moyen" */
 const summaryLabel = computed(() => {
-    if (!p?.choices) return ''
-    return choiceGroups.value
-        .map((group) => {
-            if (isMultiSelectGroup(group)) {
-                const count = selectedCountIn(group)
-                return t('composer.ingredientsSummary', { count }, count)
-            }
-            const picked = group.choices.find((choice) => quantityOf(choice) > 0)
-            return picked?.name ?? ''
-        })
-        .filter(Boolean)
-        .join(' · ')
+  if (!p?.choices) return ''
+  return choiceGroups.value
+    .map((group) => {
+      if (isMultiSelectGroup(group)) {
+        const count = selectedCountIn(group)
+        return t('composer.ingredientsSummary', { count }, count)
+      }
+      const picked = group.choices.find((choice) => quantityOf(choice) > 0)
+      return picked?.name ?? ''
+    })
+    .filter(Boolean)
+    .join(' · ')
 })
 
 const addToCart = () => {
-    if (!p || !canAddToCart.value) return
+  if (!p || !canAddToCart.value) return
 
-    cartStore.addProduct(p, quantity.value, {
-        choice: selectedChoice.value,
-        selections: selectionList.value,
-    })
-    trackEvent('product_added_to_cart', {
-        product_id: p.id,
-        product_name: p.name,
-        price: p.price,
-        quantity: quantity.value,
-        choice_id: selectedChoice.value?.id,
-        selections_count: selectionList.value.reduce((sum, selection) => sum + selection.quantity, 0),
-        source: 'composer',
-    })
-    cartItemAdded.emit({
-        productName: p.name,
-        productId: p.id,
-        choiceId: selectedChoice.value?.id,
-        selectionSignature: lineSignature(selectionList.value, quantity.value),
-    })
+  cartStore.addProduct(p, quantity.value, {
+    choice: selectedChoice.value,
+    selections: selectionList.value,
+  })
+  trackEvent('product_added_to_cart', {
+    product_id: p.id,
+    product_name: p.name,
+    price: p.price,
+    quantity: quantity.value,
+    choice_id: selectedChoice.value?.id,
+    selections_count: selectionList.value.reduce((sum, selection) => sum + selection.quantity, 0),
+    source: 'composer',
+  })
+  cartItemAdded.emit({
+    productName: p.name,
+    productId: p.id,
+    choiceId: selectedChoice.value?.id,
+    selectionSignature: lineSignature(selectionList.value, quantity.value),
+  })
 
-    emit('close')
+  emit('close')
 }
 
 onMounted(() => {
-    if (p) {
-        trackEvent('product_viewed', {
-            product_id: p.id,
-            product_name: p.name,
-            category_name: p.category?.name,
-            price: p.price,
-        })
-    }
+  if (p) {
+    trackEvent('product_viewed', {
+      product_id: p.id,
+      product_name: p.name,
+      category_name: p.category?.name,
+      price: p.price,
+    })
+  }
 
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') emit('close')
-    }
-    document.addEventListener('keydown', handleEscape)
-    onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') emit('close')
+  }
+  document.addEventListener('keydown', handleEscape)
+  onUnmounted(() => document.removeEventListener('keydown', handleEscape))
 })
 </script>

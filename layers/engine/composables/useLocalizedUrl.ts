@@ -6,7 +6,7 @@ import { useLocalePath, useRuntimeConfig } from '#imports'
  * (audit PR 3.8, P9). `localizedUrl()` is the home page.
  */
 export function useLocalizedUrl() {
-    const localePath = useLocalePath()
-    const baseUrl = (useRuntimeConfig().public.baseUrl as string).replace(/\/$/u, '')
-    return (path = '/'): string => `${baseUrl}${localePath(path)}`
+  const localePath = useLocalePath()
+  const baseUrl = (useRuntimeConfig().public.baseUrl as string).replace(/\/$/u, '')
+  return (path = '/'): string => `${baseUrl}${localePath(path)}`
 }
