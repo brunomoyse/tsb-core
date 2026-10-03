@@ -3,6 +3,12 @@
   "home": {
     "heroTagline": "Malatang · Kruidenbouillon · Luik"
   },
+  "error": {
+    "title404": "Pagina niet gevonden",
+    "notFound": "Het lijkt erop dat je verdwaald bent... Maar geen zorgen, een dampende kom malatang wacht op je!",
+    "title500": "Probleem in de keuken",
+    "serverError": "Fuzi is druk in de keuken, maar er ging iets mis. Probeer het zo meteen opnieuw."
+  },
   "schema": {
     "siteDescription": "Stel je eigen malatang-bowl samen in Luik — kruidenbouillon vers bereid",
     "cuisine": "Chinese",
