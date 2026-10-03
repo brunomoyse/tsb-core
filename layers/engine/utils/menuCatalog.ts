@@ -11,7 +11,11 @@ export type LiveProducts = Record<string, Partial<Product>>
 
 export type DietaryFilter = 'halal' | 'vegetarian' | 'spicy'
 
-/** Visible products only, live updates merged in, empty categories dropped, in the dashboard's category order. */
+/**
+ * Visible products only, live updates merged in, empty categories dropped, in the dashboard's category order.
+ * Each product carries its category (id, name, slug) because the query no longer asks for it inside every product
+ * (audit PR 6.4, P16): the parent category is stamped on here, once, instead of being sent and serialized per product.
+ */
 export const baseCategories = (
   categories: ProductCategory[],
   live: LiveProducts,
@@ -21,8 +25,11 @@ export const baseCategories = (
       ...cat,
       products: cat.products
         .map((p) => {
+          const withCategory = p.category
+            ? p
+            : { ...p, category: { id: cat.id, name: cat.name, slug: cat.slug } as ProductCategory }
           const update = live[p.id]
-          return update ? { ...p, ...update } : p
+          return update ? { ...withCategory, ...update } : withCategory
         })
         .filter((p) => p.isVisible),
     }))

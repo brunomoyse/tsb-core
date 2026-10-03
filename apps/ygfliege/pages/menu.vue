@@ -463,11 +463,6 @@ const PRODUCT_CATEGORIES = /* GraphQL */ `
         isSpicy
         isVegetarian
         isDiscountable
-        category {
-          id
-          name
-          slug
-        }
         choices {
           id
         }

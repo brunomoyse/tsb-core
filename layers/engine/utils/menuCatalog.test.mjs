@@ -138,3 +138,13 @@ test('a composer product is detected by its multi-pick group and kept out of the
     ['a', 'b'],
   )
 })
+
+test('a product the query sent without a category gets its parent category (id, name, slug) stamped on', () => {
+  const bare = [cat('a', 1, [prod('p1', 'Ramen')])]
+  const [only] = baseCategories(bare, {})
+  assert.deepEqual(only.products[0].category, { id: 'a', name: 'Cat a', slug: 'a' })
+  // A live update merges on top and keeps it; flattening for the search still sees the category name.
+  const [live] = baseCategories(bare, { p1: { isHalal: true } })
+  assert.equal(live.products[0].category.slug, 'a')
+  assert.equal(searchProducts(flattenProducts([only]), 'cat a').length, 1)
+})

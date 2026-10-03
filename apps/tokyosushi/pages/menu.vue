@@ -505,11 +505,6 @@ const PRODUCT_CATEGORIES = /* GraphQL */ `
         isSpicy
         isVegetarian
         isDiscountable
-        category {
-          id
-          name
-          slug
-        }
         choices {
           id
         }
@@ -697,6 +692,16 @@ const updateScrollButtons = () => {
   canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth
 }
 
+// A scroll event fires many times per frame; the layout reads above run once per frame at most (audit PR 6.4, P16).
+let scrollButtonsFrame = 0
+const scheduleScrollButtons = () => {
+  if (scrollButtonsFrame) return
+  scrollButtonsFrame = requestAnimationFrame(() => {
+    scrollButtonsFrame = 0
+    updateScrollButtons()
+  })
+}
+
 /**
  * Drag-to-scroll Handlers
  */
@@ -840,11 +845,12 @@ if (import.meta.client) useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
 onMounted(() => {
   updateScrollButtons()
-  scrollContainer.value?.addEventListener('scroll', updateScrollButtons)
+  scrollContainer.value?.addEventListener('scroll', scheduleScrollButtons, { passive: true })
 })
 
 onUnmounted(() => {
-  scrollContainer.value?.removeEventListener('scroll', updateScrollButtons)
+  scrollContainer.value?.removeEventListener('scroll', scheduleScrollButtons)
+  cancelAnimationFrame(scrollButtonsFrame)
 })
 </script>
 
