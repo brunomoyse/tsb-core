@@ -43,8 +43,6 @@
                     <path d="M0 12 C10 12 10 4 20 4 C30 4 30 12 40 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
                 </svg>
             </li>
-            <!-- Phone (tap-to-call), same entry as the mobile menu -->
-            <NavItem :tooltipText="phoneLabel" :ariaLabel="$t('nav.callRestaurant')" icon="/icons/contact-icon.svg" :href="phoneHref" class="hidden [@media(min-height:800px)]:block" />
             <ClientOnly>
                 <NavItem
                     v-for="item in visibleNavItems('account', Boolean(authStore.user))"
@@ -66,7 +64,6 @@ import NavItem from './NavItem.vue'
 import NavItemButton from './NavItemButton.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
@@ -76,7 +73,6 @@ import { visibleNavItems } from './navItems'
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const route = useRoute()
-const { phoneHref, phoneLabel } = useBrandPhone()
 // The cart and checkout pages already show the cart; no shortcut there.
 const isCartFlowPage = computed(() => /\/(?:cart|checkout)$/u.test(route.path))
 // "Cart, 3 items": the count is part of the accessible name.

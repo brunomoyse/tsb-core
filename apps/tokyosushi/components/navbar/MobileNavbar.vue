@@ -72,20 +72,6 @@
                                 />
                             </ClientOnly>
 
-                            <!-- Divider -->
-                            <li class="w-full border-t border-neutral-300/60 my-2"></li>
-
-                            <!-- Phone (tap-to-call) -->
-                            <li>
-                                <a :href="phoneHref"
-                                   :aria-label="$t('nav.callRestaurant')"
-                                   class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                   @click="closeMenu">
-                                    <NavIcon src="/icons/contact-icon.svg" class="w-5 h-5" />
-                                    <span class="text-sm font-medium">{{ phoneLabel }}</span>
-                                </a>
-                            </li>
-
                             <li><LanguagePicker placement="top-center" /></li>
                         </ul>
                     </div>
@@ -102,10 +88,8 @@ import CartButton from '#engine/components/cart/CartButton.vue'
 const DeliveryZoneChip = defineAsyncComponent(() => import('#engine/components/delivery/DeliveryZoneChip.vue'))
 import LanguagePicker from './LanguagePicker.vue'
 import MobileNavItem from './MobileNavItem.vue'
-import NavIcon from './NavIcon.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -118,7 +102,6 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
-const { phoneHref, phoneLabel } = useBrandPhone()
 
 const routeName = computed(() => (typeof currentRoute.name === 'string' ? currentRoute.name : ''))
 // Hidden on cart/checkout, which already show the cart.

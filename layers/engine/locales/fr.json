@@ -36,7 +36,6 @@
     "language": "Sélectionner la langue",
     "toggleMenu": "Ouvrir/fermer le menu",
     "sidebar": "Navigation principale",
-    "callRestaurant": "Appeler le restaurant",
     "searchLabel": "Rechercher un plat",
     "clearSearch": "Effacer la recherche",
     "currentLanguage": "Langue : {language}",

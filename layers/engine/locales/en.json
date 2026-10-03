@@ -36,7 +36,6 @@
     "language": "Select Language",
     "toggleMenu": "Toggle menu",
     "sidebar": "Main navigation",
-    "callRestaurant": "Call the restaurant",
     "searchLabel": "Search the menu",
     "clearSearch": "Clear search",
     "currentLanguage": "Language: {language}",

@@ -65,19 +65,6 @@
                                 </ClientOnly>
 
                                 <LanguagePicker :label="$t('nav.language')" class="justify-center" icon="/icons/translate-icon.svg"/>
-
-                                <!-- Divider -->
-                                <li class="w-full border-t border-white/20 my-2"></li>
-
-                                 <!-- Phone (tap-to-call) -->
-                                 <li>
-                                     <a :href="telHref(brand.phone)"
-                                        :aria-label="$t('nav.callRestaurant')"
-                                        class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-                                        @click="closeMenu">
-                                         <span class="text-base font-medium">{{ nationalPhone(brand.phone) }}</span>
-                                     </a>
-                                 </li>
                             </ul>
                         </div>
 
@@ -98,7 +85,6 @@ import CartButton from '#engine/components/cart/CartButton.vue'
 import LanguagePicker from './LanguagePicker.vue'
 import MobileNavItem from './MobileNavItem.vue'
 import { useAuthStore } from '#engine/stores/auth'
-import { nationalPhone, telHref } from '#engine/utils/phone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -106,7 +92,6 @@ import { useMediaQuery, useMounted } from '@vueuse/core'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const { brand } = useAppConfig()
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 
@@ -211,7 +196,7 @@ watch(() => cartStore.isCartVisible, (visible) => {
        white link text clears WCAG AA (4.50:1 vs 2.59:1). */
     background-color: var(--ygf-orange-on-white);
     color: var(--ygf-white);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
     align-items: center;
