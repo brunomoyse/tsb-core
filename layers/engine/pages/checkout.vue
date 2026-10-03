@@ -170,19 +170,26 @@
         class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6"
         :aria-label="$t('checkout.stepCheckout')"
       >
-        <NuxtLinkLocale
-          to="/menu"
-          class="inline-flex min-h-11 items-center text-primary-700 hover:text-primary-800 font-medium"
-        >
-          {{ $t('checkout.stepMenu') }}
-        </NuxtLinkLocale>
-        <template v-for="(step, idx) in visibleSteps" :key="step.key">
+        <!-- Each step carries its own trailing separator, so when the trail wraps a "〉" is never left alone at the start of a line. -->
+        <span class="inline-flex items-center gap-x-2 whitespace-nowrap">
+          <NuxtLinkLocale
+            to="/menu"
+            class="inline-flex min-h-11 items-center text-primary-700 hover:text-primary-800 font-medium"
+          >
+            {{ $t('checkout.stepMenu') }}
+          </NuxtLinkLocale>
           <span
             class="text-lg leading-none"
-            :class="idx < currentStepIndex ? 'text-primary-300' : 'text-neutral-300'"
+            :class="currentStepIndex > 0 ? 'text-primary-300' : 'text-neutral-300'"
             aria-hidden="true"
             >〉</span
           >
+        </span>
+        <span
+          v-for="(step, idx) in visibleSteps"
+          :key="step.key"
+          class="inline-flex items-center gap-x-2 whitespace-nowrap"
+        >
           <span
             :class="[
               idx === currentStepIndex
@@ -195,7 +202,14 @@
           >
             {{ step.label }}
           </span>
-        </template>
+          <span
+            v-if="idx < visibleSteps.length - 1"
+            class="text-lg leading-none"
+            :class="idx + 1 < currentStepIndex ? 'text-primary-300' : 'text-neutral-300'"
+            aria-hidden="true"
+            >〉</span
+          >
+        </span>
       </nav>
 
       <!-- Delivery zone gate: before we ask anonymous users to log in, confirm the address is deliverable.
