@@ -44,6 +44,10 @@ ENV BASE_URL=${BASE_URL} \
 # The image has no git; skip the Vite+ hook setup run by the `prepare` script.
 ENV VP_GIT_HOOKS=0
 
+# The base image ships npm 11; package.json's devEngines requires npm ^12.2.0
+# (onFail: error), so install it before `npm ci`. Keep in sync with devEngines.
+RUN npm install -g npm@12.2.0 && npm --version
+
 # Copy workspace manifests first for dependency-install layer caching.
 COPY package.json package-lock.json ./
 COPY layers/engine/package.json ./layers/engine/package.json
