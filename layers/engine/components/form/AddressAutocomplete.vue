@@ -19,17 +19,23 @@
           :aria-activedescendant="activeDescendant"
           :aria-describedby="selectedAddress ? undefined : hintId"
           :placeholder="$t('form.address.placeholder')"
-          class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
-          :class="[selectedAddress ? 'pr-24 opacity-70' : 'pr-10']"
+          :class="
+            selectedAddress
+              ? 'sr-only'
+              : 'w-full px-3.5 py-2.5 pr-10 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300'
+          "
           :readonly="Boolean(selectedAddress)"
+          :tabindex="selectedAddress ? -1 : undefined"
           @focus="onFocus"
           @blur="onBlur"
           @keydown="onKeydown"
           @input="onInput"
         />
-        <div class="absolute top-0 bottom-0 right-1 flex items-center gap-1">
+        <div
+          v-if="!selectedAddress && isLoadingAddress"
+          class="absolute top-0 bottom-0 right-1 flex items-center gap-1"
+        >
           <svg
-            v-if="isLoadingAddress"
             class="w-5 h-5 mr-1 text-neutral-400 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -50,9 +56,16 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
             />
           </svg>
+        </div>
+        <!-- The chosen address, wrapped in full (a one-line input cut "Avenue du Présider…" at 320 px); the input above stays for screen readers. -->
+        <div
+          v-if="selectedAddress"
+          data-testid="address-selected"
+          class="flex items-start gap-2 rounded-xl border border-neutral-200/80 bg-white/60 py-1.5 pl-3.5 pr-1"
+        >
           <svg
-            v-if="selectedAddress"
-            class="w-5 h-5 text-green-500"
+            v-if="!isLoadingAddress"
+            class="mt-3 w-5 h-5 shrink-0 text-green-500"
             fill="currentColor"
             viewBox="0 0 20 20"
             aria-hidden="true"
@@ -63,12 +76,18 @@
               clip-rule="evenodd"
             />
           </svg>
+          <p
+            class="min-w-0 flex-1 self-center py-1 break-words text-neutral-900"
+            aria-hidden="true"
+          >
+            {{ addressQuery }}
+          </p>
           <button
-            v-if="selectedAddress && !isLoadingAddress"
+            v-if="!isLoadingAddress"
             type="button"
             data-testid="address-clear"
             :aria-label="$t('form.address.clear')"
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-neutral-600 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-neutral-600 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="clearAddress"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
@@ -81,13 +100,13 @@
           </button>
         </div>
       </div>
-      <!-- Suggestions dropdown -->
+      <!-- Suggestions: in the flow of the form, not floating over it, so inside a sheet they push the content down (and the sheet scrolls) instead of running past the sheet's bottom edge, unreachable. -->
       <ul
         v-show="isExpanded"
         :id="listboxId"
         role="listbox"
         :aria-label="$t('form.address.label')"
-        class="absolute z-10 w-full bg-white border border-neutral-200 shadow-md max-h-60 overflow-auto rounded-xl"
+        class="mt-1.5 w-full bg-white border border-neutral-200 shadow-md max-h-[min(15rem,40dvh)] overflow-auto rounded-xl"
         @mousedown.prevent
       >
         <li

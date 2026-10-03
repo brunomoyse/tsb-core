@@ -358,7 +358,7 @@
       </div>
     </Teleport>
 
-    <!-- Address Modal -->
+    <!-- Address Modal: a sheet that scrolls inside the screen, with the suggestions in its flow (not floating past its bottom edge) -->
     <div
       v-if="showAddressModal"
       class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
@@ -369,7 +369,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="address-modal-title"
-        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative"
+        class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 max-w-lg w-full sm:mx-4 relative max-h-[92dvh] overflow-y-auto overscroll-contain"
         @click.stop
         @keydown.esc="guardedCloseAddressModal"
       >
