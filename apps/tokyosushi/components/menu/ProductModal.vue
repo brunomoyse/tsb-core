@@ -6,13 +6,14 @@
     aria-modal="true"
     aria-labelledby="product-modal-title"
     data-testid="product-modal"
-    class="bg-white rounded-xl max-w-3xl w-full p-8 relative space-y-6 shadow-2xl max-h-[90dvh] overflow-y-auto"
+    class="bg-white max-w-3xl w-full relative flex flex-col overflow-hidden shadow-2xl max-h-[92dvh] rounded-t-2xl sm:rounded-xl sm:max-h-[90dvh]"
   >
+    <!-- Outside the scrolling body, so it stays reachable when the sheet is scrolled: a row of its own on a phone (it would cover the photo), the card's corner from 640px up. -->
     <button
       @click="emit('close')"
       :aria-label="$t('common.close')"
       type="button"
-      class="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      class="z-10 flex h-11 w-11 shrink-0 self-end m-1 sm:m-0 sm:absolute sm:top-4 sm:right-4 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -30,192 +31,198 @@
       </svg>
     </button>
 
-    <div v-if="p" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Image Section -->
-      <button
-        type="button"
-        class="relative block w-full h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        :aria-label="$t('common.viewPhoto', { name: p.name })"
-        aria-haspopup="dialog"
-        @click="openLightbox(p.id, p.name)"
-      >
-        <picture class="w-full h-full flex justify-center items-center p-4">
-          <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif" />
-          <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp" />
-          <img
-            ref="imageElement"
-            :alt="p.name"
-            :src="`${productImageBaseSrc}.png`"
-            class="object-contain w-full h-full transition-opacity duration-500 rounded-lg shadow-sm"
-            :class="[!p.isAvailable ? 'grayscale' : '']"
-            @error="handleProductImageError"
-          />
-        </picture>
-      </button>
+    <!-- Scrolling body: a bottom sheet on a phone (p-4, full width), the centred card from 640px up -->
+    <div v-if="p" class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:p-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+        <!-- Image Section -->
+        <button
+          type="button"
+          class="relative block w-full h-44 lg:h-96 bg-neutral-50 rounded-xl overflow-hidden cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          :aria-label="$t('common.viewPhoto', { name: p.name })"
+          aria-haspopup="dialog"
+          @click="openLightbox(p.id, p.name)"
+        >
+          <picture class="w-full h-full flex justify-center items-center p-4">
+            <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif" />
+            <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp" />
+            <img
+              ref="imageElement"
+              :alt="p.name"
+              :src="`${productImageBaseSrc}.png`"
+              class="object-contain w-full h-full transition-opacity duration-500 rounded-lg shadow-sm"
+              :class="[!p.isAvailable ? 'grayscale' : '']"
+              @error="handleProductImageError"
+            />
+          </picture>
+        </button>
 
-      <!-- Details Section -->
-      <div class="space-y-6">
-        <div class="flex items-center flex-col">
-          <p translate="no" class="text-lg text-neutral-600 mb-2">{{ p.category.name }}</p>
-          <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-neutral-900">
-            {{ p.name }}
-          </h2>
-        </div>
+        <!-- Details Section -->
+        <div class="space-y-6">
+          <div class="flex items-center flex-col">
+            <p translate="no" class="text-lg text-neutral-600 mb-2">{{ p.category.name }}</p>
+            <h2 id="product-modal-title" translate="no" class="text-xl font-bold text-neutral-900">
+              {{ p.name }}
+            </h2>
+          </div>
 
-        <!-- Price & Badges -->
-        <div class="flex items-baseline gap-3 flex-wrap">
-          <span class="text-2xl font-bold text-neutral-900">{{
-            formatCents(displayPriceCents)
-          }}</span>
-          <span v-if="p.pieceCount" class="text-sm text-neutral-600">
-            {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
-          </span>
-        </div>
+          <!-- Price & Badges -->
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <span class="text-2xl font-bold text-neutral-900">{{
+              formatCents(displayPriceCents)
+            }}</span>
+            <span v-if="p.pieceCount" class="text-sm text-neutral-600">
+              {{ p.pieceCount }} {{ p.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}
+            </span>
+          </div>
 
-        <div class="flex gap-2 flex-wrap">
-          <DietBadge v-if="p.isHalal" kind="halal" variant="pill" />
-          <DietBadge v-if="p.isVegetarian" kind="vegetarian" variant="pill" />
-          <DietBadge v-if="p.isSpicy" kind="spicy" variant="pill" />
-          <span
-            v-if="p.isLunchOnly"
-            class="px-3 py-1 bg-tsb-four text-primary-700 text-sm rounded-full inline-flex items-center gap-1.5"
-          >
-            {{ $t('menu.lunchOnly') }}
-          </span>
-          <span
-            v-if="p.isDiscountable"
-            class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200"
-          >
-            {{ $t('menu.pickupDiscountBadge', policyParams) }}
-          </span>
-        </div>
-
-        <!-- Description -->
-        <div class="prose prose-sm" v-if="p.description">
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2">
-            {{ $t('menu.description') }}
-          </h3>
-          <p class="text-neutral-600 text-sm">{{ p.description }}</p>
-        </div>
-
-        <!-- Choice Selection -->
-        <div v-if="hasChoices" class="space-y-3 border-t pt-4">
-          <h3 class="text-sm font-semibold text-neutral-700">{{ $t('menu.selectChoice') }}</h3>
-          <div class="space-y-3">
-            <div
-              v-for="group in choiceGroups"
-              :key="group.id"
-              :ref="(el) => setGroupRef(group.id, el)"
-              data-testid="product-modal-group"
-              :data-invalid="isGroupFlagged(group)"
-              class="rounded-xl border p-3 transition-colors"
-              :class="[
-                isGroupFlagged(group) ? 'border-red-300 bg-red-50/30' : 'border-neutral-200',
-                shakingGroupId === group.id ? 'animate-shake' : '',
-              ]"
+          <div class="flex gap-2 flex-wrap">
+            <DietBadge v-if="p.isHalal" kind="halal" variant="pill" />
+            <DietBadge v-if="p.isVegetarian" kind="vegetarian" variant="pill" />
+            <DietBadge v-if="p.isSpicy" kind="spicy" variant="pill" />
+            <span
+              v-if="p.isLunchOnly"
+              class="px-3 py-1 bg-tsb-four text-primary-700 text-sm rounded-full inline-flex items-center gap-1.5"
             >
-              <div class="flex items-center justify-between mb-2 gap-3">
-                <div class="min-w-0">
-                  <span class="text-sm font-medium text-neutral-900">{{
-                    choiceGroupDisplayName(group)
-                  }}</span>
-                  <p v-if="isGroupFlagged(group)" class="text-xs text-red-700 mt-0.5">
-                    {{ groupHint(group) }}
-                  </p>
-                </div>
-                <span
-                  class="rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap tabular-nums"
-                  :class="groupTagClass(group)"
-                >
-                  <template v-if="group.minSelections > 0">{{ $t('menu.required') }} · </template
-                  >{{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ groupTargetMax(group) }}
-                </span>
-              </div>
-              <div class="space-y-2">
-                <div
-                  v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
-                  :key="choice.id"
-                  :data-testid="'product-modal-choice-' + choice.id"
-                  class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200 max-[359px]:flex-col max-[359px]:items-stretch"
-                >
-                  <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. Under 360px the stepper drops below the name, which keeps the full row width (words wrap at spaces, never mid-word). -->
-                  <span class="min-w-0 flex-1">
-                    <span class="block text-sm text-neutral-900 break-words">{{
-                      choice.name
+              {{ $t('menu.lunchOnly') }}
+            </span>
+            <span
+              v-if="p.isDiscountable"
+              class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-200"
+            >
+              {{ $t('menu.pickupDiscountBadge', policyParams) }}
+            </span>
+          </div>
+
+          <!-- Description -->
+          <div class="prose prose-sm" v-if="p.description">
+            <h3 class="text-lg font-semibold text-neutral-900 mb-2">
+              {{ $t('menu.description') }}
+            </h3>
+            <p class="text-neutral-600 text-sm">{{ p.description }}</p>
+          </div>
+
+          <!-- Choice Selection -->
+          <div v-if="hasChoices" class="space-y-3 border-t pt-4">
+            <h3 class="text-sm font-semibold text-neutral-700">{{ $t('menu.selectChoice') }}</h3>
+            <div class="space-y-3">
+              <div
+                v-for="group in choiceGroups"
+                :key="group.id"
+                :ref="(el) => setGroupRef(group.id, el)"
+                data-testid="product-modal-group"
+                :data-invalid="isGroupFlagged(group)"
+                class="rounded-xl border p-3 transition-colors"
+                :class="[
+                  isGroupFlagged(group) ? 'border-red-300 bg-red-50/30' : 'border-neutral-200',
+                  shakingGroupId === group.id ? 'animate-shake' : '',
+                ]"
+              >
+                <div class="flex items-center justify-between mb-2 gap-3">
+                  <div class="min-w-0">
+                    <span class="text-sm font-medium text-neutral-900">{{
+                      choiceGroupDisplayName(group)
                     }}</span>
-                    <span
-                      v-if="toCents(choice.priceModifier) !== 0"
-                      class="block whitespace-nowrap text-xs text-neutral-600"
-                    >
-                      {{ toCents(choice.priceModifier) > 0 ? '+' : ''
-                      }}{{ formatPrice(choice.priceModifier) }}
-                    </span>
+                    <p v-if="isGroupFlagged(group)" class="text-xs text-red-700 mt-0.5">
+                      {{ groupHint(group) }}
+                    </p>
+                  </div>
+                  <span
+                    class="rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap tabular-nums"
+                    :class="groupTagClass(group)"
+                  >
+                    <template v-if="group.minSelections > 0">{{ $t('menu.required') }} · </template
+                    >{{ selectedQuantitiesByGroup[group.id] ?? 0 }}/{{ groupTargetMax(group) }}
                   </span>
-                  <QuantityStepper
-                    size="sm"
-                    class="max-[359px]:self-end"
-                    :name="choice.name"
-                    :value="selectedChoiceQuantities[choice.id] ?? 0"
-                    :dec-disabled="!((selectedChoiceQuantities[choice.id] ?? 0) > 0)"
-                    :inc-disabled="!canIncrement(choice)"
-                    :dec-testid="`product-modal-choice-dec-${choice.id}`"
-                    :inc-testid="`product-modal-choice-inc-${choice.id}`"
-                    @decrement="decrementChoice(choice)"
-                    @increment="incrementChoice(choice)"
-                  />
+                </div>
+                <div class="space-y-2">
+                  <div
+                    v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
+                    :key="choice.id"
+                    :data-testid="'product-modal-choice-' + choice.id"
+                    class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200 max-[359px]:flex-col max-[359px]:items-stretch"
+                  >
+                    <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. Under 360px the stepper drops below the name, which keeps the full row width (words wrap at spaces, never mid-word). -->
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-sm text-neutral-900 break-words">{{
+                        choice.name
+                      }}</span>
+                      <span
+                        v-if="toCents(choice.priceModifier) !== 0"
+                        class="block whitespace-nowrap text-xs text-neutral-600"
+                      >
+                        {{ toCents(choice.priceModifier) > 0 ? '+' : ''
+                        }}{{ formatPrice(choice.priceModifier) }}
+                      </span>
+                    </span>
+                    <QuantityStepper
+                      size="sm"
+                      class="max-[359px]:self-end"
+                      :name="choice.name"
+                      :value="selectedChoiceQuantities[choice.id] ?? 0"
+                      :dec-disabled="!((selectedChoiceQuantities[choice.id] ?? 0) > 0)"
+                      :inc-disabled="!canIncrement(choice)"
+                      :dec-testid="`product-modal-choice-dec-${choice.id}`"
+                      :inc-testid="`product-modal-choice-inc-${choice.id}`"
+                      @decrement="decrementChoice(choice)"
+                      @increment="incrementChoice(choice)"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Cart Controls -->
-        <div class="border-t pt-4">
-          <p
-            v-if="!p.isAvailable"
-            data-testid="product-modal-unavailable"
-            class="text-sm text-gray-600"
-          >
-            {{ $t('menu.unavailable') }}
-          </p>
-          <!-- Under 480px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
-          <div
-            class="flex items-center justify-between gap-4 max-[479px]:flex-col max-[479px]:items-stretch"
-          >
-            <QuantityStepper
-              class="max-[479px]:self-center"
-              :name="p.name"
-              :value="quantity"
-              :dec-disabled="quantity === 1"
-              :inc-disabled="quantity === maxQuantity"
-              @decrement="quantity > 1 ? quantity-- : null"
-              @increment="quantity < maxQuantity ? quantity++ : null"
-            />
-
-            <UiButton
-              size="lg"
-              class="flex-1 max-[479px]:flex-none"
-              data-testid="product-modal-add-to-cart"
-              :disabled="!canOrder"
-              @click="addToCart"
-            >
-              {{
-                $t(editItem ? 'menu.updateWithPrice' : 'menu.addWithPrice', {
-                  price: formatCents(lineTotalCents),
-                })
-              }}
-            </UiButton>
-          </div>
-        </div>
       </div>
     </div>
+
+    <!-- Cart controls: a footer that never scrolls away, as in the other brand's product modal. -->
+    <footer
+      v-if="p"
+      class="shrink-0 border-t border-neutral-100 bg-white px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-8 sm:pt-4 sm:pb-8"
+    >
+      <p
+        v-if="!p.isAvailable"
+        data-testid="product-modal-unavailable"
+        class="mb-3 text-sm text-gray-600"
+      >
+        {{ $t('menu.unavailable') }}
+      </p>
+      <!-- Under 480px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
+      <div
+        class="flex items-center justify-between gap-4 max-[479px]:flex-col max-[479px]:items-stretch"
+      >
+        <QuantityStepper
+          class="max-[479px]:self-center"
+          :name="p.name"
+          :value="quantity"
+          :dec-disabled="quantity === 1"
+          :inc-disabled="quantity === maxQuantity"
+          @decrement="quantity > 1 ? quantity-- : null"
+          @increment="quantity < maxQuantity ? quantity++ : null"
+        />
+
+        <UiButton
+          size="lg"
+          class="flex-1 max-[479px]:flex-none"
+          data-testid="product-modal-add-to-cart"
+          :disabled="!canOrder"
+          @click="addToCart"
+        >
+          {{
+            $t(editItem ? 'menu.updateWithPrice' : 'menu.addWithPrice', {
+              price: formatCents(lineTotalCents),
+            })
+          }}
+        </UiButton>
+      </div>
+    </footer>
 
     <!-- The product could not be loaded (or no longer exists): say so instead of an empty dialog -->
     <LoadError
       v-else
       :message="$t('menu.productLoadFailed')"
       data-testid="product-modal-load-error"
-      class="mt-8 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-800"
+      class="m-4 sm:m-8 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-800"
       @retry="emit('retry')"
     />
 

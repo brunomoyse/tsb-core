@@ -369,7 +369,7 @@
       <Transition name="modal-backdrop">
         <div
           v-if="routedProductId"
-          class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 backdrop-blur-sm"
+          class="fixed inset-0 z-50 bg-black/30 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm"
           @click.self="closeModal"
         >
           <Transition name="modal-panel" appear>
