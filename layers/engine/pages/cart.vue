@@ -184,9 +184,9 @@
                     <span>{{ $t('cart.pickupDiscount') }}</span>
                     <span class="tabular-nums">-{{ formatCents(pickupDiscountCents) }}</span>
                 </div>
-                <div v-if="cartStore.couponDiscountCents > 0" class="flex justify-between text-green-800">
+                <div v-if="couponDiscountCents > 0" class="flex justify-between text-green-800">
                     <span>{{ $t('coupon.discount') }}<span v-if="cartStore.couponCode"> ({{ cartStore.couponCode }})</span></span>
-                    <span class="tabular-nums">-{{ formatCents(cartStore.couponDiscountCents) }}</span>
+                    <span class="tabular-nums">-{{ formatCents(couponDiscountCents) }}</span>
                 </div>
                 <div v-if="onlineFeeCents > 0" class="flex justify-between text-neutral-600">
                     <span>{{ $t('cart.onlineFee') }}</span>
