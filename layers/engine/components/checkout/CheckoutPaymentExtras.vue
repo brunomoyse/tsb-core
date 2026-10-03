@@ -77,7 +77,7 @@
                         data-testid="cash-acknowledge"
                         v-model="cashAcknowledgedModel"
                         :class="[
-                            'mt-0.5 h-5 w-5 rounded shrink-0 focus-visible:ring-2',
+                            'mt-0.5 h-6 w-6 rounded shrink-0 focus-visible:ring-2',
                             showCashAckError
                                 ? 'text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
                                 : 'text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2'
@@ -156,7 +156,7 @@
                         id="chopsticks"
                         data-testid="order-extra-chopsticks"
                         v-model="addChopsticks"
-                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
+                        class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded"
                     />
                     <label for="chopsticks" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
@@ -169,7 +169,7 @@
                         id="cutlery"
                         data-testid="order-extra-cutlery"
                         v-model="addCutlery"
-                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded"
+                        class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded"
                     />
                     <label for="cutlery" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addCutlery') }}
@@ -187,7 +187,7 @@
                         data-testid="order-extra-wasabi"
                         v-model="addWasabi"
                         :disabled="isLocked('wasabi')"
-                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="wasabi" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addWasabi') }}
@@ -205,7 +205,7 @@
                         data-testid="order-extra-ginger"
                         v-model="addGinger"
                         :disabled="isLocked('ginger')"
-                        class="mr-4 h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+                        class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                     />
                     <label for="ginger" class="text-neutral-700 font-medium">
                         {{ $t('checkout.addGinger') }}
@@ -224,7 +224,7 @@
                             data-testid="order-extra-sauce"
                             :checked="addSauce"
                             :disabled="isLocked('sauce')"
-                            class="h-5 w-5 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+                            class="h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
                             @change="addSauce = !addSauce"
                         />
                         <label for="add-sauce" class="text-neutral-700 font-medium">
@@ -240,7 +240,7 @@
                             :aria-pressed="sauce === option.value"
                             @click="sauce = option.value"
                             :class="[
-                                'px-3 py-1.5 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
+                                'px-3.5 py-1.5 min-h-11 text-sm border rounded-full whitespace-nowrap transition-all active:scale-[0.97]',
                                 sauce === option.value
                                     ? 'border-primary bg-tsb-four text-primary-700 font-medium'
                                     : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400'
@@ -261,9 +261,8 @@
                             v-if="extra.quantity === 0"
                             type="button"
                             :disabled="!extra.isAvailable"
-                            :aria-label="`${extra.label} — ${$t('cart.increaseQty')}`"
                             @click="incrementPaidExtra(extra.code)"
-                            class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-700 px-3 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-neutral-400"
+                            class="inline-flex min-h-11 items-center gap-2 rounded-full border border-neutral-300 bg-white text-neutral-700 px-3.5 py-1.5 text-xs transition-all active:scale-[0.97] hover:border-neutral-400"
                             :class="!extra.isAvailable ? 'opacity-50 cursor-not-allowed' : ''"
                         >
                             <span>{{ extra.label }}</span>
@@ -282,7 +281,7 @@
                                 :disabled="!extra.isAvailable || extra.quantity >= MAX_ITEM_QUANTITY"
                                 :aria-label="$t('checkout.paidExtraIncreaseAria', { name: extra.label, count: extra.quantity, price: formatCents(extra.priceCents) }, extra.quantity)"
                                 @click="incrementPaidExtra(extra.code)"
-                                class="inline-flex items-center gap-2 rounded-l-full border border-primary-300 bg-tsb-four text-primary-700 font-medium px-3 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex min-h-11 items-center gap-2 rounded-l-full border border-primary-300 bg-tsb-four text-primary-700 font-medium px-3.5 py-1.5 text-xs transition-transform active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span>{{ extra.label }}</span>
                                 <span
@@ -296,7 +295,7 @@
                                 type="button"
                                 :aria-label="$t('cart.decreaseQtyOf', { name: extra.label })"
                                 @click="decrementPaidExtra(extra.code)"
-                                class="inline-flex items-center justify-center px-2.5 rounded-r-full border border-l-0 border-primary-300 bg-tsb-four text-primary-700 hover:bg-primary-100 transition-colors active:scale-[0.97]"
+                                class="inline-flex min-w-11 items-center justify-center px-2.5 rounded-r-full border border-l-0 border-primary-300 bg-tsb-four text-primary-700 hover:bg-primary-100 transition-colors active:scale-[0.97]"
                             >
                                 <span class="text-sm leading-none" aria-hidden="true">−</span>
                             </button>

@@ -62,7 +62,7 @@ useSeoMeta({
                     <iframe
                         :src="osmEmbedUrl"
                         class="w-full h-full min-h-[280px] sm:min-h-0"
-                        :title="`${brand.name} Location`"
+                        :title="$t('contact.mapTitle', { name: brand.name })"
                         frameborder="0"
                         allowfullscreen
                         loading="lazy"

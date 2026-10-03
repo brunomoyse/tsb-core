@@ -212,7 +212,6 @@ const getStatusColorClass = (status: string) => {
                     type="button"
                     :aria-expanded="isExpanded(order.id)"
                     :aria-controls="`order-panel-${order.id}`"
-                    :aria-label="$t('me.orders.toggleOrder')"
                     class="w-full min-h-11 text-left p-5 sm:p-6 cursor-pointer hover:bg-tsb-two/80 rounded-2xl flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     @click="toggleOrder(order.id)"
                 >

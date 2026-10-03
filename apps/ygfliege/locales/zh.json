@@ -435,11 +435,6 @@
     "ingredientsSummary": "{count} 种食材"
   },
   "nav": {
-    "primary": "主导航",
-    "secondary": "页脚链接",
-    "callRestaurant": "致电餐厅"
-  },
-  "common": {
-    "clear": "清除"
+    "secondary": "页脚链接"
   }
 }

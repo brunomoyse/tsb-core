@@ -17,7 +17,7 @@
             </label>
             <input id="lastName" v-model="lastName"
                    :placeholder="$t('form.lastNamePlaceholder')"
-                   autocomplete="name"
+                   autocomplete="family-name"
                    class="w-full px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                    required type="text"/>
         </div>
@@ -38,7 +38,7 @@
                 {{ $t('form.phone') }}
             </label>
             <div class="flex space-x-2">
-                <select id="country" v-model="selectedCountry"
+                <select id="country" v-model="selectedCountry" :aria-label="$t('form.phoneCountry')"
                         class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300">
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                         {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
@@ -46,10 +46,13 @@
                 </select>
                 <input id="phone" v-model="phoneLocal"
                        :placeholder="$t('form.phonePlaceholder')"
+                       autocomplete="tel-national"
+                       :aria-invalid="phoneError ? 'true' : undefined"
+                       :aria-describedby="phoneError ? 'phone-error' : undefined"
                        class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
                        type="tel"/>
             </div>
-            <p v-if="phoneError" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
+            <p v-if="phoneError" id="phone-error" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
         </div>
 
         <AddressAutocomplete v-show="!address" @update:address="(updatedAddress) => address = updatedAddress" />

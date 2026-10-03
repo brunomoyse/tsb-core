@@ -77,7 +77,7 @@
                      section, so it repeated the heading on every tile. -->
                 <div class="min-h-[52px] flex flex-col">
                     <!-- The name is the keyboard (and screen-reader) way to open the details; the image above is the pointer way. -->
-                    <button type="button" aria-haspopup="dialog" class="self-start max-w-full rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" @click="emit('openProductModal')">
+                    <button type="button" aria-haspopup="dialog" class="relative self-start max-w-full -my-2 py-2 rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" @click="emit('openProductModal')">
                         <span
                             data-testid="product-name"
                             translate="no"
@@ -98,7 +98,7 @@
                 <!-- Price and cart controls. The stepper stays visible once the
                      item is in the cart: the inherited control collapsed itself
                      after 4s, which hid the only way to decrement. -->
-                <div v-if="product.isAvailable" ref="controlsRef" class="flex justify-between items-center gap-1 sm:gap-2 mt-2">
+                <div v-if="product.isAvailable" ref="controlsRef" class="flex flex-wrap justify-between items-center gap-x-1 gap-y-1 sm:gap-2 mt-2">
                     <span class="text-ygf-black font-bold text-base tabular-nums">
                       {{ formatPrice(product.price) }}
                     </span>
@@ -118,7 +118,7 @@
 
                     <!-- A product with choices has no "plain" line to step: "+" opens the composer so the
                          new line gets its own selections, and "−" is left out (lines are edited in the cart). -->
-                    <div v-else class="stepper stepper--sm">
+                    <div v-else class="stepper stepper--sm ml-auto">
                         <button
                             v-if="!hasChoices"
                             type="button"
@@ -133,7 +133,7 @@
                             type="button"
                             data-testid="product-card-increment"
                             class="stepper-btn"
-                            :aria-label="hasChoices ? $t('cart.addToCart') : $t('cart.increaseQtyOf', { name: product.name })"
+                            :aria-label="hasChoices ? $t('cart.addNamed', { name: product.name }) : $t('cart.increaseQtyOf', { name: product.name })"
                             :disabled="!hasChoices && cardQuantity >= MAX_ITEM_QUANTITY"
                             @click="increment"
                         >+</button>

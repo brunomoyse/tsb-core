@@ -435,11 +435,6 @@
     "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten"
   },
   "nav": {
-    "primary": "Hoofdnavigatie",
-    "secondary": "Voettekstlinks",
-    "callRestaurant": "Bel het restaurant"
-  },
-  "common": {
-    "clear": "Wissen"
+    "secondary": "Voettekstlinks"
   }
 }

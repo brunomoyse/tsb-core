@@ -38,7 +38,7 @@
                         <!-- Top Section -->
                         <div class="flex flex-col items-center space-y-6 mt-4">
                             <ul class="flex flex-col items-center space-y-6 w-full">
-                                <li><Logo :aria-label="$t('nav.home')" :alt="logoAlt" class="mb-6" icon="/images/logos/logo-white.svg" to="/"
+                                <li><Logo :aria-label="$t('nav.home')" class="mb-6" icon="/images/logos/logo-white.svg" to="/"
                                       @click="closeMenu"/></li>
                                 <MobileNavItem :label="$t('nav.menu')"
                                                to="/menu"
@@ -64,9 +64,7 @@
                                                    @click="closeMenu"/>
                                 </ClientOnly>
 
-                                <LanguagePicker :label="$t('nav.language')" alt="Translate Icon"
-                                                class="justify-center" icon="/icons/translate-icon.svg"
-                                                tooltipText="Change Language"/>
+                                <LanguagePicker :label="$t('nav.language')" class="justify-center" icon="/icons/translate-icon.svg"/>
 
                                 <!-- Divider -->
                                 <li class="w-full border-t border-white/20 my-2"></li>
@@ -74,7 +72,7 @@
                                  <!-- Phone (tap-to-call) -->
                                  <li>
                                      <a :href="telHref(brand.phone)"
-                                        :aria-label="$t('nav.callRestaurant')"
+                                        :aria-label="callLabel"
                                         class="flex min-h-12 items-center justify-center gap-3 rounded-ygf-btn px-6 py-3 text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                                         @click="closeMenu">
                                          <span class="text-base font-medium">{{ nationalPhone(brand.phone) }}</span>
@@ -104,12 +102,15 @@ import { nationalPhone, telHref } from '#engine/utils/phone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { useI18n } from 'vue-i18n'
 import { useMediaQuery, useMounted } from '@vueuse/core'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { brand } = useAppConfig()
-const logoAlt = `${brand.name} logo`
+const { t } = useI18n()
+// "Call the restaurant 04 12 34 56 78": the visible number is part of the link's name, with what it does.
+const callLabel = computed(() => `${t('nav.callRestaurant')} ${nationalPhone(brand.phone)}`)
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 
@@ -141,7 +142,7 @@ useFocusTrap(computed(() => (isMenuOpen.value ? navRef.value : null)), {
 const onEscape = (event: KeyboardEvent) => {
     if (!isMenuOpen.value) return
     const target = event.target as HTMLElement | null
-    if (target?.closest('[role="listbox"]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
+    if (target?.closest('[data-language-panel]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
     closeMenu()
 }
 

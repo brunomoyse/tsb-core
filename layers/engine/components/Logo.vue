@@ -13,12 +13,12 @@
                 <picture>
                     <source :srcset="icon.replace('.png', '.avif')" type="image/avif" />
                     <source :srcset="icon.replace('.png', '.webp')" type="image/webp" />
-                    <img :alt="alt" :src="icon" :width="size" :height="size" class="fit" />
+                    <img :alt="ariaLabel ? '' : alt" :src="icon" :width="size" :height="size" class="fit" />
                 </picture>
 
                 <!-- Tooltip positioned below -->
                 <span v-if="tooltipText"
-                      class="absolute left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max">
+                      class="absolute pointer-events-none left-1/2 top-full -translate-x-1/2 mt-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50 min-w-max">
                     {{ tooltipText }}
                 </span>
             </div>

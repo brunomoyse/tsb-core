@@ -20,7 +20,9 @@
     "keepEditing": "Continuer",
     "retry": "Réessayer",
     "saving": "Enregistrement…",
-    "required": "obligatoire"
+    "required": "obligatoire",
+    "logoAlt": "Logo {name}",
+    "clear": "Effacer"
   },
   "nav": {
     "home": "Accueil",
@@ -37,7 +39,8 @@
     "callRestaurant": "Appeler le restaurant",
     "searchLabel": "Rechercher un plat",
     "clearSearch": "Effacer la recherche",
-    "currentLanguage": "Langue : {language}"
+    "currentLanguage": "Langue : {language}",
+    "primary": "Navigation principale"
   },
   "home": {
     "heroTagline": "Restaurant japonais · Liège",
@@ -48,7 +51,8 @@
       "onsiteOnly": "Ouvert · sur place",
       "preorder": "Fermé · commandez pour {time}",
       "closed": "Fermé"
-    }
+    },
+    "restaurantImageAlt": "Illustration du restaurant {name}"
   },
   "contact": {
     "title": "Contactez-nous",
@@ -63,7 +67,8 @@
     "reservationNotice": "Les réservations par e-mail ne sont pas prises en compte. Pour réserver une table, merci de nous appeler par téléphone.",
     "weekdays": "Lundi - Vendredi",
     "weekends": "Samedi - Dimanche",
-    "closedTuesday": "Fermé le mardi"
+    "closedTuesday": "Fermé le mardi",
+    "mapTitle": "Carte : emplacement de {name}"
   },
   "about": {
     "ourStoryTitle": "Notre Histoire",
@@ -178,7 +183,8 @@
       "selected": "Adresse sélectionnée : {address}",
       "cleared": "Adresse effacée"
     },
-    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)"
+    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)",
+    "phoneCountry": "Pays du numéro de téléphone"
   },
   "me": {
     "greeting": "Bonjour",
@@ -193,7 +199,6 @@
       "loading": "Chargement des commandes...",
       "empty": "Aucune commande trouvée",
       "total": "Total",
-      "toggleOrder": "Détails de la commande",
       "downloadInvoice": "Télécharger la facture",
       "status": {
         "details": {
@@ -346,7 +351,8 @@
     },
     "increaseQtyOf": "Augmenter la quantité de {name}",
     "decreaseQtyOf": "Diminuer la quantité de {name}",
-    "addNamed": "Ajouter {name} au panier"
+    "addNamed": "Ajouter {name} au panier",
+    "inCartNamed": "{name} : {count} dans le panier, modifier la quantité"
   },
   "checkout": {
     "title": "Commande",

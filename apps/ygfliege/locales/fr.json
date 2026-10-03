@@ -435,11 +435,6 @@
     "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
   },
   "nav": {
-    "primary": "Navigation principale",
-    "secondary": "Liens de bas de page",
-    "callRestaurant": "Appeler le restaurant"
-  },
-  "common": {
-    "clear": "Effacer"
+    "secondary": "Liens de bas de page"
   }
 }

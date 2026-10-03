@@ -20,7 +20,9 @@
     "keepEditing": "继续编辑",
     "retry": "重试",
     "saving": "正在保存…",
-    "required": "必填"
+    "required": "必填",
+    "logoAlt": "{name} 标志",
+    "clear": "清除"
   },
   "nav": {
     "home": "首页",
@@ -37,7 +39,8 @@
     "callRestaurant": "致电餐厅",
     "searchLabel": "搜索菜单",
     "clearSearch": "清除搜索",
-    "currentLanguage": "语言：{language}"
+    "currentLanguage": "语言：{language}",
+    "primary": "主导航"
   },
   "home": {
     "heroTagline": "日本餐厅 · 列日",
@@ -48,7 +51,8 @@
       "onsiteOnly": "营业中 · 仅限堂食",
       "preorder": "休息中 · 现在可预订 {time}",
       "closed": "休息中"
-    }
+    },
+    "restaurantImageAlt": "{name} 餐厅插图"
   },
   "contact": {
     "title": "联系我们",
@@ -63,7 +67,8 @@
     "reservationNotice": "我们不接受通过电子邮件进行的预订。如需预订餐桌，请致电我们。",
     "weekdays": "周一 - 周五",
     "weekends": "周六 - 周日",
-    "closedTuesday": "周二休息"
+    "closedTuesday": "周二休息",
+    "mapTitle": "地图：{name} 的位置"
   },
   "about": {
     "ourStoryTitle": "我们的故事",
@@ -178,7 +183,8 @@
       "selected": "已选择地址：{address}",
       "cleared": "地址已清除"
     },
-    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）"
+    "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）",
+    "phoneCountry": "电话号码所属国家/地区"
   },
   "me": {
     "greeting": "你好",
@@ -193,7 +199,6 @@
       "loading": "加载订单中...",
       "empty": "没有找到订单",
       "total": "总计",
-      "toggleOrder": "展开订单详情",
       "downloadInvoice": "下载发票",
       "status": {
         "details": {
@@ -346,7 +351,8 @@
     },
     "increaseQtyOf": "增加{name}的数量",
     "decreaseQtyOf": "减少{name}的数量",
-    "addNamed": "将{name}加入购物车"
+    "addNamed": "将{name}加入购物车",
+    "inCartNamed": "{name}：购物车中有 {count} 件，修改数量"
   },
   "checkout": {
     "title": "结账",

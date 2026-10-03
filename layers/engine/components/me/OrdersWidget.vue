@@ -69,7 +69,6 @@
                         <button
                             type="button"
                             :aria-expanded="isExpanded(order.id)"
-                            :aria-label="$t('me.orders.toggleOrder')"
                             class="relative z-[1] w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
                             @click="toggleOrder(order.id)"
                         >
@@ -200,7 +199,6 @@
                         <button
                             type="button"
                             :aria-expanded="isExpanded(order.id)"
-                            :aria-label="$t('me.orders.toggleOrder')"
                             class="w-full text-left p-4 cursor-pointer hover:bg-neutral-50/50 rounded-xl flex items-center gap-3 transition-colors"
                             @click="toggleOrder(order.id)"
                         >

@@ -107,7 +107,7 @@
                                 </button>
                             </div>
                             <button
-                                :aria-label="$t('cart.removeItem')"
+                                :aria-label="$t('cart.removeNamed', { name: item.product.name })"
                                 class="w-11 h-11 flex items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors"
                                 @click="handleRemoveFromCart(item)"
                             >
@@ -133,30 +133,33 @@
                 <div v-if="cartStore.collectionOption === 'DELIVERY'" class="flex justify-between text-neutral-600 relative">
                     <div class="flex items-center gap-1">
                         <span>{{ $t('checkout.deliveryFee', 'Delivery Fee:') }}</span>
-                        <button
-                            ref="tooltipButtonRef"
-                            type="button"
-                            :aria-label="$t('checkout.deliveryFee')"
-                            :aria-expanded="showTooltip"
-                            class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-600 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-full relative"
-                            @click.stop="showTooltip = !showTooltip"
-                            @mouseenter="showTooltip = true"
-                            @mouseleave="showTooltip = false"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                            </svg>
+                        <span class="relative inline-flex" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+                            <button
+                                ref="tooltipButtonRef"
+                                type="button"
+                                :aria-label="$t('checkout.deliveryFee')"
+                                :aria-expanded="showTooltip"
+                                :aria-describedby="showTooltip ? 'delivery-fee-tooltip' : undefined"
+                                class="min-w-11 min-h-11 -m-2.5 p-2.5 inline-flex items-center justify-center text-neutral-600 hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none rounded-full relative"
+                                @click.stop="showTooltip = !showTooltip"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <!-- Beside the button, not inside it: the button's name stays "Delivery fee", the text is its description. -->
                             <div
                                 v-if="showTooltip"
+                                id="delivery-fee-tooltip"
                                 role="tooltip"
-                                class="absolute left-0 bottom-10 min-w-[260px] max-w-xs p-3 bg-neutral-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
+                                class="absolute left-0 bottom-8 min-w-[260px] max-w-xs p-3 bg-neutral-800 text-white text-xs rounded-xl shadow-xl z-[999] whitespace-pre-line leading-relaxed text-left"
                             >
                                 {{ deliveryFeeInfo }}
                                 <div class="absolute top-full left-3 -mt-1">
                                     <div class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-neutral-800" />
                                 </div>
                             </div>
-                        </button>
+                        </span>
                     </div>
                     <span v-if="!cartStore.address?.distance" class="text-neutral-600 italic">{{ $t('checkout.tbd') }}</span>
                     <span v-else-if="deliveryFeeCents === -1" class="text-red-700 font-medium inline-flex flex-wrap items-center justify-end gap-x-2 text-right">

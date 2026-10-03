@@ -68,7 +68,7 @@
                 <!-- LanguagePicker's root element is an <li>, so it needs a
                      list parent to stay valid HTML. -->
                 <ul class="flex items-center">
-                    <LanguagePicker :tooltipText="$t('nav.language')" alt="" icon="/icons/translate-icon.svg" />
+                    <LanguagePicker :label="$t('nav.language')" icon="/icons/translate-icon.svg" />
                 </ul>
 
                 <ClientOnly>
@@ -110,7 +110,6 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoAlt = `${useAppConfig().brand.name} logo`
 
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()

@@ -131,7 +131,7 @@ useHead({
                     <source srcset="/images/restaurant-illustrated.avif" type="image/avif" />
                     <source srcset="/images/restaurant-illustrated.webp" type="image/webp" />
                     <img
-                        :alt="`${brand.name} Restaurant`"
+                        :alt="$t('home.restaurantImageAlt', { name: brand.name })"
                         class="absolute inset-0 w-full h-full object-cover object-[72%_55%] sm:object-center"
                         src="/images/restaurant-illustrated.png"
                         width="1024"
@@ -379,7 +379,7 @@ useHead({
                     />
                 </div>
                 <!-- Cash -->
-                <div role="img" aria-label="Cash" class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center gap-1">
+                <div class="h-7 px-2.5 rounded-md border border-neutral-200 bg-white flex items-center gap-1">
                     <svg class="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25A2.25 2.25 0 014.5 6h15a2.25 2.25 0 012.25 2.25v7.5A2.25 2.25 0 0119.5 18h-15a2.25 2.25 0 01-2.25-2.25v-7.5zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span class="text-[11px] text-neutral-600 font-medium leading-none">{{ $t('about.cash') }}</span>
                 </div>

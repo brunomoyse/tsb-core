@@ -20,7 +20,9 @@
     "keepEditing": "Verder bewerken",
     "retry": "Opnieuw proberen",
     "saving": "Opslaan…",
-    "required": "verplicht"
+    "required": "verplicht",
+    "logoAlt": "Logo van {name}",
+    "clear": "Wissen"
   },
   "nav": {
     "home": "Home",
@@ -37,7 +39,8 @@
     "callRestaurant": "Bel het restaurant",
     "searchLabel": "Zoek in het menu",
     "clearSearch": "Zoekopdracht wissen",
-    "currentLanguage": "Taal: {language}"
+    "currentLanguage": "Taal: {language}",
+    "primary": "Hoofdnavigatie"
   },
   "home": {
     "heroTagline": "Japans restaurant · Luik",
@@ -48,7 +51,8 @@
       "onsiteOnly": "Open · enkel ter plaatse",
       "preorder": "Gesloten · bestel nu voor {time}",
       "closed": "Gesloten"
-    }
+    },
+    "restaurantImageAlt": "Illustratie van restaurant {name}"
   },
   "contact": {
     "title": "Contacteer ons",
@@ -63,7 +67,8 @@
     "reservationNotice": "Reservaties per e-mail worden niet in aanmerking genomen. Om een tafel te reserveren, gelieve ons telefonisch te contacteren.",
     "weekdays": "Maandag - Vrijdag",
     "weekends": "Zaterdag - Zondag",
-    "closedTuesday": "Gesloten op dinsdag"
+    "closedTuesday": "Gesloten op dinsdag",
+    "mapTitle": "Kaart: locatie van {name}"
   },
   "about": {
     "ourStoryTitle": "Ons Verhaal",
@@ -178,7 +183,8 @@
       "selected": "Adres geselecteerd: {address}",
       "cleared": "Adres gewist"
     },
-    "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)"
+    "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)",
+    "phoneCountry": "Land van het telefoonnummer"
   },
   "me": {
     "greeting": "Goedendag",
@@ -193,7 +199,6 @@
       "loading": "Bestellingen laden...",
       "empty": "Geen bestellingen gevonden",
       "total": "Totaal",
-      "toggleOrder": "Bestelgegevens",
       "downloadInvoice": "Factuur downloaden",
       "status": {
         "details": {
@@ -346,7 +351,8 @@
     },
     "increaseQtyOf": "Aantal van {name} verhogen",
     "decreaseQtyOf": "Aantal van {name} verminderen",
-    "addNamed": "{name} toevoegen aan winkelwagen"
+    "addNamed": "{name} toevoegen aan winkelwagen",
+    "inCartNamed": "{name}: {count} in de winkelwagen, aantal wijzigen"
   },
   "checkout": {
     "title": "Bestelling",

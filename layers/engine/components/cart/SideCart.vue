@@ -26,8 +26,9 @@
                         :aria-pressed="cartStore.collectionOption === option.value"
                         :disabled="option.disabled"
                         :title="option.disabled ? `${option.label}: ${$t('delivery.comingSoon')}` : undefined"
+                        :aria-label="option.disabled ? `${option.label} — ${$t('delivery.comingSoon')}` : undefined"
                         :class="[
-          'flex min-h-9 items-center gap-1 whitespace-nowrap px-2 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'flex min-h-11 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           option.disabled ? 'cursor-not-allowed opacity-40' : '',
           cartStore.collectionOption === option.value
             ? 'bg-white text-neutral-900 shadow-sm'
@@ -129,7 +130,7 @@
                             />
                             <button type="button" data-testid="cart-item-remove" data-cart-remove
                                     :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                                    class="min-h-9 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    class="min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     @click="removeWithUndo(item)">
                                 {{ $t('cart.removeItem') }}
                             </button>

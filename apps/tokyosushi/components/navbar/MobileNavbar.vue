@@ -5,7 +5,6 @@
             <div class="flex items-center shrink-0">
                 <Logo
                     :aria-label="$t('nav.home')"
-                    :alt="logoAlt"
                     class="list-none"
                     icon="/images/tsb-black-font-100.png"
                     to="/"
@@ -79,7 +78,7 @@
                             <!-- Phone (tap-to-call) -->
                             <li>
                                 <a :href="phoneHref"
-                                   :aria-label="$t('nav.callRestaurant')"
+                                   :aria-label="callLabel"
                                    class="flex min-h-11 items-center justify-center space-x-2 rounded-xl px-4 py-3 transition-colors hover:bg-tsb-one focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                    @click="closeMenu">
                                     <NavIcon src="/icons/contact-icon.svg" class="w-5 h-5" />
@@ -110,6 +109,7 @@ import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
+import { useI18n } from 'vue-i18n'
 import { useMediaQuery, useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { visibleNavItems } from './navItems'
@@ -117,10 +117,12 @@ import { visibleNavItems } from './navItems'
 const currentRoute = useRoute();
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoAlt = `${useAppConfig().brand.name} logo`
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 const { phoneHref, phoneLabel } = useBrandPhone()
+const { t } = useI18n()
+// "Call the restaurant 04 12 34 56 78": the visible number is part of the link's name, with what it does.
+const callLabel = computed(() => `${t('nav.callRestaurant')} ${phoneLabel}`)
 
 const routeName = computed(() => (typeof currentRoute.name === 'string' ? currentRoute.name : ''))
 // Hidden on cart/checkout, which already show the cart.
@@ -158,7 +160,7 @@ useFocusTrap(computed(() => (isMenuOpen.value ? navRef.value : null)), {
 const onEscape = (event: KeyboardEvent) => {
     if (!isMenuOpen.value) return
     const target = event.target as HTMLElement | null
-    if (target?.closest('[role="listbox"]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
+    if (target?.closest('[data-language-panel]') || (target !== hamburgerRef.value && target?.getAttribute('aria-expanded') === 'true')) return
     closeMenu()
 }
 

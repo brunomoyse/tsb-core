@@ -20,7 +20,9 @@
     "keepEditing": "Keep editing",
     "retry": "Try again",
     "saving": "Saving…",
-    "required": "required"
+    "required": "required",
+    "logoAlt": "{name} logo",
+    "clear": "Clear"
   },
   "nav": {
     "home": "Home",
@@ -37,7 +39,8 @@
     "callRestaurant": "Call the restaurant",
     "searchLabel": "Search the menu",
     "clearSearch": "Clear search",
-    "currentLanguage": "Language: {language}"
+    "currentLanguage": "Language: {language}",
+    "primary": "Main navigation"
   },
   "home": {
     "heroTagline": "Japanese restaurant · Liège",
@@ -48,7 +51,8 @@
       "onsiteOnly": "Open · dine-in only",
       "preorder": "Closed · order now for {time}",
       "closed": "Closed"
-    }
+    },
+    "restaurantImageAlt": "Illustration of the {name} restaurant"
   },
   "contact": {
     "title": "Contact Us",
@@ -63,7 +67,8 @@
     "reservationNotice": "Reservations by email are not taken into account. To book a table, please call us by phone.",
     "weekdays": "Monday - Friday",
     "weekends": "Saturday - Sunday",
-    "closedTuesday": "Closed on Tuesdays"
+    "closedTuesday": "Closed on Tuesdays",
+    "mapTitle": "Map: location of {name}"
   },
   "about": {
     "ourStoryTitle": "Our Story",
@@ -178,7 +183,8 @@
       "selected": "Address selected: {address}",
       "cleared": "Address cleared"
     },
-    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)"
+    "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)",
+    "phoneCountry": "Phone number country"
   },
   "me": {
     "greeting": "Hello",
@@ -193,7 +199,6 @@
       "loading": "Loading orders...",
       "empty": "No orders found",
       "total": "Total",
-      "toggleOrder": "Toggle order details",
       "downloadInvoice": "Download invoice",
       "status": {
         "details": {
@@ -346,7 +351,8 @@
     },
     "increaseQtyOf": "Increase quantity of {name}",
     "decreaseQtyOf": "Decrease quantity of {name}",
-    "addNamed": "Add {name} to the cart"
+    "addNamed": "Add {name} to the cart",
+    "inCartNamed": "{name}: {count} in the cart, change quantity"
   },
   "checkout": {
     "title": "Checkout",
