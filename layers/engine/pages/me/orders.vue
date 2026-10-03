@@ -8,9 +8,7 @@ import type { Order } from '#engine/types'
 import { formatAddress } from '#engine/utils/utils'
 import { formatDateTime } from '#engine/utils/datetime'
 import { formatPrice } from '#engine/lib/price'
-import gql from 'graphql-tag'
 
-import { print } from 'graphql/index'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
@@ -30,7 +28,7 @@ useSeoMeta({
   robots: 'noindex,nofollow',
 })
 
-const MY_ORDERS = gql`
+const MY_ORDERS = /* GraphQL */ `
   {
     myOrders(first: 100) {
       id
@@ -73,7 +71,7 @@ const {
   error: ordersError,
   pending: ordersPending,
   refresh: refetchOrders,
-} = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+} = await useGqlQuery<{ myOrders: Order[] }>(MY_ORDERS, {}, { server: false })
 // Stays null until loaded: a loading state, or the error state with Retry when the load failed. Never "no orders" before there is an answer.
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
 const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))

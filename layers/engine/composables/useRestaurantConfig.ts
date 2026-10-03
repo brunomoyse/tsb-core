@@ -3,11 +3,9 @@ import {
   ORDERING_POLICY_SELECTION,
   isPolicyUnsupportedError,
 } from '#engine/utils/orderingPolicy'
-import { type DocumentNode, print } from 'graphql'
 import { type Ref, effectScope, onMounted, shallowRef, watch } from 'vue'
 import { useNuxtApp, useRequestEvent, useState } from '#imports'
 import { STATIC_PAGE_FILL_HEADER } from '#engine/utils/staticPageCache'
-import gql from 'graphql-tag'
 import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
@@ -30,18 +28,10 @@ const configFields = (withPolicy: boolean) => `
     ${withPolicy ? ORDERING_POLICY_SELECTION : ''}
 `
 
-const RESTAURANT_CONFIG_QUERY = gql(
-  `query RestaurantConfig { restaurantConfig { ${configFields(true)} } }`,
-)
-const RESTAURANT_CONFIG_QUERY_LEGACY = gql(
-  `query RestaurantConfig { restaurantConfig { ${configFields(false)} } }`,
-)
-const SUB_RESTAURANT_CONFIG = gql(
-  `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(true)} } }`,
-)
-const SUB_RESTAURANT_CONFIG_LEGACY = gql(
-  `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(false)} } }`,
-)
+const RESTAURANT_CONFIG_QUERY = /* GraphQL */ `query RestaurantConfig { restaurantConfig { ${configFields(true)} } }`
+const RESTAURANT_CONFIG_QUERY_LEGACY = /* GraphQL */ `query RestaurantConfig { restaurantConfig { ${configFields(false)} } }`
+const SUB_RESTAURANT_CONFIG = /* GraphQL */ `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(true)} } }`
+const SUB_RESTAURANT_CONFIG_LEGACY = /* GraphQL */ `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(false)} } }`
 
 export interface RestaurantTimeSlot {
   label: string
@@ -117,7 +107,7 @@ function ensureLiveUpdates({
 
   const subscribe = (withPolicy: boolean) => {
     const sub = useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(
-      print(withPolicy ? SUB_RESTAURANT_CONFIG : SUB_RESTAURANT_CONFIG_LEGACY),
+      withPolicy ? SUB_RESTAURANT_CONFIG : SUB_RESTAURANT_CONFIG_LEGACY,
       {},
       // Gap recovery: a push missed while the socket was down (a network blip, a backgrounded tab) is never replayed.
       { onReconnect: refetch },
@@ -162,7 +152,7 @@ function makeRefetch(
 ): () => Promise<void> {
   // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
   const { $gqlFetch } = useNuxtApp() as unknown as {
-    $gqlFetch: <T>(query: DocumentNode) => Promise<T>
+    $gqlFetch: <T>(query: string) => Promise<T>
   }
   let inFlight: Promise<void> | null = null
   const run = async () => {

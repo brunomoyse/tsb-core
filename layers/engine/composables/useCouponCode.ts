@@ -1,7 +1,6 @@
 import { centsToDecimalString, toCents } from '#engine/utils/money'
 import { describeCouponRefusal, describeGqlError } from '#engine/utils/gqlErrors'
 import type { CouponValidation } from '#engine/types'
-import gql from 'graphql-tag'
 import { reportError } from '#engine/utils/reportError'
 import { unwrapGqlError } from '#engine/utils/gqlError'
 import { useCartStore } from '#engine/stores/cart'
@@ -9,7 +8,7 @@ import { useGqlMutation } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 
-const VALIDATE_COUPON = gql`
+const VALIDATE_COUPON = /* GraphQL */ `
   query ValidateCoupon($code: String!, $orderAmount: String!) {
     validateCoupon(code: $code, orderAmount: $orderAmount) {
       valid
@@ -25,7 +24,7 @@ const VALIDATE_COUPON = gql`
  * audit PR 2.3 has no `errorCode` field and rejects the query above ("Cannot query field"). Retry
  * once without it, and remember it so later attempts go straight to the old query.
  */
-const VALIDATE_COUPON_LEGACY = gql`
+const VALIDATE_COUPON_LEGACY = /* GraphQL */ `
   query ValidateCoupon($code: String!, $orderAmount: String!) {
     validateCoupon(code: $code, orderAmount: $orderAmount) {
       valid

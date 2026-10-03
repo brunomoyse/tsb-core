@@ -11,8 +11,6 @@ import {
 } from 'vue'
 import { useGqlSubscription, useRoute } from '#imports'
 import type { Order } from '#engine/types'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useI18n } from 'vue-i18n'
 
@@ -43,7 +41,7 @@ export const isOrderCompleted = (status: string): boolean => COMPLETED_STATUSES.
 export const isOrderSuccess = (status: string): boolean => SUCCESS_STATUSES.includes(status)
 export const isOrderFailed = (status: string): boolean => FAILED_STATUSES.includes(status)
 
-const SUB_ORDER_UPDATES = print(gql`
+const SUB_ORDER_UPDATES = /* GraphQL */ `
   subscription ($orderId: ID!) {
     myOrderUpdated(orderId: $orderId) {
       id
@@ -56,7 +54,7 @@ const SUB_ORDER_UPDATES = print(gql`
       }
     }
   }
-`)
+`
 
 interface UseOrderTrackingOptions {
   /** The orders as loaded by the query; null/undefined while not loaded yet. */

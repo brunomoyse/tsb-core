@@ -410,8 +410,6 @@ import SideCart from '#engine/components/cart/SideCart.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMediaQuery, useMounted } from '@vueuse/core'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
@@ -468,7 +466,7 @@ useBodyScrollLock(() => Boolean(routedProductId.value))
 /**
  * GraphQL Query
  */
-const PRODUCT_CATEGORIES = gql`
+const PRODUCT_CATEGORIES = /* GraphQL */ `
   query {
     productCategories {
       id
@@ -546,14 +544,14 @@ const [
   useOrderingAvailability(),
   useGqlQuery<{
     productCategories: ProductCategory[]
-  }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true }),
+  }>(PRODUCT_CATEGORIES, {}, { immediate: true, cache: true }),
 ])
 const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
 /**
  * Live product updates via WebSocket subscription
  */
-const SUB_PRODUCT_UPDATED = gql`
+const SUB_PRODUCT_UPDATED = /* GraphQL */ `
   subscription {
     productUpdated {
       id
@@ -573,7 +571,7 @@ const SUB_PRODUCT_UPDATED = gql`
 const liveProductData = ref<Record<string, Partial<Product>>>({})
 
 const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
-  print(SUB_PRODUCT_UPDATED),
+  SUB_PRODUCT_UPDATED,
 )
 
 watch(liveProduct, (val) => {

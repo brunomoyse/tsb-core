@@ -1,13 +1,11 @@
 import type { Address, AddressSuggestion } from '#engine/types'
 import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useNuxtApp } from '#imports'
 
-const AUTOCOMPLETE_ADDRESSES = gql`
+const AUTOCOMPLETE_ADDRESSES = /* GraphQL */ `
   query ($input: String!, $sessionToken: String!) {
     autocompleteAddresses(input: $input, sessionToken: $sessionToken) {
       placeId
@@ -18,7 +16,7 @@ const AUTOCOMPLETE_ADDRESSES = gql`
   }
 `
 
-const RESOLVE_ADDRESS = gql`
+const RESOLVE_ADDRESS = /* GraphQL */ `
   query ($placeId: String!, $sessionToken: String!) {
     resolveAddress(placeId: $placeId, sessionToken: $sessionToken) {
       id
@@ -161,7 +159,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
 
       try {
         const data: { autocompleteAddresses: AddressSuggestion[] } = await $gqlFetch(
-          print(AUTOCOMPLETE_ADDRESSES),
+          AUTOCOMPLETE_ADDRESSES,
           { variables: { input: query, sessionToken } },
         )
         if (seq !== searchSeq) return
@@ -195,7 +193,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
     cancelPendingSearch()
     isLoadingAddress.value = true
     try {
-      const data: { resolveAddress: Address } = await $gqlFetch(print(RESOLVE_ADDRESS), {
+      const data: { resolveAddress: Address } = await $gqlFetch(RESOLVE_ADDRESS, {
         variables: { placeId: suggestion.placeId, sessionToken },
       })
 
