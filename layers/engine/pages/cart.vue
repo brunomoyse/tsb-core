@@ -299,17 +299,19 @@
       ref="checkoutBarRef"
       class="sticky bottom-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
     >
-      <!-- Narrow phones: tighter padding and a label that may wrap, so the full label and the price always show. -->
+      <!-- Narrow phones: tighter padding, no bag icon under 360 px and a label that may wrap, so the full label and the price always show. -->
       <UiButton
         to="/checkout"
         size="lg"
         block
-        class="justify-between gap-3 max-[400px]:px-4"
+        class="justify-between gap-3 max-[400px]:px-3"
         :disabled="!canCheckout"
       >
-        <span class="flex min-w-0 items-center gap-2 whitespace-normal text-left">
+        <span
+          class="flex min-w-0 flex-1 items-center gap-2 whitespace-normal text-left leading-tight"
+        >
           <svg
-            class="w-5 h-5 shrink-0"
+            class="w-5 h-5 shrink-0 max-[359px]:hidden"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -324,7 +326,7 @@
           </svg>
           {{ $t('cart.checkout') }}
         </span>
-        <span class="shrink-0 font-bold text-base tabular-nums">{{
+        <span class="shrink-0 whitespace-nowrap font-bold text-base tabular-nums">{{
           formatCents(payableCents)
         }}</span>
       </UiButton>

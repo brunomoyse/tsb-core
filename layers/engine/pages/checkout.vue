@@ -266,16 +266,21 @@
           ref="payBarRef"
           class="fixed left-0 right-0 sm:left-[var(--side-rail-width,0px)] bottom-0 z-30 lg:hidden bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] p-4"
         >
+          <!--
+            [label | total]: the total never shrinks or wraps (whitespace-nowrap), the label takes what is left and wraps onto a
+            second line instead of pushing the total out of the button (uppercase YGF label + a 4-digit total at 320 px).
+            The button's own side padding is tightened on phones to give both more room.
+          -->
           <UiButton
             data-testid="checkout-place-order"
             size="lg"
             block
-            class="justify-between"
+            class="justify-between gap-3 px-3 min-[400px]:px-4 sm:px-6"
             :disabled="!isOrderingAvailable || cartStore.products.length === 0 || isOrderBlocked"
             :loading="isCheckoutProcessing"
             @click="handleCheckout"
           >
-            <span class="shrink-0">
+            <span class="min-w-0 flex-1 whitespace-normal text-left leading-tight">
               <template v-if="isCheckoutProcessing">{{ $t('checkout.processing') }}</template>
               <template v-else>
                 {{
@@ -285,14 +290,14 @@
                 }}
               </template>
             </span>
-            <!-- min-w-0 + truncate: the "updating" hint gives way instead of pushing the total off the button (uppercase YGF label at 390 px). -->
-            <span class="flex min-w-0 flex-col items-end leading-tight">
-              <span class="ml-auto font-bold text-base tabular-nums">{{
+            <!-- w-0 min-w-full on the hint: it truncates inside the width of the total instead of widening the column. -->
+            <span class="flex shrink-0 flex-col items-end leading-tight">
+              <span class="whitespace-nowrap font-bold text-base tabular-nums">{{
                 formatCents(payableCents)
               }}</span>
               <span
                 v-if="isQuotePending"
-                class="max-w-full truncate text-xs font-normal opacity-80"
+                class="w-0 min-w-full truncate text-right text-xs font-normal opacity-80"
                 data-testid="checkout-quote-updating"
                 >{{ $t('cart.quoteUpdating') }}</span
               >
