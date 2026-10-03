@@ -7,6 +7,7 @@ import { EUROPEAN_COUNTRIES } from '#engine/utils/europeanCountries'
 import OrdersWidget from '~/components/me/OrdersWidget.vue'
 import UserForm from '~/components/form/UserForm.vue'
 import { formatAddress } from '#engine/utils/utils'
+import { hasActiveOrder, profileFullName, profileInitials, splitStoredPhone } from '#engine/utils/profile'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
@@ -75,17 +76,9 @@ useSeoMeta({
 
 // ── Display computed ──
 
-const initials = computed(() => {
-    const f = authStore.user?.firstName?.[0] || ''
-    const l = authStore.user?.lastName?.[0] || ''
-    return (f + l).toUpperCase() || '?'
-})
+const initials = computed(() => profileInitials(authStore.user))
 
-const fullName = computed(() => {
-    const first = authStore.user?.firstName || ''
-    const last = authStore.user?.lastName || ''
-    return `${first} ${last}`.trim() || '–'
-})
+const fullName = computed(() => profileFullName(authStore.user))
 
 // ── Profile edit logic ──
 
@@ -124,7 +117,6 @@ const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELET
  * is never blocked (App Store 5.1.1(v)); the order keeps its denormalized data
  * and is fulfilled regardless, but the customer loses tracking once anonymized.
  */
-const ACTIVE_ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'AWAITING_PICK_UP', 'OUT_FOR_DELIVERY']
 const MY_ACTIVE_ORDERS = print(gql`
     query {
         myOrders(first: 5) {
@@ -136,9 +128,7 @@ const MY_ACTIVE_ORDERS = print(gql`
 const { data: activeOrdersData } = await useGqlQuery<{ myOrders: { id: string, status: string }[] }>(
     MY_ACTIVE_ORDERS, {}, { server: false },
 )
-const hasActiveOrder = computed(() =>
-    (activeOrdersData.value?.myOrders ?? []).some(o => ACTIVE_ORDER_STATUSES.includes(o.status)),
-)
+const hasActiveOrderInProgress = computed(() => hasActiveOrder(activeOrdersData.value?.myOrders))
 
 const showModal = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
@@ -161,22 +151,9 @@ const openModal = () => {
     userInitialValues.value.lastName = authStore.user?.lastName || ''
     userInitialValues.value.email = authStore.user?.email || ''
 
-    const storedPhone = authStore.user?.phoneNumber || ''
-    if (storedPhone) {
-        const matchingCountry = countries.find(country =>
-            storedPhone.startsWith(country.prefix)
-        )
-        if (matchingCountry) {
-            userInitialValues.value.selectedCountry = matchingCountry.code
-            userInitialValues.value.phoneLocal = storedPhone.substring(
-                matchingCountry.prefix.length
-            )
-        } else {
-            userInitialValues.value.phoneLocal = storedPhone
-        }
-    } else {
-        userInitialValues.value.phoneLocal = ''
-    }
+    const { phoneLocal, selectedCountry } = splitStoredPhone(authStore.user?.phoneNumber, countries)
+    userInitialValues.value.phoneLocal = phoneLocal
+    if (selectedCountry) userInitialValues.value.selectedCountry = selectedCountry
 
     userInitialValues.value.address = authStore.user?.address || null
     userInitialValues.value.addressConfirmed = Boolean(authStore.user?.address)
@@ -522,6 +499,7 @@ const updateNotificationPref = async (
                             v-for="lang in languages"
                             :key="lang.code"
                             :to="switchLocalePath(lang.code)"
+                            :aria-current="locale === lang.code ? 'true' : undefined"
                             :class="[
                                 'inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-sm rounded-full transition-all active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                                 locale === lang.code
@@ -594,7 +572,7 @@ const updateNotificationPref = async (
 
                     <!-- Soft warning when an order is still in progress (deletion not blocked) -->
                     <div
-                        v-if="hasActiveOrder"
+                        v-if="hasActiveOrderInProgress"
                         class="mb-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
                     >
                         <span aria-hidden="true">⚠️</span>
