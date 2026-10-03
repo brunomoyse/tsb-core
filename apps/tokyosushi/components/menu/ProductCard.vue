@@ -65,7 +65,7 @@
                     <span class="text-neutral-600 text-xs text-center">
                       <template v-if="product?.pieceCount">{{ product.pieceCount }} {{ product.pieceCount > 1 ? $t('menu.pcs') : $t('menu.pc') }}</template>
                       <template v-for="(group, idx) in forcedChoiceGroups" :key="group.id">
-                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ group.maxSelections }} {{ forcedChoiceGroupLabel(group) }}
+                        {{ (product?.pieceCount || idx > 0) ? ' + ' : '' }}{{ forcedChoiceGroupLabel(group) }}
                       </template>
                     </span>
                 </div>
@@ -125,7 +125,7 @@ import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
 import { brand } from '#brand/brand'
-import { choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
+import { choiceGroupCountLabel, choiceGroupLabelKey } from '#engine/utils/choiceGroupLabel'
 import { useI18n } from 'vue-i18n'
 import { useRuntimeConfig } from '#imports'
 import { useTracking } from '#engine/composables/useTracking'
@@ -163,9 +163,12 @@ const forcedChoiceGroups = computed(() =>
         .toSorted((a, b) => a.sortOrder - b.sortOrder),
 );
 
-const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
+// A brand label for the category ("2 soupes") wins; else the catalog's group name, with its option count for a pick-one group.
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number; choices?: { id: string }[] }) => {
     const key = choiceGroupLabelKey(brand.choiceGroupLabels, product.category?.slug, group.maxSelections)
-    return (key ? t(key) : group.name).toLowerCase();
+    return key
+        ? `${group.maxSelections} ${t(key).toLowerCase()}`
+        : choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0);
 };
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));

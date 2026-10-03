@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <!-- Lunch-only ribbon (Mon–Fri lunch service) -->
-                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-[10px] font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
+                <div v-if="product.isLunchOnly" class="absolute top-1 left-1 z-10 px-1.5 py-0.5 rounded-md bg-ygf-orange-100 text-ygf-orange-text text-xs font-semibold uppercase tracking-wide" :title="$t('menu.lunchOnly')">
                     {{ $t('menu.lunchOnlyShort') }}
                 </div>
                 <!-- Placeholder behind the image: a flat tint from the server render on (so without JavaScript, or before hydration, a transparent cut-out never sits on a moving gradient); it only starts shimmering once mounted, and is removed when the image has loaded. -->
@@ -155,6 +155,7 @@ import { useEventBus, useIntersectionObserver, useMounted } from '@vueuse/core'
 import type { Product } from '#engine/types'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatPrice } from '#engine/lib/price'
+import { choiceGroupCountLabel } from '#engine/utils/choiceGroupLabel'
 import { menuImagePriority } from '#engine/utils/menuImagePriority'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useHaptics } from '#engine/composables/useHaptics'
@@ -193,21 +194,8 @@ const forcedChoiceGroups = computed(() =>
         .toSorted((a, b) => a.sortOrder - b.sortOrder),
 );
 
-/**
- * Card-subtitle label for a required choice group. Pick-one groups show how
- * many options there are to choose from — "niveau de piquant (3)" — because
- * "1 niveau de piquant" read as if the set had a single fixed spice level.
- * Multi-select groups keep the pick count ("20 ingrédients"). Group names are
- * DB translations, so option counts are appended rather than pluralised.
- */
-const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number; choices?: { id: string }[] }) => {
-    const name = group.name.toLowerCase();
-    if (group.maxSelections === 1) {
-        const options = group.choices?.length ?? 0;
-        return options > 1 ? `${name} (${options})` : name;
-    }
-    return `${group.maxSelections} ${name}`;
-};
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number; choices?: { id: string }[] }) =>
+    choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0);
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() => productImage.productImageBase(config.public.s3bucketUrl, product?.id));
 const brandPhoto = computed(() => productPhoto(product?.slug));
