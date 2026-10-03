@@ -19,8 +19,8 @@ const LANGUAGES = [
  * outside closes it; Tab moves through the links like through any list.
  *
  * Each brand owns the markup (button, panel, styles) and wires these refs: `rootRef` on the wrapper (click outside),
- * `buttonRef` on the button, `panelId` on the list. The wrapper also carries `data-language-picker` so the mobile menu,
- * which closes itself on Escape, leaves the key to an open picker.
+ * `buttonRef` on the button, `panelId` on the list. The list also carries `data-language-panel`: the mobile menu,
+ * which closes itself on Escape, leaves the key to an open picker by checking for that attribute.
  */
 export function useLanguagePicker(): {
   open: Ref<boolean>

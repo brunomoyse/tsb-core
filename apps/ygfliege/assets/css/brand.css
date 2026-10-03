@@ -3,7 +3,7 @@
    these custom properties exist for ported marketing-page CSS and for values
    utilities can't express (warm borders, eases). */
 :root {
-  --nav-h: 5rem; /* height of the fixed mobile navbar (h-20): the menu and the spacer below it follow it */
+  /* --nav-h (the fixed navbar height) is set on `html` in main.css: a :root declaration here would beat its 640px override. */
   /* Primary colors */
   --ygf-orange: #f58220;
   --ygf-orange-light: #fdba74;

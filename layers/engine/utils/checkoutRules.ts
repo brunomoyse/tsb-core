@@ -2,7 +2,7 @@ import { evaluateCashAmount } from './cashPayment.ts'
 
 /*
  * The decisions of the checkout page, pure: which steps the customer sees, what stops a click on
- * Pay before anything is sent, and which fields are still wrong. useCheckout feeds them the live
+ * Pay before anything is sent, and which fields are still wrong. pages/checkout.vue feeds them the live
  * state and turns the results into toasts, scrolling and analytics events.
  */
 
