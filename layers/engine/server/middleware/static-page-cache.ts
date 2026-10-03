@@ -72,7 +72,8 @@ const render = defineCachedFunction(
 )
 
 export default defineEventHandler(async (event) => {
-  if (event.method !== 'GET' || getRequestHeader(event, FILL_HEADER)) return
+  // In dev a page edited a minute ago must show: nothing is cached there.
+  if (import.meta.dev || event.method !== 'GET' || getRequestHeader(event, FILL_HEADER)) return
   const config = useRuntimeConfig(event).staticPageCache as StaticPageCacheConfig | undefined
   if (!config) return
 
