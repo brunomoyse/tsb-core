@@ -37,7 +37,7 @@
                         @click="handleOrderType(option.value)">
                     <img alt="" :src="option.icon" class="w-4 h-4 shrink-0"/>
                     <span>{{ option.label }}</span>
-                    <span v-if="option.value === 'PICKUP' && policyParams.rate > 0" class="rounded-full bg-tsb-four px-1 py-0.5 text-[10px] font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort', policyParams) }}</span>
+                    <span v-if="option.value === 'PICKUP' && policyParams.rate > 0" class="rounded-full bg-tsb-four px-1 py-0.5 text-xs font-semibold text-primary-700">{{ $t('cart.pickupDiscountShort', policyParams) }}</span>
                 </button>
             </div>
         </header>
@@ -157,7 +157,7 @@
                         {{ $t(deliveryUnavailableKey, policyParams) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
-                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">
                         {{ $t('checkout.free') }}
                     </span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>

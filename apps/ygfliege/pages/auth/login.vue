@@ -8,7 +8,7 @@
                         :key="lang.code"
                         :to="switchLocalePath(lang.code)"
                         :class="[
-                            'inline-flex items-center justify-center min-h-11 min-w-11 px-1.5 text-[11px] rounded-md transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                            'inline-flex items-center justify-center min-h-11 min-w-11 px-1.5 text-xs rounded-md transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                             locale === lang.code
                                 ? 'text-ygf-black font-medium'
                                 : 'text-neutral-600 hover:text-ygf-gray-600'

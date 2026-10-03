@@ -76,7 +76,7 @@
                     <!-- INFO + CONTROLS -->
                     <div class="flex-1 min-w-0">
                         <!-- Row 1: Metadata (small, gray, truncated) -->
-                        <p v-if="itemLabelMeta(item)" class="text-[11px] text-neutral-600 truncate leading-tight mb-0.5">
+                        <p v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate leading-tight mb-0.5">
                             {{ itemLabelMeta(item) }}
                         </p>
 
@@ -90,7 +90,7 @@
                             ({{ itemChoice(item) }})
                         </p>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
                         <!-- What the server quote says about this line, with the way out -->
                         <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
@@ -100,7 +100,7 @@
                                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
                                     {{ formatCents(getItemLineTotalCents(item)) }}
                                 </span>
-                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-[11px] text-neutral-600 tabular-nums">
+                                <span v-if="item.quantity > 1 && getItemExactUnitCents(item) !== null" class="text-xs text-neutral-600 tabular-nums">
                                     {{ item.quantity }} × {{ formatCents(getItemExactUnitCents(item)!) }}
                                 </span>
                             </div>
@@ -175,7 +175,7 @@
                         {{ $t(deliveryUnavailableKey, policyParams) }}
                         <button type="button" data-testid="cart-out-of-zone-switch-to-pickup" class="underline min-h-11 px-1 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded" @click="switchToPickup">{{ $t('delivery.modal.switchToPickup') }}</button>
                     </span>
-                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-[11px] font-semibold uppercase tracking-wide">
+                    <span v-else-if="deliveryFeeCents === 0" class="inline-flex items-center px-2 py-0.5 rounded-full bg-tsb-four text-primary-700 text-xs font-semibold uppercase tracking-wide">
                         {{ $t('checkout.free') }}
                     </span>
                     <span v-else class="tabular-nums">{{ formatCents(deliveryFeeCents) }}</span>

@@ -187,7 +187,7 @@
                     </span>
                     <span class="flex flex-col items-end leading-tight">
                         <span class="ml-auto font-bold text-base tabular-nums">{{ formatCents(payableCents) }}</span>
-                        <span v-if="isQuotePending" class="text-[10px] font-normal opacity-80" data-testid="checkout-quote-updating">{{ $t('cart.quoteUpdating') }}</span>
+                        <span v-if="isQuotePending" class="text-xs font-normal opacity-80" data-testid="checkout-quote-updating">{{ $t('cart.quoteUpdating') }}</span>
                     </span>
                 </UiButton>
                 <div class="safe-area-spacer-bottom" />

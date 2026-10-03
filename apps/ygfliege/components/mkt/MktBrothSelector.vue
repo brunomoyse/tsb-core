@@ -42,7 +42,7 @@
                         {{ $t(`mkt.broths.${active.key}.name`) }}
                         <span
                             v-if="active.vegan"
-                            class="align-middle ml-2 inline-block text-[11px] font-body font-semibold uppercase tracking-wide bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-0.5"
+                            class="align-middle ml-2 inline-block text-xs font-body font-semibold uppercase tracking-wide bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-0.5"
                         >{{ $t('mkt.broths.vegan_badge') }}</span>
                     </h3>
                     <p class="text-gray-600 leading-relaxed mb-4">{{ $t(`mkt.broths.${active.key}.desc`) }}</p>

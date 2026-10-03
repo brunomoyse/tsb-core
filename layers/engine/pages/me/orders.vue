@@ -221,7 +221,7 @@ const getStatusColorClass = (status: string) => {
                                 {{ $t(`cart.${order.type.toLowerCase()}`) }}
                             </span>
                             <span
-                                class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                                class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
                                 :class="isOrderCompleted(order.status) ? getStatusColorClass(order.status) : 'text-primary-700 bg-tsb-four'"
                             >
                                 {{ getStatus(getTrackedOrder(order).status) }}
@@ -268,13 +268,13 @@ const getStatusColorClass = (status: string) => {
                             v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
                             class="mb-3 p-3 bg-primary-50/70 rounded-xl"
                         >
-                            <span class="text-[11px] text-red-700 uppercase tracking-wider">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                            <span class="text-xs text-red-700 uppercase tracking-wider">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
                             <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                         </div>
 
                         <!-- Delivery Address -->
                         <div v-if="order.address" class="mb-3 p-3 bg-white/60 rounded-xl">
-                            <span class="text-[11px] text-neutral-600 uppercase tracking-wider">{{ $t('checkout.deliveryAddress') }}</span>
+                            <span class="text-xs text-neutral-600 uppercase tracking-wider">{{ $t('checkout.deliveryAddress') }}</span>
                             <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                         </div>
 

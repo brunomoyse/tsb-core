@@ -72,7 +72,7 @@
                             </span>
                         </div>
 
-                        <p v-if="!canChangeQuantity(item)" class="text-[11px] text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
+                        <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">{{ $t('cart.customizedItemHint') }}</p>
                         <!-- What the server quote says about this line, with the way out -->
                         <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 

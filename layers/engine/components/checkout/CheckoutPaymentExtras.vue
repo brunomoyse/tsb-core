@@ -285,7 +285,7 @@
                             >
                                 <span>{{ extra.label }}</span>
                                 <span
-                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-600 text-white text-[10px] font-semibold tabular-nums px-1.5"
+                                    class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-primary-600 text-white text-xs font-semibold tabular-nums px-1.5"
                                 >×{{ extra.quantity }}</span>
                                 <span class="rounded-full bg-white/80 border border-primary-200 px-2 py-0.5 tabular-nums">
                                     +{{ formatCents(extra.priceCents) }}
