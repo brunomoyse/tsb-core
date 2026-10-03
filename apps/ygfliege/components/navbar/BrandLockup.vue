@@ -6,13 +6,13 @@
     <NuxtLinkLocale
         to="/"
         :aria-label="$t('nav.home')"
-        class="lockup shrink-0 inline-flex items-center gap-3 min-h-11 rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        class="lockup shrink-0 inline-flex items-center gap-2 lg:gap-3 min-h-11 rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
     >
         <img src="/images/logos/logo-color.svg" alt="" width="40" height="40" class="h-10 w-10 shrink-0" />
         <span class="flex flex-col leading-tight min-w-0">
             <span class="lockup-name" translate="no">Yangguofu</span>
             <!-- 12px by design: part of the logo composition, not running text (the vitrine sets it at --text-xs) -->
-            <span class="lockup-sub"><span lang="zh-Hans">杨国福麻辣烫</span> · Liège</span>
+            <span class="lockup-sub hidden lg:inline"><span lang="zh-Hans">杨国福麻辣烫</span> · Liège</span>
         </span>
     </NuxtLinkLocale>
 </template>

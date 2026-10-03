@@ -46,9 +46,10 @@
             <section ref="stickyHeader" class="sticky z-10 pt-4 sm:pt-6 bg-ygf-bg top-[80px] sm:top-16">
                 <!-- Aligned to the same max-w-7xl container as the product grid
                      so the controls don't stretch full-bleed on wide screens. -->
-                <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3">
+                <!-- Under ~360px the chip drops under the search instead of squeezing the input. -->
+                <section class="max-w-7xl mx-auto mb-4 px-4 flex items-center gap-3 max-[359px]:flex-wrap">
                     <!-- Search Bar (labeled) -->
-                    <div class="relative flex flex-1 sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg">
+                    <div class="relative flex flex-1 max-[359px]:basis-full sm:max-w-md items-center rounded-full bg-white border border-ygf-orange-100 h-11 shadow-ygf-sm transition-colors duration-300 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-ygf-bg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-600 pointer-events-none" viewBox="0 -960 960 960" fill="currentColor">
                             <path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z"/>
                         </svg>
@@ -73,9 +74,9 @@
                             </svg>
                         </button>
                     </div>
-                    <!-- Delivery zone on a phone: the header carries the logo with its name, so the chip sits beside the search (the tablet and desktop header shows it). -->
+                    <!-- Delivery zone on a phone: the header carries the logo with its name, so the chip sits beside the search (the desktop header, from xl up, shows it). -->
                     <ClientOnly>
-                        <DeliveryZoneChip compact class="sm:hidden shrink-0 max-w-[9.5rem]" />
+                        <DeliveryZoneChip compact class="xl:hidden shrink-0 max-w-[9.5rem]" />
                     </ClientOnly>
                 </section>
 
