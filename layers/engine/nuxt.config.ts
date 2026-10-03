@@ -31,6 +31,7 @@ const REQUIRED_PUBLIC_ENV = [
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
 const s3Url = process.env.S3_BUCKET_URL
+const s3Origin = s3Url ? new URL(s3Url).origin : ''
 const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || ''
@@ -60,6 +61,18 @@ const LANGUAGE_COOKIE = 'i18n_redirected'
 
 export default defineNuxtConfig({
   ssr: true,
+
+  app: {
+    head: {
+      link: [
+        // Open the connections the page is about to need while the HTML is still being parsed (audit PR 6.2, P12): the
+        // Product images come from the S3/CDN origin (plain <img>, so the default connection pool), the API is called
+        // With fetch and no credentials (hence `crossorigin`: the anonymous pool).
+        ...(s3Origin ? [{ rel: 'preconnect', href: s3Origin }] : []),
+        { rel: 'preconnect', href: apiOrigin, crossorigin: 'anonymous' as const },
+      ],
+    },
+  },
 
   hooks: {
     ready: (nuxt) => {
