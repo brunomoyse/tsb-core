@@ -111,8 +111,8 @@
             :class="[
               'mt-0.5 h-6 w-6 rounded shrink-0 focus-visible:ring-2',
               showCashAckError
-                ? 'text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
-                : 'text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2',
+                ? 'accent-primary-700 text-primary-700 border-primary-500 focus-visible:ring-ring focus-visible:ring-offset-2'
+                : 'accent-primary-700 text-primary-700 border-neutral-300 focus-visible:ring-ring focus-visible:ring-offset-2',
             ]"
           />
           <span
@@ -221,7 +221,7 @@
             id="chopsticks"
             data-testid="order-extra-chopsticks"
             v-model="addChopsticks"
-            class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="chopsticks" class="text-neutral-700 font-medium">
             {{ $t('checkout.addChopsticks', 'Add Chopsticks') }}
@@ -237,7 +237,7 @@
             id="cutlery"
             data-testid="order-extra-cutlery"
             v-model="addCutlery"
-            class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded"
+            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded"
           />
           <label for="cutlery" class="text-neutral-700 font-medium">
             {{ $t('checkout.addCutlery') }}
@@ -255,7 +255,7 @@
             data-testid="order-extra-wasabi"
             v-model="addWasabi"
             :disabled="isLocked('wasabi')"
-            class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="wasabi" class="text-neutral-700 font-medium">
             {{ $t('checkout.addWasabi') }}
@@ -273,7 +273,7 @@
             data-testid="order-extra-ginger"
             v-model="addGinger"
             :disabled="isLocked('ginger')"
-            class="mr-4 h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+            class="mr-4 h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
           />
           <label for="ginger" class="text-neutral-700 font-medium">
             {{ $t('checkout.addGinger') }}
@@ -292,7 +292,7 @@
               data-testid="order-extra-sauce"
               :checked="addSauce"
               :disabled="isLocked('sauce')"
-              class="h-6 w-6 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
+              class="h-6 w-6 accent-primary-700 text-primary-700 border-neutral-300 rounded disabled:cursor-not-allowed"
               @change="addSauce = !addSauce"
             />
             <label for="add-sauce" class="text-neutral-700 font-medium">

@@ -274,7 +274,7 @@
             :loading="isCheckoutProcessing"
             @click="handleCheckout"
           >
-            <span>
+            <span class="shrink-0">
               <template v-if="isCheckoutProcessing">{{ $t('checkout.processing') }}</template>
               <template v-else>
                 {{
@@ -284,13 +284,14 @@
                 }}
               </template>
             </span>
-            <span class="flex flex-col items-end leading-tight">
+            <!-- min-w-0 + truncate: the "updating" hint gives way instead of pushing the total off the button (uppercase YGF label at 390 px). -->
+            <span class="flex min-w-0 flex-col items-end leading-tight">
               <span class="ml-auto font-bold text-base tabular-nums">{{
                 formatCents(payableCents)
               }}</span>
               <span
                 v-if="isQuotePending"
-                class="text-xs font-normal opacity-80"
+                class="max-w-full truncate text-xs font-normal opacity-80"
                 data-testid="checkout-quote-updating"
                 >{{ $t('cart.quoteUpdating') }}</span
               >

@@ -136,12 +136,20 @@
                   v-for="choice in group.choices.toSorted((a, b) => a.sortOrder - b.sortOrder)"
                   :key="choice.id"
                   :data-testid="'product-modal-choice-' + choice.id"
-                  class="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-200"
+                  class="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-200"
                 >
-                  <span class="flex-1 text-sm text-neutral-900">{{ choice.name }}</span>
-                  <span v-if="toCents(choice.priceModifier) !== 0" class="text-xs text-neutral-600">
-                    {{ toCents(choice.priceModifier) > 0 ? '+' : ''
-                    }}{{ formatPrice(choice.priceModifier) }}
+                  <!-- The price sits under the name: side by side they left a priced option ~56 px at 390 px and pushed the stepper out of its row. -->
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-sm text-neutral-900 [overflow-wrap:anywhere]">{{
+                      choice.name
+                    }}</span>
+                    <span
+                      v-if="toCents(choice.priceModifier) !== 0"
+                      class="block whitespace-nowrap text-xs text-neutral-600"
+                    >
+                      {{ toCents(choice.priceModifier) > 0 ? '+' : ''
+                      }}{{ formatPrice(choice.priceModifier) }}
+                    </span>
                   </span>
                   <QuantityStepper
                     size="sm"

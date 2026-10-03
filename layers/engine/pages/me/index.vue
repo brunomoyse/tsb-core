@@ -733,7 +733,7 @@ const updateNotificationPref = async (
             <input
               v-model="acceptDelete"
               type="checkbox"
-              class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              class="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 accent-primary-600 text-primary-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
             />
             <span class="text-sm text-neutral-600">{{
               t('me.profile.deleteConfirmCheckbox')

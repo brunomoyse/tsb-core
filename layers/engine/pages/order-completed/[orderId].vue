@@ -209,7 +209,7 @@
                 class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-colors hover:bg-tsb-one"
               >
                 <div class="flex-1 min-w-0 pr-3">
-                  <p class="text-sm font-medium text-neutral-900 truncate">
+                  <p class="text-sm font-medium text-neutral-900 [overflow-wrap:anywhere]">
                     <template v-for="(part, i) in orderItemSegments(item)" :key="i">
                       <span
                         v-if="i > 0"

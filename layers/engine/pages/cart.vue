@@ -67,7 +67,7 @@
         >
           <!-- IMAGE — square, rounded, no crop -->
           <div
-            class="w-[68px] h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
+            class="w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
           >
             <picture>
               <source :srcset="itemImage(item.product).avif" type="image/avif" />
@@ -112,8 +112,9 @@
             <CartLineIssues class="mt-2" :item="item" :line-key="lineKeys[lineIndex]" />
 
             <!-- Row 4: Price + Quantity stepper + remove -->
-            <div class="flex items-center justify-between mt-1.5 gap-2">
-              <div class="min-w-0 flex flex-col leading-tight">
+            <div class="flex flex-wrap items-center justify-between mt-1.5 gap-x-2 gap-y-1">
+              <!-- shrink-0: the price never overlaps the stepper; on a very narrow phone the controls wrap below it. -->
+              <div class="shrink-0 flex flex-col leading-tight">
                 <span class="text-[15px] font-bold text-neutral-900 tabular-nums">
                   {{ formatCents(getItemLineTotalCents(item)) }}
                 </span>
@@ -125,7 +126,7 @@
                 </span>
               </div>
 
-              <div class="flex items-center gap-1">
+              <div class="ml-auto flex items-center gap-1">
                 <!-- Stepper: compact pill -->
                 <div class="flex items-center gap-0 bg-neutral-100 rounded-full">
                   <button
