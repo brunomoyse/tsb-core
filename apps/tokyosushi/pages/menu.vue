@@ -392,6 +392,8 @@ import { breadcrumbList, useJsonLd } from '#engine/composables/useJsonLd'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
   sitemap: { priority: 0.9, changefreq: 'weekly' },
+  // The layout leaves the restaurant config to this page on the server (see layouts/default.vue).
+  loadsRestaurantConfig: true,
 })
 
 import type { Product, ProductCategory } from '#engine/types'
@@ -446,19 +448,6 @@ const dismissAllergenNotice = () => {
   showAllergenNotice.value = false
   localStorage.setItem('allergenNoticeDismissed', 'true')
 }
-
-// Restaurant config
-// A config that failed to load says nothing about opening hours: only a loaded config that says "closed" shows the closed banner and only a loaded "ordering off" disables adding to the cart.
-const {
-  isClosed,
-  isPreorderOnly,
-  isOrderingDisabled,
-  preorderTime,
-  loadFailed: configLoadFailed,
-  pending: configPending,
-  retry: retryConfig,
-} = await useOrderingAvailability()
-const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
 // Bumped by the modal's Retry: remounting it runs its product query again.
 const modalAttempt = ref(0)
@@ -530,14 +519,36 @@ const cartStore = useCartStore()
 // SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
 const isMounted = useMounted()
 const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
-const {
-  data: dataCategories,
-  error: categoriesError,
-  pending: categoriesPending,
-  refresh: refetchCategories,
-} = await useGqlQuery<{
-  productCategories: ProductCategory[]
-}>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
+
+/*
+ * The restaurant config (ordering banners, add-to-cart gate) and the categories do not depend on each other, so they
+ * are asked together: one API round-trip on the server instead of two in a row (audit PR 6.1, P10). A config that
+ * failed to load says nothing about opening hours: only a loaded config that says "closed" shows the closed banner and
+ * only a loaded "ordering off" disables adding to the cart.
+ */
+const [
+  {
+    isClosed,
+    isPreorderOnly,
+    isOrderingDisabled,
+    preorderTime,
+    loadFailed: configLoadFailed,
+    pending: configPending,
+    retry: retryConfig,
+  },
+  {
+    data: dataCategories,
+    error: categoriesError,
+    pending: categoriesPending,
+    refresh: refetchCategories,
+  },
+] = await Promise.all([
+  useOrderingAvailability(),
+  useGqlQuery<{
+    productCategories: ProductCategory[]
+  }>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true }),
+])
+const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
 /**
  * Live product updates via WebSocket subscription

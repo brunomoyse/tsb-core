@@ -16,7 +16,7 @@ import { useRestaurantConfig } from './useRestaurantConfig'
  *  - isPreorderOnly / preorderTime: closed right now but a slot today can still be booked ("order now for 19:00").
  *  - isLoading / loadFailed: no config yet, with / without a failed request (retry with `retry`).
  */
-export async function useOrderingAvailability(options: { lazy?: boolean } = {}) {
+export async function useOrderingAvailability(options: { lazy?: boolean; server?: boolean } = {}) {
   /*
    * Everything that needs the component instance is registered BEFORE the first await (see the
    * note in useRestaurantConfig): the clock only exists so a slot that falls inside the

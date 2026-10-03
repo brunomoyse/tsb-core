@@ -197,7 +197,14 @@ const {
   config: restaurantConfig,
   isClosed,
   preorderTime,
-} = await useOrderingAvailability({ lazy: true })
+} = await useOrderingAvailability({
+  lazy: true,
+  /*
+   * The menu asks for the config itself, next to its categories: the layout waiting for it first would make that two
+   * requests one after the other (the page only starts once its layout has resolved).
+   */
+  server: !route.meta.loadsRestaurantConfig,
+})
 
 // The restaurant's JSON-LD (hours from the live config), on every page.
 useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)

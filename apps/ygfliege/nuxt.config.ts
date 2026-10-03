@@ -96,6 +96,11 @@ export default defineNuxtConfig({
     },
   },
 
+  // The brand's own static pages join the engine's list of pages answered from memory (see the engine nuxt.config).
+  runtimeConfig: {
+    staticPageCache: { pages: ['about', 'concept'] },
+  },
+
   // Per-subdirectory long cache headers for static assets. Nitro's
   // Public-asset handler sets Cache-Control directly; routeRules headers
   // Don't override it.

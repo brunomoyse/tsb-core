@@ -50,6 +50,14 @@ const csp = `${[
 
 const engineDir = fileURLToPath(new URL('./', import.meta.url))
 
+const LOCALES = [
+  { code: 'fr', language: 'fr-BE' },
+  { code: 'en', language: 'en' },
+  { code: 'zh', language: 'zh-CN' },
+  { code: 'nl', language: 'nl-BE' },
+] as const
+const LANGUAGE_COOKIE = 'i18n_redirected'
+
 export default defineNuxtConfig({
   ssr: true,
 
@@ -104,15 +112,10 @@ export default defineNuxtConfig({
       optimizeTranslationDirective: false,
     },
     defaultLocale: 'fr',
-    locales: [
-      { code: 'fr', language: 'fr-BE' },
-      { code: 'en', language: 'en' },
-      { code: 'zh', language: 'zh-CN' },
-      { code: 'nl', language: 'nl-BE' },
-    ],
+    locales: [...LOCALES],
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'i18n_redirected',
+      cookieKey: LANGUAGE_COOKIE,
       redirectOn: 'all',
     },
     strategy: 'prefix',
@@ -122,6 +125,15 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    /*
+     * The pages answered from memory (server/middleware/static-page-cache.ts, audit PR 6.1): the same for every visitor.
+     * A brand adds its own (arrays concatenate across layers); personalised pages never belong here.
+     */
+    staticPageCache: {
+      locales: LOCALES.map((l) => l.code),
+      pages: ['terms', 'privacy', 'faq', 'contact', 'account-deletion'],
+      cookie: LANGUAGE_COOKIE,
+    },
     public: {
       baseUrl: process.env.BASE_URL,
       s3bucketUrl: process.env.S3_BUCKET_URL,
@@ -188,6 +200,10 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    // Static files are compressed once at build time (gzip + brotli next to the originals) and served with the encoding
+    // The browser accepts: Nitro does not compress anything itself and tsb-infra configures no compression in Traefik.
+    // Cloudflare (when the zone is proxied) compresses what it relays, but the home server is reached without it.
+    compressPublicAssets: { gzip: true, brotli: true },
     typescript: {
       tsConfig: {
         include: [`${engineDir}server/**/*`],

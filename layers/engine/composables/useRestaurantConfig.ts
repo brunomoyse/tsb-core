@@ -4,8 +4,9 @@ import {
   isPolicyUnsupportedError,
 } from '#engine/utils/orderingPolicy'
 import { type DocumentNode, print } from 'graphql'
-import { type Ref, effectScope, shallowRef, watch } from 'vue'
-import { useNuxtApp, useState } from '#imports'
+import { type Ref, effectScope, onMounted, shallowRef, watch } from 'vue'
+import { useNuxtApp, useRequestEvent, useState } from '#imports'
+import { STATIC_PAGE_FILL_HEADER } from '#engine/utils/staticPageCache'
 import gql from 'graphql-tag'
 import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
@@ -74,6 +75,12 @@ export interface RestaurantConfigResponse {
 interface UseRestaurantConfigOptions {
   // When true, don't block on the initial query — callers render a loading state via the returned `pending` ref. Default preserves the original awaited semantics.
   lazy?: boolean
+  /**
+   * False: the server render does not ask for it (the browser does, unless the page's own call put the answer in the
+   * SSR payload, which it then adopts). For the layout of a page that loads the config itself, so the layout's await
+   * does not hold back the page's own requests (audit PR 6.1, P10).
+   */
+  server?: boolean
 }
 
 /*
@@ -184,6 +191,15 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
   const state = useRestaurantConfigState()
   const policyUnsupported = usePolicyUnsupported()
   const subscriptionStarted = useState<boolean>('restaurant-config-subscribed', () => false)
+  /*
+   * A page rendered for the static-page cache (server/middleware/static-page-cache.ts) is replayed to later visitors
+   * for a few minutes, with the config of the moment it was rendered: the browser asks for the current one once it is
+   * mounted. A page rendered for one visitor carries a config that is seconds old and does not.
+   */
+  const renderedForCache = useState<boolean>('restaurant-config-rendered-for-cache', () => false)
+  if (import.meta.server && useRequestEvent()?.node.req.headers[STATIC_PAGE_FILL_HEADER]) {
+    renderedForCache.value = true
+  }
 
   /*
    * Register the subscription and the watcher synchronously, before any await. After an `await`, Vue's active
@@ -195,11 +211,12 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
    * refresh or of a language change replaces the shared state, which also drops whatever the subscription had
    * merged into the previous answer.
    */
-  ensureLiveUpdates({
-    state,
-    policyUnsupported,
-    started: subscriptionStarted,
-    refetch: makeRefetch(state, policyUnsupported),
+  const refetch = makeRefetch(state, policyUnsupported)
+  ensureLiveUpdates({ state, policyUnsupported, started: subscriptionStarted, refetch })
+  onMounted(() => {
+    if (!renderedForCache.value) return
+    renderedForCache.value = false
+    void refetch().catch(() => undefined)
   })
   const answer = shallowRef<(() => RestaurantConfigResponse | null | undefined) | null>(null)
   watch(
@@ -222,6 +239,7 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
         unsupported: policyUnsupported,
       },
       ...(options.lazy ? { lazy: true } : {}),
+      ...(options.server === false ? { server: false } : {}),
     },
   )
   const { data, refresh, pending, error } = asyncData
