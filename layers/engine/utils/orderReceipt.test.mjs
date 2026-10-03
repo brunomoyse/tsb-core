@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/orderReceipt.test.mjs`.
+// Run: `vp test run layers/engine/utils/orderReceipt.test.mjs`.
 
 import assert from 'node:assert/strict'
 import { buildOrderReceipt } from './orderReceipt.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('delivery order: subtotal, delivery fee and total add up, nothing to round', () => {
   const receipt = buildOrderReceipt({

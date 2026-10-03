@@ -1,5 +1,5 @@
 // Parity check with `tsb-service/internal/modules/order/domain/pricing_test.go` (TestPriceLine).
-// Run: `node --test layers/engine/utils/pricing.test.mjs`. Same cases, same expected results.
+// Run: `vp test run layers/engine/utils/pricing.test.mjs`. Same cases, same expected results.
 
 import {
   exactUnitPriceCents,
@@ -9,7 +9,7 @@ import {
   toCents,
 } from './pricing.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const cases = [
   {

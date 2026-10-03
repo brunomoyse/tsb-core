@@ -1,5 +1,5 @@
 // The pure side of the server quote: totals, blocking, coupon verdict, line issues by key.
-// Run: `node --test layers/engine/utils/orderQuote.test.mjs`.
+// Run: `vp test run layers/engine/utils/orderQuote.test.mjs`.
 
 import {
   blockingOrderIssues,
@@ -19,7 +19,7 @@ import { GqlError } from './gqlError.ts'
 import assert from 'node:assert/strict'
 import { buildQuoteInput } from './orderPayload.ts'
 import { computeCartTotals } from './cartTotals.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const line = (overrides = {}) => ({
   productId: 'p1',

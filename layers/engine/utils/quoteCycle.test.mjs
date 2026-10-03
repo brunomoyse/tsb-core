@@ -1,8 +1,8 @@
 // The quote request cycle: debounce, abort, stale answers, reuse, old backend.
-// Run: `node --test layers/engine/utils/quoteCycle.test.mjs`.
+// Run: `vp test run layers/engine/utils/quoteCycle.test.mjs`.
 
 import { QUOTE_TIMEOUT_MS, createQuoteCycle } from './quoteCycle.ts'
-import { mock, test } from 'node:test'
+import { onTestFinished, test, vi } from 'vite-plus/test'
 import { GqlError } from './gqlError.ts'
 import assert from 'node:assert/strict'
 
@@ -56,7 +56,14 @@ const makeTransport = ({ ignoreAbort = false } = {}) => {
   const calls = []
   const send = (input, signal) =>
     new Promise((resolve, reject) => {
-      const call = { input, aborted: false, resolve: (quote) => resolve(quote), reject }
+      const call = {
+        input,
+        aborted: false,
+        resolve: (quote) => {
+          resolve(quote)
+        },
+        reject,
+      }
       signal.addEventListener('abort', () => {
         call.aborted = true
         // A real fetch rejects; `ignoreAbort` models a transport that still delivers the old answer.
@@ -75,7 +82,7 @@ const flush = () =>
   })
 
 const setup = ({ ignoreAbort, ...extra } = {}) => {
-  mock.timers.enable({ apis: ['setTimeout'] })
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
   const store = makeStore()
   const transport = makeTransport({ ignoreAbort })
   const events = { quotes: [], errors: [] }
@@ -90,12 +97,12 @@ const setup = ({ ignoreAbort, ...extra } = {}) => {
   return { store, transport, events, cycle }
 }
 
-test('the first quote of a visit goes out at once, and the store is pending until it answers', async (t) => {
+test('the first quote of a visit goes out at once, and the store is pending until it answers', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
   assert.equal(store.pending, true)
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   assert.equal(transport.calls.length, 1)
   transport.calls[0].resolve(answer('A'))
   await flush()
@@ -104,38 +111,38 @@ test('the first quote of a visit goes out at once, and the store is pending unti
   assert.equal(store.quote.total, 'A')
 })
 
-test('later changes are debounced: only the last of a burst is sent', async (t) => {
+test('later changes are debounced: only the last of a burst is sent', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
 
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE - 1)
+  vi.advanceTimersByTime(DEBOUNCE - 1)
   cycle.request(req('C'))
-  mock.timers.tick(DEBOUNCE - 1)
+  vi.advanceTimersByTime(DEBOUNCE - 1)
   cycle.request(req('D'))
   assert.equal(transport.calls.length, 1, 'nothing sent while the burst lasts')
   assert.equal(store.pending, true)
-  mock.timers.tick(DEBOUNCE)
+  vi.advanceTimersByTime(DEBOUNCE)
   assert.equal(transport.calls.length, 2)
   assert.deepEqual(transport.calls[1].input, { key: 'D' })
 })
 
-test('an out-of-order answer is ignored: the slow old request never overwrites the new one', async (t) => {
+test('an out-of-order answer is ignored: the slow old request never overwrites the new one', async () => {
   const { store, transport, events, cycle } = setup({ ignoreAbort: true })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
 
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE) // B is in flight
+  vi.advanceTimersByTime(DEBOUNCE) // B is in flight
   cycle.request(req('C'))
-  mock.timers.tick(DEBOUNCE) // C is in flight, B was aborted
+  vi.advanceTimersByTime(DEBOUNCE) // C is in flight, B was aborted
   assert.equal(transport.calls[1].aborted, true)
   assert.equal(transport.calls.length, 3)
 
@@ -153,15 +160,15 @@ test('an out-of-order answer is ignored: the slow old request never overwrites t
   )
 })
 
-test('an answer for inputs the cart has already left is dropped, not shown', async (t) => {
+test('an answer for inputs the cart has already left is dropped, not shown', async () => {
   const { store, transport, cycle } = setup({ ignoreAbort: true })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE) // B in flight
+  vi.advanceTimersByTime(DEBOUNCE) // B in flight
   cycle.request(req('C')) // The cart moved on before B answered
   transport.calls[1].resolve(answer('B'))
   await flush()
@@ -169,40 +176,40 @@ test('an answer for inputs the cart has already left is dropped, not shown', asy
   assert.equal(store.pending, true)
 })
 
-test('announcing the same inputs again (a second surface) neither duplicates nor restarts the request', (t) => {
+test('announcing the same inputs again (a second surface) neither duplicates nor restarts the request', () => {
   const { transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   cycle.request(req('A'))
   assert.equal(transport.calls.length, 1)
   assert.equal(transport.calls[0].aborted, false)
 })
 
-test('back to inputs that are already answered cancels what was asked in between', async (t) => {
+test('back to inputs that are already answered cancels what was asked in between', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
 
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE) // B in flight
+  vi.advanceTimersByTime(DEBOUNCE) // B in flight
   cycle.request(req('A')) // The customer undid the change
   assert.equal(transport.calls[1].aborted, true)
   assert.equal(store.pending, false, 'A is answered: nothing to wait for')
   assert.equal(store.fresh, true)
-  mock.timers.tick(DEBOUNCE * 2)
+  vi.advanceTimersByTime(DEBOUNCE * 2)
   assert.equal(transport.calls.length, 2, 'no further request')
 })
 
-test('a failed request settles the cycle without a quote: surfaces fall back and nothing stays pending', async (t) => {
+test('a failed request settles the cycle without a quote: surfaces fall back and nothing stays pending', async () => {
   const { store, transport, events, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   const offline = GqlError.fromTransport(new TypeError('Failed to fetch'))
   transport.calls[0].reject(offline)
   await flush()
@@ -212,15 +219,15 @@ test('a failed request settles the cycle without a quote: surfaces fall back and
   assert.deepEqual(events.errors, [offline])
   // The next change tries again.
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE)
+  vi.advanceTimersByTime(DEBOUNCE)
   assert.equal(transport.calls.length, 2)
 })
 
-test('an old backend: the validation error is detected once, then the cycle never asks again', async (t) => {
+test('an old backend: the validation error is detected once, then the cycle never asks again', async () => {
   const { store, transport, events, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].reject(
     new GqlError([
       {
@@ -234,60 +241,60 @@ test('an old backend: the validation error is detected once, then the cycle neve
   assert.equal(store.pending, false)
   assert.deepEqual(events.errors, [], 'not reported as an error')
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE * 3)
+  vi.advanceTimersByTime(DEBOUNCE * 3)
   assert.equal(transport.calls.length, 1)
   assert.equal(store.pending, false)
 })
 
-test('an empty cart clears the quote and cancels anything in flight', async (t) => {
+test('an empty cart clears the quote and cancels anything in flight', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE)
+  vi.advanceTimersByTime(DEBOUNCE)
   cycle.request(null)
   assert.equal(transport.calls[1].aborted, true)
   assert.equal(store.quote, null)
   assert.equal(store.pending, false)
 })
 
-test('stop() aborts and forgets (no surface shows a quote any more)', (t) => {
+test('stop() aborts and forgets (no surface shows a quote any more)', () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   cycle.stop()
   assert.equal(transport.calls[0].aborted, true)
   assert.equal(store.wantedKey, '')
   assert.equal(store.pending, false)
 })
 
-test('isCurrent decides whether the coupon of the cart is re-checked against an answer', async (t) => {
+test('isCurrent decides whether the coupon of the cart is re-checked against an answer', async () => {
   let current = true
   const { transport, events, cycle } = setup({ isCurrent: () => current })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   current = false
   transport.calls[0].resolve(answer('A'))
   await flush()
   assert.deepEqual(events.quotes, [])
 })
 
-test('a request that never answers times out: the cycle settles as failed, so nothing stays pending (Pay is not disabled forever)', async (t) => {
+test('a request that never answers times out: the cycle settles as failed, so nothing stays pending (Pay is not disabled forever)', async () => {
   const { store, transport, events, cycle } = setup({ ignoreAbort: true })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   assert.equal(transport.calls.length, 1)
   assert.equal(store.pending, true)
-  mock.timers.tick(QUOTE_TIMEOUT_MS - 1)
+  vi.advanceTimersByTime(QUOTE_TIMEOUT_MS - 1)
   await flush()
   assert.equal(store.pending, true, 'still waiting just before the deadline')
-  mock.timers.tick(1)
+  vi.advanceTimersByTime(1)
   await flush()
   assert.equal(transport.calls[0].aborted, true, 'the hung request is aborted')
   assert.equal(store.pending, false)
@@ -301,39 +308,39 @@ test('a request that never answers times out: the cycle settles as failed, so no
   )
   // The next change tries again.
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE)
+  vi.advanceTimersByTime(DEBOUNCE)
   assert.equal(transport.calls.length, 2)
 })
 
-test('the timeout is per request and is dropped when the request answers or is superseded', async (t) => {
+test('the timeout is per request and is dropped when the request answers or is superseded', async () => {
   const { store, transport, events, cycle } = setup({ ignoreAbort: true })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
-  mock.timers.tick(QUOTE_TIMEOUT_MS * 2)
+  vi.advanceTimersByTime(QUOTE_TIMEOUT_MS * 2)
   await flush()
   assert.equal(store.fresh, true, 'an answered request is not failed later by its timer')
   cycle.request(req('B'))
-  mock.timers.tick(DEBOUNCE) // B in flight (never answers)
+  vi.advanceTimersByTime(DEBOUNCE) // B in flight (never answers)
   cycle.request(req('C'))
-  mock.timers.tick(DEBOUNCE) // C in flight; B superseded
-  mock.timers.tick(QUOTE_TIMEOUT_MS - DEBOUNCE) // B's deadline passes: it must not fail the store
+  vi.advanceTimersByTime(DEBOUNCE) // C in flight; B superseded
+  vi.advanceTimersByTime(QUOTE_TIMEOUT_MS - DEBOUNCE) // B's deadline passes: it must not fail the store
   await flush()
   assert.equal(store.pending, true, 'C is still waited for')
   assert.deepEqual(events.errors, [])
-  mock.timers.tick(DEBOUNCE)
+  vi.advanceTimersByTime(DEBOUNCE)
   await flush()
   assert.equal(store.pending, false)
   assert.equal(events.errors.length, 1)
 })
 
-test('refresh() asks again for the current inputs even though they are already answered', async (t) => {
+test('refresh() asks again for the current inputs even though they are already answered', async () => {
   const { store, transport, events, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A1'))
   await flush()
   cycle.request(req('A')) // Same key: no new request
@@ -353,12 +360,12 @@ test('refresh() asks again for the current inputs even though they are already a
   ])
 })
 
-test('refresh() resolves null (callers carry on as before) when it fails, times out, or has nothing to ask', async (t) => {
+test('refresh() resolves null (callers carry on as before) when it fails, times out, or has nothing to ask', async () => {
   const { store, transport, cycle } = setup({ ignoreAbort: true })
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   assert.equal(await cycle.refresh(), null, 'nothing requested yet')
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
 
@@ -368,7 +375,7 @@ test('refresh() resolves null (callers carry on as before) when it fails, times 
   assert.equal(store.pending, false)
 
   const hung = cycle.refresh()
-  mock.timers.tick(QUOTE_TIMEOUT_MS)
+  vi.advanceTimersByTime(QUOTE_TIMEOUT_MS)
   assert.equal(await hung, null)
   assert.equal(store.pending, false)
 
@@ -376,11 +383,11 @@ test('refresh() resolves null (callers carry on as before) when it fails, times 
   assert.equal(await cycle.refresh(), null, 'stopped: nothing to ask')
 })
 
-test('refresh() on an old backend marks it unsupported and resolves null', async (t) => {
+test('refresh() on an old backend marks it unsupported and resolves null', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].resolve(answer('A'))
   await flush()
   const refreshed = cycle.refresh()
@@ -396,11 +403,11 @@ test('refresh() on an old backend marks it unsupported and resolves null', async
   assert.equal(store.unsupported, true)
 })
 
-test('RATE_LIMITED is a transient failure: totals fall back to the client and nothing is pending', async (t) => {
+test('RATE_LIMITED is a transient failure: totals fall back to the client and nothing is pending', async () => {
   const { store, transport, cycle } = setup()
-  t.after(() => mock.timers.reset())
+  onTestFinished(() => vi.useRealTimers())
   cycle.request(req('A'))
-  mock.timers.tick(0)
+  vi.advanceTimersByTime(0)
   transport.calls[0].reject(
     new GqlError([{ message: 'slow down', extensions: { code: 'RATE_LIMITED' } }]),
   )

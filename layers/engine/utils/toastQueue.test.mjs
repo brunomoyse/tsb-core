@@ -1,9 +1,9 @@
 // The toast queue: one at a time, grouped toasts replace each other, bounded (audit M19).
-// Run: `node --test layers/engine/utils/toastQueue.test.mjs`.
+// Run: `vp test run layers/engine/utils/toastQueue.test.mjs`.
 
 import { MAX_QUEUED_TOASTS, advanceToast, enqueueToast, hasToastGroup } from './toastQueue.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 let id = 0
 const toast = (message, extra = {}) => ({ id: ++id, message, variant: 'neutral', ...extra })

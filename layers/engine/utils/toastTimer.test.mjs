@@ -1,6 +1,6 @@
 import { MIN_RESUME_MS, createToastTimer } from './toastTimer.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 // A clock the test moves by hand; timers fire when `advance` passes them.
 const fakeEnv = () => {

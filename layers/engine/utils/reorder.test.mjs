@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/reorder.test.mjs`.
+// Run: `vp test run layers/engine/utils/reorder.test.mjs`.
 
 import { countUnits, planReorder } from './reorder.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const choice = (id, groupId) => ({
   id,

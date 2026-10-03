@@ -1,9 +1,9 @@
 // Image priority on the menu page (audit PR 3.7, P2).
-// Run: `node --test layers/engine/utils/menuImagePriority.test.mjs`.
+// Run: `vp test run layers/engine/utils/menuImagePriority.test.mjs`.
 
 import { categoryCardOffsets, menuImagePriority } from './menuImagePriority.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('only the first two images of the page are high priority', () => {
   const high = Array.from({ length: 60 }, (_, i) => menuImagePriority(i)).filter(

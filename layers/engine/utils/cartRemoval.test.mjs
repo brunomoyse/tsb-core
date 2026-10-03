@@ -1,9 +1,9 @@
 // The undo batching of removed cart lines (audit M19).
-// Run: `node --test layers/engine/utils/cartRemoval.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartRemoval.test.mjs`.
 
 import { REMOVAL_TOAST_GROUP, nextRemovalBatch, removalToastMessage } from './cartRemoval.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('a removal with no toast alive starts a fresh batch', () => {
   assert.deepEqual(nextRemovalBatch([], 'a', false), ['a'])

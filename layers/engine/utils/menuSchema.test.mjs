@@ -1,9 +1,9 @@
 // The schema.org Menu of the menu page (audit PR 3.8, P9).
-// Run: `node --test layers/engine/utils/menuSchema.test.mjs`.
+// Run: `vp test run layers/engine/utils/menuSchema.test.mjs`.
 
 import { buildMenuSchema, menuItemImage } from './menuSchema.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const cat = { id: 'c1', name: 'Soupes' }
 const product = (over = {}) => ({

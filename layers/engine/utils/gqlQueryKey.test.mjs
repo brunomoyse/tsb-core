@@ -1,9 +1,9 @@
 // The useAsyncData key of a GraphQL query includes its variables (audit R3).
-// Run: `node --test layers/engine/utils/gqlQueryKey.test.mjs`.
+// Run: `vp test run layers/engine/utils/gqlQueryKey.test.mjs`.
 
 import assert from 'node:assert/strict'
 import { gqlQueryKey } from './gqlQueryKey.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const Q = 'query Product($id: ID!) { product(id: $id) { id } }'
 

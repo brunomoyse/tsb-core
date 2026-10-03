@@ -1,5 +1,5 @@
 // The checkout gate: open, or closed with a bookable slot left today (audit M6).
-// Run: `node --test layers/engine/utils/orderingAvailability.test.mjs`.
+// Run: `vp test run layers/engine/utils/orderingAvailability.test.mjs`.
 
 import {
   bookableSlots,
@@ -8,7 +8,7 @@ import {
   preparationBufferMs,
 } from './orderingAvailability.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const NOW = Date.parse('2026-10-01T09:00:00Z')
 const at = (minutes) => new Date(NOW + minutes * 60_000).toISOString()

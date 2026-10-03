@@ -1,5 +1,5 @@
 // Parity check with `tsb-service/pkg/money/rounding_test.go`, in integer cents.
-// Run: `node --test layers/engine/utils/money.test.mjs`.
+// Run: `vp test run layers/engine/utils/money.test.mjs`.
 // Uses Node's built-in test runner so no new dependency is added to tsb-core.
 
 import {
@@ -11,7 +11,7 @@ import {
   toCents,
 } from './money.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('all last-digit cases', () => {
   const cases = [

@@ -1,5 +1,5 @@
 // Quantity changes on cart lines with choice selections (audit PR 1.4).
-// Run: `node --test layers/engine/utils/cartLines.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartLines.test.mjs`.
 
 import {
   addSelections,
@@ -17,7 +17,7 @@ import {
   sortSelections,
 } from './cartLines.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const broth = (quantity) => ({ groupId: 'g-broth', choiceId: 'c-tomato', quantity })
 const spice = (quantity) => ({ groupId: 'g-spice', choiceId: 'c-mild', quantity })
@@ -182,7 +182,7 @@ test('selectionsSignature does not depend on the order the selections come in', 
 
 test('merge then remove/increment finds the line (audit PR 1.4 review)', () => {
   // Two identical non-uniform lines (2 bowls, one of each choice) merge into one with summed selections.
-  const stored = sortSelections([gbA(1), gaZ(1)]) // what the store keeps (canonical)
+  const stored = sortSelections([gbA(1), gaZ(1)]) // What the store keeps (canonical)
   const merged = mergeIntoLine(
     { quantity: 2, selections: stored },
     { quantity: 2, selections: stored },

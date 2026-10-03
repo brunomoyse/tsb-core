@@ -1,9 +1,9 @@
 // The `?q=` of the menu page (audit PR 3.8, P9).
-// Run: `node --test layers/engine/utils/menuSearch.test.mjs`.
+// Run: `vp test run layers/engine/utils/menuSearch.test.mjs`.
 
 import { MAX_SEARCH_LENGTH, searchFromQuery } from './menuSearch.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('a term is taken as typed, trimmed', () => {
   assert.equal(searchFromQuery('  sushi '), 'sushi')

@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/delivery.test.mjs`.
+// Run: `vp test run layers/engine/utils/delivery.test.mjs`.
 
 import { deliveryZoneStatus, isDeliverable } from '../lib/delivery.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('an address inside the zone is deliverable', () => {
   assert.equal(isDeliverable(4200, '4000'), true)

@@ -1,7 +1,7 @@
 /*
  * Randomised parity between the engine's cart total (`computeCartTotals`, integer cents) and the
  * backend's CreateOrder, re-implemented here from scratch with exact decimal arithmetic.
- * Run: `node --test layers/engine/utils/cartTotals.parity.test.mjs`.
+ * Run: `vp test run layers/engine/utils/cartTotals.parity.test.mjs`.
  *
  * The reference below is a line-by-line transcription of the Go code (tsb-service, branch
  * audit/phase-2), deliberately NOT sharing any code with the engine:
@@ -33,7 +33,7 @@
 
 import assert from 'node:assert/strict'
 import { computeCartTotals } from './cartTotals.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 // ---------------------------------------------------------------------------------------------
 // Minimal shopspring/decimal

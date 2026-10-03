@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  // Unit tests only; the Playwright suites under */e2e are run by `playwright test`.
+  test: {
+    include: ['layers/**/*.test.mjs'],
+  },
   staged: {
     '*': 'vp check --fix',
   },

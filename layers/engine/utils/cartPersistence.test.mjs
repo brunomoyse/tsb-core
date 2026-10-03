@@ -1,5 +1,5 @@
 // The persisted cart: slim versioned shape, migration of the v0 / v1 shapes, lines that cannot be recovered.
-// Run: `node --test layers/engine/utils/cartPersistence.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartPersistence.test.mjs`.
 
 import {
   CART_SCHEMA_VERSION,
@@ -12,7 +12,7 @@ import {
 import assert from 'node:assert/strict'
 import { lineTotalCents } from './pricing.ts'
 import { orderItemPayload } from './orderPayload.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const MAX = 99
 

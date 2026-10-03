@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/orderItemLabel.test.mjs`.
+// Run: `vp test run layers/engine/utils/orderItemLabel.test.mjs`.
 
 import assert from 'node:assert/strict'
 import { orderItemChoiceText } from './orderItemLabel.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const product = {
   choices: [

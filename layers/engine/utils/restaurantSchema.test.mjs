@@ -1,9 +1,9 @@
 // The schema.org Restaurant JSON-LD (audit PR 3.8, P8).
-// Run: `node --test layers/engine/utils/restaurantSchema.test.mjs`.
+// Run: `vp test run layers/engine/utils/restaurantSchema.test.mjs`.
 
 import { buildRestaurantSchema, openingHoursSpecification } from './restaurantSchema.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const brand = (over = {}) => ({
   name: 'Brand',

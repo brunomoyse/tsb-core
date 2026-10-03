@@ -1,11 +1,11 @@
 // Mirrors the backend total: `tsb-service/internal/modules/order/infrastructure/repository.go`
 // (CreateOrder) and `internal/api/graphql/resolver/order.go` (discount clamp).
-// Run: `node --test layers/engine/utils/payable.test.mjs`.
+// Run: `vp test run layers/engine/utils/payable.test.mjs`.
 
 import { amountToMinimumCents, computePayableCents, pickupDiscountCents } from './payable.ts'
 import assert from 'node:assert/strict'
 import { roundCentsToNearest10 } from './money.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 test('roundCentsToNearest10 matches the euro helper rule', () => {
   const cases = [

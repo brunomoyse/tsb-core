@@ -1,9 +1,9 @@
 // What a cart line does with a quote issue (message + actions), and accepting a new price.
-// Run: `node --test layers/engine/utils/cartIssues.test.mjs`.
+// Run: `vp test run layers/engine/utils/cartIssues.test.mjs`.
 
 import { describeLineIssue, describeLineIssues, quotedSnapshotPricing } from './cartIssues.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const issue = (code, currentPrice = null) => ({ code, currentPrice })
 

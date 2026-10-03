@@ -14,6 +14,7 @@
     "lint": "vp lint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs",
     "check": "vp check && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs",
     "fmt": "vp fmt",
+    "test": "vp test run",
     "test:e2e": "npm run test:e2e:all",
     "test:e2e:tsb": "npm run test:e2e -w tokyosushi",
     "test:e2e:ygf": "npm run test:e2e -w ygfliege",

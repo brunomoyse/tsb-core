@@ -1,9 +1,9 @@
 // The cart -> API payload: createOrder and quoteOrder share one item builder.
-// Run: `node --test layers/engine/utils/orderPayload.test.mjs`.
+// Run: `vp test run layers/engine/utils/orderPayload.test.mjs`.
 
 import { buildCreateOrderInput, buildQuoteInput, orderItemPayload } from './orderPayload.ts'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const bowl = {
   product: { id: 'bowl', price: '10.00', choices: [{ id: 'broth-b', priceModifier: '1.50' }] },

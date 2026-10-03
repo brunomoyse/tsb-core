@@ -1,5 +1,5 @@
 // GqlError, the code -> i18n map and the Sentry filter.
-// Run: `node --test layers/engine/utils/gqlErrors.test.mjs`.
+// Run: `vp test run layers/engine/utils/gqlErrors.test.mjs`.
 
 import {
   GQL_ERROR_KEYS,
@@ -18,7 +18,7 @@ import {
 } from './gqlError.ts'
 import { existsSync, readFileSync } from 'node:fs'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const response = (code, message = 'raw backend text', extra = {}) =>
   new GqlError(

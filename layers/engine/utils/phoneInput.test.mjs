@@ -1,8 +1,8 @@
-// Run: `node --test layers/engine/utils/phoneInput.test.mjs`.
+// Run: `vp test run layers/engine/utils/phoneInput.test.mjs`.
 
 import assert from 'node:assert/strict'
 import { classifyPhoneInput } from './phoneInput.ts'
-import { test } from 'node:test'
+import { test } from 'vite-plus/test'
 
 const kind = async (value) => (await classifyPhoneInput(value)).kind
 
