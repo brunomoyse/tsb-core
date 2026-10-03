@@ -10,7 +10,9 @@ export function useOrderItemLabel() {
 
   type Item = Parameters<typeof orderLineSegments>[0]
   return {
-    orderItemMeta: (item: Item): string | undefined => cartLineMeta(item, { showProductCode }),
+    // Spaced ("E5 · Plateaux"): the line wraps at the separators like on the cart surfaces instead of breaking inside a word.
+    orderItemMeta: (item: Item): string | undefined =>
+      cartLineMeta(item, { showProductCode, spaced: true }),
     orderItemName: (item: Item): string => item.product.name,
     orderItemSegments: (item: Item) => orderLineSegments(item, showProductCode),
     orderItemChoice: (item: Item): string | undefined => orderItemChoiceText(item),

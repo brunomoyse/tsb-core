@@ -235,12 +235,16 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
   })
 
   /* ── Labels (colours stay per brand) ── */
-  const getStatus = (status: string): string => {
+  // A delivery has no counter pick-up step: for a delivery order the kitchen has finished (AWAITING_PICK_UP) the label is the "preparing" one, as in the status timeline.
+  const getStatus = (status: string, type?: string): string => {
     const map: Record<string, string> = {
       PENDING: t('me.orders.status.pending'),
       CONFIRMED: t('me.orders.status.confirmed'),
       PREPARING: t('me.orders.status.preparing'),
-      AWAITING_PICK_UP: t('me.orders.status.awaitingPickup'),
+      AWAITING_PICK_UP:
+        type === 'DELIVERY'
+          ? t('me.orders.status.preparing')
+          : t('me.orders.status.awaitingPickup'),
       OUT_FOR_DELIVERY: t('me.orders.status.outForDelivery'),
       PICKED_UP: t('me.orders.status.pickedUp'),
       DELIVERED: t('me.orders.status.delivered'),

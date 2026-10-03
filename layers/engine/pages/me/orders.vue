@@ -228,7 +228,7 @@ const getStatusColorClass = (status: string) => {
                     : 'text-primary-700 bg-tsb-four'
                 "
               >
-                {{ getStatus(getTrackedOrder(order).status) }}
+                {{ getStatus(getTrackedOrder(order).status, order.type) }}
               </span>
             </div>
             <p class="mt-0.5 text-xs text-neutral-600 tabular-nums">

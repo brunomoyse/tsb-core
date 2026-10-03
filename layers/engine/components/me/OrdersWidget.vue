@@ -155,7 +155,7 @@
                     class="inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-primary-400 status-pulse" />
-                    {{ getStatus(getTrackedOrder(order).status) }}
+                    {{ getStatus(getTrackedOrder(order).status, order.type) }}
                   </span>
                 </div>
                 <p class="mt-0.5 text-xs text-neutral-600 tabular-nums" data-allow-mismatch="text">
@@ -260,7 +260,7 @@
                     <span class="text-xs text-neutral-700 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
-                        class="block text-xs text-neutral-600 truncate leading-tight"
+                        class="block text-xs text-neutral-600 break-words leading-tight"
                       >
                         {{ orderItemMeta(item) }}
                       </span>
@@ -402,7 +402,7 @@
                     class="inline-block max-w-full px-2 py-0.5 rounded-full text-xs font-medium"
                     :class="statusBadgeClass(order.status)"
                   >
-                    {{ getStatus(order.status) }}
+                    {{ getStatus(order.status, order.type) }}
                   </span>
                 </div>
                 <p class="mt-0.5 text-xs text-neutral-600 tabular-nums" data-allow-mismatch="text">
@@ -499,7 +499,7 @@
                     <span class="text-xs text-neutral-700 min-w-0">
                       <span
                         v-if="orderItemMeta(item)"
-                        class="block text-xs text-neutral-600 truncate leading-tight"
+                        class="block text-xs text-neutral-600 break-words leading-tight"
                       >
                         {{ orderItemMeta(item) }}
                       </span>
