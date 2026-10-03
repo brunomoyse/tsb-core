@@ -168,11 +168,11 @@
     "email": "E-mail",
     "emailPlaceholder": "Voer uw e-mailadres in",
     "phone": "Telefoon",
-    "phonePlaceholder": "Telefoonnummer",
+    "phonePlaceholder": "Telefoon",
     "invalidPhone": "Ongeldig telefoonnummer",
     "address": {
       "label": "Adres",
-      "placeholder": "Begin uw adres te typen…",
+      "placeholder": "Straat en nummer…",
       "noMatch": "Geen adres gevonden.",
       "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
       "houseNumberRequired": "Huisnummer is verplicht.",

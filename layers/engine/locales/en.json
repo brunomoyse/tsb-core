@@ -168,11 +168,11 @@
     "email": "Email",
     "emailPlaceholder": "Enter your email address",
     "phone": "Phone",
-    "phonePlaceholder": "Phone number",
+    "phonePlaceholder": "Phone",
     "invalidPhone": "Invalid phone number",
     "address": {
       "label": "Address",
-      "placeholder": "Start typing your address…",
+      "placeholder": "Street and number…",
       "noMatch": "No address found.",
       "callHint": "If your address isn't listed, feel free to call us at",
       "houseNumberRequired": "A house number is required.",

@@ -168,11 +168,11 @@
     "email": "电子邮件",
     "emailPlaceholder": "请输入您的电子邮件地址",
     "phone": "电话",
-    "phonePlaceholder": "电话号码",
+    "phonePlaceholder": "电话",
     "invalidPhone": "电话号码无效",
     "address": {
       "label": "地址",
-      "placeholder": "开始输入您的地址…",
+      "placeholder": "街道和门牌号…",
       "noMatch": "未找到地址。",
       "callHint": "如果找不到您的地址，请随时致电我们：",
       "houseNumberRequired": "必须填写门牌号。",
