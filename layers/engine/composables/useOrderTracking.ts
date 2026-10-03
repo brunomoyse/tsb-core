@@ -61,7 +61,7 @@ interface UseOrderTrackingOptions {
   /** The orders as loaded by the query; null/undefined while not loaded yet. */
   orders: Readonly<Ref<Order[] | null | undefined>>
   /** Re-run the orders query (reconnect recovery + polling fallback). */
-  refetch: () => Promise<unknown> | unknown
+  refetch: () => unknown
   /** Expand active orders the first time they show up (the /me widget does). */
   autoExpandActive?: boolean
   /**
@@ -91,7 +91,7 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
       Date.parse(live.updatedAt) < Date.parse(order.updatedAt)
     )
       return order
-    return { ...order, ...live } as Order
+    return { ...order, ...live }
   }
 
   const trackedOrders = computed<Order[] | null>(

@@ -1,6 +1,12 @@
 // Stores: cart.ts
 
-import type { CartItem, CartState, Product, ProductChoice, ProductChoiceSelection } from '@/types'
+import type {
+  CartItem,
+  CartState,
+  Product,
+  ProductChoice,
+  ProductChoiceSelection,
+} from '#engine/types'
 import {
   lineSignature,
   matchesLine,
@@ -45,8 +51,9 @@ const normalizeSelections = (
     )
   }
 
-  // A lone legacy choice applies to every unit of the line.
-  if (choice) {
+  // A lone legacy choice applies to every unit of the line. Without its group (a query that
+  // Did not select it) it stays a plain choiceId on the order line.
+  if (choice?.choiceGroupId) {
     return [{ groupId: choice.choiceGroupId, choiceId: choice.id, quantity: choiceQuantity }]
   }
 

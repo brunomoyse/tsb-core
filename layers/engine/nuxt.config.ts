@@ -3,13 +3,13 @@ import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared engine layer — brand-agnostic infrastructure extended by every brand
-// app under apps/*. Owns: modules, engine plugins, i18n plumbing, runtimeConfig,
-// security headers/CSP, sitemap, sentry (conditional), SSR.
+// App under apps/*. Owns: modules, engine plugins, i18n plumbing, runtimeConfig,
+// Security headers/CSP, sitemap, sentry (conditional), SSR.
 //
 // Brand apps (the *main* app) provide pages/components/layouts/theme/assets and
-// set the `#brand` alias to their own root. In a layer's nuxt.config, `~`
-// resolves to the *main app*, not this layer, so all engine-local paths are
-// built from import.meta.url.
+// Set the `#brand` alias to their own root. In a layer's nuxt.config, `~`
+// Resolves to the *main app*, not this layer, so all engine-local paths are
+// Built from import.meta.url.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Derive origins for CSP from environment variables (dev defaults).
@@ -34,6 +34,8 @@ const csp = `${[
   "worker-src 'self' blob:",
 ].join('; ')};`
 
+const engineDir = fileURLToPath(new URL('./', import.meta.url))
+
 export default defineNuxtConfig({
   ssr: true,
 
@@ -55,8 +57,8 @@ export default defineNuxtConfig({
   ],
 
   // Pinia store auto-import. The stores live in THIS layer, so point the
-  // scanner at an absolute path — a brand app extending the engine has no
-  // stores/ dir of its own, and pinia only scans the main app by default.
+  // Scanner at an absolute path — a brand app extending the engine has no
+  // Stores/ dir of its own, and pinia only scans the main app by default.
   pinia: {
     storesDirs: [fileURLToPath(new URL('./stores/**', import.meta.url))],
   },
@@ -87,7 +89,7 @@ export default defineNuxtConfig({
     },
     strategy: 'prefix',
     // Base + #brand locale merge. Absolute path so the module resolves it
-    // from this layer regardless of which app extends it.
+    // From this layer regardless of which app extends it.
     vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
   },
 
@@ -142,6 +144,26 @@ export default defineNuxtConfig({
     },
     '/_nuxt/**': {
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
+  },
+
+  // Nuxt only adds layers under <rootDir>/layers to the generated tsconfigs, so
+  // Register this layer's files with the brand app's app/node/server projects
+  // (used by `vp check` type checking through layers/engine/tsconfig.json).
+  typescript: {
+    tsConfig: {
+      include: [`${engineDir}**/*`],
+      exclude: [`${engineDir}server/**`, `${engineDir}e2e/**`, `${engineDir}nuxt.config.ts`],
+    },
+    nodeTsConfig: {
+      include: [`${engineDir}nuxt.config.ts`, `${engineDir}types/nuxt-config.d.ts`],
+    },
+  },
+  nitro: {
+    typescript: {
+      tsConfig: {
+        include: [`${engineDir}server/**/*`],
+      },
     },
   },
 

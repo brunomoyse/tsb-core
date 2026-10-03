@@ -190,7 +190,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { BrandConfig } from '#engine/types/brand'
-import CheckoutPhoneCapture from '~/components/checkout/CheckoutPhoneCapture.vue'
+import CheckoutPhoneCapture from '#engine/components/checkout/CheckoutPhoneCapture.vue'
 import type { RestaurantTimeSlot } from '#engine/composables/useRestaurantConfig'
 import { bookableSlots } from '#engine/utils/orderingAvailability'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
@@ -232,7 +232,7 @@ const { trackEvent } = useTracking()
 const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
 // Delivery/Pickup options. A takeaway-only brand (brand.deliveryEnabled
-// false) keeps delivery visible but disabled ("available soon").
+// False) keeps delivery visible but disabled ("available soon").
 const { deliveryEnabled = true } = useAppConfig().brand
 const collectionOptions = [
   {

@@ -1,4 +1,4 @@
-import type { User } from '@/types'
+import type { User } from '#engine/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
@@ -57,7 +57,9 @@ export default defineNuxtPlugin({
   parallel: true,
   setup(nuxtApp) {
     onNuxtReady(() => {
-      nuxtApp.runWithContext(syncAuth).catch((err: unknown) => reportError(err, 'auth.sync'))
+      nuxtApp.runWithContext(syncAuth).catch((err: unknown) => {
+        reportError(err, 'auth.sync')
+      })
     })
   },
 })
@@ -65,10 +67,10 @@ export default defineNuxtPlugin({
 async function syncAuth(): Promise<void> {
   // Read before the first await: the Nuxt context only holds for the synchronous part.
   const cfg = useRuntimeConfig()
-  const { useAuthStore } = await import('~/stores/auth')
+  const { useAuthStore } = await import('#engine/stores/auth')
   const authStore = useAuthStore()
 
-  const { useOidc } = await import('~/composables/useOidc')
+  const { useOidc } = await import('#engine/composables/useOidc')
   const { isAuthenticated, silentRenew, removeUser, getAccessToken } = useOidc()
 
   const oidcAuthed = await isAuthenticated()
@@ -90,7 +92,7 @@ async function syncAuth(): Promise<void> {
   if (!authStore.user && oidcAuthed) {
     const token = await getAccessToken()
     if (!token) return
-    const url = cfg.public.graphqlHttp as string
+    const url = cfg.public.graphqlHttp
     try {
       const res = await $fetch<{ data?: { me: User }; errors?: unknown[] }>(url, {
         method: 'POST',

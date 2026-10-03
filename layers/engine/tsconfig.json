@@ -1,0 +1,12 @@
+{
+  // The engine layer has no .nuxt of its own: type-check it through the
+  // tokyosushi app's generated projects, which include the engine files (see
+  // `typescript` in nuxt.config.ts). Requires `nuxt prepare` in apps/tokyosushi.
+  "files": [],
+  "references": [
+    { "path": "../../apps/tokyosushi/.nuxt/tsconfig.app.json" },
+    { "path": "../../apps/tokyosushi/.nuxt/tsconfig.server.json" },
+    { "path": "../../apps/tokyosushi/.nuxt/tsconfig.shared.json" },
+    { "path": "../../apps/tokyosushi/.nuxt/tsconfig.node.json" }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { Address } from '~/types'
+import type { Address } from '#engine/types'
 
 /**
  * Formats an address object into a string.

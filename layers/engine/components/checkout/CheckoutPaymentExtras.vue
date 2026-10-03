@@ -446,7 +446,7 @@ import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import type { Product, ProductCategory } from '#engine/types'
 import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
-import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
+import CheckoutCouponInput from '#engine/components/checkout/CheckoutCouponInput.vue'
 import { DELIVERY_MINIMUM_CENTS } from '#engine/lib/fees'
 import { evaluateCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
@@ -659,14 +659,14 @@ const onPaymentKeydown = (e: KeyboardEvent) => {
         ? false
         : isOnlinePayment.value
   setOnlinePayment(wantOnline)
-  nextTick(() => (wantOnline ? onlineRadioRef.value : cashRadioRef.value)?.focus())
+  nextTick().then(() => (wantOnline ? onlineRadioRef.value : cashRadioRef.value)?.focus())
 }
 
 // Auto-focus the acknowledgement checkbox when the user switches to Cash — the ack control is far enough below the radio that users miss it otherwise.
 const cashAckRef = ref<HTMLInputElement | null>(null)
 watch(isOnlinePayment, (online, prev) => {
   if (prev !== undefined && !online) {
-    nextTick(() => cashAckRef.value?.focus())
+    nextTick().then(() => cashAckRef.value?.focus())
   }
 })
 

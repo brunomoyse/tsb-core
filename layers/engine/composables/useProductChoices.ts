@@ -70,7 +70,7 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
     for (const [choiceId, selectedQty] of Object.entries(selectedChoiceQuantities.value)) {
       if (selectedQty <= 0) continue
       const choice = product.choices.find((c) => c.id === choiceId)
-      if (!choice) continue
+      if (!choice?.choiceGroupId) continue
       byGroup[choice.choiceGroupId] = (byGroup[choice.choiceGroupId] ?? 0) + selectedQty
     }
 

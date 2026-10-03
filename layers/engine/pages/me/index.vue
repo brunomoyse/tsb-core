@@ -8,10 +8,10 @@ import {
   useNuxtApp,
   useSwitchLocalePath,
 } from '#imports'
-import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import AddressAutocomplete from '#engine/components/form/AddressAutocomplete.vue'
 import { EUROPEAN_COUNTRIES } from '#engine/utils/europeanCountries'
-import OrdersWidget from '~/components/me/OrdersWidget.vue'
-import UserForm from '~/components/form/UserForm.vue'
+import OrdersWidget from '#engine/components/me/OrdersWidget.vue'
+import UserForm from '#engine/components/form/UserForm.vue'
 import { formatAddress } from '#engine/utils/utils'
 import gql from 'graphql-tag'
 import { print } from 'graphql'

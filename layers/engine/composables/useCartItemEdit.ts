@@ -1,4 +1,4 @@
-import type { CartItem } from '@/types'
+import type { CartItem } from '#engine/types'
 import type { Ref } from 'vue'
 import { useState } from '#imports'
 

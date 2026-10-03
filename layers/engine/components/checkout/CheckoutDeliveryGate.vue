@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import DeliveryZonePicker from '~/components/delivery/DeliveryZonePicker.vue'
+import DeliveryZonePicker from '#engine/components/delivery/DeliveryZonePicker.vue'
 import { useId } from 'vue'
 
 const { japaneseAccents = false } = useAppConfig().brand

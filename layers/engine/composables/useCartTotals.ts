@@ -7,11 +7,11 @@ import {
   totalsFromQuote,
 } from '#engine/utils/orderQuote'
 import { exactUnitPriceCents, lineTotalCents } from '#engine/utils/pricing'
-import type { CartItem } from '@/types'
+import type { CartItem } from '#engine/types'
 import { buildQuoteInput } from '#engine/utils/orderPayload'
 import { computeCartTotals } from '#engine/utils/cartTotals'
 import { useAuthStore } from '#engine/stores/auth'
-import { useCartStore } from '@/stores/cart'
+import { useCartStore } from '#engine/stores/cart'
 import { useQuoteStore } from '#engine/stores/quote'
 import { useTracking } from '#engine/composables/useTracking'
 

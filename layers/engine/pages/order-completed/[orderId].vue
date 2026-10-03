@@ -334,7 +334,7 @@ import { computed, watch } from 'vue'
 import { definePageMeta, ref, useRoute } from '#imports'
 import { formatDate, formatTime, isSameBrusselsDay } from '#engine/utils/datetime'
 import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderItemLabel'
-import OrderStatusTimeline from '@/components/order/OrderStatusTimeline.vue'
+import OrderStatusTimeline from '#engine/components/order/OrderStatusTimeline.vue'
 
 import { useNow } from '@vueuse/core'
 import { useOrderCompleted } from '#engine/composables/useOrderCompleted'

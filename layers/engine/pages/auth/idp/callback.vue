@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import { definePageMeta, onMounted, ref, useRoute } from '#imports'
-import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
+import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 

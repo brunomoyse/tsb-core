@@ -51,7 +51,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, useAttrs } from 'vue'
-import DeliveryZoneModal from '~/components/delivery/DeliveryZoneModal.vue'
+import DeliveryZoneModal from '#engine/components/delivery/DeliveryZoneModal.vue'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'

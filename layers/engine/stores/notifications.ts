@@ -1,4 +1,4 @@
-import type { Notification, NotifyPayload } from '@/types'
+import type { Notification, NotifyPayload } from '#engine/types'
 import { advanceToast, enqueueToast, hasToastGroup } from '#engine/utils/toastQueue'
 import { createToastTimer } from '#engine/utils/toastTimer'
 import { defineStore } from 'pinia'
@@ -99,7 +99,9 @@ export const useNotificationsStore = defineStore('notifications', {
 
     armTimer(): void {
       if (!import.meta.client || !this.current) return
-      const timer = getClock(() => this.dismiss())
+      const timer = getClock(() => {
+        this.dismiss()
+      })
       if (this.current.persistent) timer.hold()
       else timer.start(this.current.duration)
     },

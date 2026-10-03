@@ -183,8 +183,8 @@
 <script lang="ts" setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRuntimeConfig } from '#imports'
-import ProfileNameForm from '~/components/auth/ProfileNameForm.vue'
-import StepIndicator from '~/components/global/StepIndicator.vue'
+import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
+import StepIndicator from '#engine/components/global/StepIndicator.vue'
 import { isValidEmail } from '#engine/lib/validators'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'

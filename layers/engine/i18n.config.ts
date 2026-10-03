@@ -5,13 +5,17 @@ import nl from './locales/nl.json'
 import zh from './locales/zh.json'
 import { brand as brandConfig } from '#brand/brand'
 // The extending brand app's locale overrides (resolved via the #brand alias,
-// which each app points at its own root). Each brand supplies at least `brandName`.
+// Which each app points at its own root). Each brand supplies at least `brandName`.
 import brandEn from '#brand/locales/en.json'
 import brandFr from '#brand/locales/fr.json'
 import brandNl from '#brand/locales/nl.json'
 import brandZh from '#brand/locales/zh.json'
 
 type Messages = Record<string, unknown>
+// The per-locale message type vue-i18n expects in `messages`.
+type LocaleMessage = NonNullable<
+  Awaited<ReturnType<Parameters<typeof defineI18nConfig>[0]>>['messages']
+>['fr']
 
 // Deep-merge brand overrides onto the base messages (brand wins on leaf keys).
 function deepMerge(base: Messages, override: Messages): Messages {
@@ -35,7 +39,7 @@ function deepMerge(base: Messages, override: Messages): Messages {
 }
 
 // Replace the `__BRAND__` and `__PHONE__` tokens in every string with the active
-// brand's name and phone number (brand.ts). Base locale strings stay
+// Brand's name and phone number (brand.ts). Base locale strings stay
 // Brand-neutral while rendering the active brand.
 function applyBrand(node: unknown, brandName: string): unknown {
   if (typeof node === 'string')
@@ -49,10 +53,10 @@ function applyBrand(node: unknown, brandName: string): unknown {
   return node
 }
 
-function build(base: Messages, brand: Messages): Messages {
+function build(base: Messages, brand: Messages): LocaleMessage {
   const merged = deepMerge(base, brand)
   const brandName = (merged.brandName as string) || ''
-  return applyBrand(merged, brandName) as Messages
+  return applyBrand(merged, brandName) as LocaleMessage
 }
 
 export default defineI18nConfig(() => ({

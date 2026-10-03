@@ -30,9 +30,9 @@ const oidcNoise = [
 
 if (cfg.public.sentryDsn) {
   Sentry.init({
-    dsn: cfg.public.sentryDsn as string,
-    environment: (cfg.public.sentryEnvironment as string) || 'production',
-    release: (cfg.public.sentryRelease as string) || undefined,
+    dsn: cfg.public.sentryDsn,
+    environment: cfg.public.sentryEnvironment || 'production',
+    release: cfg.public.sentryRelease || undefined,
 
     /*
      * Route envelopes through our own origin to bypass ad-blockers and
@@ -51,7 +51,16 @@ if (cfg.public.sentryDsn) {
     replaysOnErrorSampleRate: 0,
 
     // Drop PII-ish breadcrumbs (URLs with email/token) automatically.
-    sendDefaultPii: false,
+    // Sentry v11 replaced sendDefaultPii with dataCollection, whose defaults collect
+    // User info, cookies, bodies, query params and GraphQL variables. Opt out explicitly.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpBodies: [],
+      urlQueryParams: false,
+      graphQL: { variables: false },
+      stackFrameVariables: false,
+    },
 
     ignoreErrors: oidcNoise,
 

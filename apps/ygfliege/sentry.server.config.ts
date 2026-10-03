@@ -10,6 +10,15 @@ if (dsn) {
     environment: env,
     release,
     tracesSampleRate: 0.1,
-    sendDefaultPii: false,
+    // Sentry v11 replaced sendDefaultPii with dataCollection, whose defaults collect
+    // User info, cookies, bodies, query params and GraphQL variables. Opt out explicitly.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpBodies: [],
+      urlQueryParams: false,
+      graphQL: { variables: false },
+      stackFrameVariables: false,
+    },
   })
 }

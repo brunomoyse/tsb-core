@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import AuthFlow from '~/components/auth/AuthFlow.vue'
+import AuthFlow from '#engine/components/auth/AuthFlow.vue'
 import { useCartStore } from '#engine/stores/cart'
 import { useLocalePath } from '#imports'
 

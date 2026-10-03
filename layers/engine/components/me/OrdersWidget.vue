@@ -676,7 +676,7 @@ import { orderItemChoiceText, orderItemLabelParts } from '#engine/utils/orderIte
 import LoadError from '#engine/components/LoadError.vue'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
-import OrderStatusTimeline from '~/components/order/OrderStatusTimeline.vue'
+import OrderStatusTimeline from '#engine/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
 import { formatPrice } from '#engine/lib/price'
 import gql from 'graphql-tag'

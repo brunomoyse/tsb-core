@@ -116,7 +116,7 @@
 import type { Address, UpdateUserRequest } from '#engine/types'
 import { EUROPEAN_COUNTRIES, getCountryName } from '#engine/utils/europeanCountries'
 import { ref, watch } from 'vue'
-import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import AddressAutocomplete from '#engine/components/form/AddressAutocomplete.vue'
 import type { CountryCode } from 'libphonenumber-js'
 import { formatAddress } from '#engine/utils/utils'
 import { useI18n } from 'vue-i18n'

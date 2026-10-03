@@ -1,5 +1,5 @@
 import { navigateTo, useCartStore, useLocalePath } from '#imports'
-import type { CartItem } from '~/types'
+import type { CartItem } from '#engine/types'
 import { useCartItemEdit } from './useCartItemEdit'
 import { type CartLineFocusOptions } from './useCartLineFocus'
 import { useCartRemoval } from './useCartRemoval'

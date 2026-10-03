@@ -50,7 +50,7 @@ export function useCartRemoval(focus?: CartLineFocusOptions) {
       })
       trackEvent('product_removal_undone', { product_id: line.product.id, quantity: line.quantity })
     }
-    impact('Light')
+    void impact('Light')
   }
 
   const removeLine = (item: CartItem): void => {
@@ -80,9 +80,14 @@ export function useCartRemoval(focus?: CartLineFocusOptions) {
       duration: 5000,
       variant: 'neutral',
       group: REMOVAL_TOAST_GROUP,
-      action: { label: t('cart.undo'), handler: () => restore(restorable) },
+      action: {
+        label: t('cart.undo'),
+        handler: () => {
+          restore(restorable)
+        },
+      },
     })
-    impact('Medium')
+    void impact('Medium')
     trackEvent('product_removed_from_cart', {
       product_id: item.product.id,
       product_name: item.product.name,
@@ -100,7 +105,7 @@ export function useCartRemoval(focus?: CartLineFocusOptions) {
       selections: item.selectedChoices,
       quantity: item.quantity,
     })
-    impact('Light')
+    void impact('Light')
     trackEvent('product_quantity_decremented', {
       product_id: item.product.id,
       new_quantity: item.quantity,
@@ -118,10 +123,14 @@ export function useCartRemoval(focus?: CartLineFocusOptions) {
   const { keepFocus } = useCartLineFocus(focus ?? { container: () => null, fallback: () => null })
   return {
     removeLine: (item: CartItem): void => {
-      void keepFocus(() => removeLine(item))
+      void keepFocus(() => {
+        removeLine(item)
+      })
     },
     decrementLine: (item: CartItem): void => {
-      void keepFocus(() => decrementLine(item))
+      void keepFocus(() => {
+        decrementLine(item)
+      })
     },
     decrementProduct,
   }

@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import DeliveryZonePicker from '~/components/delivery/DeliveryZonePicker.vue'
+import DeliveryZonePicker from '#engine/components/delivery/DeliveryZonePicker.vue'
 import { ref } from 'vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'

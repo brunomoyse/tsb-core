@@ -1,6 +1,6 @@
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '~/stores/notifications'
+import { useNotificationsStore } from '#engine/stores/notifications'
 import { useRuntimeConfig } from '#imports'
 
 export function useInvoiceDownload() {
@@ -14,11 +14,11 @@ export function useInvoiceDownload() {
 
       // Attach OIDC Bearer token
       if (import.meta.client) {
-        const { useOidc } = await import('~/composables/useOidc')
+        const { useOidc } = await import('#engine/composables/useOidc')
         const { getAccessToken } = useOidc()
         const token = await getAccessToken()
         if (token) {
-          headers['Authorization'] = `Bearer ${token}`
+          headers.Authorization = `Bearer ${token}`
         }
       }
 
@@ -33,7 +33,7 @@ export function useInvoiceDownload() {
       const disposition = response.headers.get('Content-Disposition')
       let filename = `invoice-${orderId}.pdf`
       if (disposition) {
-        const [, extracted] = disposition.match(/filename="(.+?)"/u) ?? []
+        const [, extracted] = /filename="(.+?)"/u.exec(disposition) ?? []
         if (extracted) filename = extracted
       }
 

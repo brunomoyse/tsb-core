@@ -208,7 +208,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import type { Address } from '#engine/types'
-import AddressAutocomplete from '~/components/form/AddressAutocomplete.vue'
+import AddressAutocomplete from '#engine/components/form/AddressAutocomplete.vue'
 import { brand } from '#brand/brand'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { formatAddress } from '#engine/utils/utils'

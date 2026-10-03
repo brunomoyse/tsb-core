@@ -1,11 +1,11 @@
 import { type OrderingConfigInput, canPlaceOrder } from '#engine/utils/orderingAvailability'
-import type { User } from '@/types'
+import type { User } from '#engine/types'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
-import { useAuthStore } from '@/stores/auth'
-import { useCartStore } from '@/stores/cart'
-import { useTracking } from '~/composables/useTracking'
+import { useAuthStore } from '#engine/stores/auth'
+import { useCartStore } from '#engine/stores/cart'
+import { useTracking } from '#engine/composables/useTracking'
 
 const ME = print(gql`
   query {
@@ -58,25 +58,25 @@ export function useAuthCallback() {
 
   async function processCallback() {
     // Verify token is available before making the query
-    const { useOidc } = await import('~/composables/useOidc')
+    const { useOidc } = await import('#engine/composables/useOidc')
     const { getAccessToken } = useOidc()
     await getAccessToken()
 
     const data = await $gqlFetch<{ me: User }>(ME)
     if (data) {
       authStore.setUser(data.me)
-      identifyUser(data.me)
+      identifyUser()
     }
 
     trackEvent('user_logged_in', { method: 'oidc' })
 
     const returnTo = consumeReturnTo()
     if (returnTo) {
-      navigateTo(returnTo)
+      await navigateTo(returnTo)
       return
     }
     if (cartStore.products.length === 0) {
-      navigateTo(localePath('menu'))
+      await navigateTo(localePath('menu'))
       return
     }
     /*
@@ -89,7 +89,7 @@ export function useAuthCallback() {
      * user might still want to browse.
      */
     const canCheckout = await isCheckoutAvailable()
-    navigateTo(localePath(canCheckout ? 'checkout' : 'menu'))
+    await navigateTo(localePath(canCheckout ? 'checkout' : 'menu'))
   }
 
   async function isCheckoutAvailable(): Promise<boolean> {

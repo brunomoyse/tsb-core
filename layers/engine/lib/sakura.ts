@@ -63,15 +63,14 @@ class Sakura {
     this.el.style.overflow = 'hidden'
     this.el.style.position = 'relative'
 
-    this.createPetal = this.createPetal.bind(this)
-
     this.el.setAttribute(
       'data-sakura-anim-id',
       window.requestAnimationFrame(this.createPetal).toString(),
     )
   }
 
-  createPetal() {
+  // Arrow field so requestAnimationFrame callbacks keep `this`.
+  createPetal = () => {
     if (this.el.dataset.sakuraAnimId) {
       setTimeout(() => {
         window.requestAnimationFrame(this.createPetal)

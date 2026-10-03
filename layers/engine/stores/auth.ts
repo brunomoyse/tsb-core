@@ -1,4 +1,4 @@
-import type { User } from '@/types'
+import type { User } from '#engine/types'
 import { defineStore } from 'pinia'
 import { reportError } from '#engine/utils/reportError'
 
@@ -15,7 +15,8 @@ export const useAuthStore = defineStore('auth', {
       if (this.user) {
         Object.assign(this.user, user)
       } else {
-        this.user = user
+        // Callers pass a full profile when no user is loaded yet (e.g. updateMe's result).
+        this.user = user as User
       }
     },
     clearUser() {
@@ -29,7 +30,7 @@ export const useAuthStore = defineStore('auth', {
         localStorage.removeItem('auth')
       }
       try {
-        const { useOidc } = await import('~/composables/useOidc')
+        const { useOidc } = await import('#engine/composables/useOidc')
         const { signOut } = useOidc()
         await signOut()
       } catch (error) {
@@ -50,7 +51,7 @@ export const useAuthStore = defineStore('auth', {
         localStorage.removeItem('auth')
       }
       try {
-        const { useOidc } = await import('~/composables/useOidc')
+        const { useOidc } = await import('#engine/composables/useOidc')
         const { removeUser } = useOidc()
         await removeUser()
       } catch (error) {

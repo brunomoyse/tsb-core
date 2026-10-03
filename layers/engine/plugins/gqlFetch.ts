@@ -22,13 +22,13 @@ interface GqlResponse {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const cfg = useRuntimeConfig()
-  const httpURL = cfg.public.graphqlHttp as string
+  const httpURL = cfg.public.graphqlHttp
   const localePath = useLocalePath()
 
   /** Get access token from OIDC client (client-side only) */
   const getOidcToken = async (): Promise<string | null> => {
     if (import.meta.server) return null
-    const { useOidc } = await import('~/composables/useOidc')
+    const { useOidc } = await import('#engine/composables/useOidc')
     const { getAccessToken } = useOidc()
     return getAccessToken()
   }
@@ -108,7 +108,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     body: { query: string; variables: Record<string, unknown> },
     signal?: AbortSignal,
   ): Promise<GqlResponse> =>
-    await $fetch(httpURL, {
+    $fetch<GqlResponse, string>(httpURL, {
       method: 'POST',
       body,
       credentials: 'omit',
@@ -141,14 +141,14 @@ export default defineNuxtPlugin((nuxtApp) => {
   const attemptRefresh = async (): Promise<boolean> => {
     try {
       if (import.meta.server) return false
-      const { useOidc } = await import('~/composables/useOidc')
+      const { useOidc } = await import('#engine/composables/useOidc')
       const { silentRenew } = useOidc()
       const user = await silentRenew()
       return Boolean(user)
     } catch (err: unknown) {
       // Expected when the session is over (not reported): send the customer back to log in.
       if (import.meta.dev) console.warn('[gqlFetch] silent renew failed', err)
-      navigateTo(`${localePath('auth-login')}?session=expired`)
+      void navigateTo(`${localePath('auth-login')}?session=expired`)
       return false
     }
   }

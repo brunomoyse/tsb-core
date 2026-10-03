@@ -5,9 +5,9 @@ import {
   planReorder,
 } from '#engine/utils/reorder'
 import { navigateTo, useCartStore, useLocalePath, useState } from '#imports'
-import type { Order } from '~/types'
+import type { Order } from '#engine/types'
 import { useI18n } from 'vue-i18n'
-import { useNotificationsStore } from '~/stores/notifications'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 /*
  * "Re-order" of a past order (audit M16).
@@ -72,7 +72,7 @@ export function useReorder() {
           }
         : { message: t('reorder.success', { count: added }), variant: 'success' },
     )
-    navigateTo(localePath('/checkout'))
+    void navigateTo(localePath('/checkout'))
   }
 
   const reorder = (order: Order) => {
