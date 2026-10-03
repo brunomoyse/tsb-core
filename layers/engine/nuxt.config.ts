@@ -94,6 +94,8 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    // Before @nuxtjs/i18n, which asks for the locale files this registers while it sets itself up.
+    fileURLToPath(new URL('./build/i18n-messages', import.meta.url)),
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
@@ -125,6 +127,16 @@ export default defineNuxtConfig({
       optimizeTranslationDirective: false,
     },
     defaultLocale: 'fr',
+    compilation: {
+      // The FAQ answers carry their own <br> and <strong> and are rendered as HTML on purpose (our own copy, not user input).
+      // Locale files loaded lazily are checked for HTML, inline messages never were: say so instead of warning on every build.
+      strictMessage: false,
+    },
+    experimental: {
+      // The lazily-loaded messages (build/i18n-messages.ts) become hashed static files: precompressed, cached for good.
+      // As the Nitro route they answer with a 10-second cache and no compression.
+      prerenderMessages: true,
+    },
     locales: [...LOCALES],
     detectBrowserLanguage: {
       useCookie: true,
@@ -196,6 +208,10 @@ export default defineNuxtConfig({
       },
     },
     '/_nuxt/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
+    // The language files (build/i18n-messages.ts): the folder name is a hash of their content.
+    '/_i18n/**': {
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
     },
   },
