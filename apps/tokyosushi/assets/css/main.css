@@ -45,7 +45,7 @@ html {
 body {
     padding-bottom: var(--page-bottom-pad, 0px);
 }
-@media (min-width: 641px) {
+@media (min-width: 640px) {
     html { --nav-h: 0px; }
 }
 

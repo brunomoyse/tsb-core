@@ -13,7 +13,7 @@
         </Head>
 
         <Body class="bg-ygf-bg overflow-x-hidden">
-        <NuxtLoadingIndicator color="#F58220" :height="2" />
+        <NuxtLoadingIndicator color="var(--ygf-orange)" :height="2" />
         <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             {{ $t('common.skipToContent') }}
         </a>

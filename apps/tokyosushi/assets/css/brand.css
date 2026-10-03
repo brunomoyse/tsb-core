@@ -11,7 +11,7 @@
 
 html {
     background-color: #F6F5F2;
-    color-scheme: light;
+    color-scheme: only light;
 }
 
 /* Brand accent tokens (HSL channels), consumed as primary / primary-hover /
@@ -24,8 +24,6 @@ html {
     --ring: 0 72.2% 50.6%;                /* red-600: focus ring, 4.8:1 on white and >= 4.07:1 on the tsb surfaces (WCAG 1.4.11) */
     /* Width of the desktop side navbar; engine pages offset fixed bars by it. */
     --side-rail-width: 142px;
-    --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 0 0% 100%;
 
     --radius-control: 0.75rem;           /* buttons, inputs, cards */
     --radius-container: 1rem;            /* modals, panels */

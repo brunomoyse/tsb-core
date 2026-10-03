@@ -1,5 +1,10 @@
 import animate from 'tailwindcss-animate'
 
+/** Brand orange. GUIDELINES.md says #F58220; the franchisor's design kit uses #EB6100 and is awaiting a decision, so the
+ *  value stays this one. It is spelled once here for Tailwind; brand.css (--ygf-orange) and the theme-color meta in
+ *  nuxt.config.ts are the only other places, and the loading bar reads the CSS variable. See layers/engine/TOKENS.md. */
+const YGF_ORANGE = '#F58220'
+
 /** Yangguofu Malatang Liège theme. Palette, fonts, radii and warm shadows come
  *  from the official brand guide (malatang GUIDELINES.md). The shadcn tokens,
  *  keyframes and container settings are shared scaffolding (same as the other
@@ -24,7 +29,7 @@ module.exports = {
             // neutrals; class names stay stable if hex values evolve.
             colors: {
                 'ygf': {
-                    DEFAULT: '#F58220',
+                    DEFAULT: YGF_ORANGE,
                     'light': '#FDBA74',
                     'dark': '#D96A10',
                     'bg': '#FFF7ED',
@@ -42,7 +47,7 @@ module.exports = {
                     'border': 'rgba(242, 123, 32, 0.12)',
                 },
                 // Warm neutrals replace Tailwind's default cool `gray` scale, so a stray gray-* utility reads as part of the brand.
-                // 400 is decor only (about 2.7:1 on white); 500 and up pass AA for text.
+                // 400 is decor only (about 2.7:1 on white); 500 passes on white (4.8:1) but not on cream (4.43:1); use 600 and up for text.
                 'gray': {
                     50: '#FAF8F5',
                     100: '#F5F1EC',
@@ -70,13 +75,13 @@ module.exports = {
                 'ygf-orange': {
                     // Bare `ygf-orange` utilities (ring-ygf-orange, etc.) need
                     // this DEFAULT; without it they silently emit nothing.
-                    DEFAULT: '#F58220',
+                    DEFAULT: YGF_ORANGE,
                     50: '#FFF7ED',
                     100: '#FFEDD5',
                     200: '#FED7AA',
                     300: '#FDBA74',
                     400: '#FB923C',
-                    500: '#F58220',
+                    500: YGF_ORANGE,
                     600: '#D96A10',
                     700: '#C2570C',
                     800: '#9A3412',
@@ -123,7 +128,7 @@ module.exports = {
                     200: '#FED7AA',
                     300: '#FDBA74',
                     400: '#FB923C',
-                    500: '#F58220',
+                    500: YGF_ORANGE,
                     600: '#D96A10',
                     700: '#C2570C',
                     800: '#9A3412',
@@ -135,30 +140,6 @@ module.exports = {
                     foreground: "hsl(var(--primary-foreground))",
                     hover: '#9A3412',
                     soft: '#FFEDD5',
-                },
-                secondary: {
-                    DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))",
-                },
-                destructive: {
-                    DEFAULT: "hsl(var(--destructive))",
-                    foreground: "hsl(var(--destructive-foreground))",
-                },
-                muted: {
-                    DEFAULT: "hsl(var(--muted))",
-                    foreground: "hsl(var(--muted-foreground))",
-                },
-                accent: {
-                    DEFAULT: "hsl(var(--accent))",
-                    foreground: "hsl(var(--accent-foreground))",
-                },
-                popover: {
-                    DEFAULT: "hsl(var(--popover))",
-                    foreground: "hsl(var(--popover-foreground))",
-                },
-                card: {
-                    DEFAULT: "hsl(var(--card))",
-                    foreground: "hsl(var(--card-foreground))",
                 },
             },
             // Contract overrides where the raw orange scale fails contrast: solid

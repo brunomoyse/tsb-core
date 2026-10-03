@@ -59,9 +59,11 @@
         color: var(--ygf-white);
     }
 
-    .btn-primary:not(:disabled):hover {
-        background: var(--ygf-orange-on-white-hover);
-        border-color: var(--ygf-orange-on-white-hover);
+    @media (hover: hover) {
+        .btn-primary:not(:disabled):hover {
+            background: var(--ygf-orange-on-white-hover);
+            border-color: var(--ygf-orange-on-white-hover);
+        }
     }
 
     .btn-secondary {
@@ -70,10 +72,12 @@
         color: var(--ygf-orange-text);
     }
 
-    .btn-secondary:not(:disabled):hover {
-        background: var(--ygf-orange-on-white);
-        border-color: var(--ygf-orange-on-white);
-        color: var(--ygf-white);
+    @media (hover: hover) {
+        .btn-secondary:not(:disabled):hover {
+            background: var(--ygf-orange-on-white);
+            border-color: var(--ygf-orange-on-white);
+            color: var(--ygf-white);
+        }
     }
 
     /* On orange/photo backgrounds — the guide's inverted CTA. */
@@ -83,9 +87,11 @@
         color: var(--ygf-black);
     }
 
-    .btn-white:not(:disabled):hover {
-        background: var(--ygf-cream);
-        border-color: var(--ygf-cream);
+    @media (hover: hover) {
+        .btn-white:not(:disabled):hover {
+            background: var(--ygf-cream);
+            border-color: var(--ygf-cream);
+        }
     }
 
     /* Size and ghost variants emitted by the engine's <UiButton>. */
@@ -99,8 +105,10 @@
         color: var(--ygf-black);
     }
 
-    .btn-ghost:not(:disabled):hover {
-        background: var(--ygf-orange-bg);
+    @media (hover: hover) {
+        .btn-ghost:not(:disabled):hover {
+            background: var(--ygf-orange-bg);
+        }
     }
 
     /* Tertiary: underlined orange text, no fill or border. */
@@ -119,8 +127,10 @@
         transition: color var(--duration-normal) var(--ease-out);
     }
 
-    .btn-link:not(:disabled):hover {
-        color: var(--ygf-orange-on-white-hover);
+    @media (hover: hover) {
+        .btn-link:not(:disabled):hover {
+            color: var(--ygf-orange-on-white-hover);
+        }
     }
 
     /* ===== CARD ===== */
@@ -137,9 +147,11 @@
 
     /* Lift only where the whole card is a control — opt in with .card-interactive
        so static cards (order summaries, receipts) don't animate under the cursor. */
-    .card-interactive:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
+    @media (hover: hover) {
+        .card-interactive:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
     }
 
     /* Specificity must beat `.card-interactive:hover` below, or a selected card
@@ -150,8 +162,10 @@
         box-shadow: var(--shadow-md);
     }
 
-    .card.card-selected:hover {
-        box-shadow: var(--shadow-lg);
+    @media (hover: hover) {
+        .card.card-selected:hover {
+            box-shadow: var(--shadow-lg);
+        }
     }
 
     /* ===== FORM FIELD ===== */
@@ -230,9 +244,11 @@
        on specificity, so without these guards hovering a *selected* chip
        reverted the fill to near-white while the label stayed white — an
        invisible label. Keep the guards if you add another selected variant. */
-    .chip:not(:disabled):not([aria-pressed="true"]):not([aria-selected="true"]):not(.chip-selected):hover {
-        background: var(--ygf-orange-bg);
-        border-color: var(--ygf-orange-light);
+    @media (hover: hover) {
+        .chip:not(:disabled):not([aria-pressed="true"]):not([aria-selected="true"]):not(.chip-selected):hover {
+            background: var(--ygf-orange-bg);
+            border-color: var(--ygf-orange-light);
+        }
     }
 
     .chip[aria-pressed="true"],
@@ -243,11 +259,13 @@
         color: var(--ygf-white);
     }
 
-    .chip[aria-pressed="true"]:not(:disabled):hover,
-    .chip[aria-selected="true"]:not(:disabled):hover,
-    .chip-selected:not(:disabled):hover {
-        background: var(--ygf-orange-on-white-hover);
-        border-color: var(--ygf-orange-on-white-hover);
+    @media (hover: hover) {
+        .chip[aria-pressed="true"]:not(:disabled):hover,
+        .chip[aria-selected="true"]:not(:disabled):hover,
+        .chip-selected:not(:disabled):hover {
+            background: var(--ygf-orange-on-white-hover);
+            border-color: var(--ygf-orange-on-white-hover);
+        }
     }
 
     /* Non-interactive variant for badges (halal, vegan, "nouveau"). */
@@ -255,6 +273,20 @@
         min-height: 0; /* a badge, not a target */
         cursor: default;
         pointer-events: none;
+    }
+
+    /* The "x2" count on an order line: the outlined white pill of a static chip. */
+    .qty-pill {
+        flex-shrink: 0;
+        padding: 0.4375rem 0.875rem;
+        border: var(--border-default);
+        border-radius: var(--radius-btn);
+        background: var(--ygf-white);
+        color: var(--ygf-black);
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.2;
+        white-space: nowrap;
     }
 
     /* ===== QUANTITY STEPPER ===== */
@@ -285,9 +317,11 @@
                     color var(--duration-fast) var(--ease-out);
     }
 
-    .stepper-btn:not(:disabled):hover {
-        background: var(--ygf-orange-on-white);
-        color: var(--ygf-white);
+    @media (hover: hover) {
+        .stepper-btn:not(:disabled):hover {
+            background: var(--ygf-orange-on-white);
+            color: var(--ygf-white);
+        }
     }
 
     .stepper-btn:disabled {

@@ -26,6 +26,26 @@ fails contrast (YGF: `backgroundColor.primary`, `textColor.primary`, `borderColo
   least 3:1 (WCAG 1.4.11). Never `ring-<colour>-100…400`.
 - Do not tell an error from the brand red by colour alone (Tokyo Sushi: red-600 vs red-700): pair it with
   an icon and the tinted box.
+- **Danger guidance.** In Tokyo Sushi the brand accent *is* red (`primary` = red-600), so a danger state has
+  no colour of its own to hide behind: a CTA and an error would look alike. Anything that means "danger" (an
+  error message, a refused payment, a destructive confirmation) is therefore never a bare red word or a red
+  button: it is an alert icon plus a tinted box (`bg-red-50 border border-red-200 text-red-700`; `red-*` is
+  reserved for errors), with a text that says what happened. Yangguofu keeps red out of its UI except for promos
+  and errors, where the same icon and tinted box apply.
+
+## Brand orange (Yangguofu)
+
+`#F58220` stays the brand orange: GUIDELINES.md specifies it, and the franchisor's design kit uses `#EB6100`
+(the kit is awaiting the franchisor's decision; do not switch before it comes). Decorative orange (large
+surfaces, borders, glyphs, the loading bar) is that value; anything that carries white text or small text uses
+the AA-corrected steps `--ygf-orange-on-white` (#C2570C), `--ygf-orange-on-white-hover` and `--ygf-orange-text`
+(see `apps/ygfliege/assets/css/brand.css`). To change the orange: `YGF_ORANGE` in `apps/ygfliege/tailwind.config.ts`,
+`--ygf-orange` in `brand.css` and the `theme-color` meta in `apps/ygfliege/nuxt.config.ts`.
+
+## Dead tokens
+
+The unused shadcn colours (`secondary`, `destructive`, `muted`, `accent`, `popover`, `card`) are gone from both
+configs; use the contract names above. (`tsb-three` stays: the order-completed petals read it through `theme()`.)
 
 ## Guards (all run in `npm run lint`)
 

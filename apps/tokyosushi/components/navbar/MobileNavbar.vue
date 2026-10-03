@@ -144,10 +144,10 @@ const onEscape = (event: KeyboardEvent) => {
 }
 
 /*
- * `.mobile-only` hides this whole navbar from 641px up (rotating a phone to landscape): the hamburger is gone, so an open menu
+ * `.mobile-only` hides this whole navbar from 640px up (rotating a phone to landscape): the hamburger is gone, so an open menu
  * must close or its scroll lock would stay on a page nobody can unlock.
  */
-const isWide = useMediaQuery('(min-width: 641px)')
+const isWide = useMediaQuery('(min-width: 640px)')
 watch(isWide, (wide) => {
     if (wide) closeMenu()
 })
