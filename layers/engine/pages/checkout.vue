@@ -287,7 +287,8 @@ import CheckoutPaymentExtras from '~/components/checkout/CheckoutPaymentExtras.v
 import CheckoutProductSummary from '~/components/checkout/CheckoutProductSummary.vue'
 import QuoteIssuesNotice from '#engine/components/QuoteIssuesNotice.vue'
 import { buildCreateOrderInput } from '#engine/utils/orderPayload'
-import { evaluateCashAmount } from '#engine/utils/cashPayment'
+import { checkoutPreflight, checkoutStepKeys, checkoutValidationIssues, currentCheckoutStep, hasCashAckIssue, type CheckoutStepKey } from '#engine/utils/checkoutRules'
+import { createAddressPrefill } from '#engine/utils/addressPrefill'
 import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
@@ -364,25 +365,24 @@ const needsDeliveryGate = computed(() =>
 
 const needsPhoneCapture = computed(() => Boolean(authStore.user) && !authStore.user?.phoneNumber)
 
-// Steps conditionally appear based on the user's state; current step advances as each gate is cleared.
-const visibleSteps = computed(() => {
-    const steps: { key: string; label: string }[] = []
-    if (cartStore.collectionOption === 'DELIVERY') {
-        steps.push({ key: 'address', label: t('checkout.stepAddress') })
-    }
-    if (!authStore.user) steps.push({ key: 'auth', label: t('checkout.stepSignIn') })
-    if (needsPhoneCapture.value) steps.push({ key: 'phone', label: t('checkout.stepPhone') })
-    steps.push({ key: 'review', label: t('checkout.stepReview') })
-    steps.push({ key: 'payment', label: t('checkout.stepPayment') })
-    return steps
-})
-
+// Steps conditionally appear based on the user's state; current step advances as each gate is cleared (engine, utils/checkoutRules.ts).
+const stepLabelKeys: Record<CheckoutStepKey, string> = {
+    address: 'checkout.stepAddress',
+    auth: 'checkout.stepSignIn',
+    phone: 'checkout.stepPhone',
+    review: 'checkout.stepReview',
+    payment: 'checkout.stepPayment',
+}
+const stepInput = computed(() => ({
+    isDelivery: cartStore.collectionOption === 'DELIVERY',
+    signedIn: Boolean(authStore.user),
+    needsPhone: needsPhoneCapture.value,
+    needsDeliveryGate: needsDeliveryGate.value,
+}))
+const visibleSteps = computed(() => checkoutStepKeys(stepInput.value).map(key => ({ key, label: t(stepLabelKeys[key]) })))
 const currentStepIndex = computed(() => {
-    const steps = visibleSteps.value
-    if (needsDeliveryGate.value) return steps.findIndex(s => s.key === 'address')
-    if (!authStore.user) return steps.findIndex(s => s.key === 'auth')
-    if (needsPhoneCapture.value) return steps.findIndex(s => s.key === 'phone')
-    return steps.findIndex(s => s.key === 'review')
+    const current = currentCheckoutStep(stepInput.value)
+    return visibleSteps.value.findIndex(s => s.key === current)
 })
 
 // Redirect to cart if ordering becomes unavailable (restaurant closes or ordering disabled)
@@ -550,29 +550,15 @@ onMounted(() => {
     })
 })
 
-/*
- * The signed-in customer's saved address pre-fills the cart address exactly once. Never again after that: an address the
- * customer cleared (or replaced) on this page must not come back when the user record is re-set. The auth-sync plugin repairs
- * a missing record a moment after first paint (plugins/auth-sync.client.ts), so the pre-fill can also happen after mount.
- * And if the session turns out to be dead (the persisted user is dropped after a failed renewal), the address we took from
- * that user goes with it: no stale address stays in the cart behind the sign-in step.
- */
-let prefilledFromUser = false
-let prefilledAddressId: string | null = null
-const prefillAddressFromUser = () => {
-    const address = authStore.user?.address
-    if (prefilledFromUser || !address || cartStore.address) return
-    cartStore.address = address
-    prefilledFromUser = true
-    prefilledAddressId = address.id
-}
-watch(() => authStore.user?.address, prefillAddressFromUser)
-watch(() => authStore.user, (user) => {
-    if (user || !prefilledFromUser) return
-    if (cartStore.address?.id === prefilledAddressId) cartStore.address = null
-    prefilledFromUser = false
-    prefilledAddressId = null
+// The signed-in customer's saved address pre-fills the cart address exactly once (engine, utils/addressPrefill.ts); the auth-sync plugin repairs a missing record a moment after first paint, so it can also happen after mount.
+const addressPrefill = createAddressPrefill<Address>({
+    userAddress: () => authStore.user?.address,
+    cartAddress: () => cartStore.address,
+    setCartAddress: (address) => { cartStore.address = address },
 })
+const prefillAddressFromUser = addressPrefill.prefill
+watch(() => authStore.user?.address, prefillAddressFromUser)
+watch(() => authStore.user, addressPrefill.onUserChanged)
 
 // Same draft state as the phone card (CheckoutPhoneCapture): lets Pay save a number that was typed but not saved.
 const phoneCapture = usePhoneCapture()
@@ -601,9 +587,7 @@ interface CheckoutValidationError {
 // Errors from the most recent submit attempt; recomputed on input changes so the list shrinks as the user fixes each issue.
 const submitErrors = ref<CheckoutValidationError[]>([])
 
-const hasCashAckError = computed(() =>
-    submitErrors.value.some(e => e.targetId === 'cash-acknowledge-row'),
-)
+const hasCashAckError = computed(() => hasCashAckIssue(submitErrors.value))
 
 const scrollToValidationTarget = (targetId: string) => {
     if (!import.meta.client) return
@@ -618,71 +602,27 @@ const scrollToValidationTarget = (targetId: string) => {
 }
 
 const getCheckoutValidationErrors = (): CheckoutValidationError[] => {
-    const errors: CheckoutValidationError[] = []
-
-    if (!isMinimumReached.value) {
-        errors.push({
-            message: t('cart.minimumDelivery', { amount: centsToEuros(DELIVERY_MINIMUM_CENTS) }),
-            targetId: 'checkout-minimum-order-banner',
-            event: 'checkout_error_minimum_not_reached',
-        })
-    }
-
-    if (phoneCapture.hasUnsavedInput.value) {
-        // Typed but not saved (Pay commits it first, so this is an invalid number or a failed save): the field shows why.
-        errors.push({
-            message: t('checkout.phoneCapture.unsaved'),
-            targetId: 'checkout-phone-input',
-            event: 'checkout_error_phone_unsaved',
-        })
-    } else if (!authStore.user?.phoneNumber) {
-        errors.push({
-            message: t('checkout.phoneCapture.requiredBeforeOrder'),
-            targetId: 'checkout-phone-capture',
-            event: 'checkout_error_phone_required',
-        })
-    }
-
-    if (cartStore.collectionOption === 'DELIVERY' && !cartStore.address) {
-        errors.push({
-            message: t('notify.errors.addressRequired', 'Delivery address is required.'),
-            targetId: 'checkout-delivery-address',
-            event: 'checkout_error_address_required',
-        })
-    }
-
-    if (cartStore.paymentOption === 'CASH' && !cashAcknowledged.value) {
-        errors.push({
-            message: t('checkout.cashAcknowledgeMissing'),
-            targetId: 'cash-acknowledge-row',
-            event: 'checkout_error_cash_not_acknowledged',
-        })
-    }
-
-    if (cartStore.paymentOption === 'CASH' && evaluateCashAmount(cartStore.cashPaymentAmount, payableCents.value).kind === 'short') {
-        errors.push({
-            message: t('checkout.cashAmountTooLow', { total: formatCents(payableCents.value) }),
-            targetId: 'cash-payment-amount',
-            event: 'checkout_error_cash_amount_too_low',
-        })
-    }
-
-    const zone = cartStore.collectionOption === 'DELIVERY' && cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : 'ok'
-    if (zone === 'excluded') {
-        errors.push({
-            message: t('notify.errors.deliveryAddressExcluded'),
-            targetId: 'checkout-delivery-address',
-            event: 'checkout_error_address_excluded',
-        })
-    } else if (zone === 'tooFar') {
-        errors.push({
-            message: t('notify.errors.deliveryAddressTooFar', { distance: deliveryMaxKm(policy.value) }),
-            targetId: 'checkout-delivery-address',
-            event: 'checkout_error_address_too_far',
-        })
-    }
-
-    return errors
+    const isDelivery = cartStore.collectionOption === 'DELIVERY'
+    const zone = isDelivery && cartStore.address ? deliveryZoneStatus(policy.value, cartStore.address) : 'ok'
+    return checkoutValidationIssues({
+        isDelivery,
+        hasAddress: Boolean(cartStore.address),
+        zone,
+        minimumReached: isMinimumReached.value,
+        minimumAmount: minimumAmount.value,
+        maxDistanceKm: deliveryMaxKm(policy.value),
+        phoneUnsaved: phoneCapture.hasUnsavedInput.value,
+        hasPhone: Boolean(authStore.user?.phoneNumber),
+        paymentOption: cartStore.paymentOption,
+        cashAcknowledged: cashAcknowledged.value,
+        cashAmount: cartStore.cashPaymentAmount,
+        payableCents: payableCents.value,
+        totalLabel: formatCents(payableCents.value),
+    }).map(issue => ({
+        message: issue.params ? t(issue.messageKey, issue.params) : issue.fallback ? t(issue.messageKey, issue.fallback) : t(issue.messageKey),
+        targetId: issue.targetId,
+        event: issue.event,
+    }))
 }
 
 const handleCheckout = async () => {
@@ -696,63 +636,29 @@ const handleCheckout = async () => {
     let createdOrder = false
 
     try {
-        if (!isOrderingAvailable.value) {
-            notifications.notify({
-                message: t('notify.errors.orderingUnavailable'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
-
-        // The pay button is disabled in this state; this covers Enter keys and double taps. Nothing is sent
-        // While the server has not priced the cart, or while it reports something that would fail the order.
-        if (isOrderBlocked.value) {
-            notifications.notify({
-                message: t(isQuotePending.value ? 'cart.quoteUpdating' : 'checkout.quoteLineIssues'),
-                persistent: false,
-                duration: 3000,
-                variant: 'warning',
-            })
-            return
-        }
-
-        if (!isOrderingCurrentlyOpen.value && !cartStore.preferredReadyTime) {
-            notifications.notify({
-                message: t('notify.errors.fixedTimeRequiredWhileClosed'),
-                persistent: false,
-                duration: 5000,
-                variant: 'error',
-            })
-            return
-        }
-
-        // Lunch-only products require a slot in the weekday lunch window.
+        // What stops the order before the form is checked (engine, utils/checkoutRules.ts). Nothing is sent while the server has not priced the cart, or while it reports something that would fail the order.
         const cartHasLunchOnly = cartStore.products.some(item => item.product.isLunchOnly)
-        if (cartHasLunchOnly) {
-            const slotValue = cartStore.preferredReadyTime
-            const slot = slotValue
-                ? restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.find(s => s.value === slotValue)
-                : null
-            if (!slot || !slot.isLunchOnlyAllowed) {
-                notifications.notify({
-                    message: t('notify.errors.lunchOnlyRequiresLunchSlot'),
-                    persistent: false,
-                    duration: 5000,
-                    variant: 'error',
-                })
-                return
-            }
-        }
-
-        if (cartStore.products.length === 0) {
-            trackEvent('checkout_error_cart_empty')
+        const slotValue = cartStore.preferredReadyTime
+        const slot = slotValue
+            ? restaurantConfig.value?.restaurantConfig?.availableSlotsToday?.find(s => s.value === slotValue)
+            : null
+        const block = checkoutPreflight({
+            orderingAvailable: isOrderingAvailable.value,
+            orderBlocked: isOrderBlocked.value,
+            quotePending: isQuotePending.value,
+            openNow: isOrderingCurrentlyOpen.value,
+            preferredReadyTime: cartStore.preferredReadyTime,
+            cartEmpty: cartStore.products.length === 0,
+            cartHasLunchOnly,
+            slotAllowsLunchOnly: slot ? Boolean(slot.isLunchOnlyAllowed) : null,
+        })
+        if (block) {
+            if (block.event) trackEvent(block.event)
             notifications.notify({
-                message: t('notify.errors.cartEmpty', 'Your cart is empty.'),
+                message: block.fallback ? t(block.messageKey, block.fallback) : t(block.messageKey),
                 persistent: false,
-                duration: 5000,
-                variant: 'error',
+                duration: block.duration,
+                variant: block.variant,
             })
             return
         }

@@ -366,7 +366,7 @@ import type { Product, ProductCategory } from '#engine/types'
 import { centsToEuros, toCents } from '#engine/utils/money'
 import { computed, nextTick, ref, watch } from 'vue'
 import CheckoutCouponInput from '~/components/checkout/CheckoutCouponInput.vue'
-import { evaluateCashAmount } from '#engine/utils/cashPayment'
+import { evaluateCashAmount, sanitizeCashAmount } from '#engine/utils/cashPayment'
 import { formatCents } from '#engine/lib/price'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useDebounceFn } from '@vueuse/core'
@@ -507,14 +507,7 @@ const cashAcknowledgedModel = computed({
 const cashPaymentAmount = computed({
     get: () => cartStore.cashPaymentAmount ?? '',
     set: (value: string | number | null) => {
-        if (value === '' || value === null || value === undefined) {
-            cartStore.cashPaymentAmount = null
-            return
-        }
-        const raw = String(value).replace(',', '.')
-        const match = raw.match(/^(\d*)(\.\d{0,2})?/u)
-        const sanitized = match ? `${match[1] ?? ''}${match[2] ?? ''}` : ''
-        cartStore.cashPaymentAmount = sanitized === '' ? null : sanitized
+        cartStore.cashPaymentAmount = sanitizeCashAmount(value)
     },
 })
 

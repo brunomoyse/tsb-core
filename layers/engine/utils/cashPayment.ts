@@ -23,3 +23,15 @@ export function evaluateCashAmount(raw: string | number | null | undefined, paya
     if (amount === payableCents) return { kind: 'exact' }
     return { kind: 'change', changeCents: amount - payableCents }
 }
+
+/**
+ * What the cash amount field keeps of what was typed: a decimal comma becomes a point, only digits and up to two
+ * decimals survive, and nothing left means no amount (null).
+ */
+export function sanitizeCashAmount(value: string | number | null | undefined): string | null {
+    if (value === '' || value === null || value === undefined) return null
+    const raw = String(value).replace(',', '.')
+    const match = raw.match(/^(?<whole>\d*)(?<decimals>\.\d{0,2})?/u)
+    const sanitized = match ? `${match.groups?.whole ?? ''}${match.groups?.decimals ?? ''}` : ''
+    return sanitized === '' ? null : sanitized
+}
