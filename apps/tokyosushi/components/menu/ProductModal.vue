@@ -178,12 +178,12 @@
           >
             {{ $t('menu.unavailable') }}
           </p>
-          <!-- Under 360px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
+          <!-- Under 480px the stepper sits above a full-width button: beside it the label wrapped onto three lines. -->
           <div
-            class="flex items-center justify-between gap-4 max-[359px]:flex-col max-[359px]:items-stretch"
+            class="flex items-center justify-between gap-4 max-[479px]:flex-col max-[479px]:items-stretch"
           >
             <QuantityStepper
-              class="max-[359px]:self-center"
+              class="max-[479px]:self-center"
               :name="p.name"
               :value="quantity"
               :dec-disabled="quantity === 1"
@@ -194,7 +194,7 @@
 
             <UiButton
               size="lg"
-              class="flex-1 max-[359px]:flex-none"
+              class="flex-1 max-[479px]:flex-none"
               data-testid="product-modal-add-to-cart"
               :disabled="!canOrder"
               @click="addToCart"
