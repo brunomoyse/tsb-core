@@ -19,7 +19,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-heading"
-        class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[85dvh] rounded-t-2xl shadow-2xl"
+        class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[92dvh] rounded-t-2xl shadow-2xl"
       >
         <!-- Drag Handle -->
         <div class="flex justify-center pt-3 pb-1">
@@ -49,121 +49,139 @@
           </button>
         </header>
 
-        <!-- ITEMS LIST -->
-        <ul class="flex-1 overflow-y-auto p-4 space-y-3">
-          <li
-            v-for="(item, lineIndex) in cartStore.products"
-            :key="lineKeys[lineIndex]"
-            data-testid="cart-item"
-            data-cart-line
-            class="grid grid-cols-[4rem_minmax(0,1fr)_auto] max-[379px]:grid-cols-[4rem_minmax(0,1fr)] gap-3 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
-          >
-            <!-- IMAGE -->
-            <button
-              type="button"
-              class="flex shrink-0 items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              :aria-label="$t('common.viewPhoto', { name: item.product.name })"
-              aria-haspopup="dialog"
-              @click="openLightbox(item.product.id, item.product.name)"
+        <!-- ITEMS + BREAKDOWN: one scroll area, so the footer under it stays down to the total and the button -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+          <ul class="space-y-3">
+            <li
+              v-for="(item, lineIndex) in cartStore.products"
+              :key="lineKeys[lineIndex]"
+              data-testid="cart-item"
+              data-cart-line
+              class="grid grid-cols-[4rem_minmax(0,1fr)] gap-x-3 gap-y-2 bg-white rounded-xl border border-neutral-100 shadow-sm p-3 items-center"
             >
-              <picture class="contents">
-                <source :srcset="`${productImageBase(item.product.id)}.avif`" type="image/avif" />
-                <source :srcset="`${productImageBase(item.product.id)}.webp`" type="image/webp" />
-                <img
-                  ref="itemImageElements"
-                  :src="`${productImageBase(item.product.id)}.png`"
-                  alt=""
-                  class="object-contain w-full h-full"
-                  width="64"
-                  height="64"
-                  draggable="false"
-                  @error="handleProductImageError"
-                />
-              </picture>
-            </button>
-
-            <!-- PRODUCT INFO -->
-            <div class="flex flex-col justify-center text-sm min-w-0">
-              <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 truncate">
-                {{ itemLabelMeta(item) }}
-              </span>
-              <span class="font-medium text-neutral-800 leading-snug line-clamp-2">
-                {{ itemLabelName(item) }}
-              </span>
-              <span v-if="itemChoice(item)" class="text-xs text-primary-700">
-                ({{ itemChoice(item) }})
-              </span>
-              <span v-if="item.product.pieceCount" class="text-neutral-600 text-xs mt-1">
-                {{ item.product.pieceCount }}
-                {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
-              </span>
-              <span class="text-neutral-800 font-medium text-xs mt-1">
-                {{ formatCents(getItemLineTotalCents(item)) }}
-              </span>
-            </div>
-
-            <!-- QTY CONTROLS (under 380px they drop below the name: beside it the name column was ~40px wide) -->
-            <!-- Customized lines carry per-line selections, so they are edited in the modal -->
-            <div
-              v-if="hasChoices(item)"
-              class="flex flex-col items-end gap-1 max-[379px]:col-start-2 max-[379px]:flex-row max-[379px]:flex-wrap max-[379px]:items-center max-[379px]:justify-between"
-            >
-              <span
-                data-testid="cart-item-quantity"
-                class="text-sm font-semibold tabular-nums text-primary-700"
-                >×{{ item.quantity }}</span
-              >
-              <UiButton
-                variant="secondary"
-                size="sm"
-                data-testid="cart-item-edit"
-                @click="editItem(item)"
-              >
-                {{ $t('cart.editItem') }}
-              </UiButton>
+              <!-- IMAGE -->
               <button
                 type="button"
-                data-testid="cart-item-remove"
-                data-cart-remove
-                :aria-label="$t('cart.removeNamed', { name: item.product.name })"
-                class="min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 hover:text-red-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                @click="removeWithUndo(item)"
+                class="row-span-2 flex shrink-0 items-center justify-center w-16 h-16 bg-neutral-50 rounded-md overflow-hidden cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                :aria-label="$t('common.viewPhoto', { name: item.product.name })"
+                aria-haspopup="dialog"
+                @click="openLightbox(item.product.id, item.product.name)"
               >
-                {{ $t('cart.removeItem') }}
+                <picture class="contents">
+                  <source :srcset="`${productImageBase(item.product.id)}.avif`" type="image/avif" />
+                  <source :srcset="`${productImageBase(item.product.id)}.webp`" type="image/webp" />
+                  <img
+                    ref="itemImageElements"
+                    :src="`${productImageBase(item.product.id)}.png`"
+                    alt=""
+                    class="object-contain w-full h-full"
+                    width="64"
+                    height="64"
+                    draggable="false"
+                    @error="handleProductImageError"
+                  />
+                </picture>
               </button>
-            </div>
-            <QuantityStepper
-              v-else
-              class="justify-self-end max-[379px]:col-start-2 max-[379px]:justify-self-start"
-              :name="item.product.name"
-              :value="item.quantity"
-              :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
-              dec-testid="cart-item-decrement"
-              inc-testid="cart-item-increment"
-              value-testid="cart-item-quantity"
-              @decrement="handleDecrementQuantity(item)"
-              @increment="handleIncrementQuantity(item)"
-            />
-            <!-- What the server quote says about this line, with the way out -->
-            <CartLineIssues class="col-span-full" :item="item" :line-key="lineKeys[lineIndex]" />
-          </li>
 
-          <!-- EMPTY STATE -->
-          <li
-            v-if="cartStore.products.length === 0"
-            class="flex flex-col items-center justify-center h-64 text-neutral-600"
+              <!-- PRODUCT INFO (names and choices wrap in full: this is where the customer checks the order) -->
+              <div class="flex flex-col justify-center text-sm min-w-0">
+                <span v-if="itemLabelMeta(item)" class="text-xs text-neutral-600 break-words">
+                  {{ itemLabelMeta(item) }}
+                </span>
+                <span class="font-medium text-neutral-800 leading-snug break-words">
+                  {{ itemLabelName(item) }}
+                </span>
+                <span v-if="itemChoice(item)" class="text-xs text-primary-700 break-words">
+                  ({{ itemChoice(item) }})
+                </span>
+                <span v-if="item.product.pieceCount" class="text-neutral-600 text-xs mt-1">
+                  {{ item.product.pieceCount }}
+                  {{ item.product.pieceCount === 1 ? $t('menu.pc') : $t('menu.pcs') }}
+                </span>
+                <span class="text-neutral-800 font-medium text-xs mt-1">
+                  {{ formatCents(getItemLineTotalCents(item)) }}
+                </span>
+              </div>
+
+              <!--
+              CONTROLS: the same row for every line, under the information: the quantity at the start (a stepper, or the
+              fixed "×N" of a customized line, which carries per-line selections and is edited in the modal), then the
+              "Edit" button for a customized line, and the bin at the end.
+            -->
+              <div class="col-start-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span
+                  v-if="hasChoices(item)"
+                  data-testid="cart-item-quantity"
+                  class="text-sm font-semibold tabular-nums text-primary-700"
+                  >×{{ item.quantity }}</span
+                >
+                <QuantityStepper
+                  v-else
+                  :name="item.product.name"
+                  :value="item.quantity"
+                  :inc-disabled="item.quantity >= MAX_ITEM_QUANTITY"
+                  dec-testid="cart-item-decrement"
+                  inc-testid="cart-item-increment"
+                  value-testid="cart-item-quantity"
+                  @decrement="handleDecrementQuantity(item)"
+                  @increment="handleIncrementQuantity(item)"
+                />
+                <div class="ml-auto flex items-center gap-2">
+                  <UiButton
+                    v-if="hasChoices(item)"
+                    variant="secondary"
+                    size="sm"
+                    data-testid="cart-item-edit"
+                    @click="editItem(item)"
+                  >
+                    {{ $t('cart.editItem') }}
+                  </UiButton>
+                  <button
+                    type="button"
+                    data-testid="cart-item-remove"
+                    data-cart-remove
+                    :aria-label="$t('cart.removeNamed', { name: item.product.name })"
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-neutral-600 hover:text-primary-700 hover:bg-primary-50 active:bg-primary-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    @click="removeWithUndo(item)"
+                  >
+                    <svg
+                      class="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="3 6 5 6 21 6" />
+                      <path
+                        d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <!-- What the server quote says about this line, with the way out -->
+              <CartLineIssues class="col-span-full" :item="item" :line-key="lineKeys[lineIndex]" />
+            </li>
+
+            <!-- EMPTY STATE -->
+            <li
+              v-if="cartStore.products.length === 0"
+              class="flex flex-col items-center justify-center h-64 text-neutral-600"
+            >
+              <img src="/icons/shopping-bag-icon.svg" alt="" class="h-12 w-12 mb-4 flex-shrink-0" />
+              <p>{{ $t('cart.empty') }}</p>
+            </li>
+          </ul>
+
+          <!-- BREAKDOWN: with the lines, not in the footer, whose height is what the lines are left with on a small phone -->
+          <div
+            v-if="hasBreakdownRows"
+            data-testid="cart-breakdown"
+            class="space-y-1.5 rounded-xl border border-neutral-100 bg-white p-3 text-sm shadow-sm"
           >
-            <img src="/icons/shopping-bag-icon.svg" alt="" class="h-12 w-12 mb-4 flex-shrink-0" />
-            <p>{{ $t('cart.empty') }}</p>
-          </li>
-        </ul>
-
-        <!-- FOOTER: TOTAL + CHECKOUT -->
-        <footer
-          v-if="cartStore.products.length"
-          class="p-4 border-t border-neutral-200 bg-white rounded-b-none"
-        >
-          <div class="space-y-1.5 text-sm mb-4">
             <div v-if="hasBreakdown" class="flex justify-between gap-3 text-neutral-600">
               <span>{{ $t('cart.subtotal') }}</span>
               <span class="tabular-nums">{{ formatCents(subtotalCents) }}</span>
@@ -213,9 +231,16 @@
               <span>{{ $t('cart.onlineFee') }}</span>
               <span class="tabular-nums">{{ formatCents(onlineFeeCents) }}</span>
             </div>
-            <div
-              class="flex justify-between items-baseline gap-3 pt-2 mt-1 border-t border-neutral-100"
-            >
+          </div>
+        </div>
+
+        <!-- FOOTER: TOTAL + CHECKOUT -->
+        <footer
+          v-if="cartStore.products.length"
+          class="p-4 border-t border-neutral-200 bg-white rounded-b-none"
+        >
+          <div class="mb-3 text-sm">
+            <div class="flex justify-between items-baseline gap-3">
               <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
               <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
                 ><QuoteUpdatingHint /><span
@@ -329,6 +354,16 @@ const {
   switchToPickup,
 } = useCartTotals()
 const { policyParams } = useOrderingPolicy()
+// Any row to show besides the total (the total itself is in the footer).
+const hasBreakdownRows = computed(
+  () =>
+    cartStore.products.length > 0 &&
+    (hasBreakdown.value ||
+      cartStore.collectionOption === 'DELIVERY' ||
+      pickupDiscountCents.value > 0 ||
+      couponDiscountCents.value > 0 ||
+      onlineFeeCents.value > 0),
+)
 // Keeps the server quote of the cart up to date (shared by every cart surface): its totals replace the client's maths once it answers.
 useOrderQuote({ active: () => cartStore.isCartVisible })
 
