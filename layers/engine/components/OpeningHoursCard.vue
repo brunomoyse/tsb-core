@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full flex flex-col">
+    <div :class="[surface === 'white' ? 'bg-white border border-neutral-200' : 'bg-tsb-two', 'rounded-2xl p-6 sm:p-8 h-full flex flex-col']">
         <component :is="as" class="font-semibold text-neutral-900 mb-4 flex items-center gap-2 text-[15px]">
             <svg aria-hidden="true" class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $t('about.openingHoursLabel') }}
@@ -21,8 +21,10 @@
 </template>
 
 <script setup lang="ts">
-const { as = 'h3' } = defineProps<{
+// `white`: a white card with a hairline, for a brand whose page is cream (default: the tinted container surface).
+const { as = 'h3', surface = 'tint' } = defineProps<{
     as?: 'h2' | 'h3'
+    surface?: 'tint' | 'white'
 }>()
 
 const { config: restaurantConfig } = await useRestaurantConfig({ lazy: true })

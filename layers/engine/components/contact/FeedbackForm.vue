@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useNotificationsStore } from '#engine/stores/notifications'
 
+// `white`: a white card with a hairline, for a brand whose page is cream (default: the tinted container surface).
+const { surface = 'tint' } = defineProps<{ surface?: 'tint' | 'white' }>()
+
 const { t } = useI18n()
 const { $api } = useNuxtApp()
 const notifications = useNotificationsStore()
@@ -135,7 +138,7 @@ function resetForm() {
 </script>
 
 <template>
-    <div class="bg-tsb-two rounded-2xl p-6 sm:p-8 h-full">
+    <div :class="[surface === 'white' ? 'bg-white border border-neutral-200' : 'bg-tsb-two', 'rounded-2xl p-6 sm:p-8 h-full']">
         <!-- Header -->
         <div class="mb-5">
             <h2 class="font-semibold text-neutral-900 mb-1 flex items-center gap-2 text-[15px]">

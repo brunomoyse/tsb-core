@@ -83,7 +83,7 @@ useSeoMeta({
 
             <!-- Opening Hours — shared with homepage -->
             <div class="bento-hours bento-cell" style="--delay: 2">
-                <OpeningHoursCard as="h2" />
+                <OpeningHoursCard as="h2" surface="white" />
             </div>
 
             <!-- Address -->
@@ -177,7 +177,7 @@ useSeoMeta({
 
             <!-- Feedback Form -->
             <div class="bento-feedback bento-cell" style="--delay: 7">
-                <ContactFeedbackForm />
+                <ContactFeedbackForm surface="white" />
             </div>
 
         </div>

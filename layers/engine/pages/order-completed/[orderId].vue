@@ -184,7 +184,7 @@
                                     <span v-if="orderItemChoice(item)" data-testid="order-item-choices" class="block text-neutral-600 font-normal leading-snug">{{ orderItemChoice(item) }}</span>
                                 </p>
                             </div>
-                            <span class="text-xs font-semibold text-neutral-600 bg-neutral-100 rounded-full px-2.5 py-0.5 shrink-0">
+                            <span class="qty-pill">
                                 x{{ item.quantity }}
                             </span>
                         </div>

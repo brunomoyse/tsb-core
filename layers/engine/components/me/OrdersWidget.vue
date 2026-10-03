@@ -63,7 +63,7 @@
                         v-for="order in activeOrders"
                         :id="`order-card-${order.id}`"
                         :key="order.id"
-                        class="active-card relative bg-white rounded-xl border-l-[3px] border-l-primary-400"
+                        :class="['active-card relative bg-white rounded-xl border-l-[3px] border-l-primary-400', japaneseAccents ? 'active-card-seigaiha' : '']"
                     >
                         <!-- Card header -->
                         <button
@@ -91,7 +91,7 @@
                                     <span class="text-sm font-medium text-neutral-800 whitespace-nowrap">
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700 whitespace-nowrap shrink-0">
                                         <span class="w-1.5 h-1.5 rounded-full bg-primary-400 status-pulse" />
                                         {{ getStatus(getTrackedOrder(order).status) }}
                                     </span>
@@ -138,7 +138,7 @@
 
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80">
-                                    <span class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <span class="text-xs text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
                                     <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
@@ -150,8 +150,8 @@
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
                                         <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-600 truncate leading-tight">
+                                        <span class="text-xs text-neutral-700 flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-xs text-neutral-600 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
@@ -225,7 +225,7 @@
                                         {{ $t(`cart.${order.type.toLowerCase()}`) }}
                                     </span>
                                     <span
-                                        class="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0"
+                                        class="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0"
                                         :class="statusBadgeClass(order.status)"
                                     >
                                         {{ getStatus(order.status) }}
@@ -259,13 +259,13 @@
                                     v-if="order.status === 'CANCELLED' && order.cancellationReason && order.cancellationReason !== 'OTHER'"
                                     class="mb-3 p-3 bg-red-50/70 rounded-lg border border-red-100/80"
                                 >
-                                    <span class="text-[10px] text-red-700 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
+                                    <span class="text-xs text-red-700 uppercase tracking-widest font-medium">{{ $t('orderCompleted.cancellationReasonLabel') }}</span>
                                     <p class="mt-0.5 text-sm text-red-700">{{ $t(`orderCompleted.cancellationReasons.${order.cancellationReason}`) }}</p>
                                 </div>
 
                                 <!-- Delivery address -->
                                 <div v-if="order.address" class="mb-3 p-3 bg-neutral-50/80 rounded-lg border border-neutral-100/80">
-                                    <span class="text-[10px] text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
+                                    <span class="text-xs text-neutral-600 uppercase tracking-widest font-medium">{{ $t('checkout.deliveryAddress') }}</span>
                                     <p class="mt-0.5 text-sm text-neutral-700 whitespace-pre-line">{{ formatAddress(order.address) }}</p>
                                 </div>
 
@@ -277,8 +277,8 @@
                                         :class="idx > 0 ? 'receipt-divider' : ''"
                                     >
                                         <span class="text-neutral-600 tabular-nums text-xs w-5 text-right flex-shrink-0">x{{ item.quantity }}</span>
-                                        <span class="text-[13px] text-neutral-700 flex-1 min-w-0">
-                                            <span v-if="orderItemMeta(item)" class="block text-[11px] text-neutral-600 truncate leading-tight">
+                                        <span class="text-xs text-neutral-700 flex-1 min-w-0">
+                                            <span v-if="orderItemMeta(item)" class="block text-xs text-neutral-600 truncate leading-tight">
                                                 {{ orderItemMeta(item) }}
                                             </span>
                                             <span class="block text-neutral-700 leading-tight line-clamp-2">
@@ -321,7 +321,7 @@
                                 </button>
 
                                 <!-- Arigatou micro-text -->
-                                <span v-if="japaneseAccents && isOrderSuccess(order.status)" class="block text-right mt-2 text-[10px] text-neutral-600 italic select-none pointer-events-none"
+                                <span v-if="japaneseAccents && isOrderSuccess(order.status)" class="block text-right mt-2 text-xs text-neutral-600 italic select-none pointer-events-none"
                                       style="font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif"
                                       aria-hidden="true">ありがとう</span>
                             </div>
@@ -643,8 +643,10 @@ const accordionAfterLeave = (el: Element) => {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
 }
-.reorder-btn:hover svg {
-    animation: spin-once 500ms ease;
+@media (hover: hover) {
+    .reorder-btn:hover svg {
+        animation: spin-once 500ms ease;
+    }
 }
 
 @keyframes spin-once {
@@ -653,18 +655,20 @@ const accordionAfterLeave = (el: Element) => {
 }
 
 /* ── Hanko seal hover intensification ── */
-.past-card:hover .hanko-seal {
-    color: theme('colors.primary.500 / 45%');
-    border-color: theme('colors.primary.500 / 35%');
-    transition: color 300ms ease, border-color 300ms ease;
-}
-.past-card:hover .hanko-seal::before {
-    border-color: theme('colors.primary.500 / 22%');
-    transition: border-color 300ms ease;
+@media (hover: hover) {
+    .past-card:hover .hanko-seal {
+        color: theme('colors.primary.500 / 45%');
+        border-color: theme('colors.primary.500 / 35%');
+        transition: color 300ms ease, border-color 300ms ease;
+    }
+    .past-card:hover .hanko-seal::before {
+        border-color: theme('colors.primary.500 / 22%');
+        transition: border-color 300ms ease;
+    }
 }
 
-/* ── Seigaiha wave pattern on active cards ── */
-.active-card::before {
+/* ── Seigaiha wave pattern on active cards (brands with japaneseAccents only) ── */
+.active-card-seigaiha::before {
     content: '';
     position: absolute;
     top: 0;

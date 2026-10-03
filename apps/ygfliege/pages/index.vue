@@ -79,12 +79,12 @@ useSeoMeta({
                             v-if="orderingStatus !== 'loading'"
                             class="inline-flex items-center gap-2 text-sm font-medium rounded-full px-4 py-2"
                             :class="orderingStatus === 'open'
-                                ? 'bg-emerald-50 text-emerald-700'
+                                ? 'bg-ygf-success/10 text-ygf-success-dark'
                                 : 'bg-ygf-orange-50 text-ygf-orange-text'"
                         >
                             <span
                                 class="w-2 h-2 rounded-full"
-                                :class="orderingStatus === 'open' ? 'bg-emerald-500 animate-pulse' : 'bg-ygf-orange-400'"
+                                :class="orderingStatus === 'open' ? 'bg-ygf-success animate-pulse' : 'bg-ygf-orange-400'"
                             />
                             <template v-if="orderingStatus === 'open'">{{ $t('home.status.open') }}</template>
                             <template v-else-if="orderingStatus === 'preorder'">{{ $t('home.status.preorder', { time: preorderTime ?? '' }) }}</template>

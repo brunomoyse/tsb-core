@@ -63,7 +63,7 @@ const scrollToOpeningHours = () => {
 
 const firstFoldClass = computed(() => {
     const base = 'flex flex-col gap-3 min-h-[34rem] sm:h-auto sm:gap-5 lg:block lg:relative lg:gap-0 lg:min-h-0'
-    return `${base} h-[calc(100dvh-5rem-1.5rem)]`
+    return `${base} h-[calc(100dvh-var(--nav-h)-1.5rem)]`
 })
 
 useJsonLd([
