@@ -2,7 +2,8 @@
   <div
     ref="rootRef"
     data-focus-trap-companion
-    class="notification-bar fixed left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)] px-4"
+    class="notification-bar fixed left-1/2 transform -translate-x-1/2 z-[100] w-[500px] max-w-[calc(100vw-2rem)]"
+    :class="{ 'notification-bar--top': aboveDialog }"
     v-if="visible"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
@@ -15,51 +16,58 @@
         :class="['rounded-2xl shadow-xl px-5 py-3 flex flex-col', variantClasses]"
         v-if="visible"
       >
-        <div class="flex items-center justify-between gap-3">
-          <span class="flex-1 text-sm font-medium break-words py-1">
+        <!--
+          [message | action + close]: the message keeps at least 12rem and the buttons keep their size; when both do not
+          fit side by side (long Undo label on a 320 px phone) the buttons move to a row of their own under the message
+          instead of overflowing the toast.
+        -->
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
+          <span class="min-w-0 flex-[1_1_12rem] text-sm font-medium break-words py-1">
             {{ message }}
           </span>
-          <!-- Custom action button (e.g. Undo) takes precedence -->
-          <button
-            v-if="action"
-            type="button"
-            class="flex-shrink-0 min-h-11 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            @click="invokeAction"
-          >
-            {{ action.label }}
-          </button>
-          <!-- Cookie consent: an explicit accept, never a close (closing is not consent) -->
-          <slot v-else-if="cookieConsent" name="action">
+          <div class="ml-auto flex shrink-0 items-center gap-1">
+            <!-- Custom action button (e.g. Undo) takes precedence -->
             <button
+              v-if="action"
               type="button"
               class="flex-shrink-0 min-h-11 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              @click="close"
-              :aria-label="$t('cookies.acceptAria')"
+              @click="invokeAction"
             >
-              {{ $t('cookies.accept') }}
+              {{ action.label }}
             </button>
-          </slot>
-          <!-- Every other toast can be closed -->
-          <button
-            v-if="!cookieConsent"
-            type="button"
-            data-testid="notification-close"
-            :aria-label="$t('common.close')"
-            class="-mr-3 -my-1.5 inline-flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center rounded-full opacity-70 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
-            @click="close"
-          >
-            <svg
-              class="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              aria-hidden="true"
+            <!-- Cookie consent: an explicit accept, never a close (closing is not consent) -->
+            <slot v-else-if="cookieConsent" name="action">
+              <button
+                type="button"
+                class="flex-shrink-0 min-h-11 bg-white text-neutral-900 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-neutral-100 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                @click="close"
+                :aria-label="$t('cookies.acceptAria')"
+              >
+                {{ $t('cookies.accept') }}
+              </button>
+            </slot>
+            <!-- Every other toast can be closed -->
+            <button
+              v-if="!cookieConsent"
+              type="button"
+              data-testid="notification-close"
+              :aria-label="$t('common.close')"
+              class="-mr-3 -my-1.5 inline-flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center rounded-full opacity-70 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
+              @click="close"
             >
-              <path d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
         <!-- Progress bar: a CSS animation over the toast's duration; it stops while the toast is hovered or focused, like its timer -->
         <div
@@ -110,6 +118,17 @@ const visible = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
 
 /*
+ * A toast raised while a dialog is open (an address sheet, a confirmation) would sit over the dialog's own fields at
+ * the bottom of the screen. It goes to the top instead, over the dimmed page. The cart sheet is the exception: it
+ * publishes its height and the toast floats above it (the Undo for a removed line has to stay next to the list).
+ */
+const aboveDialog = ref(false)
+const dialogOpen = (): boolean =>
+  [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].some(
+    (dialog) => dialog.id !== 'cart-mobile',
+  )
+
+/*
  * Announcing the toast to screen readers is ToastAnnouncer's job (a live region that is always mounted);
  * this component is only the visual toast, with its Undo / close buttons.
  *
@@ -153,6 +172,7 @@ const invokeAction = () => {
 }
 
 onMounted(async () => {
+  aboveDialog.value = !cookieConsent && dialogOpen()
   // For cookie consent, only show if not already accepted.
   if (cookieConsent && !localStorage.getItem('cookiesAccepted')) {
     visible.value = true
@@ -197,6 +217,12 @@ onMounted(async () => {
     calc(var(--bottom-bar-h, env(safe-area-inset-bottom, 0px)) + 1rem),
     calc(100dvh - 8rem)
   );
+}
+
+/* Over a dialog: the top of the screen (below the safe area), not the bottom where the dialog's fields are. */
+.notification-bar--top {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
 }
 
 .progress-bar {
