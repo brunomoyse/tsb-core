@@ -22,7 +22,7 @@
         class="fixed bottom-0 inset-x-0 bg-tsb-one z-[60] flex flex-col max-h-[92dvh] rounded-t-2xl shadow-2xl"
       >
         <!-- Drag Handle -->
-        <div class="flex justify-center pt-3 pb-1">
+        <div class="cart-handle flex justify-center pt-3 pb-1">
           <div class="w-10 h-1 rounded-full bg-neutral-300" />
         </div>
 
@@ -237,9 +237,9 @@
         <!-- FOOTER: TOTAL + CHECKOUT -->
         <footer
           v-if="cartStore.products.length"
-          class="p-4 border-t border-neutral-200 bg-white rounded-b-none"
+          class="cart-footer p-4 border-t border-neutral-200 bg-white rounded-b-none"
         >
-          <div class="mb-3 text-sm">
+          <div class="cart-footer-total mb-3 text-sm">
             <div class="flex justify-between items-baseline gap-3">
               <span class="font-medium text-neutral-700">{{ $t('cart.total') }}</span>
               <span class="inline-flex flex-wrap items-baseline justify-end gap-x-2 text-right"
@@ -255,7 +255,7 @@
           <div
             v-if="!isMinimumReached"
             data-testid="cart-minimum-warning"
-            class="text-sm text-red-700 text-center mb-3"
+            class="cart-footer-note text-sm text-red-700 text-center mb-3"
           >
             <p>
               {{ $t('cart.addForDelivery', { amount: formatCents(amountToDeliveryMinimumCents) }) }}
@@ -269,13 +269,16 @@
               {{ $t('delivery.modal.switchToPickup') }}
             </button>
           </div>
-          <div v-if="!isOrderingAvailable" class="text-sm text-amber-800 text-center mb-2">
+          <div
+            v-if="!isOrderingAvailable"
+            class="cart-footer-note text-sm text-amber-800 text-center mb-2"
+          >
             {{ $t('cart.orderingUnavailable') }}
           </div>
           <div
             v-else-if="preorderTime"
             data-testid="cart-preorder-hint"
-            class="text-sm text-amber-800 text-center mb-2"
+            class="cart-footer-note text-sm text-amber-800 text-center mb-2"
           >
             {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
           </div>
@@ -424,6 +427,36 @@ const { decrementLine: handleDecrementQuantity } = useCartRemoval({
 </script>
 
 <style scoped>
+/*
+ * A phone held sideways (667x375) has no height to spare: no drag handle, and the footer is one row, the total on the
+ * left and the checkout button on the right, so the lines get the room. Notes (minimum, closed) keep their own row.
+ */
+@media (max-height: 480px) {
+  .cart-handle {
+    display: none;
+  }
+  .cart-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    padding-block: 0.5rem;
+  }
+  .cart-footer-total {
+    flex: 1 1 10rem;
+    margin-bottom: 0;
+  }
+  .cart-footer-note {
+    flex-basis: 100%;
+    margin-bottom: 0;
+  }
+  .cart-footer > a,
+  .cart-footer > button {
+    flex: 1 1 14rem;
+    width: auto;
+  }
+}
+
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: transform 0.35s cubic-bezier(0.33, 1, 0.68, 1);
