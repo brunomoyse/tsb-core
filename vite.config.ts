@@ -11,7 +11,7 @@ export default defineConfig({
   fmt: {
     singleQuote: true,
     semi: false,
-    ignorePatterns: ['**/public/**', 'docs/baselines/**', '**/e2e/**/*-snapshots/**'],
+    ignorePatterns: ['.claude/**', '**/public/**', 'docs/baselines/**', '**/e2e/**/*-snapshots/**'],
   },
   lint: {
     plugins: ['typescript', 'vue'],

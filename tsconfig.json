@@ -1,0 +1,15 @@
+{
+  // Type-check projects for files outside the brand apps, mainly the engine
+  // layer: it has no .nuxt of its own, so its files are registered with the
+  // tokyosushi app's generated projects (see `typescript` in
+  // layers/engine/nuxt.config.ts). Requires `nuxt prepare` in apps/tokyosushi.
+  // Kept at the repo root, outside layers/engine, so that brand Docker builds
+  // (which copy layers/ but not the root or other apps) never resolve it.
+  "files": [],
+  "references": [
+    { "path": "./apps/tokyosushi/.nuxt/tsconfig.app.json" },
+    { "path": "./apps/tokyosushi/.nuxt/tsconfig.server.json" },
+    { "path": "./apps/tokyosushi/.nuxt/tsconfig.shared.json" },
+    { "path": "./apps/tokyosushi/.nuxt/tsconfig.node.json" }
+  ]
+}

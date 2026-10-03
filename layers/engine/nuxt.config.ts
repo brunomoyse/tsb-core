@@ -177,7 +177,7 @@ export default defineNuxtConfig({
 
   // Nuxt only adds layers under <rootDir>/layers to the generated tsconfigs, so
   // Register this layer's files with the brand app's app/node/server projects
-  // (used by `vp check` type checking through layers/engine/tsconfig.json).
+  // (used by `vp check` type checking through the root tsconfig.json).
   typescript: {
     tsConfig: {
       include: [`${engineDir}**/*`],
