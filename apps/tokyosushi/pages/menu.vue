@@ -167,7 +167,7 @@
               class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               :class="
                 activeFilters.has('spicy')
-                  ? 'bg-red-500 text-white shadow-sm shadow-red-200'
+                  ? 'bg-primary-600 text-white shadow-sm shadow-red-200'
                   : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-red-50 hover:text-red-800 hover:border-red-200'
               "
             >

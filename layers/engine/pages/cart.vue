@@ -31,7 +31,7 @@
       >
         <!-- Delete action (revealed on swipe; inset by 1px at rest, so its rounded corners leave no red fringe around the card's): a pointer-only shortcut. The explicit remove button below is the keyboard and screen-reader way, so this one stays out of the tab order and the accessibility tree (audit A17). -->
         <div
-          class="absolute flex items-center bg-red-500 rounded-2xl"
+          class="absolute flex items-center bg-red-600 rounded-2xl"
           :class="getSwipeOffset(item) === 0 ? 'inset-y-px right-px' : 'inset-y-0 right-0'"
           aria-hidden="true"
         >

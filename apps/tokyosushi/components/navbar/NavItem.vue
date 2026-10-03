@@ -20,7 +20,7 @@
         <span
           v-if="badge && badge > 0"
           aria-hidden="true"
-          class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-red-500 rounded-full"
+          class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-primary-600 rounded-full"
         >
           {{ badge }}
         </span>

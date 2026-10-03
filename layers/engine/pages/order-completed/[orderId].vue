@@ -75,7 +75,7 @@
       <div class="mt-8 w-full flex flex-col sm:flex-row gap-3">
         <a
           :href="phoneHref"
-          class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          class="flex-1 flex min-h-11 items-center justify-center px-4 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           {{ $t('orderCompleted.payment.callUs') }}
         </a>
