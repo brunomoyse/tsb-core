@@ -117,7 +117,18 @@ export interface SeedOrderInput {
   createdMinutesAgo?: number
   /** One 25,00 EUR line (2 x 12,50): the receipt's subtotal is the items and the total is consistent with them. */
   withItem?: boolean
+  /**
+   * Mock only: the exact lines of the order (replaces `withItem`), priced from the catalog (product price + the price
+   * modifier of every selection). What a re-order or the receipt shows comes from here.
+   */
+  items?: { productId: string; quantity: number; selections?: OrderSelection[] }[]
   type?: 'PICKUP' | 'DELIVERY'
+}
+
+export interface OrderSelection {
+  groupId: string
+  choiceId: string
+  quantity: number
 }
 
 export interface OrderPatch {

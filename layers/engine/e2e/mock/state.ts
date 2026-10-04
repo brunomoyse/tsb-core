@@ -170,8 +170,25 @@ export class MockState {
     const id = this.nextOrderId()
     const created = new Date(Date.now() - (input.createdMinutesAgo ?? 0) * 60_000).toISOString()
     const fee = input.online ? 30 : 0
-    const itemsCents = input.withItem ? 2500 : 0
     const product = this.catalog.flatMap((category) => category.products)[0]
+    const lines: MockOrderLine[] = input.items
+      ? input.items.map((item) => this.seedLine(item))
+      : input.withItem && product
+        ? [
+            {
+              productId: product.id,
+              quantity: 2,
+              unitPrice: '12.50',
+              lineTotal: '25.00',
+              selections: [],
+            },
+          ]
+        : []
+    const itemsCents = lines.reduce(
+      (sum, line) => sum + Math.round(Number(line.lineTotal) * 100),
+      0,
+    )
+    const withItems = lines.length > 0
     const order: MockOrder = {
       id,
       createdAt: created,
@@ -182,7 +199,7 @@ export class MockState {
       discountAmount: '0.00',
       deliveryFee: '0.00',
       transactionFee: money(fee),
-      totalPrice: money(input.withItem ? itemsCents + fee : 2500),
+      totalPrice: money(withItems ? itemsCents + fee : 2500),
       couponCode: null,
       cashPaymentAmount: null,
       estimatedReadyTime: null,
@@ -199,21 +216,31 @@ export class MockState {
             links: null,
           }
         : null,
-      items:
-        input.withItem && product
-          ? [
-              {
-                productId: product.id,
-                quantity: 2,
-                unitPrice: '12.50',
-                lineTotal: '25.00',
-                selections: [],
-              },
-            ]
-          : [],
+      items: lines,
     }
     this.orders.set(id, order)
     return order
+  }
+
+  /** One seeded line, priced from the catalog like `createOrder` would. */
+  private seedLine(item: NonNullable<SeedOrderInput['items']>[number]): MockOrderLine {
+    const product = findProduct(this.catalog, item.productId)
+    if (!product) throw new Error(`seedOrder: no such product ${item.productId}`)
+    const selections = item.selections ?? []
+    const modifiers = selections.reduce((sum, selection) => {
+      const choice = product.choices.find((candidate) => candidate.id === selection.choiceId)
+      return (
+        sum + Math.max(Math.round(Number(choice?.priceModifier ?? 0) * 100), 0) * selection.quantity
+      )
+    }, 0)
+    const lineCents = Math.round(Number(product.price) * 100) * item.quantity + modifiers
+    return {
+      productId: product.id,
+      quantity: item.quantity,
+      unitPrice: money(Math.round(lineCents / item.quantity)),
+      lineTotal: money(lineCents),
+      selections: selections.map((selection) => ({ ...selection })),
+    }
   }
 
   /** Changes an order the way the webhook or the kitchen would, and pushes it to its `myOrderUpdated` subscribers. */
