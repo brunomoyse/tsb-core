@@ -13,16 +13,29 @@
   descent-override: 22.518%;
   line-gap-override: 0%;
 }
+/* The same for Android, which has no Arial, Liberation Sans or Arimo but always has Roboto: its own family name, listed
+   after 'Inter Fallback' in the stacks, so Arial-based systems keep the face above and Android takes this one. Numbers:
+   fontaine's getMetricsForFamily('Inter') against Roboto (@capsizecss/metrics: Inter 978/2048 avg width, Roboto 911/2048). */
+@font-face {
+  font-family: 'Inter Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 107.3546%;
+  ascent-override: 90.2384%;
+  descent-override: 22.4686%;
+  line-gap-override: 0%;
+}
 
-/* Noto Serif SC, bold: only the Chinese accents of the brand pages (杨国福…, the broth names, the slogan; the keys are
+/* 'YGF Accent Serif' (Noto Serif SC, bold): only the Chinese accents of the brand pages (杨国福…, the broth names, the slogan; the keys are
    mkt.broths.*.chinese, mkt.concept.broth_story.chinese_title, mkt.home.broth_hero.translit and mkt.home.stats.slogan) and
-   the Latin text that shares those lines. 24 KB instead of the three slices (78 KB) the full family cost on every page, and
+   the Latin text that shares those lines (the `font-serifzh` utility). It has a family name of its own, not 'Noto Serif SC', so
+   nothing else can pick it up by accident: a subset named like the full family would draw the Latin letters of any zh text
+   in serif and leave the Chinese characters to the system sans (mixed glyphs). 24 KB instead of the three slices (78 KB) the full family cost on every page, and
    no 300 unicode-range rules in the stylesheet. Made with Google's `text=` subsetting:
      https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=<the characters below>
    典冬刻功在就幸拌本此汤甜番石磨福穹经茄草菌辣酸醇阴顶香骨麻 + printable ASCII, French accents, « » · – — ’ “ ” €, pinyin vowels.
    A new Chinese character in one of those texts is drawn by the next font of the stack until this file is made again. */
 @font-face {
-  font-family: 'Noto Serif SC';
+  font-family: 'YGF Accent Serif';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -86,11 +99,12 @@
   --ygf-gray-600: #666666; /* secondary text: 5.74:1 on white. Use this, not gray-400, for text. */
 
   /* Typography */
-  --font-sans: 'Inter', 'Inter Fallback', 'Noto Sans', system-ui, sans-serif;
+  --font-sans:
+    'Inter', 'Inter Fallback', 'Inter Fallback Roboto', 'Noto Sans', system-ui, sans-serif;
   /* Chinese text is set in the visitor's own CJK font (Noto Sans SC where installed, else PingFang / Microsoft YaHei):
      the hosted Noto Sans SC is not shipped any more (see nuxt.config.ts). */
   --font-chinese: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --font-serif-chinese: 'Noto Serif SC', serif;
+  --font-serif-chinese: 'YGF Accent Serif', serif;
 
   /* Radii */
   --radius-sm: 6px;

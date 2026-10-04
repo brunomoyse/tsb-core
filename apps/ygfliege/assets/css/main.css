@@ -85,9 +85,11 @@ body {
 }
 
 /* Body font: Inter, Noto Sans SC for the CJK glyphs. Headings are Inter too, with the vitrine's tight tracking, as on
-   ygfliege.be; only zh headings take the calligraphic Noto Serif SC (GUIDELINES.md §3.3, accents chinois). */
+   ygfliege.be, and zh headings the same stack (Inter for the Latin letters, the visitor's CJK font for the characters): the
+   calligraphic serif (GUIDELINES.md §3.3, accents chinois) is only the `font-serifzh` accents, never a whole heading. */
 html {
-  font-family: 'Inter', 'Inter Fallback', var(--font-chinese), system-ui, sans-serif;
+  font-family:
+    'Inter', 'Inter Fallback', 'Inter Fallback Roboto', var(--font-chinese), system-ui, sans-serif;
 }
 /* Kept (audit L8): the hero and marketing images are sized in vw and rely on this cap; without it the home page overflows
    horizontally at 320-768px (measured). */
@@ -103,14 +105,13 @@ html {
     letter-spacing: -0.02em;
   }
 }
-:lang(zh) :is(h1, h2) {
-  font-family: 'Noto Serif SC', var(--font-chinese), serif;
-}
 
 input,
 tbody,
 textarea {
-  font-family: 'Inter', 'Inter Fallback', var(--font-chinese), Arial, Helvetica, sans-serif;
+  font-family:
+    'Inter', 'Inter Fallback', 'Inter Fallback Roboto', var(--font-chinese), Arial, Helvetica,
+    sans-serif;
 }
 
 /* The few HSL-triple tokens the theme contract reads (GUIDELINES.md §2.3), because Tailwind wraps them in `hsl(...)`.

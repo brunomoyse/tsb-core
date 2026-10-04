@@ -30,6 +30,25 @@
   descent-override: 15.6696%;
   line-gap-override: 0%;
 }
+/* The same for Android, which has no Arial, Liberation Sans or Arimo but always has Roboto: own family names, listed after
+   the Arial-based ones in the stacks, so those systems keep them and Android takes these. Numbers: fontaine's
+   getMetricsForFamily('Montserrat') / readMetrics(channel.ttf) against Roboto (@capsizecss/metrics). */
+@font-face {
+  font-family: 'Montserrat Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 113.0784%;
+  ascent-override: 85.6043%;
+  descent-override: 22.197%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Channel Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 159.8946%;
+  ascent-override: 46.9059%;
+  descent-override: 15.6353%;
+  line-gap-override: 0%;
+}
 
 html {
   background-color: #f6f5f2;

@@ -161,13 +161,13 @@ module.exports = {
         },
       },
       fontFamily: {
-        // Headings: Inter for Latin (as ygfliege.be), Noto Sans SC for the CJK glyphs; zh headings switch to
-        // Noto Serif SC through the `:lang(zh)` rule in main.css.
-        // ("Inter Fallback" is the size-adjusted stand-in declared in assets/css/brand.css; the CJK glyphs come from
+        // Headings: Inter for Latin (as ygfliege.be), the system CJK font for the CJK glyphs (zh headings included).
+        // ("Inter Fallback" / "Inter Fallback Roboto" are the size-adjusted stand-ins declared in assets/css/brand.css; the CJK glyphs come from
         // The visitor's own font, see --font-chinese there.)
         display: [
           'Inter',
           '"Inter Fallback"',
+          '"Inter Fallback Roboto"',
           '"Noto Sans SC"',
           '"PingFang SC"',
           '"Hiragino Sans GB"',
@@ -179,6 +179,7 @@ module.exports = {
         body: [
           'Inter',
           '"Inter Fallback"',
+          '"Inter Fallback Roboto"',
           '"Noto Sans SC"',
           '"PingFang SC"',
           '"Hiragino Sans GB"',
@@ -186,8 +187,8 @@ module.exports = {
           'system-ui',
           'sans-serif',
         ],
-        // Chinese calligraphy accents (杨国福麻辣烫): the subsetted Noto Serif SC of assets/css/brand.css.
-        serifzh: ['"Noto Serif SC"', '"Noto Sans SC"', '"PingFang SC"', 'serif'],
+        // Chinese calligraphy accents (杨国福麻辣烫): the subsetted serif of assets/css/brand.css ('YGF Accent Serif').
+        serifzh: ['"YGF Accent Serif"', '"Noto Sans SC"', '"PingFang SC"', 'serif'],
       },
       /* One container width (the vitrine's --container-max, 1200px) for header, footer, menu and marketing sections:
                the shared `max-w-7xl` / `max-w-6xl` wrappers resolve to it in this brand. */

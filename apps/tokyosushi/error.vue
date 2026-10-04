@@ -103,7 +103,19 @@ const { t } = useI18n()
 
 // The error page replaces the layout, which is what sets the document language (WCAG 3.1.1): same ISO code as the layout (zh-CN, fr-BE...).
 const localeHead = useLocaleHead()
-useHead({ htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') } })
+useHead({
+  htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') },
+  // The status code is set in the display font on the first screen (like the category headings of /menu): preloaded here as there.
+  link: [
+    {
+      rel: 'preload',
+      href: '/fonts/channel.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous',
+    },
+  ],
+})
 
 const statusCode = computed(() => error?.statusCode || 500)
 
