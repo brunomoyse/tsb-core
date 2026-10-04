@@ -56,22 +56,6 @@
     "vue-tsc": "^3.3.11",
     "ws": "^8.21.3"
   },
-  "optionalDependencies": {
-    "@esbuild/linux-arm64": "^0.28.2",
-    "@esbuild/linux-x64": "^0.28.2",
-    "@oxc-minify/binding-linux-arm64-gnu": "^0.151.0",
-    "@oxc-minify/binding-linux-x64-gnu": "^0.151.0",
-    "@oxc-parser/binding-linux-arm64-gnu": "^0.151.0",
-    "@oxc-parser/binding-linux-x64-gnu": "^0.151.0",
-    "@oxc-transform/binding-linux-arm64-gnu": "^0.151.0",
-    "@oxc-transform/binding-linux-x64-gnu": "^0.151.0",
-    "@rollup/rollup-linux-arm64-gnu": "^4.63.5",
-    "@rollup/rollup-linux-x64-gnu": "^4.63.5",
-    "@tailwindcss/oxide-linux-arm64-gnu": "^4.3.3",
-    "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3",
-    "lightningcss-linux-arm64-gnu": "^1.33.0",
-    "lightningcss-linux-x64-gnu": "^1.33.0"
-  },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
   },
