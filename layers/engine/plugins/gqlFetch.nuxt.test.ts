@@ -2,9 +2,10 @@
 // the OIDC client are the boundaries, mocked; the real runtime config, cookies and i18n of the Nuxt app are used.
 // Run: `vp test run layers/engine/plugins/gqlFetch.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useRuntimeConfig } from '#imports'
 import { setFlags } from '../../../test/flags'
+import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
 import { GQL_HTTP_ERROR, GQL_NETWORK_ERROR, GqlError } from '#engine/utils/gqlError'
 
 const oidc = vi.hoisted(() => ({
@@ -16,6 +17,9 @@ const $fetchMock = vi.hoisted(() => vi.fn())
 const useRequestEvent = vi.hoisted(() => vi.fn())
 
 vi.mock('#engine/composables/useOidc', () => ({ useOidc: () => oidc }))
+vi.mock('oidc-client-ts', async () =>
+  (await import('../../../test/helpers/fakeOidc')).oidcClientTsFake(),
+)
 mockNuxtImport('navigateTo', () => navigateTo)
 mockNuxtImport('$fetch', () => $fetchMock)
 mockNuxtImport('useRequestEvent', () => useRequestEvent)
@@ -54,6 +58,9 @@ const setLanguageCookie = (value: string | null) => {
     : 'i18n_redirected=; path=/; max-age=0'
 }
 
+/** The real localised path of the app (language prefix) with the "session expired" flag. */
+const LOGIN_EXPIRED = expect.stringMatching(/^\/[a-z]{2}\/auth\/login\?session=expired$/u)
+
 const QUERY = 'query ProductList { products { id } }'
 const ok = (data: unknown) => ({ data })
 const unauthenticated = () => ({
@@ -65,6 +72,7 @@ beforeEach(() => {
   oidc.getAccessToken.mockResolvedValue('token-1')
   oidc.silentRenew.mockResolvedValue({ access_token: 'token-2' })
   setLanguageCookie(null)
+  sessionStorage.clear()
 })
 
 describe('the request', () => {
@@ -230,12 +238,19 @@ describe('expired session: HTTP 401', () => {
     expect(navigateTo).not.toHaveBeenCalled()
   })
 
-  it('fails with the 401 when the renewal gives no session, without retrying or redirecting', async () => {
+  it('fails with the 401 and sends the customer to the login page when the renewal gives no session', async () => {
+    // useOidc.silentRenew resolves null (it does not reject) for a session that is gone or refused.
     oidc.silentRenew.mockResolvedValue(null)
     $fetchMock.mockRejectedValue(httpError(401))
     const error = await install('fr')(QUERY).catch((e: unknown) => e)
     expect(error).toMatchObject({ code: GQL_HTTP_ERROR, status: 401 })
     expect($fetchMock).toHaveBeenCalledOnce()
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
+  })
+
+  it('does not redirect when the renewal worked', async () => {
+    $fetchMock.mockRejectedValueOnce(httpError(401)).mockResolvedValueOnce(ok({}))
+    await install('fr')(QUERY)
     expect(navigateTo).not.toHaveBeenCalled()
   })
 
@@ -245,10 +260,7 @@ describe('expired session: HTTP 401', () => {
     const error = await install('fr')(QUERY).catch((e: unknown) => e)
     expect(error).toMatchObject({ status: 401 })
     expect($fetchMock).toHaveBeenCalledOnce()
-    // The real localised path of the app (language prefix) with the "session expired" flag.
-    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(
-      expect.stringMatching(/^\/[a-z]{2}\/auth\/login\?session=expired$/u),
-    )
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
   })
 
   it('reports the failure of the retry, and keeps an abort of the retry as an abort', async () => {
@@ -308,12 +320,117 @@ describe('expired session: UNAUTHENTICATED GraphQL error', () => {
     await expect(install('fr')(QUERY)).rejects.toBe(abort)
   })
 
-  it('throws the original UNAUTHENTICATED error when the session cannot be renewed', async () => {
+  it('throws the original UNAUTHENTICATED error and sends the customer to the login page when the session cannot be renewed', async () => {
     oidc.silentRenew.mockResolvedValue(null)
     $fetchMock.mockResolvedValue(unauthenticated())
     const error = await install('fr')(QUERY).catch((e: unknown) => e)
     expect(error).toMatchObject({ code: 'UNAUTHENTICATED' })
     expect($fetchMock).toHaveBeenCalledOnce()
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
+  })
+})
+
+describe('the way back from a dead session', () => {
+  it('remembers the page the customer was on, so that the login brings them back to it', async () => {
+    window.history.replaceState({}, '', '/fr/me/orders?tab=past#o-1')
+    oidc.silentRenew.mockResolvedValue(null)
+    $fetchMock.mockRejectedValue(httpError(401))
+    await install('fr')(QUERY).catch(() => undefined)
+    expect(sessionStorage.getItem('oidc_return_to')).toBe('/fr/me/orders?tab=past#o-1')
+  })
+
+  it('never makes the login page itself the return path (it would loop)', async () => {
+    window.history.replaceState({}, '', '/fr/auth/login')
+    sessionStorage.setItem('oidc_return_to', '/fr/checkout')
+    oidc.silentRenew.mockResolvedValue(null)
+    $fetchMock.mockRejectedValue(httpError(401))
+    await install('fr')(QUERY).catch(() => undefined)
+    expect(sessionStorage.getItem('oidc_return_to')).toBe('/fr/checkout')
+  })
+})
+
+// The same flows with the real useOidc over a fake UserManager (the boundary to Zitadel): what the tests above fake by
+// hand (`silentRenew` resolves null for a dead session, it does not reject) is here the real behaviour of the client.
+describe('with the real OIDC client', () => {
+  const session = (accessToken: string, expired = false) => ({
+    access_token: accessToken,
+    expired,
+  })
+
+  /** A fresh transport over a fresh useOidc (its user manager and in-flight renewal are module state). */
+  async function withRealOidc(stored: ReturnType<typeof session> | null) {
+    vi.doUnmock('#engine/composables/useOidc')
+    vi.resetModules()
+    fakeUserManagers().length = 0
+    const { default: freshPlugin } = await import('./gqlFetch')
+    const { gqlFetch } = (
+      freshPlugin as unknown as (app: unknown) => { provide: { gqlFetch: GqlFetch } }
+    )({ $i18n: { locale: { value: 'fr' } } }).provide
+    // useOidc creates its user manager when it is first used: use it once, then give the manager its answers.
+    const { useOidc } = await import('#engine/composables/useOidc')
+    await useOidc().getAccessToken()
+    const [manager] = fakeUserManagers()
+    if (!manager) throw new Error('useOidc did not create a user manager')
+    manager.getUser.mockImplementation(() => Promise.resolve(stored))
+    return { gqlFetch, manager }
+  }
+
+  afterEach(() => {
+    vi.doMock('#engine/composables/useOidc', () => ({ useOidc: () => oidc }))
+    vi.resetModules()
+  })
+
+  it('a refresh token that Zitadel refuses ends the session: wiped, back to the login page, the 401 thrown', async () => {
+    window.history.replaceState({}, '', '/fr/me')
+    const { gqlFetch, manager } = await withRealOidc(session('old'))
+    manager.signinSilent.mockRejectedValue(new Error('invalid_grant'))
+    $fetchMock.mockRejectedValue(httpError(401))
+
+    const error = await gqlFetch(QUERY).catch((e: unknown) => e)
+
+    expect(error).toMatchObject({ code: GQL_HTTP_ERROR, status: 401 })
+    expect(manager.signinSilent).toHaveBeenCalledOnce()
+    expect(manager.removeUser).toHaveBeenCalledOnce()
+    expect($fetchMock).toHaveBeenCalledOnce()
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
+    expect(sessionStorage.getItem('oidc_return_to')).toBe('/fr/me')
+  })
+
+  it('a session that is already gone ends the same way, without asking Zitadel', async () => {
+    const { gqlFetch, manager } = await withRealOidc(null)
+    $fetchMock.mockResolvedValue(unauthenticated())
+
+    await expect(gqlFetch(QUERY)).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+
+    expect(manager.signinSilent).not.toHaveBeenCalled()
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
+  })
+
+  it('two requests that get a 401 together share ONE renewal (a rotated refresh token is single use) and both retry with the new token', async () => {
+    const { gqlFetch, manager } = await withRealOidc(session('old'))
+    let current = session('old')
+    manager.getUser.mockImplementation(() => Promise.resolve(current))
+    manager.signinSilent.mockImplementation(async () => {
+      current = session('new')
+      return current
+    })
+    $fetchMock.mockImplementation((_url: string, options: { headers: Record<string, string> }) =>
+      options.headers.Authorization === 'Bearer old'
+        ? Promise.reject(httpError(401))
+        : Promise.resolve(ok({ me: { id: 'u1' } })),
+    )
+
+    const answers = await Promise.all([gqlFetch(QUERY), gqlFetch(QUERY)])
+
+    expect(answers).toEqual([{ me: { id: 'u1' } }, { me: { id: 'u1' } }])
+    expect(manager.signinSilent).toHaveBeenCalledOnce()
+    expect($fetchMock.mock.calls.map((call) => call[1].headers.Authorization)).toEqual([
+      'Bearer old',
+      'Bearer old',
+      'Bearer new',
+      'Bearer new',
+    ])
+    expect(navigateTo).not.toHaveBeenCalled()
   })
 })
 

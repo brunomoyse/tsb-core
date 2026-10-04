@@ -5,51 +5,18 @@
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useRuntimeConfig } from '#imports'
+import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
 
 interface FakeUser {
   access_token: string
   expired: boolean
 }
 
-const fake = vi.hoisted(() => {
-  type Listener = (arg?: unknown) => unknown
-  class FakeUserManager {
-    static instances: FakeUserManager[] = []
-    listeners: Record<string, Listener> = {}
-    events = {
-      addUserLoaded: vi.fn((cb: Listener) => {
-        this.listeners.loaded = cb
-      }),
-      addUserUnloaded: vi.fn((cb: Listener) => {
-        this.listeners.unloaded = cb
-      }),
-      addAccessTokenExpired: vi.fn((cb: Listener) => {
-        this.listeners.expired = cb
-      }),
-      addSilentRenewError: vi.fn(),
-    }
-    getUser = vi.fn()
-    signinRedirect = vi.fn()
-    signinRedirectCallback = vi.fn()
-    signinSilent = vi.fn()
-    signoutRedirect = vi.fn()
-    removeUser = vi.fn()
-    _client = { createSigninRequest: vi.fn() }
-    constructor(public options: Record<string, unknown>) {
-      FakeUserManager.instances.push(this)
-    }
-  }
-  class FakeStore {
-    constructor(public options: unknown) {}
-  }
-  return { FakeUserManager, FakeStore }
-})
 const $fetchMock = vi.hoisted(() => vi.fn())
 
-vi.mock('oidc-client-ts', () => ({
-  UserManager: fake.FakeUserManager,
-  WebStorageStateStore: fake.FakeStore,
-}))
+vi.mock('oidc-client-ts', async () =>
+  (await import('../../../test/helpers/fakeOidc')).oidcClientTsFake(),
+)
 mockNuxtImport('$fetch', () => $fetchMock)
 
 const user = (overrides: Partial<FakeUser> = {}): FakeUser => ({
@@ -64,7 +31,7 @@ async function load() {
   const { useOidc } = await import('./useOidc')
   const oidc = useOidc()
   const manager = () => {
-    const [created] = fake.FakeUserManager.instances
+    const [created] = fakeUserManagers()
     if (!created) throw new Error('no user manager was created')
     return created
   }
@@ -77,7 +44,7 @@ const goTo = (path: string) => {
 
 beforeEach(() => {
   vi.resetAllMocks()
-  fake.FakeUserManager.instances.length = 0
+  fakeUserManagers().length = 0
   goTo('/fr/menu')
 })
 
@@ -146,12 +113,12 @@ describe('the user manager', () => {
     const { useOidc, oidc } = await load()
     await oidc.signIn()
     await useOidc().signIn()
-    expect(fake.FakeUserManager.instances).toHaveLength(1)
+    expect(fakeUserManagers()).toHaveLength(1)
   })
 
   it('is not created before it is needed', async () => {
     await load()
-    expect(fake.FakeUserManager.instances).toHaveLength(0)
+    expect(fakeUserManagers()).toHaveLength(0)
   })
 
   it('does not renew in the background when a silent renewal fails (no addSilentRenewError handler)', async () => {

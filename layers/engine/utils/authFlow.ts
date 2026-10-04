@@ -90,6 +90,23 @@ export function sanitizeReturnTo(raw: string | null | undefined): string | null 
   return raw
 }
 
+/**
+ * A dead session sends the customer to the login page: remember the page they were on (a path that passes
+ * `sanitizeReturnTo`, so never the auth flow itself) in the slot `useAuthCallback` reads once the session is restored.
+ * Browser only; where there is no storage, or it refuses (private mode), the customer simply lands on the default page.
+ */
+export function rememberCurrentPage(): void {
+  if (typeof window === 'undefined') return
+  const { pathname, search, hash } = window.location
+  const path = sanitizeReturnTo(`${pathname}${search}${hash}`)
+  if (!path) return
+  try {
+    sessionStorage.setItem('oidc_return_to', path)
+  } catch {
+    // Storage unavailable: nothing to remember.
+  }
+}
+
 export type PostAuthTarget =
   /** Back to where the customer was (checkout, a protected page). */
   | { kind: 'path'; path: string }

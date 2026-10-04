@@ -13,6 +13,7 @@ import {
   isResendDisabled,
   isVerifyDisabled,
   postAuthTarget,
+  rememberCurrentPage,
   sanitizeReturnTo,
   stepAfterVerify,
   tickResendCooldown,
@@ -190,6 +191,50 @@ describe('return to the checkout after signing in', () => {
     assert.deepEqual(postAuthTarget('/fr/checkout', true), { kind: 'path', path: '/fr/checkout' })
     assert.deepEqual(postAuthTarget(null, true), { kind: 'menu' })
     assert.deepEqual(postAuthTarget(null, false), { kind: 'checkout-if-open' })
+  })
+})
+
+describe('remembering the page before a dead session sends the customer to the login', () => {
+  /** Runs `fn` as a browser tab at `url` whose sessionStorage is `storage` (this file runs in plain Node). */
+  const inTab = (url, storage, fn) => {
+    const { pathname, search, hash } = new URL(url, 'https://shop.test')
+    globalThis.window = { location: { pathname, search, hash } }
+    globalThis.sessionStorage = storage
+    try {
+      fn()
+    } finally {
+      delete globalThis.window
+      delete globalThis.sessionStorage
+    }
+  }
+  const memory = () => {
+    const data = new Map()
+    return { data, setItem: (k, v) => data.set(k, v), getItem: (k) => data.get(k) ?? null }
+  }
+
+  test('keeps path, query and hash of the current page where useAuthCallback will read it', () => {
+    const storage = memory()
+    inTab('/fr/me/orders?tab=past#o-1', storage, rememberCurrentPage)
+    assert.equal(storage.getItem('oidc_return_to'), '/fr/me/orders?tab=past#o-1')
+  })
+
+  test('keeps what was stored when the page is the auth flow (no login loop)', () => {
+    const storage = memory()
+    storage.setItem('oidc_return_to', '/fr/checkout')
+    inTab('/fr/auth/login?session=expired', storage, rememberCurrentPage)
+    assert.equal(storage.getItem('oidc_return_to'), '/fr/checkout')
+  })
+
+  test('does nothing without a window (SSR) and survives a storage that refuses writes', () => {
+    assert.doesNotThrow(rememberCurrentPage)
+    const refusing = {
+      setItem: () => {
+        throw new Error('QuotaExceededError')
+      },
+    }
+    assert.doesNotThrow(() => {
+      inTab('/fr/me', refusing, rememberCurrentPage)
+    })
   })
 })
 

@@ -58,6 +58,7 @@ async function requestHeaders(): Promise<Headers> {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  sessionStorage.clear()
   $fetchMock.create.mockImplementation((options: unknown) => {
     created.options = options
     return baseApi
@@ -195,6 +196,14 @@ describe('expired session: HTTP 401', () => {
 
     expect(baseApi).toHaveBeenCalledOnce()
     expect(navigateTo).toHaveBeenCalledExactlyOnceWith('/fr/auth/login?session=expired')
+  })
+
+  it('remembers the page the customer was on, so that the login brings them back to it', async () => {
+    window.history.replaceState({}, '', '/fr/me/orders?tab=past')
+    oidc.silentRenew.mockResolvedValue(null)
+    baseApi.mockRejectedValue(httpError(401))
+    await install('fr')('/me').catch(() => undefined)
+    expect(sessionStorage.getItem('oidc_return_to')).toBe('/fr/me/orders?tab=past')
   })
 
   it('does not renew twice: a second 401 on the repeated request is final', async () => {

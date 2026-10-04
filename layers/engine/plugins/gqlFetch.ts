@@ -1,4 +1,5 @@
 // Plugins: gqlFetch.ts — OIDC Bearer token authentication via Zitadel
+import { rememberCurrentPage } from '#engine/utils/authFlow'
 import { GqlError, type GqlErrorEntry, isAbortError, operationNameOf } from '#engine/utils/gqlError'
 import {
   defineNuxtPlugin,
@@ -135,20 +136,24 @@ export default defineNuxtPlugin((nuxtApp) => {
     return headers
   }
 
-  /** Attempt OIDC silent renewal (coalesced inside useOidc). */
+  /**
+   * Attempt OIDC silent renewal (coalesced inside useOidc). `silentRenew` never rejects for a dead session: it wipes
+   * it and resolves `null`, which is the usual way a session ends. Either way the customer is sent back to log in
+   * (as `$api` does), the page they were on being kept as the return path by the login page.
+   */
   const attemptRefresh = async (): Promise<boolean> => {
+    if (import.meta.server) return false
     try {
-      if (import.meta.server) return false
       const { useOidc } = await import('#engine/composables/useOidc')
       const { silentRenew } = useOidc()
-      const user = await silentRenew()
-      return Boolean(user)
+      if (await silentRenew()) return true
     } catch (err: unknown) {
-      // Expected when the session is over (not reported): send the customer back to log in.
+      // Not reported: an unexpected failure of the renewal is treated as a dead session too.
       if (import.meta.dev) console.warn('[gqlFetch] silent renew failed', err)
-      void navigateTo(`${localePath('auth-login')}?session=expired`)
-      return false
     }
+    rememberCurrentPage()
+    void navigateTo(`${localePath('auth-login')}?session=expired`)
+    return false
   }
 
   return { provide: { gqlFetch } }
