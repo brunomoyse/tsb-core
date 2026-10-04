@@ -264,12 +264,14 @@ describe('selectFirst', () => {
     expect(mountSpy(['a', 'b'], { selectFirst: true }).activeCategoryId.value).toBe('a')
   })
 
-  it('does not override a category already active', () => {
+  it('does not override a category already active', async () => {
     const { activeCategoryId, categoryIds, scrollToCategory } = mountSpy(['a', 'b'], {
       selectFirst: true,
     })
     scrollToCategory('b')
     categoryIds.value = ['x', 'y']
+    // The watcher on the ids runs on the next tick: assert after it, or the check cannot fail.
+    await nextTick()
     expect(activeCategoryId.value).toBe('b')
   })
 

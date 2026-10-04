@@ -2,12 +2,13 @@
 // "back": the redirect itself says nothing). Everything derives from the LOADED order: the phase, when the cart is cleared
 // (only a confirmed order, only the cart checked out for this order), the verify loop for a late webhook, the live
 // subscription and the polling fallback. The pure rules are in utils/orderCompleted.test.mjs; here they are wired.
-// Boundaries: the GraphQL transport, the data-fetching wrapper (useAsyncData), the WebSocket subscription and the clock.
+// Boundaries: the GraphQL transport, the WebSocket subscription and the clock. useAsyncData is Nuxt's own.
 // Run: `vp test run layers/engine/composables/useOrderCompleted.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'
 import type { Ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { clearNuxtData, useNuxtData } from '#imports'
 import { setFlags } from '../../../test/flags'
 import { useCartStore } from '#engine/stores/cart'
 import type { Order } from '#engine/types'
@@ -23,30 +24,10 @@ interface SubscriptionCall {
 }
 const gqlFetch = vi.hoisted(() => vi.fn())
 const subscriptions = vi.hoisted(() => ({ calls: [] as unknown[] }))
-const asyncDataCalls = vi.hoisted(() => ({ calls: [] as { key: string; options: unknown }[] }))
 
 mockNuxtImport('useNuxtApp', async (original) => {
   const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
   return () => withGqlFetch(original(), gqlFetch)
-})
-// The data-fetching wrapper, reduced to its contract: run the handler at once, expose data / error / refresh.
-mockNuxtImport('useAsyncData', async () => {
-  const { ref } = await import('vue')
-  return (key: string, handler: () => Promise<unknown>, options: unknown) => {
-    asyncDataCalls.calls.push({ key, options })
-    const data = ref<unknown>(null)
-    const error = ref<unknown>(null)
-    const refresh = async () => {
-      try {
-        data.value = await handler()
-        error.value = null
-      } catch (err) {
-        error.value = err
-      }
-    }
-    void refresh()
-    return { data, error, refresh }
-  }
 })
 mockNuxtImport('useGqlSubscription', async () => {
   const { ref } = await import('vue')
@@ -107,7 +88,8 @@ beforeEach(() => {
   cart.pendingOrderId = 'order-1'
   gqlFetch.mockReset()
   subscriptions.calls = []
-  asyncDataCalls.calls = []
+  // The order is cached under its key by Nuxt's own useAsyncData: start every test without it.
+  clearNuxtData()
 })
 afterEach(() => {
   current?.unmount()
@@ -116,13 +98,15 @@ afterEach(() => {
 })
 
 describe('loading the order', () => {
-  it('asks for the order of the page, on the client only (SSR has no OIDC token), and does not wait for it', async () => {
+  it('asks for the order of the page once it is mounted in the browser (SSR has no OIDC token)', async () => {
     serve(paid())
     mount('order-1')
-    expect(asyncDataCalls.calls).toEqual([{ key: 'order-order-1', options: { server: false } }])
     await settle()
+    expect(fetches()).toBe(1)
     expect(gqlFetch.mock.calls[0]![0]).toBe(ORDER_COMPLETED_QUERY)
     expect(gqlFetch.mock.calls[0]![1]).toEqual({ variables: { orderId: 'order-1' } })
+    // Cached by Nuxt under the order's own key.
+    expect(useNuxtData<{ myOrder: Order }>('order-order-1').data.value?.myOrder.id).toBe('order-1')
   })
 
   it('shows a neutral spinner until the order is there, and decides nothing from the first render', async () => {
@@ -214,6 +198,53 @@ describe('the outcome of the payment', () => {
     expect(view.phase.value).toBe('verifying')
     expect(view.resolvingPayment.value).toBe(true)
     expect(view.paymentProblem.value).toBe(false)
+    expect(cart.products).toHaveLength(1)
+  })
+})
+
+describe('the webhook that arrives late', () => {
+  it('after the verify window gave up, the safety-net poll finds the payment and the page turns to the confirmation, cart cleared', async () => {
+    serve(pending())
+    const view = mount()
+    await settle(17_500)
+    expect(view.phase.value).toBe('awaiting-confirmation')
+    expect(cart.products).toHaveLength(1)
+
+    serve(paid())
+    await settle(12_499)
+    expect(view.phase.value).toBe('awaiting-confirmation') // The poll has not run yet
+    await settle(1) // t = 30 s: the first tick of the poll that started at 15 s
+    expect(view.phase.value).toBe('confirmed')
+    expect(view.awaitingConfirmation.value).toBe(false)
+    expect(cart.products).toEqual([])
+    expect(cart.pendingOrderId).toBeNull()
+  })
+
+  it('a push that confirms the order while the page waits for the confirmation clears the cart', async () => {
+    serve(pending())
+    const view = mount()
+    await settle(17_500)
+    expect(view.phase.value).toBe('awaiting-confirmation')
+    subscription().data.value = { myOrderUpdated: { status: 'CONFIRMED' } }
+    await settle()
+    expect(view.phase.value).toBe('confirmed')
+    expect(cart.products).toEqual([])
+  })
+
+  it('an authorized payment counts as paid (card payments that are captured later)', async () => {
+    serve(paid({ payment: makePayment({ status: 'authorized' }) }))
+    const view = mount()
+    await settle()
+    expect(view.phase.value).toBe('confirmed')
+    expect(cart.products).toEqual([])
+  })
+
+  it('an order that FAILED while its payment is still open is a problem, the cart is kept', async () => {
+    serve(makeOrder({ status: 'FAILED', payment: makePayment({ status: 'open' }) }))
+    const view = mount()
+    await settle()
+    expect(view.phase.value).toBe('problem')
+    expect(view.paymentOutcome.value).toBe('abandoned')
     expect(cart.products).toHaveLength(1)
   })
 })
@@ -418,9 +449,8 @@ describe('the verify loop (the webhook may be late)', () => {
     const view = mount()
     await settle()
     await settle(400)
-    subscription().data.value = {
-      myOrderUpdated: { status: 'CONFIRMED', payment: makePayment({ status: 'paid' }) },
-    }
+    // The subscription selects id, status, updatedAt, estimatedReadyTime and cancellationReason: a status is what it sends.
+    subscription().data.value = { myOrderUpdated: { status: 'CONFIRMED' } }
     await settle(400) // The first gap (800 ms) ends: the phase is no longer verifying
     expect(view.phase.value).toBe('confirmed')
     expect(fetches()).toBe(1)
@@ -428,18 +458,17 @@ describe('the verify loop (the webhook may be late)', () => {
     expect(fetches()).toBe(1)
   })
 
-  it('a payment that goes failed then open again while the loop runs does not start a second loop', async () => {
+  it('an order that is cancelled then pending again while the loop sleeps does not start a second loop', async () => {
     serve(pending())
-    mount()
+    const view = mount()
     await settle()
-    subscription().data.value = {
-      myOrderUpdated: { payment: makePayment({ status: 'failed' }) },
-    }
+    subscription().data.value = { myOrderUpdated: { status: 'CANCELLED' } }
     await settle(100)
-    subscription().data.value = {
-      myOrderUpdated: { payment: makePayment({ status: 'open' }) },
-    }
-    await settle(800)
+    expect(view.phase.value).toBe('problem')
+    subscription().data.value = { myOrderUpdated: { status: 'PENDING' } }
+    await settle(0)
+    expect(view.phase.value).toBe('verifying')
+    await settle(700)
     // One loop only: one re-check at 800 ms, the next gap (1200 ms) has not elapsed.
     expect(fetches()).toBe(2)
     await settle(1200)
@@ -451,21 +480,22 @@ describe('the verify loop (the webhook may be late)', () => {
     serve(pending())
     mount()
     await settle(20_000)
-    expect(fetches()).toBeLessThanOrEqual(2) // Only the load (and at most the safety net)
+    expect(fetches()).toBe(1) // Only the load: no re-check (the first safety-net poll is at 30 s)
   })
 })
 
 describe('live updates', () => {
   it('subscribes to the order and recovers the gap after a reconnect', async () => {
     serve(paid())
-    mount('order-1')
+    const view = mount('order-1')
     await settle()
     const live = subscription()
     expect(live.query).toContain('myOrderUpdated')
     expect(live.variables).toEqual({ orderId: 'order-1' })
+    expect(view.order.value?.status).toBe('CONFIRMED')
     serve(paid({ status: 'PREPARING' }))
     await live.options.onReconnect!()
-    expect(subscription().data).toBeDefined()
+    expect(view.order.value?.status).toBe('PREPARING')
   })
 
   it('a pushed update is merged into the loaded order', async () => {
@@ -503,14 +533,12 @@ describe('live updates', () => {
     expect(view.order.value?.status).toBe('CONFIRMED')
   })
 
-  it('a payment confirmed by a push ends the verifying phase', async () => {
+  it('an order confirmed by a push ends the verifying phase and clears the cart', async () => {
     serve(pending())
     const view = mount()
     await settle()
     expect(view.phase.value).toBe('verifying')
-    subscription().data.value = {
-      myOrderUpdated: { status: 'CONFIRMED', payment: makePayment({ status: 'paid' }) },
-    }
+    subscription().data.value = { myOrderUpdated: { status: 'CONFIRMED' } }
     await settle()
     expect(view.phase.value).toBe('confirmed')
     expect(cart.products).toEqual([])
@@ -547,12 +575,20 @@ describe('the polling fallback (a WebSocket that fails silently)', () => {
     expect(view.order.value?.status).toBe('PREPARING')
   })
 
-  it('a changed payment status is merged as well', async () => {
-    serve(pending({ createdAt: '2026-10-04T11:59:00Z' }))
+  it('a changed payment status alone is merged as well (the status of the order is the same)', async () => {
+    // CONFIRMED with a payment still `open`: the verify loop does not run for it, so only the poll can see the change.
+    serve(paid({ payment: makePayment({ status: 'open' }) }))
     const view = mount()
     await settle()
-    serve(pending({ payment: makePayment({ status: 'paid' }), status: 'PENDING' }))
-    await settle(30_000)
+    expect(view.phase.value).toBe('confirmed')
+    expect(view.order.value?.payment?.status).toBe('open')
+    const base = fetches()
+    serve(paid({ payment: makePayment({ status: 'paid' }) }))
+    await settle(29_999)
+    expect(fetches()).toBe(base)
+    expect(view.order.value?.payment?.status).toBe('open')
+    await settle(1) // The first poll tick: 15 s after the poll started at 15 s
+    expect(fetches()).toBe(base + 1)
     expect(view.order.value?.payment?.status).toBe('paid')
   })
 

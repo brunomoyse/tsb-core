@@ -146,7 +146,7 @@ describe('what is asked, and when', () => {
     })
   })
 
-  it('every priced input re-asks: payment option, coupon, slot, address', async () => {
+  it('every priced input re-asks: payment option, coupon, slot, address (and the order type)', async () => {
     const { surface, cart } = await load()
     cart.addProduct(ramen, 1)
     surface()
@@ -167,13 +167,25 @@ describe('what is asked, and when', () => {
       cart.preferredReadyTime = '2026-10-04T19:00:00+02:00'
     })
     await change(() => {
-      cart.collectionOption = 'PICKUP'
+      cart.address = { id: 'place-1' } as never
     })
     expect(gqlFetch.mock.calls[0]![1].variables.input).toMatchObject({
       isOnlinePayment: false,
       couponCode: 'WELCOME',
       preferredReadyTime: '2026-10-04T19:00:00+02:00',
+      orderType: 'DELIVERY',
+      addressPlaceId: 'place-1',
+    })
+    await change(() => {
+      cart.address = { id: 'place-2' } as never
+    })
+    expect(gqlFetch.mock.calls[0]![1].variables.input).toMatchObject({ addressPlaceId: 'place-2' })
+    await change(() => {
+      cart.collectionOption = 'PICKUP'
+    })
+    expect(gqlFetch.mock.calls[0]![1].variables.input).toMatchObject({
       orderType: 'PICKUP',
+      addressPlaceId: null,
     })
   })
 
@@ -455,23 +467,37 @@ describe('the coupon of the cart follows each quote', () => {
     expect(cart.couponCode).toBe('WELCOME')
   })
 
-  it('an answer for inputs the cart has already left is not applied to the coupon', async () => {
-    const loaded = await load()
-    loaded.cart.addProduct(ramen, 1)
-    loaded.cart.couponCode = 'WELCOME'
-    loaded.cart.couponDiscountCents = 100
+  it('an answer for inputs the cart has already left is not applied: not to the coupon, not to the stored quote', async () => {
+    const { cart, quoteStore, surface, notifications } = await load()
+    cart.addProduct(ramen, 1)
+    cart.couponCode = 'WELCOME'
+    cart.couponDiscountCents = 100
+    answerWith(couponQuote({}, '1.00'))
+    const { quote } = surface()
+    await settle(0) // The first quote of the visit, answered: later changes are debounced
+    expect(quote.quote.value?.couponDiscount).toBe('1.00')
+
     let release!: (value: unknown) => void
     gqlFetch.mockImplementationOnce(() => new Promise((resolve) => (release = resolve)))
-    loaded.surface()
+    cart.addProduct(tea, 1)
+    await settle(DEBOUNCE) // Second request: in flight
+    expect(gqlFetch).toHaveBeenCalledTimes(2)
+    // The cart moves on again; the answer of the second request comes back BEFORE the third is sent.
+    cart.addProduct(tea, 1)
     await settle(0)
-    // The cart moves on while the first request is in flight: its answer is dropped by the cycle.
-    answerWith(couponQuote({ valid: false, errorCode: 'COUPON_INVALID' }))
-    loaded.cart.addProduct(tea, 1)
+    release({ quoteOrder: couponQuote({ valid: false, errorCode: 'COUPON_INVALID' }, '0.00') })
+    await settle(0)
+    expect(cart.couponCode).toBe('WELCOME')
+    expect(cart.couponDiscountCents).toBe(100)
+    expect(notifications.current).toBeNull()
+    expect(quoteStore.quote?.couponDiscount).toBe('1.00') // Still the first quote
+    expect(quote.freshQuote.value).toBeNull() // Not for the cart as it is now
+    // The answer for the current cart is the one that lands.
+    answerWith(couponQuote({}, '2.50'))
     await settle(DEBOUNCE)
-    release({ quoteOrder: couponQuote({}, '9.00') })
-    await settle(0)
-    expect(loaded.cart.couponCode).toBeNull() // Only the NEW answer was applied
-    loaded.notifications.dismiss()
+    expect(quote.freshQuote.value?.couponDiscount).toBe('2.50')
+    expect(cart.couponCode).toBe('WELCOME')
+    expect(cart.couponDiscountCents).toBe(250)
   })
 })
 
