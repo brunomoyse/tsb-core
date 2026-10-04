@@ -201,7 +201,29 @@ describe('selecting', () => {
     expect(qty.value).toBe(2)
   })
 
-  it('selectExclusive records at least 1 even for an optional group (min 0)', () => {
+  // NOTE (product decision, not a bug of the total): an optional pick-one group (min 0, max 1) has a scaled minimum of
+  // 0, so the pick is recorded ONCE however many units the line has: 3 bowls with an optional "+x" get one "x". The
+  // checkout total and the order the backend prices agree on it: the backend reads selection quantities as line-wide
+  // totals (tsb-service order/domain/pricing.go PriceLine: base × qty + Σ modifier × selection qty) and accepts 0..max×qty.
+  // A required group is different: it is scaled to the line (see the test above). If "every bowl gets it" is wanted for
+  // optional groups, change selectExclusive and the quantity watcher, and this test with them.
+  it('NOTE: selectExclusive on an optional group (min 0) records ONE unit, whatever the line quantity', () => {
+    const x = choice('x', 'g', { priceModifier: '0.80' })
+    const optional = makeProduct({
+      id: 'opt',
+      price: '5.00',
+      choices: [x],
+      choiceGroups: [group('g', 0, 1, [x])],
+    })
+    const { api } = use(optional, 3)
+    api.selectExclusive(x)
+    expect(api.quantityOf(x)).toBe(1)
+    expect(api.selectionList.value).toEqual([{ groupId: 'g', choiceId: 'x', quantity: 1 }])
+    // 3 × 5.00 + one 0.80 surcharge, the same line total the backend computes for these selections.
+    expect(api.lineTotalCents.value).toBe(3 * 500 + 80)
+  })
+
+  it('selectExclusive records at least 1 for an optional group (min 0) on a single unit', () => {
     const optional = makeProduct({
       id: 'opt',
       choices: [choice('x', 'g')],
@@ -397,7 +419,7 @@ describe('the line quantity changes', () => {
     expect(toRaw(api.selectedChoiceQuantities.value)).toBe(right)
   })
 
-  it('an optional pick-one group keeps its pick at least once when the quantity changes', async () => {
+  it('NOTE: an optional pick-one group keeps its single pick when the quantity changes (see selectExclusive)', async () => {
     const x = choice('x', 'g')
     const product = makeProduct({ id: 'opt', choices: [x], choiceGroups: [group('g', 0, 1, [x])] })
     const { api, qty } = use(product, 1)
