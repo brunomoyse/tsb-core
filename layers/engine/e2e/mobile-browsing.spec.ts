@@ -57,6 +57,8 @@ test.describe('categories', () => {
     test(`the strip lists every category and each chip jumps to its section, clear of the sticky header at ${width}x${height}`, async ({
       page,
     }) => {
+      // Instant scrolling: with the smooth jump still running the heading is measured on its way, not where it lands.
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.setViewportSize({ width, height })
       await page.goto('/fr/menu')
       await waitForNuxtHydration(page)

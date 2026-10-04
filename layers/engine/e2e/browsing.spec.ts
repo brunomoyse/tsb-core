@@ -54,6 +54,7 @@ test.describe('categories (Tokyo Sushi: the strip is on the desktop too)', () =>
   test('each chip jumps to its section clear of the sticky block, and the spy follows the page', async ({
     page,
   }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     const ids = await categoryIds(page)
