@@ -55,6 +55,57 @@ describe('mutate', () => {
   })
 })
 
+describe('calls that overlap (a double tap)', () => {
+  const deferred = () => {
+    let resolve: (value: unknown) => void = () => undefined
+    let reject: (reason: unknown) => void = () => undefined
+    const promise = new Promise((res, rej) => {
+      resolve = res
+      reject = rej
+    })
+    return { promise, resolve, reject }
+  }
+
+  it('each call resolves with its own answer, and `loading` holds until the LAST one is done', async () => {
+    const first = deferred()
+    const second = deferred()
+    gqlFetch.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise)
+    const { mutate, loading, data } = useGqlMutation<{ n: number }>(MUTATION)
+
+    const a = mutate({ n: 1 })
+    const b = mutate({ n: 2 })
+    expect(loading.value).toBe(true)
+
+    first.resolve({ n: 1 })
+    await expect(a).resolves.toEqual({ n: 1 })
+    expect(loading.value).toBe(true) // The second request is still on its way
+
+    second.resolve({ n: 2 })
+    await expect(b).resolves.toEqual({ n: 2 })
+    expect(loading.value).toBe(false)
+    expect(data.value).toEqual({ n: 2 }) // The last answer to arrive
+  })
+
+  it('a failure of one call does not end the loading of the other', async () => {
+    const first = deferred()
+    const second = deferred()
+    gqlFetch.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise)
+    const { mutate, loading, error } = useGqlMutation(MUTATION)
+
+    const a = mutate()
+    const b = mutate()
+    const failure = new Error('offline')
+    first.reject(failure)
+    await expect(a).rejects.toBe(failure)
+    expect(loading.value).toBe(true)
+    expect(error.value).toBe(failure)
+
+    second.resolve({ ok: true })
+    await b
+    expect(loading.value).toBe(false)
+  })
+})
+
 describe('a failed mutation', () => {
   it('throws the GqlError to the caller, keeps it in `error` and stops loading', async () => {
     const failure = new GqlError([{ message: 'nope', extensions: { code: 'FORBIDDEN' } }])
