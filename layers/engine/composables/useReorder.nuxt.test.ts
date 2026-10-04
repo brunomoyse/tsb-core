@@ -66,7 +66,7 @@ describe('reorder into an empty cart', () => {
     expect(result).toEqual({ added: 2, skipped: 0 })
     expect(cart.products.map((l) => [l.product.id, l.quantity])).toEqual([['ramen', 2]])
     expect(notifications.current).toMatchObject({
-      message: 'reorder.success{"count":2}',
+      message: 'reorder.success{"count":2}#2',
       variant: 'success',
     })
     expect(navigateTo).toHaveBeenCalledWith(useLocalePath()('/checkout'))
@@ -94,7 +94,7 @@ describe('reorder into an empty cart', () => {
     expect(result).toEqual({ added: 1, skipped: 3 })
     expect(cart.products.map((l) => l.product.id)).toEqual(['ramen'])
     expect(notifications.current).toMatchObject({
-      message: 'reorder.partial{"added":1,"names":"Gyoza (reorder.reason.unavailable)"}',
+      message: 'reorder.partial{"added":1,"names":"Gyoza (reorder.reason.unavailable)"}#1',
       variant: 'info',
       duration: 9000,
     })
@@ -167,7 +167,7 @@ describe('reorder into a cart that already has lines', () => {
     expect(cart.cashPaymentAmount).toBeNull()
     expect(useState('checkout-cash-touched').value).toBe(false)
     expect(cart.collectionOption).toBe('PICKUP')
-    expect(notifications.current?.message).toBe('reorder.success{"count":2}')
+    expect(notifications.current?.message).toBe('reorder.success{"count":2}#2')
     expect(navigateTo).toHaveBeenCalledWith(useLocalePath()('/checkout'))
   })
 
