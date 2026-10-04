@@ -47,3 +47,19 @@ test('too long or not a number is invalid', async () => {
   assert.equal(await kind('+33 6 12 34 56 78 90 12'), 'invalid')
   assert.equal(await kind('abc'), 'invalid')
 })
+
+test('an international number of the right length that is not a real number is invalid, not "keep typing"', async () => {
+  assert.equal(await kind('+32 0 00 00 00 0'), 'invalid')
+})
+
+test('nine digits that no Belgian numbering plan can complete are invalid', async () => {
+  assert.equal(await kind('000000000'), 'invalid')
+  assert.equal(await kind('0 0 0 0 0 0 0 0 0'), 'invalid')
+})
+
+// A mobile number one digit short ("0470 12 34 5") is 9 digits starting with 04, which is ALSO a valid Liège landline
+// (04 xxx xx xx), so libphonenumber accepts it and the "incomplete" guard in classifyPhoneInput never fires: the
+// Checkout saves +32470123 45 as a landline number. The guard (and its comment) assume it is rejected.
+test.skip('BUG: a mobile one digit short is reported as incomplete, not saved as a Liège landline', async () => {
+  assert.equal(await kind('0470 12 34 5'), 'incomplete')
+})

@@ -10,6 +10,7 @@ import {
   isQuoteUnsupportedError,
   isQuoteUsableForTotals,
   lineIssuesByKey,
+  needsPriceAcceptance,
   quoteLineByKey,
   quoteRequestKey,
   recheckQuote,
@@ -410,4 +411,16 @@ test('the reason a delivery address is refused: the fresh quote wins over the cl
     deliveryUnavailableKey(issue('DELIVERY_MINIMUM_NOT_MET'), '4610', policy),
     'checkout.notDeliverableArea',
   )
+})
+
+test('only a price change needs the customer to accept the new price', () => {
+  assert.equal(needsPriceAcceptance({ code: 'PRICE_CHANGED', currentPrice: '9.00' }), true)
+  for (const code of ['PRODUCT_NOT_FOUND', 'PRODUCT_UNAVAILABLE', 'SELECTION_INVALID']) {
+    assert.equal(needsPriceAcceptance({ code, currentPrice: null }), false, code)
+  }
+})
+
+test('quoteLineByKey: a key beyond the quoted lines (the cart grew) finds no line', () => {
+  const q = quote({ lines: [line()] })
+  assert.equal(quoteLineByKey(q, ['k1', 'k2'], 'k2'), null)
 })

@@ -83,3 +83,11 @@ test('an old backend is recognised by the validation error that names productCat
   )
   assert.equal(isCategoryBySlugUnsupportedError(new Error('network')), false)
 })
+
+test('a line with a legacy choice and no selectedChoices at all is a line with a choice, not the extra', () => {
+  const lines = [
+    { product: { code: 'A1' }, quantity: 2, selectedChoice: { id: 'c' } },
+    { product: { code: 'A1' }, quantity: 1, selectedChoice: null },
+  ]
+  assert.equal(paidExtraQuantity(lines, 'A1'), 3)
+})

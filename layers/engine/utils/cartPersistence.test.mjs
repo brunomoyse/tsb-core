@@ -387,3 +387,182 @@ test('migrating twice changes nothing (idempotent)', () => {
   assert.equal(second.dropped, 0)
   assert.equal(serializeCartState(second.state), json)
 })
+
+// ---------------------------------------------------------------------------------------------
+// Defensive paths: products and lines that are thinner than the menu query's, and hostile storage.
+// ---------------------------------------------------------------------------------------------
+
+test('a product without choices, code, slug, piece count or category persists with neutral defaults', () => {
+  const thin = {
+    id: 'thin',
+    name: 'Thin',
+    price: '2.00',
+    isDiscountable: undefined,
+    isLunchOnly: undefined,
+  }
+  const persisted = toPersistedLine({ product: thin, quantity: 1, selectedChoice: null })
+  assert.deepEqual(persisted, {
+    productId: 'thin',
+    quantity: 1,
+    selections: [],
+    choiceId: null,
+    snapshot: {
+      name: 'Thin',
+      code: null,
+      slug: '',
+      priceCents: 200,
+      pieceCount: null,
+      isDiscountable: false,
+      isLunchOnly: false,
+      category: null,
+      choices: [],
+    },
+  })
+})
+
+test('a category missing its fields falls back to the product categoryId and empty strings', () => {
+  const product = tea({ categoryId: 'cat-from-product', category: { order: 1 } })
+  const { snapshot } = toPersistedLine(v1Line(product, 1, []))
+  assert.deepEqual(snapshot.category, { id: 'cat-from-product', name: '', slug: '' })
+  const noIds = tea({ categoryId: undefined, category: { order: 1 } })
+  assert.equal(toPersistedLine(v1Line(noIds, 1, [])).snapshot.category.id, '')
+})
+
+test('a legacy single choice that is not among the product choices still persists, and prices itself', () => {
+  const orphan = { id: 'old', productId: 'tea', priceModifier: '0.75', sortOrder: 0, name: 'Old' }
+  const line = { product: tea(), quantity: 2, selectedChoices: undefined, selectedChoice: orphan }
+  const persisted = toPersistedLine(line)
+  assert.deepEqual(persisted.selections, [])
+  assert.equal(persisted.choiceId, 'old')
+  // The group is unknown: it is stored empty, never undefined.
+  assert.deepEqual(persisted.snapshot.choices, [
+    { id: 'old', groupId: '', priceModifierCents: 75, name: 'Old' },
+  ])
+  // And it survives the round trip: the rebuilt line carries the legacy choice with its price.
+  const rebuilt = lineFromPersisted(persisted)
+  assert.equal(rebuilt.selectedChoice.id, 'old')
+  assert.equal(lineTotalCents(rebuilt), 2 * (350 + 75))
+})
+
+test('a legacy single choice that IS among the product choices is not stored twice', () => {
+  const product = wholeProduct()
+  const line = { product, quantity: 1, selectedChoices: [], selectedChoice: product.choices[1] }
+  assert.deepEqual(
+    toPersistedLine(line).snapshot.choices.map((c) => c.id),
+    ['broth-b'],
+  )
+})
+
+test('a persisted choiceId that the snapshot no longer holds rebuilds as no choice', () => {
+  const persisted = toPersistedLine(v1Line(tea(), 1, []))
+  const rebuilt = lineFromPersisted({ ...persisted, choiceId: 'gone' })
+  assert.equal(rebuilt.selectedChoice, null)
+})
+
+test('v2 lines: missing selections / choices mean none, malformed ones drop the line', () => {
+  const base = { productId: 'p', quantity: 1, snapshot: { name: 'x', priceCents: 100 } }
+  const keep = migratePersistedCart({ version: 2, products: [base] }, MAX)
+  assert.equal(keep.dropped, 0)
+  assert.deepEqual(keep.state.products[0].selectedChoices, [])
+  assert.deepEqual(keep.state.products[0].product.choices, [])
+  const nullish = migratePersistedCart(
+    {
+      version: 2,
+      products: [{ ...base, selections: null, snapshot: { ...base.snapshot, choices: null } }],
+    },
+    MAX,
+  )
+  assert.equal(nullish.dropped, 0)
+
+  const broken = [
+    { ...base, snapshot: { ...base.snapshot, choices: 'nope' } }, // Choices not a list
+    { ...base, snapshot: { ...base.snapshot, choices: ['str'] } }, // A choice that is not an object
+    { ...base, snapshot: { ...base.snapshot, choices: [{ name: 'no id' }] } }, // A choice without id
+    { ...base, selections: ['str'] }, // A selection that is not an object
+    { ...base, snapshot: { priceCents: 100 } }, // No name
+    { ...base, snapshot: { name: 7, priceCents: 100 } }, // Name of the wrong type
+  ]
+  const result = migratePersistedCart({ version: 2, products: broken }, MAX)
+  assert.equal(result.dropped, broken.length)
+  assert.deepEqual(result.state.products, [])
+})
+
+test('v2 snapshot fields of the wrong type fall back instead of failing the line', () => {
+  const line = {
+    productId: 'p',
+    quantity: 3,
+    selections: [],
+    choiceId: '',
+    snapshot: {
+      name: 'x',
+      priceCents: 100,
+      code: '',
+      slug: 12,
+      pieceCount: 'eight',
+      isDiscountable: 'yes',
+      isLunchOnly: 1,
+      category: { id: 5, name: null, slug: undefined },
+      choices: [{ id: 'c', groupId: 4, priceModifierCents: 1.5, name: undefined }],
+    },
+  }
+  const { state, dropped } = migratePersistedCart({ version: 2, products: [line] }, MAX)
+  assert.equal(dropped, 0)
+  const item = state.products[0]
+  const persisted = toPersistedLine(item)
+  assert.equal(persisted.choiceId, null)
+  assert.deepEqual(persisted.snapshot, {
+    name: 'x',
+    code: null,
+    slug: '',
+    priceCents: 100,
+    pieceCount: null,
+    isDiscountable: false,
+    isLunchOnly: false,
+    category: { id: '', name: '', slug: '' },
+    choices: [],
+  })
+  // The malformed choice is kept in the snapshot with a zero modifier (it was never selected, so toPersistedLine slims it).
+  assert.deepEqual(item.product.choices, [
+    { ...item.product.choices[0], id: 'c', choiceGroupId: '', priceModifier: '0.00', name: '' },
+  ])
+})
+
+test('v2 piece counts that are numbers are kept', () => {
+  const { state } = migratePersistedCart(
+    {
+      version: 2,
+      products: [
+        { productId: 'p', quantity: 1, snapshot: { name: 'x', priceCents: 100, pieceCount: 8 } },
+      ],
+    },
+    MAX,
+  )
+  assert.equal(state.products[0].product.pieceCount, 8)
+})
+
+test('a v0 line whose product has no name cannot be recovered', () => {
+  const { dropped, state } = migratePersistedCart(
+    { products: [{ product: { id: 'x', price: '1.00' }, quantity: 1, selectedChoices: [] }] },
+    MAX,
+  )
+  assert.equal(dropped, 1)
+  assert.deepEqual(state.products, [])
+})
+
+test('a selected choice of a pre-group product (no choiceGroupId) is stored with an empty group', () => {
+  const product = {
+    id: 'old',
+    name: 'Old',
+    price: '5.00',
+    choices: [{ id: 'c', priceModifier: '1.00', name: 'C' }],
+  }
+  const line = {
+    product,
+    quantity: 1,
+    selectedChoices: [{ groupId: '', choiceId: 'c', quantity: 1 }],
+    selectedChoice: null,
+  }
+  assert.deepEqual(toPersistedLine(line).snapshot.choices, [
+    { id: 'c', groupId: '', priceModifierCents: 100, name: 'C' },
+  ])
+})

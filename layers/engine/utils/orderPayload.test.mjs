@@ -147,3 +147,10 @@ test('a blank coupon is null (never an empty string)', () => {
   assert.equal(buildQuoteInput(cart({ couponCode: '' })).couponCode, null)
   assert.equal(buildCreateOrderInput(cart({ couponCode: null })).couponCode, null)
 })
+
+test('a plain order line (no selections array at all, no choice) is just product and quantity', () => {
+  assert.deepEqual(orderItemPayload({ product: { id: 'tea', price: '3.00' }, quantity: 2 }), {
+    productId: 'tea',
+    quantity: 2,
+  })
+})

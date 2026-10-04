@@ -21,3 +21,11 @@ test('a brand label is chosen per category and pick count', () => {
   assert.equal(choiceGroupLabelKey(labels, 'plateau', 2), 'menu.soups')
   assert.equal(choiceGroupLabelKey(labels, 'other', 2), null)
 })
+
+test('a category-less group, or a brand without labels, has no brand label', () => {
+  const labels = { plateau: { one: 'menu.soup', other: 'menu.soups' } }
+  assert.equal(choiceGroupLabelKey(labels, null, 2), null)
+  assert.equal(choiceGroupLabelKey(labels, undefined, 1), null)
+  assert.equal(choiceGroupLabelKey(labels, '', 1), null)
+  assert.equal(choiceGroupLabelKey(undefined, 'plateau', 1), null)
+})
