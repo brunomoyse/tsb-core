@@ -1,4 +1,4 @@
-// UseInertBackground: the page wrapper is inert while a sheet is open (real DOM attribute), restored on close/unmount.
+// useInertBackground: the page wrapper is inert while a sheet is open (real DOM attribute), restored on close/unmount.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
 import { useInertBackground } from '#engine/composables/useInertBackground'

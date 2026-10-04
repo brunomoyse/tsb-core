@@ -1,7 +1,7 @@
 // Runs a composable inside a real component setup (a throw-away component mounted into the Nuxt test app), so that
 // `onMounted`, `onScopeDispose`, `onBeforeUnmount`, `useId`, injections and `getCurrentScope` behave as in a page.
 //
-//   Const { result, unmount } = withSetup(() => useOrderCompleted('o-1'))
+//   const { result, unmount } = withSetup(() => useOrderCompleted('o-1'))
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 

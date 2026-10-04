@@ -1,7 +1,7 @@
-// UseOrderingAvailability: "can I order right now?" for every surface: loading vs failed vs closed vs pre-order only vs
-// Open vs switched off, a clock that retires slots as they fall inside the preparation window, and retry.
+// useOrderingAvailability: "can I order right now?" for every surface: loading vs failed vs closed vs pre-order only vs
+// open vs switched off, a clock that retires slots as they fall inside the preparation window, and retry.
 // The restaurant config request (useRestaurantConfig) is the boundary; the shared config state, the ordering policy and
-// The rules of utils/orderingAvailability are real; time is fake.
+// the rules of utils/orderingAvailability are real; time is fake.
 // Run: `vp test run layers/engine/composables/useOrderingAvailability.nuxt.test.ts`.
 import { type EffectScope, effectScope, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'

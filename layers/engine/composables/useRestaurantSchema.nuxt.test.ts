@@ -1,5 +1,5 @@
-// UseRestaurantSchema: the site-wide Restaurant JSON-LD. useHead is the boundary; brand, runtime config, locale and the
-// Schema builder are real (tokyosushi brand, https://tokyosushi.test).
+// useRestaurantSchema: the site-wide Restaurant JSON-LD. useHead is the boundary; brand, runtime config, locale and the
+// schema builder are real (tokyosushi brand, https://tokyosushi.test).
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'

@@ -1,5 +1,5 @@
 // Runs a composable inside a real component instance (lifecycle hooks such as onUnmounted/onBeforeUnmount work) and
-// Returns what it returned, plus the wrapper to unmount it. Mounted into document.body so the real DOM is observable.
+// returns what it returned, plus the wrapper to unmount it. Mounted into document.body so the real DOM is observable.
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 

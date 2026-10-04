@@ -1,14 +1,14 @@
 // A deterministic stand-in for vue-i18n's `t`: it returns the key (with its params), so a test asserts WHICH message
-// A composable picked without depending on the wording of a locale file.
+// a composable picked without depending on the wording of a locale file.
 //
-//   Vi.mock('vue-i18n', async (importOriginal) => {
-//     Const { fakeI18n } = await import('../../../test/helpers/i18n')
-//     Return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+//   vi.mock('vue-i18n', async (importOriginal) => {
+//     const { fakeI18n } = await import('../../../test/helpers/i18n')
+//     return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
 //   })
 //
-//   Fakest('cart.undo')                 // 'cart.undo'
-//   Fakest('cart.removedUndo', { name: 'Ramen' })   // 'cart.removedUndo{"name":"Ramen"}'
-//   Fakest('cart.announce.added', { count: 2 }, 2)  // 'cart.announce.added{"count":2}#2'  (plural choice)
+//   fakeT('cart.undo')                 // 'cart.undo'
+//   fakeT('cart.removedUndo', { name: 'Ramen' })   // 'cart.removedUndo{"name":"Ramen"}'
+//   fakeT('cart.announce.added', { count: 2 }, 2)  // 'cart.announce.added{"count":2}#2'  (plural choice)
 import { ref } from 'vue'
 
 export function fakeT(key: string, params?: unknown, plural?: unknown): string {

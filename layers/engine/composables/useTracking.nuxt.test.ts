@@ -1,4 +1,4 @@
-// UseTracking in the browser: events go to window.umami when the script is loaded, nowhere (silently) when not.
+// useTracking in the browser: events go to window.umami when the script is loaded, nowhere (silently) when not.
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useTracking } from '#engine/composables/useTracking'
 

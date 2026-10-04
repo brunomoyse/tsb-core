@@ -1,4 +1,4 @@
-// UseCartLineFocus: keyboard focus must not fall on <body> when the cart line it was on goes away.
+// useCartLineFocus: keyboard focus must not fall on <body> when the cart line it was on goes away.
 // Real DOM (happy-dom): a surface with cart lines, each with a remove button; the "action" removes lines from the DOM.
 // Run: `vp test run layers/engine/composables/useCartLineFocus.nuxt.test.ts`.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'

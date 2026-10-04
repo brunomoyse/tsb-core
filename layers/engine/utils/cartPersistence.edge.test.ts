@@ -1,5 +1,5 @@
 // Cart persistence on the data localStorage really holds: partial snapshots, hand-edited or corrupted JSON, carts written
-// By older (v0/v1) or newer builds. What cannot be recovered is dropped and counted, never thrown.
+// by older (v0/v1) or newer builds. What cannot be recovered is dropped and counted, never thrown.
 import { describe, expect, it } from 'vite-plus/test'
 import type { CartItem, ProductChoice } from '#engine/types'
 import {

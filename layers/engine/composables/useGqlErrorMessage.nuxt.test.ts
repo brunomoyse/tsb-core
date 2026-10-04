@@ -1,7 +1,7 @@
-// UseGqlErrorMessage: the translated text of a failed GraphQL call. The backend's `extensions.code` picks the message,
-// Anything unknown shows the caller's generic key (the raw backend message is never displayed), and the numbers the
-// Message quotes come from the live ordering policy. vue-i18n's `t` is the boundary, replaced by one that echoes
-// Its key and parameters; the error table, the policy and the restaurant config state are real.
+// useGqlErrorMessage: the translated text of a failed GraphQL call. The backend's `extensions.code` picks the message,
+// anything unknown shows the caller's generic key (the raw backend message is never displayed), and the numbers the
+// message quotes come from the live ordering policy. vue-i18n's `t` is the boundary, replaced by one that echoes
+// its key and parameters; the error table, the policy and the restaurant config state are real.
 // Run: `vp test run layers/engine/composables/useGqlErrorMessage.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { GQL_HTTP_ERROR, GQL_NETWORK_ERROR, GqlError } from '#engine/utils/gqlError'

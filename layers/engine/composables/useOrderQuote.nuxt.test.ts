@@ -1,6 +1,6 @@
-// UseOrderQuote: keeps the server quote of the cart (`quoteOrder`) up to date for every surface that shows the cart.
+// useOrderQuote: keeps the server quote of the cart (`quoteOrder`) up to date for every surface that shows the cart.
 // The real quote cycle (debounce, abort, stale answers: see utils/quoteCycle.test.mjs), real stores and ordering policy;
-// The boundaries are the GraphQL transport ($gqlFetch), Sentry (reportError), i18n and the clock (fake timers).
+// the boundaries are the GraphQL transport ($gqlFetch), Sentry (reportError), i18n and the clock (fake timers).
 // The composable keeps module-level state (the shared cycle), so every test loads a fresh copy of it.
 // Run: `vp test run layers/engine/composables/useOrderQuote.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

@@ -1,6 +1,6 @@
-// UseInvoiceDownload: downloads the PDF invoice of an order with the customer's OIDC token and saves it under the name the
-// Server gives it; any failure is reported and shown as a toast. The HTTP call (fetch), the OIDC client and Sentry are the
-// Boundaries; the anchor click that triggers the browser download is a spy.
+// useInvoiceDownload: downloads the PDF invoice of an order with the customer's OIDC token and saves it under the name the
+// server gives it; any failure is reported and shown as a toast. The HTTP call (fetch), the OIDC client and Sentry are the
+// boundaries; the anchor click that triggers the browser download is a spy.
 // Run: `vp test run layers/engine/composables/useInvoiceDownload.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'

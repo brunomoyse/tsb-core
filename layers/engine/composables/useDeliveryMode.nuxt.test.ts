@@ -1,4 +1,4 @@
-// UseDeliveryMode: home delivery is offered only when the brand flag AND the API's delivery policy both say so.
+// useDeliveryMode: home delivery is offered only when the brand flag AND the API's delivery policy both say so.
 // Both brands: tokyosushi offers delivery, ygfliege is takeaway-only (`deliveryEnabled: false`).
 // Run: `vp test run layers/engine/composables/useDeliveryMode.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

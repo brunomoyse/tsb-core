@@ -1,7 +1,7 @@
 // $api plugin: the REST client of the shop (ofetch with the API base URL), with the Accept-Language header, the OIDC
-// Bearer token in the browser, the visitor's cookies on the server, and one silent renewal + retry after a 401.
+// bearer token in the browser, the visitor's cookies on the server, and one silent renewal + retry after a 401.
 // $fetch.create (the HTTP layer), the OIDC client and navigation are the boundaries; the runtime config and the localised
-// Paths are real.
+// paths are real.
 // Run: `vp test run layers/engine/plugins/api.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'

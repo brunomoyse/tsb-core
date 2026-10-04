@@ -1,5 +1,5 @@
-// UseOrderStatusTimeline: the steps of an order's status timeline (delivery vs pick-up), what state each is in, the
-// Screen-reader suffix, and the polite announcement of a status that changes while the page is open.
+// useOrderStatusTimeline: the steps of an order's status timeline (delivery vs pick-up), what state each is in, the
+// screen-reader suffix, and the polite announcement of a status that changes while the page is open.
 // Real announcer; i18n is a fake returning the key, so the assertions name the message chosen.
 // Run: `vp test run layers/engine/composables/useOrderStatusTimeline.nuxt.test.ts`.
 import { nextTick, ref } from 'vue'

@@ -1,7 +1,7 @@
-// UseCartSheet: dialog behaviour of the mobile cart sheet: it is open only on mobile, locks and inerts the page behind,
-// Traps focus with the close button first, closes on Escape, and gives focus back to the control that opened it, unless
-// The visitor followed a link out of the sheet. The three page-level helpers (scroll lock, inert, focus trap) are the
-// Boundary: they are replaced by spies, and the options passed to the trap are exercised as the trap would use them.
+// useCartSheet: dialog behaviour of the mobile cart sheet: it is open only on mobile, locks and inerts the page behind,
+// traps focus with the close button first, closes on Escape, and gives focus back to the control that opened it, unless
+// the visitor followed a link out of the sheet. The three page-level helpers (scroll lock, inert, focus trap) are the
+// boundary: they are replaced by spies, and the options passed to the trap are exercised as the trap would use them.
 // Run: `vp test run layers/engine/composables/useCartSheet.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'
 import { type Ref, effectScope, nextTick, ref } from 'vue'

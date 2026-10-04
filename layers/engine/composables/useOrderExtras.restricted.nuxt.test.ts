@@ -1,5 +1,5 @@
-// UseOrderExtras for a category-restricted extra that is NOT pre-ticked (neither shipped brand has one, the engine
-// Supports it): it is cleared while locked, and never ticked for the customer when unlocked.
+// useOrderExtras for a category-restricted extra that is NOT pre-ticked (neither shipped brand has one, the engine
+// supports it): it is cleared while locked, and never ticked for the customer when unlocked.
 // Run: `vp test run layers/engine/composables/useOrderExtras.restricted.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'
 import { effectScope, nextTick } from 'vue'

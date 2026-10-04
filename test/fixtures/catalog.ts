@@ -1,5 +1,5 @@
 // Plain-data builders for the catalogue types, shared by the unit tests. Every builder takes overrides, so a test
-// States only what it cares about. Prices are decimal strings as the API sends them.
+// states only what it cares about. Prices are decimal strings as the API sends them.
 import type {
   CartItem,
   Product,

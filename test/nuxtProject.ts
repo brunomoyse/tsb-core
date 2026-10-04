@@ -5,7 +5,7 @@ import { runtimeFlagsPlugin } from './flags'
 // They boot the real Nuxt app of apps/tokyosushi (layers, aliases, auto-imports, Pinia, i18n) through @nuxt/test-utils.
 
 // A production `nuxt build` insists on these (layers/engine/nuxt.config.ts); the test environment gets harmless
-// Defaults so that `vp test run` needs no setup, and a developer's own values still win.
+// defaults so that `vp test run` needs no setup, and a developer's own values still win.
 const env: Record<string, string> = {
   BASE_URL: 'https://tokyosushi.test',
   API_BASE_URL: 'https://api.tokyosushi.test/api/v1',

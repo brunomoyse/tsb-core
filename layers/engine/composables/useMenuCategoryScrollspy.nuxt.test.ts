@@ -1,6 +1,6 @@
-// UseMenuCategoryScrollspy: the active category follows the sections crossing the observer band (topmost in menu order
-// Wins), jumps mute the spy while the smooth scroll runs, the page end forces the last category, a measured header moves
-// The band, and the active chip is kept in view in the row. IntersectionObserver / ResizeObserver are controllable fakes
+// useMenuCategoryScrollspy: the active category follows the sections crossing the observer band (topmost in menu order
+// wins), jumps mute the spy while the smooth scroll runs, the page end forces the last category, a measured header moves
+// the band, and the active chip is kept in view in the row. IntersectionObserver / ResizeObserver are controllable fakes
 // (happy-dom has no layout); everything else (DOM, events, timers) is real.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { flushPromises } from '@vue/test-utils'

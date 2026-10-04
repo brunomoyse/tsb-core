@@ -1,6 +1,6 @@
 // Auth-sync plugin: once the app is ready, reconciles the Pinia user record with the OIDC token store (they can drift
-// Apart after a release or an interrupted logout). The OIDC client, $fetch (the /me call) and the error reporter are the
-// Boundaries; the auth store (real Pinia + localStorage) is the state that is checked.
+// apart after a release or an interrupted logout). The OIDC client, $fetch (the /me call) and the error reporter are the
+// boundaries; the auth store (real Pinia + localStorage) is the state that is checked.
 // Run: `vp test run layers/engine/plugins/auth-sync.client.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'
@@ -29,7 +29,7 @@ mockNuxtImport('onNuxtReady', () => (callback: () => void) => {
 const { default: plugin } = await import('./auth-sync.client')
 const { useAuthStore } = await import('#engine/stores/auth')
 
-// DefineNuxtPlugin({ name, parallel, setup }) is the setup function carrying the other fields as properties.
+// defineNuxtPlugin({ name, parallel, setup }) is the setup function carrying the other fields as properties.
 const definition = Object.assign(plugin as unknown as (nuxtApp: unknown) => void, {
   setup: plugin as unknown as (nuxtApp: unknown) => void,
 })

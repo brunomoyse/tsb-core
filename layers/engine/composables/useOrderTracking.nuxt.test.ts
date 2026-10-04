@@ -1,6 +1,6 @@
-// UseOrderTracking: live tracking of a list of orders (the /me widget and /me/orders): one subscription per ACTIVE order,
-// A live patch layered over the queried data (never older than it), a refetch when the socket reconnects, a polling
-// Fallback while any order is active, `?followOrder=<id>` expand-and-scroll, and the status labels.
+// useOrderTracking: live tracking of a list of orders (the /me widget and /me/orders): one subscription per ACTIVE order,
+// a live patch layered over the queried data (never older than it), a refetch when the socket reconnects, a polling
+// fallback while any order is active, `?followOrder=<id>` expand-and-scroll, and the status labels.
 // Boundaries: the WebSocket subscription, the route, i18n (fake) and the clock. Runs in a real component setup.
 // Run: `vp test run layers/engine/composables/useOrderTracking.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

@@ -1,5 +1,5 @@
-// UseCartRemoval: THE way a cart line leaves the cart on every surface: removed, with an "X removed, Undo" toast; several
-// Removals in a row merge into one toast whose single Undo restores them all; the last unit of a line is a removal too.
+// useCartRemoval: THE way a cart line leaves the cart on every surface: removed, with an "X removed, Undo" toast; several
+// removals in a row merge into one toast whose single Undo restores them all; the last unit of a line is a removal too.
 // Real cart and notifications stores; only the analytics beacon (window.umami) and the i18n function are fakes.
 // Run: `vp test run layers/engine/composables/useCartRemoval.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'

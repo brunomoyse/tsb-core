@@ -1,7 +1,7 @@
-// UseOrderCompleted: the logic of /order-completed/[orderId] after the Mollie redirect (paid, canceled, failed, expired,
+// useOrderCompleted: the logic of /order-completed/[orderId] after the Mollie redirect (paid, canceled, failed, expired,
 // "back": the redirect itself says nothing). Everything derives from the LOADED order: the phase, when the cart is cleared
 // (only a confirmed order, only the cart checked out for this order), the verify loop for a late webhook, the live
-// Subscription and the polling fallback. The pure rules are in utils/orderCompleted.test.mjs; here they are wired.
+// subscription and the polling fallback. The pure rules are in utils/orderCompleted.test.mjs; here they are wired.
 // Boundaries: the GraphQL transport, the data-fetching wrapper (useAsyncData), the WebSocket subscription and the clock.
 // Run: `vp test run layers/engine/composables/useOrderCompleted.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

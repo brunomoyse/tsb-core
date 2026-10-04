@@ -1,4 +1,4 @@
-// CartItemAddedKey: the shared bus key; emitters and listeners in different components meet on it.
+// cartItemAddedKey: the shared bus key; emitters and listeners in different components meet on it.
 import { useEventBus } from '@vueuse/core'
 import { describe, expect, it, vi } from 'vite-plus/test'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'

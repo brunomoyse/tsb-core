@@ -1,4 +1,4 @@
-// UseCartItemLabel / useOrderItemLabel: how a cart or order line is labelled, per brand (the menu code shows only when
+// useCartItemLabel / useOrderItemLabel: how a cart or order line is labelled, per brand (the menu code shows only when
 // `brand.showProductCode`). `useAppConfig` is wrapped, not replaced; the copy of the piece count is the i18n key.
 // Run: `vp test run layers/engine/composables/useCartItemLabel.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

@@ -1,5 +1,5 @@
-// V-reveal plugin: scroll-reveal directive. IntersectionObserver is a controllable fake; classes, styles and the
-// Directive hooks are the real thing. The server side is a no-op that renders content visible.
+// v-reveal plugin: scroll-reveal directive. IntersectionObserver is a controllable fake; classes, styles and the
+// directive hooks are the real thing. The server side is a no-op that renders content visible.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { setFlags } from '../../../test/flags'
 import {

@@ -1,4 +1,4 @@
-// UseStickyTopOffset: publishes --sticky-top-h on <html> (the bottom edge a sticky header covers) and follows resizes.
+// useStickyTopOffset: publishes --sticky-top-h on <html> (the bottom edge a sticky header covers) and follows resizes.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
 import { stickyBottom, useStickyTopOffset } from '#engine/composables/useStickyTopOffset'

@@ -1,7 +1,7 @@
-// UseGqlSubscription: GraphQL subscriptions over ONE shared graphql-ws client (browser only), kept alive across
-// Network drops, tab backgrounding and bfcache restores, with gap recovery (`onReconnect`) for the events the socket missed.
+// useGqlSubscription: GraphQL subscriptions over ONE shared graphql-ws client (browser only), kept alive across
+// network drops, tab backgrounding and bfcache restores, with gap recovery (`onReconnect`) for the events the socket missed.
 // The graphql-ws client (the WebSocket) is the boundary, replaced by a fake that records its subscriptions; the
-// Window / document events are captured and fired by hand; the timers are fake when a test is about time.
+// window / document events are captured and fired by hand; the timers are fake when a test is about time.
 // Run: `vp test run layers/engine/composables/useGqlSubscription.nuxt.test.ts`.
 import { effectScope } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'

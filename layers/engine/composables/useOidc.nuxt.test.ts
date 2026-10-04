@@ -1,6 +1,6 @@
-// UseOidc: the OIDC (Authorization Code + PKCE) client of the shop on top of oidc-client-ts: sign in/out, the callback,
-// The access token, and the silent renewal whose single in-flight promise protects Zitadel's rotating refresh token.
-// Oidc-client-ts's UserManager (which talks to Zitadel) and $fetch are the boundaries, replaced by a fake.
+// useOidc: the OIDC (Authorization Code + PKCE) client of the shop on top of oidc-client-ts: sign in/out, the callback,
+// the access token, and the silent renewal whose single in-flight promise protects Zitadel's rotating refresh token.
+// oidc-client-ts's UserManager (which talks to Zitadel) and $fetch are the boundaries, replaced by a fake.
 // Run: `vp test run layers/engine/composables/useOidc.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'

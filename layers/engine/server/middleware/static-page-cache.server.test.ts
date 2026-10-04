@@ -1,6 +1,6 @@
 // Static-page cache middleware: terms / privacy / faq ... are rendered once per language and replayed from memory.
 // A request goes through it only when the language module would not redirect it; everything else falls through to the
-// Live render untouched. Nitro's cache (defineCachedFunction) and the internal render (localFetch) are the boundaries.
+// live render untouched. Nitro's cache (defineCachedFunction) and the internal render (localFetch) are the boundaries.
 // Run: `vp test run layers/engine/server/middleware/static-page-cache.server.test.ts`.
 import { createApp, toWebHandler } from 'h3'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'

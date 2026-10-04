@@ -1,4 +1,4 @@
-// UseLanguagePicker: the disclosure state of the language switcher with the real i18n (4 locales) and switchLocalePath.
+// useLanguagePicker: the disclosure state of the language switcher with the real i18n (4 locales) and switchLocalePath.
 // Only the analytics beacon (window.umami) is a spy.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick } from 'vue'

@@ -1,6 +1,6 @@
-// UseCheckoutQuoteGuard: keeps the checkout honest about SERVER-side changes. While the page is visible the quote is
-// Refreshed every 60 s and when the tab comes back; `confirmBeforeOrder` is the last check before createOrder: it says
-// Whether the order may go on, and tells the customer when the server now disagrees with what they were looking at.
+// useCheckoutQuoteGuard: keeps the checkout honest about SERVER-side changes. While the page is visible the quote is
+// refreshed every 60 s and when the tab comes back; `confirmBeforeOrder` is the last check before createOrder: it says
+// whether the order may go on, and tells the customer when the server now disagrees with what they were looking at.
 // The quote composable is the boundary (its refresh functions are spies); stores, VueUse and the clock are real.
 // Run: `vp test run layers/engine/composables/useCheckoutQuoteGuard.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'

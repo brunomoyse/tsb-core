@@ -1,5 +1,5 @@
-// ReportError: the one way a `catch` block surfaces what it swallows: console in dev, Sentry in production (when the shop
-// Has a DSN), and never for what is expected (aborted calls, dropped connections, the customer's input).
+// reportError: the one way a `catch` block surfaces what it swallows: console in dev, Sentry in production (when the shop
+// has a DSN), and never for what is expected (aborted calls, dropped connections, the customer's input).
 // Sentry's SDK is the boundary (loaded lazily, so mocked at the module level); the runtime config is the real one.
 // Run: `vp test run layers/engine/utils/reportError.nuxt.test.ts`.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'

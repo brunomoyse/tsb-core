@@ -33,7 +33,7 @@ describe('GqlError', () => {
     expect(error.message).toBe('first')
     expect(error.code).toBeNull()
     expect(error.extensions).toEqual({ code: 42, field: 'x' })
-    // HasCode looks at every entry, `code` only at the first.
+    // hasCode looks at every entry, `code` only at the first.
     expect(error.hasCode('SECOND')).toBe(true)
     expect(error.hasCode('MISSING')).toBe(false)
   })

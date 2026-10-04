@@ -1,4 +1,4 @@
-// UseBottomBarOffset: fixed bottom bars publish --bottom-bar-h (the tallest) and, when they reserve space,
+// useBottomBarOffset: fixed bottom bars publish --bottom-bar-h (the tallest) and, when they reserve space,
 // --page-bottom-pad on <html>.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'

@@ -1,5 +1,5 @@
-// UseOrderingPolicy: the backend's ordering rules read from the shared restaurant config, with the default policy until
-// The config has loaded or for a backend that has no `policy` yet; plus the numbers the copy quotes.
+// useOrderingPolicy: the backend's ordering rules read from the shared restaurant config, with the default policy until
+// the config has loaded or for a backend that has no `policy` yet; plus the numbers the copy quotes.
 // Run: `vp test run layers/engine/composables/useOrderingPolicy.nuxt.test.ts`.
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
 import { type ApiOrderingPolicy, DEFAULT_ORDERING_POLICY } from '#engine/utils/orderingPolicy'

@@ -1,11 +1,11 @@
 // `$gqlFetch` is the GraphQL transport of the app (plugins/gqlFetch.ts) and the boundary of every composable that asks
-// The API (`useGqlMutation`, `useGqlQuery`, `useNuxtApp().$gqlFetch`). Nuxt defines the plugin's `$gqlFetch` as a
-// Read-only getter on the app, so a test wraps `useNuxtApp` instead (the real app, with `$gqlFetch` swapped):
+// the API (`useGqlMutation`, `useGqlQuery`, `useNuxtApp().$gqlFetch`). Nuxt defines the plugin's `$gqlFetch` as a
+// read-only getter on the app, so a test wraps `useNuxtApp` instead (the real app, with `$gqlFetch` swapped):
 //
-//   Const gqlFetch = vi.hoisted(() => vi.fn())
-//   MockNuxtImport('useNuxtApp', async (original) => {
-//     Const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
-//     Return () => withGqlFetch(original(), gqlFetch)
+//   const gqlFetch = vi.hoisted(() => vi.fn())
+//   mockNuxtImport('useNuxtApp', async (original) => {
+//     const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
+//     return () => withGqlFetch(original(), gqlFetch)
 //   })
 //
 // Any other property still reads from the real Nuxt app.

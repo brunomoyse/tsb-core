@@ -1,7 +1,7 @@
-// UseAddressAutocomplete: the logic of the delivery address field: a debounced Places search, a latest-search-wins rule,
-// Selection (resolving the place to a deliverable address with a house number), the Places session token, and the ARIA 1.2
-// Combobox keyboard pattern. The GraphQL transport, Sentry, i18n and the clock are the boundaries; the composable runs in
-// A real component setup (it uses useId and onBeforeUnmount).
+// useAddressAutocomplete: the logic of the delivery address field: a debounced Places search, a latest-search-wins rule,
+// selection (resolving the place to a deliverable address with a house number), the Places session token, and the ARIA 1.2
+// combobox keyboard pattern. The GraphQL transport, Sentry, i18n and the clock are the boundaries; the composable runs in
+// a real component setup (it uses useId and onBeforeUnmount).
 // Run: `vp test run layers/engine/composables/useAddressAutocomplete.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'

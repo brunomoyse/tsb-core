@@ -1,4 +1,4 @@
-// UseDateLocale: the Intl locale of the UI language, Belgian French when unknown.
+// useDateLocale: the Intl locale of the UI language, Belgian French when unknown.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { nextTick } from 'vue'
 import { useNuxtApp } from '#imports'

@@ -1,5 +1,5 @@
 // Global route middleware: on the server render it links the page's language file (a hashed static JSON) in the HTML head
-// So the browser fetches it while the HTML is parsed. useHead is the boundary; the runtime config is the real one.
+// so the browser fetches it while the HTML is parsed. useHead is the boundary; the runtime config is the real one.
 // Run: `vp test run layers/engine/middleware/preload-messages.global.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'

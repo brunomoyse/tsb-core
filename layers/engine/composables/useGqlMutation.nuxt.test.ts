@@ -1,4 +1,4 @@
-// UseGqlMutation: `mutate()` through the shared GraphQL transport, with reactive data / loading / error for the UI.
+// useGqlMutation: `mutate()` through the shared GraphQL transport, with reactive data / loading / error for the UI.
 // The transport ($gqlFetch, provided by the gqlFetch plugin) is the boundary, replaced on the real nuxtApp.
 // Run: `vp test run layers/engine/composables/useGqlMutation.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

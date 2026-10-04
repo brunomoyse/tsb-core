@@ -1,4 +1,4 @@
-// WhenIdle: run a task when the browser is idle (requestIdleCallback), or after a second where it does not exist.
+// whenIdle: run a task when the browser is idle (requestIdleCallback), or after a second where it does not exist.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { whenIdle } from '#engine/utils/whenIdle'
 

@@ -1,7 +1,7 @@
-// UseRestaurantConfig: THE restaurant config of the app (hours, ordering switch, today's slots, ordering policy): one
-// Shared state fed by the query, by one live `restaurantConfigUpdated` subscription, and by gap-recovery refetches.
+// useRestaurantConfig: THE restaurant config of the app (hours, ordering switch, today's slots, ordering policy): one
+// shared state fed by the query, by one live `restaurantConfigUpdated` subscription, and by gap-recovery refetches.
 // The GraphQL transport, the WebSocket subscription layer, the server request and the quote refresh are the boundaries;
-// UseGqlQuery, useAsyncData, the shared state and the components' lifecycle (mountSuspended) are real.
+// useGqlQuery, useAsyncData, the shared state and the components' lifecycle (mountSuspended) are real.
 // Run: `vp test run layers/engine/composables/useRestaurantConfig.nuxt.test.ts`.
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { defineComponent, h, nextTick, ref } from 'vue'

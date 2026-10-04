@@ -1,5 +1,5 @@
-// UseProductChoices: the choice-group selection engine behind the product modal (fixed sets: one broth, one spice) and
-// The bowl composer (min 5 / max 20 ingredients): grouping, min/max that scale with the quantity, selection, pricing.
+// useProductChoices: the choice-group selection engine behind the product modal (fixed sets: one broth, one spice) and
+// the bowl composer (min 5 / max 20 ingredients): grouping, min/max that scale with the quantity, selection, pricing.
 // Pure logic over a product and a quantity ref; only the i18n function is a fake (it returns the key and its params).
 // Run: `vp test run layers/engine/composables/useProductChoices.nuxt.test.ts`.
 import { nextTick, ref, toRaw } from 'vue'

@@ -1,5 +1,5 @@
-// UseZitadelApi: the calls of the passwordless login (email OTP, Google / Apple) to tsb-service's auth proxy, which adds
-// The Zitadel service-account token. $fetch is the boundary; each call must reach the right endpoint with the right body.
+// useZitadelApi: the calls of the passwordless login (email OTP, Google / Apple) to tsb-service's auth proxy, which adds
+// the Zitadel service-account token. $fetch is the boundary; each call must reach the right endpoint with the right body.
 // Run: `vp test run layers/engine/composables/useZitadelApi.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'

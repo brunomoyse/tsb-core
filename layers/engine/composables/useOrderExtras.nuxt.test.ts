@@ -1,5 +1,5 @@
-// UseOrderExtras with the tokyosushi brand: chopsticks, and wasabi / ginger / soy sauce that are pre-ticked but not
-// Offered (and cleared) while the whole cart is hot dishes (`unavailableWhenCartOnlyIn: ['tokyo-hot']`).
+// useOrderExtras with the tokyosushi brand: chopsticks, and wasabi / ginger / soy sauce that are pre-ticked but not
+// offered (and cleared) while the whole cart is hot dishes (`unavailableWhenCartOnlyIn: ['tokyo-hot']`).
 // Real cart store and brand data. The other brand is in useOrderExtras.ygfliege.nuxt.test.ts.
 // Run: `vp test run layers/engine/composables/useOrderExtras.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'

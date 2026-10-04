@@ -1,5 +1,5 @@
-// UseBodyScrollLock / lockBodyScroll: the page cannot scroll while a modal is open; nested locks restore exactly what
-// The first one saved; nothing happens during SSR.
+// useBodyScrollLock / lockBodyScroll: the page cannot scroll while a modal is open; nested locks restore exactly what
+// the first one saved; nothing happens during SSR.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
 import { lockBodyScroll, useBodyScrollLock } from '#engine/composables/useBodyScrollLock'

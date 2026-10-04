@@ -59,7 +59,7 @@ test('nine digits that no Belgian numbering plan can complete are invalid', asyn
 
 // A mobile number one digit short ("0470 12 34 5") is 9 digits starting with 04, which is ALSO a valid Liège landline
 // (04 xxx xx xx), so libphonenumber accepts it and the "incomplete" guard in classifyPhoneInput never fires: the
-// Checkout saves +32470123 45 as a landline number. The guard (and its comment) assume it is rejected.
+// checkout saves +32470123 45 as a landline number. The guard (and its comment) assume it is rejected.
 test.skip('BUG: a mobile one digit short is reported as incomplete, not saved as a Liège landline', async () => {
   assert.equal(await kind('0470 12 34 5'), 'incomplete')
 })

@@ -1,5 +1,5 @@
 // Global route middleware: protects the pages whose route meta says `public: false`. The OIDC client (Zitadel) and the
-// Navigation are the boundaries, mocked; the middleware's own decisions are what is asserted.
+// navigation are the boundaries, mocked; the middleware's own decisions are what is asserted.
 // Run: `vp test run layers/engine/middleware/auth.global.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { RouteLocationNormalized } from 'vue-router'

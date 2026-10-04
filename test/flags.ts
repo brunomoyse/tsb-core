@@ -1,10 +1,10 @@
 // Build-time flags of the app's own sources (`import.meta.server`, `import.meta.client`, `import.meta.dev`) made switchable
-// Per test. Nuxt/Nitro replace them with constants at build time, which would leave one side of every
+// per test. Nuxt/Nitro replace them with constants at build time, which would leave one side of every
 // `if (import.meta.server)` unreachable from a test. In the vitest projects, the sources of layers/ and apps/ are rewritten so
-// That each flag reads `globalThis.tsbTestFlags` first, falling back to the project's default (see vite.config.ts):
+// that each flag reads `globalThis.tsbTestFlags` first, falling back to the project's default (see vite.config.ts):
 //
-//   Import { setFlags } from '<repo>/test/flags'
-//   SetFlags({ server: true })   // this test runs "on the server"; reset automatically after each test
+//   import { setFlags } from '<repo>/test/flags'
+//   setFlags({ server: true })   // this test runs "on the server"; reset automatically after each test
 import type { Plugin } from 'vite'
 
 export interface RuntimeFlags {

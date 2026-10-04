@@ -1,5 +1,5 @@
 // Delivery-mode plugin: while delivery is not offered, the cart's collection option snaps back to PICKUP, also for a cart
-// Persisted before the flag existed, and for any later attempt to set DELIVERY.
+// persisted before the flag existed, and for any later attempt to set DELIVERY.
 // Run: `vp test run layers/engine/plugins/delivery-mode.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'
 import { effectScope, nextTick, ref } from 'vue'

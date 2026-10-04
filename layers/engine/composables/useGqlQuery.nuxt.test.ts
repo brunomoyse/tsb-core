@@ -1,6 +1,6 @@
-// UseGqlQuery: a GraphQL query as Nuxt async data. Asserts what the callers rely on: the key (document + variables +
-// Language), the refetch triggers, the older-document fallback for a backend that does not know a field, and what is
-// Taken from the SSR payload. useAsyncData and the Nuxt payload are real; the transport ($gqlFetch) is the boundary.
+// useGqlQuery: a GraphQL query as Nuxt async data. Asserts what the callers rely on: the key (document + variables +
+// language), the refetch triggers, the older-document fallback for a backend that does not know a field, and what is
+// taken from the SSR payload. useAsyncData and the Nuxt payload are real; the transport ($gqlFetch) is the boundary.
 // Run: `vp test run layers/engine/composables/useGqlQuery.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { nextTick, ref } from 'vue'

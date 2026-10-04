@@ -1,4 +1,4 @@
-// UseLocalizedUrl: absolute, localized URL for structured data and share tags (real i18n, real runtime config).
+// useLocalizedUrl: absolute, localized URL for structured data and share tags (real i18n, real runtime config).
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'

@@ -1,5 +1,5 @@
 // $gqlFetch (plugins/gqlFetch.ts) in the browser: the one GraphQL transport of the shop. The HTTP call ($fetch) and
-// The OIDC client are the boundaries, mocked; the real runtime config, cookies and i18n of the Nuxt app are used.
+// the OIDC client are the boundaries, mocked; the real runtime config, cookies and i18n of the Nuxt app are used.
 // Run: `vp test run layers/engine/plugins/gqlFetch.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'

@@ -1,4 +1,4 @@
-// UseAnnouncer: the shared state the sr-only live region reads. The same sentence twice must still be a new event.
+// useAnnouncer: the shared state the sr-only live region reads. The same sentence twice must still be a new event.
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
 import { clearNuxtState, useState } from '#imports'
 import { useAnnouncer } from '#engine/composables/useAnnouncer'

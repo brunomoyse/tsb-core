@@ -1,7 +1,7 @@
-// UsePhoneCapture: the checkout phone capture. The field is validated when the customer is done with it (blur, Enter,
-// Save), never while typing; a valid new number is saved to the profile; the checkout commits a typed-but-unsaved number
-// Before it orders. Real libphonenumber, auth store, notifications and shared state; the API (updateMe), Sentry and i18n
-// Are the boundaries.
+// usePhoneCapture: the checkout phone capture. The field is validated when the customer is done with it (blur, Enter,
+// save), never while typing; a valid new number is saved to the profile; the checkout commits a typed-but-unsaved number
+// before it orders. Real libphonenumber, auth store, notifications and shared state; the API (updateMe), Sentry and i18n
+// are the boundaries.
 // Run: `vp test run layers/engine/composables/usePhoneCapture.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'

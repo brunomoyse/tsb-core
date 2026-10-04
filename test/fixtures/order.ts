@@ -1,5 +1,5 @@
 // Builders for a placed order (what `myOrder` / `myOrders` return), shared by the order-flow tests. Every builder takes
-// Overrides, so a test states only what it cares about. Money is a decimal string as the API sends it.
+// overrides, so a test states only what it cares about. Money is a decimal string as the API sends it.
 import type { MolliePayment, Order, OrderProduct, User } from '../../layers/engine/types'
 import { makeProduct } from './catalog'
 

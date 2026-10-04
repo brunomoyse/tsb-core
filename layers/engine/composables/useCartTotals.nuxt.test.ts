@@ -1,5 +1,5 @@
-// UseCartTotals: the reactive cart totals. Real Pinia stores, real ordering policy / quote maths; only the analytics
-// Beacon (window.umami) is a spy. Expected amounts are worked out by hand from the default ordering policy
+// useCartTotals: the reactive cart totals. Real Pinia stores, real ordering policy / quote maths; only the analytics
+// beacon (window.umami) is a spy. Expected amounts are worked out by hand from the default ordering policy
 // (delivery minimum 25 EUR, fee 1 EUR per km band from 3 km, pickup 10 % from 20 EUR, online fee 0.30, step 0.10).
 // Run: `vp test run layers/engine/composables/useCartTotals.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'

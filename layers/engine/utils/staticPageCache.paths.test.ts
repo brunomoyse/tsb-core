@@ -1,5 +1,5 @@
-// CacheableLocale on paths that are not static pages at all (the middleware has already filtered them, but the rule must not
-// Depend on that). The rest of the cache rules are in staticPageCache.test.mjs.
+// cacheableLocale on paths that are not static pages at all (the middleware has already filtered them, but the rule must not
+// depend on that). The rest of the cache rules are in staticPageCache.test.mjs.
 // Run: `vp test run layers/engine/utils/staticPageCache.paths.test.ts`.
 import { describe, expect, it } from 'vite-plus/test'
 import { cacheableLocale } from './staticPageCache.ts'

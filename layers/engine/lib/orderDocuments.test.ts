@@ -1,5 +1,5 @@
 // ORDER_ITEMS_SELECTION is spliced into three GraphQL documents: it must stay one balanced selection that asks for what
-// The reorder / receipt code reads, and must not ask for the selection fields the API never fills (it fails the order).
+// the reorder / receipt code reads, and must not ask for the selection fields the API never fills (it fails the order).
 import { describe, expect, it } from 'vite-plus/test'
 import { ORDER_ITEMS_SELECTION } from './orderDocuments'
 

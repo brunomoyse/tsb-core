@@ -1,4 +1,4 @@
-// FormatCents / formatPrice: the display edge of the money pipeline. The active i18n locale comes from the Nuxt app
+// formatCents / formatPrice: the display edge of the money pipeline. The active i18n locale comes from the Nuxt app
 // (mocked boundary: reactive locale, no app, or an app lookup that throws).
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 

@@ -1,4 +1,4 @@
-// UseJsonLd / breadcrumbList: the head script of structured data (useHead is the boundary).
+// useJsonLd / breadcrumbList: the head script of structured data (useHead is the boundary).
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 

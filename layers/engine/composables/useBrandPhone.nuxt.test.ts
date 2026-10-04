@@ -1,4 +1,4 @@
-// UseBrandPhone: tel: link and national display form from the brand's international number (tokyosushi in this app).
+// useBrandPhone: tel: link and national display form from the brand's international number (tokyosushi in this app).
 import { describe, expect, it } from 'vite-plus/test'
 import { useAppConfig } from '#imports'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'

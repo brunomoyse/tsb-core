@@ -1,8 +1,8 @@
 // Unit tests never reach the network (Mollie, Zitadel, the API, S3...): an HTTP call that a test did not mock fails
-// Loudly instead of going out. Calls to the local machine stay possible (registerEndpoint, local mock servers).
+// loudly instead of going out. Calls to the local machine stay possible (registerEndpoint, local mock servers).
 //
 // `fetch` and `$fetch` are both wrapped: the Nuxt test environment builds its `$fetch` before the setup files run, on
-// The fetch it found at that time, so wrapping `fetch` alone would not cover `$fetch`.
+// the fetch it found at that time, so wrapping `fetch` alone would not cover `$fetch`.
 import { createFetch } from 'ofetch'
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])

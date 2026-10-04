@@ -1,4 +1,4 @@
-// UseTracking in plain Node (no window): the SSR side of the umami beacon.
+// useTracking in plain Node (no window): the SSR side of the umami beacon.
 import { describe, expect, it } from 'vite-plus/test'
 import { useTracking } from '#engine/composables/useTracking'
 

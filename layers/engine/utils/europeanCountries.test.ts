@@ -1,5 +1,5 @@
 // The phone-prefix country list: data the checkout phone input depends on, so its invariants are checked against
-// Libphonenumber rather than re-typed.
+// libphonenumber rather than re-typed.
 import { getCountryCallingCode } from 'libphonenumber-js'
 import { describe, expect, it } from 'vite-plus/test'
 import { EUROPEAN_COUNTRIES, getCountryName } from './europeanCountries'

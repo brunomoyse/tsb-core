@@ -1,5 +1,5 @@
-// UseCartItemActions: what the cart surfaces do with a line: remove it (with the Undo toast of useCartRemoval) or edit
-// It (reopen the product modal prefilled, in the visitor's language).
+// useCartItemActions: what the cart surfaces do with a line: remove it (with the Undo toast of useCartRemoval) or edit
+// it (reopen the product modal prefilled, in the visitor's language).
 // Run: `vp test run layers/engine/composables/useCartItemActions.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'

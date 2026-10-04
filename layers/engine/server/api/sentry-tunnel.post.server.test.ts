@@ -1,5 +1,5 @@
 // POST /api/sentry-tunnel: forwards the browser's Sentry envelopes through our own origin (ad-blockers cannot match it),
-// But only for the configured DSN, so it cannot be used as an open proxy. $fetch (Sentry's ingest) is the boundary.
+// but only for the configured DSN, so it cannot be used as an open proxy. $fetch (Sentry's ingest) is the boundary.
 // Run: `vp test run layers/engine/server/api/sentry-tunnel.post.server.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { callHandler } from '../../../../test/nitro/callHandler'

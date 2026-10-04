@@ -1,5 +1,5 @@
 // Order-line helpers on the shapes older carts and orders really have: no selections key, a legacy single choice,
-// A product without choices.
+// a product without choices.
 import { describe, expect, it } from 'vite-plus/test'
 import { orderItemChoiceText } from './orderItemLabel'
 import { orderItemPayload } from './orderPayload'

@@ -1,4 +1,4 @@
-// UseLocaleSeoMeta: og:locale of the current language and the alternates (the other three).
+// useLocaleSeoMeta: og:locale of the current language and the alternates (the other three).
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { useNuxtApp } from '#imports'
 import { useLocaleSeoMeta } from '#engine/composables/useLocaleSeoMeta'

@@ -1,4 +1,4 @@
-// UseHaptics is a stable no-op interface (the web has no haptics API): callers need no guards and nothing throws.
+// useHaptics is a stable no-op interface (the web has no haptics API): callers need no guards and nothing throws.
 import { describe, expect, it } from 'vite-plus/test'
 import { useHaptics } from '#engine/composables/useHaptics'
 

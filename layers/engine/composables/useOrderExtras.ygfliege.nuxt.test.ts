@@ -1,4 +1,4 @@
-// UseOrderExtras with the YGF Liège brand: chopsticks and cutlery, none pre-ticked, no category restriction, no sauce.
+// useOrderExtras with the YGF Liège brand: chopsticks and cutlery, none pre-ticked, no category restriction, no sauce.
 // The brand data is the real one of apps/ygfliege, swapped in for `#brand/brand`.
 // Run: `vp test run layers/engine/composables/useOrderExtras.ygfliege.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'

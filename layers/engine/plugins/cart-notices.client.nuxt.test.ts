@@ -1,6 +1,6 @@
 // Cart-notices plugin: tells the customer, once, that lines of their saved cart could not be recovered when it was loaded.
 // Waits for the app to be mounted (the toast host and the translation function exist by then); the cart store counts the
-// Dropped lines in `droppedOnHydrate` and the plugin resets it after announcing, so the same loss is not announced twice.
+// dropped lines in `droppedOnHydrate` and the plugin resets it after announcing, so the same loss is not announced twice.
 // Run: `vp test run layers/engine/plugins/cart-notices.client.nuxt.test.ts`.
 import { createPinia } from 'pinia'
 import { nextTick } from 'vue'

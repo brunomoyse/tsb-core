@@ -1,7 +1,7 @@
-// UseAuthCallback: what runs on /auth/callback once Zitadel has sent the customer back: restore the profile, then pick
-// The destination (the page they came from, the menu, or checkout when the cart is full and ordering is possible).
+// useAuthCallback: what runs on /auth/callback once Zitadel has sent the customer back: restore the profile, then pick
+// the destination (the page they came from, the menu, or checkout when the cart is full and ordering is possible).
 // The OIDC client, the GraphQL transport, navigation and the error reporter are the boundaries; the stores, the
-// Ordering policy, the localised paths and the redirect rules are real.
+// ordering policy, the localised paths and the redirect rules are real.
 // Run: `vp test run layers/engine/composables/useAuthCallback.nuxt.test.ts`.
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { createPinia, setActivePinia } from 'pinia'

@@ -1,5 +1,5 @@
-// ReportError: swallowed errors reach Sentry only in production-like conditions (a DSN is set), never for expected
-// Failures, never throwing. The Nuxt app lookup and @sentry/nuxt are the mocked boundaries.
+// reportError: swallowed errors reach Sentry only in production-like conditions (a DSN is set), never for expected
+// failures, never throwing. The Nuxt app lookup and @sentry/nuxt are the mocked boundaries.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { setFlags } from '../../../test/flags'
 import { GQL_NETWORK_ERROR, GqlError } from './gqlError'
