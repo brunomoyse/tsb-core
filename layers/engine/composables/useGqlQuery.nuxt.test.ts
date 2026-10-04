@@ -31,12 +31,6 @@ vi.mock('vue-i18n', async (importOriginal) => ({
 
 const { useGqlQuery } = await import('./useGqlQuery')
 
-/**
- * `await useGqlQuery()` is typed as the bare AsyncData (an AsyncData is itself awaitable, so TypeScript flattens the
- * promise and loses `refetch`); at run time the object has it.
- */
-const withRefetch = <T>(asyncData: T) => asyncData as T & { refetch: () => Promise<void> }
-
 let n = 0
 /** A document no other test asks: Nuxt keeps async data by key. */
 const doc = () => `query Q${++n} { thing { id } }`
@@ -98,7 +92,7 @@ describe('asking', () => {
   it('does not ask before it is told to when `immediate` is false', async () => {
     const query = doc()
     gqlFetch.mockResolvedValue({ thing: 1 })
-    const result = withRefetch(await useGqlQuery(query, {}, { immediate: false }))
+    const result = await useGqlQuery(query, {}, { immediate: false })
     expect(gqlFetch).not.toHaveBeenCalled()
     await result.refetch()
     expect(gqlFetch).toHaveBeenCalledOnce()
@@ -109,7 +103,7 @@ describe('asking', () => {
 describe('refetch', () => {
   it('asks again and replaces the answer', async () => {
     gqlFetch.mockResolvedValueOnce({ v: 1 }).mockResolvedValueOnce({ v: 2 })
-    const result = withRefetch(await useGqlQuery(doc()))
+    const result = await useGqlQuery(doc())
     expect(result.data.value).toEqual({ v: 1 })
 
     await result.refetch()
@@ -120,7 +114,7 @@ describe('refetch', () => {
 
   it('is the refresh of the async data', async () => {
     gqlFetch.mockResolvedValue({})
-    const result = withRefetch(await useGqlQuery(doc()))
+    const result = await useGqlQuery(doc())
     expect(result.refetch).toBe(result.refresh)
   })
 })
@@ -333,7 +327,7 @@ describe('the server-rendered answer (SSR payload)', () => {
     const nuxtApp = useNuxtApp()
     nuxtApp.isHydrating = true
     nuxtApp.payload.data[payloadKey(query)] = { fromServer: true }
-    const result = withRefetch(await useGqlQuery<Record<string, boolean>>(query))
+    const result = await useGqlQuery<Record<string, boolean>>(query)
     expect(gqlFetch).not.toHaveBeenCalled()
 
     nuxtApp.isHydrating = false
@@ -349,7 +343,7 @@ describe('the server-rendered answer (SSR payload)', () => {
     const nuxtApp = useNuxtApp()
     nuxtApp.isHydrating = true
     nuxtApp.payload.data[payloadKey(query)] = { fromServer: true }
-    const result = withRefetch(await useGqlQuery<Record<string, boolean>>(query))
+    const result = await useGqlQuery<Record<string, boolean>>(query)
     expect(gqlFetch).not.toHaveBeenCalled()
 
     gqlFetch.mockResolvedValue({ fresh: true })
