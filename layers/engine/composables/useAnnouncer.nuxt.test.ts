@@ -1,6 +1,6 @@
 // UseAnnouncer: the shared state the sr-only live region reads. The same sentence twice must still be a new event.
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useState } from '#imports'
+import { clearNuxtState, useState } from '#imports'
 import { useAnnouncer } from '#engine/composables/useAnnouncer'
 
 beforeEach(() => {
@@ -8,6 +8,11 @@ beforeEach(() => {
 })
 
 describe('useAnnouncer', () => {
+  it('starts silent', () => {
+    clearNuxtState('a11y-announcement')
+    expect(useAnnouncer().announcement.value).toEqual({ message: '', seq: 0 })
+  })
+
   it('writes the message and bumps seq', () => {
     const { announce, announcement } = useAnnouncer()
     announce('Added to cart')
