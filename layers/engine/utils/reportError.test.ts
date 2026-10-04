@@ -1,6 +1,6 @@
 // reportError: the one way a `catch` block surfaces what it swallows: console in dev, Sentry in production (when the shop
 // has a DSN), and never for what is expected (aborted calls, dropped connections, the customer's input).
-// The Nuxt app lookup and @sentry/nuxt are the mocked boundaries. Sentry is loaded lazily: its module factory runs
+// The Nuxt app lookup and @sentry/nuxt are the mocked boundaries. Sentry is loaded lazily (utils/sentryClient.ts): its module factory runs
 // only when the code reaches `import('@sentry/nuxt')`, so "nothing was sent" is checked as "Sentry was never even loaded".
 // Run: `vp test run layers/engine/utils/reportError.test.ts`.
 import type * as GqlerrorModule from './gqlError'
@@ -26,7 +26,12 @@ async function load() {
   vi.doMock('@sentry/nuxt', () => {
     sentry.loaded()
     if (state.loadFails) throw new Error('chunk failed to load')
-    return { captureException: sentry.captureException }
+    return {
+      captureException: sentry.captureException,
+      init: vi.fn(),
+      getClient: () => undefined,
+      browserTracingIntegration: vi.fn(),
+    }
   })
   const { GqlError } = await import('./gqlError')
   gqlErrorClass = GqlError

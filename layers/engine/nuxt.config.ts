@@ -116,7 +116,7 @@ export default defineNuxtConfig({
     /*
      * Skip Sentry when no DSN is set at build time — including the module
      * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
-     * own sentry.client/server.config.ts + org/project.
+     * own sentry.server.config.ts + org/project. The browser SDK is not set up by the module (no sentry.client.config.ts): plugins/sentry-lazy.client.ts loads it once the page is interactive.
      */
     ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
   ],
