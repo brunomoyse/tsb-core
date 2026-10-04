@@ -67,9 +67,10 @@ describe('every other page', () => {
 })
 
 describe('an event without a path', () => {
-  it('is ignored instead of failing the request', () => {
-    expect(() =>
-      (heroPreload as unknown as (event: unknown) => unknown)({ path: undefined }),
-    ).not.toThrow()
+  it('is ignored instead of failing the request: no header is added (a bare event has no response to add one to)', () => {
+    // Were the missing path treated as the home page, appendResponseHeader would throw on this event.
+    const bare = { path: undefined }
+    expect((heroPreload as unknown as (event: unknown) => unknown)(bare)).toBeUndefined()
+    expect(bare).toEqual({ path: undefined })
   })
 })

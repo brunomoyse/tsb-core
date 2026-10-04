@@ -140,9 +140,14 @@ describe('the request', () => {
     ])
   })
 
-  it('exposes the transport as nuxtApp.$gqlFetch', () => {
-    const result = (gqlFetchPlugin as unknown as (app: unknown) => unknown)({})
-    expect(result).toEqual({ provide: { gqlFetch: expect.any(Function) } })
+  it('exposes the transport as nuxtApp.$gqlFetch: the provided function is the one that reaches the API', async () => {
+    const provided = (
+      gqlFetchPlugin as unknown as (app: unknown) => { provide: { gqlFetch: GqlFetch } }
+    )({})
+    expect(Object.keys(provided.provide)).toEqual(['gqlFetch'])
+    $fetchMock.mockResolvedValue(ok({ products: [] }))
+    await expect(provided.provide.gqlFetch(QUERY)).resolves.toEqual({ products: [] })
+    expect($fetchMock).toHaveBeenCalledOnce()
   })
 })
 

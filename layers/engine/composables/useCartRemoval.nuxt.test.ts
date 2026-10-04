@@ -203,7 +203,7 @@ describe('decrementProduct (the "−" of a product card)', () => {
     cart.addProduct(ramen, 1)
     removal.decrementProduct(ramen)
     expect(cart.products).toEqual([])
-    expect(notifications.current?.action).toBeDefined()
+    expect(notifications.current?.action?.label).toBe('cart.undo')
   })
 })
 

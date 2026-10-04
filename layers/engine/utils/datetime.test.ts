@@ -1,5 +1,5 @@
 // Brussels time helpers: the restaurant's day is Brussels', whatever the visitor's or the server's timezone.
-import { afterEach, describe, expect, it } from 'vite-plus/test'
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
   RESTAURANT_TZ,
   formatDate,
@@ -11,6 +11,7 @@ import {
 
 const originalTz = process.env.TZ
 afterEach(() => {
+  vi.useRealTimers()
   if (originalTz === undefined) delete process.env.TZ
   else process.env.TZ = originalTz
 })
@@ -94,9 +95,9 @@ describe('getBrusselsParts', () => {
   })
 
   it('defaults to now', () => {
-    const before = Date.now()
-    const parts = getBrusselsParts()
-    expect(parts.year).toBeGreaterThanOrEqual(new Date(before).getUTCFullYear())
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-12-31T23:30:00Z')) // Already New Year in Brussels
+    expect(getBrusselsParts()).toMatchObject({ year: 2027, month: 1, day: 1, hour: 0, minute: 30 })
   })
 })
 

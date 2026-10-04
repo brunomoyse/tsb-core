@@ -113,6 +113,9 @@ describe('activation', () => {
     // Already active: focus is not stolen again, and the first activation still owns the restore target.
     expect(document.activeElement).toBe(first)
     expect(otherFirst).not.toBe(document.activeElement)
+    // The trap now guards the new container: the next Tab, from outside it, is pulled into it.
+    expect(press('Tab').defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(otherFirst)
   })
 
   it('ignores an element that is not visible (display: none)', async () => {

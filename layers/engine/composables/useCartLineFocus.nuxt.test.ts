@@ -107,8 +107,14 @@ describe('keepFocus', () => {
       ran = true
     })
     expect(ran).toBe(true)
-    const undef = make({ container: () => undefined, fallback: () => undefined })
-    await undef(() => undefined)
+    // A surface that answers undefined is the same: the action runs, and focus stays where it was.
+    focusOn('dec1')
+    let ranAgain = false
+    await make({ container: () => undefined, fallback: () => undefined })(() => {
+      ranAgain = true
+    })
+    expect(ranAgain).toBe(true)
+    expect(focused()).toBe('dec1')
   })
 
   it('a line without a Remove button, and no fallback, is survived (focus is simply left where the browser put it)', async () => {

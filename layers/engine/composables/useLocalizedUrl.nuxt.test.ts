@@ -25,7 +25,6 @@ async function localizedUrl(locale: string) {
 
 describe('useLocalizedUrl', () => {
   it('prefixes the path with the site origin and the active locale', async () => {
-    expect(await localizedUrl('fr')).toBeTypeOf('function')
     const origin = originalBase
     expect((await localizedUrl('fr'))('/menu')).toBe(`${origin}/fr/menu`)
     expect((await localizedUrl('nl'))('/menu')).toBe(`${origin}/nl/menu`)

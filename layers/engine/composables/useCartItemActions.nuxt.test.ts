@@ -58,9 +58,7 @@ describe('editItem', () => {
     cart.addProduct(ramen, 1)
     await useCartItemActions().editItem(cart.products[0]!)
     const target = navigateTo.mock.calls[0]![0] as { path: string }
-    expect(target.path).toBe(useLocalePath()('/menu'))
-    expect(target.path).toMatch(/\/menu$/u)
-    expect(target.path).not.toBe('/menu')
+    expect(target.path).toBe('/nl/menu')
   })
 
   it('resolves only once the navigation has finished', async () => {

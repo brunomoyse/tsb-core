@@ -79,10 +79,12 @@ describe('the client', () => {
     })
   })
 
-  it('is exposed as nuxtApp.$api', () => {
-    expect((apiPlugin as unknown as (app: unknown) => unknown)({})).toEqual({
-      provide: { api: expect.any(Function) },
-    })
+  it('is exposed as nuxtApp.$api: the provided function is the one that reaches the client', async () => {
+    const provided = (apiPlugin as unknown as (app: unknown) => { provide: { api: Api } })({})
+    expect(Object.keys(provided.provide)).toEqual(['api'])
+    baseApi.mockResolvedValue({ ok: true })
+    await expect(provided.provide.api('/me', { method: 'GET' })).resolves.toEqual({ ok: true })
+    expect(baseApi).toHaveBeenCalledExactlyOnceWith('/me', { method: 'GET' })
   })
 })
 

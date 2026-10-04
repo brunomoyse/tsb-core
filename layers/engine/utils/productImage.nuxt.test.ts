@@ -1,8 +1,6 @@
 // Product image URLs and the broken-image fallback (real DOM: <img>, <picture>, <source>).
 import { describe, expect, it } from 'vite-plus/test'
 import {
-  PRODUCT_IMAGE_FALLBACK,
-  PRODUCT_IMAGE_FALLBACK_CLASSIC,
   ensureProductImageFallback,
   handleProductImageError,
   productImageBase,
@@ -45,13 +43,6 @@ describe('productImageBase', () => {
   it('falls back to the placeholder base of the variant', () => {
     expect(productImageBase(undefined, 'p1')).toBe('/images/placeholder-product-thumbnail')
     expect(productImageBase(S3, null, 'classic')).toBe('/images/placeholder-product-classic')
-  })
-})
-
-describe('constants', () => {
-  it('exports the png placeholders', () => {
-    expect(PRODUCT_IMAGE_FALLBACK).toBe('/images/placeholder-product-thumbnail.png')
-    expect(PRODUCT_IMAGE_FALLBACK_CLASSIC).toBe('/images/placeholder-product-classic.png')
   })
 })
 
