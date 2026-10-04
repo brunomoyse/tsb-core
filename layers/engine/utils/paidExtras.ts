@@ -33,13 +33,18 @@ export interface PaidExtra {
   quantity: number
 }
 
-/** The extra's quantity in the cart: plain lines of that product (a line with a choice is the menu item, not the extra). */
+/**
+ * The extra's quantity in the cart: plain lines of that product. A line with a choice (the legacy single `selectedChoice`
+ * or any of the `selectedChoices` of a composed dish) is the menu item, not the extra: the chip's increment and
+ * decrement act on the plain line only.
+ */
 export function paidExtraQuantity(lines: readonly CartLineForExtras[], code: string): number {
   return lines
     .filter(
       (line) =>
         line.product.code === code &&
-        (!line.selectedChoice || (line.selectedChoices?.length ?? 0) === 0),
+        !line.selectedChoice &&
+        (line.selectedChoices?.length ?? 0) === 0,
     )
     .reduce((sum, line) => sum + line.quantity, 0)
 }

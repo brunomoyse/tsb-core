@@ -79,8 +79,8 @@ describe('paidExtraQuantity', () => {
       { product: { code: 'X1' }, quantity: 8, selectedChoice: { id: 'c' } },
       { product: { code: 'Y1' }, quantity: 16 },
     ]
-    // The 3rd line has a choice AND selections (a menu item); the 4th has a legacy choice without selections key: counted.
-    expect(paidExtraQuantity(lines, 'X1')).toBe(2 + 1 + 8)
+    // The 3rd line has a choice AND selections, the 4th a legacy choice without selections key: both are menu items.
+    expect(paidExtraQuantity(lines, 'X1')).toBe(2 + 1)
   })
 })
 
