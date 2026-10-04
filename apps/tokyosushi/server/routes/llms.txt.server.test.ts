@@ -1,13 +1,12 @@
 // /llms.txt: a plain-text guide for AI crawlers, served on the production domain of the brand only.
 // Run: `vp test run apps/tokyosushi/server/routes/llms.txt.server.test.ts`.
-import { describe, expect, it, vi } from 'vite-plus/test'
+import { describe, expect, it } from 'vite-plus/test'
 import { callHandler } from '../../../../test/nitro/callHandler'
 import { setRuntimeConfig } from '../../../../test/nitro/imports'
 import handler from './llms.txt'
-import { brand } from '../../brand'
+import { brand } from '#brand/brand'
 
-// The #brand alias of the server test project is tokyosushi's; this app's route must render this app's brand.
-vi.mock('#brand/brand', async () => import('../../brand'))
+// The `server` project resolves `#brand` to this app: the route renders the brand it is shipped with.
 
 const fetchLlms = async (baseUrl: unknown) => {
   setRuntimeConfig({ public: { baseUrl } })
@@ -50,6 +49,13 @@ describe('on the production domain', () => {
     for (const [, url] of body.matchAll(/\]\((?<url>[^)]+)\)/gu)) {
       expect(url).toMatch(new RegExp(`^${production}/`, 'u'))
     }
+  })
+
+  it('describes the sushi restaurant, not the malatang one of the other brand', async () => {
+    const body = await (await fetchLlms(production)).text()
+    expect(body).toContain('sushi')
+    expect(body).not.toContain('malatang')
+    expect(body).not.toContain(`${production}/fr/concept`)
   })
 
   it('tolerates trailing slashes on the configured base URL', async () => {

@@ -1,5 +1,5 @@
 // useRestaurantSchema: the site-wide Restaurant JSON-LD. useHead is the boundary; brand, runtime config, locale and the
-// schema builder are real (tokyosushi brand, https://tokyosushi.test).
+// schema builder are real (tokyosushi brand, the test base URL).
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
@@ -59,16 +59,16 @@ describe('useRestaurantSchema', () => {
       '@type': 'Restaurant',
       name: 'Tokyo Sushi Bar',
       telephone: '+3242229888',
-      url: 'https://tokyosushi.test',
+      url: useRuntimeConfig().public.baseUrl,
     })
-    expect(JSON.stringify(json)).toContain('https://tokyosushi.test/nl/menu')
+    expect(JSON.stringify(json)).toContain(`${useRuntimeConfig().public.baseUrl}/nl/menu`)
   })
 
   it('strips a trailing slash from the base URL', async () => {
-    useRuntimeConfig().public.baseUrl = 'https://tokyosushi.test/'
+    useRuntimeConfig().public.baseUrl = 'https://shop.example/'
     const { script } = await schema(() => null)
-    expect(script.innerHTML).toContain('https://tokyosushi.test/')
-    expect(script.innerHTML).not.toContain('https://tokyosushi.test//')
+    expect(script.innerHTML).toContain('https://shop.example/')
+    expect(script.innerHTML).not.toContain('https://shop.example//')
   })
 
   it('uses the live opening hours when given, not the brand fallback', async () => {

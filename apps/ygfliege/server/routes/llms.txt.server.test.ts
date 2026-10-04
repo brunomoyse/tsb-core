@@ -1,13 +1,12 @@
 // /llms.txt: a plain-text guide for AI crawlers, served on the production domain of the brand only.
 // Run: `vp test run apps/ygfliege/server/routes/llms.txt.server.test.ts`.
-import { describe, expect, it, vi } from 'vite-plus/test'
+import { describe, expect, it } from 'vite-plus/test'
 import { callHandler } from '../../../../test/nitro/callHandler'
 import { setRuntimeConfig } from '../../../../test/nitro/imports'
 import handler from './llms.txt'
-import { brand } from '../../brand'
+import { brand } from '#brand/brand'
 
-// The #brand alias of the server test project is tokyosushi's; this app's route must render this app's brand.
-vi.mock('#brand/brand', async () => import('../../brand'))
+// The `server-ygfliege` project resolves `#brand` to this app: the route renders the brand it is shipped with.
 
 const fetchLlms = async (baseUrl: unknown) => {
   setRuntimeConfig({ public: { baseUrl } })
@@ -50,6 +49,15 @@ describe('on the production domain', () => {
     for (const [, url] of body.matchAll(/\]\((?<url>[^)]+)\)/gu)) {
       expect(url).toMatch(new RegExp(`^${production}/`, 'u'))
     }
+  })
+
+  it('describes the malatang restaurant and links the pages only this brand has (concept, about)', async () => {
+    const body = await (await fetchLlms(production)).text()
+    expect(brand.name).toBe('Yangguofu Malatang Liège')
+    expect(body).toContain('malatang')
+    expect(body).toContain('麻辣烫')
+    for (const page of ['concept', 'about']) expect(body).toContain(`(${production}/fr/${page})`)
+    expect(body).not.toContain('sushi')
   })
 
   it('tolerates trailing slashes on the configured base URL', async () => {

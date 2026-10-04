@@ -9,7 +9,7 @@ import {
   productImageUrl,
 } from '#engine/utils/productImage'
 
-const S3 = 'https://s3.tokyosushi.test'
+const S3 = 'https://s3.shop.example'
 
 describe('productImageUrl', () => {
   it('points at the thumbnail of the product in the bucket, png by default', () => {

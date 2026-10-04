@@ -1,12 +1,10 @@
 // POST /api/sentry-tunnel: forwards the browser's Sentry envelopes through our own origin (ad-blockers cannot match it),
 // but only for the configured DSN, so it cannot be used as an open proxy. $fetch (Sentry's ingest) is the boundary.
 // Run: `vp test run layers/engine/server/api/sentry-tunnel.post.server.test.ts`.
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { beforeEach, describe, expect, it } from 'vite-plus/test'
 import { callHandler } from '../../../../test/nitro/callHandler'
-import { setRuntimeConfig, useRuntimeConfig } from '../../../../test/nitro/imports'
+import { $fetch as $fetchMock, setRuntimeConfig } from '../../../../test/nitro/imports'
 import handler from './sentry-tunnel.post'
-
-const $fetchMock = vi.hoisted(() => vi.fn())
 
 const DSN = 'https://publickey@o123.ingest.sentry.io/456'
 const envelope = (header: unknown = { dsn: DSN }) =>
@@ -16,10 +14,6 @@ const post = (body?: string) =>
   callHandler(handler, { path: '/api/sentry-tunnel', method: 'POST', body })
 
 beforeEach(() => {
-  vi.resetAllMocks()
-  // The handler uses Nitro's auto-imported globals, which the harness does not define for $fetch / useRuntimeConfig.
-  vi.stubGlobal('$fetch', $fetchMock)
-  vi.stubGlobal('useRuntimeConfig', useRuntimeConfig)
   setRuntimeConfig({ public: { sentryDsn: DSN } })
   $fetchMock.mockResolvedValue('ok')
 })
@@ -41,7 +35,8 @@ describe('an envelope for the configured DSN', () => {
         timeout: 5000,
       },
     )
-    expect(($fetchMock.mock.calls[0]![1].body as Buffer).toString('utf-8')).toBe(body)
+    const sent = $fetchMock.mock.calls[0]![1] as { body: Buffer }
+    expect(sent.body.toString('utf-8')).toBe(body)
   })
 
   it('is accepted whatever the public key of the DSN, as long as host and project match', async () => {

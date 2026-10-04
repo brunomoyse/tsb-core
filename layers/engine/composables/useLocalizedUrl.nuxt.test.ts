@@ -26,16 +26,17 @@ async function localizedUrl(locale: string) {
 describe('useLocalizedUrl', () => {
   it('prefixes the path with the site origin and the active locale', async () => {
     expect(await localizedUrl('fr')).toBeTypeOf('function')
-    expect((await localizedUrl('fr'))('/menu')).toBe('https://tokyosushi.test/fr/menu')
-    expect((await localizedUrl('nl'))('/menu')).toBe('https://tokyosushi.test/nl/menu')
+    const origin = originalBase
+    expect((await localizedUrl('fr'))('/menu')).toBe(`${origin}/fr/menu`)
+    expect((await localizedUrl('nl'))('/menu')).toBe(`${origin}/nl/menu`)
   })
 
   it('without an argument it is the home page of the locale', async () => {
-    expect((await localizedUrl('en'))()).toBe('https://tokyosushi.test/en')
+    expect((await localizedUrl('en'))()).toBe(`${originalBase}/en`)
   })
 
   it('does not double the slash when the base URL ends with one', async () => {
-    useRuntimeConfig().public.baseUrl = 'https://tokyosushi.test/'
-    expect((await localizedUrl('fr'))('/menu')).toBe('https://tokyosushi.test/fr/menu')
+    useRuntimeConfig().public.baseUrl = 'https://shop.example/'
+    expect((await localizedUrl('fr'))('/menu')).toBe('https://shop.example/fr/menu')
   })
 })

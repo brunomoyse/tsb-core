@@ -1,18 +1,13 @@
 // useOrderExtras with the YGF Liège brand: chopsticks and cutlery, none pre-ticked, no category restriction, no sauce.
-// The brand data is the real one of apps/ygfliege, swapped in for `#brand/brand`.
+// Runs in the real app of apps/ygfliege (its `#brand/brand`), not in a copy of the other brand's app.
 // Run: `vp test run layers/engine/composables/useOrderExtras.ygfliege.nuxt.test.ts`.
 import { createPinia, setActivePinia } from 'pinia'
 import { type EffectScope, effectScope, nextTick } from 'vue'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
+import { useAppConfig } from '#imports'
+import { useOrderExtras } from '#engine/composables/useOrderExtras'
+import { useCartStore } from '#engine/stores/cart'
 import { makeProduct } from '../../../test/fixtures/catalog'
-
-vi.mock('#brand/brand', async () => {
-  const { brand } = await import('../../../apps/ygfliege/brand')
-  return { brand }
-})
-
-const { useOrderExtras } = await import('#engine/composables/useOrderExtras')
-const { useCartStore } = await import('#engine/stores/cart')
 
 let cart: ReturnType<typeof useCartStore>
 let scope: EffectScope
@@ -30,6 +25,10 @@ afterEach(() => {
 })
 
 describe('ygfliege extras', () => {
+  it('runs in the ygfliege app', () => {
+    expect(useAppConfig().brand.name).toBe('Yangguofu Malatang Liège')
+  })
+
   it('offers chopsticks and cutlery, no sauce, and ticks nothing on a fresh cart', () => {
     const extras = mount()
     expect(extras.hasOfferedExtras).toBe(true)

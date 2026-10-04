@@ -4,8 +4,35 @@ import { runtimeFlagsPlugin } from './test/flags'
 
 const r = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 // The aliases brand apps declare in their nuxt.config.ts, for the vitest projects that do not boot Nuxt.
-const alias = { '#engine': r('./layers/engine'), '#brand': r('./apps/tokyosushi') }
+const alias = (app: 'tokyosushi' | 'ygfliege') => ({
+  '#engine': r('./layers/engine'),
+  '#brand': r(`./apps/${app}`),
+})
 const excluded = ['**/node_modules/**', '**/.nuxt/**', '**/.output/**']
+
+// Nitro server handlers (routes, API, middleware): h3 + a stand-in for Nitro's `#imports` (test/nitro). One project per
+// brand, because `#brand` is a build-time alias: the handlers of an app render that app's brand.
+const serverProject = (
+  app: 'tokyosushi' | 'ygfliege',
+  include: string[],
+  exclude: string[] = [],
+) => ({
+  plugins: [runtimeFlagsPlugin({ server: true, client: false, dev: false })],
+  resolve: { alias: { ...alias(app), '#imports': r('./test/nitro/imports.ts') } },
+  test: {
+    name: app === 'tokyosushi' ? 'server' : `server-${app}`,
+    include,
+    exclude: [...excluded, ...exclude],
+    unstubGlobals: true,
+    unstubEnvs: true,
+    restoreMocks: true,
+    setupFiles: [
+      r('./test/setup/noNetwork.ts'),
+      r('./test/setup/flags.ts'),
+      r('./test/nitro/setup.ts'),
+    ],
+  },
+})
 
 export default defineConfig({
   // Unit tests (see docs/testing.md); the Playwright suites under */e2e are run by `playwright test`.
@@ -14,30 +41,25 @@ export default defineConfig({
       {
         // Pure code: no Nuxt, no Nitro. Node environment, fast.
         plugins: [runtimeFlagsPlugin({ server: false, client: true, dev: false })],
-        resolve: { alias },
+        resolve: { alias: alias('tokyosushi') },
         test: {
           name: 'unit',
           include: ['{layers,apps}/**/*.test.{mjs,ts}'],
           setupFiles: [r('./test/setup/noNetwork.ts'), r('./test/setup/flags.ts')],
           exclude: [...excluded, '**/*.nuxt.test.ts', '**/*.server.test.ts'],
+          unstubGlobals: true,
+          unstubEnvs: true,
+          restoreMocks: true,
         },
       },
-      {
-        // Nitro server handlers (routes, API, middleware): h3 + a stand-in for Nitro's `#imports` (test/nitro).
-        plugins: [runtimeFlagsPlugin({ server: true, client: false, dev: false })],
-        resolve: { alias: { ...alias, '#imports': r('./test/nitro/imports.ts') } },
-        test: {
-          name: 'server',
-          include: ['{layers,apps}/**/*.server.test.ts'],
-          exclude: excluded,
-          setupFiles: [
-            r('./test/setup/noNetwork.ts'),
-            r('./test/setup/flags.ts'),
-            r('./test/nitro/setup.ts'),
-          ],
-        },
-      },
+      serverProject('tokyosushi', ['{layers,apps}/**/*.server.test.ts'], ['apps/ygfliege/**']),
+      // The brand-agnostic engine handlers run under both brands.
+      serverProject('ygfliege', [
+        'apps/ygfliege/**/*.server.test.ts',
+        'layers/engine/server/routes/robots.txt.server.test.ts',
+      ]),
       './vitest.nuxt.config.ts',
+      './vitest.nuxt-ygfliege.config.ts',
     ],
     coverage: {
       provider: 'v8',

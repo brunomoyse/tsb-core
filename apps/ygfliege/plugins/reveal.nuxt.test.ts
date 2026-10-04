@@ -7,8 +7,7 @@ import {
   stubIntersectionObserver,
 } from '../../../test/helpers/fakeObservers'
 
-vi.stubGlobal('defineNuxtPlugin', (fn: unknown) => fn)
-const { default: plugin } = await import('./reveal')
+import plugin from './reveal'
 
 interface Directive {
   mounted?: (el: HTMLElement, binding: { value?: unknown }) => void
@@ -40,8 +39,6 @@ beforeEach(() => {
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: 800 })
 })
 afterEach(() => {
-  vi.unstubAllGlobals()
-  vi.stubGlobal('defineNuxtPlugin', (fn: unknown) => fn)
   document.body.innerHTML = ''
 })
 
