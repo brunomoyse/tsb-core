@@ -6,6 +6,7 @@
 //   import { setFlags } from '<repo>/test/flags'
 //   setFlags({ server: true })   // this test runs "on the server"; reset automatically after each test
 import type { Plugin } from 'vite'
+import { fileURLToPath } from 'node:url'
 
 export interface RuntimeFlags {
   server: boolean
@@ -28,7 +29,7 @@ export function resetFlags() {
   globalThis.tsbTestFlags = undefined
 }
 
-const root = new URL('..', import.meta.url).pathname
+const root = fileURLToPath(new URL('..', import.meta.url))
 const FLAG = /import\.meta\.(?<flag>server|client|dev)\b/gu
 const HAS_FLAG = /import\.meta\.(?:server|client|dev)\b/u
 

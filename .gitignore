@@ -40,5 +40,6 @@ CLAUDE.md
 **/e2e/.auth-state.json
 
 # Unit-test coverage output
-coverage
+/coverage
+# The `setups.@nuxt/test-utils` marker that @nuxt/test-utils writes in the app it boots
 apps/*/.nuxtrc

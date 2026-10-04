@@ -178,8 +178,12 @@ describe('onBlur: the error shows when the customer is done with the field', () 
   it('an error is not shown on a card that was collapsed while the library loaded (Cancel)', async () => {
     saved('+3242229888')
     const phone = usePhoneCapture()
-    draft().value = 'abc' // Typed, but the card is collapsed (not editing)
-    await phone.onBlur()
+    await phone.startEditing()
+    draft().value = 'abc' // Not a number: validating it would show an error
+    const blurred = phone.onBlur() // The validation is waiting for libphonenumber to load...
+    phone.cancelEditing() // ...when the customer cancels
+    await blurred
+    expect(phone.isCollapsed.value).toBe(true)
     expect(phone.phoneError.value).toBe('')
   })
 })

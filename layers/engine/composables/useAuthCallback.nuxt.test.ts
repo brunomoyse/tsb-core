@@ -111,6 +111,8 @@ describe('restoring the session', () => {
     expect(gqlFetch.mock.calls[0]![0]).toContain('me {')
   })
 
+  // Intended: the token exchange worked, so the customer is signed in at Zitadel; a profile that cannot be read right now
+  // must not trap them on the callback page. The auth-sync plugin repairs the missing profile on the next page.
   it('keeps going without a profile when `me` answers nothing', async () => {
     answer(OPEN, null)
     await setup().processCallback()
