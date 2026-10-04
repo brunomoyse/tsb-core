@@ -1,8 +1,16 @@
 <template>
-  <div class="mx-auto max-w-3xl px-6 py-10">
+  <!-- The legal text exists in French only: say so to the other languages, and tell assistive tech what it reads. -->
+  <div class="mx-auto max-w-3xl px-6 py-10" lang="fr">
+    <p
+      v-if="locale !== 'fr'"
+      :lang="locale"
+      class="mb-6 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-center text-sm text-neutral-700"
+    >
+      {{ t('legal.frenchOnly') }}
+    </p>
     <!-- Header -->
     <header class="mb-10 text-center">
-      <PageTitle> Politique de Confidentialit&eacute; </PageTitle>
+      <PageTitle> Politique de confidentialit&eacute; </PageTitle>
       <p class="mt-3 text-sm text-neutral-600">Derni&egrave;re mise &agrave; jour : 01/10/2026</p>
     </header>
 
@@ -308,7 +316,7 @@ definePageMeta({
 })
 
 const localizedUrl = useLocalizedUrl()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { brand } = useAppConfig()
 
 // "Belgique" is intentionally hardcoded — this French legal page targets a
