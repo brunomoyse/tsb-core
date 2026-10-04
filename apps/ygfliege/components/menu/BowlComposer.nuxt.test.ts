@@ -139,6 +139,26 @@ describe('opened from "Edit" on a cart line', () => {
     expect(composer.emitted('close')).toHaveLength(1)
   })
 
+  it('keeps the edited line where it was in the cart, not at the bottom', async () => {
+    const set = bowl()
+    const other = bowl()
+    editTomatoBowl(set)
+    cart.addProduct(other.product, 1, {
+      selections: [other.selection(other.bone, 1), other.selection(other.tofu, 1)],
+    })
+    const composer = await open(set)
+
+    await composer
+      .get(`[data-testid="bowl-composer-choice-inc-${set.noodles.id}"]`)
+      .trigger('click')
+    await confirm(composer).trigger('click')
+
+    expect(cart.products.map((line) => line.product.id)).toEqual([set.id, other.id])
+    expect(cart.products[0]!.selectedChoices).toEqual(
+      expect.arrayContaining([set.selection(set.noodles, 2)]),
+    )
+  })
+
   it('forgets the edit when it closes, so the next opening is a plain one', async () => {
     const set = bowl()
     editTomatoBowl(set)

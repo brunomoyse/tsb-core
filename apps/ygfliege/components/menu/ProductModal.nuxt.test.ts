@@ -140,6 +140,24 @@ describe('opened from "Edit" on a cart line', () => {
     )
   })
 
+  it('keeps the edited line where it was in the cart, not at the bottom', async () => {
+    const set = fixedSet()
+    const other = fixedSet()
+    editTwoHotTomato(set)
+    cart.addProduct(other.product, 1, {
+      selections: [other.selection(other.bone, 1), other.selection(other.mild, 1)],
+    })
+    const modal = await open(set)
+
+    await modal.get(`[data-testid="product-modal-choice-${set.bone.id}"]`).trigger('click')
+    await confirm(modal).trigger('click')
+
+    expect(cart.products.map((line) => line.product.id)).toEqual([set.id, other.id])
+    expect(cart.products[0]!.selectedChoices).toEqual(
+      expect.arrayContaining([set.selection(set.bone, 2)]),
+    )
+  })
+
   it('forgets the edit when it closes, so the next opening is a plain one', async () => {
     const set = fixedSet()
     editTwoHotTomato(set)

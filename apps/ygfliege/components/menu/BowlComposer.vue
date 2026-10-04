@@ -307,17 +307,10 @@ const summaryLabel = computed(() => {
 const addToCart = () => {
   if (!p || !canAddToCart.value) return
 
-  if (editItem) {
-    cartStore.removeFromCart(editItem.product, {
-      choice: editItem.selectedChoice,
-      selections: editItem.selectedChoices,
-      quantity: editItem.quantity,
-    })
-  }
-  cartStore.addProduct(p, quantity.value, {
-    choice: selectedChoice.value,
-    selections: selectionList.value,
-  })
+  // An edited line is replaced where it is (it keeps its place in the cart), a new one is added.
+  const composed = { choice: selectedChoice.value, selections: selectionList.value }
+  if (editItem) cartStore.replaceLine(editItem, p, quantity.value, composed)
+  else cartStore.addProduct(p, quantity.value, composed)
   trackEvent('product_added_to_cart', {
     product_id: p.id,
     product_name: p.name,
