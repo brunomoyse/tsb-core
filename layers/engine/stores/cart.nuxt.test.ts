@@ -571,7 +571,9 @@ describe('storage adapter', () => {
       | undefined
     const pinia = createPinia()
     pinia.use(({ store, options }) => {
-      if (store.$id === 'cart') storage = (options.persist as { storage: typeof storage }).storage
+      if (store.$id === 'cart') {
+        ;({ storage } = options.persist as { storage: typeof storage })
+      }
     })
     createApp({}).use(pinia)
     setActivePinia(pinia)

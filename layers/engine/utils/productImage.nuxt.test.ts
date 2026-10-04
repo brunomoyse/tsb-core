@@ -105,7 +105,7 @@ describe('handleProductImageError', () => {
 
   it('ignores an event without an image target', () => {
     const before = document.body.innerHTML
-    expect(handleProductImageError(new Event('error'))).toBeUndefined()
+    handleProductImageError(new Event('error'))
     expect(document.body.innerHTML).toBe(before)
   })
 })
@@ -144,7 +144,9 @@ describe('ensureProductImageFallback', () => {
   })
 
   it('accepts a missing element', () => {
-    expect(ensureProductImageFallback(null)).toBeUndefined()
-    expect(ensureProductImageFallback(undefined)).toBeUndefined()
+    const before = document.body.innerHTML
+    ensureProductImageFallback(null)
+    ensureProductImageFallback(undefined)
+    expect(document.body.innerHTML).toBe(before)
   })
 })

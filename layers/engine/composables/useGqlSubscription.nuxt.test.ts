@@ -618,7 +618,12 @@ describe('gap recovery (onReconnect)', () => {
 
   it('waits for an async callback without blocking the others', async () => {
     const { subscribe } = await load()
-    const slow = vi.fn(() => new Promise<void>(() => undefined))
+    const slow = vi.fn(
+      () =>
+        new Promise<void>(() => {
+          // Never settles
+        }),
+    )
     const fine = vi.fn()
     subscribe(SUB, {}, { onReconnect: slow })
     subscribe(SUB, {}, { onReconnect: fine })

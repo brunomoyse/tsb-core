@@ -32,7 +32,7 @@ mockNuxtImport('useNuxtApp', async (original) => {
 mockNuxtImport('useGqlSubscription', async () => {
   const { ref } = await import('vue')
   return (query: string, variables: Record<string, unknown>, options: object) => {
-    const data = ref(null)
+    const data = ref<unknown>(null)
     subscriptions.calls.push({ query, variables, options, data })
     return { data }
   }
@@ -63,10 +63,9 @@ let current: { unmount: () => void } | undefined
 /** The API answers `myOrder` with each given order in turn (the last one is repeated). */
 const serve = (...orders: (Order | Error)[]) => {
   let index = 0
-  gqlFetch.mockImplementation(async () => {
+  gqlFetch.mockImplementation(() => {
     const next = orders[Math.min(index++, orders.length - 1)]!
-    if (next instanceof Error) throw next
-    return { myOrder: next }
+    return next instanceof Error ? Promise.reject(next) : Promise.resolve({ myOrder: next })
   })
 }
 const mount = (orderId = 'order-1') => {
@@ -133,7 +132,7 @@ describe('loading the order', () => {
     expect(cart.products).toHaveLength(1)
   })
 
-  it('closes the cart sheet when the page is mounted', async () => {
+  it('closes the cart sheet when the page is mounted', () => {
     serve(paid())
     cart.setCartVisibility(true)
     mount()
@@ -434,7 +433,12 @@ describe('the verify loop (the webhook may be late)', () => {
     serve(pending())
     const view = mount()
     await settle()
-    gqlFetch.mockImplementation(() => new Promise((resolve) => (release = resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
     await settle(800)
     current?.unmount()
     release({ myOrder: paid() })
@@ -663,7 +667,12 @@ describe('the polling fallback (a WebSocket that fails silently)', () => {
     const view = mount()
     await settle()
     let release!: (value: unknown) => void
-    gqlFetch.mockImplementation(() => new Promise((resolve) => (release = resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
     await settle(30_000)
     current?.unmount()
     release({ myOrder: paid({ status: 'PREPARING' }) })

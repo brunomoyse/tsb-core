@@ -2,6 +2,7 @@
 // the bowl composer (min 5 / max 20 ingredients): grouping, min/max that scale with the quantity, selection, pricing.
 // Pure logic over a product and a quantity ref; only the i18n function is a fake (it returns the key and its params).
 // Run: `vp test run layers/engine/composables/useProductChoices.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import type { Product, ProductChoice, ProductChoiceGroup } from '#engine/types'
 import { describe, expect, it, vi } from 'vite-plus/test'
 import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
@@ -10,7 +11,7 @@ import { useProductChoices } from '#engine/composables/useProductChoices'
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const choice = (id: string, groupId: string, extra: Partial<ProductChoice> = {}) =>

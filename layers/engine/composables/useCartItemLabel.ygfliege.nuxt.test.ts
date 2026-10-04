@@ -1,4 +1,5 @@
 // useCartItemLabel / useOrderItemLabel in the real app of ygfliege: this brand does not show the menu code.
+import type * as VueI18NModule from 'vue-i18n'
 import { describe, expect, it, vi } from 'vite-plus/test'
 import { makeCartItem, makeProduct } from '../../../test/fixtures/catalog'
 import { useAppConfig } from '#imports'
@@ -7,7 +8,7 @@ import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const product = makeProduct({

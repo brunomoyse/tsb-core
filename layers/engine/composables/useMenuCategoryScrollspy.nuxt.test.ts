@@ -330,7 +330,7 @@ describe('with a measured header', () => {
   })
 
   it('falls back to the default band while the header is not rendered', () => {
-    mountSpy(['a'], { header: ref(null) })
+    mountSpy(['a'], { header: ref<HTMLElement | null>(null) })
     expect(latest().options.rootMargin).toBe(DEFAULT_BAND_MARGIN)
   })
 

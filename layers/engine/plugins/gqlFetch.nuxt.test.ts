@@ -415,9 +415,9 @@ describe('with the real OIDC client', () => {
     const { gqlFetch, manager } = await withRealOidc(session('old'))
     let current = session('old')
     manager.getUser.mockImplementation(() => Promise.resolve(current))
-    manager.signinSilent.mockImplementation(async () => {
+    manager.signinSilent.mockImplementation(() => {
       current = session('new')
-      return current
+      return Promise.resolve(current)
     })
     $fetchMock.mockImplementation((_url: string, options: { headers: Record<string, string> }) =>
       options.headers.Authorization === 'Bearer old'

@@ -125,7 +125,7 @@ describe('resend countdown', () => {
     let ticks = 0
     for (;;) {
       const tick = tickResendCooldown(seconds)
-      seconds = tick.seconds
+      ;({ seconds } = tick)
       ticks++
       if (tick.done) break
     }

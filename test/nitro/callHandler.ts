@@ -8,7 +8,7 @@ export interface HandlerRequest {
 }
 
 /** Runs one h3 event handler through a real h3 app and returns the Web `Response` (status, headers, body). */
-export async function callHandler(
+export function callHandler(
   handler: EventHandler,
   { path = '/', method = 'GET', headers, body }: HandlerRequest = {},
 ): Promise<Response> {

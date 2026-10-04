@@ -1,13 +1,14 @@
 // useOrderExtras for a category-restricted extra that is NOT pre-ticked (neither shipped brand has one, the engine
 // supports it): it is cleared while locked, and never ticked for the customer when unlocked.
 // Run: `vp test run layers/engine/composables/useOrderExtras.restricted.nuxt.test.ts`.
+import type * as BrandModule from '#brand/brand'
 import { createPinia, setActivePinia } from 'pinia'
 import { effectScope, nextTick } from 'vue'
 import { expect, it, vi } from 'vite-plus/test'
 import { makeProduct } from '../../../test/fixtures/catalog'
 
 vi.mock('#brand/brand', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('#brand/brand')>()
+  const actual = await importOriginal<typeof BrandModule>()
   return {
     brand: {
       ...actual.brand,

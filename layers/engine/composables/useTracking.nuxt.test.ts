@@ -27,7 +27,8 @@ describe('useTracking', () => {
   })
 
   it('does nothing when umami is not loaded (blocked or not yet there)', () => {
-    expect(useTracking().trackEvent('x')).toBeUndefined()
+    useTracking().trackEvent('x')
+    expect(window).not.toHaveProperty('umami')
   })
 
   it('looks umami up at call time, so a script that loads late is used', () => {
@@ -43,8 +44,8 @@ describe('useTracking', () => {
     const track = vi.fn()
     scope.umami = { track }
     const { identifyUser, resetUser } = useTracking()
-    expect(identifyUser()).toBeUndefined()
-    expect(resetUser()).toBeUndefined()
+    identifyUser()
+    resetUser()
     expect(track).not.toHaveBeenCalled()
   })
 })

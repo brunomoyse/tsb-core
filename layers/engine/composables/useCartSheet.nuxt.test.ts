@@ -3,6 +3,9 @@
 // the visitor followed a link out of the sheet. The three page-level helpers (scroll lock, inert, focus trap) are the
 // boundary: they are replaced by spies, and the options passed to the trap are exercised as the trap would use them.
 // Run: `vp test run layers/engine/composables/useCartSheet.nuxt.test.ts`.
+import type * as UsefocustrapModule from '#engine/composables/useFocusTrap'
+import type * as VueRouterModule from 'vue-router'
+import type * as VueuseCoreModule from '@vueuse/core'
 import { type Ref, effectScope, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
@@ -17,9 +20,9 @@ interface TrapOptions {
 }
 
 const mocks = await vi.hoisted(async () => {
-  const { reactive, ref } = await import('vue')
+  const { reactive, ref: vueRef } = await import('vue')
   return {
-    isDesktop: ref(false),
+    isDesktop: vueRef(false),
     route: reactive({ path: '/menu' }),
     guards: [] as ((to: { path: string }) => void)[],
     removeGuard: vi.fn(),
@@ -30,11 +33,11 @@ const mocks = await vi.hoisted(async () => {
 })
 
 vi.mock('@vueuse/core', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@vueuse/core')>()),
+  ...(await importOriginal<typeof VueuseCoreModule>()),
   useMediaQuery: () => mocks.isDesktop,
 }))
 vi.mock('vue-router', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('vue-router')>()),
+  ...(await importOriginal<typeof VueRouterModule>()),
   useRoute: () => mocks.route,
   useRouter: () => ({
     beforeEach: (guard: (to: { path: string }) => void) => {
@@ -289,9 +292,9 @@ describe('lifecycle', () => {
 
 describe('with the real focus trap (the spies above only check what the sheet asks of it)', () => {
   it('opens on the close button, closes on Escape, and gives focus back to the control that opened it', async () => {
-    const { useFocusTrap } = await vi.importActual<
-      typeof import('#engine/composables/useFocusTrap')
-    >('#engine/composables/useFocusTrap')
+    const { useFocusTrap } = await vi.importActual<typeof UsefocustrapModule>(
+      '#engine/composables/useFocusTrap',
+    )
     mocks.trap.mockImplementation(useFocusTrap)
     const opener = rendered(button('opener', { 'data-cart-trigger': '' }))
     opener.focus()
@@ -300,7 +303,7 @@ describe('with the real focus trap (the spies above only check what the sheet as
     const checkout = document.createElement('button')
     sheet.append(close, checkout)
     document.body.append(sheet)
-    panel = ref(null)
+    panel = ref<HTMLElement | null>(null)
     closeButton = ref(close)
     mount()
 

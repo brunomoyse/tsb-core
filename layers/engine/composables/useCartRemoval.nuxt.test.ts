@@ -2,6 +2,7 @@
 // removals in a row merge into one toast whose single Undo restores them all; the last unit of a line is a removal too.
 // Real cart and notifications stores; only the analytics beacon (window.umami) and the i18n function are fakes.
 // Run: `vp test run layers/engine/composables/useCartRemoval.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
 import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
@@ -13,7 +14,7 @@ import { useNotificationsStore } from '#engine/stores/notifications'
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const track = vi.fn()

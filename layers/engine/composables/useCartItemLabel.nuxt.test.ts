@@ -1,6 +1,7 @@
 // useCartItemLabel / useOrderItemLabel: how a cart or order line is labelled, per brand (the menu code shows only when
 // `brand.showProductCode`). `useAppConfig` is wrapped, not replaced; the copy of the piece count is the i18n key.
 // Run: `vp test run layers/engine/composables/useCartItemLabel.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { makeCartItem, makeChoice, makeProduct } from '../../../test/fixtures/catalog'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -9,7 +10,7 @@ const brandOverride = vi.hoisted(() => ({ showProductCode: undefined as boolean 
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 mockNuxtImport('useAppConfig', (original) => () => {
   const config = original()

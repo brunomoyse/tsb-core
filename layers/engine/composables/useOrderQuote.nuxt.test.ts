@@ -3,6 +3,7 @@
 // the boundaries are the GraphQL transport ($gqlFetch), Sentry (reportError), i18n and the clock (fake timers).
 // The composable keeps module-level state (the shared cycle), so every test loads a fresh copy of it.
 // Run: `vp test run layers/engine/composables/useOrderQuote.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { type EffectScope, effectScope, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
@@ -22,7 +23,7 @@ mockNuxtImport('useNuxtApp', async (original) => {
 vi.mock('#engine/utils/reportError', () => ({ reportError }))
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const DEBOUNCE = 400
@@ -361,7 +362,12 @@ describe('failures', () => {
   it('a request that is never answered is given up on after 8 s (Pay is not disabled forever)', async () => {
     const { surface, cart } = await load()
     cart.addProduct(ramen, 1)
-    gqlFetch.mockImplementation(() => new Promise(() => undefined))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise(() => {
+          // Never settles
+        }),
+    )
     const { quote } = surface()
     await settle(0)
     expect(quote.pending.value).toBe(true)
@@ -478,7 +484,12 @@ describe('the coupon of the cart follows each quote', () => {
     expect(quote.quote.value?.couponDiscount).toBe('1.00')
 
     let release!: (value: unknown) => void
-    gqlFetch.mockImplementationOnce(() => new Promise((resolve) => (release = resolve)))
+    gqlFetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
     cart.addProduct(tea, 1)
     await settle(DEBOUNCE) // Second request: in flight
     expect(gqlFetch).toHaveBeenCalledTimes(2)

@@ -2,6 +2,7 @@
 // language), the refetch triggers, the older-document fallback for a backend that does not know a field, and what is
 // taken from the SSR payload. useAsyncData and the Nuxt payload are real; the transport ($gqlFetch) is the boundary.
 // Run: `vp test run layers/engine/composables/useGqlQuery.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { GqlError, unwrapGqlError } from '#engine/utils/gqlError'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtData, useNuxtApp } from '#imports'
@@ -24,7 +25,7 @@ mockNuxtImport('useAsyncData', (original) => (...args: unknown[]) => {
   return (original as (...a: unknown[]) => unknown)(...args)
 })
 vi.mock('vue-i18n', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('vue-i18n')>()),
+  ...(await importOriginal<typeof VueI18NModule>()),
   useI18n: () => ({ locale: locale.current }),
 }))
 

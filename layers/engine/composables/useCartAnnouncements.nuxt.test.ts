@@ -1,6 +1,7 @@
 // useCartAnnouncements: what the cart says to a screen reader, for every surface at once, by listening to the store actions.
 // Real cart store and announcer; the i18n function is a fake that returns the key and its params.
 // Run: `vp test run layers/engine/composables/useCartAnnouncements.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
 import { createPinia, setActivePinia } from 'pinia'
 import { describe, expect, it, vi } from 'vite-plus/test'
@@ -11,7 +12,7 @@ import { useCartAnnouncements } from '#engine/composables/useCartAnnouncements'
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const ramen = makeProduct({ id: 'ramen', name: 'Ramen', price: '14.00' })

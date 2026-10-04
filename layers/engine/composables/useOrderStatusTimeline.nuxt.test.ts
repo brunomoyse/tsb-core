@@ -2,6 +2,7 @@
 // screen-reader suffix, and the polite announcement of a status that changes while the page is open.
 // Real announcer; i18n is a fake returning the key, so the assertions name the message chosen.
 // Run: `vp test run layers/engine/composables/useOrderStatusTimeline.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
 import type { Order } from '#engine/types'
@@ -11,7 +12,7 @@ import { useOrderStatusTimeline } from '#engine/composables/useOrderStatusTimeli
 
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const title = (key: string) => `me.orders.status.details.title.${key}`

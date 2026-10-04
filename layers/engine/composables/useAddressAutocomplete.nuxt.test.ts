@@ -3,6 +3,7 @@
 // combobox keyboard pattern. The GraphQL transport, Sentry, i18n and the clock are the boundaries; the composable runs in
 // a real component setup (it uses useId and onBeforeUnmount).
 // Run: `vp test run layers/engine/composables/useAddressAutocomplete.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import type { Address, AddressSuggestion } from '#engine/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
@@ -20,7 +21,7 @@ mockNuxtImport('useNuxtApp', async (original) => {
 vi.mock('#engine/utils/reportError', () => ({ reportError }))
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const { useAddressAutocomplete } = await import('#engine/composables/useAddressAutocomplete')
@@ -57,10 +58,12 @@ const searchCalls = () =>
 const resolveCalls = () =>
   gqlFetch.mock.calls.filter(([query]) => String(query).includes('resolveAddress'))
 const answers = (list: AddressSuggestion[] | null) =>
-  gqlFetch.mockImplementation(async (query: string) =>
-    query.includes('autocompleteAddresses')
-      ? { autocompleteAddresses: list }
-      : { resolveAddress: address() },
+  gqlFetch.mockImplementation((query: string) =>
+    Promise.resolve(
+      query.includes('autocompleteAddresses')
+        ? { autocompleteAddresses: list }
+        : { resolveAddress: address() },
+    ),
   )
 
 /** Types a query and lets the debounce run. */
@@ -198,7 +201,12 @@ describe('searching', () => {
 
   it('the no-match hint waits for the answer: it is not shown while the search is still on its way', async () => {
     let release!: (value: unknown) => void
-    gqlFetch.mockImplementation(() => new Promise((resolve) => (release = resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
     const { api } = setup()
     await type(api, 'Zzz 1')
     expect(searchCalls()).toHaveLength(1)
@@ -212,7 +220,9 @@ describe('searching', () => {
     let release!: (value: unknown) => void
     gqlFetch.mockImplementation((query: string) =>
       query.includes('resolveAddress')
-        ? new Promise((resolve) => (release = resolve))
+        ? new Promise((resolve) => {
+            release = resolve
+          })
         : Promise.resolve({ autocompleteAddresses: [] }),
     )
     const { api } = setup()
@@ -238,7 +248,12 @@ describe('searching', () => {
 
   it('only the latest search may write its results: a slow answer to an older query is dropped', async () => {
     const releases: ((value: unknown) => void)[] = []
-    gqlFetch.mockImplementation(() => new Promise((resolve) => releases.push(resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releases.push(resolve)
+        }),
+    )
     const { api } = setup()
     await type(api, 'Rue 1')
     await type(api, 'Rue 12')
@@ -268,8 +283,18 @@ describe('searching', () => {
   it('the failure of an outdated search is ignored (it must not clear or scold the newer results)', async () => {
     const rejects: ((reason: unknown) => void)[] = []
     const resolves: ((value: unknown) => void)[] = []
-    gqlFetch.mockImplementationOnce(() => new Promise((_, reject) => rejects.push(reject)))
-    gqlFetch.mockImplementationOnce(() => new Promise((resolve) => resolves.push(resolve)))
+    gqlFetch.mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          rejects.push(reject)
+        }),
+    )
+    gqlFetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolves.push(resolve)
+        }),
+    )
     const { api } = setup()
     await type(api, 'Rue 1')
     await type(api, 'Rue 12')
@@ -393,10 +418,12 @@ describe('selecting a suggestion', () => {
   })
 
   it('an address without a house number is refused with its own message, and the customer keeps searching', async () => {
-    gqlFetch.mockImplementation(async (query: string) =>
-      query.includes('resolveAddress')
-        ? { resolveAddress: address({ houseNumber: '' }) }
-        : { autocompleteAddresses: [suggestion(59)] },
+    gqlFetch.mockImplementation((query: string) =>
+      Promise.resolve(
+        query.includes('resolveAddress')
+          ? { resolveAddress: address({ houseNumber: '' }) }
+          : { autocompleteAddresses: [suggestion(59)] },
+      ),
     )
     const { api } = setup()
     await type(api, 'Rue 5')
@@ -413,10 +440,12 @@ describe('selecting a suggestion', () => {
   })
 
   it('a place that resolves to nothing changes nothing', async () => {
-    gqlFetch.mockImplementation(async (query: string) =>
-      query.includes('resolveAddress')
-        ? { resolveAddress: null }
-        : { autocompleteAddresses: [suggestion(59)] },
+    gqlFetch.mockImplementation((query: string) =>
+      Promise.resolve(
+        query.includes('resolveAddress')
+          ? { resolveAddress: null }
+          : { autocompleteAddresses: [suggestion(59)] },
+      ),
     )
     const { api } = setup()
     await type(api, 'Rue 5')
@@ -429,10 +458,11 @@ describe('selecting a suggestion', () => {
 
   it('a failed resolve is reported and shown, and the field is usable again', async () => {
     const failure = new Error('resolve failed')
-    gqlFetch.mockImplementation(async (query: string) => {
-      if (query.includes('resolveAddress')) throw failure
-      return { autocompleteAddresses: [suggestion(59)] }
-    })
+    gqlFetch.mockImplementation((query: string) =>
+      query.includes('resolveAddress')
+        ? Promise.reject(failure)
+        : Promise.resolve({ autocompleteAddresses: [suggestion(59)] }),
+    )
     const { api } = setup()
     await type(api, 'Rue 5')
     await api.selectSuggestion(suggestion(59))
@@ -446,7 +476,9 @@ describe('selecting a suggestion', () => {
     let finish!: (value: unknown) => void
     gqlFetch.mockImplementation((query: string) =>
       query.includes('resolveAddress')
-        ? new Promise((resolve) => (finish = resolve))
+        ? new Promise((resolve) => {
+            finish = resolve
+          })
         : Promise.resolve({ autocompleteAddresses: [suggestion(59)] }),
     )
     const { api } = setup()
@@ -475,7 +507,9 @@ describe('selecting a suggestion', () => {
     gqlFetch.mockImplementation((query: string) =>
       query.includes('resolveAddress')
         ? Promise.resolve({ resolveAddress: address() })
-        : new Promise((resolve) => releases.push(resolve)),
+        : new Promise((resolve) => {
+            releases.push(resolve)
+          }),
     )
     const { api } = setup()
     await type(api, 'Rue 5')
@@ -571,7 +605,7 @@ describe('keyboard (ARIA 1.2 combobox)', () => {
     expect(resolveCalls()[0]![1].variables.placeId).toBe('place-1')
   })
 
-  it('Enter never submits an enclosing form, even when the list is closed', async () => {
+  it('Enter never submits an enclosing form, even when the list is closed', () => {
     const { api } = setup()
     expect(key(api, 'Enter').prevented).toBe(true)
     expect(resolveCalls()).toHaveLength(0)
@@ -586,7 +620,7 @@ describe('keyboard (ARIA 1.2 combobox)', () => {
     expect(api.suggestions.value).toHaveLength(3) // Closed, not discarded
   })
 
-  it('Escape with the list already closed reaches the dialog', async () => {
+  it('Escape with the list already closed reaches the dialog', () => {
     const { api } = setup()
     expect(key(api, 'Escape')).toEqual({ prevented: false, stopped: false })
   })
@@ -654,7 +688,12 @@ describe('clearAddress', () => {
 
   it('cancels a search that was waiting, and drops one that was in flight', async () => {
     const releases: ((value: unknown) => void)[] = []
-    gqlFetch.mockImplementation(() => new Promise((resolve) => releases.push(resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releases.push(resolve)
+        }),
+    )
     const { api } = setup()
     await type(api, 'Rue 5')
     api.addressQuery.value = 'Rue 59'
@@ -686,7 +725,12 @@ describe('clearAddress', () => {
 describe('unmounting', () => {
   it('cancels the pending search and the blur timer, and drops an answer that arrives later', async () => {
     const releases: ((value: unknown) => void)[] = []
-    gqlFetch.mockImplementation(() => new Promise((resolve) => releases.push(resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releases.push(resolve)
+        }),
+    )
     const { api, unmount } = setup()
     await type(api, 'Rue 5') // In flight
     api.addressQuery.value = 'Rue 59'

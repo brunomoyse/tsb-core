@@ -1,6 +1,7 @@
 // Global route middleware: protects the pages whose route meta says `public: false`. The OIDC client (Zitadel) and the
 // navigation are the boundaries, mocked; the middleware's own decisions are what is asserted.
 // Run: `vp test run layers/engine/middleware/auth.global.nuxt.test.ts`.
+import type * as NuxtAppModule from 'nuxt/app'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { RouteLocationNormalized } from 'vue-router'
 import { setFlags } from '../../../test/flags'
@@ -16,7 +17,7 @@ const reportError = vi.hoisted(() => vi.fn())
 vi.mock('#engine/composables/useOidc', () => ({ useOidc: () => oidc }))
 vi.mock('#engine/utils/reportError', () => ({ reportError }))
 vi.mock('nuxt/app', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('nuxt/app')>()),
+  ...(await importOriginal<typeof NuxtAppModule>()),
   navigateTo,
 }))
 

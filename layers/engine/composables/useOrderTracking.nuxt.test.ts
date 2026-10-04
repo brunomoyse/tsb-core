@@ -3,6 +3,7 @@
 // fallback while any order is active, `?followOrder=<id>` expand-and-scroll, and the status labels.
 // Boundaries: the WebSocket subscription, the route, i18n (fake) and the clock. Runs in a real component setup.
 // Run: `vp test run layers/engine/composables/useOrderTracking.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { type Ref, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { Order } from '#engine/types'
@@ -25,9 +26,9 @@ const route = await vi.hoisted(async () => {
 })
 
 mockNuxtImport('useGqlSubscription', async () => {
-  const { onScopeDispose, ref } = await import('vue')
+  const { onScopeDispose, ref: vueRef } = await import('vue')
   return (query: string, variables: { orderId: string }, options: object) => {
-    const sub = { query, variables, options, data: ref(null), stopped: false }
+    const sub = { query, variables, options, data: vueRef(null), stopped: false }
     onScopeDispose(() => {
       sub.stopped = true
     })
@@ -38,7 +39,7 @@ mockNuxtImport('useGqlSubscription', async () => {
 mockNuxtImport('useRoute', () => () => route)
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const { isOrderCompleted, isOrderFailed, isOrderSuccess, useOrderTracking } =
@@ -447,7 +448,7 @@ describe('?followOrder=<id> (the "follow your order" email link)', () => {
     expect(el.scroll).toHaveBeenCalledOnce()
   })
 
-  it('takes the first value of a repeated parameter', async () => {
+  it('takes the first value of a repeated parameter', () => {
     route.query = { followOrder: ['b', 'a'] }
     orders.value = [order('a'), order('b')]
     const view = mount()

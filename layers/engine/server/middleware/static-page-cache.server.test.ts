@@ -4,12 +4,12 @@
 // the cache is replaced by a small in-memory fake that honours the options the middleware gives it (key, validate,
 // maxAge, swr), so that "answered from the cache" is a request that did not render again.
 // Run: `vp test run layers/engine/server/middleware/static-page-cache.server.test.ts`.
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
   STATIC_PAGE_FILL_HEADER,
   STATIC_PAGE_SKIP_HEADER,
   type StaticPageCacheConfig,
 } from '../../utils/staticPageCache'
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createApp, toWebHandler } from 'h3'
 import { setFlags } from '../../../../test/flags'
 
@@ -30,7 +30,7 @@ interface Rendered {
 
 interface NitroDouble {
   config: unknown
-  localFetch: ReturnType<typeof vi.fn>
+  localFetch: Mock<(path: string, init?: unknown) => Promise<Response>>
   cached: { render?: (pathname: string) => Promise<Rendered>; options?: CacheOptions }
   entries: Map<string, { value: Rendered; mtime: number }>
   background: Promise<unknown>[]
@@ -49,7 +49,7 @@ vi.mock('nitropack/runtime', () => ({
   defineCachedFunction: (fn: (pathname: string) => Promise<Rendered>, options: CacheOptions) => {
     nitro.cached.render = fn
     nitro.cached.options = options
-    return async (pathname: string) => {
+    return (pathname: string): Promise<Rendered> => {
       const key = options.getKey(pathname)
       const renderAndStore = async () => {
         const value = await fn(pathname)
@@ -58,10 +58,10 @@ vi.mock('nitropack/runtime', () => ({
       }
       const entry = nitro.entries.get(key)
       if (entry && options.validate(entry)) {
-        if (Date.now() - entry.mtime <= options.maxAge * 1000) return entry.value
+        if (Date.now() - entry.mtime <= options.maxAge * 1000) return Promise.resolve(entry.value)
         if (options.swr) {
           nitro.background.push(renderAndStore().catch(() => undefined))
-          return entry.value
+          return Promise.resolve(entry.value)
         }
       }
       return renderAndStore()

@@ -2,10 +2,12 @@
 // the config has loaded or for a backend that has no `policy` yet; plus the numbers the copy quotes.
 // Run: `vp test run layers/engine/composables/useOrderingPolicy.nuxt.test.ts`.
 import { type ApiOrderingPolicy, DEFAULT_ORDERING_POLICY } from '#engine/utils/orderingPolicy'
+import {
+  type RestaurantConfig,
+  useRestaurantConfigState,
+} from '#engine/composables/useRestaurantConfig'
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
-import type { RestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
-import { useRestaurantConfigState } from '#engine/composables/useRestaurantConfig'
 
 const apiPolicy = (overrides: Partial<ApiOrderingPolicy> = {}): ApiOrderingPolicy => ({
   deliveryEnabled: true,

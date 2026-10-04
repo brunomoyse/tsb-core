@@ -136,11 +136,12 @@ describe('loading the config', () => {
   it('is one request for callers that ask at the same time (the layout and the page)', async () => {
     gqlFetch.mockImplementation(
       () =>
-        new Promise((resolve) =>
-          setTimeout(() => {
+        new Promise((resolve) => {
+          // Answers a tick later: both callers have asked by then, as the layout and the page do.
+          queueMicrotask(() => {
             resolve(answer())
-          }, 10),
-        ),
+          })
+        }),
     )
     const [first, second] = await Promise.all([mountConfig(), mountConfig()])
     expect(gqlFetch).toHaveBeenCalledOnce()

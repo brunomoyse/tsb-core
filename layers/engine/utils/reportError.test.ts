@@ -3,6 +3,7 @@
 // The Nuxt app lookup and @sentry/nuxt are the mocked boundaries. Sentry is loaded lazily: its module factory runs
 // only when the code reaches `import('@sentry/nuxt')`, so "nothing was sent" is checked as "Sentry was never even loaded".
 // Run: `vp test run layers/engine/utils/reportError.test.ts`.
+import type * as GqlerrorModule from './gqlError'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { GQL_NETWORK_ERROR } from './gqlError'
 import { setFlags } from '../../../test/flags'
@@ -35,7 +36,7 @@ async function load() {
 const withDsn = (dsn: string | undefined) => {
   state.app = { $config: { public: { sentryDsn: dsn } } }
 }
-let gqlErrorClass: typeof import('./gqlError').GqlError
+let gqlErrorClass: typeof GqlerrorModule.GqlError
 const gqlError = (code: string) => new gqlErrorClass([{ message: 'boom', extensions: { code } }])
 const serverFault = () => Object.assign(new Error('Server blew up'), { status: 500 })
 
@@ -92,7 +93,7 @@ describe('in production with a Sentry DSN', () => {
     sentry.captureException.mockImplementation(() => {
       throw new Error('sentry down')
     })
-    expect(reportError(serverFault(), 'a')).toBeUndefined()
+    reportError(serverFault(), 'a')
     await vi.waitFor(() => {
       expect(sentry.captureException).toHaveBeenCalledOnce()
     })

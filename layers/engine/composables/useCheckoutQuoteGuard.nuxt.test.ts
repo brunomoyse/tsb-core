@@ -3,6 +3,7 @@
 // whether the order may go on, and tells the customer when the server now disagrees with what they were looking at.
 // The quote composable is the boundary (its refresh functions are spies); stores, VueUse and the clock are real.
 // Run: `vp test run layers/engine/composables/useCheckoutQuoteGuard.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { type EffectScope, effectScope } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
@@ -15,7 +16,7 @@ const quoteFns = vi.hoisted(() => ({ refreshQuote: vi.fn(), requestQuoteRefresh:
 vi.mock('#engine/composables/useOrderQuote', () => quoteFns)
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const { QUOTE_RECHECK_INTERVAL_MS, useCheckoutQuoteGuard } =

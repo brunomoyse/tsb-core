@@ -3,6 +3,7 @@
 // The restaurant config request (useRestaurantConfig) is the boundary; the shared config state, the ordering policy and
 // the rules of utils/orderingAvailability are real; time is fake.
 // Run: `vp test run layers/engine/composables/useOrderingAvailability.nuxt.test.ts`.
+import type * as UserestaurantconfigModule from '#engine/composables/useRestaurantConfig'
 import { type EffectScope, effectScope, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { ApiOrderingPolicy } from '#engine/utils/orderingPolicy'
@@ -11,7 +12,7 @@ import { setFlags } from '../../../test/flags'
 
 const request = vi.hoisted(() => ({ useRestaurantConfig: vi.fn() }))
 vi.mock('#engine/composables/useRestaurantConfig', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('#engine/composables/useRestaurantConfig')>()),
+  ...(await importOriginal<typeof UserestaurantconfigModule>()),
   useRestaurantConfig: request.useRestaurantConfig,
 }))
 
@@ -46,7 +47,7 @@ let scope: EffectScope
 const serve = (value: RestaurantConfig | null) => {
   useRestaurantConfigState().value = value ? { restaurantConfig: value } : null
 }
-const mount = async (options?: { lazy?: boolean; server?: boolean }) => {
+const mount = (options?: { lazy?: boolean; server?: boolean }) => {
   scope = effectScope()
   return scope.run(() => useOrderingAvailability(options))!
 }
@@ -60,12 +61,14 @@ beforeEach(() => {
   pending.value = false
   error.value = null
   refresh.mockReset().mockResolvedValue(undefined)
-  request.useRestaurantConfig.mockReset().mockImplementation(async () => ({
-    config: useRestaurantConfigState(),
-    refresh,
-    pending,
-    error,
-  }))
+  request.useRestaurantConfig.mockReset().mockImplementation(() =>
+    Promise.resolve({
+      config: useRestaurantConfigState(),
+      refresh,
+      pending,
+      error,
+    }),
+  )
   serve(null)
 })
 afterEach(() => {

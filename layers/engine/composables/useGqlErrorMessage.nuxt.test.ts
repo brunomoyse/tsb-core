@@ -3,6 +3,7 @@
 // message quotes come from the live ordering policy. vue-i18n's `t` is the boundary, replaced by one that echoes
 // its key and parameters; the error table, the policy and the restaurant config state are real.
 // Run: `vp test run layers/engine/composables/useGqlErrorMessage.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { GqlError } from '#engine/utils/gqlError'
 import { useRestaurantConfigState } from './useRestaurantConfig'
@@ -13,7 +14,7 @@ const t = vi.hoisted(() =>
   ),
 )
 vi.mock('vue-i18n', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('vue-i18n')>()),
+  ...(await importOriginal<typeof VueI18NModule>()),
   useI18n: () => ({ t }),
 }))
 

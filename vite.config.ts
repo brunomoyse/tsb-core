@@ -151,6 +151,16 @@ export default defineConfig({
           'typescript/no-unsafe-argument': 'off',
           'typescript/strict-boolean-expressions': 'off',
           'typescript/no-non-null-assertion': 'off',
+          // Test doubles: classes with one-line constructors, `_`-named internals of the thing they fake, `javascript:` URLs
+          // as hostile input, throw-away regexes and function expressions that need their own `this`.
+          'typescript/parameter-properties': 'off',
+          'max-classes-per-file': 'off',
+          'no-underscore-dangle': 'off',
+          'no-script-url': 'off',
+          'max-params': 'off',
+          'prefer-named-capture-group': 'off',
+          'new-cap': 'off',
+          'func-names': 'off',
         },
       },
     ],

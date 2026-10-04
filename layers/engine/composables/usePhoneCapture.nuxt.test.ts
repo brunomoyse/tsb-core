@@ -3,6 +3,7 @@
 // before it orders. Real libphonenumber, auth store, notifications and shared state; the API (updateMe), Sentry and i18n
 // are the boundaries.
 // Run: `vp test run layers/engine/composables/usePhoneCapture.nuxt.test.ts`.
+import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtState, useState } from '#imports'
 import { createPinia, setActivePinia } from 'pinia'
@@ -21,7 +22,7 @@ mockNuxtImport('useNuxtApp', async (original) => {
 vi.mock('#engine/utils/reportError', () => ({ reportError }))
 vi.mock('vue-i18n', async (importOriginal) => {
   const { fakeI18n } = await import('../../../test/helpers/i18n')
-  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+  return { ...(await importOriginal<typeof VueI18NModule>()), useI18n: fakeI18n }
 })
 
 const { usePhoneCapture } = await import('#engine/composables/usePhoneCapture')
@@ -256,7 +257,12 @@ describe('submit', () => {
 
   it('while the save is in flight loading is true', async () => {
     let finish!: (value: unknown) => void
-    gqlFetch.mockImplementation(() => new Promise((resolve) => (finish = resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve
+        }),
+    )
     const phone = usePhoneCapture()
     draft().value = '0470 12 34 56'
     const pending = phone.submit()
@@ -323,7 +329,12 @@ describe('commitPending (the checkout, before it validates the order)', () => {
 
   it('waits for a save already in flight (Save tapped, then Pay), then finds nothing left to commit', async () => {
     let finish!: (value: unknown) => void
-    gqlFetch.mockImplementation(() => new Promise((resolve) => (finish = resolve)))
+    gqlFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve
+        }),
+    )
     const phone = usePhoneCapture()
     draft().value = '0470 12 34 56'
     editing().value = true

@@ -46,7 +46,7 @@ describe('lockBodyScroll', () => {
     setFlags({ server: true })
     const release = lockBodyScroll()
     expect(document.body.style.overflow).toBe('')
-    expect(release()).toBeUndefined()
+    release()
     expect(document.body.style.overflow).toBe('')
   })
 })

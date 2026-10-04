@@ -8,7 +8,7 @@ import { setRuntimeConfig } from '../../../../test/nitro/imports'
 
 // The `server-ygfliege` project resolves `#brand` to this app: the route renders the brand it is shipped with.
 
-const fetchLlms = async (baseUrl: unknown) => {
+const fetchLlms = (baseUrl: unknown) => {
   setRuntimeConfig({ public: { baseUrl } })
   return callHandler(handler, { path: '/llms.txt' })
 }
