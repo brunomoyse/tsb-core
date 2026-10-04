@@ -100,6 +100,7 @@ describe('apply', () => {
     ['COUPON_ALREADY_ACTIVE', 'notify.errors.couponAlreadyActive'],
     ['COUPON_RATE_LIMITED', 'notify.errors.tooManyRequests'],
     ['COUPON_CHECK_FAILED', 'notify.errors.couponCheckFailed'],
+    ['COUPON_RESERVE_FAILED', 'notify.errors.orderCreationFailed'],
   ])(
     'a code the server refuses with %s is shown as %s, and nothing goes on the cart',
     async (errorCode, key) => {

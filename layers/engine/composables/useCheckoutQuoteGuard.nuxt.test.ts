@@ -47,19 +47,20 @@ afterEach(() => {
 })
 
 describe('confirmBeforeOrder', () => {
-  const dismissed = () => useNotificationsStore().current
+  /** The toast on screen (null when the customer was told nothing). */
+  const toast = () => useNotificationsStore().current
 
   it('lets the order go when the fresh quote is what the customer was looking at', async () => {
     quoteFns.refreshQuote.mockResolvedValue(makeQuote({ total: '25.30' }))
     expect(await mount().confirmBeforeOrder(2530)).toBe(true)
     expect(quoteFns.refreshQuote).toHaveBeenCalledOnce()
-    expect(dismissed()).toBeNull()
+    expect(toast()).toBeNull()
   })
 
   it('stops the order and says so when the server total is not the one displayed (a price moved)', async () => {
     quoteFns.refreshQuote.mockResolvedValue(makeQuote({ total: '26.30' }))
     expect(await mount().confirmBeforeOrder(2530)).toBe(false)
-    expect(dismissed()).toMatchObject({
+    expect(toast()).toMatchObject({
       message: 'checkout.quoteChanged',
       variant: 'warning',
       duration: 7000,
@@ -76,7 +77,7 @@ describe('confirmBeforeOrder', () => {
       }),
     )
     expect(await mount().confirmBeforeOrder(2530)).toBe(false)
-    expect(dismissed()?.message).toBe('checkout.quoteChanged')
+    expect(toast()?.message).toBe('checkout.quoteChanged')
     useNotificationsStore().dismiss()
   })
 
@@ -88,7 +89,47 @@ describe('confirmBeforeOrder', () => {
       }),
     )
     expect(await mount().confirmBeforeOrder(2530)).toBe(false)
+    expect(toast()?.message).toBe('checkout.quoteChanged')
     useNotificationsStore().dismiss()
+  })
+
+  it.each(['RESTAURANT_CLOSED', 'ORDERING_UNAVAILABLE'])(
+    'stops the order on the order-level issue %s, and tells the customer',
+    async (code) => {
+      quoteFns.refreshQuote.mockResolvedValue(
+        makeQuote({ total: '25.30', issues: [{ code, minimum: null }] }),
+      )
+      expect(await mount().confirmBeforeOrder(2530)).toBe(false)
+      expect(toast()?.message).toBe('checkout.quoteChanged')
+      useNotificationsStore().dismiss()
+    },
+  )
+
+  it("a missing delivery address is the page's to explain: it does not stop the order here", async () => {
+    quoteFns.refreshQuote.mockResolvedValue(
+      makeQuote({ total: '25.30', issues: [{ code: 'ADDRESS_REQUIRED', minimum: null }] }),
+    )
+    expect(await mount().confirmBeforeOrder(2530)).toBe(true)
+    expect(toast()).toBeNull()
+  })
+
+  it.each(['ADDRESS_UNRESOLVABLE', 'ORDER_TOO_MANY_ITEMS'])(
+    '%s: the server did not price the order (zeros), so the total is not compared, but the order still does not go out',
+    async (code) => {
+      quoteFns.refreshQuote.mockResolvedValue(
+        makeQuote({ total: '0.00', issues: [{ code, minimum: null }] }),
+      )
+      expect(await mount().confirmBeforeOrder(2530)).toBe(false)
+      expect(toast()?.message).toBe('checkout.quoteChanged')
+      useNotificationsStore().dismiss()
+    },
+  )
+
+  it("a refresh that rejects is the caller's to handle: the guard does not swallow it nor tell the customer anything", async () => {
+    const failure = new Error('quote exploded')
+    quoteFns.refreshQuote.mockRejectedValue(failure)
+    await expect(mount().confirmBeforeOrder(2530)).rejects.toBe(failure)
+    expect(toast()).toBeNull()
   })
 
   it('a quote the totals cannot use has nothing comparable: a different total does not stop the order', async () => {
@@ -98,13 +139,13 @@ describe('confirmBeforeOrder', () => {
     })
     quoteFns.refreshQuote.mockResolvedValue(unusable)
     expect(await mount().confirmBeforeOrder(2530)).toBe(true)
-    expect(dismissed()).toBeNull()
+    expect(toast()).toBeNull()
   })
 
   it('when the check itself fails (network, timeout, an old backend) the order goes on as it always did', async () => {
     quoteFns.refreshQuote.mockResolvedValue(null)
     expect(await mount().confirmBeforeOrder(2530)).toBe(true)
-    expect(dismissed()).toBeNull()
+    expect(toast()).toBeNull()
   })
 })
 
