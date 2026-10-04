@@ -1,9 +1,61 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite-plus'
 
+const r = (path: string) => fileURLToPath(new URL(path, import.meta.url))
+// The aliases brand apps declare in their nuxt.config.ts, for the vitest projects that do not boot Nuxt.
+const alias = { '#engine': r('./layers/engine'), '#brand': r('./apps/tokyosushi') }
+const excluded = ['**/node_modules/**', '**/.nuxt/**', '**/.output/**']
+
 export default defineConfig({
-  // Unit tests only; the Playwright suites under */e2e are run by `playwright test`.
+  // Unit tests (see docs/testing.md); the Playwright suites under */e2e are run by `playwright test`.
   test: {
-    include: ['layers/**/*.test.mjs'],
+    projects: [
+      {
+        // Pure code: no Nuxt, no Nitro. Node environment, fast.
+        resolve: { alias },
+        test: {
+          name: 'unit',
+          include: ['{layers,apps}/**/*.test.{mjs,ts}'],
+          exclude: [
+            ...excluded,
+            '**/*.nuxt.test.ts',
+            '**/*.nuxt-ssr.test.ts',
+            '**/*.server.test.ts',
+          ],
+        },
+      },
+      {
+        // Nitro server handlers (routes, API, middleware): h3 + a stand-in for Nitro's `#imports` (test/nitro).
+        resolve: { alias: { ...alias, '#imports': r('./test/nitro/imports.ts') } },
+        test: {
+          name: 'server',
+          include: ['{layers,apps}/**/*.server.test.ts'],
+          exclude: excluded,
+          setupFiles: [r('./test/nitro/setup.ts')],
+        },
+      },
+      './vitest.nuxt.config.ts',
+      './vitest.nuxt-ssr.config.ts',
+    ],
+    coverage: {
+      provider: 'v8',
+      // TypeScript sources of both brand apps and the engine layer. `.vue` files are covered by the Playwright suites.
+      include: ['{layers,apps}/**/*.ts'],
+      exclude: [
+        '**/node_modules/**',
+        '**/.nuxt/**',
+        '**/.output/**',
+        '**/*.test.*',
+        '**/*.d.ts',
+        '**/*.config.ts',
+        '**/brand.ts',
+        '**/types/**',
+        '**/e2e/**',
+        'layers/engine/build/**',
+      ],
+      reporter: ['text-summary', 'json-summary', 'lcov'],
+      reportsDirectory: 'coverage',
+    },
   },
   staged: {
     '*': 'vp check --fix',
