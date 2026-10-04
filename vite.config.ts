@@ -10,6 +10,202 @@ const alias = (app: 'tokyosushi' | 'ygfliege') => ({
 })
 const excluded = ['**/node_modules/**', '**/.nuxt/**', '**/.output/**']
 
+// The files of the critical flows (order, auth, payment, checkout money) must not regress, whatever the rest gains:
+// each is held at the level it reaches today: 100 % lines and functions everywhere, and 100 % of the branches and
+// statements except the few arms measured below 100 (defensive fallbacks and dead `import.meta.server` arms, listed in
+// docs/testing.md). Only ever raise them.
+const criticalFiles = {
+  'layers/engine/stores/cart.ts': { statements: 100, branches: 98.68, functions: 100, lines: 100 },
+  'layers/engine/stores/quote.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/stores/auth.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/composables/useOrderQuote.ts': {
+    statements: 100,
+    branches: 97.82,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useCheckoutQuoteGuard.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useCouponCode.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useOrderCompleted.ts': {
+    statements: 99.01,
+    branches: 94.64,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useOrderTracking.ts': {
+    statements: 98.3,
+    branches: 97.22,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useOrderExtras.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useOidc.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useAuthCallback.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/usePhoneCapture.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useReorder.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useGqlMutation.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/composables/useGqlErrorMessage.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/plugins/gqlFetch.ts': {
+    statements: 98.5,
+    branches: 97.77,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/plugins/api.ts': {
+    statements: 97.29,
+    branches: 96.15,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/plugins/auth-sync.client.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/middleware/auth.global.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/pricing.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/money.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/cartLines.ts': {
+    statements: 100,
+    branches: 98.46,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/cartTotals.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/cartPersistence.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/orderPayload.ts': {
+    statements: 100,
+    branches: 96.87,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/orderQuote.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/quoteCycle.ts': {
+    statements: 98.94,
+    branches: 97.43,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/orderCompleted.ts': {
+    statements: 100,
+    branches: 97.5,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/checkoutRules.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/checkoutSubmit.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/cashPayment.ts': {
+    statements: 100,
+    branches: 91.3,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/paidExtras.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/reorder.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/gqlError.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/gqlErrors.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/utils/authFlow.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/authErrors.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/lib/paymentOutcome.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
+  'layers/engine/lib/delivery.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+}
+
 // Nitro server handlers (routes, API, middleware): h3 + a stand-in for Nitro's `#imports` (test/nitro). One project per
 // brand, because `#brand` is a build-time alias: the handlers of an app render that app's brand.
 const serverProject = (
@@ -80,7 +276,7 @@ export default defineConfig({
       reporter: ['text-summary', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
       // A ratchet just under the measured values (99.7 % statements, 98.8 % branches, 100 % lines). Only ever raise it.
-      thresholds: { statements: 99, branches: 98, functions: 99, lines: 99 },
+      thresholds: { statements: 99, branches: 98, functions: 99, lines: 99, ...criticalFiles },
     },
   },
   staged: {
