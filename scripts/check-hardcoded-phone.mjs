@@ -23,7 +23,13 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const roots = [join(repoRoot, 'layers/engine'), join(repoRoot, 'apps')]
 const skipDirs = new Set(['node_modules', '.nuxt', '.output', '.data'])
 // Repo-relative paths allowed to contain phone numbers.
-const allowedFiles = [/^apps\/[^/]+\/brand\.ts$/u, /^layers\/engine\/utils\/phone\.ts$/u]
+// Tests and e2e specs use fixed fixture numbers on purpose; the guard is about shipped copy and markup.
+const allowedFiles = [
+  /^apps\/[^/]+\/brand\.ts$/u,
+  /^layers\/engine\/utils\/phone\.ts$/u,
+  /\.test\.(?:ts|mts|mjs|js)$/u,
+  /(?:^|\/)e2e\//u,
+]
 
 const telLiteral = /tel:[+0]|\+32\s?\d/u
 // Spaced national or international form; unspaced digit runs would also match SVG path data.
