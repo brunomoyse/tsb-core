@@ -129,6 +129,31 @@ test.describe('Slow or failing quote', () => {
   })
 })
 
+test.describe('Server changes while the checkout stays open', () => {
+  test('a price that changes on the server is picked up within a minute, without any tap', async ({
+    authenticatedPage: page,
+    backend,
+    brand,
+  }) => {
+    // The page re-asks for the quote every minute while it is visible: let that minute pass at once.
+    await page.clock.install()
+    await page.goto('/fr/checkout')
+    await expect(payButton(page)).toBeVisible()
+    await chooseCollection(page, 'pickup')
+    await waitForQuote(page)
+    expect(await payAmount(page)).toBe(BASE[brand])
+    await expect(page.getByTestId('cart-line-issue-PRICE_CHANGED')).toHaveCount(0)
+
+    await backend.mock.product(GYOZA_ID, { price: '12.00' })
+    await page.clock.fastForward('01:05')
+    const issue = page.getByTestId('cart-line-issue-PRICE_CHANGED')
+    await expect(issue).toBeVisible()
+    await expect(issue).toContainText('€ → 12,00 €')
+    await expect(payButton(page)).toBeDisabled()
+    expect(await backend.mock.operations('createOrder')).toHaveLength(0)
+  })
+})
+
 test.describe('createOrder refused', () => {
   const refusals = [
     {

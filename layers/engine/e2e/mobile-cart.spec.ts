@@ -492,11 +492,51 @@ test.describe('Cart on a phone', () => {
     expect(eurosOf(await sheet.getByTestId('cart-total').innerText())).toBeGreaterThanOrEqual(5.5)
   })
 
+  test('a product pushed as sold out or repriced while the menu is open changes on its card at once', async ({
+    page,
+    backend,
+    brand,
+  }) => {
+    const plain = PLAIN[brand]
+    await gotoMenu(page)
+    const card = page.getByTestId('product-card').filter({ hasText: plain.name }).first()
+    await card.scrollIntoViewIfNeeded()
+    await expect(card.getByTestId('product-add-to-cart')).toBeVisible()
+    await backend.mock.waitFor((state) => state.subscriptions.includes('productUpdated'))
+
+    await backend.mock.product(plain.id, { price: '9.99' })
+    await expect(card).toContainText('9,99')
+
+    await backend.mock.product(plain.id, { isAvailable: false })
+    await expect(card).toContainText('Indisponible')
+    await expect(card.getByTestId('product-add-to-cart')).toHaveCount(0)
+
+    await backend.mock.product(plain.id, { isAvailable: true })
+    await expect(card.getByTestId('product-add-to-cart')).toBeVisible()
+    await addPlain(page, plain.name)
+    // The cart line carries the price the customer was shown when adding.
+    const sheet = await openCart(page)
+    await expect(line(sheet, plain.name)).toContainText('9,99')
+  })
+
   test('an empty cart shows its empty state and no checkout link', async ({ page }) => {
     await page.goto('/fr/cart')
     await expect(page.getByTestId('cart-empty')).toBeVisible()
     await expect(page.getByTestId('cart-checkout-link')).toHaveCount(0)
     await expect(page.getByTestId('floating-cart-bar')).toHaveCount(0)
     await noHorizontalScroll(page, 'empty cart')
+  })
+
+  test('the checkout of an empty cart says so and cannot be paid', async ({
+    authenticatedPage: page,
+    backend,
+  }) => {
+    await backend.mock.user({ phoneNumber: '+32470123456' })
+    await page.goto('/fr/checkout')
+    const pay = page.locator('[data-testid="checkout-place-order"]:visible').first()
+    await expect(pay).toBeVisible()
+    await expect(page.getByText('Votre panier est vide.')).toBeVisible()
+    await expect(pay).toBeDisabled()
+    expect(await backend.mock.operations('createOrder')).toHaveLength(0)
   })
 })

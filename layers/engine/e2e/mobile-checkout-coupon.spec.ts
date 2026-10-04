@@ -25,8 +25,10 @@ test.skip(({ mock }) => !mock, 'needs the mock tsb-service (coupons, quote, crea
 test.skip(({ isMobile }) => !isMobile, 'phone layout')
 
 const BASKET = {
-  tokyosushi: { goods: 27.6, base: 25.1, fiveOff: 20.1, welcome10: 22.4, welcomeAmount: '2,76' },
-  ygfliege: { goods: 22.0, base: 20.1, fiveOff: 15.1, welcome10: 17.9, welcomeAmount: '2,20' },
+  // `welcomeRow` is what the quote charges for WELCOME10: 10 % of the goods snapped to 0,10 like every discount (TS 2,76 -> 2,80).
+  // The pickup discount is snapped the same way: TS -2,80, YGF -2,20.
+  tokyosushi: { goods: 27.6, base: 25.1, fiveOff: 20.1, welcome10: 22.3, welcomeRow: '2,80' },
+  ygfliege: { goods: 22.0, base: 20.1, fiveOff: 15.1, welcome10: 17.9, welcomeRow: '2,20' },
 } as const
 
 const input = (page: Page) => page.getByTestId('coupon-input')
@@ -76,11 +78,11 @@ test.describe('Promo codes at checkout', () => {
   }) => {
     const basket = BASKET[brand]
     await apply(page, 'WELCOME10')
-    await expect(page.getByTestId('coupon-applied')).toContainText(`-${basket.welcomeAmount}`)
+    await expect(page.getByTestId('coupon-applied')).toBeVisible()
     await waitForQuote(page)
-    await expect(summaryRow(page, /Réduction code promo/u)).toContainText(
-      `-${basket.welcomeAmount}`,
-    )
+    // The pill first shows validateCoupon's amount, then the one the quote charges.
+    await expect(page.getByTestId('coupon-applied')).toContainText(`-${basket.welcomeRow}`)
+    await expect(summaryRow(page, /Réduction code promo/u)).toContainText(`-${basket.welcomeRow}`)
     expect(await payAmount(page)).toBe(basket.welcome10)
   })
 
@@ -200,7 +202,7 @@ test.describe('Promo codes at checkout', () => {
     await choosePayment(page, 'cash')
     await page.getByTestId('cash-acknowledge').check()
     await waitForQuote(page)
-    // Cash: no online fee. TS 27,60 - 2,76 - 5,00 = 19,84 -> 19,80; YGF 22,00 - 2,20 - 5,00 = 14,80.
+    // Cash: no online fee. TS 27,60 - 2,80 - 5,00 = 19,80; YGF 22,00 - 2,20 - 5,00 = 14,80.
     const expected = brand === 'tokyosushi' ? 19.8 : 14.8
     expect(await payAmount(page)).toBe(expected)
     await payButton(page).click()
@@ -210,7 +212,7 @@ test.describe('Promo codes at checkout', () => {
     expect(order?.input).toMatchObject({ couponCode: 'FIVEOFF', orderType: 'PICKUP' })
     expect(order?.total).toBe(expected.toFixed(2))
     await expect(page.getByTestId('receipt-discount')).toContainText(
-      brand === 'tokyosushi' ? '7,76' : '7,20',
+      brand === 'tokyosushi' ? '7,80' : '7,20',
     )
   })
 })

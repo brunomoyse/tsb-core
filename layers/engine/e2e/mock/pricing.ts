@@ -4,8 +4,10 @@ import type { CouponRule } from './types.ts'
 
 /*
  * `quoteOrder` / `createOrder` pricing, a mirror of the engine's utils/pricing.ts + cartTotals.ts and of tsb-service's
- * order_quote.go: goods, pickup discount (10 % of the discountable goods from 20,00), delivery fee by distance,
- * coupon, 0,30 online fee, total rounded to 0,10. Everything in cents inside, decimal strings out.
+ * order_quote.go / order_pricing.go: goods, pickup discount (10 % of the discountable goods from 20,00), delivery fee by
+ * distance, coupon, 0,30 online fee, total rounded to 0,10. Each discount is snapped to the 0,10 step on its own, the two
+ * together never exceed the basket (scaled down proportionally), and the online fee is added after the clamp, as
+ * `OrderTotal` does. Everything in cents inside, decimal strings out.
  */
 
 export interface QuoteItemInput {
@@ -144,9 +146,13 @@ export function quote(context: QuoteContext, input: QuoteInput) {
     }
   }
 
-  const pickupDiscount =
+  const step = POLICY_CENTS.totalRoundingStep
+  // Round half up to the step (the backend's RoundToNearest10Cents, for amounts that are never negative).
+  const snap = (cents: number): number => Math.round(cents / step) * step
+
+  let pickupDiscount =
     !isDelivery && subtotal >= POLICY_CENTS.pickupDiscountMinimum
-      ? Math.round((discountable * POLICY_CENTS.pickupDiscountRateBp) / 10_000)
+      ? snap(Math.round((discountable * POLICY_CENTS.pickupDiscountRateBp) / 10_000))
       : 0
 
   let coupon: { code: string; valid: boolean; errorCode: string | null } | null = null
@@ -161,7 +167,7 @@ export function quote(context: QuoteContext, input: QuoteInput) {
           issues.push({ code: 'COUPON_MIN_ORDER_NOT_MET', minimum: result.minimum })
       } else {
         coupon = { code, valid: true, errorCode: null }
-        couponDiscount = result.discountCents
+        couponDiscount = snap(result.discountCents)
       }
     } else {
       // The server does not evaluate a coupon for a caller it cannot identify (COUPON_NOT_EVALUATED in the engine).
@@ -169,10 +175,16 @@ export function quote(context: QuoteContext, input: QuoteInput) {
     }
   }
 
+  // Together the discounts never exceed goods + delivery: scale both down, snapped (order_pricing.go step 7).
+  const goodsAndFee = subtotal + deliveryFee
+  if (pickupDiscount + couponDiscount > goodsAndFee) {
+    const ratio = goodsAndFee / (pickupDiscount + couponDiscount)
+    pickupDiscount = snap(pickupDiscount * ratio)
+    couponDiscount = snap(goodsAndFee - pickupDiscount)
+  }
+
   const onlineFee = input.isOnlinePayment ? POLICY_CENTS.onlinePaymentFee : 0
-  const raw = subtotal + deliveryFee - pickupDiscount - couponDiscount + onlineFee
-  const step = POLICY_CENTS.totalRoundingStep
-  const total = Math.round(raw / step) * step
+  const total = snap(Math.max(goodsAndFee - pickupDiscount - couponDiscount, 0) + onlineFee)
 
   return {
     lines: priced.map((entry) => entry.line),

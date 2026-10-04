@@ -210,7 +210,8 @@ test.describe('Cash payment', () => {
 
     const [order] = await backend.mock.createdOrders()
     expect(order?.input).toMatchObject({ isOnlinePayment: false })
-    expect(String(order?.input?.cashPaymentAmount).replace(',', '.')).toMatch(/^20(\.00)?$/u)
+    // The decimal comma typed by the customer travels as a decimal point.
+    expect(order?.input?.cashPaymentAmount).toBe('20.00')
     const payment = page.getByTestId('receipt-payment')
     await expect(payment).toContainText('Espèces au retrait')
     await expect(payment).toContainText('Vous paierez avec 20,00')

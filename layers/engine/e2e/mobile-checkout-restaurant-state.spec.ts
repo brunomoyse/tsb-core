@@ -132,6 +132,27 @@ test.describe('Closed, with time slots still bookable today (pre-order)', () => 
     })
   })
 
+  test('a slot that goes by while the customer reads the page is replaced by the next one, with a notice', async ({
+    authenticatedPage: page,
+  }) => {
+    await page.clock.install()
+    await fillCart(page, [GYOZA])
+    await gotoCheckout(page)
+    await chooseCollection(page, 'pickup')
+    const select = page.getByTestId('checkout-preferred-time')
+    const first = (await select.locator('option').first().getAttribute('value')) ?? ''
+    await expect(select).toHaveValue(first)
+
+    // 45 minutes later the first slot is inside the preparation window: it is no longer offered.
+    await page.clock.fastForward('45:00')
+    await expect(page.getByText('Votre créneau horaire a expiré').first()).toBeVisible()
+    await expect(select.locator(`option[value="${first}"]`)).toHaveCount(0)
+    await expect(select).not.toHaveValue(first)
+    await expect(select).toHaveValue(
+      (await select.locator('option').first().getAttribute('value')) ?? '',
+    )
+  })
+
   test('the cart sheet advertises the pre-order time instead of "unavailable"', async ({
     authenticatedPage: page,
     brand,

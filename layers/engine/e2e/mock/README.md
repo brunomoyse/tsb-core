@@ -58,20 +58,38 @@ test('a closed restaurant blocks the pay button', async ({ authenticatedPage: pa
 
 ## Controlling the mock (`backend.mock`, a `MockControl`)
 
-| Call                                                                                                                 | Effect                                                                                                                                          |
-| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `restaurant('open' \| 'scheduled-only' \| 'closed' \| 'disabled')`                                                   | restaurant config; pushed live to open pages (`restaurantConfigUpdated`)                                                                        |
-| `scenario({ quoteDelayMs, quoteFailure, createOrderFailure, createOrderDelayMs, latencyMs, mollie, rejectSession })` | failures and delays; `mollie`: `ask` (buttons) / `paid` / `failed` / `canceled` / `expired` / `open` (return before the webhook)                |
-| `coupon('CODE', { kind, value, minOrder?, refusal? })`                                                               | promo codes (defaults: WELCOME10, FIVEOFF, EXPIRED, BIGSPENDER); unknown codes are COUPON_INVALID                                               |
-| `user({ phoneNumber, firstName, address: 'place-home' \| null, ... })`                                               | profile; places: `place-home` 1,8 km, `place-mid` 3,5 km, `place-far` 8,2 km, `place-out` 12 km (out of zone), `place-excluded` (postcode 4610) |
-| `seedOrder({ status, online, paymentStatus, withItem, createdMinutesAgo })`                                          | an order in a given state (what the webhook would have left) -> id                                                                              |
-| `settleOrder(id, status, paymentStatus)` / `patchOrder(id, {...})`                                                   | changes it and pushes `myOrderUpdated` to the page over the WebSocket                                                                           |
-| `product(id, { price, isAvailable })`                                                                                | catalog change, pushed as `productUpdated`                                                                                                      |
-| `operations(op?)`, `createdOrders()`, `state()`, `waitFor(pred)`                                                     | what the app did: GraphQL calls with their arguments, the `createOrder` inputs                                                                  |
+| Call                                                                                                                 | Effect                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `restaurant('open' \| 'scheduled-only' \| 'closed' \| 'disabled')`                                                   | restaurant config; pushed live to open pages (`restaurantConfigUpdated`)                                                                                                                            |
+| `scenario({ quoteDelayMs, quoteFailure, createOrderFailure, createOrderDelayMs, latencyMs, mollie, rejectSession })` | failures and delays; `mollie`: `ask` (buttons) / `paid` / `failed` / `canceled` / `expired` / `open` (return before the webhook)                                                                    |
+| `failOperation(op, { code, message?, productId? } \| null)`                                                          | any root operation of the app (`validateCoupon`, `restaurantConfig`, `myOrders`...) answers a GraphQL error with that `extensions.code`; `null` repairs it. For what has no dedicated scenario      |
+| `coupon('CODE', { kind, value, minOrder?, refusal? })`                                                               | promo codes (defaults: WELCOME10, FIVEOFF, EXPIRED, BIGSPENDER); unknown codes are COUPON_INVALID                                                                                                   |
+| `user({ phoneNumber, firstName, address: 'place-home' \| null, ... })`                                               | profile; places: `place-home` 1,8 km, `place-mid` 3,5 km, `place-far` 8,2 km, `place-out` 12 km (out of zone), `place-excluded` (postcode 4610)                                                     |
+| `seedOrder({ status, online, paymentStatus, withItem, items, type, createdMinutesAgo })`                             | an order in a given state (what the webhook would have left) -> id. `items` (mock only) = exact lines `{ productId, quantity, selections }` priced from the catalog, for re-order and receipt specs |
+| `settleOrder(id, status, paymentStatus)` / `patchOrder(id, {...})`                                                   | changes it and pushes `myOrderUpdated` to the page over the WebSocket                                                                                                                               |
+| `product(id, { price, isAvailable })`                                                                                | catalog change, pushed as `productUpdated`                                                                                                                                                          |
+| `operations(op?)`, `createdOrders()`, `state()`, `waitFor(pred)`                                                     | what the app did: GraphQL calls with their arguments, the `createOrder` inputs                                                                                                                      |
 
 The default is: restaurant open, user signed in as "Eva Mock" with no phone and no saved address, no orders, no failures.
 Online payment: `createOrder` returns `payment.links.checkout.href` = the fake Mollie page; click `mollie-paid` /
 `mollie-failed` / ... (`getByTestId`) or set `scenario({ mollie: 'paid' })` and the app comes straight back.
+
+## Helpers for order journeys (`../support/order-flow.ts`)
+
+Layout-aware building blocks used by the `mobile-*.spec.ts` and `checkout-desktop.spec.ts` journeys: `fillCart` / `addPlain`
+(from the menu cards), `openProductModal` + `pickChoice`, `openCart` (side cart on a desktop, floating bar + sheet on a
+phone), `gotoCheckout`, `chooseCollection`, `choosePayment`, `pickDeliveryAddress`, `payButton` / `payAmount` (the phone's bar
+or the desktop button; the amount comes from the summary on desktop), `summaryRow`, `waitForQuote`, `cartLines` (the
+persisted cart), `noHorizontalScroll` / `inViewport` / `expectNoOverlap` (layout checks). Things worth knowing when writing
+one more:
+
+- The address field only searches once the text has a digit (a house number): query `'Blonden 33'`, not `'Blonden'`.
+- A push (`settleOrder`, `patchOrder`, `restaurant()`) reaches a page only once it has subscribed: wait with
+  `backend.mock.waitFor((s) => s.subscriptions.includes('myOrderUpdated:<id>'))` (or `'restaurantConfigUpdated'`).
+- The fake Mollie page lives on the mock's origin, so the app's localStorage (the cart) cannot be read while it is open.
+- Tokyo Sushi starts on **delivery**: its 25,00 minimum and missing address block the pay button, so a spec that is not
+  about delivery picks pickup first (`chooseCollection(page, 'pickup')`). YGF is pickup-only.
+- Playwright cannot serialise a regexp that contains an apostrophe into a role/text selector: write `/Modifier l.adresse/`.
 
 ## Keeping the mock in step with the app
 

@@ -200,11 +200,15 @@ export async function waitForQuote(page: Page): Promise<void> {
   ).toHaveCount(0, { timeout: 20_000 })
 }
 
-/** The amount on the pay button ("Aller au paiement  17,90 €"). */
+/**
+ * What the customer is about to pay: the amount on the phone's pay bar ("Aller au paiement  17,90 €"), or on a
+ * desktop, where the button carries no amount, the total of the summary card.
+ */
 export async function payAmount(page: Page): Promise<number> {
   const text = await payButton(page).innerText()
   const amounts = text.match(/\d+,\d{2}\s*€/gu) ?? []
-  return eurosOf(amounts.at(-1))
+  if (amounts.length > 0) return eurosOf(amounts.at(-1))
+  return eurosOf(await summaryRow(page, /^Total/u).innerText())
 }
 
 /** Opens the address sheet of the delivery card and picks a mock place (the query needs a house number, as the field's does). */

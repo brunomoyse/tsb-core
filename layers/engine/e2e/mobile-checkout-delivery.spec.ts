@@ -1,3 +1,4 @@
+import { type Page } from '@playwright/test'
 import {
   chooseCollection,
   choosePayment,
@@ -94,7 +95,7 @@ test.describe('Delivery checkout (Tokyo Sushi)', () => {
     await expect(page.getByTestId('checkout-quote-issues')).toHaveCount(0)
     await expect(payButton(page)).toBeEnabled()
     await waitForQuote(page)
-    await expect(summaryRow(page, /Remise/u)).toContainText('2,69')
+    await expect(summaryRow(page, /Remise/u)).toContainText('2,70')
   })
 
   test('an address in an excluded postcode is refused with its own reason', async ({
@@ -159,8 +160,8 @@ test.describe('Delivery checkout (Tokyo Sushi)', () => {
 
     await chooseCollection(page, 'pickup')
     await waitForQuote(page)
-    // Pickup: 10 % off the goods (26,90 -> -2,69), no delivery row, online fee: 24,51 -> 24,50.
-    await expect(summaryRow(page, /Remise/u)).toContainText('2,69')
+    // Pickup: 10 % off the goods (2,69 snapped to 0,10: -2,70), no delivery row, online fee: 24,50 + 0,30 = 24,50 after rounding.
+    await expect(summaryRow(page, /Remise/u)).toContainText('2,70')
     await expect(page.locator('#checkout-delivery-address')).toHaveCount(0)
     expect(await payAmount(page)).toBe(24.5)
 
@@ -215,6 +216,70 @@ test.describe('Delivery checkout (Tokyo Sushi)', () => {
   })
 })
 
+test.describe('Before signing in', () => {
+  /** The address field of the zone gate (no dialog: the picker is the page). */
+  async function pickGateAddress(page: Page, query: string) {
+    const input = page.getByRole('combobox')
+    await input.fill(query)
+    const suggestion = page.getByRole('option').first()
+    await expect(suggestion).toBeVisible()
+    await suggestion.dispatchEvent('mousedown')
+  }
+  const gate = (page: Page) => page.getByRole('heading', { name: 'Avant de continuer' })
+  const authStep = (page: Page) =>
+    page.getByRole('heading', { name: /Plus qu.une étape, connectez-vous/u })
+
+  test.beforeEach(({ brand }) => {
+    test.skip(brand !== 'tokyosushi', 'takeaway-only brand: no zone to check')
+  })
+
+  test('a delivery customer who is not signed in must give a deliverable address before being asked to log in', async ({
+    page,
+    backend,
+  }) => {
+    await fillCart(page, CART)
+    await page.goto('/fr/checkout')
+    await page
+      .getByRole('radio', { name: /Livraison/u })
+      .first()
+      .click()
+    await expect(gate(page)).toBeVisible()
+    await expect(authStep(page)).toHaveCount(0)
+
+    // Out of the zone: told why, offered pickup, still no login step.
+    await pickGateAddress(page, 'Rue de la Station 7')
+    await expect(
+      page.getByRole('status').filter({ hasText: 'hors de notre zone de 9 km' }),
+    ).toBeVisible()
+    await expect(gate(page)).toBeVisible()
+    await expect(authStep(page)).toHaveCount(0)
+
+    // A deliverable one: the gate opens onto the sign-in step, and the cart is safe.
+    await page.getByRole('button', { name: 'Modifier', exact: true }).click()
+    await pickGateAddress(page, 'Saint-Gilles 12')
+    await expect(authStep(page)).toBeVisible()
+    await expect(gate(page)).toHaveCount(0)
+    await expect(page.getByText('Votre panier est sauvegardé')).toContainText('3 articles')
+    expect(await backend.mock.operations('createOrder')).toHaveLength(0)
+  })
+
+  test('choosing pickup from the gate goes straight to the sign-in step', async ({ page }) => {
+    await fillCart(page, CART)
+    await page.goto('/fr/checkout')
+    await page
+      .getByRole('radio', { name: /Livraison/u })
+      .first()
+      .click()
+    await expect(gate(page)).toBeVisible()
+    await page
+      .getByRole('radio', { name: /À emporter/u })
+      .first()
+      .click()
+    await expect(authStep(page)).toBeVisible()
+    await expect(gate(page)).toHaveCount(0)
+  })
+})
+
 test.describe('Takeaway-only brand (YGF)', () => {
   test('delivery is offered as "soon", pickup is selected and the pickup discount kicks in at 20,00', async ({
     authenticatedPage: page,
@@ -236,12 +301,12 @@ test.describe('Takeaway-only brand (YGF)', () => {
     await expect(summaryRow(page, /Remise/u)).toHaveCount(0)
     expect(await payAmount(page)).toBe(9.7)
 
-    // Three gyoza: 16,50 + 3,90 = 20,40, so 10 % off (2,04): 18,36 + 0,30 = 18,66, rounded to 18,70.
+    // Three gyoza: 16,50 + 3,90 = 20,40, so 10 % off (2,04, snapped to 2,00): 18,40 + 0,30 = 18,70.
     const more = page.getByRole('button', { name: 'Augmenter la quantité de Gyoza de bœuf' })
     await more.click()
     await more.click()
     await waitForQuote(page)
-    await expect(summaryRow(page, /Remise/u)).toContainText('2,04')
+    await expect(summaryRow(page, /Remise/u)).toContainText('2,00')
     expect(await payAmount(page)).toBe(18.7)
     const quote = (await backend.mock.operations('quoteOrder')).at(-1)
     expect(quote?.args.input).toMatchObject({ orderType: 'PICKUP', addressPlaceId: null })
