@@ -2,10 +2,11 @@
   <!-- The header lockup of ygfliege.be (src/components/header.ts of the vitrine): the official circle seal beside the
          restaurant name set in text. GUIDELINES.md §2.2 forbids showing the circle without its name, and forbids redrawing
          the logo, so the name is composed text next to the untouched kit asset, exactly as on the vitrine. The accessible
-         name is carried by the link; the circle is decorative. -->
+         name is carried by the link (it starts with the visible name, as WCAG 2.5.3 wants, then says where the link goes); the
+         circle is decorative. -->
   <NuxtLinkLocale
     to="/"
-    :aria-label="$t('nav.home')"
+    :aria-label="`Yangguofu 杨国福麻辣烫 · Liège – ${$t('nav.home')}`"
     class="lockup shrink-0 inline-flex items-center gap-2 lg:gap-3 min-h-11 rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
   >
     <img
