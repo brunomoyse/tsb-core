@@ -342,7 +342,8 @@ const updateNotificationPref = async (
   <section class="max-w-5xl mx-auto pt-6 sm:pt-8 pb-8 px-2">
     <!-- Header -->
     <div class="text-center mb-6 sm:mb-8 bento-cell" style="--delay: 0">
-      <PageTitle>
+      <!-- min-h-16 below sm: the server's title ("Mon compte - Tokyo Sushi Bar") takes two lines on a phone and the greeting that replaces it after hydration one: the block keeps the two-line height (the text is centred in it), so the grid does not jump (CLS), and the title stays the largest text of the first screen (LCP). -->
+      <PageTitle class="flex min-h-16 items-center justify-center sm:min-h-0">
         {{
           authStore.user?.firstName
             ? `${t('me.greeting')}, ${authStore.user.firstName}`
