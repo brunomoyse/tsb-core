@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import { orderItemChoiceText } from './orderItemLabel'
 import { orderItemPayload } from './orderPayload'
 import { paidExtraQuantity } from './paidExtras'
-import { lineIssuesByKey, quoteLineByKey } from './orderQuote'
+import { lineIssuesByKey, needsPriceAcceptance, quoteLineByKey } from './orderQuote'
 import { priceCartLine, priceLine } from './pricing'
 import { planReorder } from './reorder'
 import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
@@ -177,5 +177,12 @@ describe('planReorder with older orders', () => {
     const plan = planReorder([{ quantity: 1, product, choice: null }])
     expect(plan.lines).toHaveLength(1)
     expect(plan.lines[0]!.selections).toEqual([])
+  })
+})
+
+describe('needsPriceAcceptance', () => {
+  it('only an issue that a new price resolves asks the customer to accept it', () => {
+    expect(needsPriceAcceptance({ code: 'PRICE_CHANGED', currentPrice: '11.00' })).toBe(true)
+    expect(needsPriceAcceptance({ code: 'PRODUCT_NOT_FOUND', currentPrice: null })).toBe(false)
   })
 })
