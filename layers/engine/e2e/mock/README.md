@@ -61,13 +61,14 @@ test('a closed restaurant blocks the pay button', async ({ authenticatedPage: pa
 
 ## Reusable checks (`../support/`)
 
-| Helper                                                         | What it asserts                                                                                                                                                                          |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `layout.ts` `measureLayout(page)` / `expectMobileLayout(page)` | on the current page and viewport: nothing sticks out sideways (a horizontal scroller may), no two controls cover each other, no control under 44 px (icon buttons 44 x 44, text 44 tall) |
-| `i18n.ts` `expectNoUntranslatedText(page, brand)`              | no raw key (`checkout.foo`), unfilled `{template}`, `undefined` / `NaN` in the text or the placeholder / aria-label / title / alt attributes                                             |
-| `i18n.ts` `message(brand, locale, 'login.title')`              | the apps' own message (engine + brand overrides, `__BRAND__` filled): assert the right language is on screen without hard-coding copy                                                    |
-| `locale.ts` `chooseLocale(context, baseURL, 'nl')`             | the visitor has picked that language (cookie + header); without it a French browser opening `/nl/...` is redirected to `/fr/...` (`redirectOn: 'all'`)                                   |
-| `nav.ts`, `login.ts`, `account.ts`                             | phone menu, language picker, category chips, login steps, account dialogs                                                                                                                |
+| Helper                                                         | What it asserts                                                                                                                                                                                                                           |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layout.ts` `measureLayout(page)` / `expectMobileLayout(page)` | on the current page and viewport: nothing sticks out sideways (a horizontal scroller may), no two controls cover each other, no control under 44 px (icon buttons 44 x 44, text 44 tall)                                                  |
+| `i18n.ts` `expectNoUntranslatedText(page, brand)`              | no raw key (`checkout.foo`), unfilled `{template}`, `undefined` / `NaN` in the text or the placeholder / aria-label / title / alt attributes                                                                                              |
+| `i18n.ts` `message(brand, locale, 'login.title')`              | the apps' own message (engine + brand overrides, `__BRAND__` filled): assert the right language is on screen without hard-coding copy                                                                                                     |
+| `locale.ts` `chooseLocale(context, baseURL, 'nl')`             | the visitor has picked that language (cookie + header); without it a French browser opening `/nl/...` is redirected to `/fr/...` (`redirectOn: 'all'`)                                                                                    |
+| `nav.ts`, `login.ts`, `account.ts`                             | phone menu, language picker, category chips, login steps, account dialogs                                                                                                                                                                 |
+| `hydration.ts` `holdHydration(page)`                           | holds every `/_nuxt/*.js` of the page until the returned `release()`: for a spec about the painted but not yet hydrated page (`mobile-early-tap`, `mobile-early-form`); `page.goto` then resolves at once (use `{ waitUntil: 'commit' }`) |
 
 ## Controlling the mock (`backend.mock`, a `MockControl`)
 
@@ -130,6 +131,7 @@ Add the field to the object returned by the resolver (`resolvers.ts`, `state.ts`
 - One user: the mock's `me` is always `state.user` whatever address signed in (a new account takes the address typed and starts
   without a name until `complete-profile`).
 - Responses are French only (the mock ignores `Accept-Language`).
+- `page.goto` resolves once the app is hydrated (`#__nuxt` has its Vue app) and **fails** with "the app did not hydrate within 10 s" when it never does; a page that is not the app (the fake Mollie page, a download) is not waited for.
 - A failing test gets a `browser-problems` attachment (page errors, console errors, failed requests) and, locally, a trace.
 
 ## Flaky on a machine that creates network interfaces
