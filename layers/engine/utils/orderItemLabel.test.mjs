@@ -134,3 +134,18 @@ test('orderLineSegments: code (when the brand has codes), category, then the nam
     { text: 'x', muted: false },
   ])
 })
+
+test('selections of a product that carries no choices list fall back to the single choice', () => {
+  assert.equal(
+    orderItemChoiceText({
+      product: {},
+      selections: [{ choiceId: 'a', quantity: 1 }],
+      choice: { name: 'Salmon' },
+    }),
+    'Salmon',
+  )
+  assert.equal(
+    orderItemChoiceText({ selections: [{ choiceId: 'a', quantity: 1 }], choice: null }),
+    undefined,
+  )
+})

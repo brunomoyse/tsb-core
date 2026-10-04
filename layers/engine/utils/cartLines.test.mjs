@@ -258,3 +258,26 @@ test('cartLineKeys: unique keys, the first occurrence keeps the plain key', () =
   assert.strictEqual(keys[0], cartLineKey(a))
   assert.strictEqual(new Set(keys).size, 3)
 })
+
+test('cartLineKey: a line without selectedChoices / selectedChoice is keyed by its product and "none"', () => {
+  assert.strictEqual(cartLineKey({ product: { id: 'p1' }, quantity: 3 }), 'p1-none')
+  assert.strictEqual(
+    cartLineKey({ product: { id: 'p1' }, quantity: 3, selectedChoice: { id: 'legacy' } }),
+    'p1-legacy',
+  )
+})
+
+test('canChangeLineQuantity: null selections are an uncustomised line', () => {
+  assert.strictEqual(canChangeLineQuantity(null, 2), true)
+})
+
+test('matchesLine: a plain line without selectedChoices matches the plain lookup only', () => {
+  const plain = { product: { id: 'p1' }, quantity: 2 }
+  assert.ok(matchesLine(plain, { productId: 'p1', selections: [] }))
+  assert.ok(
+    !matchesLine(plain, {
+      productId: 'p1',
+      selections: [{ groupId: 'g', choiceId: 'c', quantity: 2 }],
+    }),
+  )
+})

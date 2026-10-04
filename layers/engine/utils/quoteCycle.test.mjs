@@ -416,3 +416,42 @@ test('RATE_LIMITED is a transient failure: totals fall back to the client and no
   assert.equal(store.fresh, false)
   assert.equal(store.unsupported, false, 'asked again on the next change')
 })
+
+test('refresh() before the debounce of a pending change has run sends at once and drops the timer', async () => {
+  const { store, transport, cycle } = setup()
+  onTestFinished(() => vi.useRealTimers())
+  cycle.request(req('A'))
+  vi.advanceTimersByTime(0)
+  transport.calls[0].resolve(answer('A'))
+  await flush()
+
+  cycle.request(req('B')) // Debounced: the timer is waiting
+  const refreshed = cycle.refresh()
+  assert.equal(transport.calls.length, 2, 'the refresh went out without waiting for the debounce')
+  assert.deepEqual(transport.calls[1].input, { key: 'B' })
+  vi.advanceTimersByTime(DEBOUNCE * 2)
+  assert.equal(transport.calls.length, 2, 'the debounce timer was cancelled: B is not sent twice')
+  transport.calls[1].resolve(answer('B'))
+  assert.equal((await refreshed).total, 'B')
+  assert.equal(store.quoteKey, 'B')
+})
+
+test('refresh() whose cart moved meanwhile resolves null and leaves the new request alone', async () => {
+  const { store, transport, cycle } = setup()
+  onTestFinished(() => vi.useRealTimers())
+  cycle.request(req('A'))
+  vi.advanceTimersByTime(0)
+  transport.calls[0].resolve(answer('A'))
+  await flush()
+
+  const refreshed = cycle.refresh()
+  cycle.request(req('B')) // The cart changed: A is no longer what is wanted, so its refresh is cancelled
+  assert.equal(transport.calls[1].aborted, true)
+  assert.equal(await refreshed, null)
+  assert.equal(store.wantedKey, 'B')
+  vi.advanceTimersByTime(DEBOUNCE)
+  assert.equal(transport.calls.length, 3, 'B is sent on its own timer')
+  transport.calls[2].resolve(answer('B'))
+  await flush()
+  assert.equal(store.quoteKey, 'B')
+})

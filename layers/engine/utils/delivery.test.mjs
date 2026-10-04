@@ -72,3 +72,9 @@ test('a distance past the last tier is out of zone even when the radius is large
   })
   assert.equal(deliveryFeeCentsForDistance(gap, 7000), OUT_OF_ZONE)
 })
+
+test('a missing postcode is never excluded', () => {
+  assert.equal(isExcludedPostcode(policy, null), false)
+  assert.equal(isExcludedPostcode(policy, undefined), false)
+  assert.equal(isExcludedPostcode(policy, ''), false)
+})

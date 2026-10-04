@@ -163,3 +163,20 @@ test('a product without choices and without group data is restored as is', () =>
   assert.deepEqual(plan.lines[0].selections, [])
   assert.equal(countUnits(plan.lines), 2)
 })
+
+test('an old order choice on a product that now lists no choices at all skips the line', () => {
+  const noChoices = { id: 'p4', name: 'Maki', isAvailable: true, isVisible: true }
+  const plan = planReorder([
+    { quantity: 1, product: noChoices, choice: choice('salmon', 'g-fish'), selections: [] },
+  ])
+  assert.equal(plan.lines.length, 0)
+  assert.equal(plan.skipped[0].reason, 'choices')
+})
+
+test('an old order choice whose group is unknown is restored with an empty groupId', () => {
+  const legacy = { id: 'salmon', productId: 'p5', priceModifier: '0.00', sortOrder: 0, name: 'S' }
+  const sushi = { id: 'p5', name: 'Maki', isAvailable: true, isVisible: true, choices: [legacy] }
+  const plan = planReorder([{ quantity: 2, product: sushi, choice: legacy, selections: [] }])
+  assert.equal(plan.lines.length, 1)
+  assert.deepEqual(plan.lines[0].selections, [{ groupId: '', choiceId: 'salmon', quantity: 2 }])
+})
