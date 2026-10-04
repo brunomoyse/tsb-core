@@ -100,6 +100,16 @@
           >
             <img src="/icons/account-circle-icon.svg" alt="" aria-hidden="true" class="w-5 h-5" />
           </NuxtLinkLocale>
+          <!-- The signed-out visitor's login control, invisible: it keeps the room (same markup, so the same width in every language) and the language picker beside it does not jump once the session is known (audit PR 6.3, P13). -->
+          <template #fallback>
+            <span aria-hidden="true" class="invisible inline-flex lg:hidden w-11 h-11" />
+            <span
+              aria-hidden="true"
+              class="invisible hidden lg:inline-flex btn btn-secondary !py-2 !px-5 text-sm"
+            >
+              {{ $t('nav.login') }}
+            </span>
+          </template>
         </ClientOnly>
       </div>
     </div>

@@ -1,5 +1,4 @@
 // Composables/useGqlSubscription.ts
-import { type DocumentNode, print } from 'graphql'
 import { onScopeDispose, ref } from 'vue'
 import type { Client } from 'graphql-ws'
 import { reportError } from '#engine/utils/reportError'
@@ -154,7 +153,8 @@ const getWsClient = (): Promise<Client> => {
   if (wsClient) return Promise.resolve(wsClient)
   if (!wsClientPromise) {
     wsClientPromise = Promise.all([
-      import('graphql-ws'),
+      // The client entry: the package root also holds the server, which pulls in the whole `graphql` library.
+      import('graphql-ws/client'),
       import('#engine/composables/useOidc'),
     ]).then(([{ createClient }, { useOidc }]) => {
       const cfg = useRuntimeConfig()
@@ -250,7 +250,7 @@ interface SubscriptionOptions {
 }
 
 export function useGqlSubscription<T = unknown>(
-  rawSub: string | DocumentNode,
+  subscription: string,
   variables: Record<string, unknown> = {},
   options: SubscriptionOptions = {},
 ) {
@@ -266,7 +266,7 @@ export function useGqlSubscription<T = unknown>(
         if (disposed) return
         stop = client.subscribe(
           {
-            query: typeof rawSub === 'string' ? rawSub : print(rawSub),
+            query: subscription,
             variables,
           },
           {

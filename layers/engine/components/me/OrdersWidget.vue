@@ -684,8 +684,6 @@ import type { Order } from '#engine/types'
 import OrderStatusTimeline from '#engine/components/order/OrderStatusTimeline.vue'
 import { formatAddress } from '#engine/utils/utils'
 import { formatPrice } from '#engine/lib/price'
-import gql from 'graphql-tag'
-import { print } from 'graphql/index'
 import { useDateLocale } from '#engine/composables/useDateLocale'
 import { useGqlQuery } from '#imports'
 import { useI18n } from 'vue-i18n'
@@ -709,7 +707,7 @@ const formatReadyTime = (iso: string) => formatTime(iso, dateLocale.value)
 const LOAD_STEP = 5
 const visibleCount = ref(LOAD_STEP)
 
-const MY_ORDERS = gql`
+const MY_ORDERS = /* GraphQL */ `
   {
     myOrders(first: 5) {
       id
@@ -749,7 +747,7 @@ const {
   error: ordersError,
   pending: ordersPending,
   refresh: refetchOrders,
-} = await useGqlQuery<{ myOrders: Order[] }>(print(MY_ORDERS), {}, { server: false })
+} = await useGqlQuery<{ myOrders: Order[] }>(MY_ORDERS, {}, { server: false })
 // Null means loading, or failed (see ordersFailed): the empty state is only for a list that loaded and is empty.
 const orders = computed<Order[] | null>(() => dataOrders.value?.myOrders ?? null)
 const ordersFailed = computed(() => orders.value === null && Boolean(ordersError.value))

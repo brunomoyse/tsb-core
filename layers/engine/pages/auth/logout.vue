@@ -1,10 +1,19 @@
 <script lang="ts" setup>
-import { definePageMeta, navigateTo, onMounted, useLocalePath, useRoute } from '#imports'
+import {
+  definePageMeta,
+  navigateTo,
+  onMounted,
+  useLocalePath,
+  useRoute,
+  useSeoMeta,
+} from '#imports'
 import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useTracking } from '#engine/composables/useTracking'
 
 definePageMeta({ public: true })
+// Sign-in plumbing, not content: never indexed (audit PR 6.4, P15; the login pages say the same).
+useSeoMeta({ robots: 'noindex,nofollow' })
 
 const authStore = useAuthStore()
 const localePath = useLocalePath()

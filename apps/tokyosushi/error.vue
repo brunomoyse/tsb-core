@@ -82,7 +82,15 @@
 </template>
 
 <script setup lang="ts">
-import { clearError, computed, ref, reloadNuxtApp, useHead, useLocalePath } from '#imports'
+import {
+  clearError,
+  computed,
+  ref,
+  reloadNuxtApp,
+  useHead,
+  useLocalePath,
+  useSeoMeta,
+} from '#imports'
 import type { NuxtError } from '#app'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
@@ -95,7 +103,19 @@ const { t } = useI18n()
 
 // The error page replaces the layout, which is what sets the document language (WCAG 3.1.1): same ISO code as the layout (zh-CN, fr-BE...).
 const localeHead = useLocaleHead()
-useHead({ htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') } })
+useHead({
+  htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') },
+  // The status code is set in the display font on the first screen (like the category headings of /menu): preloaded here as there.
+  link: [
+    {
+      rel: 'preload',
+      href: '/fonts/channel.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous',
+    },
+  ],
+})
 
 const statusCode = computed(() => error?.statusCode || 500)
 
@@ -111,6 +131,9 @@ const errorTitle = computed(() => {
       return t('error.titleGeneric')
   }
 })
+
+// The page replaces the layout, so it names itself (tab, history, share) and stays out of the index.
+useSeoMeta({ title: () => errorTitle.value, robots: 'noindex,nofollow' })
 
 const errorMessage = computed(() => {
   switch (error?.statusCode) {

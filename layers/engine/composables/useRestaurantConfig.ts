@@ -3,10 +3,9 @@ import {
   ORDERING_POLICY_SELECTION,
   isPolicyUnsupportedError,
 } from '#engine/utils/orderingPolicy'
-import { type DocumentNode, print } from 'graphql'
-import { type Ref, effectScope, shallowRef, watch } from 'vue'
-import { useNuxtApp, useState } from '#imports'
-import gql from 'graphql-tag'
+import { type Ref, effectScope, onMounted, shallowRef, watch } from 'vue'
+import { useNuxtApp, useRequestEvent, useResponseHeader, useState } from '#imports'
+import { STATIC_PAGE_FILL_HEADER, STATIC_PAGE_SKIP_HEADER } from '#engine/utils/staticPageCache'
 import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
@@ -29,18 +28,10 @@ const configFields = (withPolicy: boolean) => `
     ${withPolicy ? ORDERING_POLICY_SELECTION : ''}
 `
 
-const RESTAURANT_CONFIG_QUERY = gql(
-  `query RestaurantConfig { restaurantConfig { ${configFields(true)} } }`,
-)
-const RESTAURANT_CONFIG_QUERY_LEGACY = gql(
-  `query RestaurantConfig { restaurantConfig { ${configFields(false)} } }`,
-)
-const SUB_RESTAURANT_CONFIG = gql(
-  `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(true)} } }`,
-)
-const SUB_RESTAURANT_CONFIG_LEGACY = gql(
-  `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(false)} } }`,
-)
+const RESTAURANT_CONFIG_QUERY = /* GraphQL */ `query RestaurantConfig { restaurantConfig { ${configFields(true)} } }`
+const RESTAURANT_CONFIG_QUERY_LEGACY = /* GraphQL */ `query RestaurantConfig { restaurantConfig { ${configFields(false)} } }`
+const SUB_RESTAURANT_CONFIG = /* GraphQL */ `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(true)} } }`
+const SUB_RESTAURANT_CONFIG_LEGACY = /* GraphQL */ `subscription RestaurantConfigUpdated { restaurantConfigUpdated { ${configFields(false)} } }`
 
 export interface RestaurantTimeSlot {
   label: string
@@ -74,6 +65,12 @@ export interface RestaurantConfigResponse {
 interface UseRestaurantConfigOptions {
   // When true, don't block on the initial query — callers render a loading state via the returned `pending` ref. Default preserves the original awaited semantics.
   lazy?: boolean
+  /**
+   * False: the server render does not ask for it (the browser does, unless the page's own call put the answer in the
+   * SSR payload, which it then adopts). For the layout of a page that loads the config itself, so the layout's await
+   * does not hold back the page's own requests (audit PR 6.1, P10).
+   */
+  server?: boolean
 }
 
 /*
@@ -110,7 +107,7 @@ function ensureLiveUpdates({
 
   const subscribe = (withPolicy: boolean) => {
     const sub = useGqlSubscription<{ restaurantConfigUpdated: RestaurantConfig }>(
-      print(withPolicy ? SUB_RESTAURANT_CONFIG : SUB_RESTAURANT_CONFIG_LEGACY),
+      withPolicy ? SUB_RESTAURANT_CONFIG : SUB_RESTAURANT_CONFIG_LEGACY,
       {},
       // Gap recovery: a push missed while the socket was down (a network blip, a backgrounded tab) is never replayed.
       { onReconnect: refetch },
@@ -155,7 +152,7 @@ function makeRefetch(
 ): () => Promise<void> {
   // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
   const { $gqlFetch } = useNuxtApp() as unknown as {
-    $gqlFetch: <T>(query: DocumentNode) => Promise<T>
+    $gqlFetch: <T>(query: string) => Promise<T>
   }
   let inFlight: Promise<void> | null = null
   const run = async () => {
@@ -184,6 +181,17 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
   const state = useRestaurantConfigState()
   const policyUnsupported = usePolicyUnsupported()
   const subscriptionStarted = useState<boolean>('restaurant-config-subscribed', () => false)
+  /*
+   * A page rendered for the static-page cache (server/middleware/static-page-cache.ts) is replayed to later visitors
+   * for a few minutes, with the config of the moment it was rendered: the browser asks for the current one once it is
+   * mounted. A page rendered for one visitor carries a config that is seconds old and does not.
+   */
+  const renderedForCache = useState<boolean>('restaurant-config-rendered-for-cache', () => false)
+  if (import.meta.server && useRequestEvent()?.node.req.headers[STATIC_PAGE_FILL_HEADER]) {
+    renderedForCache.value = true
+  }
+  // Taken here, not after the await below: the Nuxt context is gone by then (the render would fail with NUXT_E1001).
+  const skipCache = import.meta.server ? useResponseHeader(STATIC_PAGE_SKIP_HEADER) : null
 
   /*
    * Register the subscription and the watcher synchronously, before any await. After an `await`, Vue's active
@@ -195,11 +203,12 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
    * refresh or of a language change replaces the shared state, which also drops whatever the subscription had
    * merged into the previous answer.
    */
-  ensureLiveUpdates({
-    state,
-    policyUnsupported,
-    started: subscriptionStarted,
-    refetch: makeRefetch(state, policyUnsupported),
+  const refetch = makeRefetch(state, policyUnsupported)
+  ensureLiveUpdates({ state, policyUnsupported, started: subscriptionStarted, refetch })
+  onMounted(() => {
+    if (!renderedForCache.value) return
+    renderedForCache.value = false
+    void refetch().catch(() => undefined)
   })
   const answer = shallowRef<(() => RestaurantConfigResponse | null | undefined) | null>(null)
   watch(
@@ -222,9 +231,12 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
         unsupported: policyUnsupported,
       },
       ...(options.lazy ? { lazy: true } : {}),
+      ...(options.server === false ? { server: false } : {}),
     },
   )
   const { data, refresh, pending, error } = asyncData
+  // A render for the cache without the config (the API failed): the cache must not replay it, see STATIC_PAGE_SKIP_HEADER.
+  if (skipCache && renderedForCache.value && error.value) skipCache.value = '1'
   answer.value = () => data.value
   if (data.value) state.value = data.value
 

@@ -1,5 +1,4 @@
 // Plugins: gqlFetch.ts — OIDC Bearer token authentication via Zitadel
-import { type DocumentNode, print } from 'graphql'
 import { GqlError, type GqlErrorEntry, isAbortError, operationNameOf } from '#engine/utils/gqlError'
 import {
   defineNuxtPlugin,
@@ -38,10 +37,9 @@ export default defineNuxtPlugin((nuxtApp) => {
    * utils/gqlError.ts): the GraphQL `errors` of the response, or the failed HTTP request.
    */
   const gqlFetch = async <T = unknown>(
-    query: string | DocumentNode,
+    queryText: string,
     { variables = {}, signal }: GqlOptions = {},
   ): Promise<T> => {
-    const queryText = typeof query === 'string' ? query : print(query)
     const operationName = operationNameOf(queryText)
     const body = { query: queryText, variables }
     // An aborted request is control flow, not a failure: it keeps its AbortError identity.

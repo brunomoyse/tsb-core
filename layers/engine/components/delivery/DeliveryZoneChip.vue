@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    @click="open = true"
+    @click="openModal"
     :aria-label="chipAriaLabel"
     v-bind="forwardedAttrs"
     :class="[
@@ -47,17 +47,17 @@
       <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </button>
-  <DeliveryZoneModal v-model:open="open" />
+  <DeliveryZoneModal v-if="modalWanted" v-model:open="open" />
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, useAttrs } from 'vue'
-import DeliveryZoneModal from '#engine/components/delivery/DeliveryZoneModal.vue'
+import { computed, defineAsyncComponent, onMounted, ref, useAttrs } from 'vue'
 import { deliveryZoneStatus } from '#engine/lib/delivery'
 import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
+import { whenIdle } from '#engine/utils/whenIdle'
 
 defineOptions({ inheritAttrs: false })
 
@@ -72,6 +72,25 @@ const forwardedAttrs = computed(() => {
 })
 
 const open = ref(false)
+
+/*
+ * The zone modal (and the address picker in it) is its own chunk (audit PR 6.2, P12): it is fetched when the browser is
+ * idle and mounted, closed, as soon as it has arrived, so a tap finds it ready; a tap before that mounts it open.
+ */
+const loadModal = () => import('#engine/components/delivery/DeliveryZoneModal.vue')
+const DeliveryZoneModal = defineAsyncComponent(loadModal)
+const modalWanted = ref(false)
+const openModal = () => {
+  modalWanted.value = true
+  open.value = true
+}
+onMounted(() => {
+  whenIdle(() => {
+    void loadModal().then(() => {
+      modalWanted.value = true
+    })
+  })
+})
 const cartStore = useCartStore()
 const { t } = useI18n()
 const { policy } = useOrderingPolicy()

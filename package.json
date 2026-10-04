@@ -30,7 +30,6 @@
     "@sentry/nuxt": "^11.0.0",
     "@vueuse/core": "^15.0.0",
     "graphql": "^17.0.2",
-    "graphql-tag": "^2.12.7",
     "graphql-ws": "^6.2.2",
     "libphonenumber-js": "^1.13.13",
     "nuxt": "^4.5.2",

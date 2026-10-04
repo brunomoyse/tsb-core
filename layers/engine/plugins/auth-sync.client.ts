@@ -1,6 +1,4 @@
 import type { User } from '#engine/types'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
 
 /**
@@ -17,7 +15,7 @@ import { reportError } from '#engine/utils/reportError'
  *      If /me fails, the OIDC token is stale — clear it.
  *   3. Both empty / both valid         → no-op.
  */
-const ME_QUERY = print(gql`
+const ME_QUERY = /* GraphQL */ `
   query AuthSyncMe {
     me {
       id
@@ -38,7 +36,7 @@ const ME_QUERY = print(gql`
       }
     }
   }
-`)
+`
 
 /*
  * Parallel and deferred (audit PR 3.7, P5): this used to be an async, blocking plugin, so before the app could mount

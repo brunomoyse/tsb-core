@@ -31,6 +31,7 @@ const REQUIRED_PUBLIC_ENV = [
 const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
 const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
 const s3Url = process.env.S3_BUCKET_URL
+const s3Origin = s3Url ? new URL(s3Url).origin : ''
 const osm = 'https://www.openstreetmap.org'
 const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
 const zitadelOrigin = process.env.ZITADEL_AUTHORITY || ''
@@ -50,8 +51,41 @@ const csp = `${[
 
 const engineDir = fileURLToPath(new URL('./', import.meta.url))
 
+const LOCALES = [
+  { code: 'fr', language: 'fr-BE' },
+  { code: 'en', language: 'en' },
+  { code: 'zh', language: 'zh-CN' },
+  { code: 'nl', language: 'nl-BE' },
+] as const
+const LANGUAGE_COOKIE = 'i18n_redirected'
+
 export default defineNuxtConfig({
   ssr: true,
+
+  app: {
+    head: {
+      link: [
+        // Open the connections the page is about to need while the HTML is still being parsed (audit PR 6.2, P12): the
+        // Product images come from the S3/CDN origin (plain <img>, so the default connection pool), the API is called
+        // With fetch and no credentials (hence `crossorigin`: the anonymous pool).
+        ...(s3Origin ? [{ rel: 'preconnect', href: s3Origin }] : []),
+        { rel: 'preconnect', href: apiOrigin, crossorigin: 'anonymous' as const },
+      ],
+      script: [
+        /*
+         * A returning visitor with a cart gets the menu's desktop cart column on the very first paint (audit PR 6.3, P13):
+         * the cart is in localStorage, which the server cannot read, so the column used to appear after hydration and
+         * narrow the menu, re-wrapping every product row. This flags <html data-has-cart> before the body is parsed; the
+         * menu pages reserve the column from it (until they are mounted and know the real cart). Key and shape: the
+         * 'cart' store (stores/cart.ts, utils/cartPersistence.ts).
+         */
+        {
+          innerHTML:
+            "try{var c=JSON.parse(localStorage.getItem('cart')||'null');if(c&&c.products&&c.products.length)document.documentElement.setAttribute('data-has-cart','')}catch(e){}",
+        },
+      ],
+    },
+  },
 
   hooks: {
     ready: (nuxt) => {
@@ -73,6 +107,8 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    // Before @nuxtjs/i18n, which asks for the locale files this registers while it sets itself up.
+    fileURLToPath(new URL('./build/i18n-messages', import.meta.url)),
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
@@ -104,15 +140,20 @@ export default defineNuxtConfig({
       optimizeTranslationDirective: false,
     },
     defaultLocale: 'fr',
-    locales: [
-      { code: 'fr', language: 'fr-BE' },
-      { code: 'en', language: 'en' },
-      { code: 'zh', language: 'zh-CN' },
-      { code: 'nl', language: 'nl-BE' },
-    ],
+    compilation: {
+      // The FAQ answers carry their own <br> and <strong> and are rendered as HTML on purpose (our own copy, not user input).
+      // Locale files loaded lazily are checked for HTML, inline messages never were: say so instead of warning on every build.
+      strictMessage: false,
+    },
+    experimental: {
+      // The lazily-loaded messages (build/i18n-messages.ts) become hashed static files: precompressed, cached for good.
+      // As the Nitro route they answer with a 10-second cache and no compression.
+      prerenderMessages: true,
+    },
+    locales: [...LOCALES],
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'i18n_redirected',
+      cookieKey: LANGUAGE_COOKIE,
       redirectOn: 'all',
     },
     strategy: 'prefix',
@@ -122,6 +163,20 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    /*
+     * The pages answered from memory (server/middleware/static-page-cache.ts, audit PR 6.1): the same for every visitor.
+     * A brand adds its own (arrays concatenate across layers); personalised pages never belong here.
+     */
+    staticPageCache: {
+      locales: LOCALES.map((l) => l.code),
+      pages: ['terms', 'privacy', 'faq', 'contact', 'account-deletion'],
+      cookie: LANGUAGE_COOKIE,
+    },
+    /*
+     * The address of each language file (`{ fr: '/_i18n/<hash>/fr/messages.json', ... }`), filled in at build time by
+     * build/i18n-messages.ts and read by middleware/preload-messages.global.ts. Empty in dev.
+     */
+    tsbI18nMessageUrls: {},
     public: {
       baseUrl: process.env.BASE_URL,
       s3bucketUrl: process.env.S3_BUCKET_URL,
@@ -148,14 +203,20 @@ export default defineNuxtConfig({
       changefreq: 'weekly',
       priority: 0.8,
     },
+    /*
+     * Private and transactional pages. Unprefixed on purpose: the module expands each pattern to every locale prefix
+     * itself, and the earlier `/**\/me`-style patterns matched none of /fr/me, /fr/checkout (checked in the generated
+     * sitemaps: cart, checkout, me and me/orders were listed). robots.txt and each page's robots meta agree with this list.
+     */
     exclude: [
       '/auth/**',
-      '/**/login',
-      '/**/checkout',
-      '/**/me',
-      '/**/me/**',
-      '/**/logout',
-      '/**/order-completed/**',
+      '/login',
+      '/logout',
+      '/cart',
+      '/checkout',
+      '/me',
+      '/me/**',
+      '/order-completed/**',
     ],
   },
 
@@ -173,6 +234,10 @@ export default defineNuxtConfig({
     '/_nuxt/**': {
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
     },
+    // The language files (build/i18n-messages.ts): the folder name is a hash of their content.
+    '/_i18n/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
   },
 
   // Nuxt only adds layers under <rootDir>/layers to the generated tsconfigs, so
@@ -188,6 +253,10 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    // Static files are compressed once at build time (gzip + brotli next to the originals) and served with the encoding
+    // The browser accepts: Nitro does not compress anything itself and tsb-infra configures no compression in Traefik.
+    // Cloudflare (when the zone is proxied) compresses what it relays, but the home server is reached without it.
+    compressPublicAssets: { gzip: true, brotli: true },
     typescript: {
       tsConfig: {
         include: [`${engineDir}server/**/*`],

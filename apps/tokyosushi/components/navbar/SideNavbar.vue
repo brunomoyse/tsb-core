@@ -68,6 +68,10 @@
           :icon="item.icon"
           :to="item.to"
         />
+        <!-- The signed-out visitor's one entry (login): its place is kept so the language picker below does not jump when the session is known (audit PR 6.3, P13). -->
+        <template #fallback>
+          <li aria-hidden="true" class="h-[50px] w-[50px]" />
+        </template>
       </ClientOnly>
       <!-- Language picker -->
       <li><LanguagePicker variant="rail" placement="right" /></li>

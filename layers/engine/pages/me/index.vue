@@ -19,8 +19,6 @@ import {
   profileInitials,
   splitStoredPhone,
 } from '#engine/utils/profile'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -47,7 +45,7 @@ const { $gqlFetch } = useNuxtApp()
 const { trackEvent } = useTracking()
 
 // Fetch user profile if not in store (e.g., page refresh with cleared persistence)
-const ME = print(gql`
+const ME = /* GraphQL */ `
   query {
     me {
       id
@@ -68,7 +66,7 @@ const ME = print(gql`
       }
     }
   }
-`)
+`
 
 onMounted(async () => {
   if (!authStore.user) {
@@ -92,7 +90,7 @@ const fullName = computed(() => profileFullName(authStore.user))
 
 // ── Profile edit logic ──
 
-const UPDATE_ME = gql`
+const UPDATE_ME = /* GraphQL */ `
   mutation ($input: UpdateUserInput!) {
     updateMe(input: $input) {
       id
@@ -114,7 +112,7 @@ const UPDATE_ME = gql`
     }
   }
 `
-const DELETE_ME = gql`
+const DELETE_ME = /* GraphQL */ `
   mutation {
     deleteMe
   }
@@ -127,14 +125,14 @@ const { mutate: mutationDeleteMe } = useGqlMutation<{ deleteMe: boolean }>(DELET
  * is never blocked (App Store 5.1.1(v)); the order keeps its denormalized data
  * and is fulfilled regardless, but the customer loses tracking once anonymized.
  */
-const MY_ACTIVE_ORDERS = print(gql`
+const MY_ACTIVE_ORDERS = /* GraphQL */ `
   query {
     myOrders(first: 5) {
       id
       status
     }
   }
-`)
+`
 const { data: activeOrdersData } = await useGqlQuery<{
   myOrders: { id: string; status: string }[]
 }>(MY_ACTIVE_ORDERS, {}, { server: false })

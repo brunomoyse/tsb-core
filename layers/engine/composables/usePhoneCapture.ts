@@ -2,7 +2,6 @@ import { type PhoneInputState, classifyPhoneInput } from '#engine/utils/phoneInp
 import { type Ref, computed, nextTick, ref } from 'vue'
 import { useAuthStore, useGqlMutation, useState } from '#imports'
 import type { User } from '#engine/types'
-import gql from 'graphql-tag'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
@@ -33,7 +32,7 @@ const messageKey = (state: PhoneInputState): string | null => {
   }
 }
 
-const UPDATE_ME = gql`
+const UPDATE_ME = /* GraphQL */ `
   mutation ($input: UpdateUserInput!) {
     updateMe(input: $input) {
       id

@@ -9,8 +9,6 @@ import { computed, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { useAsyncData, useCartStore, useGqlSubscription, useNuxtApp } from '#imports'
 import { ORDER_ITEMS_SELECTION } from '#engine/lib/orderDocuments'
 import type { Order } from '#engine/types'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 
 /*
  * Shared logic of the /order-completed/[orderId] page (both brands).
@@ -36,7 +34,7 @@ import { print } from 'graphql'
  * tsb-mobile's post-payment flow (`lib/paymentOutcome.ts`).
  */
 
-export const ORDER_COMPLETED_QUERY = print(gql`
+export const ORDER_COMPLETED_QUERY = /* GraphQL */ `
     query ($orderId: ID!) {
         myOrder(id: $orderId) {
             id
@@ -75,7 +73,7 @@ export const ORDER_COMPLETED_QUERY = print(gql`
             ${ORDER_ITEMS_SELECTION}
         }
     }
-`)
+`
 
 /** Gaps between status checks while an online order is still open/pending (≈17 s in total). */
 const VERIFY_DELAYS_MS = [800, 1200, 1500, 2000, 3000, 4000, 5000]
@@ -219,7 +217,7 @@ export function useOrderCompleted(orderId: string) {
   const { data: liveUpdate } = useGqlSubscription<{
     myOrderUpdated: Partial<Order>
   }>(
-    print(gql`
+    /* GraphQL */ `
       subscription ($orderId: ID!) {
         myOrderUpdated(orderId: $orderId) {
           id
@@ -229,7 +227,7 @@ export function useOrderCompleted(orderId: string) {
           cancellationReason
         }
       }
-    `),
+    `,
     { orderId },
     { onReconnect: refetchOnReconnect },
   )

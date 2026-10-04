@@ -1,6 +1,5 @@
 // Composables: useGqlQuery.ts
 import type { AsyncData, NuxtApp } from 'nuxt/app'
-import { type DocumentNode, print } from 'graphql'
 import { useAsyncData, useNuxtApp } from '#imports'
 import type { Ref } from 'vue'
 import { gqlQueryKey } from '../utils/gqlQueryKey'
@@ -27,7 +26,7 @@ interface Options {
    * document's by default): a document must not be sent a variable it does not declare, which a server rejects.
    */
   legacy?: {
-    query: string | DocumentNode
+    query: string
     variables?: Vars
     isUnsupported: (err: unknown) => boolean
     unsupported: Ref<boolean>
@@ -58,7 +57,7 @@ const freshExceptWhenHydrating = (
     : undefined
 
 export async function useGqlQuery<T>(
-  rawQuery: string | DocumentNode,
+  query: string,
   variables: Vars = {},
   opts: Options = { immediate: true, cache: false },
 ): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
@@ -66,14 +65,14 @@ export async function useGqlQuery<T>(
   const { locale } = useI18n()
   const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
   const getVars = () => evaluate(variables)
-  const ask = (document: string | DocumentNode, vars: Vars = variables) =>
-    $gqlFetch<T>(printIfAst(document), { variables: evaluate(vars) })
+  const ask = (document: string, vars: Vars = variables) =>
+    $gqlFetch<T>(document, { variables: evaluate(vars) })
   const { legacy } = opts
   const handler = async (): Promise<T> => {
-    if (!legacy) return ask(rawQuery)
+    if (!legacy) return ask(query)
     if (!legacy.unsupported.value) {
       try {
-        return await ask(rawQuery)
+        return await ask(query)
       } catch (err) {
         if (!legacy.isUnsupported(err)) throw err
         legacy.unsupported.value = true
@@ -89,7 +88,6 @@ export async function useGqlQuery<T>(
    * `refresh()` one shared slot, and it keeps a slow answer for the old variables from landing on the new ones.
    * Locale in the key also stops SSR/cached payloads bleeding across languages.
    */
-  const query = printIfAst(rawQuery)
   const key = () => gqlQueryKey(query, getVars(), locale.value)
 
   const asyncData = await useAsyncData<T>(key, handler, {
@@ -104,5 +102,3 @@ export async function useGqlQuery<T>(
     refetch: () => Promise<void>
   }
 }
-
-const printIfAst = (q: string | DocumentNode): string => (typeof q === 'string' ? q : print(q))

@@ -481,7 +481,6 @@ import { formatCents } from '#engine/lib/price'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderExtras } from '#engine/composables/useOrderExtras'
 import { centsToEuros } from '#engine/utils/money'
-import gql from 'graphql-tag'
 import { reportError } from '#engine/utils/reportError'
 import { useCartTotals } from '#engine/composables/useCartTotals'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -629,7 +628,7 @@ const tempAddress = ref<Address | null>(null)
 const addressModalRef = ref<HTMLElement | null>(null)
 useFocusTrap(addressModalRef)
 
-const CREATE_ORDER = gql`
+const CREATE_ORDER = /* GraphQL */ `
   mutation CreateOrder($input: CreateOrderInput!) {
     createOrder(input: $input) {
       id

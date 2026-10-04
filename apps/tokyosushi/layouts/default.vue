@@ -166,25 +166,12 @@
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import SideNavbar from '~/components/navbar/SideNavbar.vue'
 import { computed } from 'vue'
-import { useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
-
-useHead({
-  link: [
-    {
-      rel: 'preload',
-      href: '/fonts/channel.woff2',
-      as: 'font',
-      type: 'font/woff2',
-      crossorigin: 'anonymous',
-    },
-  ],
-})
 
 const route = useRoute()
 const { t } = useI18n()
@@ -197,12 +184,20 @@ const {
   config: restaurantConfig,
   isClosed,
   preorderTime,
-} = await useOrderingAvailability({ lazy: true })
+} = await useOrderingAvailability({
+  lazy: true,
+  /*
+   * The menu asks for the config itself, next to its categories: the layout waiting for it first would make that two
+   * requests one after the other (the page only starts once its layout has resolved).
+   */
+  server: !route.meta.loadsRestaurantConfig,
+})
 
 // The restaurant's JSON-LD (hours from the live config), on every page.
 useRestaurantSchema(() => restaurantConfig.value?.restaurantConfig?.openingHours)
 
-const head = useLocaleHead()
+// Canonical + hreflang alternates (+ og:locale): one <link> each, keyed by id (checked in the built HTML, audit PR 6.4).
+const head = useLocaleHead({ seo: true })
 const notifications = useNotificationsStore()
 
 const title = computed(() =>

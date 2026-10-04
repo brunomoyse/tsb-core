@@ -1,15 +1,13 @@
 import { postAuthTarget, sanitizeReturnTo } from '#engine/utils/authFlow'
 import { type OrderingConfigInput, canPlaceOrder } from '#engine/utils/orderingAvailability'
 import type { User } from '#engine/types'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { reportError } from '#engine/utils/reportError'
 import { useAuthStore } from '#engine/stores/auth'
 import { useCartStore } from '#engine/stores/cart'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
-const ME = print(gql`
+const ME = /* GraphQL */ `
   query {
     me {
       id
@@ -30,9 +28,9 @@ const ME = print(gql`
       }
     }
   }
-`)
+`
 
-const RESTAURANT_STATUS = print(gql`
+const RESTAURANT_STATUS = /* GraphQL */ `
   query AuthCallbackRestaurantStatus {
     restaurantConfig {
       orderingEnabled
@@ -44,7 +42,7 @@ const RESTAURANT_STATUS = print(gql`
       }
     }
   }
-`)
+`
 
 /**
  * Shared post-auth callback logic, used by each app's pages/auth/callback.vue

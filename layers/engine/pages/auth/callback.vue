@@ -15,12 +15,14 @@
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta, onMounted, ref } from '#imports'
+import { definePageMeta, onMounted, ref, useSeoMeta } from '#imports'
 import { reportError } from '#engine/utils/reportError'
 import { useAuthCallback } from '#engine/composables/useAuthCallback'
 import { useOidc } from '#engine/composables/useOidc'
 
 definePageMeta({ public: true })
+// Sign-in plumbing, not content: never indexed (audit PR 6.4, P15; the login pages say the same).
+useSeoMeta({ robots: 'noindex,nofollow' })
 
 const { handleCallback } = useOidc()
 const { processCallback } = useAuthCallback()

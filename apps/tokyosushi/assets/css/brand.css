@@ -10,6 +10,46 @@
   font-display: swap;
 }
 
+/* Metric-matched stand-ins for the swap (audit PR 6.3, P13): until a web font has arrived the text is set in local Arial (or its metric twins Liberation Sans / Arimo)
+   scaled to the web font's width, ascent and descent, so the swap changes the letter shapes but not the line breaks or the
+   height of anything. Numbers: fontaine's getMetricsForFamily('Montserrat') / readMetrics(channel.ttf) against Arial.
+   They are listed after the web font in the font stacks (tailwind.config.ts). */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 112.8307%;
+  ascent-override: 85.7923%;
+  descent-override: 22.2457%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Channel Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 159.5444%;
+  ascent-override: 47.0089%;
+  descent-override: 15.6696%;
+  line-gap-override: 0%;
+}
+/* The same for Android, which has no Arial, Liberation Sans or Arimo but always has Roboto: own family names, listed after
+   the Arial-based ones in the stacks, so those systems keep them and Android takes these. Numbers: fontaine's
+   getMetricsForFamily('Montserrat') / readMetrics(channel.ttf) against Roboto (@capsizecss/metrics). */
+@font-face {
+  font-family: 'Montserrat Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 113.0784%;
+  ascent-override: 85.6043%;
+  descent-override: 22.197%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Channel Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 159.8946%;
+  ascent-override: 46.9059%;
+  descent-override: 15.6353%;
+  line-gap-override: 0%;
+}
+
 html {
   background-color: #f6f5f2;
   color-scheme: only light;

@@ -159,9 +159,7 @@ import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { formatCents } from '#engine/lib/price'
-import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
-import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useEventBus } from '@vueuse/core'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
@@ -202,7 +200,7 @@ useFocusTrap(panelRef)
 
 const quantity = ref(1)
 
-const PRODUCT_QUERY = gql`
+const PRODUCT_QUERY = /* GraphQL */ `
   query Product($id: ID!) {
     product(id: $id) {
       id
@@ -244,7 +242,7 @@ const PRODUCT_QUERY = gql`
 `
 
 const { data: dataProduct } = await useGqlQuery<{ product: Product }>(
-  print(PRODUCT_QUERY),
+  PRODUCT_QUERY,
   { id: product },
   { immediate: true, cache: true },
 )

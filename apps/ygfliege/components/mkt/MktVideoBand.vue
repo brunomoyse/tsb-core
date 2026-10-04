@@ -64,8 +64,9 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 // Full-bleed looping ingredient video. Sources are swapped in lazily when the
-// band nears the viewport so the ~3MB files never block initial load; autoplay
-// is muted + playsinline (mobile-safe) and skipped for reduced-motion users.
+// Band nears the viewport so the ~1MB files (720 px wide, re-encoded from 3MB 1280 px ones, audit PR 6.4, P16) never
+// Block initial load; autoplay is muted + playsinline (mobile-safe) and skipped for
+// Reduced-motion users and for visitors who asked to save data (the poster stays; the button still plays it).
 // A visible pause/play button (audit PR 3.6, A18) lets anyone stop the loop.
 const band = ref<HTMLElement | null>(null)
 const video = ref<HTMLVideoElement | null>(null)
@@ -107,6 +108,9 @@ const toggle = () => {
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   motionAllowed.value = true
+  // Save-Data (Chromium's Network Information API): no download unless the visitor presses play.
+  const { connection } = navigator as Navigator & { connection?: { saveData?: boolean } }
+  if (connection?.saveData) return
   observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {

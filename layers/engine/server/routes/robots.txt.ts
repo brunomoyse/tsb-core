@@ -25,6 +25,8 @@ export default defineEventHandler((event) => {
     'Allow: /',
     'Disallow: /auth/',
     'Disallow: /*/auth/',
+    'Disallow: /cart',
+    'Disallow: /*/cart',
     'Disallow: /checkout',
     'Disallow: /*/checkout',
     // The trailing `$` keeps `/*/me` from also matching /fr/menu.
@@ -35,7 +37,8 @@ export default defineEventHandler((event) => {
     'Disallow: /order-completed/',
     'Disallow: /*/order-completed/',
     '',
-    `Sitemap: ${baseUrl}/sitemap.xml`,
+    // The index itself: /sitemap.xml is only an HTML page that refreshes to it (one sitemap per language).
+    `Sitemap: ${baseUrl}/sitemap_index.xml`,
     '',
   ].join('\n')
 })

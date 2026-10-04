@@ -85,7 +85,15 @@
 </template>
 
 <script setup lang="ts">
-import { clearError, computed, ref, reloadNuxtApp, useHead, useLocalePath } from '#imports'
+import {
+  clearError,
+  computed,
+  ref,
+  reloadNuxtApp,
+  useHead,
+  useLocalePath,
+  useSeoMeta,
+} from '#imports'
 import type { NuxtError } from '#app'
 import { useI18n } from 'vue-i18n'
 import { useLocaleHead } from '#i18n'
@@ -114,6 +122,9 @@ const errorTitle = computed(() => {
       return t('error.titleGeneric')
   }
 })
+
+// The page replaces the layout, so it names itself (tab, history, share) and stays out of the index.
+useSeoMeta({ title: () => errorTitle.value, robots: 'noindex,nofollow' })
 
 const errorMessage = computed(() => {
   switch (error?.statusCode) {

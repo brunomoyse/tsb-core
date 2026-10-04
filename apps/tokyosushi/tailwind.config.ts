@@ -21,8 +21,16 @@ module.exports = {
       // Second brand app redefines these hex values / display font; the
       // Tsb-* class names stay stable across brands.
       fontFamily: {
-        sans: ['Montserrat', 'Arial', 'Helvetica', 'sans-serif'],
-        channel: ['Channel', 'sans-serif'],
+        // The "… Fallback" faces are the size-adjusted stand-ins declared in assets/css/brand.css.
+        sans: [
+          'Montserrat',
+          '"Montserrat Fallback"',
+          '"Montserrat Fallback Roboto"',
+          'Arial',
+          'Helvetica',
+          'sans-serif',
+        ],
+        channel: ['Channel', '"Channel Fallback"', '"Channel Fallback Roboto"', 'sans-serif'],
       },
       colors: {
         tsb: {

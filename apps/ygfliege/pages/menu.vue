@@ -6,7 +6,13 @@
     <div
       ref="contentContainer"
       class="w-full min-w-0"
-      :class="hasCartItems ? 'lg:w-2/3' : 'lg:w-full'"
+      :class="
+        isMounted
+          ? hasCartItems
+            ? 'lg:w-2/3'
+            : 'lg:w-full'
+          : 'lg:w-full [html[data-has-cart]_&]:lg:w-2/3'
+      "
     >
       <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
       <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
@@ -296,11 +302,16 @@
     </div>
 
     <!-- Desktop Cart Sidebar -->
+    <!-- The column is in the server's HTML and shown from the first paint when <html data-has-cart> says the visitor has a cart (see the engine nuxt.config): no width change after hydration. -->
     <aside
-      v-if="hasCartItems"
-      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:block lg:w-1/3 lg:pr-4"
+      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:w-1/3 lg:pr-4"
+      :class="isMounted ? hasCartItems && 'lg:block' : '[html[data-has-cart]_&]:lg:block'"
     >
-      <SideCart :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
+      <SideCart
+        v-if="hasCartItems"
+        :is-ordering-available="!isClosed"
+        :preorder-time="preorderTime"
+      />
     </aside>
 
     <ClientOnly>
@@ -341,20 +352,18 @@ import { breadcrumbList, useJsonLd } from '#engine/composables/useJsonLd'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
   sitemap: { priority: 0.9, changefreq: 'weekly' },
+  // The layout leaves the restaurant config to this page on the server (see layouts/default.vue).
+  loadsRestaurantConfig: true,
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
-import BowlComposer from '~/components/menu/BowlComposer.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
-import ProductModal from '~/components/menu/ProductModal.vue'
-import SideCart from '#engine/components/cart/SideCart.vue'
+import { whenIdle } from '#engine/utils/whenIdle'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import gql from 'graphql-tag'
-import { print } from 'graphql'
 import { useCartStore } from '#engine/stores/cart'
 import { useDebounce, useEventBus, useMediaQuery, useMounted } from '@vueuse/core'
 import LoadError from '#engine/components/LoadError.vue'
@@ -378,6 +387,23 @@ import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 
+/*
+ * The product modal, the bowl composer and the desktop cart are not part of the first paint (the overlays open on a tap,
+ * the cart only has something to show once the cart store has hydrated): their code is its own chunk, fetched when the
+ * browser is idle (audit PR 6.2, P12) so the first tap does not wait for it.
+ */
+const loadProductModal = () => import('~/components/menu/ProductModal.vue')
+const loadBowlComposer = () => import('~/components/menu/BowlComposer.vue')
+const ProductModal = defineAsyncComponent(loadProductModal)
+const BowlComposer = defineAsyncComponent(loadBowlComposer)
+const SideCart = defineAsyncComponent(() => import('#engine/components/cart/SideCart.vue'))
+onMounted(() => {
+  whenIdle(() => {
+    void loadProductModal()
+    void loadBowlComposer()
+  })
+})
+
 const { brand } = useAppConfig()
 const route = useRoute()
 // The product open in the modal: only a plain `?product=<id>` (a repeated or empty parameter opens nothing).
@@ -396,19 +422,6 @@ const dismissAllergenNotice = () => {
   showAllergenNotice.value = false
   localStorage.setItem('allergenNoticeDismissed', 'true')
 }
-
-// Restaurant config
-// A config that failed to load says nothing about opening hours: only a loaded config that says "closed" shows the closed banner and only a loaded "ordering off" disables adding to the cart.
-const {
-  isClosed,
-  isPreorderOnly,
-  isOrderingDisabled,
-  preorderTime,
-  loadFailed: configLoadFailed,
-  pending: configPending,
-  retry: retryConfig,
-} = await useOrderingAvailability()
-const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
 // Bumped by a modal's Retry: remounting it runs its product query again.
 const modalAttempt = ref(0)
@@ -429,7 +442,7 @@ useBodyScrollLock(() => Boolean(routedProductId.value))
 /**
  * GraphQL Query
  */
-const PRODUCT_CATEGORIES = gql`
+const PRODUCT_CATEGORIES = /* GraphQL */ `
   query {
     productCategories {
       id
@@ -450,11 +463,6 @@ const PRODUCT_CATEGORIES = gql`
         isSpicy
         isVegetarian
         isDiscountable
-        category {
-          id
-          name
-          slug
-        }
         choices {
           id
         }
@@ -480,19 +488,41 @@ const cartStore = useCartStore()
 // SSR renders the empty-cart state; cart store rehydrates from localStorage after mount.
 const isMounted = useMounted()
 const hasCartItems = computed(() => isMounted.value && cartStore.products.length > 0)
-const {
-  data: dataCategories,
-  error: categoriesError,
-  pending: categoriesPending,
-  refresh: refetchCategories,
-} = await useGqlQuery<{
-  productCategories: ProductCategory[]
-}>(print(PRODUCT_CATEGORIES), {}, { immediate: true, cache: true })
+
+/*
+ * The restaurant config (ordering banners, add-to-cart gate) and the categories do not depend on each other, so they
+ * are asked together: one API round-trip on the server instead of two in a row (audit PR 6.1, P10). A config that
+ * failed to load says nothing about opening hours: only a loaded config that says "closed" shows the closed banner and
+ * only a loaded "ordering off" disables adding to the cart.
+ */
+const [
+  {
+    isClosed,
+    isPreorderOnly,
+    isOrderingDisabled,
+    preorderTime,
+    loadFailed: configLoadFailed,
+    pending: configPending,
+    retry: retryConfig,
+  },
+  {
+    data: dataCategories,
+    error: categoriesError,
+    pending: categoriesPending,
+    refresh: refetchCategories,
+  },
+] = await Promise.all([
+  useOrderingAvailability(),
+  useGqlQuery<{
+    productCategories: ProductCategory[]
+  }>(PRODUCT_CATEGORIES, {}, { immediate: true, cache: true }),
+])
+const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
 /**
  * Live product updates via WebSocket subscription
  */
-const SUB_PRODUCT_UPDATED = gql`
+const SUB_PRODUCT_UPDATED = /* GraphQL */ `
   subscription {
     productUpdated {
       id
@@ -512,7 +542,7 @@ const SUB_PRODUCT_UPDATED = gql`
 const liveProductData = ref<Record<string, Partial<Product>>>({})
 
 const { data: liveProduct } = useGqlSubscription<{ productUpdated: Partial<Product> }>(
-  print(SUB_PRODUCT_UPDATED),
+  SUB_PRODUCT_UPDATED,
 )
 
 watch(liveProduct, (val) => {

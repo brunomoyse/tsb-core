@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Brand story: storytelling blocks, timeline (2003 Harbin → 2026 Liège),
-// values, world map and counters. Ported from the ygfliege.be Vike site.
+// Brand story: storytelling blocks, timeline (2003 Harbin → 2026 Liège), values, world map and counters.
+// Ported from the ygfliege.be Vike site.
 definePageMeta({
   public: true,
   sitemap: { priority: 0.7, changefreq: 'monthly' },
@@ -162,7 +162,9 @@ useSeoMeta({
       </h2>
       <img
         v-reveal
-        src="/images/icons/global-map.svg"
+        src="/images/icons/global-map.webp"
+        width="1431"
+        height="553"
         :alt="$t('mkt.about.world_map.title')"
         class="w-full h-auto"
         loading="lazy"

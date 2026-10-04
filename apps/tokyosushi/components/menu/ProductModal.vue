@@ -242,9 +242,7 @@ import { useGqlQuery, useRuntimeConfig } from '#imports'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
-import gql from 'graphql-tag'
 import { lineSignature } from '#engine/utils/cartLines'
-import { print } from 'graphql'
 import { scrollBehavior } from '#engine/utils/scrollBehavior'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { toCents } from '#engine/utils/money'
@@ -302,7 +300,7 @@ const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value
 const quantity = ref(editItem?.quantity ?? 1)
 const maxQuantity = 99
 
-const PRODUCT_QUERY = gql`
+const PRODUCT_QUERY = /* GraphQL */ `
   query Product($id: ID!) {
     product(id: $id) {
       id
@@ -352,7 +350,7 @@ const PRODUCT_QUERY = gql`
 
 const { data: dataProduct } = await useGqlQuery<{
   product: Product
-}>(print(PRODUCT_QUERY), { id: product }, { immediate: true, cache: true })
+}>(PRODUCT_QUERY, { id: product }, { immediate: true, cache: true })
 
 const p = dataProduct.value?.product
 
