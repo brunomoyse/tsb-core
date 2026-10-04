@@ -1,5 +1,6 @@
 // Middleware: auth.global.ts — OIDC session management via Zitadel
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { reportError } from '#engine/utils/reportError'
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -18,8 +19,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (await isAuthenticated()) return
 
   // 2. Attempt silent renewal
-  const renewed = await silentRenew()
-  if (renewed) return
+  try {
+    const renewed = await silentRenew()
+    if (renewed) return
+  } catch (err: unknown) {
+    // Zitadel could not be reached (offline): the session is intact, only its token is expired. Let the customer
+    // through rather than to the login page: the page's own requests renew it as soon as the network is back.
+    if (isSilentRenewUnavailable(err)) return
+    throw err
+  }
 
   const locale = to.path.split('/')[1] || 'fr'
 

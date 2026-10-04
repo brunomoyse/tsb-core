@@ -128,7 +128,9 @@
     "choice": "Choice",
     "required": "Required",
     "addWithPrice": "Add · {price}",
+    "update": "Update",
     "updateWithPrice": "Update · {price}",
+    "editing": "Editing",
     "viewDetails": "View details for {name}",
     "loadFailed": "We couldn't load the menu.",
     "productLoadFailed": "We couldn't load this product."
@@ -183,6 +185,7 @@
       "cleared": "Address cleared"
     },
     "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)",
+    "phoneMaybeMobile": "This mobile number seems to be missing a digit. Please check it.",
     "phoneCountry": "Phone number country"
   },
   "me": {

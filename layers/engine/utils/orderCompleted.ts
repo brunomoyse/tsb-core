@@ -1,8 +1,4 @@
-import {
-  type PaymentOutcome,
-  isPaymentProblem,
-  outcomeFromPaymentStatus,
-} from '../lib/paymentOutcome.ts'
+import { type PaymentOutcome, outcomeFromPaymentStatus } from '../lib/paymentOutcome.ts'
 
 /*
  * The decisions of the /order-completed/[orderId] page (composables/useOrderCompleted.ts), kept pure so
@@ -58,7 +54,8 @@ export function orderCompletedPhase(input: {
   if (out === null) return 'confirmed'
   if (out === 'abandoned' && order.status === 'PENDING')
     return verifyExpired ? 'awaiting-confirmation' : 'verifying'
-  return isPaymentProblem(out) ? 'problem' : 'confirmed'
+  // Every outcome left here (canceled, failed, expired, a settled-looking abandoned one) is a problem: `paid` was null above.
+  return 'problem'
 }
 
 /*

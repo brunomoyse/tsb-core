@@ -15,7 +15,7 @@ const excluded = ['**/node_modules/**', '**/.nuxt/**', '**/.output/**']
 // statements except the few arms measured below 100 (defensive fallbacks and dead `import.meta.server` arms, listed in
 // docs/testing.md). Only ever raise them.
 const criticalFiles = {
-  'layers/engine/stores/cart.ts': { statements: 100, branches: 98.68, functions: 100, lines: 100 },
+  'layers/engine/stores/cart.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   'layers/engine/stores/quote.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   'layers/engine/stores/auth.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   'layers/engine/composables/useOrderQuote.ts': {
@@ -37,8 +37,8 @@ const criticalFiles = {
     lines: 100,
   },
   'layers/engine/composables/useOrderCompleted.ts': {
-    statements: 99.01,
-    branches: 94.64,
+    statements: 100,
+    branches: 98.07,
     functions: 100,
     lines: 100,
   },
@@ -91,17 +91,12 @@ const criticalFiles = {
     lines: 100,
   },
   'layers/engine/plugins/gqlFetch.ts': {
-    statements: 98.5,
-    branches: 97.77,
+    statements: 100,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
-  'layers/engine/plugins/api.ts': {
-    statements: 97.29,
-    branches: 96.15,
-    functions: 100,
-    lines: 100,
-  },
+  'layers/engine/plugins/api.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   'layers/engine/plugins/auth-sync.client.ts': {
     statements: 100,
     branches: 100,
@@ -118,7 +113,7 @@ const criticalFiles = {
   'layers/engine/utils/money.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   'layers/engine/utils/cartLines.ts': {
     statements: 100,
-    branches: 98.46,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
@@ -136,7 +131,7 @@ const criticalFiles = {
   },
   'layers/engine/utils/orderPayload.ts': {
     statements: 100,
-    branches: 96.87,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
@@ -147,14 +142,14 @@ const criticalFiles = {
     lines: 100,
   },
   'layers/engine/utils/quoteCycle.ts': {
-    statements: 98.94,
-    branches: 97.43,
+    statements: 100,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
   'layers/engine/utils/orderCompleted.ts': {
     statements: 100,
-    branches: 97.5,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
@@ -172,7 +167,7 @@ const criticalFiles = {
   },
   'layers/engine/utils/cashPayment.ts': {
     statements: 100,
-    branches: 91.3,
+    branches: 100,
     functions: 100,
     lines: 100,
   },
@@ -191,6 +186,12 @@ const criticalFiles = {
     lines: 100,
   },
   'layers/engine/utils/authFlow.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/silentRenewError.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
   'layers/engine/utils/authErrors.ts': {
     statements: 100,
     branches: 100,

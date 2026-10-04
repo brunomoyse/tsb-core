@@ -128,7 +128,9 @@
     "choice": "Keuze",
     "required": "Verplicht",
     "addWithPrice": "Toevoegen · {price}",
+    "update": "Bijwerken",
     "updateWithPrice": "Bijwerken · {price}",
+    "editing": "Bewerken",
     "viewDetails": "Details van {name} bekijken",
     "loadFailed": "We konden het menu niet laden.",
     "productLoadFailed": "We konden dit product niet laden."
@@ -183,6 +185,7 @@
       "cleared": "Adres gewist"
     },
     "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)",
+    "phoneMaybeMobile": "Er lijkt een cijfer te ontbreken in dit gsm-nummer: controleer het",
     "phoneCountry": "Land van het telefoonnummer"
   },
   "me": {

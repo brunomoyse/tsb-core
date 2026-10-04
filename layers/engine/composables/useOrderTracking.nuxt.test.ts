@@ -550,14 +550,18 @@ describe('reactive reading', () => {
 })
 
 // With no scope to stop them, the watchers of this call outlive the test: they watch a list of their own that no other
-// test can touch.
+// test can touch, and the shared route, which a later `?followOrder=` test does change: so the test empties its list at
+// the end (nothing left to subscribe to, poll or scroll to), which leaves those watchers inert.
 describe('outside a component', () => {
-  it('with no parent scope the subscriptions still work, in their own scopes', () => {
+  it('with no parent scope the subscriptions still work, in their own scopes', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined) // Vue warns that there is nothing to dispose with
     // Its own list: nothing stops these watchers afterwards, so no other test may be able to wake them.
     const detached = ref<Order[] | null>([order('a')])
     const view = useOrderTracking({ orders: detached, refetch: vi.fn() })
     expect(liveSubs()).toEqual(['a'])
     expect(view.trackedOrders.value).toHaveLength(1)
+    detached.value = []
+    await nextTick()
+    expect(liveSubs()).toEqual([])
   })
 })

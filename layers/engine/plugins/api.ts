@@ -1,4 +1,5 @@
 // Plugins/api.ts — OIDC Bearer token authentication via Zitadel
+import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { rememberCurrentPage } from '#engine/utils/authFlow'
 import {
   defineNuxtPlugin,
@@ -17,9 +18,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
   const localePath = useLocalePath()
 
-  /** Get access token from OIDC client (client-side only) */
+  /** Get access token from OIDC client. Only called from the client branch of the request hook (never during SSR). */
   const getOidcToken = async (): Promise<string | null> => {
-    if (import.meta.server) return null
     const { useOidc } = await import('#engine/composables/useOidc')
     const { getAccessToken } = useOidc()
     return getAccessToken()
@@ -67,7 +67,14 @@ export default defineNuxtPlugin((nuxtApp) => {
         'status' in err &&
         (err as { status: number }).status === 401
       ) {
-        const ok = await refreshAuth()
+        let ok: boolean
+        try {
+          ok = await refreshAuth()
+        } catch (renewErr: unknown) {
+          // Zitadel could not be reached: the session is kept, no login redirect, this request fails and the next renews again.
+          if (isSilentRenewUnavailable(renewErr)) throw err
+          throw renewErr
+        }
         if (ok) return baseApi<T, string>(request, options)
         rememberCurrentPage()
         void navigateTo(`${localePath('auth-login')}?session=expired`)

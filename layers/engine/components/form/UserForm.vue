@@ -66,12 +66,17 @@
           :placeholder="$t('form.phonePlaceholder')"
           autocomplete="tel-national"
           :aria-invalid="phoneError ? 'true' : undefined"
-          :aria-describedby="phoneError ? 'phone-error' : undefined"
+          :aria-describedby="phoneError ? 'phone-error' : phoneHint ? 'phone-hint' : undefined"
           class="min-w-0 flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
           type="tel"
+          @input="onPhoneInput"
+          @blur="onPhoneBlur"
         />
       </div>
       <p v-if="phoneError" id="phone-error" class="text-sm text-red-700 mt-1">{{ phoneError }}</p>
+      <p v-else-if="phoneHint" id="phone-hint" role="status" class="text-sm text-amber-800 mt-1">
+        {{ phoneHint }}
+      </p>
     </div>
 
     <AddressAutocomplete
@@ -124,6 +129,7 @@ import { ref, watch } from 'vue'
 import AddressAutocomplete from '#engine/components/form/AddressAutocomplete.vue'
 import type { CountryCode } from 'libphonenumber-js'
 import { formatAddress } from '#engine/utils/utils'
+import { looksLikeShortMobile } from '#engine/utils/phoneInput'
 import { useI18n } from 'vue-i18n'
 
 interface InitialValues {
@@ -157,6 +163,8 @@ const selectedCountry = ref(initialValues.selectedCountry || 'BE')
 const address = ref<Address | null>(initialValues.address || null)
 
 const phoneError = ref('')
+// A number that is accepted but looks like a mobile with a digit missing: a hint, it never blocks the save.
+const phoneHint = ref('')
 
 const isShaking = ref(false)
 const triggerShake = () => {
@@ -183,10 +191,30 @@ const validatePhone = async (): Promise<string | null> => {
   const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
   if (!parsed?.isValid()) {
     phoneError.value = t('form.invalidPhone')
+    phoneHint.value = ''
     return null
   }
   phoneError.value = ''
-  return parsed.format('E.164')
+  const e164 = parsed.format('E.164')
+  phoneHint.value = shortMobileHint(e164)
+  return e164
+}
+
+const shortMobileHint = (e164: string): string =>
+  looksLikeShortMobile(e164) ? t('form.phoneMaybeMobile') : ''
+
+// Typing clears the hint (the number is about to change); leaving the field checks it again, so the hint is on screen
+// before Save, not only after it. No error on blur here: this form has always reported an invalid number on Save.
+const onPhoneInput = () => {
+  phoneHint.value = ''
+}
+// Another country reads the same digits as another number: the hint is checked again on the next blur or Save.
+watch(selectedCountry, onPhoneInput)
+const onPhoneBlur = async () => {
+  if (!phoneLocal.value.trim()) return
+  const { parsePhoneNumberFromString } = await import('libphonenumber-js')
+  const parsed = parsePhoneNumberFromString(phoneLocal.value, selectedCountry.value as CountryCode)
+  phoneHint.value = parsed?.isValid() ? shortMobileHint(parsed.format('E.164')) : ''
 }
 
 const handleSubmit = async () => {

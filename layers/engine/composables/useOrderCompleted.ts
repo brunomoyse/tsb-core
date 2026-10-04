@@ -189,7 +189,8 @@ export function useOrderCompleted(orderId: string) {
         }
         if (disposed || phase.value !== 'verifying') return
       }
-      if (!disposed) verifyExpired.value = true
+      // Still pending after the last check, which just found the page alive: nothing explains it but a late webhook.
+      verifyExpired.value = true
     } finally {
       verifyRunning = false
     }
@@ -243,8 +244,8 @@ export function useOrderCompleted(orderId: string) {
        chance to connect first. */
   let pollTimer: ReturnType<typeof setInterval> | null = null
   let pollDelay: ReturnType<typeof setTimeout> | null = null
+  // Called once, by the timeout armed on mount.
   const startPolling = () => {
-    if (pollTimer) return
     pollTimer = setInterval(async () => {
       try {
         const fresh = await fetchOrder()

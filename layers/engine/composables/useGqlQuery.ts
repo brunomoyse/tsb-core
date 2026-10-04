@@ -56,11 +56,18 @@ const freshExceptWhenHydrating = (
     ? nuxtApp.payload.data[key]
     : undefined
 
+/*
+ * What `await useGqlQuery()` gives. An `AsyncData` is itself thenable (it is the data object AND a promise of it), so
+ * TypeScript's `await` flattens `Promise<AsyncData & { refetch }>` to the bare data object and the callers lose
+ * `refetch`. The declared result must therefore be the awaited, non-thenable data object plus `refetch`.
+ */
+export type GqlQueryResult<T> = Awaited<AsyncData<T, never>> & { refetch: () => Promise<void> }
+
 export async function useGqlQuery<T>(
   query: string,
   variables: Vars = {},
   opts: Options = { immediate: true, cache: false },
-): Promise<AsyncData<T, never> & { refetch: () => Promise<void> }> {
+): Promise<GqlQueryResult<T>> {
   const { $gqlFetch } = useNuxtApp()
   const { locale } = useI18n()
   const evaluate = (vars: Vars) => (typeof vars === 'function' ? vars() : vars)
@@ -98,7 +105,5 @@ export async function useGqlQuery<T>(
     ...(opts.cache ? {} : { getCachedData: freshExceptWhenHydrating as GetCachedData<T> }),
   })
 
-  return Object.assign(asyncData, { refetch: asyncData.refresh }) as AsyncData<T, never> & {
-    refetch: () => Promise<void>
-  }
+  return Object.assign(asyncData, { refetch: asyncData.refresh }) as unknown as GqlQueryResult<T>
 }

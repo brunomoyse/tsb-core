@@ -35,7 +35,7 @@
           {{ $t('checkout.phoneCapture.title') }}
         </h3>
         <p v-if="isCollapsed" class="text-xs mt-0.5 text-neutral-600 tabular-nums">
-          {{ savedNumber }}
+          {{ savedNumberDisplay }}
         </p>
         <p v-else class="text-xs mt-0.5 text-amber-800">
           {{ $t('checkout.phoneCapture.description') }}
@@ -67,7 +67,9 @@
             :placeholder="$t('form.phonePlaceholder')"
             :aria-label="$t('form.phone')"
             :aria-invalid="phoneError ? 'true' : undefined"
-            :aria-describedby="phoneError ? 'checkout-phone-error' : undefined"
+            :aria-describedby="
+              phoneError ? 'checkout-phone-error' : phoneHint ? 'checkout-phone-hint' : undefined
+            "
             :class="loading ? 'pr-9' : 'pr-3'"
             class="w-full px-3 py-2.5 bg-white border border-neutral-200 rounded-xl text-base sm:text-sm text-neutral-900 placeholder-neutral-600 tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
             @input="onInput"
@@ -102,6 +104,15 @@
     <p v-if="phoneError" id="checkout-phone-error" role="alert" class="text-xs text-red-700 mt-2">
       {{ phoneError }}
     </p>
+    <p
+      v-else-if="phoneHint"
+      id="checkout-phone-hint"
+      data-testid="checkout-phone-hint"
+      role="status"
+      class="text-xs text-amber-800 mt-2"
+    >
+      {{ phoneHint }}
+    </p>
   </section>
 </template>
 
@@ -114,10 +125,11 @@ const phoneInputRef = ref<HTMLInputElement | null>(null)
 const {
   phoneLocal,
   phoneError,
+  phoneHint,
   loading,
   isCollapsed,
   saved,
-  savedNumber,
+  savedNumberDisplay,
   startEditing,
   cancelEditing,
   onInput,

@@ -84,8 +84,10 @@ export function rescaleSelections<T extends LineSelection>(
 export const canChangeLineQuantity = (
   selections: LineSelection[] | null | undefined,
   quantity: number,
-): boolean =>
-  (selections?.length ?? 0) === 0 || perUnitSelections(selections ?? [], quantity) !== null
+): boolean => {
+  const own = selections ?? []
+  return own.length === 0 || perUnitSelections(own, quantity) !== null
+}
 
 /**
  * Identity of a line's composition for merging: per UNIT when the line is uniform, so one bowl
