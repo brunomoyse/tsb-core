@@ -31,7 +31,7 @@
     "@sentry/nuxt": "^11.0.0",
     "@vueuse/core": "^15.0.0",
     "graphql": "^17.0.2",
-    "graphql-ws": "^6.2.2",
+    "graphql-ws": "^6.3.0",
     "libphonenumber-js": "^1.13.14",
     "nuxt": "^4.5.2",
     "oidc-client-ts": "^3.5.0",
