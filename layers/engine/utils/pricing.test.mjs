@@ -5,6 +5,7 @@ import {
   exactUnitPriceCents,
   lineTotalCents as itemLineTotalCents,
   unitPriceCents as itemUnitPriceCents,
+  priceCartLine,
   priceLine,
   toCents,
 } from './pricing.ts'
@@ -133,4 +134,43 @@ test('summing line totals in cents is exact (no float drift)', () => {
     0,
   )
   assert.strictEqual(cents, 100)
+})
+
+test('a line of zero quantity totals nothing, and its unit price is the base price', () => {
+  assert.deepEqual(priceLine('12.00', 0, [{ modifier: '1.00', quantity: 0 }]), {
+    lineTotalCents: 0,
+    unitPriceCents: 1200,
+  })
+  assert.strictEqual(exactUnitPriceCents({ quantity: 0, product: { price: '5.00' } }), null)
+})
+
+test('a plain line has no selections: no choices list, no selectedChoices, no legacy choice', () => {
+  const item = { quantity: 3, product: { price: '4.50' } }
+  assert.strictEqual(itemLineTotalCents(item), 1350)
+  assert.strictEqual(itemUnitPriceCents(item), 450)
+})
+
+test('selections naming a choice the product does not have are not priced; the rest still are', () => {
+  const item = {
+    quantity: 1,
+    product: { price: '10.00', choices: [{ id: 'known', priceModifier: '1.00' }] },
+    selectedChoices: [
+      { choiceId: 'ghost', quantity: 1 },
+      { choiceId: 'known', quantity: 1 },
+    ],
+  }
+  assert.strictEqual(itemLineTotalCents(item), 1100)
+  // Selections of a product that lists no choices at all price nothing extra.
+  assert.strictEqual(itemLineTotalCents({ ...item, product: { price: '10.00' } }), 1000)
+})
+
+test('a legacy single choice applies to every unit of the line; a negative modifier never discounts', () => {
+  const price = (modifier) =>
+    priceCartLine({
+      quantity: 3,
+      product: { price: '10.00' },
+      selectedChoice: { priceModifier: modifier },
+    }).lineTotalCents
+  assert.strictEqual(price('1.50'), 3 * 1000 + 3 * 150)
+  assert.strictEqual(price('-1.50'), 3000)
 })

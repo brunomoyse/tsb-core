@@ -54,7 +54,7 @@ export const EUROPEAN_COUNTRIES: EuropeanCountry[] = [
   { code: 'SM', prefix: '+378', flag: '\u{1F1F8}\u{1F1F2}' },
   { code: 'TR', prefix: '+90', flag: '\u{1F1F9}\u{1F1F7}' },
   { code: 'UA', prefix: '+380', flag: '\u{1F1FA}\u{1F1E6}' },
-  { code: 'VA', prefix: '+379', flag: '\u{1F1FB}\u{1F1E6}' },
+  { code: 'VA', prefix: '+39', flag: '\u{1F1FB}\u{1F1E6}' },
   { code: 'XK', prefix: '+383', flag: '\u{1F1FD}\u{1F1F0}' },
 ]
 

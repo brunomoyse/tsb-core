@@ -14,9 +14,12 @@ export function useGqlMutation<T = unknown>(mutation: string) {
   const data = ref<T>()
   const loading = ref(false)
   const error = ref<unknown>()
+  // Calls in flight: `loading` stays true until the last one is done (a double tap must not look finished after the first answer).
+  let inFlight = 0
 
   /** Call this and await the result */
   const mutate = async (variables: Vars = {}): Promise<T> => {
+    inFlight += 1
     loading.value = true
     error.value = undefined
     try {
@@ -27,7 +30,8 @@ export function useGqlMutation<T = unknown>(mutation: string) {
       error.value = e
       throw e
     } finally {
-      loading.value = false
+      inFlight -= 1
+      loading.value = inFlight > 0
     }
   }
 

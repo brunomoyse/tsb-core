@@ -116,3 +116,22 @@ test('roundCentsToStep rounds to the policy step, ties up, and keeps 10 as round
   assert.strictEqual(roundCentsToStep(-2463, 25), -2475)
   assert.ok(Object.is(roundCentsToStep(-1, 10), 0), 'never -0')
 })
+
+test('roundCentsToStep returns a non-finite amount as it is', () => {
+  assert.ok(Number.isNaN(roundCentsToStep(Number.NaN, 10)))
+  assert.strictEqual(roundCentsToStep(Infinity, 10), Infinity)
+  assert.strictEqual(roundCentsToStep(-Infinity, 10), -Infinity)
+})
+
+test('roundCentsToStep with no usable step (0, 1, negative, NaN, Infinity) rounds to whole cents', () => {
+  for (const step of [0, 1, -5, Number.NaN, Infinity]) {
+    assert.strictEqual(roundCentsToStep(1234.4, step), 1234)
+    assert.strictEqual(roundCentsToStep(1234.5, step), 1235)
+  }
+})
+
+test('roundCentsToStep never returns -0', () => {
+  assert.ok(Object.is(roundCentsToStep(-0.4, 1), 0))
+  assert.ok(Object.is(roundCentsToStep(0.2, 1), 0))
+  assert.ok(Object.is(roundCentsToStep(-3, 10), 0))
+})

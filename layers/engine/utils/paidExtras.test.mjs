@@ -42,12 +42,21 @@ test('the quantity counts plain lines of the product, not lines with a choice', 
       selectedChoice: { id: 'c' },
       selectedChoices: [{ choiceId: 'c', quantity: 1 }],
     },
+    // A composed dish as the cart stores it today: no legacy choice, selections only.
+    {
+      product: { code: 'A1' },
+      quantity: 7,
+      selectedChoice: null,
+      selectedChoices: [{ choiceId: 'c', quantity: 1 }],
+    },
+    // A legacy line: a single choice and no selections.
     { product: { code: 'A1' }, quantity: 3, selectedChoice: { id: 'c' }, selectedChoices: [] },
+    { product: { code: 'A1' }, quantity: 4, selectedChoice: null, selectedChoices: [] },
     { product: { code: 'B' }, quantity: 5 },
   ]
-  assert.equal(paidExtraQuantity(lines, 'A1'), 5)
+  assert.equal(paidExtraQuantity(lines, 'A1'), 2 + 4)
   assert.equal(paidExtraQuantity(lines, 'Z'), 0)
-  assert.equal(paidExtrasOf([product('A1', 'Rice', '0.50')], lines)[0].quantity, 5)
+  assert.equal(paidExtrasOf([product('A1', 'Rice', '0.50')], lines)[0].quantity, 6)
 })
 
 test('an old backend is recognised by the validation error that names productCategoryBySlug', () => {
@@ -82,4 +91,20 @@ test('an old backend is recognised by the validation error that names productCat
     true,
   )
   assert.equal(isCategoryBySlugUnsupportedError(new Error('network')), false)
+})
+
+test('a line with a legacy choice and no selectedChoices at all is a line with a choice, not the extra', () => {
+  const lines = [
+    { product: { code: 'A1' }, quantity: 2, selectedChoice: { id: 'c' } },
+    { product: { code: 'A1' }, quantity: 1, selectedChoice: null },
+  ]
+  assert.equal(paidExtraQuantity(lines, 'A1'), 1)
+})
+
+test('a line with selections but no legacy choice (how the cart stores a composed dish) is not the extra either', () => {
+  const lines = [
+    { product: { code: 'A1' }, quantity: 3, selectedChoice: null, selectedChoices: [{}] },
+    { product: { code: 'A1' }, quantity: 2, selectedChoices: [{}] },
+  ]
+  assert.equal(paidExtraQuantity(lines, 'A1'), 0)
 })

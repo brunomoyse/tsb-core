@@ -105,3 +105,23 @@ test('accepting a price adds the selected choices the snapshot lacked, so the pr
     { id: 'egg', priceModifier: '0.80', groupId: 'g2' },
   ])
 })
+
+test('a code the table does not know sorts after every known one (in their own order) and offers only removal', () => {
+  const views = describeLineIssues(
+    [
+      issue('BRAND_NEW_B'),
+      issue('PRICE_CHANGED'),
+      issue('BRAND_NEW_A'),
+      issue('PRODUCT_NOT_FOUND'),
+    ],
+    1000,
+    1200,
+  )
+  assert.deepEqual(
+    views.map((view) => view.code),
+    ['PRODUCT_NOT_FOUND', 'PRICE_CHANGED', 'BRAND_NEW_B', 'BRAND_NEW_A'],
+  )
+  assert.deepEqual(views[2].actions, ['remove'])
+  assert.equal(views[2].messageKey, 'cart.issues.generic')
+  assert.deepEqual(views[1].params, { fromCents: 1000, toCents: 1200 })
+})

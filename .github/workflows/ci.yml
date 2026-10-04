@@ -21,8 +21,10 @@ jobs:
       - name: vp check (format, lint, type check) and repo guard scripts
         run: vp run check
 
-      - name: Engine unit tests (vp test)
-        run: vp test run
+      # Unit tests with v8 coverage; the thresholds (test.coverage.thresholds in vite.config.ts) fail the job
+      # when coverage drops. Nothing is uploaded. See docs/testing.md.
+      - name: Unit tests with coverage (vp test)
+        run: vp test run --coverage
 
   typecheck:
     name: Typecheck (${{ matrix.app }})

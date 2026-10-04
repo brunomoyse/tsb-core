@@ -130,3 +130,27 @@ test('cookieValue finds a cookie by exact name', () => {
   assert.equal(cookieValue('my_i18n_redirected=nl', 'i18n_redirected'), null)
   assert.equal(cookieValue(null, 'i18n_redirected'), null)
 })
+
+test('absent headers: no Accept-Language names no language, no Cookie header has no cookie', () => {
+  for (const header of [null, undefined, '']) {
+    assert.equal(preferredLocale(header, config.locales), null)
+  }
+  assert.equal(cookieValue(null, 'a'), null)
+  assert.equal(cookieValue(undefined, 'a'), null)
+})
+
+test('an Accept-Language of blanks names no language: cacheable, like no header at all', () => {
+  assert.equal(hit({ acceptLanguage: '   ' }), 'fr')
+  assert.equal(hit({ acceptLanguage: 'de,*' }), null)
+})
+
+test('a path that is not a listed page of a known locale is never cacheable, whatever the cookie says', () => {
+  for (const pathname of ['/fr/menu', '/de/terms', '/', '/fr/terms/']) {
+    assert.equal(cacheableLocale({ pathname }, config), null, pathname)
+    assert.equal(
+      cacheableLocale({ pathname, cookie: 'i18n_redirected=fr' }, config),
+      null,
+      pathname,
+    )
+  }
+})

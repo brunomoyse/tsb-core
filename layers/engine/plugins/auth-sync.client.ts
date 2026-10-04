@@ -77,8 +77,12 @@ async function syncAuth(): Promise<void> {
   if (authStore.user && !oidcAuthed) {
     const renewed = await silentRenew()
     if (renewed) return
-    await removeUser()
-    authStore.clearUser()
+    // The profile goes whether or not the OIDC store could be cleaned: a failing removeUser must not leave a ghost user.
+    try {
+      await removeUser()
+    } finally {
+      authStore.clearUser()
+    }
     return
   }
 

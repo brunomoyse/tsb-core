@@ -13,6 +13,7 @@ import {
   isResendDisabled,
   isVerifyDisabled,
   postAuthTarget,
+  rememberCurrentPage,
   sanitizeReturnTo,
   stepAfterVerify,
   tickResendCooldown,
@@ -124,7 +125,7 @@ describe('resend countdown', () => {
     let ticks = 0
     for (;;) {
       const tick = tickResendCooldown(seconds)
-      seconds = tick.seconds
+      ;({ seconds } = tick)
       ticks++
       if (tick.done) break
     }
@@ -177,6 +178,15 @@ describe('return to the checkout after signing in', () => {
     assert.equal(sanitizeReturnTo('fr/checkout'), null)
   })
 
+  test('browser quirks that turn a "same-site" path into another host are refused', () => {
+    // A browser reads `/\\evil.example` as `//evil.example`, and ignores a tab or newline inside the URL.
+    assert.equal(sanitizeReturnTo('/\\evil.example'), null)
+    assert.equal(sanitizeReturnTo('/fr/\\evil.example'), null)
+    assert.equal(sanitizeReturnTo('/\t/evil.example'), null)
+    assert.equal(sanitizeReturnTo('/\n/evil.example'), null)
+    assert.equal(sanitizeReturnTo('/fr/menu\u0000'), null)
+  })
+
   test('the auth pages themselves are never a return target (no login loop)', () => {
     assert.equal(sanitizeReturnTo('/fr/auth/login'), null)
     assert.equal(sanitizeReturnTo('/en/auth/callback'), null)
@@ -190,6 +200,50 @@ describe('return to the checkout after signing in', () => {
     assert.deepEqual(postAuthTarget('/fr/checkout', true), { kind: 'path', path: '/fr/checkout' })
     assert.deepEqual(postAuthTarget(null, true), { kind: 'menu' })
     assert.deepEqual(postAuthTarget(null, false), { kind: 'checkout-if-open' })
+  })
+})
+
+describe('remembering the page before a dead session sends the customer to the login', () => {
+  /** Runs `fn` as a browser tab at `url` whose sessionStorage is `storage` (this file runs in plain Node). */
+  const inTab = (url, storage, fn) => {
+    const { pathname, search, hash } = new URL(url, 'https://shop.test')
+    globalThis.window = { location: { pathname, search, hash } }
+    globalThis.sessionStorage = storage
+    try {
+      fn()
+    } finally {
+      delete globalThis.window
+      delete globalThis.sessionStorage
+    }
+  }
+  const memory = () => {
+    const data = new Map()
+    return { data, setItem: (k, v) => data.set(k, v), getItem: (k) => data.get(k) ?? null }
+  }
+
+  test('keeps path, query and hash of the current page where useAuthCallback will read it', () => {
+    const storage = memory()
+    inTab('/fr/me/orders?tab=past#o-1', storage, rememberCurrentPage)
+    assert.equal(storage.getItem('oidc_return_to'), '/fr/me/orders?tab=past#o-1')
+  })
+
+  test('keeps what was stored when the page is the auth flow (no login loop)', () => {
+    const storage = memory()
+    storage.setItem('oidc_return_to', '/fr/checkout')
+    inTab('/fr/auth/login?session=expired', storage, rememberCurrentPage)
+    assert.equal(storage.getItem('oidc_return_to'), '/fr/checkout')
+  })
+
+  test('does nothing without a window (SSR) and survives a storage that refuses writes', () => {
+    assert.doesNotThrow(rememberCurrentPage)
+    const refusing = {
+      setItem: () => {
+        throw new Error('QuotaExceededError')
+      },
+    }
+    assert.doesNotThrow(() => {
+      inTab('/fr/me', refusing, rememberCurrentPage)
+    })
   })
 })
 

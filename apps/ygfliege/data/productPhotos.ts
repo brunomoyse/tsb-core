@@ -62,7 +62,7 @@ export const PRODUCT_PHOTOS: Record<string, ProductPhoto> = {
 export const PRODUCT_PHOTO_WIDTHS = [320, 560, 800]
 
 export const productPhoto = (slug?: string | null): ProductPhoto | undefined =>
-  slug ? PRODUCT_PHOTOS[slug] : undefined
+  slug && Object.hasOwn(PRODUCT_PHOTOS, slug) ? PRODUCT_PHOTOS[slug] : undefined
 
 /**
  * Site-relative URLs of a mapped product's photo for structured data: the PNG fallback and the largest WebP.

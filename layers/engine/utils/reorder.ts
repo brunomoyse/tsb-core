@@ -88,13 +88,15 @@ export function planReorder(items: ReorderItem[]): ReorderPlan {
     } else if (item.choice) {
       // Old order with a single choice and no selections: it applies to every unit.
       legacyChoice = currentChoice(item.choice.id) ?? null
-      selections = legacyChoice
-        ? [{ groupId: legacyChoice.choiceGroupId ?? '', choiceId: legacyChoice.id, quantity }]
-        : []
       if (!legacyChoice) {
         skip('choices')
         continue
       }
+      // A choice without a group cannot be a selection (the API's `groupId` is a mandatory UUID and an empty one
+      // fails the whole order): like the cart store does, it stays the plain legacy `choice` (a `choiceId` on the line).
+      selections = legacyChoice.choiceGroupId
+        ? [{ groupId: legacyChoice.choiceGroupId, choiceId: legacyChoice.id, quantity }]
+        : []
     } else {
       selections = []
     }

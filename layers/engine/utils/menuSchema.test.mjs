@@ -56,6 +56,16 @@ test('a brand photo wins, made absolute', () => {
   assert.equal(other.url, 'https://s3.be/images/thumbnails/p-uuid.png')
 })
 
+test('a brand photo that is already an absolute URL is left as it is', () => {
+  const image = menuItemImage(product(), {
+    baseUrl: base.baseUrl,
+    s3BaseUrl: base.s3BaseUrl,
+    photoFor: () => ({ png: 'https://cdn.test/a.png', webp: 'https://cdn.test/a.webp' }),
+  })
+  assert.equal(image.url, 'https://cdn.test/a.png')
+  assert.equal(image.contentUrl, 'https://cdn.test/a.webp')
+})
+
 test('without a bucket the placeholder is an absolute URL', () => {
   const image = menuItemImage(product(), { baseUrl: base.baseUrl })
   assert.match(image.url, /^https:\/\/shop\.be\/images\/placeholder-product-thumbnail\.png$/u)

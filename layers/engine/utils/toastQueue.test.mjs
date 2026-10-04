@@ -62,6 +62,21 @@ test('a toast of the same group replaces the waiting one, not the showing one', 
   )
 })
 
+test('a waiting toast of the same group is replaced in place: it keeps its turn among the others', () => {
+  const state = {
+    current: toast('showing', { group: 'other' }),
+    queue: [toast('waiting a', { group: 'removal' }), toast('waiting b', { group: 'x' })],
+  }
+  const result = enqueueToast(state, toast('2 items removed', { group: 'removal' }))
+  assert.deepEqual(
+    result.queue.map((t) => t.message),
+    ['2 items removed', 'waiting b'],
+  )
+  assert.equal(result.current, state.current)
+  assert.equal(result.currentChanged, false)
+  assert.equal(result.restartCurrent, false)
+})
+
 test('the same message is not announced twice, while showing or waiting', () => {
   let state = enqueueToast(empty(), toast('network error', { variant: 'error' }))
   state = enqueueToast(state, toast('network error', { variant: 'error' }))
