@@ -36,7 +36,9 @@ Shared builders and helpers live in `test/` at the repo root:
 
 - `test/fixtures/catalog.ts`: `makeProduct`, `makeChoice`, `makeCartItem`
 - `test/fixtures/quote.ts`: `makeQuote`, `makeQuoteLine` (a `quoteOrder` answer)
+- `test/fixtures/order.ts`: `makeOrder`, `makeOrderItem`, `makePayment`, `makeUser` (a placed order, as `myOrder` returns it)
 - `test/flags.ts`: `setFlags({ server, client, dev })`, see "SSR-only and dev-only code"
+- `test/helpers/`: `i18n.ts`, `gqlFetch.ts`, `withSetup.ts`, see "Composables that talk to the API"
 - `test/nitro/callHandler.ts` and `test/nitro/imports.ts`: run a Nitro handler, set its runtime config
 - `test/setup/*`: setup files of the projects (no network, flag reset)
 
@@ -78,6 +80,32 @@ mutations made in the same tick as a `$patch`, so `await nextTick()` before muta
 
 `vi.mock` / `mockNuxtImport` are hoisted: the values they use must come from `vi.hoisted(...)`. A module that is
 mocked must be imported **after** the mocks: `const { default: plugin } = await import('./gqlFetch')`.
+
+### Composables that talk to the API
+
+The GraphQL transport (`$gqlFetch`, used by `useGqlMutation`, `useGqlQuery` and `useNuxtApp().$gqlFetch`) is a read-only
+getter on the Nuxt app, so it is replaced by wrapping `useNuxtApp`; `vue-i18n`'s `useI18n` is replaced by a `t` that returns the
+key and its params, so a test asserts WHICH message was chosen, not its wording; `withSetup` runs a composable inside a real
+component (`onMounted`, `onScopeDispose`, `useId`...).
+
+```ts
+const gqlFetch = vi.hoisted(() => vi.fn())
+mockNuxtImport('useNuxtApp', async (original) => {
+  const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
+  return () => withGqlFetch(original(), gqlFetch)
+})
+vi.mock('vue-i18n', async (importOriginal) => {
+  const { fakeI18n } = await import('../../../test/helpers/i18n')
+  return { ...(await importOriginal<typeof import('vue-i18n')>()), useI18n: fakeI18n }
+})
+
+const { result, unmount } = withSetup(() => useThing()) // from test/helpers/withSetup
+```
+
+A composable with module-level state (a shared request cycle, a "backend is old" flag) is loaded fresh per test:
+`vi.resetModules()` then `await import(...)` of it and of the stores and error classes it shares `instanceof` with
+(see `useOrderQuote.nuxt.test.ts`, `useCouponCode.nuxt.test.ts`). Fake timers: `vi.useFakeTimers({ toFake: [...] })`
+with only the timers the code uses, and `await vi.advanceTimersByTimeAsync(ms)` to let promises settle.
 
 ### Plugins
 
