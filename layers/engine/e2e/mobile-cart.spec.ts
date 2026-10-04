@@ -278,8 +278,8 @@ test.describe('Cart on a phone', () => {
     page,
     brand,
   }) => {
-    // Only the TS product modal reads the "line being edited": see the BUG note of the YGF test below.
-    test.skip(brand !== 'tokyosushi', 'YGF: covered by the test.fail below')
+    // Only the TS product modal reads the "line being edited": see the YGF test below.
+    test.skip(brand !== 'tokyosushi', 'YGF: covered by the next test')
     await gotoMenu(page)
     const modal = await openProductModal(page, 'Poulet teriyaki')
     await pickChoice(page, modal, 'product-modal', 'Piquante')
@@ -314,35 +314,46 @@ test.describe('Cart on a phone', () => {
     await expect(edited).toContainText('12,90')
   })
 
-  // BUG (found by this spec): the "Edit" button of a customised line exists on every brand (engine cart), but
-  // The YGF ProductModal / BowlComposer never read `useCartItemEdit()`, so the menu opens an EMPTY composer and
-  // Confirming ADDS a second line instead of replacing the first. The first assertion below fails today.
-  test.fail(
-    'YGF: Edit on a customised line reopens the product prefilled and replaces the line',
-    async ({ page, brand }) => {
-      test.skip(brand !== 'ygfliege', 'TS: covered by the test above')
-      await gotoMenu(page)
-      const modal = await openProductModal(page, 'Menu Découverte')
-      await pickChoice(page, modal, 'product-modal', 'Bouillon tomate mijoté')
-      await pickChoice(page, modal, 'product-modal', 'Moyen')
-      await modal.getByTestId('product-modal-add-to-cart').click()
-      await expect(modal).toBeHidden()
+  // Used to be a BUG (found by this spec, fixed by fix/small-bugs): the "Edit" button of a customised line exists on every
+  // brand (engine cart), but the YGF ProductModal / BowlComposer never read `useCartItemEdit()`: the menu opened an EMPTY
+  // composer and confirming ADDED a second line. Now the header says "Modification", the choices are prefilled and the
+  // line is replaced where it was.
+  test('YGF: Edit on a customised line reopens the product prefilled and replaces the line', async ({
+    page,
+    brand,
+  }) => {
+    test.skip(brand !== 'ygfliege', 'TS: covered by the test above')
+    await gotoMenu(page)
+    const modal = await openProductModal(page, 'Menu Découverte')
+    await pickChoice(page, modal, 'product-modal', 'Bouillon tomate mijoté')
+    await pickChoice(page, modal, 'product-modal', 'Moyen')
+    await modal.getByTestId('product-modal-add-to-cart').click()
+    await expect(modal).toBeHidden()
+    await addPlain(page, 'Mochi')
 
-      const sheet = await openCart(page)
-      await line(sheet, 'Menu Découverte').getByTestId('cart-item-edit').click()
-      await expect(modal).toBeVisible()
-      const update = modal.getByTestId('product-modal-add-to-cart')
-      // Prefilled and offering an update: the broth and the spice are already picked.
-      await expect(update).toBeEnabled()
-      await pickChoice(page, modal, 'product-modal', 'Fort') // Replaces the spice level
-      await update.click()
-      await expect(modal).toBeHidden()
-      expect(
-        await cartLines(page),
-        'editing must replace the line, not add a second one',
-      ).toHaveLength(1)
-    },
-  )
+    const sheet = await openCart(page)
+    await line(sheet, 'Menu Découverte').getByTestId('cart-item-edit').click()
+    await expect(modal).toBeVisible()
+    await expect(modal.getByTestId('product-modal-eyebrow')).toHaveText('Modification')
+    const update = modal.getByTestId('product-modal-add-to-cart')
+    // Prefilled and offering an update: the broth and the spice are already picked.
+    await expect(update).toBeEnabled()
+    await expect(update).toContainText('Mettre à jour')
+    await pickChoice(page, modal, 'product-modal', 'Fort') // Replaces the spice level
+    await update.click()
+    await expect(modal).toBeHidden()
+    await expect
+      .poll(async () => (await cartLines(page)).length, {
+        message: 'editing must replace the line, not add a second one',
+      })
+      .toBe(2)
+    // The edited line stays first (it was added first), with the new spice level.
+    const lines = await cartLines(page)
+    expect(lines[0]?.selections?.length).toBeGreaterThan(0)
+    const cart = await openCart(page)
+    await expect(cart.getByTestId('cart-item').first()).toContainText('Menu Découverte')
+    await expect(cart.getByTestId('cart-item').first()).toContainText('Fort')
+  })
 
   test('long names and choices at 320 px: nothing scrolls sideways, controls never overlap', async ({
     page,

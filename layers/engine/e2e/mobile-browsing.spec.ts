@@ -112,7 +112,9 @@ test.describe('categories', () => {
     }, middle)
     await expect.poll(() => chipIsActive(page, middle)).toBe(true)
 
-    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight }))
+    await page.evaluate(() => {
+      window.scrollTo({ top: document.documentElement.scrollHeight })
+    })
     await expect.poll(() => chipIsActive(page, ids.at(-1) ?? '')).toBe(true)
     // The selected chip is brought into view inside the horizontally scrolling strip.
     await expect.poll(() => chipVisibleInRow(page, ids.at(-1) ?? '')).toBe(true)
@@ -139,9 +141,13 @@ test.describe('categories', () => {
       await page.goto('/fr/menu')
       await waitForNuxtHydration(page)
       const ids = await categoryIds(page)
-      await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight }))
+      await page.evaluate(() => {
+        window.scrollTo({ top: document.documentElement.scrollHeight })
+      })
       await expect.poll(() => chipIsActive(page, ids.at(-1) ?? '')).toBe(true)
-      await page.evaluate(() => window.scrollTo({ top: 0 }))
+      await page.evaluate(() => {
+        window.scrollTo({ top: 0 })
+      })
       await expect.poll(() => chipIsActive(page, ids[0] ?? ''), { timeout: 3_000 }).toBe(true)
     },
   )
@@ -200,7 +206,7 @@ test.describe('search', () => {
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     await page.locator('#menuSearch').fill('zzzzzz')
-    await expect(page.getByText('Aucun résultat pour "zzzzzz"')).toBeVisible()
+    await expect(page.getByText('Aucun résultat pour « zzzzzz »')).toBeVisible()
     await expect(page.locator(SEL.productCard)).toHaveCount(0)
   })
 

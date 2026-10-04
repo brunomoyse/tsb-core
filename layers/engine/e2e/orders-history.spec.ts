@@ -20,7 +20,7 @@ test.describe('/me/orders', () => {
     authenticatedPage: page,
   }) => {
     await page.goto('/fr/me/orders')
-    await expect(page.getByText('Aucune commande trouvée')).toBeVisible()
+    await expect(page.getByText("Vous n'avez pas encore de commande")).toBeVisible()
     await expect(page.getByTestId('orders-load-error')).toHaveCount(0)
   })
 
@@ -46,8 +46,8 @@ test.describe('/me/orders', () => {
     await page.goto('/fr/me/orders')
     await expect(rows(page)).toHaveCount(3)
     await expect(rows(page).nth(0)).toContainText('En préparation')
-    await expect(rows(page).nth(1)).toContainText('Annulé')
-    await expect(rows(page).nth(2)).toContainText('Retiré')
+    await expect(rows(page).nth(1)).toContainText('Annulée')
+    await expect(rows(page).nth(2)).toContainText('Retirée')
     // Pickup, with the order's total: 2 x 12,50 + 0,30 online fee.
     await expect(rows(page).nth(2)).toContainText('À emporter')
     await expect(rows(page).nth(2)).toContainText('25,30')
@@ -184,7 +184,7 @@ test.describe('/me/orders', () => {
     await expect(page.getByTestId('orders-load-error')).toContainText(
       'Impossible de charger vos commandes',
     )
-    await expect(page.getByText('Aucune commande trouvée')).toHaveCount(0)
+    await expect(page.getByText("Vous n'avez pas encore de commande")).toHaveCount(0)
 
     await backend.mock.failOperation('myOrders', null)
     await page.getByTestId('orders-load-error').getByRole('button', { name: 'Réessayer' }).click()
@@ -202,9 +202,9 @@ test.describe('/me/orders', () => {
     await backend.mock.waitFor((state) => state.subscriptions.includes(`myOrderUpdated:${id}`))
 
     await backend.mock.settleOrder(id, 'CONFIRMED')
-    await expect(rows(page).first()).toContainText('Confirmé')
+    await expect(rows(page).first()).toContainText('Confirmée')
     await backend.mock.settleOrder(id, 'PICKED_UP')
-    await expect(rows(page).first()).toContainText('Retiré')
+    await expect(rows(page).first()).toContainText('Retirée')
   })
 })
 
@@ -242,7 +242,7 @@ test.describe('recent orders on /me', () => {
       .getByRole('button', { name: 'Réessayer' })
       .click()
     await expect(page.getByTestId('orders-widget-load-error')).toHaveCount(0)
-    await expect(page.getByTestId('orders-widget')).toContainText('Retiré')
+    await expect(page.getByTestId('orders-widget')).toContainText('Retirée')
   })
 
   test('an order in progress is listed first and expands to its tracking', async ({

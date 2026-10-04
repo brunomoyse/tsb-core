@@ -39,17 +39,17 @@ const timeIn = (iso: string): string =>
 
 const PICKUP_STEPS = [
   'Commande reçue',
-  'Confirmé par le restaurant',
-  'Préparation',
-  'En attente de retrait',
-  'Retiré',
+  'Confirmée par le restaurant',
+  'En préparation',
+  'Prête à être retirée',
+  'Retirée',
 ]
 const DELIVERY_STEPS = [
   'Commande reçue',
-  'Confirmé par le restaurant',
-  'Préparation',
+  'Confirmée par le restaurant',
+  'En préparation',
   'En cours de livraison',
-  'Livré',
+  'Livrée',
 ]
 
 test.describe('Order confirmation page, live', () => {
@@ -68,9 +68,9 @@ test.describe('Order confirmation page, live', () => {
     await listening(backend.mock, id)
 
     const steps = [
-      ['CONFIRMED', 'Confirmé par le restaurant', 1],
-      ['PREPARING', 'Préparation', 2],
-      ['AWAITING_PICK_UP', 'En attente de retrait', 3],
+      ['CONFIRMED', 'Confirmée par le restaurant', 1],
+      ['PREPARING', 'En préparation', 2],
+      ['AWAITING_PICK_UP', 'Prête à être retirée', 3],
     ] as const
     for (const [status, title, done] of steps) {
       await backend.settleOrder(id, status, 'paid')
@@ -111,7 +111,7 @@ test.describe('Order confirmation page, live', () => {
 
     // A finished kitchen order is still "being prepared" for a delivery: there is no counter pick-up step.
     await backend.settleOrder(id, 'AWAITING_PICK_UP', 'paid')
-    await expect(current(page)).toContainText('Préparation')
+    await expect(current(page)).toContainText('En préparation')
     await backend.settleOrder(id, 'OUT_FOR_DELIVERY', 'paid')
     await expect(current(page)).toContainText('En cours de livraison')
     await backend.settleOrder(id, 'DELIVERED', 'paid')
@@ -159,7 +159,7 @@ test.describe('Order confirmation page, live', () => {
   }) => {
     const id = await backend.seedOrder({ status: 'PREPARING', online: false, withItem: true })
     await page.goto(`/fr/order-completed/${id}`)
-    await expect(current(page)).toContainText('Préparation')
+    await expect(current(page)).toContainText('En préparation')
     await listening(backend.mock, id)
 
     await backend.mock.patchOrder(id, { status: 'CANCELLED', cancellationReason: 'OUT_OF_STOCK' })
@@ -176,7 +176,7 @@ test.describe('Order confirmation page, live', () => {
   }) => {
     const id = await backend.seedOrder({ status: 'CONFIRMED', online: false, withItem: true })
     await page.goto(`/fr/order-completed/${id}`)
-    await expect(current(page)).toContainText('Confirmé par le restaurant')
+    await expect(current(page)).toContainText('Confirmée par le restaurant')
     await listening(backend.mock, id)
 
     await backend.mock.patchOrder(id, { status: 'CANCELLED', cancellationReason: 'OTHER' })
@@ -202,7 +202,7 @@ test.describe('Order confirmation page, live', () => {
 
     await backend.settleOrder(id, 'CONFIRMED', 'paid')
     await expect(hint).toHaveCount(0)
-    await expect(current(page)).toContainText('Confirmé par le restaurant')
+    await expect(current(page)).toContainText('Confirmée par le restaurant')
   })
 
   test('an order that cannot be loaded says so instead of spinning for ever', async ({
@@ -243,7 +243,7 @@ test.describe('Order confirmation page, live', () => {
       status: 'CONFIRMED',
       estimatedReadyTime: new Date(Date.now() + 30 * 60_000).toISOString(),
     })
-    await expect(current(page)).toContainText('Confirmé par le restaurant')
+    await expect(current(page)).toContainText('Confirmée par le restaurant')
     await expect(page.getByText('Heure estimée de retrait :')).toBeVisible()
     // The same page, never reloaded: still the one navigation of the checkout.
     expect(page.url()).toContain(id)

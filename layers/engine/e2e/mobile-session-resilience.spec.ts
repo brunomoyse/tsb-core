@@ -34,26 +34,56 @@ test.describe('Profile sync at app start', () => {
     expect(await hasSession(page)).toBe(true)
   })
 
-  // BUG (found by this spec): the sync treats ANY failure of its /me request as "the token is stale" and removes the
-  // OIDC session: a request cut by a navigation, a dropped connection or a 5xx signs the customer out, who then meets
-  // The login step in the middle of an order. Only a refusal of the token itself (401 / UNAUTHENTICATED) should do that.
-  // The assertion below fails today.
-  test.fail(
-    'a network failure of the profile request does not sign the customer out',
-    async ({ authenticatedPage: page }) => {
-      await page.route('**/api/v1/graphql', async (route) => {
-        if (isProfileSync(route.request().postData())) await route.abort('connectionreset')
-        else await route.continue()
-      })
-      const failed = page.waitForEvent('requestfailed', (request) =>
-        isProfileSync(request.postData()),
-      )
-      await page.goto('/fr/menu')
-      await failed
-      await page.waitForLoadState('networkidle')
-      expect(await hasSession(page), 'the OIDC session was removed after a failed request').toBe(
-        true,
-      )
-    },
-  )
+  // Used to be a BUG (found by this spec, fixed by fix/small-bugs): the sync treated ANY failure of its /me request as "the
+  // token is stale" and removed the OIDC session: a request cut by a navigation, a dropped connection or a 5xx signed the
+  // customer out in the middle of an order. Only a refusal of the token itself (401 / UNAUTHENTICATED) does that now.
+  test('a network failure of the profile request does not sign the customer out', async ({
+    authenticatedPage: page,
+  }) => {
+    await page.route('**/api/v1/graphql', async (route) => {
+      if (isProfileSync(route.request().postData())) await route.abort('connectionreset')
+      else await route.continue()
+    })
+    const failed = page.waitForEvent('requestfailed', (request) =>
+      isProfileSync(request.postData()),
+    )
+    await page.goto('/fr/menu')
+    await failed
+    await page.waitForLoadState('networkidle')
+    expect(await hasSession(page), 'the OIDC session was removed after a failed request').toBe(true)
+  })
+
+  test('a server error on the profile request does not sign the customer out either', async ({
+    authenticatedPage: page,
+  }) => {
+    let answered = false
+    await page.route('**/api/v1/graphql', async (route) => {
+      if (isProfileSync(route.request().postData())) {
+        answered = true
+        await route.fulfill({ status: 503, body: 'Service Unavailable' })
+      } else await route.continue()
+    })
+    await page.goto('/fr/menu')
+    await expect.poll(() => answered).toBe(true)
+    await page.waitForLoadState('networkidle')
+    expect(await hasSession(page), 'the OIDC session was removed after a 503').toBe(true)
+  })
+
+  test('a refused token (UNAUTHENTICATED) does end the session', async ({
+    authenticatedPage: page,
+  }) => {
+    await page.route('**/api/v1/graphql', async (route) => {
+      if (isProfileSync(route.request().postData()))
+        await route.fulfill({
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: null,
+            errors: [{ message: 'unauthenticated', extensions: { code: 'UNAUTHENTICATED' } }],
+          }),
+        })
+      else await route.continue()
+    })
+    await page.goto('/fr/menu')
+    await expect.poll(() => hasSession(page)).toBe(false)
+  })
 })

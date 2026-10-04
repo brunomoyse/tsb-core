@@ -42,7 +42,7 @@ test.describe('Side cart', () => {
     await cart.getByTestId('cart-option-delivery').click()
     await expect(cart.getByTestId('cart-option-delivery')).toHaveAttribute('aria-pressed', 'true')
     // Delivery without an address: the fee is "calculated at payment", no discount; 26,90 + 0,30 online fee.
-    await expect(cart).toContainText('Livraison calculée au paiement')
+    await expect(cart).toContainText('Frais de livraison calculés au paiement')
     await expect(cart).not.toContainText('Remise à emporter')
     await expect
       .poll(async () => eurosOf(await cart.getByTestId('cart-total').innerText()))
@@ -65,7 +65,7 @@ test.describe('Side cart', () => {
     await fillCart(page, ['Edamame']) // 4,50
     const cart = sideCart(page)
     await cart.getByTestId('cart-option-delivery').click()
-    await expect(cart.getByTestId('cart-minimum-warning')).toContainText('Ajoutez encore 20,50')
+    await expect(cart.getByTestId('cart-minimum-warning')).toContainText('Encore 20,50')
     await expect(cart.getByTestId('cart-checkout-link')).toHaveAttribute('aria-disabled', 'true')
 
     await cart.getByTestId('cart-switch-to-pickup').click()
@@ -99,7 +99,7 @@ test.describe('Side cart', () => {
     page,
     brand,
   }) => {
-    test.skip(brand !== 'tokyosushi', 'the YGF edit is the test.fail of mobile-cart.spec.ts')
+    test.skip(brand !== 'tokyosushi', 'the YGF edit is covered by mobile-cart.spec.ts')
     await gotoMenu(page)
     const modal = await openProductModal(page, 'Poulet teriyaki')
     await pickChoice(page, modal, 'product-modal', 'Piquante')
@@ -178,7 +178,7 @@ test.describe('Checkout in columns', () => {
     await cart.getByTestId('cart-checkout-link').click()
     await page.waitForURL('**/fr/checkout')
     await expect(payButton(page)).toBeVisible()
-    // Desktop: the button sits in the "Options & Paiement" card; the phone's fixed bar is not rendered visible.
+    // Desktop: the button sits in the "Options et paiement" card; the phone's fixed bar is not rendered visible.
     await expect(
       page.locator('#checkout-payment-extras').getByTestId('checkout-place-order'),
     ).toBeVisible()

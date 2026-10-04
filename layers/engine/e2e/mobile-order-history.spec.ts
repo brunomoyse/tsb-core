@@ -76,16 +76,16 @@ test.describe('Orders in progress', () => {
     await expect(order.getByRole('button', { name: 'Recommander' })).toHaveCount(0)
 
     await backend.settleOrder(id, 'CONFIRMED', 'paid')
-    await expect(order.getByText('Confirmé', { exact: true })).toBeVisible()
+    await expect(order.getByText('Confirmée', { exact: true })).toBeVisible()
     await backend.settleOrder(id, 'PREPARING', 'paid')
-    await expect(order.getByText('En préparation', { exact: true })).toBeVisible()
+    await expect(order.getByRole('button', { name: /En préparation/u }).first()).toBeVisible()
     await expect(
       order.getByRole('list', { name: 'Suivi de la commande' }).locator('[aria-current="step"]'),
-    ).toContainText('Préparation')
+    ).toContainText('En préparation')
 
     // Done: the live timeline goes, and the order can be ordered again.
     await backend.settleOrder(id, 'PICKED_UP', 'paid')
-    await expect(order.getByText('Retiré', { exact: true })).toBeVisible()
+    await expect(order.getByText('Retirée', { exact: true })).toBeVisible()
     await expect(order.getByRole('list', { name: 'Suivi de la commande' })).toHaveCount(0)
     await expect(order.getByRole('button', { name: 'Recommander' })).toBeVisible()
     await noHorizontalScroll(page, 'order list')
@@ -103,7 +103,7 @@ test.describe('Orders in progress', () => {
     const order = await openOrder(page, id)
     await backend.mock.waitFor((state) => state.subscriptions.includes(`myOrderUpdated:${id}`))
     await backend.mock.patchOrder(id, { status: 'CANCELLED', cancellationReason: 'KITCHEN_CLOSED' })
-    await expect(order.getByText('Annulé', { exact: true })).toBeVisible()
+    await expect(order.getByText('Annulée', { exact: true })).toBeVisible()
     await expect(order.getByText('Cuisine fermée')).toBeVisible()
     await expect(order.getByRole('button', { name: 'Recommander' })).toHaveCount(0)
   })

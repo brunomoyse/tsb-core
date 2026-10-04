@@ -45,7 +45,7 @@ test.describe('OIDC callback', () => {
     page,
   }) => {
     await page.goto('/fr/auth/callback?code=forged&state=not-ours')
-    await expect(page.getByText("L'authentification a échoué")).toBeVisible()
+    await expect(page.getByText('La connexion a échoué')).toBeVisible()
     expect(await sessionEntries(page)).toHaveLength(0)
     await page.getByRole('link', { name: 'Réessayer' }).click()
     await page.waitForURL(/\/fr\/auth\/login/u)
@@ -53,7 +53,7 @@ test.describe('OIDC callback', () => {
 
   test('an error answer from Zitadel (access_denied) is an error page', async ({ page }) => {
     await page.goto('/fr/auth/callback?error=access_denied&state=whatever')
-    await expect(page.getByText("L'authentification a échoué")).toBeVisible()
+    await expect(page.getByText('La connexion a échoué')).toBeVisible()
     expect(await sessionEntries(page)).toHaveLength(0)
   })
 
@@ -74,9 +74,7 @@ test.describe('OIDC callback', () => {
     const other = await context.browser()?.newContext({ baseURL: page.url() })
     const replay = await other?.newPage()
     await replay?.goto(callbackUrl)
-    await expect(
-      replay?.getByText("L'authentification a échoué") ?? page.locator('x'),
-    ).toBeVisible()
+    await expect(replay?.getByText('La connexion a échoué') ?? page.locator('x')).toBeVisible()
     await other?.close()
   })
 
@@ -168,27 +166,11 @@ test.describe('a session that is old or refused', () => {
   })
 
   /*
-   * BUG (found by this spec, not fixed: product decision): the server refuses a token the browser still believes in
-   * (revoked, user deleted, clock skew). gqlFetch's attemptRefresh sends the customer to `/auth/login?session=expired` only
-   * when silentRenew() THROWS, but useOidc.silentRenew never throws: it wipes the session and returns null. So the
-   * customer stays on an error page ("Impossible de charger vos commandes", Retry that cannot work, no token any more)
-   * and is never asked to sign in again. Expected: the login page with the session-expired notice.
-   * Not a one-line fix: an anonymous visitor's UNAUTHENTICATED answers (checkout) go through the same path and must
-   * not be thrown at the login page.
+   * The server refuses a token the browser still believes in (revoked, user deleted, clock skew): the renewal gets a
+   * definitive refusal, the session is cleared and the customer lands on the login page with the expired notice
+   * (this was a BUG before fix/small-bugs: the customer stayed on an error page with a Retry that could not work).
    */
-  test.fail(
-    'a token the server refuses mid-session sends the customer to login with the expired notice',
-    async ({ authenticatedPage: page, backend }) => {
-      await page.goto('/fr/me')
-      await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour, Eva')
-      await backend.mock.scenario({ rejectSession: true })
-      await page.getByRole('link', { name: /Tout voir/u }).click()
-      await page.waitForURL(/\/auth\/login/u, { timeout: 5_000 })
-      await expect(page.getByText('Votre session a expiré')).toBeVisible()
-    },
-  )
-
-  test('what a refused token does today: the orders page shows its load error and the session is dropped', async ({
+  test('a token the server refuses mid-session sends the customer to login with the expired notice', async ({
     authenticatedPage: page,
     backend,
   }) => {
@@ -196,7 +178,9 @@ test.describe('a session that is old or refused', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour, Eva')
     await backend.mock.scenario({ rejectSession: true })
     await page.getByRole('link', { name: /Tout voir/u }).click()
-    await expect(page.getByTestId('orders-load-error')).toBeVisible()
+    // Through Zitadel (the mock) and back to the login page, which carries the notice.
+    await page.waitForURL(/\/fr\/auth\/login\?authRequest=/u, { timeout: 10_000 })
+    await expect(page.getByText('Votre session a expiré')).toBeVisible()
     expect(await sessionEntries(page)).toHaveLength(0)
   })
 })
@@ -240,7 +224,7 @@ test.describe('pages that need an account', () => {
   }) => {
     await addFirstSimpleProduct(page)
     await page.goto('/fr/checkout')
-    await expect(page.getByText("Plus qu'une étape, connectez-vous")).toBeVisible()
+    await expect(page.getByText("Plus qu'une étape : connectez-vous")).toBeVisible()
     await expect(page.getByText('Votre panier est sauvegardé')).toBeVisible()
     await expect(page.locator(SEL.checkoutPlaceOrder)).toHaveCount(0)
     expect(await page.evaluate(() => location.pathname)).toBe('/fr/checkout')

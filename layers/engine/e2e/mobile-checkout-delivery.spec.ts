@@ -81,7 +81,7 @@ test.describe('Delivery checkout (Tokyo Sushi)', () => {
     await waitForQuote(page)
 
     await expect(page.locator('#checkout-delivery-address')).toContainText(
-      'Trop loin pour la livraison (max 9 km)',
+      'Trop loin pour la livraison (max. 9 km)',
     )
     await expect(summaryRow(page, 'Frais de livraison')).toContainText('Trop loin')
     // The server quote says so too, and the pay button is off.
@@ -128,7 +128,7 @@ test.describe('Delivery checkout (Tokyo Sushi)', () => {
     await waitForQuote(page)
 
     const banner = page.locator('#checkout-minimum-order-banner')
-    await expect(banner).toContainText('Livraison minimum de 25')
+    await expect(banner).toContainText('Minimum de commande pour la livraison : 25')
     await expect(payButton(page)).toBeDisabled()
 
     // More Edamame: 6 x 4,50 = 27,00, the banner goes and Pay comes back.
@@ -227,7 +227,7 @@ test.describe('Before signing in', () => {
   }
   const gate = (page: Page) => page.getByRole('heading', { name: 'Avant de continuer' })
   const authStep = (page: Page) =>
-    page.getByRole('heading', { name: /Plus qu.une étape, connectez-vous/u })
+    page.getByRole('heading', { name: /Plus qu.une étape : connectez-vous/u })
 
   test.beforeEach(({ brand }) => {
     test.skip(brand !== 'tokyosushi', 'takeaway-only brand: no zone to check')
@@ -249,7 +249,7 @@ test.describe('Before signing in', () => {
     // Out of the zone: told why, offered pickup, still no login step.
     await pickGateAddress(page, 'Rue de la Station 7')
     await expect(
-      page.getByRole('status').filter({ hasText: 'hors de notre zone de 9 km' }),
+      page.getByRole('status').filter({ hasText: 'hors de notre zone de livraison (9 km)' }),
     ).toBeVisible()
     await expect(gate(page)).toBeVisible()
     await expect(authStep(page)).toHaveCount(0)

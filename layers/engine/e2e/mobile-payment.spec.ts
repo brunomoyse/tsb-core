@@ -73,7 +73,7 @@ test.describe('Online payment through the hosted page', () => {
     )
     // The webhook confirmed it: the timeline is past "received".
     await expect(page.getByRole('list', { name: 'Suivi de la commande' })).toContainText(
-      'Confirmé par le restaurant',
+      'Confirmée par le restaurant',
     )
     await expect.poll(async () => (await cartLines(page)).length).toBe(0)
     await expect(page.getByTestId('floating-cart-bar')).toHaveCount(0)
@@ -256,7 +256,7 @@ test.describe('Cash payment', () => {
     await waitForQuote(page)
     await payButton(page).click()
     await expect(
-      page.getByRole('alert').filter({ hasText: 'Merci de compléter avant de valider' }),
+      page.getByRole('alert').filter({ hasText: 'À compléter avant de commander' }),
     ).toBeVisible()
     await expect(
       page.getByRole('button', { name: 'Merci de confirmer le paiement en espèces' }),
@@ -264,7 +264,9 @@ test.describe('Cash payment', () => {
     expect(await backend.mock.operations('createOrder')).toHaveLength(0)
 
     await page.getByTestId('cash-acknowledge').check()
-    await expect(page.getByRole('alert').filter({ hasText: 'Merci de compléter' })).toHaveCount(0)
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'À compléter avant de commander' }),
+    ).toHaveCount(0)
     await payButton(page).click()
     await page.waitForURL('**/fr/order-completed/**')
   })

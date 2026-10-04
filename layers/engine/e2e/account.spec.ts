@@ -44,7 +44,7 @@ test.describe('profile', () => {
     await dialog.getByLabel('Nom de famille').fill('Dupont')
     await dialog.getByTestId('profile-submit').click()
 
-    await expect(toast(page, 'Le profil a correctement été mis à jour.')).toBeVisible()
+    await expect(toast(page, 'Votre profil a bien été mis à jour.')).toBeVisible()
     await expect(dialog).toBeHidden()
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour, Éva-Marie')
     await expect(page.getByText('Éva-Marie Dupont')).toBeVisible()
@@ -310,7 +310,7 @@ test.describe('e-mail preferences', () => {
     await openAccount(page)
     const marketing = page.getByRole('switch', { name: 'E-mails marketing' })
     await marketing.click()
-    await expect(toast(page, 'Échec de la mise à jour des préférences.')).toBeVisible()
+    await expect(toast(page, "Impossible d'enregistrer vos préférences.")).toBeVisible()
     await expect(marketing).toHaveAttribute('aria-checked', 'false')
   })
 })

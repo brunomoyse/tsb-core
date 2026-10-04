@@ -219,7 +219,7 @@ test('ordering several bowls at once asks for 5 ingredients per bowl, and the pr
   await root.getByRole('button', { name: 'Augmenter la quantité de Malatang sur mesure' }).tap()
   await expect(add(page)).toBeDisabled()
   await expect(ingredientsCount(root, brand, 5, 40)).toBeVisible()
-  await expect(root.getByText('Sélectionnez au moins 5 options')).toBeVisible()
+  await expect(root.getByText('Choisissez au moins 5 options')).toBeVisible()
   for (const id of VEGETABLES) await inc(root, id).tap()
   await expect(add(page)).toBeEnabled()
   // 2 x 2,50 + 10 x 1,00.

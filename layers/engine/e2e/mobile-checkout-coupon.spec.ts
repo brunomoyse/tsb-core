@@ -60,8 +60,8 @@ test.describe('Promo codes at checkout', () => {
     await expect(page.getByTestId('coupon-applied')).toContainText('-5,00')
     await expect(page.getByTestId('coupon-error')).toHaveCount(0)
     // The code is shown as the customer typed it.
-    await expect(summaryRow(page, /Réduction code promo/u)).toContainText('fiveoff')
-    await expect(summaryRow(page, /Réduction code promo/u)).toContainText('-5,00')
+    await expect(summaryRow(page, /Code promo/u)).toContainText('fiveoff')
+    await expect(summaryRow(page, /Code promo/u)).toContainText('-5,00')
     await waitForQuote(page)
     expect(await payAmount(page)).toBe(basket.fiveOff)
 
@@ -82,7 +82,7 @@ test.describe('Promo codes at checkout', () => {
     await waitForQuote(page)
     // The pill first shows validateCoupon's amount, then the one the quote charges.
     await expect(page.getByTestId('coupon-applied')).toContainText(`-${basket.welcomeRow}`)
-    await expect(summaryRow(page, /Réduction code promo/u)).toContainText(`-${basket.welcomeRow}`)
+    await expect(summaryRow(page, /Code promo/u)).toContainText(`-${basket.welcomeRow}`)
     expect(await payAmount(page)).toBe(basket.welcome10)
   })
 
@@ -103,7 +103,7 @@ test.describe('Promo codes at checkout', () => {
     await expect(input(page)).toBeFocused()
     await waitForQuote(page)
     expect(await payAmount(page)).toBe(basket.base)
-    await expect(summaryRow(page, /Réduction code promo/u)).toHaveCount(0)
+    await expect(summaryRow(page, /Code promo/u)).toHaveCount(0)
     expect((await cartState(page)).couponCode).toBeNull()
     const quote = (await backend.mock.operations('quoteOrder')).at(-1)
     expect(quote?.args.input).toMatchObject({ couponCode: null })
@@ -183,7 +183,7 @@ test.describe('Promo codes at checkout', () => {
     await expect(page.getByTestId('coupon-applied')).toHaveCount(0, { timeout: 15_000 })
     await expect(page.getByText(/Le code promo WELCOME10 a été retiré/u).first()).toBeVisible()
     await waitForQuote(page)
-    await expect(summaryRow(page, /Réduction code promo/u)).toHaveCount(0)
+    await expect(summaryRow(page, /Code promo/u)).toHaveCount(0)
     expect((await cartState(page)).couponCode).toBeNull()
     expect(await payAmount(page)).toBeLessThan(BASKET[brand].base)
   })

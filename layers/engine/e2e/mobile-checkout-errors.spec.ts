@@ -159,7 +159,7 @@ test.describe('createOrder refused', () => {
     {
       name: 'a server error',
       failure: { code: 'INTERNAL' },
-      message: 'La création de la commande a échoué. Veuillez réessayer.',
+      message: "Votre commande n'a pas pu être créée. Veuillez réessayer.",
     },
     {
       name: 'a product sold out in the meantime, named in the message',
@@ -219,11 +219,13 @@ test.describe('createOrder refused', () => {
     await readyToPayInCash(page)
     await backend.mock.scenario({ rejectSession: true })
     await payButton(page).click()
-    // The customer is told to sign in again; no order exists and the cart is intact.
+    // The server refuses the token and the renewal is refused too: the customer is sent to sign in again (with the
+    // expired notice); no order exists and the cart is intact.
+    await page.waitForURL(/\/fr\/auth\/login\?authRequest=/u)
     await expect(
-      page.getByText('Votre session a expiré. Veuillez vous reconnecter.').first(),
+      page.locator('p[role="alert"]', { hasText: 'Votre session a expiré' }),
     ).toBeVisible()
-    await expect.poll(async () => (await backend.mock.operations('createOrder')).length).toBe(1)
+    expect(await backend.mock.operations('createOrder')).toHaveLength(1)
     expect(await backend.mock.createdOrders()).toHaveLength(0)
     expect(await cartLines(page)).toHaveLength(1)
   })
