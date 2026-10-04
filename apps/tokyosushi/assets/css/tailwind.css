@@ -165,6 +165,13 @@
     min-height: calc(100dvh - 60px);
   }
 
+  /* A page that grows after hydration (checkout, order tracking) takes at least this much, so that the footer starts just below
+     the fold instead of jumping out of it (CLS). Used from lg: the desktop layout has a side navigation and no top bar, so the
+     page's own height is the viewport's. */
+  .min-h-fold {
+    min-height: 100dvh;
+  }
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;

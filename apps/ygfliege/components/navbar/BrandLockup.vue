@@ -2,11 +2,11 @@
   <!-- The header lockup of ygfliege.be (src/components/header.ts of the vitrine): the official circle seal beside the
          restaurant name set in text. GUIDELINES.md §2.2 forbids showing the circle without its name, and forbids redrawing
          the logo, so the name is composed text next to the untouched kit asset, exactly as on the vitrine. The accessible
-         name is carried by the link (it starts with the visible name, as WCAG 2.5.3 wants, then says where the link goes); the
-         circle is decorative. -->
+         name is the visible text plus a visually hidden " – Accueil" (WCAG 2.5.3: it starts with the visible name, and says
+         where the link goes). There is deliberately no aria-label: it would replace the text and lose the lang="zh-Hans" /
+         translate="no" marking of the Chinese name, which a French voice would then spell. The circle is decorative. -->
   <NuxtLinkLocale
     to="/"
-    :aria-label="`Yangguofu 杨国福麻辣烫 · Liège – ${$t('nav.home')}`"
     class="lockup shrink-0 inline-flex items-center gap-2 lg:gap-3 min-h-11 rounded-ygf-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
   >
     <img
@@ -20,9 +20,10 @@
       <span class="lockup-name" translate="no">Yangguofu</span>
       <!-- 12px by design: part of the logo composition, not running text (the vitrine sets it at --text-xs) -->
       <span class="lockup-sub hidden lg:inline"
-        ><span lang="zh-Hans">杨国福麻辣烫</span> · Liège</span
+        ><span lang="zh-Hans" translate="no">杨国福麻辣烫</span> · Liège</span
       >
     </span>
+    <span class="sr-only"> – {{ $t('nav.home') }}</span>
   </NuxtLinkLocale>
 </template>
 

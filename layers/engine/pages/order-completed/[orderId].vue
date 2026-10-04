@@ -1,6 +1,8 @@
 <template>
-  <!-- lg:min-h-dvh: the order loads after hydration and is taller than the first render: keep the footer below the fold meanwhile (CLS). -->
-  <div class="min-h-calc lg:min-h-dvh flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16">
+  <!-- min-h-calc (the phone's top bar) then lg:min-h-fold (each brand's CSS: the viewport minus its desktop top bar): the order loads after hydration and is taller than the first render, so the footer stays just below the fold meanwhile (CLS) without forcing a scroll on a short page. -->
+  <div
+    class="min-h-calc lg:min-h-fold flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16"
+  >
     <!-- Online payment did not complete: distinct per-status outcome
              (canceled / failed / expired, or an open payment on a cancelled order). The cart
              is kept so the user can retry — mirrors tsb-mobile. -->

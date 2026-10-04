@@ -102,6 +102,8 @@ useSeoMeta({
     <!-- ── Timeline ── -->
     <section class="bg-ygf-cream">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <!-- The dates below are h3s: they need an h2 of their own, or they read as children of the last story block. -->
+        <h2 class="sr-only">{{ $t('mkt.about.timeline.heading') }}</h2>
         <ol class="relative border-l-2 border-ygf-orange-200 ml-3 sm:ml-6 flex flex-col gap-10">
           <li v-for="entry in TIMELINE" :key="entry.key" v-reveal class="relative pl-8">
             <span
