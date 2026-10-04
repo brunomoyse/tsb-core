@@ -39,17 +39,25 @@ const isRefusal = (err: unknown): boolean =>
 export function useOidc() {
   const config = useRuntimeConfig()
 
+  const baseUrl = (config.public.baseUrl as string).replace(/\/+$/u, '')
+
+  /*
+   * The callback page in the language of the page the customer is on NOW. The user manager is a singleton built on first
+   * use, so the redirect URI in its settings is the one of the first page; every sign-in passes this one instead.
+   */
+  function callbackUrl(): string {
+    const locale =
+      typeof window === 'undefined' ? 'fr' : window.location.pathname.split('/')[1] || 'fr'
+    return `${baseUrl}/${locale}/auth/callback`
+  }
+
   function getUserManager(): UserManager {
     if (userManager) return userManager
 
-    const locale =
-      typeof window === 'undefined' ? 'fr' : window.location.pathname.split('/')[1] || 'fr'
-
-    const baseUrl = (config.public.baseUrl as string).replace(/\/+$/u, '')
     userManager = new UserManager({
       authority: config.public.zitadelAuthority as string,
       client_id: config.public.zitadelClientId as string,
-      redirect_uri: `${baseUrl}/${locale}/auth/callback`,
+      redirect_uri: callbackUrl(),
       post_logout_redirect_uri: baseUrl,
       response_type: 'code',
       scope: 'openid profile email offline_access urn:zitadel:iam:org:project:roles',
@@ -95,7 +103,7 @@ export function useOidc() {
   /** Start the OIDC authorize redirect (web only). */
   async function signIn(extraParams?: Record<string, string>) {
     const mgr = getUserManager()
-    await mgr.signinRedirect({ extraQueryParams: extraParams })
+    await mgr.signinRedirect({ redirect_uri: callbackUrl(), extraQueryParams: extraParams })
   }
 
   /**
@@ -107,7 +115,7 @@ export function useOidc() {
     const mgr = getUserManager()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const client = (mgr as any)._client
-    const signinRequest = await client.createSigninRequest({})
+    const signinRequest = await client.createSigninRequest({ redirect_uri: callbackUrl() })
 
     const apiUrl = config.public.api as string
     const response = await $fetch<{ authRequestId: string }>(`${apiUrl}/auth/authorize-proxy`, {

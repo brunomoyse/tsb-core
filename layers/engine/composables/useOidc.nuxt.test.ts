@@ -80,17 +80,25 @@ describe('the user manager', () => {
     expect(manager().options.redirect_uri).toMatch(/\/nl\/auth\/callback$/u)
   })
 
-  // NOTE: the user manager is a singleton built on first use, so its redirect_uri keeps the language of the page where
-  // that happened: a visitor who switches language afterwards still comes back from Zitadel on the first language's
-  // callback page (a cosmetic detour: that page then sends them on).
-  it('NOTE: the redirect URI keeps the language of the first page, a later language switch does not change it', async () => {
+  // The user manager is a singleton built on first use: its settings keep the language of the first page, so every
+  // sign-in passes the callback URL of the page the customer is on at that moment (see the signIn tests).
+  it('builds the sign-in redirect URI from the language of the page at sign-in time, not of the first page', async () => {
     goTo('/nl/me')
     const { oidc, manager } = await load()
     await oidc.signIn()
+    expect(manager().signinRedirect).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        redirect_uri: `${useRuntimeConfig().public.baseUrl}/nl/auth/callback`,
+      }),
+    )
     goTo('/en/menu')
     await oidc.signIn()
     expect(fakeUserManagers()).toHaveLength(1)
-    expect(manager().options.redirect_uri).toMatch(/\/nl\/auth\/callback$/u)
+    expect(manager().signinRedirect).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        redirect_uri: `${useRuntimeConfig().public.baseUrl}/en/auth/callback`,
+      }),
+    )
   })
 
   it('defaults to French on a path without language', async () => {
@@ -170,6 +178,7 @@ describe('signIn', () => {
     const { oidc, manager } = await load()
     await oidc.signIn({ ui_locales: 'nl' })
     expect(manager().signinRedirect).toHaveBeenCalledExactlyOnceWith({
+      redirect_uri: `${useRuntimeConfig().public.baseUrl}/fr/auth/callback`,
       extraQueryParams: { ui_locales: 'nl' },
     })
   })
@@ -178,6 +187,7 @@ describe('signIn', () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     expect(manager().signinRedirect).toHaveBeenCalledExactlyOnceWith({
+      redirect_uri: `${useRuntimeConfig().public.baseUrl}/fr/auth/callback`,
       extraQueryParams: undefined,
     })
   })
@@ -202,11 +212,28 @@ describe('getAuthRequestId (inline login at checkout)', () => {
 
     await expect(oidc.getAuthRequestId()).resolves.toBe('req-42')
 
-    expect(manager()._client.createSigninRequest).toHaveBeenCalledExactlyOnceWith({})
+    expect(manager()._client.createSigninRequest).toHaveBeenCalledExactlyOnceWith({
+      redirect_uri: `${useRuntimeConfig().public.baseUrl}/fr/auth/callback`,
+    })
     expect($fetchMock).toHaveBeenCalledExactlyOnceWith(
       `${useRuntimeConfig().public.api}/auth/authorize-proxy`,
       { method: 'POST', body: { authorizeUrl: 'https://auth.test/authorize?x=1' } },
     )
+  })
+
+  it('asks for the callback page of the language the customer is on now, not of the first page', async () => {
+    goTo('/nl/checkout')
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    goTo('/zh/checkout')
+    manager()._client.createSigninRequest.mockResolvedValue({ url: 'https://auth.test/authorize' })
+    $fetchMock.mockResolvedValue({ authRequestId: 'req-1' })
+
+    await oidc.getAuthRequestId()
+
+    expect(manager()._client.createSigninRequest).toHaveBeenCalledExactlyOnceWith({
+      redirect_uri: `${useRuntimeConfig().public.baseUrl}/zh/auth/callback`,
+    })
   })
 
   it('fails when the proxy returns no auth request id', async () => {
