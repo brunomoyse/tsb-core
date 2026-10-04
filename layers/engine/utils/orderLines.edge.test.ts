@@ -164,11 +164,11 @@ describe('planReorder with older orders', () => {
     expect(plan.skipped).toEqual([{ name: product.name, quantity: 1, reason: 'choices' }])
   })
 
-  it('a legacy choice whose group is not recorded becomes a selection with an empty group', () => {
+  it('a legacy choice whose group is not recorded stays the plain legacy choice (no selection with an empty group)', () => {
     const choice = makeChoice({ id: 'c1', choiceGroupId: undefined as never })
     const product = makeProduct({ choices: [choice] })
     const plan = planReorder([{ quantity: 2, product, choice, selections: [] }])
-    expect(plan.lines[0]!.selections).toEqual([{ groupId: '', choiceId: 'c1', quantity: 2 }])
+    expect(plan.lines[0]!.selections).toEqual([])
     expect(plan.lines[0]!.choice).toBe(choice)
   })
 
