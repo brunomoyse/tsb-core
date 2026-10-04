@@ -7,6 +7,8 @@ updates:
     ignore:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # Peer-pinned to the vitest that vite-plus bundles: bump it together with vite-plus, never alone.
+      - dependency-name: '@vitest/coverage-v8'
     groups:
       oxc-toolchain:
         patterns:
