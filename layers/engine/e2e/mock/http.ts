@@ -2,6 +2,7 @@ import { type IncomingMessage, type Server, type ServerResponse, createServer } 
 import { type RequestContext, execute, parseSubscription } from './graphql.ts'
 import { WebSocketServer } from 'ws'
 import { handleControl } from './control.ts'
+import { handleRest } from './auth.ts'
 import { handleMollie } from './mollie.ts'
 import { handleZitadel } from './zitadel.ts'
 import { MockState } from './state.ts'
@@ -103,7 +104,9 @@ export function createMockServer({ brand, port, appUrl }: MockServerOptions): Pr
     }
 
     if (handleMollie(req, res, url, state, appUrl)) return
-    if (handleZitadel(res, url, `${selfUrl}/zitadel`)) return
+    if (await handleZitadel(req, res, url, `${selfUrl}/zitadel`, state)) return
+    if (await handleRest(req, res, url, async () => parseJson(await readBody(req)), state, selfUrl))
+      return
 
     if (url.pathname.startsWith('/images/') || url.pathname.startsWith('/s3/')) {
       res.writeHead(200, { 'Content-Type': 'image/png', ...CORS })

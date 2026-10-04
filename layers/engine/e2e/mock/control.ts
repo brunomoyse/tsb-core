@@ -1,7 +1,7 @@
 import type { MockState } from './state.ts'
 import { findPlace } from './restaurant.ts'
 import { findProduct } from './catalog/index.ts'
-import type { MockUser, Scenario, SeedOrderInput } from './types.ts'
+import type { MockUser, ScenarioPatch, SeedOrderInput } from './types.ts'
 
 /*
  * The control API (`/__mock/*`): what a spec uses to put the mock in the situation it wants to test. JSON in, JSON out.
@@ -43,11 +43,12 @@ export function handleControl(
   }
 
   if (route === '/scenario' && method === 'POST') {
-    const patch = body as Partial<Scenario>
+    const patch = body as ScenarioPatch
     const before = state.scenario.restaurant
     state.scenario = {
       ...state.scenario,
       ...patch,
+      otp: { ...state.scenario.otp, ...patch.otp },
       coupons: { ...state.scenario.coupons, ...patch.coupons },
     }
     if (state.scenario.restaurant !== before) state.publish('restaurantConfigUpdated', null)
