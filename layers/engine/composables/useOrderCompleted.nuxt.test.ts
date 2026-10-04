@@ -9,7 +9,7 @@ import { clearNuxtData, useNuxtData } from '#imports'
 import { createPinia, setActivePinia } from 'pinia'
 import { makeOrder, makePayment } from '../../../test/fixtures/order'
 import type { Order } from '#engine/types'
-import type { Ref } from 'vue'
+import { type Ref, watch } from 'vue'
 import { makeProduct } from '../../../test/fixtures/catalog'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mountComposable } from '../../../test/helpers/mountComposable'
@@ -677,10 +677,22 @@ describe('the polling fallback (a WebSocket that fails silently)', () => {
         }),
     )
     await settle(30_000)
+    // Every status the page showed from here on. Nuxt may drop the order of an unmounted page (so the order can be
+    // undefined at the end, depending on test order): what must hold is that it showed the real one, never the late one.
+    const shown: (string | undefined)[] = []
+    const stop = watch(
+      () => view.order.value?.status,
+      (status) => shown.push(status),
+      {
+        flush: 'sync',
+        immediate: true,
+      },
+    )
     current?.unmount()
     release({ myOrder: paid({ status: 'PREPARING' }) })
     await settle()
-    // Nuxt may drop the order of an unmounted page; the late answer must not have been merged either way.
-    expect(view.order.value?.status).not.toBe('PREPARING')
+    stop()
+    expect(shown).toContain('CONFIRMED')
+    expect(shown).not.toContain('PREPARING')
   })
 })
