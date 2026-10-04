@@ -11,7 +11,7 @@
     </div>
 
     <!-- Step 1: SSO (primary) + email (secondary) -->
-    <form v-if="step === 'email'" class="space-y-4" @submit.prevent="onSubmitEmail">
+    <form v-if="step === 'email'" class="space-y-4" method="post" @submit.prevent="onSubmitEmail">
       <!-- SSO buttons: fastest path for the Google/Apple majority.
                  Styled per each provider's official branding guidelines:
                  Google is white with a #747775 outline and the multicolour G,
@@ -114,7 +114,12 @@
     </form>
 
     <!-- Step 2: OTP code -->
-    <form v-else-if="step === 'code'" class="space-y-4" @submit.prevent="onSubmitCode">
+    <form
+      v-else-if="step === 'code'"
+      class="space-y-4"
+      method="post"
+      @submit.prevent="onSubmitCode"
+    >
       <p class="text-sm text-neutral-600">
         {{ $t('login.codeSent', { email }) }}
       </p>
@@ -218,6 +223,7 @@ import {
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 import { useTracking } from '#engine/composables/useTracking'
+import { useKeepTypedValue } from '#engine/composables/useKeepTypedValue'
 
 interface Props {
   /** 'page' = standalone /auth/login, 'inline' = embedded in checkout. */
@@ -241,6 +247,8 @@ const step = ref<AuthStep>('email')
 
 const email = ref('')
 const code = ref('')
+// An address typed or autofilled before the page hydrated (see useKeepTypedValue).
+useKeepTypedValue(email, 'auth-email')
 
 const emailInputRef = ref<HTMLInputElement | null>(null)
 const codeInputRef = ref<HTMLInputElement | null>(null)

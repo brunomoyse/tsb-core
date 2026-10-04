@@ -1,5 +1,5 @@
 <template>
-  <form class="space-y-4" @submit.prevent="onSubmit">
+  <form class="space-y-4" method="post" @submit.prevent="onSubmit">
     <div>
       <h2 class="text-lg font-semibold text-neutral-900">
         {{ $t('login.profileTitle') }}
