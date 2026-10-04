@@ -130,6 +130,7 @@
     "addWithPrice": "添加 · {price}",
     "update": "更新",
     "updateWithPrice": "更新 · {price}",
+    "editing": "正在修改",
     "viewDetails": "查看 {name} 详情",
     "loadFailed": "无法加载菜单。",
     "productLoadFailed": "无法加载该商品。"

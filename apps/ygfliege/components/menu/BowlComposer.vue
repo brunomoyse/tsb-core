@@ -13,7 +13,9 @@
       class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60"
     >
       <div class="min-w-0">
-        <span class="section-label">{{ $t('composer.eyebrow') }}</span>
+        <span class="section-label" data-testid="bowl-composer-eyebrow">{{
+          $t(editItem ? 'menu.editing' : 'composer.eyebrow')
+        }}</span>
         <h2
           id="bowl-composer-title"
           translate="no"

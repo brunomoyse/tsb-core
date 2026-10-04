@@ -130,6 +130,7 @@
     "addWithPrice": "Add · {price}",
     "update": "Update",
     "updateWithPrice": "Update · {price}",
+    "editing": "Editing",
     "viewDetails": "View details for {name}",
     "loadFailed": "We couldn't load the menu.",
     "productLoadFailed": "We couldn't load this product."

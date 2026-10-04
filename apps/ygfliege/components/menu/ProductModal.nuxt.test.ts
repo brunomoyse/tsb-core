@@ -98,6 +98,8 @@ describe('opened from "Edit" on a cart line', () => {
     expect(pressed(modal, set.mild.id)).toBe('false')
     expect(confirm(modal).text()).toContain(t('menu.update'))
     expect(confirm(modal).attributes('disabled')).toBeUndefined()
+    // The header says it too, not only the button (it replaces the category name).
+    expect(modal.get('[data-testid="product-modal-eyebrow"]').text()).toBe(t('menu.editing'))
   })
 
   it('replaces the line with the new selections: still one line, never a second one', async () => {
@@ -187,6 +189,7 @@ describe('opened from the menu', () => {
     const set = fixedSet()
     const modal = await open(set)
 
+    expect(modal.find('[data-testid="product-modal-eyebrow"]').exists()).toBe(false)
     expect(confirm(modal).text()).toContain(t('menu.addToCart'))
     await modal.get(`[data-testid="product-modal-choice-${set.tomato.id}"]`).trigger('click')
     await modal.get(`[data-testid="product-modal-choice-${set.mild.id}"]`).trigger('click')

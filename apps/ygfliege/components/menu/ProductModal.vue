@@ -13,7 +13,11 @@
       class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60"
     >
       <div class="min-w-0">
-        <span v-if="p?.category?.name" translate="no" class="section-label">{{
+        <!-- Editing a cart line: the eyebrow says so (the button alone is easy to miss) -->
+        <span v-if="editItem" class="section-label" data-testid="product-modal-eyebrow">{{
+          $t('menu.editing')
+        }}</span>
+        <span v-else-if="p?.category?.name" translate="no" class="section-label">{{
           p.category.name
         }}</span>
         <h2

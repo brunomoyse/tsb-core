@@ -113,6 +113,8 @@ describe('opened from "Edit" on a cart line', () => {
     expect(ingredientCount(composer, set.noodles.id)).toBe('1')
     expect(confirm(composer).text()).toContain(t('menu.update'))
     expect(confirm(composer).attributes('disabled')).toBeUndefined()
+    // The header says it too, not only the button.
+    expect(composer.get('[data-testid="bowl-composer-eyebrow"]').text()).toBe(t('menu.editing'))
   })
 
   it('replaces the line with the new composition: still one line, never a second one', async () => {
@@ -187,6 +189,7 @@ describe('opened from the menu', () => {
     const set = bowl()
     const composer = await open(set)
 
+    expect(composer.get('[data-testid="bowl-composer-eyebrow"]').text()).toBe(t('composer.eyebrow'))
     expect(confirm(composer).text()).toContain(t('menu.addToCart'))
     await composer.get(`[data-testid="bowl-composer-choice-${set.tomato.id}"]`).trigger('click')
     await composer.get(`[data-testid="bowl-composer-choice-inc-${set.tofu.id}"]`).trigger('click')

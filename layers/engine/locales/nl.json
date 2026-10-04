@@ -130,6 +130,7 @@
     "addWithPrice": "Toevoegen · {price}",
     "update": "Bijwerken",
     "updateWithPrice": "Bijwerken · {price}",
+    "editing": "Bewerken",
     "viewDetails": "Details van {name} bekijken",
     "loadFailed": "We konden het menu niet laden.",
     "productLoadFailed": "We konden dit product niet laden."
