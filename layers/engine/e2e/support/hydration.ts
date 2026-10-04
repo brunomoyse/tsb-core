@@ -43,3 +43,32 @@ export async function waitForNuxtHydration(page: Page) {
 
 // No-op: cookie consent banner was removed (Umami analytics doesn't use cookies)
 export async function dismissCookieConsent(_page: Page) {}
+
+/*
+ * Vue logs "Hydration completed but contains mismatches" (a console error, also in a production build) when the DOM the
+ * server sent differs from what the client rendered: a flash of different content and, sometimes, a lost event handler.
+ * Call this before navigating; the returned function lists the page and the message of every occurrence so far.
+ */
+export function watchHydrationMismatches(page: Page): () => string[] {
+  const found: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /hydration/iu.test(message.text()))
+      found.push(`${page.url()}: ${message.text()}`)
+  })
+  return () => [...found]
+}
+
+/*
+ * Like waitForNuxtHydration, for a spec that walks many pages (a sweep): Vue has mounted and the network went quiet, but a
+ * page that keeps a request or a socket busy (polling, live updates) must not stall the whole walk, so the idle wait is
+ * best effort and bounded.
+ */
+export async function settleNuxt(page: Page, idleTimeout = 5_000) {
+  await page.waitForLoadState('domcontentloaded')
+  await page.waitForFunction(
+    () => (document.querySelector('#__nuxt')?.childElementCount ?? 0) > 0,
+    undefined,
+    { timeout: 15_000 },
+  )
+  await page.waitForLoadState('networkidle', { timeout: idleTimeout }).catch(() => undefined)
+}

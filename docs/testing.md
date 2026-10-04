@@ -2,7 +2,8 @@
 
 Unit tests run with Vite+ (`vp test run`, vitest 5 inside). They cover the **TypeScript** of `layers/` and `apps/`
 (composables, stores, plugins, middleware, server routes, utils, lib). `.vue` pages and components are covered by the
-Playwright suites (`*/e2e`), not by the unit metric.
+Playwright suites (`*/e2e`), not by the unit metric. Those run against an in-repo mock of the API, with no secret: how to
+write and run them is in `layers/engine/e2e/mock/README.md` (CI job "E2E (mock)").
 
 ```bash
 npm test                                          # all projects, ~25 s

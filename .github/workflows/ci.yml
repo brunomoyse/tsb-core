@@ -81,6 +81,44 @@ jobs:
       - name: Build
         run: npm run build -w ${{ matrix.app }}
 
+  e2e-mock:
+    name: E2E (mock) (${{ matrix.app }}, ${{ matrix.shard }})
+    # Production build of the app against the in-repo mock of tsb-service (layers/engine/e2e/mock): no secret, database
+    # or Zitadel. Each shard builds the app itself (Playwright webServer) and runs one half of the suite, chromium only:
+    # a brand's whole run is ~20 min on one worker (the mock holds one state, so no parallelism), a shard ~10 min.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [tokyosushi, ygfliege]
+        shard: [desktop, mobile]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version: '24'
+          cache: true
+
+      - name: Install Playwright browsers
+        run: vp exec playwright install --with-deps chromium
+
+      - name: Run E2E tests against the mock
+        run: npm run test:e2e:mock:${{ matrix.shard }} -w ${{ matrix.app }}
+
+      - name: Upload Playwright report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.app }}-${{ matrix.shard }}
+          path: |
+            apps/${{ matrix.app }}/playwright-report
+            apps/${{ matrix.app }}/test-results
+          retention-days: 7
+
   test:
     name: E2E Tests
     runs-on: ubuntu-latest

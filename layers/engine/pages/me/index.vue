@@ -689,7 +689,7 @@ const updateNotificationPref = async (
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-account-title"
-          class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4"
+          class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[92dvh] overflow-y-auto overscroll-contain"
           @click.stop
           @keydown.esc="closeDeleteModal"
         >
@@ -746,7 +746,8 @@ const updateNotificationPref = async (
               {{ t('me.profile.deleteLearnMore') }}
             </NuxtLinkLocale>
           </p>
-          <div class="flex gap-3">
+          <!-- Under 480 px the two buttons stack: side by side, a brand whose buttons never wrap ran past the screen edge. -->
+          <div class="flex gap-3 max-[479px]:flex-col">
             <UiButton
               variant="secondary"
               class="flex-1"
@@ -780,7 +781,7 @@ const updateNotificationPref = async (
           role="dialog"
           aria-modal="true"
           aria-labelledby="edit-profile-title"
-          class="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full mx-4"
+          class="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full mx-4 max-h-[92dvh] overflow-y-auto overscroll-contain"
           @click.stop
           @keydown.esc="closeModal"
         >

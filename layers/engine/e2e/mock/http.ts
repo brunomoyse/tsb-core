@@ -1,0 +1,251 @@
+import { type IncomingMessage, type Server, type ServerResponse, createServer } from 'node:http'
+import { type RequestContext, execute, parseSubscription } from './graphql.ts'
+import { WebSocketServer } from 'ws'
+import { handleControl } from './control.ts'
+import { handleRest } from './auth.ts'
+import { handleMollie } from './mollie.ts'
+import { handleZitadel } from './zitadel.ts'
+import { MockState } from './state.ts'
+import type { MockBrand } from './types.ts'
+import { operations } from './resolvers.ts'
+
+/*
+ * The mock tsb-service: GraphQL over HTTP (POST /api/v1/graphql), graphql-transport-ws on the same path, the control
+ * API (/__mock/*), the fake Mollie checkout (/mollie/*) and fake images (/images/*, /s3/*). One brand per process.
+ */
+
+export interface MockServerOptions {
+  brand: MockBrand
+  port: number
+  /** Origin of the web app, used to send the customer back from the fake Mollie when the request did not say. */
+  appUrl: string
+}
+
+export interface MockServer {
+  state: MockState
+  server: Server
+  url: string
+  close: () => Promise<void>
+}
+
+// A 1x1 PNG: every product and category image.
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+)
+
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
+}
+
+const sendJson = (res: ServerResponse, status: number, body: unknown) => {
+  res.writeHead(status, { 'Content-Type': 'application/json', ...CORS })
+  res.end(JSON.stringify(body))
+}
+
+const readBody = (req: IncomingMessage): Promise<string> =>
+  new Promise((resolve) => {
+    let data = ''
+    req.on('data', (chunk: Buffer) => (data += chunk))
+    req.on('end', () => {
+      resolve(data)
+    })
+  })
+
+const parseJson = (text: string): Record<string, unknown> | null => {
+  if (!text.trim()) return {}
+  try {
+    const value: unknown = JSON.parse(text)
+    return value && typeof value === 'object' ? (value as Record<string, unknown>) : null
+  } catch {
+    return null
+  }
+}
+
+const text = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const headerOf = (req: IncomingMessage, name: string): string | undefined => {
+  const value = req.headers[name]
+  return Array.isArray(value) ? value[0] : value
+}
+
+export function createMockServer({ brand, port, appUrl }: MockServerOptions): Promise<MockServer> {
+  const state = new MockState(brand)
+  const selfUrl = `http://localhost:${port}`
+  const delay = Number(process.env.MOCK_LATENCY_MS) || 0
+
+  const contextOf = (req: IncomingMessage): RequestContext => ({
+    state,
+    authenticated: /^Bearer\s+\S+/u.test(headerOf(req, 'authorization') ?? ''),
+    origin: headerOf(req, 'origin') ?? null,
+    locale: headerOf(req, 'accept-language') ?? 'fr',
+    selfUrl,
+  })
+
+  const server = createServer(async (req, res) => {
+    const url = new URL(req.url ?? '/', selfUrl)
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, CORS)
+      res.end()
+      return
+    }
+
+    if (url.pathname.startsWith('/__mock/')) {
+      const body = parseJson(req.method === 'GET' ? '' : await readBody(req))
+      if (body === null) {
+        sendJson(res, 400, { error: 'bad json' })
+        return
+      }
+      const result = handleControl(state, req.method ?? 'GET', url.pathname, body)
+      sendJson(res, result?.status ?? 404, result?.body ?? { error: 'not found' })
+      return
+    }
+
+    if (handleMollie(req, res, url, state, appUrl)) return
+    if (await handleZitadel(req, res, url, `${selfUrl}/zitadel`, state)) return
+    if (await handleRest(req, res, url, async () => parseJson(await readBody(req)), state, selfUrl))
+      return
+
+    if (url.pathname.startsWith('/images/') || url.pathname.startsWith('/s3/')) {
+      res.writeHead(200, { 'Content-Type': 'image/png', ...CORS })
+      res.end(PNG)
+      return
+    }
+
+    if (url.pathname === '/api/v1/graphql' && req.method === 'POST') {
+      const body = parseJson(await readBody(req))
+      if (!body || typeof body.query !== 'string') {
+        sendJson(res, 400, { errors: [{ message: 'bad request' }] })
+        return
+      }
+      const wait = delay + state.scenario.latencyMs
+      if (wait) await new Promise((resolve) => setTimeout(resolve, wait))
+      const result = await execute(operations, contextOf(req), {
+        query: body.query,
+        variables: (body.variables as Record<string, unknown> | undefined) ?? {},
+      })
+      sendJson(res, 200, result)
+      return
+    }
+
+    sendJson(res, 404, { errors: [{ message: `mock: no route ${req.method} ${url.pathname}` }] })
+  })
+
+  // Graphql-transport-ws
+  const wss = new WebSocketServer({ noServer: true })
+  wss.on('connection', (socket, req) => {
+    let authenticated = false
+    const unsubscribe = new Map<string, () => void>()
+    const send = (message: unknown) => {
+      socket.send(JSON.stringify(message))
+    }
+
+    socket.on('message', (raw) => {
+      let message: { type?: string; id?: string; payload?: Record<string, unknown> }
+      try {
+        message = JSON.parse(Buffer.isBuffer(raw) ? raw.toString('utf8') : '')
+      } catch {
+        return
+      }
+      switch (message.type) {
+        case 'connection_init': {
+          authenticated = /^Bearer\s+\S+/u.test(text(message.payload?.Authorization))
+          send({ type: 'connection_ack' })
+          break
+        }
+        case 'ping':
+          send({ type: 'pong' })
+          break
+        case 'subscribe': {
+          const id = message.id ?? ''
+          const context: RequestContext = {
+            ...contextOf(req),
+            authenticated,
+          }
+          const parsed = parseSubscription(operations, state, {
+            query: text(message.payload?.query),
+            variables: (message.payload?.variables as Record<string, unknown> | undefined) ?? {},
+          })
+          if (!parsed?.definition) {
+            state.noteGap(`subscription ${parsed?.name ?? '(unparsable)'}`)
+            send({
+              type: 'error',
+              id,
+              payload: [
+                {
+                  message: 'mock: no such subscription',
+                  extensions: { code: 'GRAPHQL_VALIDATION_FAILED' },
+                },
+              ],
+            })
+            break
+          }
+          state.log({
+            at: new Date().toISOString(),
+            op: parsed.name,
+            kind: 'subscription',
+            args: parsed.args,
+            authenticated,
+          })
+          if (parsed.name === 'myOrderUpdated' && !authenticated) {
+            send({
+              type: 'error',
+              id,
+              payload: [{ message: 'unauthenticated', extensions: { code: 'UNAUTHENTICATED' } }],
+            })
+            break
+          }
+          const { definition } = parsed
+          unsubscribe.set(
+            id,
+            state.subscribe(definition.topic(parsed.args), (event) => {
+              send({
+                type: 'next',
+                id,
+                payload: { data: parsed.render(definition.payload(event, context)) },
+              })
+            }),
+          )
+          break
+        }
+        case 'complete':
+          unsubscribe.get(message.id ?? '')?.()
+          unsubscribe.delete(message.id ?? '')
+          break
+        default:
+          break
+      }
+    })
+    socket.on('close', () => {
+      for (const stop of unsubscribe.values()) stop()
+      unsubscribe.clear()
+    })
+  })
+  server.on('upgrade', (req, socket, head) => {
+    if (!(req.url ?? '').startsWith('/api/v1/graphql')) {
+      socket.destroy()
+      return
+    }
+    wss.handleUpgrade(req, socket, head, (ws) => wss.emit('connection', ws, req))
+  })
+
+  return new Promise((resolve) => {
+    server.listen(port, () => {
+      resolve({
+        state,
+        server,
+        url: selfUrl,
+        close: () =>
+          new Promise<void>((done) => {
+            for (const client of wss.clients) client.terminate()
+            server.close(() => {
+              done()
+            })
+            server.closeAllConnections()
+          }),
+      })
+    })
+  })
+}

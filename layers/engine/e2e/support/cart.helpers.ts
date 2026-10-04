@@ -9,15 +9,23 @@ import { waitForNuxtHydration } from './hydration'
  * already open: the floating bar disappears once the panel is visible.
  */
 export async function openCartIfMobile(page: Page): Promise<void> {
-  const sideCartVisible = await page
-    .locator(SEL.sideCart)
-    .isVisible({ timeout: 500 })
-    .catch(() => false)
-  if (sideCartVisible) return
+  const sideCart = page.locator(SEL.sideCart)
   const bar = page.locator(SEL.floatingCartBar)
-  if (await bar.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await bar.click()
-  }
+  const sheet = page.locator(SEL.cartMobile)
+  // Wait for whichever cart UI the viewport has: Locator.isVisible() does not wait, so checking the side cart
+  // Right after an add races the cart store's first render.
+  await expect
+    .poll(
+      async () =>
+        (await sideCart.isVisible()) || (await bar.isVisible()) || (await sheet.isVisible()),
+      {
+        timeout: 5_000,
+        message: 'neither the side cart, the floating cart bar nor the cart sheet is visible',
+      },
+    )
+    .toBe(true)
+  if ((await sideCart.isVisible()) || (await sheet.isVisible())) return
+  await bar.click()
   await page.locator(SEL.cartMobile).waitFor({ state: 'visible', timeout: 5_000 })
 }
 
@@ -84,13 +92,14 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
 }
 
 /*
- * Checkout blocks ordering until the account has a phone number. A valid entry
- * auto-saves to the account (CheckoutPhoneCapture), so the e2e user only goes
- * through this once; afterwards the field is collapsed and this is a no-op.
+ * Checkout blocks ordering until the account has a phone number. A valid entry is saved with the Save button (or Enter;
+ * typing alone never saves), after which the card collapses, so the e2e user only goes through this once; afterwards
+ * the field is collapsed and this is a no-op.
  */
 export async function ensurePhoneNumber(page: Page) {
   const input = page.locator('#checkout-phone-capture input[type="tel"]')
   if (!(await input.isVisible({ timeout: 2_000 }).catch(() => false))) return
   await input.fill('0470 12 34 56')
+  await page.locator('#checkout-phone-capture [data-testid="checkout-phone-save"]').click()
   await expect(input).toBeHidden({ timeout: 10_000 })
 }

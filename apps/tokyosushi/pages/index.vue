@@ -243,7 +243,7 @@ useHead({
             :aria-checked="collection === 'DELIVERY'"
             @click="collection = 'DELIVERY'"
             :class="[
-              'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+              'flex-1 inline-flex min-h-11 items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
               collection === 'DELIVERY'
                 ? 'bg-white text-neutral-900 shadow-sm'
                 : 'text-neutral-600 hover:text-neutral-700',
@@ -273,7 +273,7 @@ useHead({
             :aria-checked="collection === 'PICKUP'"
             @click="collection = 'PICKUP'"
             :class="[
-              'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+              'flex-1 inline-flex min-h-11 items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
               collection === 'PICKUP'
                 ? 'bg-white text-neutral-900 shadow-sm'
                 : 'text-neutral-600 hover:text-neutral-700',
@@ -555,7 +555,7 @@ useHead({
         <div>
           <NuxtLinkLocale
             to="/contact"
-            class="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-900 hover:text-neutral-600 transition underline underline-offset-2"
+            class="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-neutral-900 hover:text-neutral-600 transition underline underline-offset-2"
           >
             {{ $t('about.contactLink') }}
             <svg

@@ -20,6 +20,7 @@
     "test:e2e:tsb": "npm run test:e2e -w tokyosushi",
     "test:e2e:ygf": "npm run test:e2e -w ygfliege",
     "test:e2e:all": "npm run test:e2e:tsb; tsb=$?; npm run test:e2e:ygf && exit $tsb",
+    "test:e2e:mock": "npm run test:e2e:mock -w tokyosushi; tsb=$?; npm run test:e2e:mock -w ygfliege && exit $tsb",
     "test:visual": "npm run test:visual -w tokyosushi; tsb=$?; npm run test:visual -w ygfliege && exit $tsb",
     "test:visual:update": "npm run test:visual:update -w tokyosushi; tsb=$?; npm run test:visual:update -w ygfliege && exit $tsb",
     "prepare": "vp config"
@@ -43,6 +44,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.6",
+    "@types/ws": "^8.18.2",
     "@vitest/coverage-v8": "5.0.1",
     "@vue/test-utils": "^2.5.1",
     "happy-dom": "^20.14.5",
@@ -51,7 +53,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^6.0.3",
     "vite-plus": "1.0.0",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.11",
+    "ws": "^8.21.3"
   },
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.28.2",
