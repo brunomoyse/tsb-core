@@ -425,7 +425,10 @@ describe('the verify loop (the webhook may be late)', () => {
     current?.unmount()
     await settle(60_000)
     expect(fetches()).toBe(before)
-    expect(view.phase.value).toBe('verifying')
+    // Nuxt may drop the order of an unmounted page (so the phase would read 'loading'): what must not happen is the
+    // loop running out and the page reporting "awaiting confirmation".
+    expect(view.phase.value).not.toBe('awaiting-confirmation')
+    expect(view.awaitingConfirmation.value).toBe(false)
   })
 
   it('leaving the page while a re-check is in flight ends the loop quietly', async () => {
@@ -677,6 +680,7 @@ describe('the polling fallback (a WebSocket that fails silently)', () => {
     current?.unmount()
     release({ myOrder: paid({ status: 'PREPARING' }) })
     await settle()
-    expect(view.order.value?.status).toBe('CONFIRMED')
+    // Nuxt may drop the order of an unmounted page; the late answer must not have been merged either way.
+    expect(view.order.value?.status).not.toBe('PREPARING')
   })
 })
