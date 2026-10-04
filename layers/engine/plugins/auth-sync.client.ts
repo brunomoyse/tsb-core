@@ -14,7 +14,8 @@ import { reportError } from '#engine/utils/reportError'
  *   1. authStore filled + OIDC expired → silent renew, else clear both (but not when Zitadel cannot be reached:
  *      the session is kept and the next request renews it).
  *   2. authStore empty + OIDC valid    → fetch /me and repopulate authStore.
- *      If /me fails, the OIDC token is stale — clear it.
+ *      If /me refuses the token (HTTP 401 / UNAUTHENTICATED) the OIDC token is stale — clear it; any other
+ *      failure (offline, aborted, 5xx) keeps the session.
  *   3. Both empty / both valid         → no-op.
  */
 const ME_QUERY = /* GraphQL */ `
@@ -104,8 +105,12 @@ async function syncAuth(): Promise<void> {
     const token = await getAccessToken()
     if (!token) return
     const url = cfg.public.graphqlHttp
+    let refused = false
     try {
-      const res = await $fetch<{ data?: { me: User }; errors?: unknown[] }>(url, {
+      const res = await $fetch<{
+        data?: { me: User }
+        errors?: { extensions?: { code?: string } }[]
+      }>(url, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: { query: ME_QUERY, variables: {} },
@@ -114,12 +119,27 @@ async function syncAuth(): Promise<void> {
         authStore.setUser(res.data.me)
         return
       }
-      // Token accepted at HTTP layer but /me returned nothing or GraphQL errors — stale.
-      await removeUser()
+      // Only the token itself being refused ends the session; any other answer without a profile is not about it.
+      refused = res?.errors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ?? false
     } catch (err: unknown) {
-      // Backend rejected the token (revoked, user deleted, etc.): expected, not reported.
-      if (import.meta.dev) console.warn('[auth-sync] /me rejected the token', err)
-      await removeUser()
+      /*
+       * HTTP 401: the backend rejected the token (revoked, user deleted, etc.), expected, not reported. Any other failure
+       * (network drop, a request aborted by a navigation, a 5xx) says nothing about the token: the session is kept and
+       * the next navigation / request tries again, instead of signing the customer out mid-order.
+       */
+      refused = isUnauthorized(err)
+      if (import.meta.dev)
+        console.warn(
+          refused ? '[auth-sync] /me rejected the token' : '[auth-sync] /me failed, session kept',
+          err,
+        )
     }
+    if (refused) await removeUser()
   }
 }
+
+const isUnauthorized = (err: unknown): boolean =>
+  typeof err === 'object' &&
+  err !== null &&
+  ((err as { status?: unknown }).status === 401 ||
+    (err as { statusCode?: unknown }).statusCode === 401)
