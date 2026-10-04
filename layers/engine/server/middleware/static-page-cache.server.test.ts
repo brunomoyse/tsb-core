@@ -26,18 +26,20 @@ interface Rendered {
   body: string
 }
 
-const nitro = vi.hoisted(() => ({
-  config: undefined as unknown,
+interface NitroDouble {
+  config: unknown
+  localFetch: ReturnType<typeof vi.fn>
+  cached: { render?: (pathname: string) => Promise<Rendered>; options?: CacheOptions }
+}
+const nitro = vi.hoisted((): NitroDouble => ({
+  config: undefined,
   localFetch: vi.fn(),
-  cached: {
-    render: undefined as undefined | ((pathname: string) => Promise<Rendered>),
-    options: undefined,
-  },
+  cached: {},
 }))
 
 vi.mock('nitropack/runtime', () => ({
   // The cache itself is Nitro's: the function is returned as it is (every request renders) and its options recorded.
-  defineCachedFunction: (fn: (pathname: string) => Promise<Rendered>, options: unknown) => {
+  defineCachedFunction: (fn: (pathname: string) => Promise<Rendered>, options: CacheOptions) => {
     nitro.cached.render = fn
     nitro.cached.options = options
     return fn
@@ -218,7 +220,7 @@ describe('when the render does not give a usable page', () => {
 })
 
 describe('what is cached and for how long', () => {
-  const options = () => nitro.cached.options as CacheOptions
+  const options = () => nitro.cached.options!
   const NOW = new Date('2026-10-04T12:00:00Z').getTime()
   const entry = (
     overrides: Partial<{ status: number; incomplete: boolean }> = {},
