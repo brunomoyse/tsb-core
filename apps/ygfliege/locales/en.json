@@ -5,7 +5,7 @@
   },
   "error": {
     "title404": "Page not found",
-    "notFound": "Looks like you got lost... But don't worry, a steaming bowl of malatang is waiting for you!",
+    "notFound": "This page seems to have wandered off… Don't worry, a steaming bowl of malatang is waiting for you!",
     "title500": "Trouble in the kitchen",
     "serverError": "Fuzi is busy in the kitchen, but something went wrong. Please try again in a moment."
   },
@@ -46,14 +46,14 @@
     "broths": {
       "label": "Our signatures",
       "title": "Our signature broths",
-      "subtitle": "Five flavours, one promise: fresh ingredients, broth prepared daily.",
+      "subtitle": "Five flavours, one promise: fresh ingredients and broth made fresh every day.",
       "vegan_badge": "Vegan",
       "allergens_label": "Allergens",
       "beef_bone": {
         "name": "Classic Herbal Beef Bone Broth",
         "chinese": "经典草本骨汤",
-        "desc": "Our signature since 2003: beef bones simmered for 8 hours with more than 20 oriental herbs. Pick your heat, from mild to extra spicy.",
-        "spice": "Your choice: mild, spicy or extra spicy",
+        "desc": "Our signature since 2003: beef bones simmered for 8 hours with more than 20 oriental herbs. Pick your heat, from mild to hot.",
+        "spice": "Your choice: mild, medium or hot",
         "allergens": "Milk, gluten, sesame, soy"
       },
       "tomato": {
@@ -64,7 +64,7 @@
         "allergens": "Soy"
       },
       "mala_dry": {
-        "name": "Peanut Butter Spicy Dry Mix",
+        "name": "Mala Mix with sesame-peanut sauce",
         "chinese": "石磨醇香麻辣拌",
         "desc": "The broth-free exception: your ingredients coated in a fragrant sesame-peanut sauce. Addictive, gently spicy.",
         "spice": "Mildly spicy",
@@ -99,7 +99,7 @@
         },
         "step3": {
           "title": "Tell us",
-          "desc": "Pick your broth and spice level: mild, medium, or hot."
+          "desc": "Pick your broth and spice level: mild, medium or hot."
         },
         "step4": {
           "title": "Enjoy",
@@ -134,7 +134,7 @@
         ]
       },
       "broth_hero": {
-        "label": "Oriental food-nourishment",
+        "label": "Oriental wellness cuisine",
         "translit": "Cǎoběn gǔtāng",
         "cta": "Discover the herbal broth"
       },
@@ -176,7 +176,7 @@
       },
       "step3": {
         "title": "Tell us",
-        "desc": "Pick your broth and spice level: mild, medium, or hot."
+        "desc": "Pick your broth and spice level: mild, medium or hot."
       },
       "step4": {
         "title": "Enjoy",
@@ -186,15 +186,15 @@
         "title": "Frequently asked questions",
         "spicy": {
           "question": "Is it spicy?",
-          "answer": "You choose! Our beef bone broth comes in three heat levels: mild, spicy or extra spicy. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut dry mix are mildly spicy."
+          "answer": "You choose! Our beef bone broth comes in three heat levels: mild, medium or hot. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut Mala Mix are mildly spicy."
         },
         "what": {
           "question": "What is malatang?",
-          "answer": "Malatang is a Chinese individual bowl concept: you pick your fresh ingredients at the counter, we cook them in a herbal broth. It's a balanced, personalised, comforting meal."
+          "answer": "Malatang is a Chinese build-your-own bowl: you pick fresh ingredients at the counter and we cook them to order in a herbal broth. A balanced meal, just the way you like it, that does you good."
         },
         "vegan": {
-          "question": "I'm vegetarian/vegan?",
-          "answer": "Absolutely! Our counter offers many vegetables, mushrooms, tofu and noodles. You can build a 100% plant-based bowl. Ask us for details about our broths."
+          "question": "What if I'm vegetarian or vegan?",
+          "answer": "No problem! Our counter is full of vegetables, mushrooms, tofu and noodles, so you can easily build a 100% plant-based bowl. Just ask us which broth to go for."
         }
       },
       "broth_story": {
@@ -212,7 +212,7 @@
       "meta_desc": "Yangguofu Malatang Liège menu: five broths and dozens of fresh ingredients at €3.49/100 g. By weight, transparent.",
       "broths_title": "Our broths",
       "ingredients_title": "Our ingredients",
-      "ingredients_subtitle": "All fresh, all your choice: build the bowl that's you.",
+      "ingredients_subtitle": "All fresh, all your choice: build a bowl that is all you.",
       "pricing_title": "Pay by weight",
       "pricing_desc": "At Yangguofu, there's no fixed price: you only pay for what you pick. Fill your bowl, we weigh it, the price is clear. Simple, transparent, fair.",
       "pricing_step1": "Fill up",
@@ -287,7 +287,7 @@
         },
         "2024": {
           "title": "The rebrand",
-          "desc": "New orange identity, Gen.6 store concept. Yangguofu reinvents itself with 'Oriental Wellness Cuisine' as its vision."
+          "desc": "New orange identity, Gen.6 store concept: Yangguofu reinvents itself with ‘Oriental wellness cuisine’ as its compass."
         },
         "liege": {
           "title": "Liège, Belgium",
@@ -364,7 +364,7 @@
     },
     "not_found": {
       "title": "Page not found",
-      "message": "Looks like you got lost... But don't worry, a steaming bowl of malatang is waiting for you!",
+      "message": "This page seems to have wandered off… Don't worry, a steaming bowl of malatang is waiting for you!",
       "button": "Back to home",
       "fuzi_alt": "Fuzi, the Yangguofu mascot, enjoying a bowl of noodles"
     },
@@ -398,15 +398,15 @@
     "questions": {
       "what": {
         "question": "What is malatang?",
-        "answer": "Malatang is a Chinese individual bowl concept: you pick your fresh ingredients at the counter, we cook them in a herbal broth. It's a balanced, personalised, comforting meal."
+        "answer": "Malatang is a Chinese build-your-own bowl: you pick fresh ingredients at the counter and we cook them to order in a herbal broth. A balanced meal, just the way you like it, that does you good."
       },
       "spicy": {
         "question": "Is it spicy?",
-        "answer": "You choose! Our beef bone broth comes in three heat levels: mild, spicy or extra spicy. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut dry mix are mildly spicy."
+        "answer": "You choose! Our beef bone broth comes in three heat levels: mild, medium or hot. Prefer no heat at all? The tomato and mushroom broths are perfectly gentle. The tom yum and the sesame-peanut Mala Mix are mildly spicy."
       },
       "vegan": {
-        "question": "I'm vegetarian/vegan?",
-        "answer": "Absolutely! Our counter offers many vegetables, mushrooms, tofu and noodles. You can build a 100% plant-based bowl. Ask us for details about our broths."
+        "question": "What if I'm vegetarian or vegan?",
+        "answer": "No problem! Our counter is full of vegetables, mushrooms, tofu and noodles, so you can easily build a 100% plant-based bowl. Just ask us which broth to go for."
       },
       "hours": {
         "question": "What are your opening hours?",
