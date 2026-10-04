@@ -2,15 +2,17 @@
 // Waits for the app to be mounted (the toast host and the translation function exist by then); the cart store counts the
 // dropped lines in `droppedOnHydrate` and the plugin resets it after announcing, so the same loss is not announced twice.
 // Run: `vp test run layers/engine/plugins/cart-notices.client.nuxt.test.ts`.
-import { createPinia } from 'pinia'
-import { nextTick } from 'vue'
-import { beforeEach, describe, expect, it } from 'vite-plus/test'
+import { type Pinia, createPinia } from 'pinia'
+import { type EffectScope, effectScope, nextTick } from 'vue'
+import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { useCartStore } from '#engine/stores/cart'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import plugin from './cart-notices.client'
 
 type Hook = () => void
-const pinia = createPinia()
+// A fresh Pinia and a scope per test: the plugin's watchers are stopped with the scope, not left on a shared store.
+let pinia: Pinia
+let scope: EffectScope
 
 /** A fake Nuxt app that records the `app:mounted` hook, to be run when the test says the app is mounted. */
 const install = () => {
@@ -22,7 +24,9 @@ const install = () => {
       hooks[name] = callback
     },
   }
-  ;(plugin as unknown as (app: typeof nuxtApp) => void)(nuxtApp)
+  scope.run(() => {
+    ;(plugin as unknown as (app: typeof nuxtApp) => void)(nuxtApp)
+  })
   return {
     mount: () => {
       hooks['app:mounted']!()
@@ -32,9 +36,13 @@ const install = () => {
 }
 
 beforeEach(() => {
-  pinia.state.value = {}
-  const cart = useCartStore(pinia)
-  cart.droppedOnHydrate = 0
+  pinia = createPinia()
+  scope = effectScope()
+})
+
+afterEach(() => {
+  scope.stop()
+  // The notification clock is module state: leave it stopped for the next test.
   useNotificationsStore(pinia).dismiss()
 })
 

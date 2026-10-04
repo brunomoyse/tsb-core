@@ -47,7 +47,7 @@ function answerCurrentCart(
 
 beforeEach(() => {
   track.mockReset()
-  ;(window as unknown as { umami: unknown }).umami = { track }
+  vi.stubGlobal('umami', { track })
   useState('restaurant-config').value = null
 })
 

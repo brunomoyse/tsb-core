@@ -14,6 +14,7 @@ import {
   stubResizeObserver,
 } from '../../../test/helpers/fakeObservers'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { setViewport } from '../../../test/helpers/viewport'
 
 const cleanups: (() => void)[] = []
 const sections = new Map<string, HTMLElement>()
@@ -50,14 +51,7 @@ const leave = (id: string) => {
   latest().emit([{ target: sections.get(id)!, isIntersecting: false }])
 }
 
-function setPage({ inner, scrollY, height }: { inner: number; scrollY: number; height: number }) {
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: inner })
-  Object.defineProperty(window, 'scrollY', { configurable: true, value: scrollY })
-  Object.defineProperty(document.documentElement, 'scrollHeight', {
-    configurable: true,
-    value: height,
-  })
-}
+const setPage = setViewport
 const scroll = () => window.dispatchEvent(new Event('scroll'))
 
 beforeEach(() => {

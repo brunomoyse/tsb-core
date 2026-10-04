@@ -39,12 +39,11 @@ beforeEach(() => {
   quoteFns.refreshQuote.mockReset()
   quoteFns.requestQuoteRefresh.mockReset()
   visibility = 'visible'
-  Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => visibility })
+  vi.spyOn(document, 'visibilityState', 'get').mockImplementation(() => visibility)
 })
 afterEach(() => {
   scope?.stop()
   vi.useRealTimers()
-  Reflect.deleteProperty(document, 'visibilityState')
 })
 
 describe('confirmBeforeOrder', () => {

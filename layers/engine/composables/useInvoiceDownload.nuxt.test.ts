@@ -38,8 +38,8 @@ beforeEach(() => {
   createObjectURL.mockClear()
   revokeObjectURL.mockClear()
   vi.stubGlobal('fetch', fetchMock)
-  window.URL.createObjectURL = createObjectURL
-  window.URL.revokeObjectURL = revokeObjectURL
+  vi.spyOn(window.URL, 'createObjectURL').mockImplementation(createObjectURL)
+  vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(revokeObjectURL)
   downloads = []
   vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
     this: HTMLAnchorElement,
@@ -48,8 +48,6 @@ beforeEach(() => {
   })
 })
 afterEach(() => {
-  vi.restoreAllMocks()
-  vi.unstubAllGlobals()
   useNotificationsStore().dismiss()
 })
 
@@ -98,7 +96,7 @@ describe('downloadInvoice', () => {
     expect(fetchMock.mock.calls[0]![1].headers).toEqual({})
   })
 
-  it('does not touch the OIDC client on the server', async () => {
+  it('looks for no OIDC token when it is not running in the browser (the button only exists there: this is its guard)', async () => {
     setFlags({ server: true })
     fetchMock.mockResolvedValue(pdf())
     await useInvoiceDownload().downloadInvoice('order-42')

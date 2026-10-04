@@ -20,7 +20,7 @@ async function picker() {
 
 beforeEach(() => {
   track.mockReset()
-  ;(window as unknown as { umami: unknown }).umami = { track }
+  vi.stubGlobal('umami', { track })
   originalLocale = i18n().locale.value
   i18n().locale.value = 'fr'
 })

@@ -25,7 +25,7 @@ beforeEach(() => {
   setActivePinia(createPinia())
   track.mockReset()
   navigateTo.mockReset().mockResolvedValue(undefined)
-  ;(window as unknown as { umami: unknown }).umami = { track }
+  vi.stubGlobal('umami', { track })
   useCartItemEdit().value = null
   useNuxtApp().$i18n.locale.value = 'fr'
 })

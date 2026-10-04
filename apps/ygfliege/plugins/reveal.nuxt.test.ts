@@ -2,6 +2,7 @@
 // directive hooks are the real thing. The server side is a no-op that renders content visible.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { setFlags } from '../../../test/flags'
+import { setViewport } from '../../../test/helpers/viewport'
 import {
   FakeIntersectionObserver,
   stubIntersectionObserver,
@@ -36,7 +37,7 @@ function element(top: number) {
 
 beforeEach(() => {
   stubIntersectionObserver()
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 800 })
+  setViewport({ inner: 800 })
 })
 afterEach(() => {
   document.body.innerHTML = ''

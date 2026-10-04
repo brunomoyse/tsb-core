@@ -334,10 +334,10 @@ describe('the polling fallback', () => {
   it('does not poll while the tab is hidden', async () => {
     orders.value = [order('a')]
     mount()
-    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true })
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true)
     await settle(90_000)
     expect(refetch).not.toHaveBeenCalled()
-    Reflect.deleteProperty(document, 'hidden')
+    hidden.mockReturnValue(false)
     await settle(30_000)
     expect(refetch).toHaveBeenCalledTimes(1)
   })
@@ -491,16 +491,12 @@ describe('?followOrder=<id> (the "follow your order" email link)', () => {
   })
 
   it('uses an instant jump when the visitor asked for reduced motion', async () => {
-    const original = window.matchMedia
-    window.matchMedia = ((query: string) => ({
-      matches: query.includes('reduce'),
-    })) as typeof window.matchMedia
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }))
     const el = card('a')
     route.query = { followOrder: 'a' }
     orders.value = [order('a')]
     mount()
     await nextTick()
-    window.matchMedia = original
     expect(el.scroll).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' })
   })
 
@@ -552,7 +548,8 @@ describe('reactive reading', () => {
   })
 })
 
-// Last on purpose: with no scope to stop them, the watchers of this call outlive the test.
+// With no scope to stop them, the watchers of this call outlive the test: they watch a list of their own that no other
+// test can touch.
 describe('outside a component', () => {
   it('with no parent scope the subscriptions still work, in their own scopes', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined) // Vue warns that there is nothing to dispose with
