@@ -77,6 +77,19 @@ describe('the user manager', () => {
     expect(manager().options.redirect_uri).toMatch(/\/nl\/auth\/callback$/u)
   })
 
+  // NOTE: the user manager is a singleton built on first use, so its redirect_uri keeps the language of the page where
+  // that happened: a visitor who switches language afterwards still comes back from Zitadel on the first language's
+  // callback page (a cosmetic detour: that page then sends them on).
+  it('NOTE: the redirect URI keeps the language of the first page, a later language switch does not change it', async () => {
+    goTo('/nl/me')
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    goTo('/en/menu')
+    await oidc.signIn()
+    expect(fakeUserManagers()).toHaveLength(1)
+    expect(manager().options.redirect_uri).toMatch(/\/nl\/auth\/callback$/u)
+  })
+
   it('defaults to French on a path without language', async () => {
     goTo('/')
     const { oidc, manager } = await load()
@@ -308,6 +321,22 @@ describe('silentRenew', () => {
     manager().getUser.mockResolvedValue(user({ expired: true }))
     manager().signinSilent.mockRejectedValue(new Error('invalid_grant'))
     manager().listeners.loaded!(user())
+
+    await expect(oidc.silentRenew()).resolves.toBeNull()
+
+    expect(manager().removeUser).toHaveBeenCalledOnce()
+    expect(oidc.oidcUser.value).toBeNull()
+  })
+
+  // NOTE (owner decision pending, not asserted as desirable): every failure of signinSilent wipes the session, a dropped
+  // connection (a TypeError from fetch, e.g. a phone coming back from sleep with no network yet) included, although
+  // the refresh token would still be valid. Telling "refused by Zitadel" from "could not reach it" needs the shapes
+  // oidc-client-ts throws against a real Zitadel; until then the safe side is to wipe, as the comment in useOidc says.
+  it('NOTE: a network failure while renewing wipes the session just like a refused refresh token', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager().getUser.mockResolvedValue(user({ expired: true }))
+    manager().signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
 
     await expect(oidc.silentRenew()).resolves.toBeNull()
 

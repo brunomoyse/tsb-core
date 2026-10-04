@@ -186,7 +186,7 @@ describe('searching', () => {
     },
   )
 
-  it('the no-match hint is not shown while loading text is too short, before any search, or after a selection', async () => {
+  it('the no-match hint is not shown before any search, nor for a text under 3 characters', async () => {
     answers([])
     const { api } = setup()
     expect(api.showNoMatchHint.value).toBe(false)
@@ -194,6 +194,46 @@ describe('searching', () => {
     expect(api.showNoMatchHint.value).toBe(true)
     api.addressQuery.value = 'Z1'
     expect(api.showNoMatchHint.value).toBe(false) // Under 3 characters
+  })
+
+  it('the no-match hint waits for the answer: it is not shown while the search is still on its way', async () => {
+    let release!: (value: unknown) => void
+    gqlFetch.mockImplementation(() => new Promise((resolve) => (release = resolve)))
+    const { api } = setup()
+    await type(api, 'Zzz 1')
+    expect(searchCalls()).toHaveLength(1)
+    expect(api.showNoMatchHint.value).toBe(false)
+    release({ autocompleteAddresses: [] })
+    await vi.advanceTimersByTimeAsync(0)
+    expect(api.showNoMatchHint.value).toBe(true)
+  })
+
+  it('the no-match hint is not shown while a chosen place is being resolved', async () => {
+    let release!: (value: unknown) => void
+    gqlFetch.mockImplementation((query: string) =>
+      query.includes('resolveAddress')
+        ? new Promise((resolve) => (release = resolve))
+        : Promise.resolve({ autocompleteAddresses: [] }),
+    )
+    const { api } = setup()
+    await type(api, 'Zzz 1')
+    expect(api.showNoMatchHint.value).toBe(true)
+    const resolving = api.selectSuggestion(suggestion(1))
+    expect(api.isLoadingAddress.value).toBe(true)
+    expect(api.showNoMatchHint.value).toBe(false)
+    release({ resolveAddress: address() })
+    await resolving
+    expect(api.isLoadingAddress.value).toBe(false)
+  })
+
+  it('the no-match hint is not shown once an address is selected, although the list is empty again', async () => {
+    answers([suggestion(59)])
+    const { api } = setup()
+    await type(api, 'Rue de la Cathédrale 5')
+    await api.selectSuggestion(suggestion(59))
+    expect(api.selectedAddress.value).not.toBeNull()
+    expect(api.suggestions.value).toEqual([])
+    expect(api.showNoMatchHint.value).toBe(false)
   })
 
   it('only the latest search may write its results: a slow answer to an older query is dropped', async () => {
