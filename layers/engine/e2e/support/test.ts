@@ -1,7 +1,10 @@
-import { type Page, test as base } from '@playwright/test'
+import { type Page, test as base, expect } from '@playwright/test'
+import { type Backend, mockBackend, realBackend } from './backend'
 import { existsSync, readFileSync } from 'node:fs'
 import type { CapturedOidcState } from './auth-flow'
+import { MockControl } from '../mock/client'
 import { authStateFile } from './paths'
+import { fakeOidcEntry } from '../mock/oidc'
 
 /*
  * Shared `test` for the engine specs, run by every brand app.
@@ -28,6 +31,18 @@ export interface BrandOptions {
   loginOrigin: string | undefined
   /* OTP test user for this brand; undefined skips specs that log in through the UI. */
   e2eUserEmail: string | undefined
+  /*
+   * Mock mode (playwright.mock.config.ts): where the mock tsb-service listens and which fake OIDC session the
+   * authenticated pages get. Undefined = real mode: the test server, Zitadel and its database.
+   */
+  mock: MockOptions | undefined
+}
+
+export interface MockOptions {
+  url: string
+  /* ZITADEL_AUTHORITY / ZITADEL_CLIENT_ID the app under test was built with. */
+  oidcAuthority: string
+  oidcClientId: string
 }
 
 let cachedState: CapturedOidcState | null = null
@@ -49,12 +64,82 @@ function loadAuthState(configFile: string | undefined): CapturedOidcState | null
  * so the OIDC user is in localStorage by the time the auth middleware reads
  * it via isAuthenticated().
  */
-export const test = base.extend<BrandOptions & { authenticatedPage: Page }>({
+export const test = base.extend<
+  BrandOptions & { authenticatedPage: Page; backend: Backend; mockLifecycle: void }
+>({
   brand: ['tokyosushi', { option: true }],
   loginAvailable: [true, { option: true }],
   loginOrigin: [undefined, { option: true }],
   e2eUserEmail: [undefined, { option: true }],
-  authenticatedPage: async ({ page, context }, use, testInfo) => {
+  mock: [undefined, { option: true }],
+
+  /* Real DB helpers or mock control behind one interface (support/backend.ts). */
+  backend: async ({ mock }, use) => {
+    await use(mock ? mockBackend(new MockControl(mock.url)) : realBackend())
+  },
+
+  /*
+   * Mock mode only, every test: start from the mock's defaults, keep the browser off the internet, and afterwards fail
+   * the test when the app asked the mock for something it cannot answer (the mock lags the app: add the field or
+   * operation to e2e/mock/resolvers.ts rather than letting the app get a silent null).
+   */
+  mockLifecycle: [
+    async ({ mock, context }, use, testInfo) => {
+      if (!mock) {
+        await use()
+        return
+      }
+      const control = new MockControl(mock.url)
+      await control.reset()
+      await context.route(
+        (url) => !['localhost', '127.0.0.1'].includes(url.hostname),
+        (route) => route.abort('blockedbyclient'),
+      )
+      // What the browser complained about, attached to a failing test (a failed chunk or API call explains most flakes).
+      const problems: string[] = []
+      context.on('page', (opened) => {
+        opened.on('pageerror', (error) => problems.push(`pageerror: ${error.message}`))
+        opened.on('console', (message) => {
+          if (message.type() === 'error') problems.push(`console.error: ${message.text()}`)
+        })
+        opened.on('requestfailed', (request) =>
+          problems.push(`requestfailed: ${request.url()} ${request.failure()?.errorText ?? ''}`),
+        )
+      })
+      await use()
+      if (testInfo.status !== testInfo.expectedStatus && problems.length > 0) {
+        await testInfo.attach('browser-problems', {
+          body: problems.join('\n'),
+          contentType: 'text/plain',
+        })
+      }
+      if (testInfo.status === testInfo.expectedStatus) {
+        const { gaps } = await control.state()
+        expect(
+          gaps,
+          'the app used API the mock does not implement (see e2e/mock/README.md)',
+        ).toEqual([])
+      }
+    },
+    { auto: true },
+  ],
+
+  authenticatedPage: async ({ page, context, mock }, use, testInfo) => {
+    if (mock) {
+      /*
+       * A fake oidc-client-ts session: seeded before any page script, once per browser context (a later sign-out must not
+       * be undone by the next navigation).
+       */
+      const entry = fakeOidcEntry({ authority: mock.oidcAuthority, clientId: mock.oidcClientId })
+      await context.addInitScript((pair: [string, string]) => {
+        if (localStorage.getItem('e2e-session-seeded')) return
+        localStorage.setItem(pair[0], pair[1])
+        localStorage.setItem('e2e-session-seeded', '1')
+      }, entry)
+      await use(page)
+      return
+    }
+
     const state = loadAuthState(testInfo.config.configFile)
     if (!state) {
       base.skip(

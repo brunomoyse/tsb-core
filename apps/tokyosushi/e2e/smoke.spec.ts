@@ -2,16 +2,18 @@ import {
   dismissCookieConsent,
   waitForNuxtHydration,
 } from '../../../layers/engine/e2e/support/hydration'
-import { expect, test } from '@playwright/test'
+import { expect, test } from '../../../layers/engine/e2e/support/test'
 import { SEL } from '../../../layers/engine/e2e/support/selectors'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
-  await context.addInitScript(() => localStorage.clear())
+  await context.addInitScript(() => {
+    localStorage.clear()
+  })
 })
 
 // Brand name to assert in the page title. Defaults to Tokyo Sushi Bar; override
-// via E2E_BRAND_NAME when running against another white-label brand.
+// Via E2E_BRAND_NAME when running against another white-label brand.
 const BRAND_NAME = process.env.E2E_BRAND_NAME || 'Tokyo Sushi'
 
 test.describe('Public page smoke tests', () => {

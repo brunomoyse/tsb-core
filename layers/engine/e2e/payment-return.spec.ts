@@ -1,12 +1,6 @@
-import {
-  type SeededOrderStatus,
-  deleteOrder,
-  findUserIdByEmail,
-  seedOrder,
-  settleOrder,
-} from './support/db'
 import { expect, test } from './support/test'
 import { type Page } from '@playwright/test'
+import type { OrderStatus, PaymentStatus } from './mock/types'
 import { SEL } from './support/selectors'
 
 /*
@@ -100,21 +94,15 @@ const cartLineCount = (page: Page): Promise<number> =>
     }
   }, CART_KEY)
 
-function userId(): string {
-  const email = process.env.E2E_USER_EMAIL
-  if (!email) throw new Error('E2E_USER_EMAIL must be set')
-  return findUserIdByEmail(email)
-}
-
 test.describe('Mollie return (full page load)', () => {
   let orderId: string | null = null
 
-  test.afterEach(() => {
-    if (orderId) deleteOrder(orderId)
+  test.afterEach(async ({ backend }) => {
+    if (orderId) await backend.deleteOrder(orderId)
     orderId = null
   })
 
-  const problemCases: { payment: string; status: SeededOrderStatus }[] = [
+  const problemCases: { payment: PaymentStatus; status: OrderStatus }[] = [
     { payment: 'canceled', status: 'CANCELLED' },
     { payment: 'failed', status: 'FAILED' },
     { payment: 'expired', status: 'CANCELLED' },
@@ -125,8 +113,9 @@ test.describe('Mollie return (full page load)', () => {
   problemCases.forEach(({ payment, status }) => {
     test(`${payment} payment keeps the cart and offers a retry`, async ({
       authenticatedPage: page,
+      backend,
     }) => {
-      orderId = seedOrder({ userId: userId(), status, online: true, paymentStatus: payment })
+      orderId = await backend.seedOrder({ status, online: true, paymentStatus: payment })
       await seedCart(page, orderId)
 
       await page.goto(`/fr/order-completed/${orderId}`)
@@ -146,9 +135,9 @@ test.describe('Mollie return (full page load)', () => {
 
   test('a late webhook shows "verifying", never "payment failed", and clears the cart once paid', async ({
     authenticatedPage: page,
+    backend,
   }) => {
-    orderId = seedOrder({
-      userId: userId(),
+    orderId = await backend.seedOrder({
       status: 'PENDING',
       online: true,
       paymentStatus: 'open',
@@ -163,7 +152,7 @@ test.describe('Mollie return (full page load)', () => {
     expect(await cartLineCount(page)).toBe(1)
 
     // The webhook lands while the page is verifying (the verify loop polls for ~17 s).
-    settleOrder(orderId, 'CONFIRMED', 'paid')
+    await backend.settleOrder(orderId, 'CONFIRMED', 'paid')
 
     await expect(page.locator(SEL.orderCompletedTitle)).toBeVisible({ timeout: 20_000 })
     await expect(page.locator(SEL.orderCompletedPaymentProblem)).toHaveCount(0)
@@ -172,10 +161,10 @@ test.describe('Mollie return (full page load)', () => {
 
   test('still pending after the verify window: neutral "awaiting confirmation", no retry, cart kept', async ({
     authenticatedPage: page,
+    backend,
   }) => {
     test.setTimeout(120_000) // ~17 s verify window + the webhook step
-    orderId = seedOrder({
-      userId: userId(),
+    orderId = await backend.seedOrder({
       status: 'PENDING',
       online: true,
       paymentStatus: 'open',
@@ -193,14 +182,13 @@ test.describe('Mollie return (full page load)', () => {
     expect(await cartLineCount(page)).toBe(1)
 
     // The late webhook finally lands: the page updates by itself and the cart is committed.
-    settleOrder(orderId, 'CONFIRMED', 'paid')
+    await backend.settleOrder(orderId, 'CONFIRMED', 'paid')
     await expect(page.locator(SEL.orderCompletedTitle)).toBeVisible({ timeout: 30_000 })
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
-  test('a paid online order clears the cart', async ({ authenticatedPage: page }) => {
-    orderId = seedOrder({
-      userId: userId(),
+  test('a paid online order clears the cart', async ({ authenticatedPage: page, backend }) => {
+    orderId = await backend.seedOrder({
       status: 'CONFIRMED',
       online: true,
       paymentStatus: 'paid',
@@ -214,8 +202,8 @@ test.describe('Mollie return (full page load)', () => {
     await expect.poll(() => cartLineCount(page)).toBe(0)
   })
 
-  test('a cash order clears the cart', async ({ authenticatedPage: page }) => {
-    orderId = seedOrder({ userId: userId(), status: 'CONFIRMED', online: false })
+  test('a cash order clears the cart', async ({ authenticatedPage: page, backend }) => {
+    orderId = await backend.seedOrder({ status: 'CONFIRMED', online: false })
     await seedCart(page, orderId)
 
     await page.goto(`/fr/order-completed/${orderId}`)
@@ -228,9 +216,9 @@ test.describe('Mollie return (full page load)', () => {
      a checkout that ran on the previous bundle left no pendingOrderId behind. */
   test('transitional: a cart without pendingOrderId is cleared for an order created minutes ago', async ({
     authenticatedPage: page,
+    backend,
   }) => {
-    orderId = seedOrder({
-      userId: userId(),
+    orderId = await backend.seedOrder({
       status: 'CONFIRMED',
       online: true,
       paymentStatus: 'paid',
@@ -245,10 +233,10 @@ test.describe('Mollie return (full page load)', () => {
 
   test('revisiting a paid order later does not clear a newer cart', async ({
     authenticatedPage: page,
+    backend,
   }) => {
     // Older than the transitional 30-minute window, and the cart is not the one checked out for it.
-    orderId = seedOrder({
-      userId: userId(),
+    orderId = await backend.seedOrder({
       status: 'CONFIRMED',
       online: true,
       paymentStatus: 'paid',

@@ -295,7 +295,10 @@ test.describe('Cart operations', () => {
 
     const warning = page.locator(SEL.cartMinimumWarning)
     test.skip(
-      !(await warning.isVisible({ timeout: 2_000 }).catch(() => false)),
+      !(await warning
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)),
       'First product already meets minimum',
     )
 
@@ -319,13 +322,17 @@ test.describe('Cart operations', () => {
 
     const warning = page.locator(SEL.cartMinimumWarning)
     test.skip(
-      !(await warning.isVisible({ timeout: 2_000 }).catch(() => false)),
+      !(await warning
+        .waitFor({ state: 'visible', timeout: 2_000 })
+        .then(() => true)
+        .catch(() => false)),
       'First product already meets minimum',
     )
 
     await page.locator(SEL.cartSwitchToPickup).click()
     await expect(warning).toBeHidden()
-    await expect(page.locator(SEL.cartCheckoutLink)).toHaveAttribute('aria-disabled', 'false')
+    // UiButton marks a blocked link aria-disabled="true" and leaves the attribute off otherwise.
+    await expect(page.locator(SEL.cartCheckoutLink)).not.toHaveAttribute('aria-disabled', 'true')
   })
 
   test('SideCart and /cart show the same payable total', async ({ page }, testInfo) => {

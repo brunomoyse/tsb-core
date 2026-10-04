@@ -1,14 +1,15 @@
-import { type Locator, type Page, expect, test } from '@playwright/test'
+import { type Locator, type Page } from '@playwright/test'
+import { expect, test } from '../../../layers/engine/e2e/support/test'
 
 // Compose-a-bowl flow against the seeded YGF menu
 // (tsb-service/seeds/ygfliege_menu.sql). The "Malatang sur mesure" product has
-// three choice groups: base (min 1/max 1), ingredients (min 5/max 20) and
-// spice level (min 1/max 1) — the add-to-cart button must stay disabled until
-// every group is satisfied.
+// Three choice groups: base (min 1/max 1), ingredients (min 5/max 20) and
+// Spice level (min 1/max 1) — the add-to-cart button must stay disabled until
+// Every group is satisfied.
 //
 // Composer products open BowlComposer; fixed sets (broth + spice, every group
-// min=max=1) stay on ProductModal. Both are driven by the same
-// useProductChoices composable, so the gating assertions below cover each.
+// Min=max=1) stay on ProductModal. Both are driven by the same
+// UseProductChoices composable, so the gating assertions below cover each.
 
 const choiceRowSelector = (prefix: string) =>
   `[data-testid^="${prefix}-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"])`
@@ -20,7 +21,7 @@ const openComposer = async (page: Page): Promise<Locator> => {
   await expect(cta).toBeVisible({ timeout: 15_000 })
   const composer = page.getByTestId('bowl-composer')
   // Retry the click: the SSR page is visible before Vue hydration attaches
-  // listeners, and a pre-hydration click lands on inert DOM.
+  // Listeners, and a pre-hydration click lands on inert DOM.
   await expect(async () => {
     await cta.click()
     await expect(composer).toBeVisible({ timeout: 2_000 })
@@ -171,11 +172,12 @@ test.describe('compose a bowl (Malatang sur mesure)', () => {
     await expect(modal).toBeVisible()
 
     // The regression: "+" used to push a second line with no selections, which the backend rejects at payment.
+    // The persisted cart (utils/cartPersistence.ts, version 2) keeps each line's picks under `selections`.
     const lines = await page.evaluate(() => {
       const raw = localStorage.getItem('cart')
-      return raw ? (JSON.parse(raw).products as { selectedChoices?: unknown[] }[]) : []
+      return raw ? (JSON.parse(raw).products as { selections?: unknown[] }[]) : []
     })
     expect(lines).toHaveLength(1)
-    for (const line of lines) expect(line.selectedChoices?.length ?? 0).toBeGreaterThan(0)
+    for (const line of lines) expect(line.selections?.length ?? 0).toBeGreaterThan(0)
   })
 })
