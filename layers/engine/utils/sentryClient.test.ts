@@ -17,6 +17,10 @@ const fakeSdk = () => {
   const sdk = {
     init: vi.fn(),
     getClient: vi.fn(() => ({ addIntegration })),
+    getActiveSpan: vi.fn((): unknown => undefined),
+    getRootSpan: vi.fn((span: unknown) => span),
+    spanToJSON: vi.fn((span: { op?: string }) => ({ attributes: { 'sentry.op': span.op } })),
+    updateSpanName: vi.fn(),
     browserTracingIntegration: vi.fn((options: unknown) => ({ name: 'BrowserTracing', options })),
   }
   return { sdk, addIntegration, module: sdk as unknown as SentryModule }
@@ -98,6 +102,51 @@ describe('initSentry', () => {
     noClient.sdk.getClient.mockReturnValue(undefined as never)
     initSentry(noClient.module, env({ $router: {} }))
     expect(noClient.addIntegration).not.toHaveBeenCalled()
+  })
+})
+
+describe('the pageload span name', () => {
+  const routerAt = (path: string, matched: string[]) => ({
+    currentRoute: { value: { path, matched: matched.map((p) => ({ path: p })) } },
+  })
+
+  it('is the matched route of the page the visitor opened, not "Pageload" and not the visited URL', () => {
+    const { sdk } = fakeSdk()
+    const pageload = { op: 'pageload' }
+    sdk.getActiveSpan.mockReturnValue(pageload)
+    initSentry(
+      sdk as unknown as SentryModule,
+      env({ $router: routerAt('/fr/product/42', ['/fr', '/fr/product/:id()']) }),
+    )
+    expect(sdk.updateSpanName).toHaveBeenCalledExactlyOnceWith(pageload, '/fr/product/:id()')
+  })
+
+  it('falls back to the path when no route matched (a 404)', () => {
+    const { sdk } = fakeSdk()
+    sdk.getActiveSpan.mockReturnValue({ op: 'pageload' })
+    initSentry(sdk as unknown as SentryModule, env({ $router: routerAt('/fr/nope', []) }))
+    expect(sdk.updateSpanName).toHaveBeenCalledWith(expect.anything(), '/fr/nope')
+  })
+
+  it('renames the root of the active span, and only a pageload', () => {
+    const { sdk } = fakeSdk()
+    const child = { op: 'ui.long-animation-frame' }
+    const root = { op: 'pageload' }
+    sdk.getActiveSpan.mockReturnValue(child)
+    sdk.getRootSpan.mockReturnValue(root)
+    initSentry(sdk as unknown as SentryModule, env({ $router: routerAt('/fr', ['/fr']) }))
+    expect(sdk.updateSpanName).toHaveBeenCalledExactlyOnceWith(root, '/fr')
+
+    const navigation = fakeSdk()
+    navigation.sdk.getActiveSpan.mockReturnValue({ op: 'navigation' })
+    initSentry(navigation.module, env({ $router: routerAt('/fr', ['/fr']) }))
+    expect(navigation.sdk.updateSpanName).not.toHaveBeenCalled()
+  })
+
+  it('does nothing when no span is active', () => {
+    const { sdk } = fakeSdk()
+    initSentry(sdk as unknown as SentryModule, env({ $router: routerAt('/fr', ['/fr']) }))
+    expect(sdk.updateSpanName).not.toHaveBeenCalled()
   })
 })
 
@@ -206,20 +255,28 @@ describe('startSentry', () => {
     await expect(startSentry(env())).rejects.toThrow('only loads in the browser')
   })
 
-  it('loads the real facade (the four SDK functions the shop uses) when no loader is given', async () => {
+  it('loads the real facade (the SDK functions the shop uses) when no loader is given', async () => {
     vi.doMock('@sentry/nuxt', () => ({
       init: vi.fn(),
       captureException: vi.fn(),
       getClient: vi.fn(),
       browserTracingIntegration: vi.fn(),
+      getActiveSpan: vi.fn(),
+      getRootSpan: vi.fn(),
+      spanToJSON: vi.fn(),
+      updateSpanName: vi.fn(),
     }))
     const { startSentry } = await import('./sentryClient')
     const sdk = await startSentry(env())
     expect(Object.keys(sdk).toSorted()).toEqual([
       'browserTracingIntegration',
       'captureException',
+      'getActiveSpan',
       'getClient',
+      'getRootSpan',
       'init',
+      'spanToJSON',
+      'updateSpanName',
     ])
   })
 })

@@ -22,6 +22,11 @@ export interface SentryEnvironment {
   $router?: unknown
 }
 
+/** What `namePageload` reads of the Vue router. */
+interface CurrentRoute {
+  currentRoute: { value: { path: string; matched: readonly { path: string }[] } }
+}
+
 /*
  * Defensive cap against a runaway error source flooding the tunnel. The actual OIDC iframe-loop root cause is fixed in
  * useOidc.ts (removeUser on signinSilent failure), but if a different source ever floods Sentry from the client we don't
@@ -121,7 +126,27 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
         routeLabel: 'path',
       }),
     )
+    namePageload(Sentry, env.$router as CurrentRoute)
   }
+}
+
+/*
+ * Names the page's pageload span after the matched route (`/fr/menu`, `/fr/order-completed/:orderId()`: the language is part of the route path in this app) instead of the literal `Pageload`. It is the name the router tracing gives the navigation spans (routeLabel 'path'), so both kinds of span group alike.
+ *
+ * The SDK is loaded after the router's first navigation, so the router tracing never sees it and cannot name the span; the
+ * span would stay `Pageload` for every page of the shop and all of them would land in one bucket. The matched route's path
+ * is the parametrised one (not `/fr/order-completed/42`), which keeps the number of names small. `updateSpanName` also marks the
+ * name final, so the SDK does not fall back to `Pageload` when the span ends.
+ *
+ * The pageload span's DURATION is not meaningful any more: it now measures "until the SDK started (2.5 s after load) plus its
+ * idle time", not the page's load. Look at the web vitals attached to it (LCP, CLS, INP, TTFB, FCP) for the page's speed.
+ */
+function namePageload(Sentry: SentryModule, router: CurrentRoute): void {
+  const active = Sentry.getActiveSpan()
+  const root = active && Sentry.getRootSpan(active)
+  if (!root || Sentry.spanToJSON(root).attributes['sentry.op'] !== 'pageload') return
+  const route = router.currentRoute.value
+  Sentry.updateSpanName(root, route.matched.at(-1)?.path ?? route.path)
 }
 
 /*
