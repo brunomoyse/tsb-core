@@ -1,10 +1,10 @@
 // Quote store: the shared state of the server quote and its request cycle (wanted / settled / quote keys).
 // Plain Pinia, no Nuxt: the store only holds state; `useOrderQuote` drives it.
 // Run: `vp test run layers/engine/stores/quote.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useQuoteStore } from '#engine/stores/quote'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeQuote, makeQuoteLine } from '../../../test/fixtures/quote'
+import { useQuoteStore } from '#engine/stores/quote'
 
 beforeEach(() => {
   setActivePinia(createPinia())

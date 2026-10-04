@@ -1,15 +1,15 @@
 // useCartItemActions: what the cart surfaces do with a line: remove it (with the Undo toast of useCartRemoval) or edit
 // it (reopen the product modal prefilled, in the visitor's language).
 // Run: `vp test run layers/engine/composables/useCartItemActions.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
+import { useLocalePath, useNuxtApp } from '#imports'
+import { makeProduct } from '../../../test/fixtures/catalog'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { useCartStore } from '#engine/stores/cart'
 import { useNotificationsStore } from '#engine/stores/notifications'
-import { useLocalePath, useNuxtApp } from '#imports'
-import { makeProduct } from '../../../test/fixtures/catalog'
 
 const navigateTo = vi.hoisted(() => vi.fn())
 mockNuxtImport('navigateTo', () => navigateTo)

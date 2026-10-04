@@ -1,11 +1,11 @@
 // useCouponCode: applying / removing a promo code on the cart. `apply` returns null on success, else the translated
 // reason the code was refused; a request that FAILED never says "invalid code". The GraphQL transport is the boundary.
 // Run: `vp test run layers/engine/composables/useCouponCode.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useCartStore } from '#engine/stores/cart'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeProduct } from '../../../test/fixtures/catalog'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { useCartStore } from '#engine/stores/cart'
 
 const reportError = vi.hoisted(() => vi.fn())
 const gqlFetch = vi.hoisted(() => vi.fn())

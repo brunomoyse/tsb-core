@@ -2,13 +2,13 @@
 // offered (and cleared) while the whole cart is hot dishes (`unavailableWhenCartOnlyIn: ['tokyo-hot']`).
 // Real cart store and brand data. The other brand is in useOrderExtras.ygfliege.nuxt.test.ts.
 // Run: `vp test run layers/engine/composables/useOrderExtras.nuxt.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
 import { type EffectScope, effectScope, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { useCartStore } from '#engine/stores/cart'
+import { createPinia, setActivePinia } from 'pinia'
 import type { Product } from '#engine/types'
 import { makeProduct } from '../../../test/fixtures/catalog'
+import { useCartStore } from '#engine/stores/cart'
+import { useOrderExtras } from '#engine/composables/useOrderExtras'
 
 const inCategory = (slug: string, id = slug): Product =>
   makeProduct({

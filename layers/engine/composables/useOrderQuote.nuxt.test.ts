@@ -3,15 +3,15 @@
 // the boundaries are the GraphQL transport ($gqlFetch), Sentry (reportError), i18n and the clock (fake timers).
 // The composable keeps module-level state (the shared cycle), so every test loads a fresh copy of it.
 // Run: `vp test run layers/engine/composables/useOrderQuote.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { type EffectScope, effectScope, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../test/flags'
-import { makeProduct } from '../../../test/fixtures/catalog'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeQuote, makeQuoteLine } from '../../../test/fixtures/quote'
-import { makeUser } from '../../../test/fixtures/auth'
 import type { OrderQuote } from '#engine/utils/orderQuote'
+import { makeProduct } from '../../../test/fixtures/catalog'
+import { makeUser } from '../../../test/fixtures/auth'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setFlags } from '../../../test/flags'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
 const reportError = vi.hoisted(() => vi.fn())

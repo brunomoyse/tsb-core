@@ -1,7 +1,7 @@
 // Run: `vp test run layers/engine/utils/profile.test.mjs`.
 
-import { EUROPEAN_COUNTRIES } from './europeanCountries.ts'
 import { hasActiveOrder, profileFullName, profileInitials, splitStoredPhone } from './profile.ts'
+import { EUROPEAN_COUNTRIES } from './europeanCountries.ts'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
 

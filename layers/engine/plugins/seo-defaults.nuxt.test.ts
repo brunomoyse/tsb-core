@@ -1,6 +1,6 @@
 // Seo-defaults plugin: the share-card defaults of every page (brand image with dimensions, site name, Twitter card).
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useRuntimeConfig } from '#imports'
 
 const useSeoMeta = vi.hoisted(() => vi.fn())

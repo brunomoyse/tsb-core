@@ -1,9 +1,9 @@
 // useDateLocale: the Intl locale of the UI language, Belgian French when unknown.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
-import { nextTick } from 'vue'
-import { useNuxtApp } from '#imports'
-import { useDateLocale } from '#engine/composables/useDateLocale'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
+import { nextTick } from 'vue'
+import { useDateLocale } from '#engine/composables/useDateLocale'
+import { useNuxtApp } from '#imports'
 
 const i18n = () => useNuxtApp().$i18n as unknown as { locale: { value: string } }
 let original = ''

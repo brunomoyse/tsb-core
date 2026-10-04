@@ -2,12 +2,12 @@
 // language), the refetch triggers, the older-document fallback for a backend that does not know a field, and what is
 // taken from the SSR payload. useAsyncData and the Nuxt payload are real; the transport ($gqlFetch) is the boundary.
 // Run: `vp test run layers/engine/composables/useGqlQuery.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { nextTick, ref } from 'vue'
+import { GqlError, unwrapGqlError } from '#engine/utils/gqlError'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtData, useNuxtApp } from '#imports'
-import { GqlError, unwrapGqlError } from '#engine/utils/gqlError'
+import { nextTick, ref } from 'vue'
 import { gqlQueryKey } from '#engine/utils/gqlQueryKey'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
 
 const gqlFetch = vi.hoisted(() => vi.fn())

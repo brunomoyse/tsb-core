@@ -3,13 +3,13 @@
 // fallback while any order is active, `?followOrder=<id>` expand-and-scroll, and the status labels.
 // Boundaries: the WebSocket subscription, the route, i18n (fake) and the clock. Runs in a real component setup.
 // Run: `vp test run layers/engine/composables/useOrderTracking.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { type Ref, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../test/flags'
 import type { Order } from '#engine/types'
 import { makeOrder } from '../../../test/fixtures/order'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { setFlags } from '../../../test/flags'
 
 interface Sub {
   query: string

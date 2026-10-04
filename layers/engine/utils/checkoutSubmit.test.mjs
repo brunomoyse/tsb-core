@@ -5,11 +5,11 @@ import { GQL_KNOWN_CODES, describeErrorCode, describeGqlError } from './gqlError
 import { GqlError, unwrapGqlError } from './gqlError.ts'
 import { blockingProductName, orderPlacementRoute } from './checkoutSubmit.ts'
 import { buildCreateOrderInput, buildQuoteInput } from './orderPayload.ts'
-import { describeLineIssue, describeLineIssues } from './cartIssues.ts'
 import { describe, test } from 'vite-plus/test'
+import { describeLineIssue, describeLineIssues } from './cartIssues.ts'
 import { isQuoteBlocking, lineIssuesByKey, quoteLineByKey, recheckQuote } from './orderQuote.ts'
-import assert from 'node:assert/strict'
 import { DEFAULT_ORDERING_POLICY as POLICY } from './orderingPolicy.ts'
+import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const bowl = {

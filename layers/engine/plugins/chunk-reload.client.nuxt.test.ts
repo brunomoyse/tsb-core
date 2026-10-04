@@ -1,6 +1,6 @@
 // Chunk-reload plugin: a lazy chunk that fails to load reloads the current route (once per the guard of reloadNuxtApp).
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 const reloadNuxtApp = vi.hoisted(() => vi.fn())
 const route = vi.hoisted(() => ({ fullPath: '/fr/menu?x=1' }))

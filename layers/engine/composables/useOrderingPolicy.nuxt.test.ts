@@ -1,11 +1,11 @@
 // useOrderingPolicy: the backend's ordering rules read from the shared restaurant config, with the default policy until
 // the config has loaded or for a backend that has no `policy` yet; plus the numbers the copy quotes.
 // Run: `vp test run layers/engine/composables/useOrderingPolicy.nuxt.test.ts`.
-import { beforeEach, describe, expect, it } from 'vite-plus/test'
 import { type ApiOrderingPolicy, DEFAULT_ORDERING_POLICY } from '#engine/utils/orderingPolicy'
+import { beforeEach, describe, expect, it } from 'vite-plus/test'
+import type { RestaurantConfig } from '#engine/composables/useRestaurantConfig'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useRestaurantConfigState } from '#engine/composables/useRestaurantConfig'
-import type { RestaurantConfig } from '#engine/composables/useRestaurantConfig'
 
 const apiPolicy = (overrides: Partial<ApiOrderingPolicy> = {}): ApiOrderingPolicy => ({
   deliveryEnabled: true,

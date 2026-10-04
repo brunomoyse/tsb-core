@@ -2,8 +2,8 @@
 // `defineEventHandler`, `setHeader`, `createError`, ... without importing them, and so may it `useRuntimeConfig()` and
 // `$fetch(...)`. Expose the same names as globals (the last two are the doubles of test/nitro/imports.ts).
 import * as h3 from 'h3'
-import { beforeEach } from 'vite-plus/test'
 import { $fetch, setRuntimeConfig, useRuntimeConfig } from './imports'
+import { beforeEach } from 'vite-plus/test'
 
 for (const [name, value] of Object.entries(h3)) {
   if (!(name in globalThis)) Object.defineProperty(globalThis, name, { value, configurable: true })

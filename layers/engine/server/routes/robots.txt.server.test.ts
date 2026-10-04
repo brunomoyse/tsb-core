@@ -2,9 +2,9 @@
 // Run: `vp test run layers/engine/server/routes/robots.txt.server.test.ts`.
 import { describe, expect, it } from 'vite-plus/test'
 import { brand } from '#brand/brand'
-import { setRuntimeConfig } from '../../../../test/nitro/imports'
 import { callHandler } from '../../../../test/nitro/callHandler'
 import robots from './robots.txt'
+import { setRuntimeConfig } from '../../../../test/nitro/imports'
 
 const fetchRobots = async (baseUrl: unknown) => {
   setRuntimeConfig({ public: { baseUrl } })

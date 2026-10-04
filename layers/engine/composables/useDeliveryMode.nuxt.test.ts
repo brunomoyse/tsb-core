@@ -1,11 +1,11 @@
 // useDeliveryMode: home delivery is offered only when the brand flag AND the API's delivery policy both say so.
 // Both brands: tokyosushi offers delivery, ygfliege is takeaway-only (`deliveryEnabled: false`).
 // Run: `vp test run layers/engine/composables/useDeliveryMode.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useRestaurantConfigState } from '#engine/composables/useRestaurantConfig'
 import type { ApiOrderingPolicy } from '#engine/utils/orderingPolicy'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { brand as tokyosushi } from '#brand/brand'
+import { useRestaurantConfigState } from '#engine/composables/useRestaurantConfig'
 
 // `undefined` = the brand does not set the flag at all.
 const brandFlag = vi.hoisted(() => ({ value: undefined as boolean | undefined }))

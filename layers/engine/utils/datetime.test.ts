@@ -1,5 +1,4 @@
 // Brussels time helpers: the restaurant's day is Brussels', whatever the visitor's or the server's timezone.
-import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
   RESTAURANT_TZ,
   formatDate,
@@ -8,6 +7,7 @@ import {
   getBrusselsParts,
   isSameBrusselsDay,
 } from './datetime'
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
 
 const originalTz = process.env.TZ
 afterEach(() => {

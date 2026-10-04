@@ -1,6 +1,6 @@
 // Umami plugin: injects the analytics script only when both the website id and the host are configured.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 const useHead = vi.hoisted(() => vi.fn())
 const publicConfig = vi.hoisted(() => ({ umamiWebsiteId: '' as unknown, umamiHost: '' as unknown }))

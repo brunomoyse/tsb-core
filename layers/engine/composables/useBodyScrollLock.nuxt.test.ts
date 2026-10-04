@@ -1,10 +1,10 @@
 // useBodyScrollLock / lockBodyScroll: the page cannot scroll while a modal is open; nested locks restore exactly what
 // the first one saved; nothing happens during SSR.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
-import { nextTick, ref } from 'vue'
 import { lockBodyScroll, useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
-import { setFlags } from '../../../test/flags'
+import { nextTick, ref } from 'vue'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { setFlags } from '../../../test/flags'
 
 beforeEach(() => {
   document.body.style.overflow = ''

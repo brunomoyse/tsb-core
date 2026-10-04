@@ -1,8 +1,8 @@
 // useLocaleSeoMeta: og:locale of the current language and the alternates (the other three).
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useNuxtApp } from '#imports'
-import { useLocaleSeoMeta } from '#engine/composables/useLocaleSeoMeta'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
+import { useLocaleSeoMeta } from '#engine/composables/useLocaleSeoMeta'
+import { useNuxtApp } from '#imports'
 
 const i18n = () => useNuxtApp().$i18n as unknown as { locale: { value: string } }
 let original = ''

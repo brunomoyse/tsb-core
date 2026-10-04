@@ -5,9 +5,9 @@
 // Run: `vp test run layers/engine/composables/useOrderingAvailability.nuxt.test.ts`.
 import { type EffectScope, effectScope, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../test/flags'
 import type { ApiOrderingPolicy } from '#engine/utils/orderingPolicy'
 import type { RestaurantConfig } from '#engine/composables/useRestaurantConfig'
+import { setFlags } from '../../../test/flags'
 
 const request = vi.hoisted(() => ({ useRestaurantConfig: vi.fn() }))
 vi.mock('#engine/composables/useRestaurantConfig', async (importOriginal) => ({

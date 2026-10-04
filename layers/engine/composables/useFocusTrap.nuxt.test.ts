@@ -1,8 +1,8 @@
 // useFocusTrap: real DOM focus behaviour (happy-dom): initial focus, Tab/Shift+Tab cycling, focus pulled back from outside,
 // escape handling for the topmost trap only, companions, and focus restore on deactivation / unmount.
+import { type FocusTrapOptions, useFocusTrap } from '#engine/composables/useFocusTrap'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
-import { type FocusTrapOptions, useFocusTrap } from '#engine/composables/useFocusTrap'
 import { mountComposable } from '../../../test/helpers/mountComposable'
 
 interface Tab {

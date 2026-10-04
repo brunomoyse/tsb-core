@@ -1,8 +1,8 @@
 // useRestaurantSchema in the real app of ygfliege: the JSON-LD is this brand's (name, phone, address, hours).
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vite-plus/test'
-import { useRuntimeConfig } from '#imports'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
+import { useRuntimeConfig } from '#imports'
 
 const useHead = vi.hoisted(() => vi.fn())
 mockNuxtImport('useHead', () => useHead)

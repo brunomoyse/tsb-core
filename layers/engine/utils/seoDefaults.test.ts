@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vite-plus/test'
 import { OG_IMAGE_HEIGHT, OG_IMAGE_PATH, OG_IMAGE_WIDTH, inLanguageTag } from './seoDefaults'
+import { describe, expect, it } from 'vite-plus/test'
 
 describe('inLanguageTag', () => {
   it.each([

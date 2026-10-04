@@ -3,13 +3,13 @@
 // combobox keyboard pattern. The GraphQL transport, Sentry, i18n and the clock are the boundaries; the composable runs in
 // a real component setup (it uses useId and onBeforeUnmount).
 // Run: `vp test run layers/engine/composables/useAddressAutocomplete.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
-import { nextTick } from 'vue'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useNotificationsStore } from '#engine/stores/notifications'
 import type { Address, AddressSuggestion } from '#engine/types'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { nextTick } from 'vue'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
 const reportError = vi.hoisted(() => vi.fn())

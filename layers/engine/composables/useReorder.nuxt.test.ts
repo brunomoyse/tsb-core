@@ -2,14 +2,14 @@
 // silently (the shared prompt asks Replace / Add / Cancel); lines that cannot be restored are skipped and named.
 // Real cart, notifications, planReorder and shared state; navigation and i18n are the boundaries.
 // Run: `vp test run layers/engine/composables/useReorder.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useCartStore } from '#engine/stores/cart'
-import { useNotificationsStore } from '#engine/stores/notifications'
 import { clearNuxtState, useLocalePath, useState } from '#imports'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
 import { makeOrder, makeOrderItem } from '../../../test/fixtures/order'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { useCartStore } from '#engine/stores/cart'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 const navigateTo = vi.hoisted(() => vi.fn())
 mockNuxtImport('navigateTo', () => navigateTo)

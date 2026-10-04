@@ -2,10 +2,10 @@
 // the access token, and the silent renewal whose single in-flight promise protects Zitadel's rotating refresh token.
 // oidc-client-ts's UserManager (which talks to Zitadel) and $fetch are the boundaries, replaced by a fake.
 // Run: `vp test run layers/engine/composables/useOidc.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useRuntimeConfig } from '#imports'
 import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { useRuntimeConfig } from '#imports'
 
 interface FakeUser {
   access_token: string

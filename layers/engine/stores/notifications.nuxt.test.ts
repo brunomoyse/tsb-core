@@ -1,10 +1,10 @@
 // Notifications store: one toast on screen, the others queued; expiry clock with pause/resume; client-only timer.
 // Time is faked, everything else (store, queue and timer rules) is real.
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useNotificationsStore } from '#engine/stores/notifications'
+import { createPinia, setActivePinia } from 'pinia'
 import { MAX_QUEUED_TOASTS } from '#engine/utils/toastQueue'
 import { setFlags } from '../../../test/flags'
+import { useNotificationsStore } from '#engine/stores/notifications'
 
 function store() {
   setActivePinia(createPinia())

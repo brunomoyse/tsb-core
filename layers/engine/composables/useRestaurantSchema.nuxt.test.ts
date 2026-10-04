@@ -1,8 +1,8 @@
 // useRestaurantSchema: the site-wide Restaurant JSON-LD. useHead is the boundary; brand, runtime config, locale and the
 // schema builder are real (tokyosushi brand, the test base URL).
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
 
 interface Script {

@@ -3,14 +3,14 @@
 // before it orders. Real libphonenumber, auth store, notifications and shared state; the API (updateMe), Sentry and i18n
 // are the boundaries.
 // Run: `vp test run layers/engine/composables/usePhoneCapture.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
-import { ref } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { clearNuxtState, useState } from '#imports'
+import { createPinia, setActivePinia } from 'pinia'
+import { makeUser } from '../../../test/fixtures/auth'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { ref } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
 import { useNotificationsStore } from '#engine/stores/notifications'
-import { clearNuxtState, useState } from '#imports'
-import { makeUser } from '../../../test/fixtures/auth'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
 const reportError = vi.hoisted(() => vi.fn())

@@ -2,10 +2,6 @@
 // wins), jumps mute the spy while the smooth scroll runs, the page end forces the last category, a measured header moves
 // the band, and the active chip is kept in view in the row. IntersectionObserver / ResizeObserver are controllable fakes
 // (happy-dom has no layout); everything else (DOM, events, timers) is real.
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { flushPromises } from '@vue/test-utils'
-import { nextTick, ref } from 'vue'
-import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { DEFAULT_BAND_MARGIN, bandRootMargin } from '#engine/utils/menuScrollspy'
 import {
   FakeIntersectionObserver,
@@ -13,8 +9,12 @@ import {
   stubIntersectionObserver,
   stubResizeObserver,
 } from '../../../test/helpers/fakeObservers'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { nextTick, ref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { mountComposable } from '../../../test/helpers/mountComposable'
 import { setViewport } from '../../../test/helpers/viewport'
+import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 
 const cleanups: (() => void)[] = []
 const sections = new Map<string, HTMLElement>()

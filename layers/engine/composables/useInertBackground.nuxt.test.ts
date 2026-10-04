@@ -1,9 +1,9 @@
 // useInertBackground: the page wrapper is inert while a sheet is open (real DOM attribute), restored on close/unmount.
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
-import { useInertBackground } from '#engine/composables/useInertBackground'
-import { setFlags } from '../../../test/flags'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { setFlags } from '../../../test/flags'
+import { useInertBackground } from '#engine/composables/useInertBackground'
 
 let root: HTMLElement
 beforeEach(() => {

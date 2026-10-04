@@ -1,9 +1,9 @@
 // useCartItemEdit: the cart line being edited, shared between the cart (which sets it) and the product modal.
 // Run: `vp test run layers/engine/composables/useCartItemEdit.nuxt.test.ts`.
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useState } from '#imports'
-import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { makeCartItem } from '../../../test/fixtures/catalog'
+import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
+import { useState } from '#imports'
 
 beforeEach(() => {
   useCartItemEdit().value = null

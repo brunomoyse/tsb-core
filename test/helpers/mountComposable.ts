@@ -5,8 +5,8 @@
 //   const { result } = mountComposable(() => useFocusTrap(...), { attach: true })   // in document.body: real DOM focus
 //
 // Every mounted component is unmounted after the test (test/setup/vue.ts); `unmount` ends one earlier.
-import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
+import { mount } from '@vue/test-utils'
 
 export function mountComposable<T>(setup: () => T, options: { attach?: boolean } = {}) {
   let result!: T

@@ -3,11 +3,11 @@
 // The graphql-ws client (the WebSocket) is the boundary, replaced by a fake that records its subscriptions; the
 // window / document events are captured and fired by hand; the timers are fake when a test is about time.
 // Run: `vp test run layers/engine/composables/useGqlSubscription.nuxt.test.ts`.
-import { effectScope } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useRuntimeConfig } from '#imports'
+import { effectScope } from 'vue'
 import { setFlags } from '../../../test/flags'
 import { settle } from '../../../test/helpers/settle'
+import { useRuntimeConfig } from '#imports'
 
 interface Sink {
   next: (message: { data?: unknown }) => void

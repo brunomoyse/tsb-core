@@ -1,6 +1,6 @@
 // The toast timer on the real clock (the default environment), plus the pause guards.
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { MIN_RESUME_MS, createToastTimer } from './toastTimer'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 
 beforeEach(() => vi.useFakeTimers())
 afterEach(() => vi.useRealTimers())

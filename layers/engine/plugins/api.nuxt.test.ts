@@ -3,9 +3,9 @@
 // $fetch.create (the HTTP layer), the OIDC client and navigation are the boundaries; the runtime config and the localised
 // paths are real.
 // Run: `vp test run layers/engine/plugins/api.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
 
 interface CreateOptions {

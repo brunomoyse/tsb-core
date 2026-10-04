@@ -3,11 +3,11 @@
 // The OIDC client, the GraphQL transport, navigation and the error reporter are the boundaries; the stores, the
 // ordering policy, the localised paths and the redirect rules are real.
 // Run: `vp test run layers/engine/composables/useAuthCallback.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeCartItem } from '../../../test/fixtures/catalog'
 import { makeUser } from '../../../test/fixtures/auth'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 const oidc = vi.hoisted(() => ({ getAccessToken: vi.fn<() => Promise<string | null>>() }))
 const gqlFetch = vi.hoisted(() => vi.fn())

@@ -4,14 +4,14 @@
 // the cache is replaced by a small in-memory fake that honours the options the middleware gives it (key, validate,
 // maxAge, swr), so that "answered from the cache" is a request that did not render again.
 // Run: `vp test run layers/engine/server/middleware/static-page-cache.server.test.ts`.
-import { createApp, toWebHandler } from 'h3'
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../../test/flags'
 import {
   STATIC_PAGE_FILL_HEADER,
   STATIC_PAGE_SKIP_HEADER,
   type StaticPageCacheConfig,
 } from '../../utils/staticPageCache'
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createApp, toWebHandler } from 'h3'
+import { setFlags } from '../../../../test/flags'
 
 interface CacheOptions {
   name: string

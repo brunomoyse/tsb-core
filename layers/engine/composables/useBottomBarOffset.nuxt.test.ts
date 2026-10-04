@@ -1,11 +1,11 @@
 // useBottomBarOffset: fixed bottom bars publish --bottom-bar-h (the tallest) and, when they reserve space,
 // --page-bottom-pad on <html>.
+import { FakeResizeObserver, stubResizeObserver } from '../../../test/helpers/fakeObservers'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { nextTick, ref } from 'vue'
-import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
-import { setFlags } from '../../../test/flags'
-import { FakeResizeObserver, stubResizeObserver } from '../../../test/helpers/fakeObservers'
 import { mountComposable } from '../../../test/helpers/mountComposable'
+import { setFlags } from '../../../test/flags'
+import { useBottomBarOffset } from '#engine/composables/useBottomBarOffset'
 
 const bar = () => document.documentElement.style.getPropertyValue('--bottom-bar-h')
 const pad = () => document.documentElement.style.getPropertyValue('--page-bottom-pad')

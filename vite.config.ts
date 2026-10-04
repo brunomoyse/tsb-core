@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite-plus'
+import { fileURLToPath } from 'node:url'
 import { runtimeFlagsPlugin } from './test/flags'
 
 const r = (path: string) => fileURLToPath(new URL(path, import.meta.url))
@@ -137,6 +137,23 @@ export default defineConfig({
       'typescript/no-unnecessary-type-assertion': 'off',
       'typescript/strict-void-return': 'off',
     },
+    overrides: [
+      {
+        // Tests cast to fakes, build partial objects and read `any` from mocks: these rules are noise there, and only there.
+        files: ['**/*.test.{ts,mjs}', 'test/**/*.ts'],
+        rules: {
+          'typescript/prefer-readonly-parameter-types': 'off',
+          'typescript/no-unsafe-type-assertion': 'off',
+          'typescript/no-unsafe-member-access': 'off',
+          'typescript/no-unsafe-return': 'off',
+          'typescript/no-unsafe-assignment': 'off',
+          'typescript/no-unsafe-call': 'off',
+          'typescript/no-unsafe-argument': 'off',
+          'typescript/strict-boolean-expressions': 'off',
+          'typescript/no-non-null-assertion': 'off',
+        },
+      },
+    ],
     env: {
       browser: true,
     },

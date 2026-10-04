@@ -1,12 +1,12 @@
 // $gqlFetch (plugins/gqlFetch.ts) in the browser: the one GraphQL transport of the shop. The HTTP call ($fetch) and
 // the OIDC client are the boundaries, mocked; the real runtime config, cookies and i18n of the Nuxt app are used.
 // Run: `vp test run layers/engine/plugins/gqlFetch.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useRuntimeConfig } from '#imports'
-import { setFlags } from '../../../test/flags'
-import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
 import { GQL_HTTP_ERROR, GQL_NETWORK_ERROR, GqlError } from '#engine/utils/gqlError'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setFlags } from '../../../test/flags'
+import { useRuntimeConfig } from '#imports'
 
 const oidc = vi.hoisted(() => ({
   getAccessToken: vi.fn<() => Promise<string | null>>(),

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vite-plus/test'
 import { BROTHS, brothPhotoSlugs, brothSlugForName } from './broths'
+import { describe, expect, it } from 'vite-plus/test'
 
 describe('BROTHS', () => {
   it('lists the five signature broths with unique keys and slugs', () => {

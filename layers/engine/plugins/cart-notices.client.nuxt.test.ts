@@ -2,12 +2,12 @@
 // Waits for the app to be mounted (the toast host and the translation function exist by then); the cart store counts the
 // dropped lines in `droppedOnHydrate` and the plugin resets it after announcing, so the same loss is not announced twice.
 // Run: `vp test run layers/engine/plugins/cart-notices.client.nuxt.test.ts`.
-import { type Pinia, createPinia } from 'pinia'
 import { type EffectScope, effectScope, nextTick } from 'vue'
+import { type Pinia, createPinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
+import plugin from './cart-notices.client'
 import { useCartStore } from '#engine/stores/cart'
 import { useNotificationsStore } from '#engine/stores/notifications'
-import plugin from './cart-notices.client'
 
 type Hook = () => void
 // A fresh Pinia and a scope per test: the plugin's watchers are stopped with the scope, not left on a shared store.

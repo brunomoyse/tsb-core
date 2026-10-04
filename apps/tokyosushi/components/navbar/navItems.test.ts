@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vite-plus/test'
 import { NAV_ITEMS, visibleNavItems } from './navItems'
+import { describe, expect, it } from 'vite-plus/test'
 
 const keys = (items: readonly { key: string }[]) => items.map((item) => item.key)
 

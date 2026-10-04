@@ -4,8 +4,8 @@
 // only when the code reaches `import('@sentry/nuxt')`, so "nothing was sent" is checked as "Sentry was never even loaded".
 // Run: `vp test run layers/engine/utils/reportError.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../test/flags'
 import { GQL_NETWORK_ERROR } from './gqlError'
+import { setFlags } from '../../../test/flags'
 
 const state = vi.hoisted(() => ({ app: undefined as unknown, throws: false, loadFails: false }))
 const sentry = vi.hoisted(() => ({ loaded: vi.fn(), captureException: vi.fn() }))

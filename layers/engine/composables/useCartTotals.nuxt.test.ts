@@ -2,18 +2,18 @@
 // beacon (window.umami) is a spy. Expected amounts are worked out by hand from the default ordering policy
 // (delivery minimum 25 EUR, fee 1 EUR per km band from 3 km, pickup 10 % from 20 EUR, online fee 0.30, step 0.10).
 // Run: `vp test run layers/engine/composables/useCartTotals.nuxt.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
-import { useState } from '#imports'
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useCartTotals } from '#engine/composables/useCartTotals'
-import { useAuthStore } from '#engine/stores/auth'
-import { useCartStore } from '#engine/stores/cart'
-import { useQuoteStore } from '#engine/stores/quote'
-import { buildQuoteInput } from '#engine/utils/orderPayload'
-import { quoteRequestKey } from '#engine/utils/orderQuote'
 import type { Address, User } from '#engine/types'
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
 import { makeQuote, makeQuoteLine } from '../../../test/fixtures/quote'
+import { buildQuoteInput } from '#engine/utils/orderPayload'
+import { quoteRequestKey } from '#engine/utils/orderQuote'
+import { useAuthStore } from '#engine/stores/auth'
+import { useCartStore } from '#engine/stores/cart'
+import { useCartTotals } from '#engine/composables/useCartTotals'
+import { useQuoteStore } from '#engine/stores/quote'
+import { useState } from '#imports'
 
 const track = vi.fn()
 

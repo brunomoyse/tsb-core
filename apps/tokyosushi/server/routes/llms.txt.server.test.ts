@@ -1,10 +1,10 @@
 // /llms.txt: a plain-text guide for AI crawlers, served on the production domain of the brand only.
 // Run: `vp test run apps/tokyosushi/server/routes/llms.txt.server.test.ts`.
 import { describe, expect, it } from 'vite-plus/test'
-import { callHandler } from '../../../../test/nitro/callHandler'
-import { setRuntimeConfig } from '../../../../test/nitro/imports'
-import handler from './llms.txt'
 import { brand } from '#brand/brand'
+import { callHandler } from '../../../../test/nitro/callHandler'
+import handler from './llms.txt'
+import { setRuntimeConfig } from '../../../../test/nitro/imports'
 
 // The `server` project resolves `#brand` to this app: the route renders the brand it is shipped with.
 

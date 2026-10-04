@@ -3,9 +3,9 @@
 // the visitor followed a link out of the sheet. The three page-level helpers (scroll lock, inert, focus trap) are the
 // boundary: they are replaced by spies, and the options passed to the trap are exercised as the trap would use them.
 // Run: `vp test run layers/engine/composables/useCartSheet.nuxt.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
 import { type Ref, effectScope, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
 import { setFlags } from '../../../test/flags'
 import { useCartStore } from '#engine/stores/cart'
 

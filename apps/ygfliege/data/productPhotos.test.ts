@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vite-plus/test'
 import {
   PRODUCT_PHOTOS,
   PRODUCT_PHOTO_WIDTHS,
   productPhoto,
   productPhotoUrls,
 } from './productPhotos'
+import { describe, expect, it } from 'vite-plus/test'
 
 describe('ygfliege productPhoto', () => {
   it('finds the photo of a mapped product by slug', () => {

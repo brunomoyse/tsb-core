@@ -1,11 +1,11 @@
 // Global route middleware: on the server render it links the page's language file (a hashed static JSON) in the HTML head
 // so the browser fetches it while the HTML is parsed. useHead is the boundary; the runtime config is the real one.
 // Run: `vp test run layers/engine/middleware/preload-messages.global.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { RouteLocationNormalized } from 'vue-router'
-import { useRuntimeConfig } from '#imports'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
+import { useRuntimeConfig } from '#imports'
 
 const useHead = vi.hoisted(() => vi.fn())
 mockNuxtImport('useHead', () => useHead)

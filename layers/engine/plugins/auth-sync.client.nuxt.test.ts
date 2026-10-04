@@ -2,12 +2,12 @@
 // apart after a release or an interrupted logout). The OIDC client, $fetch (the /me call) and the error reporter are the
 // boundaries; the auth store (real Pinia + localStorage) is the state that is checked.
 // Run: `vp test run layers/engine/plugins/auth-sync.client.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { useRuntimeConfig } from '#imports'
-import { setFlags } from '../../../test/flags'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeUser } from '../../../test/fixtures/auth'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setFlags } from '../../../test/flags'
+import { useRuntimeConfig } from '#imports'
 
 const oidc = vi.hoisted(() => ({
   isAuthenticated: vi.fn<() => Promise<boolean>>(),

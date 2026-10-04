@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import type { Address } from '#engine/types'
 import { formatAddress, timeToRFC3339, toCamelCase } from './utils'
+import type { Address } from '#engine/types'
 
 const address = (overrides: Partial<Address> = {}) =>
   ({

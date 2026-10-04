@@ -9,8 +9,8 @@ import {
   describeErrorCode,
   describeGqlError,
 } from './gqlErrors.ts'
-import { GqlError } from './gqlError.ts'
 import { existsSync, readFileSync } from 'node:fs'
+import { GqlError } from './gqlError.ts'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
 

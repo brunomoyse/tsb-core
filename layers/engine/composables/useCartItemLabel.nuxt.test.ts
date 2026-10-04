@@ -1,9 +1,9 @@
 // useCartItemLabel / useOrderItemLabel: how a cart or order line is labelled, per brand (the menu code shows only when
 // `brand.showProductCode`). `useAppConfig` is wrapped, not replaced; the copy of the piece count is the i18n key.
 // Run: `vp test run layers/engine/composables/useCartItemLabel.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { makeCartItem, makeChoice, makeProduct } from '../../../test/fixtures/catalog'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 const brandOverride = vi.hoisted(() => ({ showProductCode: undefined as boolean | undefined }))
 

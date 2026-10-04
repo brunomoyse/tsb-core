@@ -3,14 +3,14 @@
 // The GraphQL transport, the WebSocket subscription layer, the server request and the quote refresh are the boundaries;
 // useGqlQuery, useAsyncData, the shared state and the components' lifecycle (mountSuspended) are real.
 // Run: `vp test run layers/engine/composables/useRestaurantConfig.nuxt.test.ts`.
-import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { defineComponent, h, nextTick, ref } from 'vue'
+import type { RestaurantConfig, RestaurantConfigResponse } from './useRestaurantConfig'
+import { STATIC_PAGE_FILL_HEADER, STATIC_PAGE_SKIP_HEADER } from '#engine/utils/staticPageCache'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtData, clearNuxtState, useState } from '#imports'
+import { defineComponent, h, nextTick, ref } from 'vue'
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { GqlError } from '#engine/utils/gqlError'
-import { STATIC_PAGE_FILL_HEADER, STATIC_PAGE_SKIP_HEADER } from '#engine/utils/staticPageCache'
 import { setFlags } from '../../../test/flags'
-import type { RestaurantConfig, RestaurantConfigResponse } from './useRestaurantConfig'
 
 interface FakeSubscription {
   query: string

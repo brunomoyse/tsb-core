@@ -1,8 +1,8 @@
 // useLocalizedUrl: absolute, localized URL for structured data and share tags (real i18n, real runtime config).
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
-import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
+import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 
 const i18n = () => useNuxtApp().$i18n as unknown as { locale: { value: string } }
 let original = ''

@@ -1,13 +1,13 @@
 // useOrderExtras with the YGF Liège brand: chopsticks and cutlery, none pre-ticked, no category restriction, no sauce.
 // Runs in the real app of apps/ygfliege (its `#brand/brand`), not in a copy of the other brand's app.
 // Run: `vp test run layers/engine/composables/useOrderExtras.ygfliege.nuxt.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
 import { type EffectScope, effectScope, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
-import { useAppConfig } from '#imports'
-import { useOrderExtras } from '#engine/composables/useOrderExtras'
-import { useCartStore } from '#engine/stores/cart'
+import { createPinia, setActivePinia } from 'pinia'
 import { makeProduct } from '../../../test/fixtures/catalog'
+import { useAppConfig } from '#imports'
+import { useCartStore } from '#engine/stores/cart'
+import { useOrderExtras } from '#engine/composables/useOrderExtras'
 
 let cart: ReturnType<typeof useCartStore>
 let scope: EffectScope

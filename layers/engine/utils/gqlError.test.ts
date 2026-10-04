@@ -2,7 +2,6 @@
 // One file for utils/gqlError.ts: construction rules, the odd inputs of transports, abort detection and the Sentry filter.
 // The message table (code -> i18n key) is tested in gqlErrors.test.mjs.
 // Run: `vp test run layers/engine/utils/gqlError.test.ts`.
-import { describe, expect, it } from 'vite-plus/test'
 import {
   GQL_HTTP_ERROR,
   GQL_NETWORK_ERROR,
@@ -14,6 +13,7 @@ import {
   toGqlError,
   unwrapGqlError,
 } from './gqlError.ts'
+import { describe, expect, it } from 'vite-plus/test'
 
 describe('GqlError', () => {
   it('has a generic message, no code and empty extensions when the response carried no error entry', () => {

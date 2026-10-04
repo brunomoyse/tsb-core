@@ -1,12 +1,12 @@
 // Auth store: the signed-in customer's profile, logout and account-deletion clean-up, and its localStorage persistence.
 // The OIDC client (Zitadel) and the error reporter are the boundaries, mocked.
 // Run: `vp test run layers/engine/stores/auth.nuxt.test.ts`.
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createApp, nextTick } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { createPersistedState } from 'pinia-plugin-persistedstate'
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { setFlags } from '../../../test/flags'
 import { makeUser } from '../../../test/fixtures/auth'
+import { setFlags } from '../../../test/flags'
 
 const oidc = vi.hoisted(() => ({
   signOut: vi.fn<() => Promise<void>>(),

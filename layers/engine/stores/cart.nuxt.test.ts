@@ -1,15 +1,15 @@
 // Cart store: lines, quantity rules, accepting a quoted price, reset, and its localStorage persistence.
 // Run: `vp test run layers/engine/stores/cart.nuxt.test.ts`.
+import { MAX_ITEM_QUANTITY, defaultOrderExtra, useCartStore } from '#engine/stores/cart'
+import { beforeEach, describe, expect, it } from 'vite-plus/test'
 import { createApp, nextTick } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { createPersistedState } from 'pinia-plugin-persistedstate'
-import { beforeEach, describe, expect, it } from 'vite-plus/test'
-import { MAX_ITEM_QUANTITY, defaultOrderExtra, useCartStore } from '#engine/stores/cart'
-import { brand } from '#brand/brand'
-import { setFlags } from '../../../test/flags'
+import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
 import type { CartItem } from '#engine/types'
 import type { QuoteLine } from '#engine/utils/orderQuote'
-import { makeChoice, makeProduct } from '../../../test/fixtures/catalog'
+import { brand } from '#brand/brand'
+import { createPersistedState } from 'pinia-plugin-persistedstate'
+import { setFlags } from '../../../test/flags'
 
 const sushi = makeProduct({ id: 'sushi', price: '10.00' })
 const ramen = makeProduct({ id: 'ramen', price: '14.50', name: 'Ramen' })

@@ -1,10 +1,10 @@
 // useDeliveryMode in the real app of ygfliege: a takeaway-only brand (`deliveryEnabled: false`), whatever the API says.
 // Run: `vp test run layers/engine/composables/useDeliveryMode.ygfliege.nuxt.test.ts`.
 import { beforeEach, describe, expect, it } from 'vite-plus/test'
+import type { ApiOrderingPolicy } from '#engine/utils/orderingPolicy'
 import { useAppConfig } from '#imports'
 import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
 import { useRestaurantConfigState } from '#engine/composables/useRestaurantConfig'
-import type { ApiOrderingPolicy } from '#engine/utils/orderingPolicy'
 
 const serve = (deliveryEnabled: boolean | undefined) => {
   useRestaurantConfigState().value =

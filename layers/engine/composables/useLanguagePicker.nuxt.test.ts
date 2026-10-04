@@ -1,11 +1,11 @@
 // useLanguagePicker: the disclosure state of the language switcher with the real i18n (4 locales) and switchLocalePath.
 // Only the analytics beacon (window.umami) is a spy.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { nextTick } from 'vue'
-import { useNuxtApp } from '#imports'
-import { useLanguagePicker } from '#engine/composables/useLanguagePicker'
-import { setFlags } from '../../../test/flags'
 import { mountComposableInNuxt } from '../../../test/helpers/mountComposable'
+import { nextTick } from 'vue'
+import { setFlags } from '../../../test/flags'
+import { useLanguagePicker } from '#engine/composables/useLanguagePicker'
+import { useNuxtApp } from '#imports'
 
 const track = vi.fn()
 const i18n = () => useNuxtApp().$i18n as unknown as { locale: { value: string } }

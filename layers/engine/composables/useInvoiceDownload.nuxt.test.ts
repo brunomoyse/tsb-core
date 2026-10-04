@@ -2,8 +2,8 @@
 // server gives it; any failure is reported and shown as a toast. The HTTP call (fetch), the OIDC client and Sentry are the
 // boundaries; the anchor click that triggers the browser download is a spy.
 // Run: `vp test run layers/engine/composables/useInvoiceDownload.nuxt.test.ts`.
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { createPinia, setActivePinia } from 'pinia'
 import { setFlags } from '../../../test/flags'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { useRuntimeConfig } from '#imports'

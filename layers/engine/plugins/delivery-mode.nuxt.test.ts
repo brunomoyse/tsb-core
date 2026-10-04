@@ -1,9 +1,9 @@
 // Delivery-mode plugin: while delivery is not offered, the cart's collection option snaps back to PICKUP, also for a cart
 // persisted before the flag existed, and for any later attempt to set DELIVERY.
 // Run: `vp test run layers/engine/plugins/delivery-mode.nuxt.test.ts`.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
 import { effectScope, nextTick, ref } from 'vue'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useCartStore } from '#engine/stores/cart'
 
 const deliveryEnabled = vi.hoisted(() => ({ ref: undefined as { value: boolean } | undefined }))

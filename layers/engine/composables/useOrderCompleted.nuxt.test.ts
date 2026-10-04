@@ -4,17 +4,17 @@
 // subscription and the polling fallback. The pure rules are in utils/orderCompleted.test.mjs; here they are wired.
 // Boundaries: the GraphQL transport, the WebSocket subscription and the clock. useAsyncData is Nuxt's own.
 // Run: `vp test run layers/engine/composables/useOrderCompleted.nuxt.test.ts`.
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia, setActivePinia } from 'pinia'
-import type { Ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtData, useNuxtData } from '#imports'
+import { createPinia, setActivePinia } from 'pinia'
+import { makeOrder, makePayment } from '../../../test/fixtures/order'
+import type { Order } from '#engine/types'
+import type { Ref } from 'vue'
+import { makeProduct } from '../../../test/fixtures/catalog'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mountComposable } from '../../../test/helpers/mountComposable'
 import { setFlags } from '../../../test/flags'
 import { useCartStore } from '#engine/stores/cart'
-import type { Order } from '#engine/types'
-import { makeProduct } from '../../../test/fixtures/catalog'
-import { makeOrder, makePayment } from '../../../test/fixtures/order'
-import { mountComposable } from '../../../test/helpers/mountComposable'
 
 interface SubscriptionCall {
   query: string
