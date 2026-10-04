@@ -2,7 +2,7 @@ import { ACCEPT_LANGUAGE, LOCALES, type Locale, chooseLocale } from './support/l
 import { addSimpleProductToCart, cartLines, switchLanguage } from './support/nav'
 import { expect, test } from './support/test'
 import { expectNoUntranslatedText, message, untranslatedText } from './support/i18n'
-import { waitForNuxtHydration } from './support/hydration'
+import { settleNuxt, waitForNuxtHydration, watchHydrationMismatches } from './support/hydration'
 
 /*
  * Languages (fr default, en, nl, zh), both brands, desktop layout (phone: mobile-i18n.spec.ts): the URL prefix and the
@@ -262,6 +262,7 @@ test.describe('no raw translation keys', () => {
   for (const locale of LOCALES) {
     test(`public pages in ${locale}`, async ({ page, context, baseURL, brand, backend }) => {
       test.skip(!backend.isMock, 'needs the mock catalog')
+      const mismatches = watchHydrationMismatches(page)
       await chooseLocale(context, baseURL ?? '', locale)
       const paths = [
         '',
@@ -278,9 +279,10 @@ test.describe('no raw translation keys', () => {
       ]
       for (const path of paths) {
         await page.goto(`/${locale}${path}`)
-        await waitForNuxtHydration(page)
+        await settleNuxt(page)
         await expectNoUntranslatedText(page, brand, `/${locale}${path}`)
       }
+      expect(mismatches(), 'server and client rendered different DOM').toEqual([])
     })
 
     test(`pages of a signed-in customer with a cart and orders in ${locale}`, async ({
@@ -291,6 +293,9 @@ test.describe('no raw translation keys', () => {
       backend,
     }) => {
       test.skip(!backend.isMock, 'needs the mock API')
+      // Seven page loads, a cart and three orders: more than the default minute on a slow machine.
+      test.setTimeout(150_000)
+      const mismatches = watchHydrationMismatches(page)
       await backend.mock.user({ phoneNumber: '+32470123456', address: 'place-home' })
       const delivered = await backend.seedOrder({
         status: 'PICKED_UP',
@@ -318,12 +323,43 @@ test.describe('no raw translation keys', () => {
         `/order-completed/${delivered}`,
       ]) {
         await page.goto(`/${locale}${path}`)
-        await waitForNuxtHydration(page)
+        await settleNuxt(page)
         await page.locator('main').first().waitFor()
         if (path === '/me/orders')
           await page.locator('button[aria-controls^="order-panel-"]').first().click()
         await expectNoUntranslatedText(page, brand, `/${locale}${path}`)
       }
+      // (/me is the known exception: see the test.fail below.)
+      expect(
+        mismatches().filter((entry) => !/\/me: /u.test(entry)),
+        'server and client rendered different DOM',
+      ).toEqual([])
     })
   }
+
+  /*
+   * BUG (found by the sweep above, not fixed: a rendering decision): a signed-in customer who reloads /me gets "Hydration
+   * completed but contains mismatches". The server renders the page without a user (generic title, "-" placeholders: the
+   * OIDC session and the persisted profile live in localStorage, which it cannot read) while the client's first render
+   * already has the persisted profile (greeting, e-mail, initials). Vue repairs it by rendering again, so nothing breaks,
+   * but every signed-in visit pays a second render and flashes the placeholders. The profile should be shown after
+   * mount (ClientOnly, or an `onMounted` read) so both renders agree.
+   */
+  test.fail(
+    'a signed-in customer opening /me hydrates without a mismatch',
+    async ({ authenticatedPage: page, backend }) => {
+      test.skip(!backend.isMock, 'needs the mock API')
+      const mismatches = watchHydrationMismatches(page)
+      // Any page first: the profile is persisted (localStorage "auth") once the app has loaded it.
+      await page.goto('/fr/menu')
+      await waitForNuxtHydration(page)
+      await expect
+        .poll(() => page.evaluate(() => localStorage.getItem('auth') ?? ''))
+        .toContain('e2e@')
+      await page.goto('/fr/me')
+      await waitForNuxtHydration(page)
+      await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour')
+      expect(mismatches()).toEqual([])
+    },
+  )
 })
