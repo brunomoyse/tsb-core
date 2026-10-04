@@ -2,6 +2,7 @@
 // for the real SDK: what matters is what the shop hands to `init`, and that the SDK is loaded once and only when asked).
 // Run: `vp test run layers/engine/utils/sentryClient.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { setFlags } from '../../../test/flags'
 import {
   MAX_EVENTS_PER_SESSION,
   type SentryEnvironment,
@@ -197,6 +198,12 @@ describe('startSentry', () => {
     await expect(startSentry(env(), load)).rejects.toThrow('chunk failed to load')
     await expect(startSentry(env(), load)).resolves.toBe(sdk)
     expect(load).toHaveBeenCalledTimes(2)
+  })
+
+  it('never loads the browser SDK on the server', async () => {
+    setFlags({ server: true, client: false })
+    const { startSentry } = await import('./sentryClient')
+    await expect(startSentry(env())).rejects.toThrow('only loads in the browser')
   })
 
   it('loads the real facade (the four SDK functions the shop uses) when no loader is given', async () => {

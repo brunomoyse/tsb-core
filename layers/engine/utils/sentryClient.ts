@@ -124,12 +124,23 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
   }
 }
 
+/*
+ * Browser only. The server build inlines dynamic imports, so an unconditional `import('./sentrySdk.ts')` would be a static
+ * import there, linked when the server starts: the Node entry of @sentry/nuxt has no `browserTracingIntegration`, and the
+ * server would fail to boot. `import.meta.client` is a build-time constant: the branch (and the import) is dropped from the
+ * server bundle.
+ */
+const loadBrowserSdk = (): Promise<SentryModule> =>
+  import.meta.client
+    ? import('./sentrySdk.ts')
+    : Promise.reject(new Error('The Sentry browser SDK only loads in the browser'))
+
 let started: Promise<SentryModule> | null = null
 
 /** Loads and initialises Sentry once; every later call gets the same promise. */
 export function startSentry(
   env: SentryEnvironment,
-  loadSdk: () => Promise<SentryModule> = () => import('./sentrySdk.ts'),
+  loadSdk: () => Promise<SentryModule> = loadBrowserSdk,
 ): Promise<SentryModule> {
   started ??= loadSdk().then((Sentry) => {
     initSentry(Sentry, env)
