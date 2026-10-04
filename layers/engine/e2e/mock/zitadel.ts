@@ -14,7 +14,8 @@ import type { MockState } from './state.ts'
  *   /oauth/v2/token                     authorization_code (the code `finalize` issued) and refresh_token grants; an unsigned
  *                                       id_token (oidc-client-ts reads the claims but never checks the signature).
  *                                       `scenario.rejectSession` makes the refresh grant fail with invalid_grant: the session
- *                                       is over, the app must send the customer back to the login page.
+ *                                       is over, the app must send the customer back to the login page. Calls are logged as
+ *                                       REST calls on `/zitadel/oauth/v2/token` with their `grant_type`.
  *   /oidc/v1/end_session                straight back to post_logout_redirect_uri
  *   /oauth/v2/keys                      empty key set
  */
@@ -113,6 +114,14 @@ export async function handleZitadel(
     const form = await readForm(req)
     const clientId = form.get('client_id') ?? ''
     const { auth } = state
+    // Logged with the REST calls (`MockControl.restCalls('/zitadel')`): which grant the app used, and how often.
+    state.logRest({
+      at: new Date().toISOString(),
+      method: 'POST',
+      path: '/zitadel/oauth/v2/token',
+      body: { grant_type: form.get('grant_type') ?? '' },
+      authenticated: false,
+    })
     const issue = (nonce: string | null) => {
       const refresh = auth.next('refresh')
       auth.refreshTokens.add(refresh)

@@ -18,23 +18,26 @@ export interface FakeSession {
 export function fakeOidcEntry(session: FakeSession): [string, string] {
   const now = Math.floor(Date.now() / 1000)
   const expiresAt = now + (session.expiresInSeconds ?? 86_400)
+  const profile = {
+    sub: '00000000-0000-4000-8000-00000000e2e0',
+    iss: session.authority,
+    aud: session.clientId,
+    exp: expiresAt,
+    iat: now,
+    email: session.email ?? 'e2e@example.test',
+    given_name: session.firstName ?? 'Eva',
+    family_name: session.lastName ?? 'Mock',
+  }
+  // A decodable (unsigned) JWT: a token refresh compares the new id_token's claims with the stored one's.
+  const jwt = (claims: unknown) => Buffer.from(JSON.stringify(claims)).toString('base64url')
   const user = {
-    id_token: 'e2e.id.token',
+    id_token: `${jwt({ alg: 'none', typ: 'JWT' })}.${jwt(profile)}.mock`,
     session_state: null,
     access_token: 'e2e-access-token',
     refresh_token: 'e2e-refresh-token',
     token_type: 'Bearer',
     scope: 'openid profile email offline_access',
-    profile: {
-      sub: '00000000-0000-4000-8000-00000000e2e0',
-      iss: session.authority,
-      aud: session.clientId,
-      exp: expiresAt,
-      iat: now,
-      email: session.email ?? 'e2e@example.test',
-      given_name: session.firstName ?? 'Eva',
-      family_name: session.lastName ?? 'Mock',
-    },
+    profile,
     expires_at: expiresAt,
   }
   return [`oidc.user:${session.authority}:${session.clientId}`, JSON.stringify(user)]
