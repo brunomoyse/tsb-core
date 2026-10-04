@@ -43,6 +43,10 @@ The dev server and `nuxi typecheck` do not need them.
 
 Optional: `ZITADEL_NATIVE_CLIENT_ID`, `UMAMI_*`, `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, `SENTRY_*`.
 
+Runtime (read when the server starts, no rebuild): `NUXT_DEFER_HYDRATION=true` also holds the page's entry script back
+until after the first paint (`layers/engine/utils/deferHydration.ts`). It paints earlier and hydrates later, so it is off by
+default; the default only delays the language file and the prefetch hints.
+
 ### 2) Install and run
 
 ```bash

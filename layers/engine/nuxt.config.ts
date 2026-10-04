@@ -177,6 +177,12 @@ export default defineNuxtConfig({
      * build/i18n-messages.ts and read by middleware/preload-messages.global.ts. Empty in dev.
      */
     tsbI18nMessageUrls: {},
+    /*
+     * Runtime switch (`NUXT_DEFER_HYDRATION=true`) for the FULL deferral of the entry script until after the first paint
+     * (server/plugins/defer-hydration.ts, utils/deferHydration.ts). Off: the entry script and modulepreloads stay in the head
+     * and only the language file and prefetch hints wait for the first frame.
+     */
+    deferHydration: false,
     public: {
       baseUrl: process.env.BASE_URL,
       s3bucketUrl: process.env.S3_BUCKET_URL,
