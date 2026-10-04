@@ -18,9 +18,7 @@ describe('ygfliege productPhoto', () => {
     expect(productPhoto(undefined)).toBeUndefined()
   })
 
-  // Low-severity hardening, reported not fixed: PRODUCT_PHOTOS is a plain object, so a slug such as "constructor" or
-  // "toString" resolves to an inherited function. Real catalog slugs are kebab-case names, so it cannot happen today.
-  it.skip('does not resolve inherited object keys as products', () => {
+  it('does not resolve inherited object keys as products', () => {
     expect(productPhoto('constructor')).toBeUndefined()
   })
 

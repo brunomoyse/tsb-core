@@ -38,7 +38,7 @@ export function runtimeFlagsPlugin(defaults: RuntimeFlags): Plugin {
     name: 'tsb:test-runtime-flags',
     enforce: 'pre',
     transform(code, id) {
-      const file = id.split('?')[0]
+      const [file = ''] = id.split('?')
       if (!file.startsWith(root) || file.includes('/node_modules/') || file.includes('/.nuxt/'))
         return null
       if (!/\.(?:ts|mts|js|mjs|vue)$/u.test(file) || !HAS_FLAG.test(code)) return null

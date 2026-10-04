@@ -36,9 +36,7 @@ describe('EUROPEAN_COUNTRIES', () => {
     }
   })
 
-  // BUG (reported, not fixed: product decision): the list gives the Vatican +379, a code libphonenumber does not
-  // Assign; its numbers are +39 06 698... A customer picking VA would send a number the phone validation rejects.
-  it.skip('Vatican City uses the calling code libphonenumber knows (+39)', () => {
+  it('Vatican City uses the calling code libphonenumber knows (+39)', () => {
     expect(EUROPEAN_COUNTRIES.find((c) => c.code === 'VA')?.prefix).toBe(
       `+${getCountryCallingCode('VA')}`,
     )

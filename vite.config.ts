@@ -57,9 +57,8 @@ export default defineConfig({
       ],
       reporter: ['text-summary', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
-      // A ratchet: the measured values of the last coverage commit, rounded down. They only ever go up; the
-      // Target is 95 % (order, auth and payment flows close to 100 %).
-      thresholds: { statements: 43, branches: 50, functions: 44, lines: 43 },
+      // A ratchet just under the measured values (99.7 % statements, 98.8 % branches, 100 % lines). Only ever raise it.
+      thresholds: { statements: 99, branches: 98, functions: 99, lines: 99 },
     },
   },
   staged: {
