@@ -178,6 +178,15 @@ describe('return to the checkout after signing in', () => {
     assert.equal(sanitizeReturnTo('fr/checkout'), null)
   })
 
+  test('browser quirks that turn a "same-site" path into another host are refused', () => {
+    // A browser reads `/\\evil.example` as `//evil.example`, and ignores a tab or newline inside the URL.
+    assert.equal(sanitizeReturnTo('/\\evil.example'), null)
+    assert.equal(sanitizeReturnTo('/fr/\\evil.example'), null)
+    assert.equal(sanitizeReturnTo('/\t/evil.example'), null)
+    assert.equal(sanitizeReturnTo('/\n/evil.example'), null)
+    assert.equal(sanitizeReturnTo('/fr/menu\u0000'), null)
+  })
+
   test('the auth pages themselves are never a return target (no login loop)', () => {
     assert.equal(sanitizeReturnTo('/fr/auth/login'), null)
     assert.equal(sanitizeReturnTo('/en/auth/callback'), null)

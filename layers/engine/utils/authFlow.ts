@@ -82,10 +82,14 @@ export const isVerifyDisabled = (code: string, loading: boolean): boolean =>
 
 /**
  * A return path is only honoured when it stays on this site: an absolute path, not protocol-relative (`//evil`),
- * and not the auth flow itself (that would loop the customer back to the login page).
+ * and not the auth flow itself (that would loop the customer back to the login page). Browsers read a backslash as a
+ * slash and drop tabs and line breaks inside a URL, so `/\evil.example` and `/<TAB>/evil.example` are `//evil.example`:
+ * any backslash or control character disqualifies the path.
  */
 export function sanitizeReturnTo(raw: string | null | undefined): string | null {
   if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null
+  // oxlint-disable-next-line no-control-regex -- the point is to refuse control characters
+  if (/[\\\u0000-\u001f\u007f]/u.test(raw)) return null
   if (/^\/[^/]+\/auth(\/|$)/u.test(raw)) return null
   return raw
 }
