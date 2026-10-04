@@ -80,6 +80,7 @@ export const defaultScenario = (): Scenario => ({
     verifyFailure: null,
   },
   invoiceFailure: false,
+  feedbackFailure: null,
   operationFailures: {},
   coupons: {
     WELCOME10: { kind: 'percent', value: 10, minOrder: 15 },

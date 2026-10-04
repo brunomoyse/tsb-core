@@ -61,7 +61,7 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
     {
       name: 'brand-desktop',
       testDir: `${appDir}/e2e`,
-      testIgnore: REAL_BACKEND_ONLY,
+      testIgnore: [...REAL_BACKEND_ONLY, '**/mobile-*.spec.ts'],
       use: desktop,
     },
     {
@@ -78,14 +78,13 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
       use: mobile,
     },
   ]
-  if (brandMobileSpecs.length > 0) {
-    projects.splice(1, 0, {
-      name: 'brand-mobile',
-      testDir: `${appDir}/e2e`,
-      testMatch: brandMobileSpecs,
-      use: mobile,
-    })
-  }
+  // The brand's phone project: its smoke specs and every `mobile-*.spec.ts` of its e2e folder.
+  projects.splice(1, 0, {
+    name: 'brand-mobile',
+    testDir: `${appDir}/e2e`,
+    testMatch: [...brandMobileSpecs, '**/mobile-*.spec.ts'],
+    use: mobile,
+  })
 
   return {
     timeout: 60_000,

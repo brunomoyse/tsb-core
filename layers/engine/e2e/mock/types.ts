@@ -90,6 +90,8 @@ export interface Scenario {
   otp: OtpScenario
   /** `GET /orders/:id/invoice` answers 500. */
   invoiceFailure: boolean
+  /** `POST /feedback` (contact form) is refused: 400 invalid input, 400 captcha_failed, 429 or 500. */
+  feedbackFailure: 'invalid' | 'captcha_failed' | 'rate_limited' | 'server' | null
   /** Any root query/mutation by field name (`updateMe`, `myOrders`...) fails with this GraphQL error before it runs. */
   operationFailures: Record<string, GqlFailure>
   /** Promo codes by (upper-case) code. */

@@ -33,6 +33,7 @@ export function tokyosushiCatalog(): MockCategory[] {
           price: '6.90',
           code: 'E3',
           pieceCount: 5,
+          isHalal: true,
         },
         {
           id: 'p-wakame',
@@ -89,6 +90,7 @@ export function tokyosushiCatalog(): MockCategory[] {
           slug: 'poulet-teriyaki',
           price: '12.90',
           code: 'P12',
+          isHalal: true,
           description: 'Poulet grillé, sauce au choix.',
           groups: [
             {

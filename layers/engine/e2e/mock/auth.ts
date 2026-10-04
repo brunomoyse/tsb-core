@@ -11,6 +11,7 @@ import type { MockState } from './state.ts'
  *   POST /auth/authorize-proxy               { authorizeUrl }  (inline checkout login) -> { authRequestId }
  *   POST /auth/finalize                      { authRequestId, sessionId, sessionToken }-> { callbackUrl }
  *   GET  /orders/:id/invoice                 a one-page PDF, `Content-Disposition: attachment`
+ *   POST /feedback                           the contact page's form -> { success }; refused as `scenario.feedbackFailure` says
  *
  * `finalize` is the hand-off back to Zitadel: it answers with the app's own `/auth/callback?code=..&state=..` (the code is
  * exchanged by zitadel.ts' token endpoint). What each call does is steered by `scenario.otp` (types.ts OtpScenario): the
@@ -56,7 +57,7 @@ export function handleRest(
   if (!url.pathname.startsWith(`${prefix}/`)) return false
   const path = url.pathname.slice(prefix.length)
   const invoice = /^\/orders\/([^/]+)\/invoice$/u.exec(path)
-  if (!path.startsWith('/auth/') && !invoice) return false
+  if (!path.startsWith('/auth/') && !invoice && path !== '/feedback') return false
   return run()
 
   async function run(): Promise<boolean> {
@@ -73,9 +74,28 @@ export function handleRest(
       json(res, 405, { error: 'method not allowed' })
       return true
     }
+    if (path === '/feedback') {
+      feedback(res, state, input)
+      return true
+    }
     handleAuth(res, state, path, input, selfUrl)
     return true
   }
+}
+
+function feedback(res: ServerResponse, state: MockState, input: Record<string, unknown>) {
+  const failure = state.scenario.feedbackFailure
+  if (failure === 'rate_limited') json(res, 429, { error: 'too_many_requests' })
+  else if (failure === 'server') json(res, 500, { error: 'internal_error' })
+  else if (failure === 'captcha_failed') json(res, 400, { error: 'captcha_failed' })
+  else if (
+    failure === 'invalid' ||
+    !str(input.name).trim() ||
+    !str(input.email).includes('@') ||
+    str(input.message).trim().length < 10
+  )
+    json(res, 400, { error: 'invalid_input' })
+  else json(res, 200, { success: true })
 }
 
 function invoiceDownload(

@@ -56,3 +56,70 @@ export const cartLines = (page: Page) =>
         }
       ).products ?? [],
   )
+
+/**
+ * The bottom edge of what stays on screen at the top while scrolling (the fixed phone navbar, a sticky category strip):
+ * content that lands above this line is hidden behind it.
+ */
+export function stickyBottom(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    let bottom = 0
+    for (const el of document.body.querySelectorAll('*')) {
+      const { position } = getComputedStyle(el)
+      if (position !== 'fixed' && position !== 'sticky') continue
+      if (el.closest('[inert], [aria-hidden="true"]')) continue
+      const rect = el.getBoundingClientRect()
+      if (rect.height === 0 || rect.width < window.innerWidth * 0.5) continue
+      // Pinned to the top: it starts within the first 120 px and is on screen.
+      if (rect.top > 120 || rect.bottom <= 0) continue
+      bottom = Math.max(bottom, rect.bottom)
+    }
+    return bottom
+  })
+}
+
+/** Ids of the categories on the menu, in order (each section is `id="category-<id>"`, each chip `data-chip-category`). */
+export const categoryIds = (page: Page) =>
+  page
+    .locator('[data-chip-category]')
+    .evaluateAll((chips) => chips.map((chip) => chip.getAttribute('data-chip-category') ?? ''))
+
+/** Whether the chip of a category is the selected one (`aria-pressed` in one brand, `aria-current` in the other). */
+export const chipIsActive = (page: Page, id: string) =>
+  page
+    .locator(`[data-chip-category="${id}"]`)
+    .evaluate(
+      (chip) =>
+        chip.getAttribute('aria-pressed') === 'true' ||
+        chip.getAttribute('aria-current') === 'true',
+    )
+
+/** Whether a category chip is (almost) entirely inside the visible part of its horizontally scrolling strip. */
+export const chipVisibleInRow = (page: Page, id: string) =>
+  page.locator(`[data-chip-category="${id}"]`).evaluate((chip) => {
+    const row = chip.parentElement
+    if (!row) return false
+    const a = chip.getBoundingClientRect()
+    const b = row.getBoundingClientRect()
+    // Nine tenths of the chip inside the strip (the strips fade their edges, a chip may touch one).
+    const inside = Math.min(a.right, b.right) - Math.max(a.left, b.left)
+    return inside >= a.width * 0.9
+  })
+
+/**
+ * A guest with a product in the cart gets to the sign-in step of the checkout: where delivery exists, the delivery-zone
+ * gate comes first (the "Pickup" radio of its picker skips it); a pickup-only brand has no gate.
+ */
+export async function guestCheckoutSignIn(
+  page: Page,
+  gateTitle: string,
+  pickupLabel: string,
+  path = '/fr/checkout',
+): Promise<void> {
+  await page.goto(path)
+  const gate = page.getByRole('region').filter({ hasText: gateTitle })
+  const signIn = page.getByTestId('login-submit')
+  await expect(gate.or(signIn)).toBeVisible()
+  if (await gate.isVisible()) await gate.getByRole('radio', { name: pickupLabel }).click()
+  await expect(signIn).toBeVisible()
+}

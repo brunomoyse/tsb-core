@@ -26,7 +26,8 @@ Ports: tokyosushi app 3200 + mock 8100, ygfliege app 3201 + mock 8101. The build
 | `catalog/`                    | Seed menus per brand (long names, required/multi-select choice groups, unavailable item, paid extras).                                                                                                 |
 | `state.ts`                    | All mutable state + `reset()` + pub/sub that feeds the WebSocket subscriptions.                                                                                                                        |
 | `mollie.ts`                   | Fake hosted checkout: `/mollie/checkout/<orderId>` then back to `<app>/<locale>/order-completed/<id>`.                                                                                                 |
-| `zitadel.ts`                  | Discovery + authorize (-> the app's own login page) + end_session. No token endpoint yet.                                                                                                              |
+| `zitadel.ts`                  | Fake Zitadel: discovery, authorize (-> the app's own login page with an `authRequest`), token endpoint (code exchange and refresh grant), end_session.                                                 |
+| `auth.ts`                     | The REST side of tsb-service (`/api/v1/...`): `/auth/session/otp/*`, `/auth/finalize`, `/auth/authorize-proxy`, the invoice PDF, the contact form's `/feedback`.                                       |
 | `control.ts`, `client.ts`     | Control API (`/__mock/*`) and its typed test-side client `MockControl`.                                                                                                                                |
 | `oidc.ts`                     | The fake oidc-client-ts session seeded in localStorage.                                                                                                                                                |
 | `../support/backend.ts`       | `backend` fixture: the same calls against the mock or, in real mode, the test DB.                                                                                                                      |
@@ -52,24 +53,49 @@ test('a closed restaurant blocks the pay button', async ({ authenticatedPage: pa
 - Runs in both modes: only `backend.seedOrder / settleOrder / deleteOrder`. Anything else goes through `backend.mock`.
 - Specs that never need the backend beyond the app (menu, cart, forms) need nothing special.
 - A spec that cannot run on the mock (needs Zitadel, pixel baselines): add it to `REAL_BACKEND_ONLY` in `playwright.ts`.
-- Phone-layout specs: name the file `mobile-*.spec.ts` (it runs on the `engine-mobile` project only), or add it to
-  that project's `testMatch`. The desktop projects skip `mobile-*`.
+- Phone-layout specs: name the file `mobile-*.spec.ts` (it runs on the `engine-mobile` project only; in a brand's own
+  `apps/<brand>/e2e` it runs on `brand-mobile`), or add it to that project's `testMatch`. The desktop projects skip `mobile-*`.
+  Narrower or wider phones: `test.use({ viewport })` or `page.setViewportSize` (the layout guard does 320 / 360 / 390 / 430).
 - New spec projects/viewports: edit `playwright.ts` once, it applies to both brands.
+
+## Reusable checks (`../support/`)
+
+| Helper                                                         | What it asserts                                                                                                                                                                          |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layout.ts` `measureLayout(page)` / `expectMobileLayout(page)` | on the current page and viewport: nothing sticks out sideways (a horizontal scroller may), no two controls cover each other, no control under 44 px (icon buttons 44 x 44, text 44 tall) |
+| `i18n.ts` `expectNoUntranslatedText(page, brand)`              | no raw key (`checkout.foo`), unfilled `{template}`, `undefined` / `NaN` in the text or the placeholder / aria-label / title / alt attributes                                             |
+| `i18n.ts` `message(brand, locale, 'login.title')`              | the apps' own message (engine + brand overrides, `__BRAND__` filled): assert the right language is on screen without hard-coding copy                                                    |
+| `locale.ts` `chooseLocale(context, baseURL, 'nl')`             | the visitor has picked that language (cookie + header); without it a French browser opening `/nl/...` is redirected to `/fr/...` (`redirectOn: 'all'`)                                   |
+| `nav.ts`, `login.ts`, `account.ts`                             | phone menu, language picker, category chips, login steps, account dialogs                                                                                                                |
 
 ## Controlling the mock (`backend.mock`, a `MockControl`)
 
-| Call                                                                                                                 | Effect                                                                                                                                          |
-| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `restaurant('open' \| 'scheduled-only' \| 'closed' \| 'disabled')`                                                   | restaurant config; pushed live to open pages (`restaurantConfigUpdated`)                                                                        |
-| `scenario({ quoteDelayMs, quoteFailure, createOrderFailure, createOrderDelayMs, latencyMs, mollie, rejectSession })` | failures and delays; `mollie`: `ask` (buttons) / `paid` / `failed` / `canceled` / `expired` / `open` (return before the webhook)                |
-| `coupon('CODE', { kind, value, minOrder?, refusal? })`                                                               | promo codes (defaults: WELCOME10, FIVEOFF, EXPIRED, BIGSPENDER); unknown codes are COUPON_INVALID                                               |
-| `user({ phoneNumber, firstName, address: 'place-home' \| null, ... })`                                               | profile; places: `place-home` 1,8 km, `place-mid` 3,5 km, `place-far` 8,2 km, `place-out` 12 km (out of zone), `place-excluded` (postcode 4610) |
-| `seedOrder({ status, online, paymentStatus, withItem, createdMinutesAgo })`                                          | an order in a given state (what the webhook would have left) -> id                                                                              |
-| `settleOrder(id, status, paymentStatus)` / `patchOrder(id, {...})`                                                   | changes it and pushes `myOrderUpdated` to the page over the WebSocket                                                                           |
-| `product(id, { price, isAvailable })`                                                                                | catalog change, pushed as `productUpdated`                                                                                                      |
-| `operations(op?)`, `createdOrders()`, `state()`, `waitFor(pred)`                                                     | what the app did: GraphQL calls with their arguments, the `createOrder` inputs                                                                  |
+| Call                                                                                                                 | Effect                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `restaurant('open' \| 'scheduled-only' \| 'closed' \| 'disabled')`                                                   | restaurant config; pushed live to open pages (`restaurantConfigUpdated`)                                                                                                                    |
+| `scenario({ quoteDelayMs, quoteFailure, createOrderFailure, createOrderDelayMs, latencyMs, mollie, rejectSession })` | failures and delays; `mollie`: `ask` (buttons) / `paid` / `failed` / `canceled` / `expired` / `open` (return before the webhook)                                                            |
+| `scenario({ otp: { code, newAccount, requestFailure, codeExpired, resendFailure, verifyFailure } })`                 | the sign-in endpoints: the accepted code (default `123456`), a new account (asks for a name), a refused address / throttle / outage, an expired code                                        |
+| `failOperation('updateMe', { code: 'INTERNAL' })` / `failOperation('updateMe', null)`                                | any root query or mutation fails with that GraphQL error (and recovers when lifted): load errors, failed saves                                                                              |
+| `scenario({ invoiceFailure, feedbackFailure })`                                                                      | the invoice download answers 500; the contact form is refused (`invalid` / `captcha_failed` / `rate_limited` / `server`)                                                                    |
+| `coupon('CODE', { kind, value, minOrder?, refusal? })`                                                               | promo codes (defaults: WELCOME10, FIVEOFF, EXPIRED, BIGSPENDER); unknown codes are COUPON_INVALID                                                                                           |
+| `user({ phoneNumber, firstName, address: 'place-home' \| null, ... })`                                               | profile; places: `place-home` 1,8 km, `place-mid` 3,5 km, `place-far` 8,2 km, `place-out` 12 km (out of zone), `place-excluded` (postcode 4610)                                             |
+| `seedOrder({ status, online, paymentStatus, withItem, createdMinutesAgo })`                                          | an order in a given state (what the webhook would have left) -> id                                                                                                                          |
+| `settleOrder(id, status, paymentStatus)` / `patchOrder(id, {...})`                                                   | changes it and pushes `myOrderUpdated` to the page over the WebSocket                                                                                                                       |
+| `product(id, { price, isAvailable })`                                                                                | catalog change, pushed as `productUpdated`                                                                                                                                                  |
+| `operations(op?)`, `restCalls(prefix?)`, `createdOrders()`, `state()`, `waitFor(pred)`                               | what the app did: GraphQL calls with their arguments, REST calls (`/auth/...`, `/orders/:id/invoice`, `/feedback`, the token grants at `/zitadel/oauth/v2/token`), the `createOrder` inputs |
 
 The default is: restaurant open, user signed in as "Eva Mock" with no phone and no saved address, no orders, no failures.
+
+## Signing in for real (the OTP flow)
+
+`authenticatedPage` skips the login UI with a faked session. A spec about the login itself drives the real round trip, which
+the mock serves end to end: `/fr/auth/login` -> `GET /zitadel/oauth/v2/authorize` (stores the request, redirects to the app's login
+page with `?authRequest=<id>`) -> `POST /auth/session/otp/request|verify|resend|complete-profile` -> `POST /auth/finalize` (answers the
+app's `/auth/callback?code=&state=`) -> `POST /zitadel/oauth/v2/token` (an unsigned id_token and a refresh token) -> the app is signed
+in. `support/login.ts` has the steps (`openLogin`, `requestCode`, `submitCode`, `loginWithCode`) and `seedSession` for a session of a
+chosen age (an expired access token is renewed with the refresh grant; `scenario({ rejectSession: true })` makes that grant, the API
+and the invoice answer "unauthenticated", i.e. a session the server no longer honours). The resend countdown is a real 20 s timer:
+use `page.clock.install()` and `page.clock.runFor(21_000)` instead of waiting.
 Online payment: `createOrder` returns `payment.links.checkout.href` = the fake Mollie page; click `mollie-paid` /
 `mollie-failed` / ... (`getByTestId`) or set `scenario({ mollie: 'paid' })` and the app comes straight back.
 
@@ -82,8 +108,9 @@ Add the field to the object returned by the resolver (`resolvers.ts`, `state.ts`
 ## Limits (for now)
 
 - One mock state per brand, so `workers: 1`; every test starts from `reset()`.
-- The OTP login UI cannot complete: `zitadel.ts` has no token endpoint and the `/auth/session/otp/*` REST calls of
-  tsb-service are not mocked. Authenticated specs use the fake session instead.
+- Google / Apple sign-in (`/auth/idp/*`) is not mocked; the buttons are only checked for being there.
+- One user: the mock's `me` is always `state.user` whatever address signed in (a new account takes the address typed and starts
+  without a name until `complete-profile`).
 - Responses are French only (the mock ignores `Accept-Language`).
 - A failing test gets a `browser-problems` attachment (page errors, console errors, failed requests) and, locally, a trace.
 
