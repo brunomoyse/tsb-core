@@ -5,7 +5,7 @@
   },
   "error": {
     "title404": "Page introuvable",
-    "notFound": "On dirait que vous vous êtes un peu perdu... Pas de panique, un bon bol de malatang vous attend !",
+    "notFound": "Cette page s'est perdue… Pas de panique, un bon bol de malatang vous attend !",
     "title500": "Souci en cuisine",
     "serverError": "Fuzi s'active en cuisine, mais quelque chose n'a pas fonctionné. Réessayez dans un instant."
   },
@@ -52,8 +52,8 @@
       "beef_bone": {
         "name": "Bouillon d'os de bœuf épicé",
         "chinese": "经典草本骨汤",
-        "desc": "Notre signature depuis 2003 : os de bœuf mijotés 8 heures et plus de 20 herbes orientales. Choisissez votre intensité, du doux au très épicé.",
-        "spice": "Au choix : doux, épicé ou très épicé",
+        "desc": "Notre signature depuis 2003 : os de bœuf mijotés 8 heures avec plus de 20 herbes orientales. Choisissez votre intensité, de doux à fort.",
+        "spice": "Au choix : doux, moyen ou fort",
         "allergens": "Lait, gluten, sésame, soja"
       },
       "tomato": {
@@ -64,17 +64,17 @@
         "allergens": "Soja"
       },
       "mala_dry": {
-        "name": "Marmite parfumée à la sauce pimentée",
+        "name": "Mala Mix à la sauce sésame-cacahuète",
         "chinese": "石磨醇香麻辣拌",
         "desc": "L'exception sans bouillon : vos ingrédients enrobés d'une sauce parfumée au sésame et à la cacahuète. Envoûtant, légèrement relevé.",
-        "spice": "Doux épicé",
+        "spice": "Légèrement relevé",
         "allergens": "Gluten, sésame, arachide, soja"
       },
       "tom_yum": {
         "name": "Bouillon thaïlandais Tom Yum",
         "chinese": "酸辣冬阴功",
         "desc": "L'évasion thaïlandaise : aigre, épicé, parfumé à la citronnelle. Un aller simple pour l'Asie du Sud-Est.",
-        "spice": "Doux épicé",
+        "spice": "Légèrement relevé",
         "allergens": "Poisson, crustacés, soja"
       },
       "mushroom": {
@@ -99,7 +99,7 @@
         },
         "step3": {
           "title": "Dites-nous",
-          "desc": "Choisissez votre bouillon et votre niveau de piment : doux, moyen ou bien relevé."
+          "desc": "Choisissez votre bouillon et votre niveau de piquant : doux, moyen ou fort."
         },
         "step4": {
           "title": "Savourez",
@@ -176,7 +176,7 @@
       },
       "step3": {
         "title": "Dites-nous",
-        "desc": "Choisissez votre bouillon et votre niveau de piment : doux, moyen ou bien relevé."
+        "desc": "Choisissez votre bouillon et votre niveau de piquant : doux, moyen ou fort."
       },
       "step4": {
         "title": "Savourez",
@@ -186,14 +186,14 @@
         "title": "Questions fréquentes",
         "spicy": {
           "question": "C'est épicé ?",
-          "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, épicé ou très épicé. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et la marmite sésame-cacahuète restent légèrement relevés."
+          "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, moyen ou fort. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et le Mala Mix sésame-cacahuète restent légèrement relevés."
         },
         "what": {
           "question": "C'est quoi le malatang ?",
           "answer": "Le malatang, c'est un bol individuel venu de Chine : vous choisissez vos produits frais au comptoir, et on les cuit à la minute dans un bouillon aux herbes. Un repas équilibré, à votre goût, et qui fait du bien."
         },
         "vegan": {
-          "question": "Je suis végétarien ou vegan ?",
+          "question": "Et si je suis végétarien ou vegan ?",
           "answer": "Aucun souci ! Notre comptoir regorge de légumes, de champignons, de tofu et de nouilles. Vous pouvez tout à fait composer un bol 100% végétal. N'hésitez pas à nous demander conseil pour le bouillon."
         }
       },
@@ -244,7 +244,7 @@
         "beef": "Bœuf",
         "lamb": "Agneau",
         "pork_belly": "Poitrine de porc",
-        "meatballs": "Boulettes",
+        "meatballs": "Boulettes de viande",
         "shrimp": "Crevettes",
         "fish_balls": "Boulettes de poisson",
         "squid": "Calamars",
@@ -364,7 +364,7 @@
     },
     "not_found": {
       "title": "Page introuvable",
-      "message": "On dirait que vous vous êtes un peu perdu... Pas de panique, un bon bol de malatang vous attend !",
+      "message": "Cette page s'est perdue… Pas de panique, un bon bol de malatang vous attend !",
       "button": "Retour à l'accueil",
       "fuzi_alt": "Fuzi, la mascotte Yangguofu, savoure un bol de nouilles"
     },
@@ -402,10 +402,10 @@
       },
       "spicy": {
         "question": "C'est épicé ?",
-        "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, épicé ou très épicé. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et la marmite sésame-cacahuète restent légèrement relevés."
+        "answer": "C'est vous qui choisissez ! Notre bouillon d'os de bœuf se décline en trois intensités : doux, moyen ou fort. Envie de zéro piment ? Le bouillon tomate et le bouillon champignons sont tout doux. Le Tom Yum et le Mala Mix sésame-cacahuète restent légèrement relevés."
       },
       "vegan": {
-        "question": "Je suis végétarien ou vegan ?",
+        "question": "Et si je suis végétarien ou vegan ?",
         "answer": "Aucun souci ! Notre comptoir regorge de légumes, de champignons, de tofu et de nouilles. Vous pouvez tout à fait composer un bol 100% végétal. N'hésitez pas à nous demander conseil pour le bouillon."
       },
       "hours": {
@@ -437,7 +437,7 @@
     "open": "Composer mon bol",
     "stepOf": "Étape {n}/{total}",
     "chosen": "Choisi",
-    "selectedCount": "{count}/{max} sélectionnés",
+    "selectedCount": "{count}/{max} choisis",
     "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
   },
   "nav": {

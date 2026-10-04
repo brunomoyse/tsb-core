@@ -446,6 +446,7 @@ definePageMeta({ public: true, pageTransition: false })
 
 import type { Address, CreateOrderRequest, Order } from '#engine/types'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 import {
   computed,
   navigateTo,
@@ -503,7 +504,9 @@ import { useTracking } from '#engine/composables/useTracking'
 
 const { japaneseAccents = false } = useAppConfig().brand
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.
+const dateLocale = useDateLocale()
 const gqlErrorMessage = useGqlErrorMessage()
 // Names the cart item a line-level createOrder error points at (`extensions.productId`) in the message.
 const blockingProductNameOf = (err: unknown): string | undefined =>
@@ -599,7 +602,7 @@ const nextOpeningTime = computed(() => {
   if (!iso) return null
   const next = new Date(iso)
   const sameDay = isSameBrusselsDay(next, new Date())
-  return new Intl.DateTimeFormat(locale.value, {
+  return new Intl.DateTimeFormat(dateLocale.value, {
     ...(sameDay ? {} : { weekday: 'long' }),
     hour: '2-digit',
     minute: '2-digit',

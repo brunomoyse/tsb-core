@@ -7,7 +7,11 @@
  *    language shows up as a raw key path (or a French fallback) for those customers.
  * 2. Placeholder parity: every language of a key uses the same {placeholders} (a renamed or
  *    dropped {count} / {amount} silently breaks the message).
- * 3. Used keys: every literal `$t('a.b')` / `t('a.b')` call in the engine or an app must resolve
+ * 3. Plural forms: fr, nl and en have the same number of `|` forms for a key; zh has one form (no plural) or the
+ *    same number. A missing form silently shows the wrong grammatical number.
+ * 4. Typography: three dots instead of the ellipsis character "…", and ASCII , . ! ? : ; ( ) right after a Chinese
+ *    character (Chinese uses full-width punctuation).
+ * 5. Used keys: every literal `$t('a.b')` / `t('a.b')` call in the engine or an app must resolve
  *    in the French messages (engine + that app). Dynamic keys (`'prefix.' + x`, template strings)
  *    are not checked, and neither are keys that only appear in a call's default-value argument.
  */
@@ -63,6 +67,33 @@ function checkParity(label, messages) {
   }
 }
 
+// `|` separates plural forms; an escaped `{'|'}` is a literal pipe.
+const pluralForms = (value) =>
+  typeof value === 'string' ? value.replaceAll("{'|'}", '').split('|').length : 1
+
+function checkPluralsAndTypography(label, messages) {
+  for (const key of Object.keys(messages.fr)) {
+    const forms = Object.fromEntries(LOCALES.map((l) => [l, pluralForms(messages[l][key])]))
+    const european = new Set([forms.fr, forms.nl, forms.en])
+    if (european.size > 1 || (forms.zh !== 1 && forms.zh !== forms.fr)) {
+      const detail = LOCALES.map((l) => `${l}=${forms[l]}`).join(' ')
+      failures.push(`${label}: plural forms differ for "${key}": ${detail}`)
+    }
+  }
+  for (const l of LOCALES) {
+    for (const [key, value] of Object.entries(messages[l])) {
+      const texts = Array.isArray(value) ? value : [value]
+      for (const text of texts) {
+        if (typeof text !== 'string') continue
+        if (text.includes('...')) failures.push(`${label}: ${l} "${key}" uses "..." (write "…")`)
+        if (l === 'zh' && /[\u4e00-\u9fff][,.!?:;()]/u.test(text.replaceAll(/<[^>]+>/gu, ''))) {
+          failures.push(`${label}: zh "${key}" has ASCII punctuation after a Chinese character`)
+        }
+      }
+    }
+  }
+}
+
 async function* walk(dir) {
   let entries
   try {
@@ -103,6 +134,7 @@ async function checkUsedKeys(label, roots, fr) {
 const engineDir = join(repoRoot, 'layers/engine')
 const engine = await loadLocales(join(engineDir, 'locales'))
 checkParity('engine locales', engine)
+checkPluralsAndTypography('engine locales', engine)
 
 const apps = (await readdir(join(repoRoot, 'apps'), { withFileTypes: true }))
   .filter((e) => e.isDirectory())
@@ -113,6 +145,7 @@ for (const app of apps) {
   const appDir = join(repoRoot, 'apps', app)
   const messages = await loadLocales(join(appDir, 'locales'))
   checkParity(`${app} locales`, messages)
+  checkPluralsAndTypography(`${app} locales`, messages)
   await checkUsedKeys(app, [engineDir, appDir], { ...engine.fr, ...messages.fr })
 }
 

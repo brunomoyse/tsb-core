@@ -66,11 +66,11 @@ export function useReorder() {
     notifications.notify(
       plan.skipped.length > 0
         ? {
-            message: t('reorder.partial', { added, names: skippedNames(plan.skipped) }),
+            message: t('reorder.partial', { added, names: skippedNames(plan.skipped) }, added),
             variant: 'info',
             duration: 9000,
           }
-        : { message: t('reorder.success', { count: added }), variant: 'success' },
+        : { message: t('reorder.success', { count: added }, added), variant: 'success' },
     )
     void navigateTo(localePath('/checkout'))
   }

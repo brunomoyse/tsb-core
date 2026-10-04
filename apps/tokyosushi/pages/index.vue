@@ -3,13 +3,16 @@ import { RESTAURANT_TZ, getBrusselsParts, isSameBrusselsDay } from '#engine/util
 import { useCartStore } from '#engine/stores/cart'
 import { useBrandPhone } from '#engine/composables/useBrandPhone'
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 
 definePageMeta({
   sitemap: { priority: 1, changefreq: 'daily' },
 })
 
 const localizedUrl = useLocalizedUrl()
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.
+const dateLocale = useDateLocale()
 const cartStore = useCartStore()
 const { policyParams } = useOrderingPolicy()
 const { brand } = useAppConfig()
@@ -40,7 +43,7 @@ const nextOpeningTime = computed(() => {
   if (!iso) return null
   const next = new Date(iso)
   const sameDay = isSameBrusselsDay(next, new Date())
-  return new Intl.DateTimeFormat(locale.value, {
+  return new Intl.DateTimeFormat(dateLocale.value, {
     ...(sameDay ? {} : { weekday: 'long' }),
     hour: '2-digit',
     minute: '2-digit',

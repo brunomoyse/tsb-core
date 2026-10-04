@@ -28,15 +28,15 @@
     "home": "Home",
     "menu": "Menu",
     "contact": "Contact",
-    "login": "Login",
-    "logout": "Logout",
+    "login": "Log in",
+    "logout": "Log out",
     "myAccount": "My account",
-    "search": "Search...",
+    "search": "Search…",
     "cart": "Cart",
-    "language": "Select Language",
+    "language": "Select language",
     "toggleMenu": "Toggle menu",
     "sidebar": "Main navigation",
-    "searchLabel": "Search the menu",
+    "searchLabel": "Search for a dish",
     "clearSearch": "Clear search",
     "currentLanguage": "Language: {language}",
     "primary": "Main navigation"
@@ -54,18 +54,18 @@
     "restaurantImageAlt": "Illustration of the {name} restaurant"
   },
   "contact": {
-    "title": "Contact Us",
-    "subtitle": "Find us, call us, or reserve a table today!",
-    "viewLargerMap": "View Larger Map",
+    "title": "Contact us",
+    "subtitle": "Visit us, call us or book a table today!",
+    "viewLargerMap": "View larger map",
     "addressTitle": "Address",
     "address": "Rue de la Cathédrale 59, Liège, Belgium",
     "phoneTitle": "Phone",
     "emailTitle": "Email",
-    "openingHoursTitle": "Opening Hours",
+    "openingHoursTitle": "Opening hours",
     "followUs": "Follow us",
-    "reservationNotice": "Reservations by email are not taken into account. To book a table, please call us by phone.",
-    "weekdays": "Monday - Friday",
-    "weekends": "Saturday - Sunday",
+    "reservationNotice": "We do not take reservations by email. To book a table, please call us.",
+    "weekdays": "Monday – Friday",
+    "weekends": "Saturday – Sunday",
     "closedTuesday": "Closed on Tuesdays",
     "mapTitle": "Map: location of {name}"
   },
@@ -73,7 +73,7 @@
     "ourStoryTitle": "Our Story",
     "ourStoryText1": "In 2016, a young couple with a passion for Japanese cuisine opened a small restaurant on Rue de la Régence in Liège, with the support of their parents. Every morning, fresh fish is carefully selected and prepared by hand to guarantee uncompromising quality. Word spread quickly: between dine-in guests and a flood of delivery orders, the small space could no longer keep up.",
     "ourStoryText2": "At the end of 2024, the restaurant moved to Rue de la Cathédrale into a larger space, just steps from the original location. Today, __BRAND__ remains a family affair where every dish is crafted with the same care as on day one.",
-    "ourStoryText3": "In 2026, __BRAND__ celebrates its 10th anniversary. A decade of fresh fish, refined recipes, and smiles shared with you. Thank you to everyone who has trusted us since day one, this journey is yours as much as ours.",
+    "ourStoryText3": "In 2026, __BRAND__ celebrates its 10th anniversary: a decade of fresh fish, refined recipes and smiles shared with you. Thank you to everyone who has trusted us since day one. This journey is yours as much as ours.",
     "yearsOfPassion": "years of passion",
     "openingHoursLabel": "Opening Hours",
     "contactLink": "Get in touch",
@@ -82,9 +82,9 @@
     "cash": "Cash",
     "infoCards": {
       "freeDelivery": "Free delivery",
-      "freeDeliveryDesc": "Free from {deliveryMinimum} EUR, with delivery fees based on distance beyond.",
-      "takeawayDiscount": "Takeaway -{rate}%",
-      "takeawayDiscountDesc": "{rate}% discount on eligible items from {pickupMinimum} EUR for all pickup orders.",
+      "freeDeliveryDesc": "For orders from €{deliveryMinimum}. Free nearby, then priced by distance.",
+      "takeawayDiscount": "Pickup -{rate}%",
+      "takeawayDiscountDesc": "{rate}% off eligible items on every pickup order from €{pickupMinimum}.",
       "freshDaily": "Fresh daily",
       "freshDailyDesc": "Our fish is cut fresh every morning by our chef for uncompromising quality."
     }
@@ -96,10 +96,10 @@
     "pickFilters": "Filters",
     "choices": "choices",
     "noProduct": "No products available",
-    "allergenNotice": "Our products may contain fish, shellfish and lactose. Please inform us of any allergies.",
+    "allergenNotice": "Our products may contain fish, crustaceans and lactose. Please tell us about any allergies.",
     "allergenNoticeShort": "Allergies? Info:",
     "unavailable": "Unavailable",
-    "noResults": "No results for \"{query}\"",
+    "noResults": "No results for ‘{query}’",
     "previousCategory": "Previous category",
     "nextCategory": "Next category",
     "halal": "Halal",
@@ -113,16 +113,16 @@
     "pcs": "pieces",
     "addToCart": "Add",
     "selectChoice": "Select an option",
-    "chooseRemaining": "{count} more to select | {count} more to select",
-    "chooseAtLeast": "Select at least {count} option | Select at least {count} options",
-    "removeExcess": "Remove {count} selection | Remove {count} selections",
+    "chooseRemaining": "{count} more to choose | {count} more to choose",
+    "chooseAtLeast": "Choose at least {count} option | Choose at least {count} options",
+    "removeExcess": "Remove {count} choice | Remove {count} choices",
     "price": "Price",
     "code": "Code",
     "description": "Description",
-    "discountable": "Discountable",
+    "discountable": "Discount applies",
     "yes": "Yes",
     "no": "No",
-    "pickupDiscountBadge": "{rate}% off on pickup",
+    "pickupDiscountBadge": "{rate}% off for pickup",
     "restaurantClosed": "The restaurant is currently closed.",
     "restaurantClosedDetails": "You can browse the menu, but ordering is unavailable.",
     "choice": "Choice",
@@ -147,18 +147,18 @@
     "resendCooldown": "Resend in {seconds}s",
     "backToEmail": "Back",
     "dividerOr": "or",
-    "ssoGoogle": "Login with Google",
-    "ssoApple": "Login with Apple",
-    "authenticating": "Authenticating...",
-    "callbackError": "Authentication failed. Please try again.",
+    "ssoGoogle": "Continue with Google",
+    "ssoApple": "Continue with Apple",
+    "authenticating": "Logging you in…",
+    "callbackError": "Login failed. Please try again.",
     "tryAgain": "Try again",
-    "profileTitle": "Almost done, what should we call you?",
-    "profileSubtitle": "We'll use your first name to personalize your orders and emails.",
+    "profileTitle": "Almost done! What should we call you?",
+    "profileSubtitle": "We'll use your first name to personalise your orders and emails.",
     "completeSignup": "Complete sign-up",
     "stepEmail": "Email",
     "stepCode": "Code",
     "stepProfile": "Profile",
-    "stepsAriaLabel": "Sign-in progress"
+    "stepsAriaLabel": "Login progress"
   },
   "form": {
     "firstName": "First name",
@@ -174,7 +174,7 @@
       "label": "Address",
       "placeholder": "Street and number…",
       "noMatch": "No address found.",
-      "callHint": "If your address isn't listed, feel free to call us at",
+      "callHint": "If your address isn't listed, feel free to call us on",
       "houseNumberRequired": "A house number is required.",
       "example": "Example: Rue de Fragnée 12, Liège",
       "clear": "Clear address",
@@ -194,9 +194,9 @@
       "backToAccount": "My account",
       "allOrdersTitle": "All my orders",
       "loadMore": "Show {count} more",
-      "loadMoreLast": "Show last {count}",
-      "loading": "Loading orders...",
-      "empty": "No orders found",
+      "loadMoreLast": "Show the last {count}",
+      "loading": "Loading orders…",
+      "empty": "No orders yet",
       "total": "Total",
       "downloadInvoice": "Download invoice",
       "status": {
@@ -204,42 +204,42 @@
           "title": {
             "pending": "Order placed",
             "confirmed": "Confirmed by the restaurant",
-            "preparing": "Preparing your order",
-            "awaitingPickUp": "Awaiting pick-up",
+            "preparing": "Being prepared",
+            "awaitingPickUp": "Ready for pickup",
             "outForDelivery": "Out for delivery",
             "delivered": "Delivered",
-            "pickedUp": "Picked Up"
+            "pickedUp": "Picked up"
           }
         },
         "pending": "Pending",
         "confirmed": "Confirmed",
         "preparing": "Preparing",
-        "awaitingPickup": "Awaiting Pickup",
-        "pickedUp": "Picked Up",
-        "outForDelivery": "Out for Delivery",
+        "awaitingPickup": "Ready for pickup",
+        "pickedUp": "Picked up",
+        "outForDelivery": "Out for delivery",
         "delivered": "Delivered",
         "cancelled": "Cancelled",
         "failed": "Failed"
       }
     },
     "profile": {
-      "title": "My Profile",
+      "title": "My profile",
       "name": "Name",
       "email": "Email",
       "phone": "Phone",
       "address": "Address",
-      "phoneNumber": "Phone Number",
-      "update": "Update Profile",
+      "phoneNumber": "Phone number",
+      "update": "Update profile",
       "addAddress": "Add an address",
       "editAddress": "Edit address",
-      "addressUpdateSuccess": "Your address has been successfully updated.",
-      "updateSuccess": "Your profile has been successfully updated.",
+      "addressUpdateSuccess": "Your address has been updated.",
+      "updateSuccess": "Your profile has been updated.",
       "deleteAccount": "Delete account",
       "deleteConfirmTitle": "Delete your account?",
       "deleteConfirmBody": "This action is permanent and cannot be undone.",
       "deleteActiveOrderWarning": "You have an order in progress. If you delete your account now, you won't be able to track it or receive updates. The restaurant will still prepare it.",
-      "deleteAnonymizeNote": "Your account and personal data (name, email, phone number and saved addresses) are permanently anonymized, and you are signed out.",
-      "deleteOrdersNote": "Your past orders stay with the restaurant in anonymized form, as Belgian accounting law requires. They are no longer linked to you.",
+      "deleteAnonymizeNote": "Your account and personal data (name, email, phone number and saved addresses) are permanently anonymised, and you are logged out.",
+      "deleteOrdersNote": "Your past orders stay with the restaurant in anonymised form, as Belgian accounting law requires. They are no longer linked to you.",
       "deleteConfirmPrompt": "To confirm, type your email address below:",
       "deleteConfirmCheckbox": "I understand my account and data will be permanently deleted.",
       "deleteConfirmPlaceholder": "Type your email to confirm",
@@ -261,31 +261,31 @@
       "orderUpdatesLabel": "Order updates",
       "orderUpdatesDescription": "Get emails at every step of your current order.",
       "updateSuccess": "Notification preferences updated.",
-      "updateError": "Failed to update preferences."
+      "updateError": "We couldn't save your preferences."
     }
   },
   "delivery": {
     "comingSoon": "Available soon",
     "chip": {
-      "verify": "Check the zone",
+      "verify": "Check delivery area",
       "verifyCompact": "Zone",
       "inZone": "Delivery · {km} km",
-      "outOfZone": "Outside delivery zone",
-      "outOfZoneCompact": "Out of zone",
+      "outOfZone": "Outside delivery area",
+      "outOfZoneCompact": "Out of area",
       "pickup": "Pickup at restaurant",
       "pickupCompact": "Pickup",
-      "actionHint": "tap to change"
+      "actionHint": "change"
     },
     "modal": {
       "title": "Delivery or pickup?",
       "subtitle": "Confirm your address before ordering.",
-      "modeLabel": "Collection mode",
+      "modeLabel": "Delivery or pickup",
       "deliveryTab": "Delivery",
       "pickupTab": "Pickup",
       "currentAddress": "Current address",
       "change": "Change",
       "distanceOk": "We deliver to this address",
-      "distanceTooFar": "This address is outside our {distance} km delivery zone",
+      "distanceTooFar": "This address is outside our delivery area ({distance} km)",
       "distanceValue": "Distance: {km} km",
       "switchToPickup": "Switch to pickup",
       "confirm": "Confirm",
@@ -294,27 +294,27 @@
     },
     "gate": {
       "title": "Before you continue",
-      "subtitle": "Let's first make sure we can deliver to your address. This avoids any surprises at checkout."
+      "subtitle": "Let's first check that we can deliver to your address, so there are no surprises at checkout."
     }
   },
   "cart": {
     "title": "Cart",
     "viewCart": "View cart",
     "empty": "Your cart is empty",
-    "emptyHint": "Browse the menu to add your favorites",
+    "emptyHint": "Browse the menu to add your favourites",
     "delivery": "Delivery",
     "pickup": "Pickup",
     "subtotal": "Subtotal",
-    "deliveryFee": "Delivery Fee",
-    "pickupDiscount": "Pickup Discount",
+    "deliveryFee": "Delivery fee",
+    "pickupDiscount": "Pickup discount",
     "total": "Total",
-    "minimumDelivery": "Delivery minimum order amount is {amount}€",
-    "minimumPickup": "Pickup minimum order amount is {amount}€",
-    "checkout": "Checkout",
+    "minimumDelivery": "Minimum order for delivery: €{amount}",
+    "minimumPickup": "Minimum order for pickup: €{amount}",
+    "checkout": "Go to checkout",
     "removeItem": "Remove",
     "decreaseQty": "Decrease quantity",
     "increaseQty": "Increase quantity",
-    "customizedItemHint": "Customized: remove then re-add from the menu to edit",
+    "customizedItemHint": "Customised: remove it and add it again from the menu to change it",
     "closeCart": "Close cart",
     "addToCart": "Add to cart",
     "item": "item",
@@ -323,11 +323,11 @@
     "undo": "Undo",
     "removedUndo": "“{name}” removed",
     "eachSuffix": "each",
-    "deliveryTbd": "Delivery calculated at checkout",
+    "deliveryTbd": "Delivery fee calculated at checkout",
     "editItem": "Edit",
     "pickupDiscountShort": "-{rate}%",
     "onlineFee": "Online payment fee",
-    "addForDelivery": "Add {amount} more to qualify for delivery.",
+    "addForDelivery": "Add {amount} more for delivery.",
     "quoteUpdating": "Updating prices…",
     "removedUnavailable": "Some items in your cart are no longer available and were removed.",
     "issues": {
@@ -356,11 +356,11 @@
   "checkout": {
     "title": "Checkout",
     "authStep": {
-      "heading": "Almost there, sign in to place your order",
+      "heading": "Almost there: log in to place your order",
       "cartSaved": "Your cart is saved",
       "tabLogin": "Log in",
       "tabRegister": "Create account",
-      "returnToLogin": "Email verified, sign in now"
+      "returnToLogin": "Email verified, log in now"
     },
     "phoneCapture": {
       "title": "Phone number",
@@ -372,63 +372,63 @@
       "unsaved": "Save or fix your phone number before placing the order.",
       "editAria": "Edit phone number"
     },
-    "orderSummary": "Your Order",
+    "orderSummary": "Your order",
     "emptyCart": "Your cart is empty.",
     "subtotal": "Subtotal:",
-    "deliveryFee": "Delivery Fee:",
+    "deliveryFee": "Delivery fee:",
     "deliveryFeeInfo": "Delivery fees based on distance:\n{tiers}",
     "deliveryFeeTierFirst": "• Less than {to} km: {fee}",
     "deliveryFeeTier": "• {from}-{to} km: {fee}",
     "transactionFee": "Transaction fee:",
-    "discount": "Pick-up discount",
+    "discount": "Pickup discount",
     "total": "Total:",
     "collection": "Delivery / Pickup",
-    "deliveryAddress": "Delivery Address",
-    "editAddress": "Edit Address",
+    "deliveryAddress": "Delivery address",
+    "editAddress": "Edit address",
     "noAddress": "No address selected",
-    "addAddress": "Add Address",
-    "addressComment": "Additional Info for Address",
-    "addressCommentPlaceholder": "e.g. Ring the bell twice",
-    "preferredTime": "Preferred Time",
-    "asapDelivery": "ASAP (40-60 min)",
-    "asapDeliveryShort": "ASAP (40-60 min)",
-    "asapPickup": "ASAP",
-    "asapUnavailableWhileClosed": "ASAP is unavailable while closed. Please select a fixed time for today.",
-    "noRemainingSlotsToday": "No remaining time slots for today.",
-    "extrasAndPayment": "Extras & Payment",
-    "paymentMethod": "Payment Method",
-    "online": "Online Payment",
+    "addAddress": "Add address",
+    "addressComment": "Address details",
+    "addressCommentPlaceholder": "e.g. 2nd floor, ring twice",
+    "preferredTime": "Preferred time",
+    "asapDelivery": "As soon as possible (40–60 min)",
+    "asapDeliveryShort": "ASAP (40–60 min)",
+    "asapPickup": "As soon as possible",
+    "asapUnavailableWhileClosed": "We're closed right now, so \"As soon as possible\" isn't available. Please choose a time for today.",
+    "noRemainingSlotsToday": "No time slots left today.",
+    "extrasAndPayment": "Extras and payment",
+    "paymentMethod": "Payment method",
+    "online": "Online",
     "cash": "Cash",
     "cashWarning": "Heads up: once the order is placed, the payment method can no longer be changed.",
-    "cashAcknowledge": "I understand and confirm I will pay in cash.",
+    "cashAcknowledge": "I confirm I will pay in cash.",
     "cashAcknowledgeMissing": "Please confirm you'll pay in cash",
     "cashAcknowledged": "Cash payment confirmed",
     "discardAddress": "Discard the address you entered?",
-    "cashAmountLabel": "How much are you planning to pay with?",
+    "cashAmountLabel": "How much cash will you pay with?",
     "cashAmountPlaceholder": "e.g. 50",
     "extras": "Extras",
-    "addChopsticks": "Add Chopsticks",
-    "addCutlery": "Add Cutlery",
-    "addWasabi": "Add Wasabi",
-    "addGinger": "Add Ginger",
+    "addChopsticks": "Add chopsticks",
+    "addCutlery": "Add cutlery",
+    "addWasabi": "Add wasabi",
+    "addGinger": "Add ginger",
     "addSoySauce": "Add soy sauce",
     "sauce": "Soy sauce",
     "none": "None",
     "sweet": "Sweet",
     "salty": "Salty",
     "both": "Both",
-    "orderComment": "Order Comment",
+    "orderComment": "Order comment",
     "orderCommentPlaceholder": "e.g. Allergies or special instructions",
-    "goToPayment": "Go to Payment",
-    "placeOrder": "Place Order",
-    "processing": "Processing...",
-    "restaurantClosed": "Restaurant is currently closed. Please check the opening hours.",
+    "goToPayment": "Continue to payment",
+    "placeOrder": "Place order",
+    "processing": "Processing…",
+    "restaurantClosed": "The restaurant is currently closed. Please check the opening hours.",
     "orderDisabled": "Ordering is disabled at the moment. Please try again later.",
     "free": "Free",
     "stepMenu": "Menu",
     "stepCheckout": "Checkout",
     "stepAddress": "Address",
-    "stepSignIn": "Sign in",
+    "stepSignIn": "Log in",
     "stepPhone": "Phone",
     "stepReview": "Review",
     "stepPayment": "Payment",
@@ -438,35 +438,35 @@
     "notDeliverableArea": "We don't deliver to your area.",
     "tbd": "To be determined",
     "optional": "(optional)",
-    "openingPayment": "Opening secure payment...",
+    "openingPayment": "Opening secure payment…",
     "completeBeforeOrder": "Please complete these before placing your order:",
     "completeBeforeOrderCount": "{count} item is missing | {count} items are missing",
     "addressDistanceKm": "{distance} km away",
-    "addExtras": "Add some extras?",
-    "extrasDescription": "Complete your order with some accompaniments",
+    "addExtras": "Fancy a side?",
+    "extrasDescription": "Round off your order with a side",
     "paidExtra": "Paid extra",
     "paidExtrasNotice": "These extras are billed as products and added to your cart.",
     "quoteIssuesTitle": "Your order can't be paid yet",
     "quoteLineIssues": "Some items can no longer be ordered as they are: check the flagged lines in your order.",
     "quoteChanged": "Prices or availability changed: please review your order.",
-    "cashAmountTooLow": "That is less than the total ({total}). Enter at least {total}, or leave the field empty.",
+    "cashAmountTooLow": "That's less than the total ({total}). Enter at least {total}, or leave the field empty.",
     "cashChangeDue": "Change due: {amount}",
-    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more"
+    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more | {name}, {count} added, {price} each: add one more"
   },
   "orderCompleted": {
-    "title": "Order Completed",
-    "thankYou": "Thank you for your purchase!",
-    "orderSuccess": "Your order was placed successfully.",
+    "title": "Order received",
+    "thankYou": "Thank you for your order!",
+    "orderSuccess": "Your order has been placed.",
     "items": "Items",
-    "loading": "Loading order details...",
-    "returnHome": "Return to Home",
-    "viewOrders": "View My Orders",
+    "loading": "Loading order details…",
+    "returnHome": "Back to home",
+    "viewOrders": "View my orders",
     "status": "Status",
-    "pageTitle": "Order Confirmation - __BRAND__",
-    "liveTracking": "Live tracking, status updates automatically",
-    "estimatedDeliveredTime": "Estimated delivered time:",
-    "estimatedReadyTime": "Estimated ready time:",
-    "orderCanceled": "Your order has been cancelled. Please contact the restaurant at __PHONE__.",
+    "pageTitle": "Order confirmation - __BRAND__",
+    "liveTracking": "Live tracking: the status updates automatically",
+    "estimatedDeliveredTime": "Estimated delivery time:",
+    "estimatedReadyTime": "Estimated pickup time:",
+    "orderCanceled": "Your order has been cancelled. Please contact the restaurant on __PHONE__ for more information.",
     "notConfirmedYet": "Your order has not been confirmed yet. You can call the restaurant to check:",
     "cancellationReasonLabel": "Reason:",
     "cancellationReasons": {
@@ -474,11 +474,11 @@
       "KITCHEN_CLOSED": "Kitchen closed",
       "DELIVERY_AREA": "Outside delivery area"
     },
-    "loadError": "Failed to load order details. Please try again.",
+    "loadError": "We couldn't load the order details. Please try again.",
     "backToMenu": "Back to menu",
     "payment": {
-      "canceledTitle": "Payment canceled",
-      "canceledBody": "You canceled the payment, so your order wasn’t placed. Your cart is saved. You can try again.",
+      "canceledTitle": "Payment cancelled",
+      "canceledBody": "You cancelled the payment, so your order wasn’t placed. Your cart is saved. You can try again.",
       "failedTitle": "Payment failed",
       "failedBody": "We couldn’t process your payment and no charge was made. Your cart is saved. Please try again.",
       "expiredTitle": "Payment expired",
@@ -488,7 +488,7 @@
       "tryAgain": "Try again",
       "verifying": "Verifying your payment…",
       "awaitingConfirmationTitle": "Confirming your payment",
-      "awaitingConfirmationBody": "We haven’t received the payment confirmation yet. This page will update automatically. If you were charged, don’t pay again: contact us at {phone}.",
+      "awaitingConfirmationBody": "We haven’t received the payment confirmation yet. This page will update automatically. If you were charged, don’t pay again: contact us on {phone}.",
       "callUs": "Call the restaurant"
     },
     "receipt": {
@@ -501,15 +501,15 @@
       "cashWith": "You will pay with {amount}",
       "changeDue": "change due: {amount}",
       "deliveryTo": "Delivery address",
-      "pickupAt": "Pick up at"
+      "pickupAt": "Pickup at"
     }
   },
   "error": {
-    "homeButton": "Back to Home",
-    "menuButton": "View Menu",
-    "notFound": "Oops! This page seems to have disappeared...",
-    "forbidden": "Access forbidden. You don't have permission to view this page.",
-    "serverError": "A server error occurred. Please try again later.",
+    "homeButton": "Back to home",
+    "menuButton": "View menu",
+    "notFound": "Oops! This page seems to have disappeared…",
+    "forbidden": "Access denied. You don't have permission to view this page.",
+    "serverError": "Something went wrong on our side. Please try again later.",
     "generic": "Something went wrong. Please try again.",
     "title404": "Nothing on the plate",
     "title403": "Off limits",
@@ -517,36 +517,36 @@
     "titleGeneric": "Chopstick slip"
   },
   "footer": {
-    "terms": "Terms & Conditions",
+    "terms": "Terms and conditions",
     "privacy": "Privacy Policy"
   },
   "notify": {
     "errors": {
       "cartEmpty": "Your cart is empty.",
-      "addressRequired": "Address is required.",
-      "deliveryAddressTooFar": "The delivery address is too far. Max {distance} km.",
+      "addressRequired": "A delivery address is required.",
+      "deliveryAddressTooFar": "The delivery address is too far away (max. {distance} km).",
       "deliveryAddressExcluded": "We don't deliver to your area.",
-      "deliveryUnavailable": "Delivery isn't available — please choose pickup.",
+      "deliveryUnavailable": "Delivery is not available: please choose pickup.",
       "invalidCode": "Invalid or expired code. Please try again.",
       "codeExpired": "The code has expired. Request a new one.",
-      "emailNotVerified": "Please verify your email address before logging in. Check your inbox for the verification link.",
+      "emailNotVerified": "Please verify your email address before logging in. You will find the verification link in your inbox.",
       "orderingUnavailable": "Ordering is currently unavailable. Please try again later.",
-      "fixedTimeRequiredWhileClosed": "Please select a fixed time slot for today while we are closed.",
+      "fixedTimeRequiredWhileClosed": "We're closed right now: please choose a time for today.",
       "lunchOnlyRequiresLunchSlot": "Some items in your cart are only available for a weekday lunch slot (Mon–Fri). Please pick a lunch slot or remove those items.",
       "slotExpiredAutoReset": "Your selected time slot has expired and was reset.",
       "slotTooSoon": "The selected time slot is too soon. Please choose a later time.",
       "slotOutsideHours": "The selected time slot is outside the opening hours.",
       "slotNotToday": "The time slot must be for today.",
       "slotNotAligned": "Time slots must be aligned to 15-minute intervals.",
-      "orderingClosedToday": "Ordering is closed today.",
+      "orderingClosedToday": "We are not taking orders today.",
       "tooManyRequests": "Too many attempts. Please wait a few minutes before trying again.",
-      "couponCheckFailed": "We could not check your coupon. Please try again.",
-      "orderCreationFailed": "Order creation failed. Please try again.",
+      "couponCheckFailed": "We couldn't check your promo code. Please try again.",
+      "orderCreationFailed": "We couldn't create your order. Please try again.",
       "profileUpdateFailed": "Profile update failed.",
-      "requestFailed": "Request failed. Please try again.",
+      "requestFailed": "Something went wrong. Please try again.",
       "addressLookupFailed": "Address lookup failed. Please try again.",
       "addressMissingHouseNumber": "Please select a complete address with a house number.",
-      "ordersLoadFailed": "Failed to load your orders.",
+      "ordersLoadFailed": "We couldn't load your orders.",
       "invoiceDownloadFailed": "Invoice download failed.",
       "sessionExpired": "Your session has expired. Please log in again.",
       "oauthFailed": "Login failed. Please try again.",
@@ -556,10 +556,10 @@
       "serverError": "The server is temporarily unavailable. Please try again in a moment.",
       "orderTooManyItems": "Your cart has too many different products (50 maximum).",
       "productNotFound": "An item in your cart is no longer on the menu. Remove it from your cart and try again.",
-      "invalidQuantity": "The quantity of a product is not valid (between 1 and 99).",
+      "invalidQuantity": "The quantity of an item is not valid (it must be between 1 and 99).",
       "selectionInvalid": "An option you chose is no longer valid. Edit that product in your cart and try again.",
       "couponMinOrderNotMet": "This promo code requires a higher order amount.",
-      "couponAlreadyActive": "You already have an open order that uses a promo code. Try again once it is complete.",
+      "couponAlreadyActive": "You already have an order in progress that uses a promo code. Try again once it is complete.",
       "cashAmountInvalid": "The cash amount you entered is not valid.",
       "paymentFailed": "The payment could not be started. Please try again.",
       "priceChanged": "The price of an item in your cart has changed. Check your cart and confirm the new price.",
@@ -571,12 +571,12 @@
   },
   "schema": {
     "siteName": "__BRAND__",
-    "siteDescription": "Experience the best flavors of Japan in Liège",
+    "siteDescription": "Experience the best flavours of Japan in Liège",
     "restaurantName": "__BRAND__",
     "cuisine": "Japanese",
     "home": {
-      "title": "__BRAND__ - Japanese Restaurant in Liège",
-      "description": "Experience the best flavors of Japan in Liège. Fresh sushi, sashimi, and authentic Japanese cuisine."
+      "title": "__BRAND__ - Japanese restaurant in Liège",
+      "description": "Experience the best flavours of Japan in Liège. Fresh sushi, sashimi and authentic Japanese cuisine."
     },
     "menu": {
       "title": "Menu - __BRAND__",
@@ -584,33 +584,33 @@
       "name": "__BRAND__ Menu"
     },
     "contact": {
-      "title": "Contact Us - __BRAND__",
-      "description": "Find us, call us, or reserve a table today! Rue de la Cathédrale 59, Liège, Belgium"
+      "title": "Contact us - __BRAND__",
+      "description": "Visit us, call us or book a table today! Rue de la Cathédrale 59, Liège, Belgium"
     },
     "terms": {
-      "title": "Terms & Conditions - __BRAND__",
+      "title": "Terms and conditions - __BRAND__",
       "description": "Terms and conditions of __BRAND__. Legal information, delivery, payment, and return policy."
     },
     "privacy": {
-      "title": "Privacy Policy - __BRAND__",
+      "title": "Privacy policy - __BRAND__",
       "description": "__BRAND__ privacy policy. Data collection, purposes, GDPR rights, and cookies."
     },
     "login": {
-      "title": "Login - __BRAND__",
+      "title": "Log in - __BRAND__",
       "description": "Log in to your __BRAND__ account"
     },
     "checkout": {
       "title": "Checkout - __BRAND__"
     },
     "myAccount": {
-      "title": "My Account - __BRAND__"
+      "title": "My account - __BRAND__"
     },
     "myOrders": {
-      "title": "My Orders - __BRAND__"
+      "title": "My orders - __BRAND__"
     },
     "orderConfirmation": {
-      "title": "Order Confirmation - __BRAND__",
-      "description": "Your order has been confirmed"
+      "title": "Order confirmation - __BRAND__",
+      "description": "Your order summary"
     },
     "breadcrumb": {
       "home": "Home",
@@ -621,7 +621,7 @@
       "accountDeletion": "Account deletion"
     },
     "accountDeletion": {
-      "title": "Account Deletion - __BRAND__",
+      "title": "Account deletion - __BRAND__",
       "description": "How to request deletion of your __BRAND__ account and personal data."
     },
     "cart": {
@@ -629,19 +629,19 @@
     }
   },
   "feedback": {
-    "title": "Share Your Feedback",
+    "title": "Share your feedback",
     "subtitle": "Help us improve your experience",
     "name": "Name",
     "namePlaceholder": "Your name",
     "email": "Email",
     "emailPlaceholder": "Your email address",
-    "serviceType": "Service Type",
+    "serviceType": "Service type",
     "serviceTypes": {
       "takeaway": "Takeaway",
       "dine-in": "Dine-in",
       "delivery": "Delivery"
     },
-    "feedbackType": "Feedback Type",
+    "feedbackType": "Feedback type",
     "feedbackTypes": {
       "improvement": "Suggestion",
       "complaint": "Complaint",
@@ -649,8 +649,8 @@
     },
     "message": "Message",
     "messagePlaceholder": "Tell us about your experience (min. 10 characters)",
-    "submit": "Send Feedback",
-    "sending": "Sending...",
+    "submit": "Send",
+    "sending": "Sending…",
     "success": "Thank you for your feedback! We appreciate you taking the time to share your thoughts.",
     "sendAnother": "Send another",
     "errorGeneric": "Something went wrong. Please try again.",
@@ -659,28 +659,28 @@
     "errorCaptchaFailed": "Bot verification failed. Please try again."
   },
   "coupon": {
-    "title": "Promo Code",
+    "title": "Promo code",
     "placeholder": "Enter promo code",
     "apply": "Apply",
     "remove": "Remove",
     "removed": "Promo code removed",
-    "applied": "Coupon applied: -{discount} off",
+    "applied": "Promo code applied: {discount} off",
     "invalid": "Invalid promo code",
-    "discount": "Coupon discount",
+    "discount": "Promo code",
     "removedNoLongerApplies": "Promo code {code} was removed: {reason}"
   },
   "reorder": {
-    "button": "Re-order",
-    "success": "{count} items added to cart",
-    "partial": "{added} items added. Not added: {names}",
-    "empty": "No available items to re-order",
-    "emptyWithNames": "Nothing could be re-ordered: {names}",
+    "button": "Reorder",
+    "success": "{count} item added to your cart | {count} items added to your cart",
+    "partial": "{added} item added. Not added: {names} | {added} items added. Not added: {names}",
+    "empty": "None of these items can be reordered",
+    "emptyWithNames": "Nothing could be reordered: {names}",
     "reason": {
       "unavailable": "unavailable",
-      "choices": "choices changed, please build it again from the menu"
+      "choices": "choices changed, please choose them again from the menu"
     },
     "confirmTitle": "Replace your current cart?",
-    "confirmBody": "Your cart already has items. Replace it with this order, or add this order to it.",
+    "confirmBody": "Your cart already has items. Replace it with this order, or add this order to it?",
     "replace": "Replace",
     "add": "Add to cart"
   },
@@ -692,14 +692,14 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to your questions about __BRAND__",
     "stillHaveQuestions": "Still have questions?",
-    "contactUs": "Contact Us",
+    "contactUs": "Contact us",
     "schemaTitle": "FAQ - __BRAND__",
     "schemaDescription": "Frequently asked questions about __BRAND__ - delivery, hours, halal options and more",
     "breadcrumb": "FAQ",
     "questions": {
       "delivery": {
         "question": "Do you deliver? What is the delivery area?",
-        "answer": "Yes, we deliver from our restaurant at Rue de la Cathédrale 59, Liège. Delivery fees vary by distance:<br><br>• Under 3 km: <strong>Free</strong> (minimum 25 EUR)<br>• 3-4 km: 1 EUR<br>• 4-5 km: 2 EUR<br>• 5-6 km: 3 EUR<br>• 6-7 km: 4 EUR<br>• 7-8 km: 5 EUR<br>• 8-9 km: 6 EUR<br><br>Beyond 9 km, delivery is not available unless your order is 130 EUR or more. You can check your address when placing an order."
+        "answer": "Yes, we deliver from our restaurant at Rue de la Cathédrale 59, Liège. Delivery fees depend on the distance:<br><br>• Under 3 km: <strong>free</strong> (minimum order €25)<br>• 3–4 km: €1<br>• 4–5 km: €2<br>• 5–6 km: €3<br>• 6–7 km: €4<br>• 7–8 km: €5<br>• 8–9 km: €6<br><br>Beyond 9 km, delivery is not available unless your order is €130 or more. You can check your address when placing an order."
       },
       "hours": {
         "question": "What are your opening hours?",
@@ -711,19 +711,19 @@
       },
       "discount": {
         "question": "Is there a discount for pickup orders?",
-        "answer": "Yes! Enjoy {rate}% off on all discountable items when you choose the pickup option. The discount is automatically applied at checkout."
+        "answer": "Yes! Enjoy {rate}% off all eligible items when you choose pickup. The discount is applied automatically at checkout."
       },
       "payment": {
         "question": "What payment methods do you accept?",
-        "answer": "We accept online payment (credit/debit card) and cash payment on delivery or pickup. For online orders, payment is secure."
+        "answer": "We accept online payment (debit or credit card) and cash on delivery or at pickup. Online payments are secure."
       },
       "allergens": {
         "question": "Do you have allergen information?",
-        "answer": "Our products generally contain <strong>fish</strong>, <strong>shellfish</strong> and <strong>lactose</strong>. Please inform us of any allergies or dietary restrictions in the order comments. Contact us directly at __PHONE__ for detailed allergen information about our dishes."
+        "answer": "Our products generally contain <strong>fish</strong>, <strong>crustaceans</strong> and <strong>lactose</strong>. Please tell us about any allergies or dietary restrictions in the order comments. Call us on __PHONE__ for detailed allergen information about our dishes."
       },
       "invoice": {
         "question": "How do I request an invoice?",
-        "answer": "All invoice requests must be made on the same day as your order. Contact us at <strong>__PHONE__</strong> to make your request."
+        "answer": "Invoices must be requested on the day of your order. Call us on <strong>__PHONE__</strong> to request one."
       },
       "freshness": {
         "question": "Is your fish fresh?",
@@ -731,7 +731,7 @@
       },
       "parking": {
         "question": "Is there parking nearby?",
-        "answer": "Our restaurant is located in the center of Liège. There are several public parking lots nearby: Parking Cathédrale, Parking Opéra, and street parking spaces (paid)."
+        "answer": "Our restaurant is in the centre of Liège. There are several public car parks nearby (Parking Cathédrale, Parking Opéra) and paid on-street parking."
       }
     }
   },
@@ -740,8 +740,8 @@
     "lastUpdated": "Last updated: 08/06/2026",
     "intro": "You can delete your __BRAND__ account and the personal data associated with it yourself, at any time, directly from the app or this website.",
     "howTitle": "How to delete your account",
-    "howBody": "Sign in, open your account page, and select “Delete account”. After you confirm, your account is deleted immediately and you are signed out. There is no waiting period.",
-    "fallbackTitle": "Can't sign in?",
+    "howBody": "Log in, open your account page and select “Delete account”. Once you confirm, your account is deleted immediately and you are logged out. There is no waiting period.",
+    "fallbackTitle": "Can't log in?",
     "fallbackBody": "If you can no longer access your account, email us from the address linked to it, with the subject “Account deletion”. We'll delete it after verifying your identity.",
     "emailSubject": "Account deletion",
     "dataTitle": "What data is deleted",
@@ -766,5 +766,8 @@
     "completed": "completed",
     "upcoming": "upcoming",
     "changed": "Order status: {status}"
+  },
+  "legal": {
+    "frenchOnly": "This page is only available in French."
   }
 }
