@@ -183,6 +183,7 @@
       "cleared": "地址已清除"
     },
     "incompletePhone": "号码不完整，请继续输入（例如 0470 12 34 56）",
+    "phoneMaybeMobile": "这个手机号好像少了一位，请检查一下",
     "phoneCountry": "电话号码所属国家/地区"
   },
   "me": {

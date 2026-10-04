@@ -183,6 +183,7 @@
       "cleared": "Adresse effacée"
     },
     "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)",
+    "phoneMaybeMobile": "Il semble manquer un chiffre à ce GSM : vérifiez-le",
     "phoneCountry": "Pays du numéro de téléphone"
   },
   "me": {

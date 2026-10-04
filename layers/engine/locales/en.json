@@ -183,6 +183,7 @@
       "cleared": "Address cleared"
     },
     "incompletePhone": "Incomplete number: keep typing (e.g. 0470 12 34 56)",
+    "phoneMaybeMobile": "Looks like a mobile number with a digit missing: check it",
     "phoneCountry": "Phone number country"
   },
   "me": {

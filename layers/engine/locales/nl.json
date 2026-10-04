@@ -183,6 +183,7 @@
       "cleared": "Adres gewist"
     },
     "incompletePhone": "Onvolledig nummer: typ verder (bv. 0470 12 34 56)",
+    "phoneMaybeMobile": "Er lijkt een cijfer te ontbreken in dit gsm-nummer: controleer het",
     "phoneCountry": "Land van het telefoonnummer"
   },
   "me": {

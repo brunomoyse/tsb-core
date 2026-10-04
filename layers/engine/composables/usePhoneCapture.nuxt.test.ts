@@ -42,7 +42,12 @@ beforeEach(() => {
   setActivePinia(createPinia())
   auth = useAuthStore()
   notifications = useNotificationsStore()
-  clearNuxtState(['checkout-phone-draft', 'checkout-phone-error', 'checkout-phone-editing'])
+  clearNuxtState([
+    'checkout-phone-draft',
+    'checkout-phone-error',
+    'checkout-phone-editing',
+    'checkout-phone-hint',
+  ])
   gqlFetch.mockReset()
   reportError.mockReset()
 })
@@ -185,6 +190,77 @@ describe('onBlur: the error shows when the customer is done with the field', () 
     await blurred
     expect(phone.isCollapsed.value).toBe(true)
     expect(phone.phoneError.value).toBe('')
+  })
+})
+
+// A 9-digit number starting 046-049 is a valid Liège landline for libphonenumber, and is also a mobile one digit short:
+// it is accepted and saved, with a hint under the field (never an error, never a block).
+describe('the hint for a mobile number one digit short', () => {
+  const SHORT = '0470 12 34 5'
+
+  it('shows after the customer leaves the field, with no error', async () => {
+    const phone = usePhoneCapture()
+    draft().value = SHORT
+    expect(phone.phoneHint.value).toBe('')
+    await phone.onBlur()
+    expect(phone.phoneHint.value).toBe('form.phoneMaybeMobile')
+    expect(phone.phoneError.value).toBe('')
+  })
+
+  it('is not shown for a complete mobile, a Liège landline, an unfinished or an invalid number', async () => {
+    const phone = usePhoneCapture()
+    for (const typed of ['0470 12 34 56', '04 222 98 88', '0470 12', 'abc']) {
+      draft().value = typed
+      await phone.onBlur()
+      expect(phone.phoneHint.value, typed).toBe('')
+    }
+  })
+
+  it('goes away when the customer types again', async () => {
+    const phone = usePhoneCapture()
+    draft().value = SHORT
+    await phone.onBlur()
+    phone.onInput()
+    expect(phone.phoneHint.value).toBe('')
+  })
+
+  it('is checked again by Save, which still saves the number', async () => {
+    updateMeAnswers('+3247012345')
+    const phone = usePhoneCapture()
+    draft().value = SHORT
+    editing().value = true
+    expect(await phone.submit()).toBe(true)
+    expect(gqlFetch.mock.calls[0]![1]).toEqual({
+      variables: { input: { phoneNumber: '+3247012345' } },
+    })
+    expect(auth.user?.phoneNumber).toBe('+3247012345')
+  })
+
+  it('stays on the collapsed card that shows such a saved number, so it can be corrected', async () => {
+    saved('+3247012345')
+    const phone = usePhoneCapture()
+    expect(phone.isCollapsed.value).toBe(true)
+    expect(phone.phoneHint.value).toBe('form.phoneMaybeMobile')
+    await phone.startEditing()
+    expect(phone.phoneHint.value).toBe('')
+    phone.cancelEditing()
+    expect(phone.phoneHint.value).toBe('form.phoneMaybeMobile')
+  })
+
+  it('is not on the collapsed card of an ordinary saved number', () => {
+    saved('+32470123456')
+    expect(usePhoneCapture().phoneHint.value).toBe('')
+  })
+
+  it('does not appear on a card that was collapsed while the library loaded (Cancel)', async () => {
+    saved('+3242229888')
+    const phone = usePhoneCapture()
+    await phone.startEditing()
+    draft().value = SHORT
+    const blurred = phone.onBlur()
+    phone.cancelEditing()
+    await blurred
+    expect(phone.phoneHint.value).toBe('')
   })
 })
 

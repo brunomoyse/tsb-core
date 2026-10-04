@@ -18,6 +18,16 @@ export type PhoneInputState =
 // A Belgian national number is 0 + 8 digits (landline) or 0 + 9 digits (mobile, 04xx): 9 or 10 digits.
 const BE_LANDLINE_DIGITS = 9
 
+/*
+ * A valid Belgian number that is shaped like a Liège landline (04 xxx xx xx) but starts 046-049, the mobile prefixes:
+ * most likely a mobile number with one digit missing ("0470 12 34 5"). libphonenumber accepts it as a landline, and
+ * some may really be one, so it stays valid: the form only asks the customer to check it. Takes the E.164 string.
+ */
+export function looksLikeShortMobile(e164: string): boolean {
+  // Belgian country code, then 8 digits starting 46-49 (a complete mobile has 9).
+  return e164.startsWith('+32') && /^4[6-9]\d{6}$/u.test(e164.slice(3))
+}
+
 export async function classifyPhoneInput(raw: string): Promise<PhoneInputState> {
   const trimmed = raw.trim()
   if (!trimmed) return { kind: 'empty' }
@@ -36,8 +46,6 @@ export async function classifyPhoneInput(raw: string): Promise<PhoneInputState> 
 
   const digits = trimmed.replace(/\D/gu, '')
   if (tooShort || digits.length < BE_LANDLINE_DIGITS) return { kind: 'incomplete' }
-  // 0 + 8 digits that is not a landline can still be a mobile that is one digit short ("0470 12 34 5").
-  if (digits.length === BE_LANDLINE_DIGITS && digits.startsWith('04')) return { kind: 'incomplete' }
   // 9 digits that are neither a landline nor the start of a mobile cannot be completed into a Belgian number.
   if (digits.length === BE_LANDLINE_DIGITS) return { kind: 'invalid' }
   return { kind: 'needsCountryCode' }
