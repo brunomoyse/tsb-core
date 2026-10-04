@@ -58,7 +58,10 @@ onMounted(async () => {
       navigateTo(localePath('menu'))
     }
   } catch (e) {
-    console.error('OIDC callback error:', e)
+    // reportError: a console warning in development, Sentry in production (errors raised inside oidc-client-ts are filtered
+    // out there: a callback opened without a state, from a stale link or a bot, is not a bug). Not console.error: a bare visit
+    // to this page would fail Lighthouse's "no browser errors in the console" check.
+    reportError(e, 'auth.callback')
     error.value = true
   }
 })
