@@ -2,6 +2,7 @@ import { defineCachedFunction, useNitroApp, useRuntimeConfig } from 'nitropack/r
 import { defineEventHandler, getRequestHeader, getRequestURL, setResponseHeader } from 'h3'
 import {
   STATIC_PAGE_FILL_HEADER as FILL_HEADER,
+  STATIC_PAGE_SKIP_HEADER as SKIP_HEADER,
   type StaticPageCacheConfig,
   cacheableLocale,
   staticPageLocale,
@@ -25,14 +26,24 @@ import {
  *
  * The restaurant config in the cached HTML (opening hours, the policy numbers in the FAQ) is up to a few minutes old when
  * the browser receives it; useRestaurantConfig asks again after hydration for a page that was rendered for the cache
- * (the render carries FILL_HEADER, which the render itself passes through to the application untouched).
+ * (the render carries FILL_HEADER, which the render itself passes through to the application untouched). A render made
+ * while the restaurant config could not be fetched is flagged by the application (SKIP_HEADER) and never kept, and no
+ * render is served for more than STALE_MAX_AGE, so a long outage cannot freeze an old page in place.
  * Personalised pages (cart, checkout, me, auth, order-completed) are never listed.
  */
 
 /** Seconds a render is fresh. */
 const MAX_AGE = 300
+/**
+ * Seconds a render may still be served (while a new one is made in the background) once it is no longer fresh: older
+ * than that it is not served at all, the request waits for a new render. Without it a site whose renders keep failing
+ * would replay the last good page, hours old, for ever. (nitropack 2.13's `staleMaxAge` option does nothing for cached
+ * functions, so this is enforced in `validate` below.)
+ */
+const STALE_MAX_AGE = 3600
 /** Headers of the render that belong to that one response, not to the page. */
 const SKIPPED_HEADERS = new Set([
+  SKIP_HEADER,
   'set-cookie',
   'content-length',
   'content-encoding',
@@ -47,6 +58,8 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 
 interface Rendered {
   status: number
+  /** The page was rendered without its restaurant config (SKIP_HEADER): good for this visitor, not for the next ones. */
+  incomplete: boolean
   headers: [string, string][]
   body: string
 }
@@ -56,6 +69,7 @@ const render = defineCachedFunction(
     const res = await useNitroApp().localFetch(pathname, { headers: { [FILL_HEADER]: '1' } })
     return {
       status: res.status,
+      incomplete: res.headers.has(SKIP_HEADER),
       headers: [...res.headers.entries()].filter(([name]) => !SKIPPED_HEADERS.has(name)),
       body: await res.text(),
     }
@@ -66,8 +80,12 @@ const render = defineCachedFunction(
     maxAge: MAX_AGE,
     swr: true,
     getKey: (pathname: string) => pathname,
-    // Only a successful render is kept: a 404 or a failure is asked again.
-    validate: (entry) => entry.value?.status === 200,
+    // Only a complete, successful render is kept: a 404, a failure or a page without its restaurant config is asked
+    // Again, and a render older than STALE_MAX_AGE is not served any more.
+    validate: (entry) =>
+      entry.value?.status === 200 &&
+      !entry.value.incomplete &&
+      Date.now() - (entry.mtime ?? 0) <= STALE_MAX_AGE * 1000,
   },
 )
 

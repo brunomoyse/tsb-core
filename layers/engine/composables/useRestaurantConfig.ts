@@ -4,8 +4,8 @@ import {
   isPolicyUnsupportedError,
 } from '#engine/utils/orderingPolicy'
 import { type Ref, effectScope, onMounted, shallowRef, watch } from 'vue'
-import { useNuxtApp, useRequestEvent, useState } from '#imports'
-import { STATIC_PAGE_FILL_HEADER } from '#engine/utils/staticPageCache'
+import { useNuxtApp, useRequestEvent, useResponseHeader, useState } from '#imports'
+import { STATIC_PAGE_FILL_HEADER, STATIC_PAGE_SKIP_HEADER } from '#engine/utils/staticPageCache'
 import { requestQuoteRefresh } from './useOrderQuote'
 import { useGqlQuery } from './useGqlQuery'
 import { useGqlSubscription } from './useGqlSubscription'
@@ -190,6 +190,8 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
   if (import.meta.server && useRequestEvent()?.node.req.headers[STATIC_PAGE_FILL_HEADER]) {
     renderedForCache.value = true
   }
+  // Taken here, not after the await below: the Nuxt context is gone by then (the render would fail with NUXT_E1001).
+  const skipCache = import.meta.server ? useResponseHeader(STATIC_PAGE_SKIP_HEADER) : null
 
   /*
    * Register the subscription and the watcher synchronously, before any await. After an `await`, Vue's active
@@ -233,6 +235,8 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
     },
   )
   const { data, refresh, pending, error } = asyncData
+  // A render for the cache without the config (the API failed): the cache must not replay it, see STATIC_PAGE_SKIP_HEADER.
+  if (skipCache && renderedForCache.value && error.value) skipCache.value = '1'
   answer.value = () => data.value
   if (data.value) state.value = data.value
 

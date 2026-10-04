@@ -15,6 +15,13 @@
 /** Sent by the cache on the render it asks for itself: the server then knows its HTML may be replayed to later visitors. */
 export const STATIC_PAGE_FILL_HEADER = 'x-static-page-cache-fill'
 
+/**
+ * Set by the application on a render made for the cache whose restaurant config could not be fetched (the API was down):
+ * the HTML has no opening hours, so the cache must not keep it for the next visitors. The cache removes it from the
+ * response it replays.
+ */
+export const STATIC_PAGE_SKIP_HEADER = 'x-static-page-cache-skip'
+
 export interface StaticPageCacheConfig {
   /** Locale codes of the `strategy: 'prefix'` routes (`/fr/...`). */
   locales: string[]
@@ -52,8 +59,15 @@ export function cookieValue(header: string | null | undefined, name: string): st
 }
 
 /**
- * The first supported language of an Accept-Language header, by quality then by position: a locale code, `null` when the
- * header names no language of ours (or is absent).
+ * The language @nuxtjs/i18n 10.6 detects from an Accept-Language header (`header` detector -> parseAcceptLanguage +
+ * findBrowserLocale): a locale code, `null` when the header names no language of ours (or is absent). It is NOT the RFC
+ * 9110 algorithm and this mirrors the module on purpose, quirks included, because the cache must decide exactly as the
+ * module does (a different answer either serves a page the module would have redirected, or misses for nothing):
+ *  - the header is split on `,`, each part cut at the first `;` (so quality values are ignored: `en;q=0.1,fr` is
+ *    English, `en;q=0,fr` too), `*` and empty parts dropped, nothing trimmed (`en, fr` is `en` and ` fr`, and ` fr`
+ *    matches nothing);
+ *  - the first tag, in header order, whose primary subtag (`fr` of `fr-BE`, case-insensitive) is a supported language wins.
+ * layers/engine/utils/staticPageCache.test.mjs compares it with the module's own functions on generated headers.
  */
 export function preferredLocale(
   header: string | null | undefined,
@@ -61,18 +75,14 @@ export function preferredLocale(
 ): string | null {
   const tags = (header ?? '')
     .split(',')
-    .map((part, position) => {
-      const [tag = '', ...params] = part.trim().split(';')
-      const q = params.map((p) => /^\s*q\s*=\s*(?<q>[\d.]+)\s*$/iu.exec(p)?.groups?.q).find(Boolean)
-      return {
-        primary: (tag.trim().split('-')[0] ?? '').toLowerCase(),
-        q: q ? Number(q) : 1,
-        position,
-      }
-    })
-    .filter((t) => t.primary && t.q > 0)
-    .toSorted((a, b) => b.q - a.q || a.position - b.position)
-  return tags.map((t) => t.primary).find((primary) => locales.includes(primary)) ?? null
+    .map((tag) => tag.split(';')[0] ?? '')
+    .filter((tag) => tag !== '*' && tag !== '')
+  for (const tag of tags) {
+    const primary = (tag.split('-')[0] ?? '').toLowerCase()
+    const locale = locales.find((code) => code.toLowerCase() === primary)
+    if (locale) return locale
+  }
+  return null
 }
 
 /**
