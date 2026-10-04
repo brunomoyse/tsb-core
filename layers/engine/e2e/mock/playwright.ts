@@ -111,7 +111,7 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
       },
       locale: 'fr-BE',
       extraHTTPHeaders: { 'Accept-Language': 'fr-BE,fr;q=0.9' },
-      trace: 'on-first-retry',
+      trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
       screenshot: 'only-on-failure',
     },
     projects,

@@ -95,7 +95,24 @@ export const test = base.extend<
         (url) => !['localhost', '127.0.0.1'].includes(url.hostname),
         (route) => route.abort('blockedbyclient'),
       )
+      // What the browser complained about, attached to a failing test (a failed chunk or API call explains most flakes).
+      const problems: string[] = []
+      context.on('page', (opened) => {
+        opened.on('pageerror', (error) => problems.push(`pageerror: ${error.message}`))
+        opened.on('console', (message) => {
+          if (message.type() === 'error') problems.push(`console.error: ${message.text()}`)
+        })
+        opened.on('requestfailed', (request) =>
+          problems.push(`requestfailed: ${request.url()} ${request.failure()?.errorText ?? ''}`),
+        )
+      })
       await use()
+      if (testInfo.status !== testInfo.expectedStatus && problems.length > 0) {
+        await testInfo.attach('browser-problems', {
+          body: problems.join('\n'),
+          contentType: 'text/plain',
+        })
+      }
       if (testInfo.status === testInfo.expectedStatus) {
         const { gaps } = await control.state()
         expect(

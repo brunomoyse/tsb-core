@@ -85,3 +85,18 @@ Add the field to the object returned by the resolver (`resolvers.ts`, `state.ts`
 - The OTP login UI cannot complete: `zitadel.ts` has no token endpoint and the `/auth/session/otp/*` REST calls of
   tsb-service are not mocked. Authenticated specs use the fake session instead.
 - Responses are French only (the mock ignores `Accept-Language`).
+- A failing test gets a `browser-problems` attachment (page errors, console errors, failed requests) and, locally, a trace.
+
+## Flaky on a machine that creates network interfaces
+
+Chromium aborts in-flight requests with `net::ERR_NETWORK_CHANGED` whenever the host's network interfaces change, even
+for localhost. On a host where Docker creates/removes veth devices all the time (parallel `dockertest` runs), that
+surfaces as random "element not found" / "Failed to fetch dynamically imported module" failures (the attachment shows
+it). CI is not affected. Locally, run the suite in its own network namespace, which sees no host interface events
+(the build needs the internet for fonts: do one normal run first):
+
+```bash
+# once, normally (it builds apps/<brand>/.output), then:
+cd apps/tokyosushi
+E2E_SKIP_BUILD=1 unshare -rn bash -c 'ip link set lo up && exec npx playwright test -c playwright.mock.config.ts'
+```
