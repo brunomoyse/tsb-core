@@ -286,3 +286,37 @@ describe('lifecycle', () => {
     expect(mocks.guards).toHaveLength(0)
   })
 })
+
+describe('with the real focus trap (the spies above only check what the sheet asks of it)', () => {
+  it('opens on the close button, closes on Escape, and gives focus back to the control that opened it', async () => {
+    const { useFocusTrap } = await vi.importActual<
+      typeof import('#engine/composables/useFocusTrap')
+    >('#engine/composables/useFocusTrap')
+    mocks.trap.mockImplementation(useFocusTrap)
+    const opener = rendered(button('opener', { 'data-cart-trigger': '' }))
+    opener.focus()
+    const sheet = document.createElement('div')
+    const close = document.createElement('button')
+    const checkout = document.createElement('button')
+    sheet.append(close, checkout)
+    document.body.append(sheet)
+    panel = ref(null)
+    closeButton = ref(close)
+    mount()
+
+    cart.setCartVisibility(true)
+    await nextTick()
+    panel.value = sheet // The panel is in the DOM: the trap activates
+    await nextTick()
+    expect(document.activeElement).toBe(close)
+
+    const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    window.dispatchEvent(escape)
+    expect(escape.defaultPrevented).toBe(true)
+    expect(cart.isCartVisible).toBe(false)
+
+    panel.value = null // The leave transition ended: the trap lets go
+    await nextTick()
+    expect(document.activeElement).toBe(opener)
+  })
+})

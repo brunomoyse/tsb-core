@@ -1,6 +1,8 @@
 // Static-page cache middleware: terms / privacy / faq ... are rendered once per language and replayed from memory.
 // A request goes through it only when the language module would not redirect it; everything else falls through to the
-// live render untouched. Nitro's cache (defineCachedFunction) and the internal render (localFetch) are the boundaries.
+// live render untouched. Nitro's cache (defineCachedFunction) and the internal render (localFetch) are the boundaries;
+// the cache is replaced by a small in-memory fake that honours the options the middleware gives it (key, validate,
+// maxAge, swr), so that "answered from the cache" is a request that did not render again.
 // Run: `vp test run layers/engine/server/middleware/static-page-cache.server.test.ts`.
 import { createApp, toWebHandler } from 'h3'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
@@ -30,19 +32,40 @@ interface NitroDouble {
   config: unknown
   localFetch: ReturnType<typeof vi.fn>
   cached: { render?: (pathname: string) => Promise<Rendered>; options?: CacheOptions }
+  entries: Map<string, { value: Rendered; mtime: number }>
+  background: Promise<unknown>[]
 }
 const nitro = vi.hoisted((): NitroDouble => ({
   config: undefined,
   localFetch: vi.fn(),
   cached: {},
+  entries: new Map(),
+  background: [],
 }))
 
 vi.mock('nitropack/runtime', () => ({
-  // The cache itself is Nitro's: the function is returned as it is (every request renders) and its options recorded.
+  // Nitro's cache, reduced to its contract: an entry is read back while `validate` accepts it, fresh for `maxAge`
+  // seconds, then (swr) still served while a new render is stored in the background.
   defineCachedFunction: (fn: (pathname: string) => Promise<Rendered>, options: CacheOptions) => {
     nitro.cached.render = fn
     nitro.cached.options = options
-    return fn
+    return async (pathname: string) => {
+      const key = options.getKey(pathname)
+      const renderAndStore = async () => {
+        const value = await fn(pathname)
+        nitro.entries.set(key, { value, mtime: Date.now() })
+        return value
+      }
+      const entry = nitro.entries.get(key)
+      if (entry && options.validate(entry)) {
+        if (Date.now() - entry.mtime <= options.maxAge * 1000) return entry.value
+        if (options.swr) {
+          nitro.background.push(renderAndStore().catch(() => undefined))
+          return entry.value
+        }
+      }
+      return renderAndStore()
+    }
   },
   useNitroApp: () => ({ localFetch: nitro.localFetch }),
   useRuntimeConfig: () => ({ staticPageCache: nitro.config }),
@@ -79,6 +102,8 @@ const renderAs = (
 
 beforeEach(() => {
   vi.resetAllMocks()
+  nitro.entries.clear()
+  nitro.background = []
   nitro.config = config
   nitro.localFetch.mockImplementation(() =>
     Promise.resolve(renderAs('<html>terms</html>', { headers: { 'content-type': 'text/html' } })),
@@ -216,6 +241,69 @@ describe('when the render does not give a usable page', () => {
     const { response, body } = await request('/fr/terms')
     expect(body).toBe('<html>no hours</html>')
     expect(response.headers.has(STATIC_PAGE_SKIP_HEADER)).toBe(false)
+  })
+})
+
+describe('the cache in front of the render', () => {
+  const NOW = new Date('2026-10-04T12:00:00Z').getTime()
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(NOW)
+  })
+  const later = (seconds: number) => vi.setSystemTime(NOW + seconds * 1000)
+
+  it('renders a page once and answers the next requests from memory', async () => {
+    await request('/fr/terms')
+    await request('/fr/terms')
+    const { body } = await request('/fr/terms')
+    expect(body).toBe('<html>terms</html>')
+    expect(nitro.localFetch).toHaveBeenCalledOnce()
+  })
+
+  it('a query string never makes another entry; every language and page has its own', async () => {
+    await request('/fr/terms?utm=a')
+    await request('/fr/terms?utm=b')
+    expect(nitro.localFetch).toHaveBeenCalledOnce()
+    await request('/en/terms')
+    await request('/fr/faq')
+    expect(nitro.localFetch.mock.calls.map((call) => call[0])).toEqual([
+      '/fr/terms',
+      '/en/terms',
+      '/fr/faq',
+    ])
+  })
+
+  it('after 5 minutes the old render is still served while a new one is made in the background', async () => {
+    await request('/fr/terms')
+    nitro.localFetch.mockResolvedValue(renderAs('<html>new</html>'))
+    later(301)
+    const { body } = await request('/fr/terms')
+    expect(body).toBe('<html>terms</html>') // Nobody waits for the re-render
+    await Promise.all(nitro.background)
+    expect(nitro.localFetch).toHaveBeenCalledTimes(2)
+    expect((await request('/fr/terms')).body).toBe('<html>new</html>')
+  })
+
+  it('a render older than one hour is not served any more: the request waits for a new one', async () => {
+    await request('/fr/terms')
+    nitro.localFetch.mockResolvedValue(renderAs('<html>after the outage</html>'))
+    later(3601)
+    const { body } = await request('/fr/terms')
+    expect(body).toBe('<html>after the outage</html>')
+    expect(nitro.localFetch).toHaveBeenCalledTimes(2)
+  })
+
+  it.each([
+    ['a 404 render', () => renderAs('missing', { status: 404 })],
+    [
+      'a render made without its restaurant config',
+      () => renderAs('<html>no hours</html>', { headers: { [STATIC_PAGE_SKIP_HEADER]: '1' } }),
+    ],
+  ])('does not keep %s: the next request renders again', async (_label, answer) => {
+    nitro.localFetch.mockImplementation(() => Promise.resolve(answer()))
+    await request('/fr/terms')
+    await request('/fr/terms')
+    expect(nitro.localFetch).toHaveBeenCalledTimes(2)
   })
 })
 

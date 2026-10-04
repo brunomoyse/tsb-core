@@ -152,6 +152,32 @@ describe('the key: document, variables and language', () => {
     expect(gqlFetch).toHaveBeenLastCalledWith(query, { variables: { id: 2 } })
   })
 
+  it('a slow answer for the old variables never lands on the new ones', async () => {
+    const query = doc()
+    let releaseOld: (value: unknown) => void = () => undefined
+    gqlFetch.mockImplementation((_q: string, { variables }: { variables: { id: number } }) =>
+      variables.id === 1
+        ? new Promise((resolve) => {
+            releaseOld = resolve
+          })
+        : Promise.resolve({ id: variables.id }),
+    )
+    const id = ref(1)
+    const pendingCall = useGqlQuery<{ id: number }>(query, () => ({ id: id.value }), { lazy: true })
+    await nextTick()
+    id.value = 2
+    await vi.waitFor(() => {
+      expect(gqlFetch).toHaveBeenCalledTimes(2)
+    })
+    releaseOld({ id: 1 }) // The old request answers last
+    const { data } = await pendingCall
+    await vi.waitFor(() => {
+      expect(data.value).toEqual({ id: 2 })
+    })
+    await nextTick()
+    expect(data.value).toEqual({ id: 2 })
+  })
+
   it('asks again in the new language when the locale changes', async () => {
     const query = doc()
     let language = 'fr'
@@ -246,43 +272,15 @@ describe('an older document for a backend that does not know a field (legacy)', 
   })
 })
 
-describe('options passed on to useAsyncData', () => {
-  const optionsOf = () => asyncDataCalls[0]![2] as Record<string, unknown>
-
-  it('by default: immediate, blocking, cancel-on-duplicate, with a custom cache lookup', async () => {
-    gqlFetch.mockResolvedValue({})
-    await useGqlQuery(doc())
-    expect(optionsOf()).toMatchObject({
-      immediate: true,
-      lazy: false,
-      dedupe: 'cancel',
-      server: true,
-    })
-    expect(optionsOf().getCachedData).toBeTypeOf('function')
+describe('the options of the callers', () => {
+  it('asks at once and the answer is there when the call resolves (immediate, blocking)', async () => {
+    gqlFetch.mockResolvedValue({ ready: true })
+    const { data, pending } = await useGqlQuery(doc())
+    expect(data.value).toEqual({ ready: true })
+    expect(pending.value).toBe(false)
   })
 
-  it('forwards lazy, dedupe and server: false when asked', async () => {
-    gqlFetch.mockResolvedValue({})
-    await useGqlQuery(doc(), {}, { lazy: true, dedupe: 'defer', server: false, immediate: true })
-    expect(optionsOf()).toMatchObject({
-      lazy: true,
-      dedupe: 'defer',
-      server: false,
-      immediate: true,
-    })
-  })
-
-  it('leaves the cache lookup to Nuxt with cache: true (Nuxt serves its own cached data, not only the hydration payload)', async () => {
-    gqlFetch.mockResolvedValue({})
-    await useGqlQuery(doc(), {}, { cache: false })
-    const hydrationOnly = optionsOf().getCachedData
-    asyncDataCalls.length = 0
-    await useGqlQuery(doc(), {}, { cache: true })
-    expect(optionsOf().getCachedData).toBeTypeOf('function')
-    expect(optionsOf().getCachedData).not.toBe(hydrationOnly)
-  })
-
-  it('two concurrent callers of the same query with dedupe: defer share one request', async () => {
+  it('two concurrent callers of the same query share one request with dedupe: defer', async () => {
     const query = doc()
     let finish: (value: unknown) => void = () => undefined
     gqlFetch.mockReturnValue(
@@ -299,21 +297,29 @@ describe('options passed on to useAsyncData', () => {
     expect(a.data.value).toEqual({ shared: true })
     expect(b.data.value).toEqual({ shared: true })
   })
+
+  it('by default (cancel) a second caller of a query in flight asks again, and both end with the newest answer', async () => {
+    const query = doc()
+    let call = 0
+    gqlFetch.mockImplementation(() => Promise.resolve({ call: ++call }))
+    const first = useGqlQuery<{ call: number }>(query, {}, { immediate: true })
+    const second = useGqlQuery<{ call: number }>(query, {}, { immediate: true })
+    const [a, b] = await Promise.all([first, second])
+    expect(gqlFetch).toHaveBeenCalledTimes(2)
+    expect(a.data.value).toEqual({ call: 2 })
+    expect(b.data.value).toEqual({ call: 2 })
+  })
 })
 
 describe('the server-rendered answer (SSR payload)', () => {
-  const lookup = (query: string, cause: string) => {
-    const { getCachedData } = asyncDataCalls[0]![2] as {
-      getCachedData: (k: string, app: unknown, ctx: { cause: string }) => unknown
-    }
-    return getCachedData(gqlQueryKey(query, {}, 'fr'), useNuxtApp(), { cause })
-  }
+  const payloadKey = (query: string, variables: Record<string, unknown> = {}, language = 'fr') =>
+    gqlQueryKey(query, variables, language)
 
   it('is adopted by the first run while the browser hydrates, instead of asking again', async () => {
     const query = doc()
     const nuxtApp = useNuxtApp()
     nuxtApp.isHydrating = true
-    nuxtApp.payload.data[gqlQueryKey(query, {}, 'fr')] = { fromServer: true }
+    nuxtApp.payload.data[payloadKey(query)] = { fromServer: true }
 
     const { data } = await useGqlQuery<{ fromServer: boolean }>(query)
 
@@ -321,32 +327,72 @@ describe('the server-rendered answer (SSR payload)', () => {
     expect(data.value).toEqual({ fromServer: true })
   })
 
-  it('is reused during the server render itself (a second component asking for the same document)', async () => {
+  it('is not used for a refetch once the app has hydrated: it goes to the network and replaces the answer', async () => {
     const query = doc()
-    gqlFetch.mockResolvedValue({})
-    setFlags({ server: true })
-    await useGqlQuery(query)
-    useNuxtApp().payload.data[gqlQueryKey(query, {}, 'fr')] = { fromServer: true }
-    expect(lookup(query, 'initial')).toEqual({ fromServer: true })
-  })
-
-  it('is never used for a later run (refresh, language or variables change, navigation): it goes to the network', async () => {
-    const query = doc()
-    gqlFetch.mockResolvedValue({})
-    await useGqlQuery(query)
     const nuxtApp = useNuxtApp()
     nuxtApp.isHydrating = true
-    nuxtApp.payload.data[gqlQueryKey(query, {}, 'fr')] = { stale: true }
-    expect(lookup(query, 'refresh:manual')).toBeUndefined()
-    expect(lookup(query, 'refresh:hook')).toBeUndefined()
-    expect(lookup(query, 'watch')).toBeUndefined()
+    nuxtApp.payload.data[payloadKey(query)] = { fromServer: true }
+    const result = withRefetch(await useGqlQuery<Record<string, boolean>>(query))
+    expect(gqlFetch).not.toHaveBeenCalled()
+
+    nuxtApp.isHydrating = false
+    gqlFetch.mockResolvedValue({ fresh: true })
+    await result.refetch()
+
+    expect(gqlFetch).toHaveBeenCalledOnce()
+    expect(result.data.value).toEqual({ fresh: true })
+  })
+
+  it('is not used for a refetch asked while the app is still hydrating either: only the first run adopts it', async () => {
+    const query = doc()
+    const nuxtApp = useNuxtApp()
+    nuxtApp.isHydrating = true
+    nuxtApp.payload.data[payloadKey(query)] = { fromServer: true }
+    const result = withRefetch(await useGqlQuery<Record<string, boolean>>(query))
+    expect(gqlFetch).not.toHaveBeenCalled()
+
+    gqlFetch.mockResolvedValue({ fresh: true })
+    await result.refetch()
+
+    expect(gqlFetch).toHaveBeenCalledOnce()
+    expect(result.data.value).toEqual({ fresh: true })
+  })
+
+  it('is not used for the answer under a new key (language or variables change) after hydration, even if the payload holds one', async () => {
+    const query = doc()
+    const nuxtApp = useNuxtApp()
+    nuxtApp.payload.data[payloadKey(query, { id: 2 })] = { stale: true }
+    gqlFetch.mockImplementation((_q: string, { variables }: { variables: { id: number } }) =>
+      Promise.resolve({ id: variables.id }),
+    )
+    const id = ref(1)
+    const { data } = await useGqlQuery<Record<string, unknown>>(query, () => ({ id: id.value }))
+    expect(data.value).toEqual({ id: 1 })
+
+    id.value = 2
+    await vi.waitFor(() => {
+      expect(data.value).toEqual({ id: 2 })
+    })
+    expect(gqlFetch).toHaveBeenLastCalledWith(query, { variables: { id: 2 } })
+  })
+
+  it('is reused during the server render itself: a second component asking for the same document costs no request', async () => {
+    const query = doc()
+    gqlFetch.mockResolvedValue({ answered: true })
+    setFlags({ server: true })
+    const first = await useGqlQuery<Record<string, boolean>>(query)
+    const second = await useGqlQuery<Record<string, boolean>>(query)
+    expect(first.data.value).toEqual({ answered: true })
+    expect(second.data.value).toEqual({ answered: true })
+    expect(gqlFetch).toHaveBeenCalledOnce()
   })
 
   it('is not used outside hydration and the server render (a client-side navigation asks for fresh data)', async () => {
     const query = doc()
-    gqlFetch.mockResolvedValue({})
-    await useGqlQuery(query)
-    useNuxtApp().payload.data[gqlQueryKey(query, {}, 'fr')] = { stale: true }
-    expect(lookup(query, 'initial')).toBeUndefined()
+    gqlFetch.mockResolvedValue({ fresh: true })
+    useNuxtApp().payload.data[payloadKey(query)] = { stale: true }
+    const { data } = await useGqlQuery<Record<string, boolean>>(query)
+    expect(gqlFetch).toHaveBeenCalledOnce()
+    expect(data.value).toEqual({ fresh: true })
   })
 })
