@@ -87,19 +87,40 @@ describe('registration', () => {
     const failure = new Error('localStorage blocked')
     oidc.isAuthenticated.mockRejectedValue(failure)
     freshStore(null)
-    let reconciliation: Promise<void> = Promise.resolve()
-    definition.setup({
-      runWithContext: (fn: () => Promise<void>) => {
-        reconciliation = fn()
-        return reconciliation
-      },
+    const reconciliation = Promise.resolve().then(async () => {
+      let run: Promise<void> = Promise.resolve()
+      definition.setup({
+        runWithContext: (fn: () => Promise<void>) => {
+          run = fn()
+          return run
+        },
+      })
+      whenReady.callbacks[0]!()
+      await run
     })
-    whenReady.callbacks[0]!()
     await expect(reconciliation).rejects.toBe(failure)
+    expect(reportError).toHaveBeenCalledExactlyOnceWith(failure, 'auth.sync')
   })
 })
 
 describe('case 1: a profile is stored but the OIDC session is gone or expired', () => {
+  it('drops the profile even when the OIDC store cannot be cleaned (no ghost user), and reports it', async () => {
+    const store = freshStore(makeUser())
+    const failure = new Error('localStorage blocked')
+    oidc.removeUser.mockRejectedValue(failure)
+    let run: Promise<void> = Promise.resolve()
+    definition.setup({
+      runWithContext: (fn: () => Promise<void>) => {
+        run = fn()
+        return run
+      },
+    })
+    whenReady.callbacks[0]!()
+    await expect(run).rejects.toBe(failure)
+    expect(store.user).toBeNull()
+    expect(reportError).toHaveBeenCalledExactlyOnceWith(failure, 'auth.sync')
+  })
+
   it('keeps both when the session renews silently', async () => {
     const store = freshStore(makeUser())
     oidc.silentRenew.mockResolvedValue({ access_token: 'fresh' })
