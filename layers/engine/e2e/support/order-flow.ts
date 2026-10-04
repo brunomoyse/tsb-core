@@ -207,9 +207,9 @@ export async function payAmount(page: Page): Promise<number> {
   return eurosOf(amounts.at(-1))
 }
 
-/** Opens the address sheet of the delivery card and picks a mock place by what its suggestion says. */
+/** Opens the address sheet of the delivery card and picks a mock place (the query needs a house number, as the field's does). */
 export async function pickDeliveryAddress(page: Page, query: string): Promise<void> {
-  const open = page.getByRole('button', { name: /Ajouter une adresse|Modifier l'adresse/u }).first()
+  const open = page.getByRole('button', { name: /Ajouter une adresse|Modifier l.adresse/u }).first()
   await open.click()
   const dialog = page.getByRole('dialog', { name: /adresse/iu })
   await expect(dialog).toBeVisible()
@@ -221,4 +221,20 @@ export async function pickDeliveryAddress(page: Page, query: string): Promise<vo
   await expect(dialog.getByTestId('address-selected')).toBeVisible()
   await dialog.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(dialog).toBeHidden()
+}
+
+/** The "Votre commande" card of the checkout (lines + price breakdown). */
+export const checkoutSummary = (page: Page): Locator =>
+  page
+    .locator('section.card')
+    .filter({ has: page.getByRole('heading', { name: 'Votre commande' }) })
+
+/** One row of its breakdown by label ("Sous-total", "Frais de livraison", "Remise (à emporter)", "Total"...). */
+export const summaryRow = (page: Page, label: string | RegExp): Locator =>
+  checkoutSummary(page).locator('div.justify-between', { hasText: label }).last()
+
+/** Opens the menu and adds one unit of each named plain product (the cart persists, so a later `goto` keeps it). */
+export async function fillCart(page: Page, names: (string | RegExp)[]): Promise<void> {
+  await gotoMenu(page)
+  for (const name of names) await addPlain(page, name)
 }

@@ -1,5 +1,6 @@
 import type {
   CouponRule,
+  GqlFailure,
   MockAddress,
   MockStateSnapshot,
   MockUser,
@@ -52,6 +53,11 @@ export class MockControl {
   /** Merges a partial scenario (see `Scenario` in types.ts). */
   async scenario(patch: Partial<Scenario>): Promise<void> {
     await this.call('POST', '/scenario', patch)
+  }
+
+  /** Makes one root operation of the app (`validateCoupon`, `restaurantConfig`...) fail with a GraphQL error; null repairs it. */
+  async failOperation(op: string, failure: GqlFailure | null): Promise<void> {
+    await this.call('POST', '/scenario', { operationFailures: { [op]: failure } })
   }
 
   /** Open | scheduled-only (closed now, today's slots bookable) | closed | disabled. Pushed to open pages. */

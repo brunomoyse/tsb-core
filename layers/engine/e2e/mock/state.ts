@@ -68,6 +68,7 @@ export const defaultScenario = (): Scenario => ({
   quoteFailure: null,
   createOrderFailure: null,
   createOrderDelayMs: 0,
+  operationFailures: {},
   mollie: 'ask',
   rejectSession: false,
   coupons: {

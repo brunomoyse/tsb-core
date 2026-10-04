@@ -10,7 +10,7 @@ import type { MockUser, Scenario, SeedOrderInput } from './types.ts'
  *   GET    /__mock/health
  *   GET    /__mock/state                 snapshot: scenario, user, orders, operations the app made, gaps
  *   POST   /__mock/reset                 back to the defaults (the fixture does this before every test)
- *   POST   /__mock/scenario              merge a partial Scenario (coupons are merged per code)
+ *   POST   /__mock/scenario              merge a partial Scenario (coupons and operationFailures are merged per key; a null failure clears it)
  *   POST   /__mock/user                  merge a partial user; `address` is a place id (see restaurant.ts PLACES) or null
  *   POST   /__mock/orders                seed an order (SeedOrderInput) -> { id }
  *   POST   /__mock/orders/:id            change an order (OrderPatch), pushed to its subscribers
@@ -43,12 +43,20 @@ export function handleControl(
   }
 
   if (route === '/scenario' && method === 'POST') {
-    const patch = body as Partial<Scenario>
+    const patch = body as Partial<Omit<Scenario, 'operationFailures'>> & {
+      operationFailures?: Record<string, Scenario['operationFailures'][string] | null>
+    }
     const before = state.scenario.restaurant
+    const operationFailures = { ...state.scenario.operationFailures }
+    for (const [operation, failure] of Object.entries(patch.operationFailures ?? {})) {
+      if (failure === null) delete operationFailures[operation]
+      else operationFailures[operation] = failure
+    }
     state.scenario = {
       ...state.scenario,
       ...patch,
       coupons: { ...state.scenario.coupons, ...patch.coupons },
+      operationFailures,
     }
     if (state.scenario.restaurant !== before) state.publish('restaurantConfigUpdated', null)
     return ok(state.scenario)

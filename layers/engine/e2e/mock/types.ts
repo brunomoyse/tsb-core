@@ -66,6 +66,11 @@ export interface Scenario {
   createOrderFailure: GqlFailure | null
   /** `createOrder` waits this long before answering. */
   createOrderDelayMs: number
+  /**
+   * Any root operation of the app, by name (`validateCoupon`, `restaurantConfig`, `myOrders`, ...), fails with this
+   * GraphQL error. Set per operation through `MockControl.failOperation`; a `null` value takes the failure away.
+   */
+  operationFailures: Record<string, GqlFailure>
   /** Where the fake Mollie page sends the customer. */
   mollie: MollieBehavior
   /** Tokens are refused (UNAUTHENTICATED) even when the request carries one: an expired session. */
