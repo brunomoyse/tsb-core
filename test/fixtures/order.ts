@@ -1,6 +1,6 @@
 // Builders for a placed order (what `myOrder` / `myOrders` return), shared by the order-flow tests. Every builder takes
 // Overrides, so a test states only what it cares about. Money is a decimal string as the API sends it.
-import type { MolliePayment, Order, OrderProduct } from '../../layers/engine/types'
+import type { MolliePayment, Order, OrderProduct, User } from '../../layers/engine/types'
 import { makeProduct } from './catalog'
 
 export function makeOrderItem(overrides: Partial<OrderProduct> = {}): OrderProduct {
@@ -54,6 +54,21 @@ export function makeOrder(overrides: Partial<Order> = {}): Order {
     customer: null,
     items: [makeOrderItem()],
     payment: makePayment(),
+    ...overrides,
+  }
+}
+
+export function makeUser(overrides: Partial<User> = {}): User {
+  return {
+    deletionRequestedAt: null,
+    email: 'ada@example.test',
+    firstName: 'Ada',
+    id: 'user-1',
+    lastName: 'Lovelace',
+    notifyMarketing: false,
+    notifyOrderUpdates: true,
+    phoneNumber: null,
+    address: null,
     ...overrides,
   }
 }

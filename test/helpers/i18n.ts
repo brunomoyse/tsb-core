@@ -12,7 +12,13 @@
 import { ref } from 'vue'
 
 export function fakeT(key: string, params?: unknown, plural?: unknown): string {
-  const named = params !== undefined && typeof params === 'object' ? JSON.stringify(params) : ''
+  const named =
+    params !== undefined &&
+    typeof params === 'object' &&
+    params !== null &&
+    Object.keys(params).length > 0
+      ? JSON.stringify(params)
+      : ''
   const choice = typeof plural === 'number' ? `#${plural}` : ''
   return `${key}${named}${choice}`
 }
