@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-calc flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16">
+  <!-- lg:min-h-dvh: the order loads after hydration and is taller than the first render: keep the footer below the fold meanwhile (CLS). -->
+  <div class="min-h-calc lg:min-h-dvh flex flex-col items-center px-4 pt-8 pb-12 sm:pt-12 sm:pb-16">
     <!-- Online payment did not complete: distinct per-status outcome
              (canceled / failed / expired, or an open payment on a cancelled order). The cart
              is kept so the user can retry — mirrors tsb-mobile. -->
