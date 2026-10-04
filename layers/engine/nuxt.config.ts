@@ -172,6 +172,11 @@ export default defineNuxtConfig({
       pages: ['terms', 'privacy', 'faq', 'contact', 'account-deletion'],
       cookie: LANGUAGE_COOKIE,
     },
+    /*
+     * The address of each language file (`{ fr: '/_i18n/<hash>/fr/messages.json', ... }`), filled in at build time by
+     * build/i18n-messages.ts and read by middleware/preload-messages.global.ts. Empty in dev.
+     */
+    tsbI18nMessageUrls: {},
     public: {
       baseUrl: process.env.BASE_URL,
       s3bucketUrl: process.env.S3_BUCKET_URL,

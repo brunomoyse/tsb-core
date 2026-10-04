@@ -64,6 +64,21 @@ export default defineNuxtModule({
       })
     })
 
+    /*
+     * The address of each language file, for the page to preload (middleware/preload-messages.global.ts). The module
+     * names them `/_i18n/<hash of the files' content>/<locale>/messages.json` and only keeps the hash in its own bundle;
+     * it adds those addresses to the routes Nitro prerenders, which is where they are read from. Private runtime config:
+     * only the server render needs it.
+     */
+    nuxt.hook('nitro:init', (nitro) => {
+      const urls: Record<string, string> = {}
+      for (const route of nitro.options.prerender.routes ?? []) {
+        const match = /^\/_i18n\/[^/]+\/(?<code>[^/]+)\/messages\.json$/u.exec(route)
+        if (match?.groups?.code) urls[match.groups.code] = route
+      }
+      ;(nitro.options.runtimeConfig as Record<string, unknown>).tsbI18nMessageUrls = urls
+    })
+
     // Dev: a locale file of the engine or of the brand changed.
     nuxt.hook('builder:watch', (_event, path) => {
       if (/(^|\/)locales\/[a-z]{2}\.json$/u.test(path) || path.endsWith('brand.ts')) generate()
