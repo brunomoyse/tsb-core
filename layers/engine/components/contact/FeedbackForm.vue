@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useNotificationsStore } from '#engine/stores/notifications'
+import { useKeepTypedValue } from '#engine/composables/useKeepTypedValue'
 
 // `white`: a white card with a hairline, for a brand whose page is cream (default: the tinted container surface).
 const { surface = 'tint' } = defineProps<{ surface?: 'tint' | 'white' }>()
@@ -12,6 +13,8 @@ const turnstileSiteKey = config.public.turnstileSiteKey as string
 
 const name = ref('')
 const email = ref('')
+// An address typed or autofilled before the page hydrated (see useKeepTypedValue).
+useKeepTypedValue(email, 'feedback-email')
 const serviceType = ref('')
 const feedbackType = ref('')
 const message = ref('')
@@ -219,7 +222,7 @@ function resetForm() {
     </div>
 
     <!-- Form -->
-    <form v-else @submit.prevent="handleSubmit" class="space-y-4">
+    <form v-else method="post" @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Honeypot (hidden from real users) -->
       <div
         aria-hidden="true"

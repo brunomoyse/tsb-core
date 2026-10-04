@@ -52,7 +52,7 @@
       </button>
     </div>
 
-    <form v-if="!isCollapsed" class="mt-3" novalidate @submit.prevent="submit">
+    <form v-if="!isCollapsed" class="mt-3" method="post" novalidate @submit.prevent="submit">
       <!-- Wraps: on a narrow phone the input keeps a usable width and Save drops below it. -->
       <div class="flex flex-wrap items-stretch gap-2">
         <div class="relative flex-1 basis-40 min-w-0">
@@ -119,6 +119,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { usePhoneCapture } from '#engine/composables/usePhoneCapture'
+import { useKeepTypedValue } from '#engine/composables/useKeepTypedValue'
 
 // The logic (validate on blur / Enter / Save, never while typing) lives in the engine, shared by both brands.
 const phoneInputRef = ref<HTMLInputElement | null>(null)
@@ -136,4 +137,6 @@ const {
   onBlur,
   submit,
 } = usePhoneCapture(phoneInputRef)
+// A number typed or autofilled before the page hydrated (see useKeepTypedValue).
+useKeepTypedValue(phoneLocal, 'checkout-phone-input')
 </script>

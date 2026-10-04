@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Page, Route } from '@playwright/test'
 
 /*
  * Wait for Nuxt 4 to finish mounting. The old probe (`app.$nuxt?.isHydrating`)
@@ -71,4 +71,29 @@ export async function settleNuxt(page: Page, idleTimeout = 5_000) {
     { timeout: 15_000 },
   )
   await page.waitForLoadState('networkidle', { timeout: idleTimeout }).catch(() => undefined)
+}
+
+/*
+ * A page whose JavaScript is held back, to test what a visitor sees between the first paint and hydration: every script
+ * under /_nuxt/ waits until `release()`. While held, `page.goto` (which otherwise resolves once the app is hydrated, see
+ * support/test.ts) returns at once. Releasing lets the app hydrate and goto wait again.
+ */
+const held = new Map<Page, Route[]>()
+const SCRIPTS = /\/_nuxt\/.*\.js(?:\?.*)?$/u
+
+export const isHoldingHydration = (page: Page): boolean => held.has(page)
+
+export async function holdHydration(page: Page): Promise<() => Promise<void>> {
+  const routes: Route[] = []
+  let released = false
+  held.set(page, routes)
+  await page.route(SCRIPTS, async (route) => {
+    if (released) await route.continue()
+    else routes.push(route)
+  })
+  return async () => {
+    released = true
+    held.delete(page)
+    await Promise.all(routes.splice(0).map((route) => route.continue()))
+  }
 }

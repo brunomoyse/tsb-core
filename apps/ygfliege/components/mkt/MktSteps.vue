@@ -13,6 +13,7 @@
         :fallback-height="792"
         :alt="$t(`${keyPrefix}.step${step.num}.title`)"
         sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 92vw"
+        :eager="eagerFirst && step.num === 1"
         img-class="w-full aspect-square object-cover"
       />
       <div class="p-5">
@@ -21,9 +22,9 @@
             class="w-7 h-7 rounded-full bg-primary-600 text-white text-sm font-bold flex items-center justify-center"
             >{{ step.num }}</span
           >
-          <h3 class="font-display font-bold text-lg text-ygf-black">
+          <component :is="headingTag" class="font-display font-bold text-lg text-ygf-black">
             {{ $t(`${keyPrefix}.step${step.num}.title`) }}
-          </h3>
+          </component>
         </div>
         <p class="text-sm text-gray-600 leading-relaxed">
           {{ $t(`${keyPrefix}.step${step.num}.desc`) }}
@@ -36,10 +37,17 @@
 <script setup lang="ts">
 // 4-step "how it works" grid. The home and concept pages use different locale
 // Namespaces for the same structure, hence keyPrefix.
-defineProps<{
-  /** E.g. "mkt.home.steps" or "mkt.concept" */
-  keyPrefix: string
-}>()
+withDefaults(
+  defineProps<{
+    /** E.g. "mkt.home.steps" or "mkt.concept" */
+    keyPrefix: string
+    /** The level of the step titles: one under the page's own title is h2, one under a section heading is h3. */
+    headingTag?: 'h2' | 'h3'
+    /** The first step's picture is on the first screen of a phone and is the page's largest image: load it at once. */
+    eagerFirst?: boolean
+  }>(),
+  { headingTag: 'h3', eagerFirst: false },
+)
 
 const steps = [{ num: 1 }, { num: 2 }, { num: 3 }, { num: 4 }]
 </script>

@@ -1,6 +1,9 @@
 <template>
   <!-- On a phone the wrapper reaches the screen edges (past the layout's own padding, --main-gutter): the cards need the width for the time slot, the phone and the promo fields. -->
-  <div class="max-w-7xl mx-auto p-4 max-sm:mx-[calc(var(--main-gutter,0px)*-1)]">
+  <!-- lg:min-h-fold (each brand's CSS: the viewport minus its top bar): the page is rendered after hydration (cart and session are in the browser), ~300-700px taller than the server's skeleton; the footer then sits just below the fold from the first frame instead of jumping out of the viewport (CLS), and a short page is not pushed further than the footer. -->
+  <div
+    class="max-w-7xl mx-auto p-4 max-sm:mx-[calc(var(--main-gutter,0px)*-1)] lg:min-h-[calc(100dvh-60px)]"
+  >
     <!-- Restaurant Closed Banner: only for a loaded config that says nothing can be ordered -->
     <div
       v-if="isOrderingClosed"

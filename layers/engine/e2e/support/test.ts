@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import type { CapturedOidcState } from './auth-flow'
 import { MockControl } from '../mock/client'
 import { authStateFile } from './paths'
+import { isHoldingHydration } from './hydration'
 import { fakeOidcEntry } from '../mock/oidc'
 
 /*
@@ -72,6 +73,39 @@ export const test = base.extend<
   loginOrigin: [undefined, { option: true }],
   e2eUserEmail: [undefined, { option: true }],
   mock: [undefined, { option: true }],
+
+  /*
+   * `page.goto` resolves once the app is hydrated: the window's load event, which `goto` waits for, can fire before the app
+   * has hydrated (the entry script is a module and Nuxt's plugins are async), and a click straight after `goto` would then
+   * land on server-rendered HTML with no handlers. Pages that are not the app (the fake Mollie page, a download) have no
+   * #__nuxt and are not waited for. A page that never hydrates FAILS here, with that said, instead of timing out somewhere
+   * downstream (or, on a static page, passing without ever running its JavaScript). `holdHydration` (support/hydration.ts)
+   * is for the specs that look at the page before hydration: goto then resolves at once.
+   */
+  page: async ({ page }, use) => {
+    const goto = page.goto.bind(page)
+    page.goto = async (url, options) => {
+      const response = await goto(url, options)
+      if (isHoldingHydration(page)) return response
+      try {
+        await page.waitForFunction(
+          () => {
+            const root = document.getElementById('__nuxt')
+            return !root || '__vue_app__' in root
+          },
+          undefined,
+          { timeout: 10_000 },
+        )
+      } catch (error) {
+        throw new Error(
+          `page.goto(${url}): the app did not hydrate within 10 s (no Vue app on #__nuxt at ${page.url()}); its JavaScript failed to load or run`,
+          { cause: error },
+        )
+      }
+      return response
+    }
+    await use(page)
+  },
 
   /* Real DB helpers or mock control behind one interface (support/backend.ts). */
   backend: async ({ mock }, use) => {

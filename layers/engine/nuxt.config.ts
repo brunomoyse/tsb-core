@@ -116,7 +116,7 @@ export default defineNuxtConfig({
     /*
      * Skip Sentry when no DSN is set at build time — including the module
      * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
-     * own sentry.client/server.config.ts + org/project.
+     * own sentry.server.config.ts + org/project. The browser SDK is not set up by the module (no sentry.client.config.ts): plugins/sentry-lazy.client.ts loads it once the page is interactive.
      */
     ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
   ],
@@ -177,6 +177,12 @@ export default defineNuxtConfig({
      * build/i18n-messages.ts and read by middleware/preload-messages.global.ts. Empty in dev.
      */
     tsbI18nMessageUrls: {},
+    /*
+     * Runtime switch (`NUXT_DEFER_HYDRATION=true`) for the FULL deferral of the entry script until after the first paint
+     * (server/plugins/defer-hydration.ts, utils/deferHydration.ts). Off: the entry script and modulepreloads stay in the head
+     * and only the language file and prefetch hints wait for the first frame.
+     */
+    deferHydration: false,
     public: {
       baseUrl: process.env.BASE_URL,
       s3bucketUrl: process.env.S3_BUCKET_URL,

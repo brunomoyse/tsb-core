@@ -1,5 +1,10 @@
 <template>
-  <form class="space-y-4" :class="{ 'animate-shake': isShaking }" @submit.prevent="handleSubmit">
+  <form
+    class="space-y-4"
+    :class="{ 'animate-shake': isShaking }"
+    method="post"
+    @submit.prevent="handleSubmit"
+  >
     <div>
       <label class="field-label" for="firstName">
         {{ $t('form.firstName') }}
@@ -130,6 +135,7 @@ import AddressAutocomplete from '#engine/components/form/AddressAutocomplete.vue
 import type { CountryCode } from 'libphonenumber-js'
 import { formatAddress } from '#engine/utils/utils'
 import { looksLikeShortMobile } from '#engine/utils/phoneInput'
+import { useKeepTypedValue } from '#engine/composables/useKeepTypedValue'
 import { useI18n } from 'vue-i18n'
 
 interface InitialValues {
@@ -158,6 +164,9 @@ const firstName = ref(initialValues.firstName || '')
 const lastName = ref(initialValues.lastName || '')
 const email = ref(initialValues.email || '')
 const phoneLocal = ref(initialValues.phoneLocal || '')
+// What was typed or autofilled before the page hydrated (see useKeepTypedValue).
+useKeepTypedValue(email, 'email')
+useKeepTypedValue(phoneLocal, 'phone')
 const selectedCountry = ref(initialValues.selectedCountry || 'BE')
 
 const address = ref<Address | null>(initialValues.address || null)
