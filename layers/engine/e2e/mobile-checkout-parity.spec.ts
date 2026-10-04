@@ -95,9 +95,8 @@ async function breakdown(page: Page): Promise<string[]> {
 }
 
 test.describe('Client maths and server quote agree', () => {
-  test.beforeEach(async ({ authenticatedPage: page, backend }) => {
+  test.beforeEach(async ({ backend }) => {
     await backend.mock.user({ phoneNumber: '+32470123456', address: 'place-mid' })
-    await page.goto('/fr/menu')
   })
 
   for (const variation of [
@@ -129,11 +128,13 @@ test.describe('Client maths and server quote agree', () => {
         // A delivery order must reach the 25,00 minimum: only the biggest basket does, and the checkout says so otherwise.
         (basket) => variation.collection === 'pickup' || basket.name.includes('several quantities'),
       )
-      for (const basket of baskets) {
+      for (const [index, basket] of baskets.entries()) {
         await test.step(basket.name, async () => {
-          await page.evaluate(() => {
-            localStorage.removeItem('cart')
-          })
+          // A fresh basket for each case after the first (the first starts on an empty cart).
+          if (index > 0)
+            await page.evaluate(() => {
+              localStorage.removeItem('cart')
+            })
           await buildBasket(page, basket)
           await chooseCollection(page, variation.collection)
           await choosePayment(page, variation.payment)

@@ -68,9 +68,34 @@ export async function expectNoOverlap(a: Locator, b: Locator, label: string): Pr
   expect(overlapX > 0.5 && overlapY > 0.5, `${label}: the two elements overlap`).toBe(false)
 }
 
+/**
+ * A signed-in visitor's first page load ends with the app re-reading the profile (`AuthSyncMe`, once the app is idle) and
+ * storing it as the `auth` user. A full navigation while that request is in flight aborts it, and the app then drops the
+ * session (see the BUG test in mobile-checkout-errors.spec.ts): wait for the profile before navigating away. A no-op for a
+ * visitor who is not signed in.
+ */
+export async function sessionSettled(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const signedIn = Object.keys(localStorage).some((key) => key.startsWith('oidc.user:'))
+      if (!signedIn) return true
+      try {
+        return Boolean(
+          (JSON.parse(localStorage.getItem('auth') ?? '{}') as { user?: unknown }).user,
+        )
+      } catch {
+        return false
+      }
+    },
+    undefined,
+    { timeout: 15_000 },
+  )
+}
+
 export async function gotoMenu(page: Page): Promise<void> {
   await page.goto('/fr/menu')
   await waitForNuxtHydration(page)
+  await sessionSettled(page)
   await expect(page.getByTestId('product-card').first()).toBeVisible()
 }
 
@@ -174,6 +199,7 @@ export const payButton = (page: Page): Locator =>
 export async function gotoCheckout(page: Page): Promise<void> {
   await page.goto('/fr/checkout')
   await waitForNuxtHydration(page)
+  await sessionSettled(page)
   await expect(payButton(page)).toBeVisible({ timeout: 20_000 })
 }
 
