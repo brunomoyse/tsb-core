@@ -30,7 +30,7 @@ useSeoMeta({
         </h1>
         <p class="mt-3 text-gray-600 max-w-2xl mx-auto">{{ $t('mkt.concept.subtitle') }}</p>
       </div>
-      <MktSteps key-prefix="mkt.concept" />
+      <MktSteps key-prefix="mkt.concept" heading-tag="h2" eager-first />
     </section>
 
     <!-- ── Broth story ── -->

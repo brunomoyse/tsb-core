@@ -71,7 +71,7 @@ useSeoMeta({
     <!-- ── Storytelling ── -->
     <section class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-14 sm:gap-20">
       <div
-        v-for="block in STORYTELLING"
+        v-for="(block, blockIndex) in STORYTELLING"
         :key="block.key"
         v-reveal
         class="grid gap-8 lg:grid-cols-2 lg:items-center"
@@ -84,13 +84,14 @@ useSeoMeta({
             :fallback-height="block.imageHeight"
             :alt="$t(`mkt.about.storytelling.${block.key}.title`)"
             sizes="(min-width: 1024px) 48vw, 92vw"
+            :eager="blockIndex === 0"
             img-class="w-full rounded-ygf-lg shadow-ygf-md"
           />
         </div>
         <div :class="block.reverse ? 'lg:order-1' : ''">
-          <h3 class="font-display font-bold text-2xl text-ygf-black mb-3">
+          <h2 class="font-display font-bold text-2xl text-ygf-black mb-3">
             {{ $t(`mkt.about.storytelling.${block.key}.title`) }}
-          </h3>
+          </h2>
           <p class="text-gray-600 leading-relaxed">
             {{ $t(`mkt.about.storytelling.${block.key}.text`) }}
           </p>
