@@ -54,7 +54,7 @@
           id="country"
           v-model="selectedCountry"
           :aria-label="$t('form.phoneCountry')"
-          class="px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
+          class="w-36 min-w-0 shrink-0 px-2.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
         >
           <option v-for="country in countries" :key="country.code" :value="country.code">
             {{ country.flag }} {{ getCountryName(country.code, locale) }} ({{ country.prefix }})
@@ -67,7 +67,7 @@
           autocomplete="tel-national"
           :aria-invalid="phoneError ? 'true' : undefined"
           :aria-describedby="phoneError ? 'phone-error' : undefined"
-          class="flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
+          class="min-w-0 flex-1 px-3.5 py-2.5 bg-white/60 backdrop-blur-sm border border-neutral-200/80 rounded-xl text-neutral-900 placeholder-neutral-500 focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring focus-visible:outline-none transition-all duration-300"
           type="tel"
         />
       </div>
