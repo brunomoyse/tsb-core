@@ -58,6 +58,8 @@ App runs on port `3000` by default.
 npm run dev
 npm run build
 npm run lint
+npm test                 # unit tests (vp test run), see docs/testing.md
+npm run test:coverage    # same, with v8 coverage and the CI thresholds
 npm run test:e2e
 npm run test:e2e:headed
 npm run test:e2e:ui

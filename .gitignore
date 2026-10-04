@@ -38,3 +38,8 @@ CLAUDE.md
 # Playwright E2E temp files (e2e/ now lives under apps/<brand>/)
 **/e2e/.restaurant-config-backup.json
 **/e2e/.auth-state.json
+
+# Unit-test coverage output
+/coverage
+# The `setups.@nuxt/test-utils` marker that @nuxt/test-utils writes in the app it boots
+apps/*/.nuxtrc

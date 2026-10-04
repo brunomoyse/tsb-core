@@ -1,4 +1,5 @@
 // Plugins/api.ts — OIDC Bearer token authentication via Zitadel
+import { rememberCurrentPage } from '#engine/utils/authFlow'
 import {
   defineNuxtPlugin,
   navigateTo,
@@ -68,6 +69,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       ) {
         const ok = await refreshAuth()
         if (ok) return baseApi<T, string>(request, options)
+        rememberCurrentPage()
         void navigateTo(`${localePath('auth-login')}?session=expired`)
       }
       throw err

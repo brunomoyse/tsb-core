@@ -1,8 +1,8 @@
 // The cart across a reload and across the sign-in round trip (full page loads to Zitadel and back).
 // Run: `vp test run layers/engine/utils/cartCheckoutPersistence.test.mjs`.
 
-import { parsePersistedCart, serializeCartState } from './cartPersistence.ts'
 import { describe, test } from 'vite-plus/test'
+import { parsePersistedCart, serializeCartState } from './cartPersistence.ts'
 import assert from 'node:assert/strict'
 import { buildCreateOrderInput } from './orderPayload.ts'
 import { lineTotalCents } from './pricing.ts'
