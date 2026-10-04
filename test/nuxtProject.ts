@@ -39,6 +39,7 @@ export function nuxtProject(options: {
         fileURLToPath(new URL('./setup/noNetwork.ts', import.meta.url)),
         fileURLToPath(new URL('./setup/flags.ts', import.meta.url)),
         fileURLToPath(new URL('./setup/vue.ts', import.meta.url)),
+        fileURLToPath(new URL('./setup/nuxtReady.ts', import.meta.url)),
       ],
       unstubGlobals: true,
       unstubEnvs: true,

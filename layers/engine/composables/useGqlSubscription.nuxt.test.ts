@@ -7,6 +7,7 @@ import { effectScope } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useRuntimeConfig } from '#imports'
 import { setFlags } from '../../../test/flags'
+import { settle } from '../../../test/helpers/settle'
 
 interface Sink {
   next: (message: { data?: unknown }) => void
@@ -300,7 +301,7 @@ describe('closing', () => {
     await vi.waitFor(() => {
       expect(h.createClient).toHaveBeenCalled()
     })
-    await new Promise((resolve) => setTimeout(resolve, 20))
+    await settle()
     expect(error.value).toBeNull()
   })
 
@@ -310,8 +311,9 @@ describe('closing', () => {
     await ready()
     stop()
     listeners.pageshow!({ persisted: true })
-    await new Promise((resolve) => setTimeout(resolve, 20))
+    await settle()
     expect(clients()).toHaveLength(1)
+    expect(lastClient().subscriptions).toHaveLength(1)
   })
 })
 
@@ -320,7 +322,7 @@ describe('during SSR', () => {
     setFlags({ server: true })
     const { subscribe } = await load()
     const { data, error } = subscribe(SUB)
-    await new Promise((resolve) => setTimeout(resolve, 20))
+    await settle()
     expect(h.createClient).not.toHaveBeenCalled()
     expect(addedListeners).toEqual([])
     expect(data.value).toBeUndefined()
@@ -381,7 +383,7 @@ describe('global browser events', () => {
       subscribe(SUB)
       await ready()
       listeners.online!()
-      await new Promise((resolve) => setTimeout(resolve, 20))
+      await settle()
       expect(clients()).toHaveLength(1)
       expect(clients()[0]!.dispose).not.toHaveBeenCalled()
     })
@@ -537,18 +539,25 @@ describe('global browser events', () => {
       subscribe(SUB)
       await ready()
       lastClient().dispose.mockRejectedValue(new Event('error'))
-      expect(() => {
+      const unhandled = vi.fn()
+      process.on('unhandledRejection', unhandled)
+      try {
         listeners.pagehide!()
-      }).not.toThrow()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+        await settle()
+      } finally {
+        process.off('unhandledRejection', unhandled)
+      }
+      expect(unhandled).not.toHaveBeenCalled()
+      expect(lastClient().dispose).toHaveBeenCalledOnce()
     })
 
-    it('pagehide with no client yet does nothing harmful', async () => {
+    it('a pagehide before the client exists does not lose the subscription that is on its way', async () => {
       const { subscribe } = await load()
       subscribe(SUB)
-      expect(() => {
-        listeners.pagehide!()
-      }).not.toThrow()
+      listeners.pagehide!()
+      await ready()
+      expect(clients()).toHaveLength(1)
+      expect(lastClient().subscriptions).toHaveLength(1)
     })
 
     it('recycles on pageshow only when the page was restored from the back-forward cache', async () => {
@@ -696,12 +705,17 @@ describe('the pong watchdog (silent connection drops)', () => {
     expect(sock.close).not.toHaveBeenCalled()
   })
 
-  it('closing a socket that had no ping armed is harmless', async () => {
-    const sock = socket()
-    const on = await connected(sock)
-    expect(() => {
-      on.closed()
-    }).not.toThrow()
+  it('watches the next socket after one closed: only the new one is closed on a missed pong', async () => {
+    const first = socket()
+    const on = await connected(first)
+    on.ping(false)
+    on.closed()
+    const second = socket()
+    on.connected(second, undefined, false)
+    on.ping(false)
+    vi.advanceTimersByTime(5_000)
+    expect(first.close).not.toHaveBeenCalled()
+    expect(second.close).toHaveBeenCalledExactlyOnceWith(4408, 'Pong timeout')
   })
 
   it('a ping after the socket closed (no socket) has nothing to close', async () => {

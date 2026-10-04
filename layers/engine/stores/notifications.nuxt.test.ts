@@ -221,9 +221,12 @@ describe('pause and resume (hover / focus)', () => {
     expect(s.current).not.toBeNull()
   })
 
-  it('isPaused is false before any toast has existed', () => {
-    store()
-    expect(useNotificationsStore().isPaused()).toBe(false)
+  it('isPaused is false before any toast has existed: the module has no clock yet', async () => {
+    // The clock is created by the first toast of the module: a fresh copy of the module has none.
+    vi.resetModules()
+    const { useNotificationsStore: freshStore } = await import('#engine/stores/notifications')
+    setActivePinia(createPinia())
+    expect(freshStore().isPaused()).toBe(false)
   })
 
   it('dismiss ends a pause', () => {
