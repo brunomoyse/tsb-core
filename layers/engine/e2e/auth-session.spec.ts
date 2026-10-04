@@ -201,6 +201,27 @@ test.describe('a session that is old or refused', () => {
   })
 })
 
+test.describe('the session-expired notice', () => {
+  test('the login page says the session expired, also after the round trip through Zitadel', async ({
+    page,
+  }) => {
+    await page.goto('/fr/auth/login?session=expired')
+    // The notice survives the redirect to Zitadel and back (it is parked in sessionStorage meanwhile).
+    await page.waitForURL(/\/fr\/auth\/login\?authRequest=/u)
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'Votre session a expiré' }),
+    ).toBeVisible()
+    await expect(page.locator('#auth-email')).toBeVisible()
+  })
+
+  test('without the flag there is no notice', async ({ page }) => {
+    await page.goto('/fr/auth/login')
+    await page.waitForURL(/authRequest=/u)
+    await expect(page.locator('#auth-email')).toBeVisible()
+    await expect(page.getByText('Votre session a expiré')).toHaveCount(0)
+  })
+})
+
 test.describe('pages that need an account', () => {
   for (const path of ['/fr/me', '/fr/me/orders']) {
     test(`${path} sends an anonymous visitor to the login page and remembers where to return`, async ({
