@@ -8,8 +8,10 @@ import {
   SilentRenewUnavailableError,
   isSilentRenewUnavailable,
 } from '#engine/utils/silentRenewError'
-import { type Ref, ref } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { type Ref, ref, toValue } from 'vue'
+import { useNuxtApp, useRuntimeConfig } from '#imports'
+
+const DEFAULT_LOCALE = 'fr'
 
 let userManager: UserManager | null = null
 const oidcUser: Ref<OidcUser | null> = ref(null)
@@ -65,14 +67,17 @@ export function useOidc() {
   const config = useRuntimeConfig()
 
   const baseUrl = (config.public.baseUrl as string).replace(/\/+$/u, '')
+  // Read now, in the Nuxt context: callbackUrl() runs later, from event handlers.
+  const supportedLocales: string[] = toValue(useNuxtApp().$i18n.localeCodes)
 
   /*
    * The callback page in the language of the page the customer is on NOW. The user manager is a singleton built on first
    * use, so the redirect URI in its settings is the one of the first page; every sign-in passes this one instead.
    */
   function callbackUrl(): string {
-    const locale =
-      typeof window === 'undefined' ? 'fr' : window.location.pathname.split('/')[1] || 'fr'
+    // Only a language the app serves has a registered callback: a page outside i18n ("/_nuxt/...", "/x") gets French.
+    const first = typeof window === 'undefined' ? '' : window.location.pathname.split('/')[1]
+    const locale = first && supportedLocales.includes(first) ? first : DEFAULT_LOCALE
     return `${baseUrl}/${locale}/auth/callback`
   }
 

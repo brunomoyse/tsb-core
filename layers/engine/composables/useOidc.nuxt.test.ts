@@ -101,6 +101,32 @@ describe('the user manager', () => {
     )
   })
 
+  it.each(['fr', 'en', 'nl', 'zh'])(
+    'takes the language of the page when it is %s',
+    async (code) => {
+      goTo(`/${code}/menu`)
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      expect(manager().options.redirect_uri).toMatch(new RegExp(`/${code}/auth/callback$`, 'u'))
+    },
+  )
+
+  // The first path segment is only a language if the app serves it: anything else has no registered callback URL.
+  it.each(['/menu', '/_nuxt/entry.js', '/de/menu', '/FR/menu', '/api/v1/x'])(
+    'falls back to French when the first path segment is not a language (%s)',
+    async (path) => {
+      goTo(path)
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      expect(manager().options.redirect_uri).toMatch(/\/fr\/auth\/callback$/u)
+      expect(manager().signinRedirect).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          redirect_uri: `${useRuntimeConfig().public.baseUrl}/fr/auth/callback`,
+        }),
+      )
+    },
+  )
+
   it('defaults to French on a path without language', async () => {
     goTo('/')
     const { oidc, manager } = await load()
