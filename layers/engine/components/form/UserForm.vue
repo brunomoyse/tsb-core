@@ -99,7 +99,8 @@
       </div>
     </div>
 
-    <div class="flex gap-2">
+    <!-- Under 480 px the two buttons stack (the primary one first): side by side, a brand whose buttons never wrap ran past the screen edge. -->
+    <div class="flex gap-2 max-[479px]:flex-col-reverse">
       <UiButton variant="secondary" class="flex-1" @click="emit('close')">
         {{ $t('common.cancel') }}
       </UiButton>

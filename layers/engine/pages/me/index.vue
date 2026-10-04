@@ -746,7 +746,8 @@ const updateNotificationPref = async (
               {{ t('me.profile.deleteLearnMore') }}
             </NuxtLinkLocale>
           </p>
-          <div class="flex gap-3">
+          <!-- Under 480 px the two buttons stack: side by side, a brand whose buttons never wrap ran past the screen edge. -->
+          <div class="flex gap-3 max-[479px]:flex-col">
             <UiButton
               variant="secondary"
               class="flex-1"
