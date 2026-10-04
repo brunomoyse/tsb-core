@@ -107,6 +107,13 @@ export default defineConfig({
       'unicorn/no-nested-ternary': 'off',
       'one-var': 'off',
       'vite-plus/prefer-vite-plus-imports': 'error',
+      // The autofix capitalises the first letter of every comment line, which mangles continuation lines
+      // ("Node scripts/product-photo.mjs") and code examples in comments.
+      'capitalized-comments': 'off',
+      // Two more autofixes the pre-commit hook (`vp check --fix`) applies blindly: the first strips casts that the
+      // lint run (without Nuxt's generated types) believes useless, the second rewrites arrow bodies as `=>{  x; }`.
+      'typescript/no-unnecessary-type-assertion': 'off',
+      'typescript/strict-void-return': 'off',
     },
     env: {
       browser: true,
