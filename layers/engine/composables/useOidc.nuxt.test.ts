@@ -2,7 +2,7 @@
 // the access token, and the silent renewal whose single in-flight promise protects Zitadel's rotating refresh token.
 // oidc-client-ts's UserManager (which talks to Zitadel) and $fetch are the boundaries, replaced by a fake.
 // Run: `vp test run layers/engine/composables/useOidc.nuxt.test.ts`.
-import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { fakeUserManagers, refusal } from '../../../test/helpers/fakeOidc'
 import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -377,9 +377,9 @@ describe('silentRenew', () => {
     expect(oidc.oidcUser.value).toBeNull()
   })
 
-  // A refusal is an answer of Zitadel's token endpoint (oidc-client-ts's ErrorResponse): the refresh token is expired,
-  // revoked or was already used. Anything that is not an answer (no network, a timeout, a 5xx) says nothing about the
-  // session: it is kept, and the renewal rejects so that the callers do not mistake it for a dead session.
+  // A failure is transient ONLY when we got no answer from Zitadel (no network, a timeout) or it said "later" (408, 429,
+  // 5xx, OAuth server_error / temporarily_unavailable): the session is kept, and the renewal rejects so that the callers
+  // do not mistake it for a dead session. Everything else will fail the same way next time: the session is wiped.
   it.each(['invalid_grant', 'login_required', 'interaction_required', 'invalid_client'])(
     'wipes the session on a definitive refusal (%s)',
     async (code) => {
@@ -418,7 +418,62 @@ describe('silentRenew', () => {
     expect(oidc.oidcUser.value).toEqual(stored)
   })
 
-  it('renews again once the network is back: the session was kept, the refresh token is still good', async () => {
+  it.each([
+    [
+      'a validation error (sub of the id_token differs)',
+      () => new Error('sub in id_token does not match current sub'),
+    ],
+    [
+      'a validation error (auth_time)',
+      () => new Error('auth_time in id_token does not match original auth_time'),
+    ],
+    ['a validation error (azp)', () => new Error('azp in id_token does not match original azp')],
+    [
+      'an invalid content type',
+      () => new Error('Invalid response Content-Type: text/html, from URL: https://z/token'),
+    ],
+    [
+      'a 403 without an OAuth body (a WAF)',
+      () => new Error('Forbidden (403): <html>blocked</html>'),
+    ],
+    ['a 404 without an OAuth body (a misrouted URL)', () => new Error('Not Found (404): ')],
+    ['a 400 without an OAuth body', () => new Error('Bad Request (400): ')],
+    [
+      'an OAuth error whose description mentions a 5xx',
+      () =>
+        new (refusal('invalid_request').constructor as new (a: {
+          error: string
+          error_description: string
+        }) => Error)({ error: 'invalid_request', error_description: 'upstream (503)' }),
+    ],
+    ['something that is not an Error', () => 'boom'],
+  ])('wipes the session on %s: it would fail the same way every time', async (_title, failure) => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager().getUser.mockResolvedValue(user({ expired: true }))
+    manager().signinSilent.mockRejectedValue(failure())
+    manager().listeners.loaded!(user())
+
+    await expect(oidc.silentRenew()).resolves.toBeNull()
+
+    expect(manager().removeUser).toHaveBeenCalledOnce()
+    expect(oidc.oidcUser.value).toBeNull()
+  })
+
+  it.each([408, 429, 500, 502, 503, 504])(
+    'keeps the session on an HTTP %i without an OAuth body',
+    async (status) => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager().getUser.mockResolvedValue(user({ expired: true }))
+      manager().signinSilent.mockRejectedValue(new Error(`Whatever (${status}): `))
+
+      await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+      expect(manager().removeUser).not.toHaveBeenCalled()
+    },
+  )
+
+  it('renews again once the network is back (online event): the session was kept, the refresh token is still good', async () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
@@ -427,6 +482,7 @@ describe('silentRenew', () => {
       .mockResolvedValueOnce(user({ access_token: 'access-2' }))
 
     await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    window.dispatchEvent(new Event('online'))
     await expect(oidc.silentRenew()).resolves.toMatchObject({ access_token: 'access-2' })
     expect(manager().removeUser).not.toHaveBeenCalled()
   })
@@ -504,6 +560,112 @@ describe('silentRenew', () => {
 
     expect(manager().signinSilent).toHaveBeenCalledOnce()
     expect(oidc.oidcUser.value).toMatchObject({ access_token: 'access-2' })
+  })
+})
+
+// An outage must not turn into a storm: each authenticated request renews once on its token and once more on the 401
+// that follows. After a transient failure nothing calls the token endpoint for 30 s (or until the browser is online).
+describe('the cooldown after a transient failure of the renewal', () => {
+  const COOLDOWN_MS = 30_000
+
+  async function outage() {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    const loaded = await load()
+    await loaded.oidc.signIn()
+    loaded.manager().getUser.mockResolvedValue(user({ expired: true }))
+    loaded.manager().signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
+    return loaded
+  }
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('calls the token endpoint once for any number of serial and parallel requests during the outage', async () => {
+    const { oidc, manager } = await outage()
+
+    const requests = await Promise.allSettled(
+      Array.from({ length: 5 }, async () => {
+        // One request: its token, then (after the 401) the renewal again.
+        await oidc.getAccessToken()
+        await oidc.silentRenew().catch(() => undefined)
+      }),
+    )
+    for (let i = 0; i < 10; i++) {
+      vi.advanceTimersByTime(1_000)
+      await oidc.getAccessToken()
+      await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    }
+
+    expect(requests.every((r) => r.status === 'fulfilled')).toBe(true)
+    expect(manager().signinSilent).toHaveBeenCalledOnce()
+    expect(manager().removeUser).not.toHaveBeenCalled()
+  })
+
+  it('fails fast with the transient error (and its cause) while it lasts', async () => {
+    const { oidc, manager } = await outage()
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+
+    const second = await oidc.silentRenew().catch((e: unknown) => e)
+
+    expect(isSilentRenewUnavailable(second)).toBe(true)
+    expect((second as Error).cause).toBeInstanceOf(TypeError)
+    expect(manager().signinSilent).toHaveBeenCalledOnce()
+  })
+
+  it('tries again once the cooldown is over, at most once per window', async () => {
+    const { oidc, manager } = await outage()
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+
+    vi.advanceTimersByTime(COOLDOWN_MS - 1)
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    expect(manager().signinSilent).toHaveBeenCalledOnce()
+
+    vi.advanceTimersByTime(1)
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    expect(manager().signinSilent).toHaveBeenCalledTimes(2)
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    expect(manager().signinSilent).toHaveBeenCalledTimes(2)
+  })
+
+  it('ends when the browser comes back online', async () => {
+    const { oidc, manager } = await outage()
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    manager().signinSilent.mockResolvedValue(user({ access_token: 'access-2' }))
+
+    window.dispatchEvent(new Event('online'))
+
+    await expect(oidc.getAccessToken()).resolves.toBe('access-2')
+    expect(manager().signinSilent).toHaveBeenCalledTimes(2)
+  })
+
+  it('blocks the access-token-expired event too, and a success clears nothing it should not', async () => {
+    const { oidc, manager } = await outage()
+    await oidc.getAccessToken()
+    await expect(manager().listeners.expired!()).resolves.toBeUndefined()
+    expect(manager().signinSilent).toHaveBeenCalledOnce()
+  })
+
+  it('does not hold a definitive failure back: the session is wiped at once and the next renewal has nothing to do', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager()
+      .getUser.mockResolvedValueOnce(user({ expired: true }))
+      .mockResolvedValue(null)
+    manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+    await expect(oidc.silentRenew()).resolves.toBeNull()
+    await expect(oidc.silentRenew()).resolves.toBeNull()
+    expect(manager().signinSilent).toHaveBeenCalledOnce()
+  })
+
+  it('does not apply to a session without refresh token: it is wiped, cooldown or not', async () => {
+    const { oidc, manager } = await outage()
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    manager().getUser.mockResolvedValue(user({ expired: true, refresh_token: undefined }))
+
+    await expect(oidc.silentRenew()).resolves.toBeNull()
+    expect(manager().removeUser).toHaveBeenCalledOnce()
   })
 })
 

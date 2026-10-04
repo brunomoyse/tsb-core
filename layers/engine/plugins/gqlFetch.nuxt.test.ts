@@ -423,9 +423,9 @@ describe('with the real OIDC client', () => {
 
   it('a network failure while renewing keeps the session: not wiped, no login redirect, and the next request renews', async () => {
     const { gqlFetch, manager } = await withRealOidc(session('old', true))
-    // Offline for both attempts of the first request (the token lookup, then the renewal the 401 asks for).
+    // Offline: the token lookup of the first request fails, and so does the renewal the 401 asks for, without a second
+    // call to Zitadel (cooldown).
     manager.signinSilent
-      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
       .mockRejectedValueOnce(new TypeError('Failed to fetch'))
       .mockResolvedValueOnce(session('new'))
     $fetchMock.mockRejectedValueOnce(httpError(401))
@@ -438,14 +438,42 @@ describe('with the real OIDC client', () => {
     // The request went out without a token (none could be had); the retry never happened.
     expect($fetchMock).toHaveBeenCalledOnce()
     expect($fetchMock.mock.calls[0]![1].headers.Authorization).toBeUndefined()
+    expect(manager.signinSilent).toHaveBeenCalledOnce()
 
     // The network is back: the next request gets a fresh token from the same refresh token.
+    window.dispatchEvent(new Event('online'))
     manager.getUser.mockImplementation(() => Promise.resolve(session('old', true)))
     $fetchMock.mockResolvedValueOnce(ok({ me: { id: 'u1' } }))
     await expect(gqlFetch(QUERY)).resolves.toEqual({ me: { id: 'u1' } })
     expect($fetchMock.mock.calls[1]![1].headers.Authorization).toBe('Bearer new')
-    expect(manager.signinSilent).toHaveBeenCalledTimes(3)
+    expect(manager.signinSilent).toHaveBeenCalledTimes(2)
     expect(navigateTo).not.toHaveBeenCalled()
+  })
+
+  it('during an outage, requests fail fast: Zitadel is asked once, not twice per request', async () => {
+    const { gqlFetch, manager } = await withRealOidc(session('old', true))
+    manager.signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
+    $fetchMock.mockRejectedValue(httpError(401))
+
+    for (let i = 0; i < 5; i++) {
+      await expect(gqlFetch(QUERY)).rejects.toMatchObject({ status: 401 })
+    }
+
+    expect(manager.signinSilent).toHaveBeenCalledOnce()
+    expect(manager.removeUser).not.toHaveBeenCalled()
+    expect(navigateTo).not.toHaveBeenCalled()
+  })
+
+  it('a deterministic renewal failure (id_token validation) ends the session: it would fail every time', async () => {
+    window.history.replaceState({}, '', '/fr/me')
+    const { gqlFetch, manager } = await withRealOidc(session('old'))
+    manager.signinSilent.mockRejectedValue(new Error('sub in id_token does not match current sub'))
+    $fetchMock.mockRejectedValue(httpError(401))
+
+    await expect(gqlFetch(QUERY)).rejects.toMatchObject({ status: 401 })
+
+    expect(manager.removeUser).toHaveBeenCalledOnce()
+    expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
   })
 
   it('a session that is already gone ends the same way, without asking Zitadel', async () => {

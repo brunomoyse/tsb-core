@@ -23,15 +23,37 @@ const oidcUser: Ref<OidcUser | null> = ref(null)
 let silentRenewPromise: Promise<OidcUser | null> | null = null
 
 /*
- * OAuth error codes of a token endpoint that say "try again later", not "this refresh token is no good": the session
- * is kept. Every other `ErrorResponse` (invalid_grant: expired, revoked or already used refresh token, login_required,
- * invalid_client...) is a definitive refusal.
+ * OAuth error codes of a token endpoint that say "try again later", not "this refresh token is no good".
  */
 const TRANSIENT_OAUTH_ERRORS = new Set(['server_error', 'temporarily_unavailable'])
 
-/** Did Zitadel itself answer that this session cannot be renewed? (Not: we could not reach it.) */
-const isRefusal = (err: unknown): boolean =>
-  err instanceof ErrorResponse && !TRANSIENT_OAUTH_ERRORS.has(String(err.error))
+/** oidc-client-ts words a non-2xx answer without an OAuth body as `Error("<statusText> (<status>): <body>")`. */
+const TRANSIENT_HTTP_STATUS = /\((?:408|429|5\d\d)\)/u
+
+/*
+ * Could not get an answer from Zitadel, or it said "later": the session is kept (the refresh token may well be good)
+ * and the renewal is not attempted again before the cooldown below is over. ONLY these are transient: a dropped
+ * connection (fetch rejects with a TypeError), oidc-client-ts's `ErrorTimeout`, HTTP 408/429/5xx, and the OAuth
+ * `server_error` / `temporarily_unavailable`. Everything else is definitive, because it will fail the same way next
+ * time and keeping the session would leave the customer "signed in" for ever with every request failing: Zitadel's
+ * refusals (invalid_grant...), oidc-client-ts's validation errors (sub / auth_time / azp mismatch, invalid
+ * Content-Type) and a 4xx without an OAuth body (a WAF 403, a misrouted 404).
+ */
+const isTransient = (err: unknown): boolean => {
+  if (err instanceof ErrorResponse) return TRANSIENT_OAUTH_ERRORS.has(String(err.error))
+  if (err instanceof TypeError) return true
+  if (!(err instanceof Error)) return false
+  return err.name === 'ErrorTimeout' || TRANSIENT_HTTP_STATUS.test(err.message)
+}
+
+/*
+ * After a transient failure no new renewal is attempted for this long: every authenticated request renews once on its
+ * token and once more on the 401 that follows, so during an outage they would hammer the token endpoint. Requests
+ * fail fast with the same transient error instead. The browser coming back online ends it early.
+ */
+const RENEW_COOLDOWN_MS = 30_000
+let renewBlockedUntil = 0
+let renewBlockedBy: unknown = null
 
 /**
  * Provides OIDC Authorization Code + PKCE flow via oidc-client-ts.
@@ -67,6 +89,13 @@ export function useOidc() {
       userStore: new WebStorageStateStore({ store: localStorage }),
       stateStore: new WebStorageStateStore({ store: localStorage }),
     })
+
+    // The network is back: no reason to wait out the cooldown.
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        renewBlockedUntil = 0
+      })
+    }
 
     userManager.events.addUserLoaded((user) => {
       oidcUser.value = user
@@ -167,8 +196,9 @@ export function useOidc() {
    * Resolves the renewed user, or `null` when the session is over (nothing to
    * renew, or Zitadel refused the refresh token: the stale user is wiped).
    * Rejects with `SilentRenewUnavailableError` when Zitadel could not be
-   * reached (offline, timeout, 5xx): the session is NOT touched, the caller
-   * keeps the customer signed in and does not send them to the login page.
+   * reached (offline, timeout, 408/429/5xx): the session is NOT touched, the
+   * caller keeps the customer signed in and does not send them to the login
+   * page. For 30 s after such a failure it rejects at once, without a call.
    */
   function silentRenew(): Promise<OidcUser | null> {
     silentRenewPromise ??= doSilentRenew().finally(() => {
@@ -183,13 +213,20 @@ export function useOidc() {
     if (!existing) return null // No session to renew
     // Without a refresh token oidc-client-ts would try a hidden iframe, which this app does not configure: no way back.
     if (!existing.refresh_token) return endSession(mgr)
+    if (Date.now() < renewBlockedUntil) {
+      throw new SilentRenewUnavailableError({ cause: renewBlockedBy })
+    }
     try {
       const user = await mgr.signinSilent()
       oidcUser.value = user
       return user
     } catch (err) {
-      if (isRefusal(err)) return endSession(mgr)
-      throw new SilentRenewUnavailableError({ cause: err })
+      if (isTransient(err)) {
+        renewBlockedUntil = Date.now() + RENEW_COOLDOWN_MS
+        renewBlockedBy = err
+        throw new SilentRenewUnavailableError({ cause: err })
+      }
+      return endSession(mgr)
     }
   }
 
