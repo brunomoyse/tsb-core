@@ -249,6 +249,18 @@ describe('startSentry', () => {
     expect(load).toHaveBeenCalledTimes(2)
   })
 
+  it('announces the start to whoever waits for it, once the SDK is initialised and not before', async () => {
+    const { startSentry, whenSentryStarted } = await import('./sentryClient')
+    const sdk = fakeSdk().module
+    const waiting = vi.fn()
+    void whenSentryStarted().then(waiting)
+    await Promise.resolve()
+    expect(waiting).not.toHaveBeenCalled()
+    await startSentry(env(), () => Promise.resolve(sdk))
+    await Promise.resolve()
+    expect(waiting).toHaveBeenCalledExactlyOnceWith(sdk)
+  })
+
   it('never loads the browser SDK on the server', async () => {
     setFlags({ server: true, client: false })
     const { startSentry } = await import('./sentryClient')

@@ -3,7 +3,9 @@ import {
   type SentryEnvironment,
   type SentryModule,
   startSentry,
+  whenSentryStarted,
 } from '#engine/utils/sentryClient'
+import { isNuxtError } from '#app'
 
 /*
  * Sentry, loaded after the page is interactive (see utils/sentryClient.ts for why). Until the SDK is there, the three
@@ -11,6 +13,13 @@ import {
  * promise rejection, and Vue's / Nuxt's error hooks. The first one also loads the SDK at once, then everything kept is
  * sent, so an early failure is reported (a little later), not lost. Without an error, the SDK starts at idle time
  * once the page has been loaded for LOAD_DELAY_MS, which keeps it out of the first-interaction window.
+ *
+ * `enforce: 'pre'`: this plugin runs before the engine's others (api, auth-sync, gqlFetch...), so an error thrown while
+ * one of them sets up is kept too instead of vanishing before the `app:error` hook below exists.
+ *
+ * Known trade-off: an error kept before the SDK is there is sent without breadcrumbs (the SDK records the console, fetch and
+ * navigation from its own start) and without the Vue component context (its Vue integration is not installed either; the
+ * `info` string of Vue's hook is attached as extra data).
  *
  * Does nothing without a DSN (the engine only registers the @sentry/nuxt module for builds that have one).
  */
@@ -25,6 +34,7 @@ interface Captured {
 
 export default defineNuxtPlugin({
   name: 'sentry-lazy',
+  enforce: 'pre',
   parallel: true,
   setup(nuxtApp) {
     const env = nuxtApp as unknown as SentryEnvironment
@@ -41,16 +51,17 @@ export default defineNuxtPlugin({
     }
 
     const load = () => {
-      void startSentry(env)
-        .then((Sentry) => {
-          sentry = Sentry
-          // Sentry's own global handlers are in place now: ours would report everything twice.
-          window.removeEventListener('error', onScriptError)
-          window.removeEventListener('unhandledrejection', onRejection)
-          for (const item of kept.splice(0)) send(Sentry, item)
-        })
-        .catch(() => undefined)
+      void startSentry(env).catch(() => undefined)
     }
+
+    // Whoever starts the SDK (this plugin, or `reportError` for a caught error): from then on its own global handlers are
+    // in place, so ours come off at once (they would report every window error twice) and what was kept is sent.
+    void whenSentryStarted().then((Sentry) => {
+      sentry = Sentry
+      window.removeEventListener('error', onScriptError)
+      window.removeEventListener('unhandledrejection', onRejection)
+      for (const item of kept.splice(0)) send(Sentry, item)
+    })
 
     const capture = (item: Captured) => {
       if (sentry) {
@@ -82,11 +93,12 @@ export default defineNuxtPlugin({
       capture({ error, mechanism: 'auto.function.nuxt.vue-error', extra: { info } })
     })
     nuxtApp.hook('app:error', (error) => {
-      // Redirects and client errors (a 404 is a visitor's typo) are not ours to track.
-      const status =
-        (error as { status?: number; statusCode?: number } | null)?.status ??
-        (error as { statusCode?: number } | null)?.statusCode
-      if (status && status >= 300 && status < 500) return
+      // Same rule as the @sentry/nuxt module's own plugin: redirects and client errors of a Nuxt/h3 error (a 404 is a
+      // visitor's typo) are not ours to track. Any other thrown value is reported, whatever fields it has.
+      if (isNuxtError(error)) {
+        const status = error.status ?? error.statusCode
+        if (status && status >= 300 && status < 500) return
+      }
       capture({ error, mechanism: 'auto.function.nuxt.app-error' })
     })
 

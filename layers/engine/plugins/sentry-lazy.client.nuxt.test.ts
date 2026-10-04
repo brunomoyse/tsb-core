@@ -8,12 +8,15 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 const loader = vi.hoisted(() => ({
   startSentry: vi.fn(),
   captureException: vi.fn(),
+  // The "SDK is initialised" signal of utils/sentryClient: resolved with `started(sdk)`, by whoever starts the SDK.
+  whenSentryStarted: vi.fn(),
 }))
 const whenReady = vi.hoisted(() => ({ callbacks: [] as (() => void)[] }))
 
 vi.mock('#engine/utils/sentryClient', () => ({
   MAX_EVENTS_PER_SESSION: 3,
   startSentry: loader.startSentry,
+  whenSentryStarted: loader.whenSentryStarted,
 }))
 mockNuxtImport('onNuxtReady', () => (callback: () => void) => {
   whenReady.callbacks.push(callback)
@@ -39,6 +42,7 @@ const listeners: [string, EventListenerOrEventListenerObject][] = []
 
 let loaded: (sdk: unknown) => void
 let loadFailed: (reason: unknown) => void
+let started: (sdk: unknown) => void
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
@@ -53,10 +57,19 @@ beforeEach(() => {
   whenReady.callbacks.length = 0
   loader.startSentry.mockReset()
   loader.captureException.mockReset()
+  loader.whenSentryStarted.mockReset()
+  const signal = new Promise((resolve) => {
+    started = resolve
+  })
+  loader.whenSentryStarted.mockReturnValue(signal)
   loader.startSentry.mockImplementation(
     () =>
       new Promise((resolve, reject) => {
-        loaded = resolve
+        // `loaded` is the SDK finishing its start: it answers startSentry's caller and announces itself.
+        loaded = (sdk) => {
+          started(sdk)
+          resolve(sdk)
+        }
         loadFailed = reject
       }),
   )
@@ -72,8 +85,10 @@ const sdk = () => ({ captureException: loader.captureException })
 const flush = () => vi.advanceTimersByTimeAsync(0)
 
 describe('registration', () => {
-  it('is a parallel plugin, and does nothing at all without a DSN', () => {
-    expect((plugin as unknown as { parallel: boolean }).parallel).toBe(true)
+  it('is a parallel plugin that runs before the others, and does nothing at all without a DSN', () => {
+    const meta = plugin as unknown as { parallel: boolean; enforce: string }
+    expect(meta.parallel).toBe(true)
+    expect(meta.enforce).toBe('pre')
     const hooks = setup('')
     expect(hooks).toEqual({})
     expect(whenReady.callbacks).toHaveLength(0)
@@ -170,20 +185,30 @@ describe('errors raised while the SDK is not there', () => {
     })
   })
 
-  it('keeps a Nuxt app error, but not a redirect or a client error such as a 404', async () => {
+  it('keeps a Nuxt app error, but not a redirect or a client error (a 404) of a Nuxt error', async () => {
     const hooks = setup()
-    hooks['app:error']!({ statusCode: 404 })
-    hooks['app:error']!({ status: 302 })
-    hooks['app:error']!(null)
-    expect(loader.startSentry).toHaveBeenCalledOnce()
-    const fault = { statusCode: 500 }
+    hooks['app:error']!(createError({ statusCode: 404 }))
+    hooks['app:error']!(createError({ statusCode: 302 }))
+    expect(loader.startSentry).not.toHaveBeenCalled()
+    const fault = createError({ statusCode: 500 })
     hooks['app:error']!(fault)
+    expect(loader.startSentry).toHaveBeenCalledOnce()
+    hooks['app:error']!(null)
     loaded(sdk())
     await flush()
     expect(loader.captureException).toHaveBeenCalledTimes(2)
     expect(loader.captureException).toHaveBeenCalledWith(fault, {
       mechanism: { handled: false, type: 'auto.function.nuxt.app-error' },
     })
+  })
+
+  it('only filters Nuxt errors like the @sentry/nuxt module does: any other thrown value is kept, whatever its status', async () => {
+    const hooks = setup()
+    const notNuxt = Object.assign(new Error('upstream'), { statusCode: 404 })
+    hooks['app:error']!(notNuxt)
+    loaded(sdk())
+    await flush()
+    expect(loader.captureException).toHaveBeenCalledExactlyOnceWith(notNuxt, expect.anything())
   })
 
   it('keeps at most as many errors as Sentry would send while it loads', async () => {
@@ -210,6 +235,22 @@ describe('errors raised while the SDK is not there', () => {
     hooks['vue:error']!(error, {}, 'render')
     expect(loader.captureException).toHaveBeenCalledOnce()
     expect(loader.startSentry).toHaveBeenCalledOnce()
+  })
+
+  it('lets go of the window listeners when something else starts the SDK (reportError), and sends what was kept', async () => {
+    const hooks = setup()
+    const error = new Error('kept')
+    hooks['vue:error']!(error, {}, 'render')
+    loader.startSentry.mockClear()
+    // `reportError` loaded the SDK: not this plugin's loader, only the signal.
+    started(sdk())
+    await flush()
+    expect(loader.captureException).toHaveBeenCalledOnce()
+    // Sentry's own handlers report a window error now: ours must not as well.
+    loader.captureException.mockClear()
+    window.dispatchEvent(new ErrorEvent('error', { error: new Error('window') }))
+    expect(loader.captureException).not.toHaveBeenCalled()
+    expect(loader.startSentry).not.toHaveBeenCalled()
   })
 
   it('loads again on the next error when the first attempt failed', async () => {

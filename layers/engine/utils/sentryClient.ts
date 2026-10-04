@@ -161,6 +161,16 @@ const loadBrowserSdk = (): Promise<SentryModule> =>
     : Promise.reject(new Error('The Sentry browser SDK only loads in the browser'))
 
 let started: Promise<SentryModule> | null = null
+let announceStarted: (Sentry: SentryModule) => void = () => undefined
+const startedSignal = new Promise<SentryModule>((resolve) => {
+  announceStarted = resolve
+})
+
+/**
+ * Resolves once the SDK is initialised, whoever started it (the buffering plugin, or `reportError` for a caught error). It
+ * never loads anything itself and never rejects: it stays pending when the SDK is never needed.
+ */
+export const whenSentryStarted = (): Promise<SentryModule> => startedSignal
 
 /** Loads and initialises Sentry once; every later call gets the same promise. */
 export function startSentry(
@@ -169,6 +179,7 @@ export function startSentry(
 ): Promise<SentryModule> {
   started ??= loadSdk().then((Sentry) => {
     initSentry(Sentry, env)
+    announceStarted(Sentry)
     return Sentry
   })
   // A failed load (offline, stale chunk) is retried on the next call instead of being cached.
