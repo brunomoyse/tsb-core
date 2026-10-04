@@ -205,6 +205,21 @@ test.describe('Order confirmation page, live', () => {
     await expect(current(page)).toContainText('Confirmé par le restaurant')
   })
 
+  test('an order that cannot be loaded says so instead of spinning for ever', async ({
+    authenticatedPage: page,
+    backend,
+  }) => {
+    const id = await backend.seedOrder({ status: 'CONFIRMED', online: false, withItem: true })
+    await backend.mock.failOperation('myOrder', { code: 'NOT_FOUND' })
+    await page.goto(`/fr/order-completed/${id}`)
+    await expect(page.getByText('Impossible de charger les détails de la commande')).toBeVisible()
+    await expect(page.getByTestId('order-completed-title')).toHaveCount(0)
+    await expect(page.getByTestId('order-completed-verifying')).toHaveCount(0)
+    // The way out is still there.
+    await expect(page.getByRole('link', { name: 'Voir mes commandes' })).toBeVisible()
+    await noHorizontalScroll(page, 'order that failed to load')
+  })
+
   test('placing a cash order and watching the restaurant take it, without a reload', async ({
     authenticatedPage: page,
     backend,
