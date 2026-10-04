@@ -128,6 +128,7 @@
     "choice": "Choice",
     "required": "Required",
     "addWithPrice": "Add · {price}",
+    "update": "Update",
     "updateWithPrice": "Update · {price}",
     "viewDetails": "View details for {name}",
     "loadFailed": "We couldn't load the menu.",

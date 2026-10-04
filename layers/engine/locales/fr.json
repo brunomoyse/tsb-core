@@ -128,6 +128,7 @@
     "choice": "Choix",
     "required": "Obligatoire",
     "addWithPrice": "Ajouter · {price}",
+    "update": "Mettre à jour",
     "updateWithPrice": "Mettre à jour · {price}",
     "viewDetails": "Voir le détail de {name}",
     "loadFailed": "Impossible de charger le menu.",

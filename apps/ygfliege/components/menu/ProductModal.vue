@@ -231,7 +231,7 @@
           :disabled="!canAddToCart"
           @click="addToCart"
         >
-          <span>{{ $t('menu.addToCart') }}</span>
+          <span>{{ $t(editItem ? 'menu.update' : 'menu.addToCart') }}</span>
           <span class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
         </button>
       </div>
@@ -253,6 +253,7 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import LoadError from '#engine/components/LoadError.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
+import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { formatCents } from '#engine/lib/price'
 import { lineSignature } from '#engine/utils/cartLines'
 import { useCartStore } from '#engine/stores/cart'
@@ -311,7 +312,12 @@ const openLightbox = (id: string, name: string) => {
   lightboxRef.value?.open()
 }
 
-const quantity = ref(1)
+// Set when the modal was opened from a customized cart line ("Edit"): prefill from that line and replace it on
+// confirm instead of adding a second one (same as the Tokyo Sushi modal).
+const cartItemEdit = useCartItemEdit()
+const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value : null
+
+const quantity = ref(editItem?.quantity ?? 1)
 const maxQuantity = 99
 
 const PRODUCT_QUERY = /* GraphQL */ `
@@ -373,6 +379,7 @@ const p = dataProduct.value?.product
 const choicesApi = useProductChoices(p, quantity)
 const {
   choiceGroups,
+  selectedChoiceQuantities,
   selectionList,
   selectedChoice,
   displayPriceCents,
@@ -381,6 +388,13 @@ const {
   allGroupsSatisfied,
   groupHint,
 } = choicesApi
+
+// Editing a cart line: start from its selections.
+if (editItem?.selectedChoices?.length) {
+  selectedChoiceQuantities.value = Object.fromEntries(
+    editItem.selectedChoices.map((selection) => [selection.choiceId, selection.quantity]),
+  )
+}
 
 const canAddToCart = computed(() => {
   if (orderingDisabled) return false
@@ -396,7 +410,10 @@ onMounted(() => {
     if (e.key === 'Escape') emit('close')
   }
   document.addEventListener('keydown', handleEscape)
-  onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleEscape)
+    cartItemEdit.value = null
+  })
 
   // Track product view
   if (p) {
@@ -412,6 +429,13 @@ onMounted(() => {
 const addToCart = () => {
   if (!p || !canAddToCart.value) return
 
+  if (editItem) {
+    cartStore.removeFromCart(editItem.product, {
+      choice: editItem.selectedChoice,
+      selections: editItem.selectedChoices,
+      quantity: editItem.quantity,
+    })
+  }
   cartStore.addProduct(p, quantity.value, {
     choice: selectedChoice.value,
     selections: selectionList.value,
