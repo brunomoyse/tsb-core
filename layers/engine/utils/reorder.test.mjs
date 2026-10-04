@@ -1,6 +1,7 @@
 // Run: `vp test run layers/engine/utils/reorder.test.mjs`.
 
 import { countUnits, planReorder } from './reorder.ts'
+import { orderItemPayload } from './orderPayload.ts'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
 
@@ -173,10 +174,23 @@ test('an old order choice on a product that now lists no choices at all skips th
   assert.equal(plan.skipped[0].reason, 'choices')
 })
 
-test('an old order choice whose group is unknown is restored with an empty groupId', () => {
+test('an old order choice whose group is unknown stays the plain legacy choice: no selection with an empty groupId', () => {
   const legacy = { id: 'salmon', productId: 'p5', priceModifier: '0.00', sortOrder: 0, name: 'S' }
   const sushi = { id: 'p5', name: 'Maki', isAvailable: true, isVisible: true, choices: [legacy] }
   const plan = planReorder([{ quantity: 2, product: sushi, choice: legacy, selections: [] }])
   assert.equal(plan.lines.length, 1)
-  assert.deepEqual(plan.lines[0].selections, [{ groupId: '', choiceId: 'salmon', quantity: 2 }])
+  // The order input would carry `choiceId` only: tsb-service's CreateOrderItemSelectionInput.groupId is a mandatory
+  // UUID, an empty one fails the whole createOrder / quoteOrder request, not just the line.
+  assert.deepEqual(plan.lines[0].selections, [])
+  assert.deepEqual(plan.lines[0].choice, legacy)
+  const [line] = plan.lines
+  assert.deepEqual(
+    orderItemPayload({
+      product: line.product,
+      quantity: line.quantity,
+      selectedChoice: line.choice,
+      selectedChoices: line.selections,
+    }),
+    { productId: 'p5', quantity: 2, choiceId: 'salmon' },
+  )
 })
