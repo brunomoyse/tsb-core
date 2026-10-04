@@ -254,12 +254,14 @@ for (const lang of ['fr', 'en', 'nl', 'zh']) {
 // Parity with the backend: every code of tsb-service's apperr/codes.go is known here.
 // Only runs in the workspace layout (tsb-core next to tsb-service), skipped in a lone checkout.
 // ---------------------------------------------------------------------------------------------
-// Codes only the dashboard can raise (its assistant; a staff cancellation whose Mollie settlement failed): the
-// customer app never calls those, so they have no customer message on purpose (a translation would be dead copy).
+// Codes only the dashboard can raise (its assistant; a staff cancellation whose Mollie settlement failed or whose
+// payment cannot be refunded): the customer app never calls those, so they have no customer message on purpose (a
+// translation would be dead copy).
 const DASHBOARD_ONLY_CODES = [
   'ASSISTANT_DISABLED',
   'ASSISTANT_UNAVAILABLE',
   'PAYMENT_SETTLEMENT_FAILED',
+  'PAYMENT_NOT_REFUNDABLE',
 ]
 const goCodes = new URL(
   '../../../../tsb-service/internal/api/graphql/apperr/codes.go',
