@@ -1,4 +1,5 @@
-// The persisted cart: slim versioned shape, migration of the v0 / v1 shapes, lines that cannot be recovered.
+// The persisted cart: slim versioned shape, migration of the v0 / v1 shapes, lines that cannot be recovered; then the
+// data localStorage really holds: partial snapshots, hand-edited or corrupted JSON, every way a line can be malformed.
 // Run: `vp test run layers/engine/utils/cartPersistence.test.mjs`.
 
 import {
@@ -6,13 +7,15 @@ import {
   lineFromPersisted,
   migratePersistedCart,
   parsePersistedCart,
+  productFromSnapshot,
   serializeCartState,
   toPersistedLine,
 } from './cartPersistence.ts'
+import { describe, expect, it, test } from 'vite-plus/test'
+import { makeChoice, makeProduct } from '../../../test/fixtures/catalog.ts'
 import assert from 'node:assert/strict'
 import { lineTotalCents } from './pricing.ts'
 import { orderItemPayload } from './orderPayload.ts'
-import { test } from 'vite-plus/test'
 
 const MAX = 99
 
@@ -389,180 +392,364 @@ test('migrating twice changes nothing (idempotent)', () => {
 })
 
 // ---------------------------------------------------------------------------------------------
-// Defensive paths: products and lines that are thinner than the menu query's, and hostile storage.
+// The data localStorage really holds: sparse products, malformed lines, other builds' carts. What cannot be recovered is
+// dropped and counted, never thrown.
 // ---------------------------------------------------------------------------------------------
+const EDGE_MAX = 20
 
-test('a product without choices, code, slug, piece count or category persists with neutral defaults', () => {
-  const thin = {
-    id: 'thin',
-    name: 'Thin',
-    price: '2.00',
-    isDiscountable: undefined,
-    isLunchOnly: undefined,
-  }
-  const persisted = toPersistedLine({ product: thin, quantity: 1, selectedChoice: null })
-  assert.deepEqual(persisted, {
-    productId: 'thin',
-    quantity: 1,
-    selections: [],
-    choiceId: null,
-    snapshot: {
-      name: 'Thin',
+const snapshot = (overrides = {}) => ({
+  name: 'Salmon nigiri',
+  code: 'S1',
+  slug: 'salmon-nigiri',
+  priceCents: 1000,
+  pieceCount: null,
+  isDiscountable: true,
+  isLunchOnly: false,
+  category: { id: 'cat', name: 'Sushi', slug: 'sushi' },
+  choices: [],
+  ...overrides,
+})
+
+const v2Line = (overrides = {}) => ({
+  productId: 'p1',
+  quantity: 2,
+  selections: [],
+  choiceId: null,
+  snapshot: snapshot(),
+  ...overrides,
+})
+
+const migrate = (products, extra = {}) =>
+  migratePersistedCart({ version: CART_SCHEMA_VERSION, products, ...extra }, EDGE_MAX)
+
+describe('toPersistedLine with sparse products', () => {
+  it('fills what the product lacks with neutral values', () => {
+    const product = makeProduct({
+      code: undefined,
+      slug: undefined,
+      pieceCount: undefined,
+      isDiscountable: undefined,
+      isLunchOnly: undefined,
+      category: undefined,
+      choices: undefined,
+    })
+    const line = toPersistedLine({ product, quantity: 1 })
+    expect(line.snapshot).toMatchObject({
       code: null,
       slug: '',
-      priceCents: 200,
       pieceCount: null,
       isDiscountable: false,
       isLunchOnly: false,
       category: null,
       choices: [],
-    },
+    })
+    expect(line.choiceId).toBeNull()
+    expect(line.selections).toEqual([])
+  })
+
+  it('a category without id or names takes the product category id and empty strings', () => {
+    const product = makeProduct({ categoryId: 'cat-9', category: {} })
+    expect(toPersistedLine({ product, quantity: 1 }).snapshot.category).toEqual({
+      id: 'cat-9',
+      name: '',
+      slug: '',
+    })
+    const none = makeProduct({ categoryId: undefined, category: {} })
+    expect(toPersistedLine({ product: none, quantity: 1 }).snapshot.category?.id).toBe('')
+  })
+
+  it('keeps only the selected choices, with their price modifiers in cents', () => {
+    const a = makeChoice({ id: 'a', priceModifier: '1.50', choiceGroupId: 'g' })
+    const b = makeChoice({ id: 'b', priceModifier: '2.00', choiceGroupId: null })
+    const product = makeProduct({ choices: [a, b, makeChoice({ id: 'c' })] })
+    const line = toPersistedLine({
+      product,
+      quantity: 1,
+      selectedChoices: [{ groupId: 'g', choiceId: 'a', quantity: 1 }],
+      selectedChoice: b,
+    })
+    expect(line.snapshot.choices).toEqual([
+      { id: 'a', groupId: 'g', priceModifierCents: 150, name: 'Choice' },
+      { id: 'b', groupId: '', priceModifierCents: 200, name: 'Choice' },
+    ])
+    expect(line.choiceId).toBe('b')
+  })
+
+  it('a legacy choice that is not in the product choices is kept so that it can price itself', () => {
+    const legacy = makeChoice({
+      id: 'legacy',
+      priceModifier: '0.50',
+      choiceGroupId: undefined,
+    })
+    const legacyProduct = makeProduct({ choices: [] })
+    const line = toPersistedLine({ product: legacyProduct, quantity: 1, selectedChoice: legacy })
+    expect(line.snapshot.choices).toEqual([
+      { id: 'legacy', groupId: '', priceModifierCents: 50, name: 'Choice' },
+    ])
+    // It survives the round trip and prices itself: the rebuilt line carries the choice with its modifier.
+    const rebuilt = lineFromPersisted(line)
+    expect(rebuilt.selectedChoice?.id).toBe('legacy')
+    expect(lineTotalCents(rebuilt)).toBe(Math.round(Number(legacyProduct.price) * 100) + 50)
   })
 })
 
-test('a category missing its fields falls back to the product categoryId and empty strings', () => {
-  const product = tea({ categoryId: 'cat-from-product', category: { order: 1 } })
-  const { snapshot } = toPersistedLine(v1Line(product, 1, []))
-  assert.deepEqual(snapshot.category, { id: 'cat-from-product', name: '', slug: '' })
-  const noIds = tea({ categoryId: undefined, category: { order: 1 } })
-  assert.equal(toPersistedLine(v1Line(noIds, 1, [])).snapshot.category.id, '')
-})
-
-test('a legacy single choice that is not among the product choices still persists, and prices itself', () => {
-  const orphan = { id: 'old', productId: 'tea', priceModifier: '0.75', sortOrder: 0, name: 'Old' }
-  const line = { product: tea(), quantity: 2, selectedChoices: undefined, selectedChoice: orphan }
-  const persisted = toPersistedLine(line)
-  assert.deepEqual(persisted.selections, [])
-  assert.equal(persisted.choiceId, 'old')
-  // The group is unknown: it is stored empty, never undefined.
-  assert.deepEqual(persisted.snapshot.choices, [
-    { id: 'old', groupId: '', priceModifierCents: 75, name: 'Old' },
-  ])
-  // And it survives the round trip: the rebuilt line carries the legacy choice with its price.
-  const rebuilt = lineFromPersisted(persisted)
-  assert.equal(rebuilt.selectedChoice.id, 'old')
-  assert.equal(lineTotalCents(rebuilt), 2 * (350 + 75))
-})
-
-test('a legacy single choice that IS among the product choices is not stored twice', () => {
-  const product = wholeProduct()
-  const line = { product, quantity: 1, selectedChoices: [], selectedChoice: product.choices[1] }
-  assert.deepEqual(
-    toPersistedLine(line).snapshot.choices.map((c) => c.id),
-    ['broth-b'],
-  )
-})
-
-test('a persisted choiceId that the snapshot no longer holds rebuilds as no choice', () => {
-  const persisted = toPersistedLine(v1Line(tea(), 1, []))
-  const rebuilt = lineFromPersisted({ ...persisted, choiceId: 'gone' })
-  assert.equal(rebuilt.selectedChoice, null)
-})
-
-test('v2 lines: missing selections / choices mean none, malformed ones drop the line', () => {
-  const base = { productId: 'p', quantity: 1, snapshot: { name: 'x', priceCents: 100 } }
-  const keep = migratePersistedCart({ version: 2, products: [base] }, MAX)
-  assert.equal(keep.dropped, 0)
-  assert.deepEqual(keep.state.products[0].selectedChoices, [])
-  assert.deepEqual(keep.state.products[0].product.choices, [])
-  const nullish = migratePersistedCart(
-    {
-      version: 2,
-      products: [{ ...base, selections: null, snapshot: { ...base.snapshot, choices: null } }],
-    },
-    MAX,
-  )
-  assert.equal(nullish.dropped, 0)
-
-  const broken = [
-    { ...base, snapshot: { ...base.snapshot, choices: 'nope' } }, // Choices not a list
-    { ...base, snapshot: { ...base.snapshot, choices: ['str'] } }, // A choice that is not an object
-    { ...base, snapshot: { ...base.snapshot, choices: [{ name: 'no id' }] } }, // A choice without id
-    { ...base, selections: ['str'] }, // A selection that is not an object
-    { ...base, snapshot: { priceCents: 100 } }, // No name
-    { ...base, snapshot: { name: 7, priceCents: 100 } }, // Name of the wrong type
-  ]
-  const result = migratePersistedCart({ version: 2, products: broken }, MAX)
-  assert.equal(result.dropped, broken.length)
-  assert.deepEqual(result.state.products, [])
-})
-
-test('v2 snapshot fields of the wrong type fall back instead of failing the line', () => {
-  const line = {
-    productId: 'p',
-    quantity: 3,
-    selections: [],
-    choiceId: '',
-    snapshot: {
-      name: 'x',
-      priceCents: 100,
-      code: '',
-      slug: 12,
-      pieceCount: 'eight',
-      isDiscountable: 'yes',
-      isLunchOnly: 1,
-      category: { id: 5, name: null, slug: undefined },
-      choices: [{ id: 'c', groupId: 4, priceModifierCents: 1.5, name: undefined }],
-    },
-  }
-  const { state, dropped } = migratePersistedCart({ version: 2, products: [line] }, MAX)
-  assert.equal(dropped, 0)
-  const item = state.products[0]
-  const persisted = toPersistedLine(item)
-  assert.equal(persisted.choiceId, null)
-  assert.deepEqual(persisted.snapshot, {
-    name: 'x',
-    code: null,
-    slug: '',
-    priceCents: 100,
-    pieceCount: null,
-    isDiscountable: false,
-    isLunchOnly: false,
-    category: { id: '', name: '', slug: '' },
-    choices: [],
+describe('productFromSnapshot / lineFromPersisted', () => {
+  it('a snapshot without category gives an empty one', () => {
+    const product = productFromSnapshot('p1', snapshot({ category: null }))
+    expect(product.categoryId).toBe('')
+    expect(product.category).toMatchObject({ id: '', name: '', slug: '', order: 0 })
+    expect(product.price).toBe('10.00')
   })
-  // The malformed choice is kept in the snapshot with a zero modifier (it was never selected, so toPersistedLine slims it).
-  assert.deepEqual(item.product.choices, [
-    { ...item.product.choices[0], id: 'c', choiceGroupId: '', priceModifier: '0.00', name: '' },
-  ])
+
+  it('rebuilds the legacy choice from the snapshot, or null when it is not in it', () => {
+    const base = {
+      productId: 'p1',
+      quantity: 1,
+      selections: [],
+      choiceId: 'c1',
+      snapshot: snapshot({
+        choices: [{ id: 'c1', groupId: 'g', priceModifierCents: 150, name: 'Spicy' }],
+      }),
+    }
+    expect(lineFromPersisted(base).selectedChoice).toMatchObject({
+      id: 'c1',
+      priceModifier: '1.50',
+    })
+    expect(lineFromPersisted({ ...base, choiceId: 'other' }).selectedChoice).toBeNull()
+    expect(lineFromPersisted({ ...base, choiceId: null }).selectedChoice).toBeNull()
+  })
 })
 
-test('v2 piece counts that are numbers are kept', () => {
-  const { state } = migratePersistedCart(
-    {
-      version: 2,
-      products: [
-        { productId: 'p', quantity: 1, snapshot: { name: 'x', priceCents: 100, pieceCount: 8 } },
-      ],
-    },
-    MAX,
-  )
-  assert.equal(state.products[0].product.pieceCount, 8)
+describe('serialize / parse round trip', () => {
+  it('an empty state serialises to an empty cart', () => {
+    expect(JSON.parse(serializeCartState({})).products).toEqual([])
+  })
 })
 
-test('a v0 line whose product has no name cannot be recovered', () => {
-  const { dropped, state } = migratePersistedCart(
-    { products: [{ product: { id: 'x', price: '1.00' }, quantity: 1, selectedChoices: [] }] },
-    MAX,
-  )
-  assert.equal(dropped, 1)
-  assert.deepEqual(state.products, [])
+describe('v2 lines are validated', () => {
+  const ok = (line) => migrate([line]).state.products.length === 1
+  const dropped = (line) => migrate([line]).dropped
+
+  it('keeps a well-formed line', () => {
+    expect(ok(v2Line())).toBe(true)
+    expect(dropped(v2Line())).toBe(0)
+  })
+
+  it.each([
+    ['not an object', 'junk'],
+    ['null', null],
+    ['no product id', v2Line({ productId: '' })],
+    ['no snapshot', v2Line({ snapshot: undefined })],
+    ['a quantity that is not a number', v2Line({ quantity: '2' })],
+    ['an infinite quantity', v2Line({ quantity: Infinity })],
+    ['selections that are not a list', v2Line({ selections: 'x' })],
+    ['a selection that is not an object', v2Line({ selections: [1] })],
+    ['a selection without a choice id', v2Line({ selections: [{ groupId: 'g', quantity: 1 }] })],
+    ['a selection without a group id', v2Line({ selections: [{ choiceId: 'c', quantity: 1 }] })],
+    [
+      'a selection quantity of 0',
+      v2Line({ selections: [{ groupId: 'g', choiceId: 'c', quantity: 0 }] }),
+    ],
+    [
+      'a selection quantity with decimals',
+      v2Line({ selections: [{ groupId: 'g', choiceId: 'c', quantity: 1.5 }] }),
+    ],
+    [
+      'a selection quantity that is not a number',
+      v2Line({ selections: [{ groupId: 'g', choiceId: 'c', quantity: '1' }] }),
+    ],
+    ['snapshot choices that are not a list', v2Line({ snapshot: snapshot({ choices: 'x' }) })],
+    ['a snapshot choice without id', v2Line({ snapshot: snapshot({ choices: [{ name: 'x' }] }) })],
+    [
+      'a snapshot choice that is not an object',
+      v2Line({ snapshot: snapshot({ choices: [null] }) }),
+    ],
+    ['a negative price', v2Line({ snapshot: snapshot({ priceCents: -1 }) })],
+    ['a price with decimals', v2Line({ snapshot: snapshot({ priceCents: 10.5 }) })],
+    ['a price that is not a number', v2Line({ snapshot: snapshot({ priceCents: '10' }) })],
+    ['a name that is not text', v2Line({ snapshot: snapshot({ name: 5 }) })],
+  ])('drops a line with %s and counts it', (_label, line) => {
+    expect(ok(line)).toBe(false)
+    expect(dropped(line)).toBe(1)
+  })
+
+  it('clamps the quantity between 1 and the maximum and truncates decimals', () => {
+    const quantity = (value) => migrate([v2Line({ quantity: value })]).state.products[0].quantity
+    expect(quantity(0)).toBe(1)
+    expect(quantity(-4)).toBe(1)
+    expect(quantity(3.9)).toBe(3)
+    expect(quantity(500)).toBe(EDGE_MAX)
+  })
+
+  it('missing selections or snapshot choices mean none', () => {
+    const [line] = migrate([
+      v2Line({ selections: undefined, snapshot: snapshot({ choices: undefined }) }),
+    ]).state.products
+    expect(line.selectedChoices).toEqual([])
+    expect(line.product.choices).toEqual([])
+  })
+
+  it('tolerates sparse snapshot fields: an unknown category, missing code/slug/flags, a choice without name or modifier', () => {
+    const [line] = migrate([
+      v2Line({
+        choiceId: '',
+        snapshot: {
+          name: 'Bowl',
+          priceCents: 0,
+          category: 'nope',
+          pieceCount: 6,
+          choices: [{ id: 'c1', priceModifierCents: 1.5 }],
+        },
+      }),
+    ]).state.products
+    expect(line.product).toMatchObject({
+      code: null,
+      slug: '',
+      pieceCount: 6,
+      isDiscountable: false,
+      isLunchOnly: false,
+      categoryId: '',
+    })
+    expect(line.product.choices[0]).toMatchObject({
+      id: 'c1',
+      priceModifier: '0.00',
+      name: '',
+      choiceGroupId: '',
+    })
+    expect(line.selectedChoice).toBeNull()
+  })
+
+  it('a category that is a record keeps its parts, with empty strings for the missing ones', () => {
+    const [line] = migrate([v2Line({ snapshot: snapshot({ category: { id: 'c' } }) })]).state
+      .products
+    expect(line.product.category).toMatchObject({ id: 'c', name: '', slug: '' })
+  })
 })
 
-test('a selected choice of a pre-group product (no choiceGroupId) is stored with an empty group', () => {
-  const product = {
-    id: 'old',
-    name: 'Old',
-    price: '5.00',
-    choices: [{ id: 'c', priceModifier: '1.00', name: 'C' }],
-  }
-  const line = {
-    product,
-    quantity: 1,
-    selectedChoices: [{ groupId: '', choiceId: 'c', quantity: 1 }],
-    selectedChoice: null,
-  }
-  assert.deepEqual(toPersistedLine(line).snapshot.choices, [
-    { id: 'c', groupId: '', priceModifierCents: 100, name: 'C' },
-  ])
+describe('carts written by other builds', () => {
+  it('a missing products list is an empty cart', () => {
+    const result = migratePersistedCart({ version: 2 }, EDGE_MAX)
+    expect(result.state.products).toEqual([])
+    expect(result.dropped).toBe(0)
+  })
+
+  describe('v0 / v1 lines (the whole product per line)', () => {
+    const legacyProduct = (overrides = {}) => ({
+      id: 'p1',
+      name: 'Ramen',
+      price: '12.00',
+      choices: [],
+      ...overrides,
+    })
+    const legacy = (overrides = {}) => ({
+      product: legacyProduct(),
+      quantity: 1,
+      ...overrides,
+    })
+    const products = (line) => migrate([line]).state.products
+
+    it('keeps a plain line, slimmed to its snapshot', () => {
+      const [line] = products(legacy({ quantity: 3 }))
+      expect(line).toMatchObject({ quantity: 3, selectedChoices: [], selectedChoice: null })
+      expect(line.product).toMatchObject({ id: 'p1', name: 'Ramen', price: '12.00' })
+    })
+
+    it.each([
+      ['a product without id', legacy({ product: legacyProduct({ id: '' }) })],
+      ['a product that is not an object', legacy({ product: 'x' })],
+      ['a quantity that is not a number', legacy({ quantity: 'many' })],
+      ['a product name that is not text', legacy({ product: legacyProduct({ name: 1 }) })],
+      ['a price that is not a number', legacy({ product: legacyProduct({ price: 'free' }) })],
+      ['a null price', legacy({ product: legacyProduct({ price: null }) })],
+      ['an empty price', legacy({ product: legacyProduct({ price: '' }) })],
+      ['malformed selections', legacy({ selectedChoices: [{ choiceId: 'c' }] })],
+    ])('drops %s', (_label, line) => {
+      expect(products(line)).toEqual([])
+      expect(migrate([line]).dropped).toBe(1)
+    })
+
+    it('a single legacy choice with its group becomes a selection scaled to the quantity (line-wide)', () => {
+      const choice = {
+        id: 'c1',
+        choiceGroupId: 'g',
+        priceModifier: '1.00',
+        name: 'Spicy',
+      }
+      const [line] = products(
+        legacy({
+          quantity: 2,
+          product: legacyProduct({ choices: [choice] }),
+          selectedChoice: choice,
+        }),
+      )
+      expect(line.selectedChoices).toEqual([{ groupId: 'g', choiceId: 'c1', quantity: 2 }])
+    })
+
+    it('a legacy choice that never knew its group stays the single legacy choice', () => {
+      const choice = { id: 'c1', priceModifier: '1.00', name: 'Spicy' }
+      const [line] = products(
+        legacy({ product: legacyProduct({ choices: [choice] }), selectedChoice: choice }),
+      )
+      expect(line.selectedChoices).toEqual([])
+      expect(line.selectedChoice).toMatchObject({ id: 'c1' })
+    })
+
+    it('a legacy selectedChoice without an id is ignored', () => {
+      const [line] = products(legacy({ selectedChoice: { name: 'x' } }))
+      expect(line.selectedChoice).toBeNull()
+    })
+
+    it('valid selectedChoices are kept as they are', () => {
+      const selection = { groupId: 'g', choiceId: 'c1', quantity: 2 }
+      const [line] = products(legacy({ quantity: 2, selectedChoices: [selection] }))
+      expect(line.selectedChoices).toEqual([selection])
+    })
+
+    it('duplicate legacy lines are merged', () => {
+      expect(
+        migrate([legacy({ quantity: 1 }), legacy({ quantity: 2 })]).state.products,
+      ).toHaveLength(1)
+    })
+
+    it('legacy and v2 lines can live in the same cart', () => {
+      const result = migrate([legacy(), v2Line({ productId: 'p2' })])
+      expect(result.state.products.map((l) => l.product.id).sort()).toEqual(['p1', 'p2'])
+    })
+  })
+})
+
+describe('the coupon discount', () => {
+  it('keeps integer cents when there is a coupon code', () => {
+    expect(
+      migrate([], { couponCode: 'A', couponDiscountCents: 250 }).state.couponDiscountCents,
+    ).toBe(250)
+  })
+
+  it('converts the legacy euro amount to cents', () => {
+    expect(migrate([], { couponCode: 'A', couponDiscount: 2.5 }).state.couponDiscountCents).toBe(
+      250,
+    )
+  })
+
+  it.each([
+    ['a negative amount', { couponDiscountCents: -5 }],
+    ['an amount with decimals', { couponDiscountCents: 2.5 }],
+    ['text', { couponDiscountCents: '250' }],
+    ['a legacy zero', { couponDiscount: 0 }],
+    ['a legacy text', { couponDiscount: '2.5' }],
+    ['nothing', {}],
+  ])('%s becomes 0', (_label, extra) => {
+    expect(migrate([], { couponCode: 'A', ...extra }).state.couponDiscountCents).toBe(0)
+  })
+
+  it('without a coupon code there is no discount, whatever was stored', () => {
+    expect(migrate([], { couponDiscountCents: 500 }).state.couponDiscountCents).toBe(0)
+    expect(migrate([], { couponCode: '', couponDiscount: 5 }).state.couponDiscountCents).toBe(0)
+  })
+
+  it('the legacy euro key is not carried into the state', () => {
+    expect(migrate([], { couponCode: 'A', couponDiscount: 2.5 }).state).not.toHaveProperty(
+      'couponDiscount',
+    )
+  })
 })

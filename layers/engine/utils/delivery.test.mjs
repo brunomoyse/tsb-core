@@ -73,6 +73,12 @@ test('a distance past the last tier is out of zone even when the radius is large
   assert.equal(deliveryFeeCentsForDistance(gap, 7000), OUT_OF_ZONE)
 })
 
+test('an excluded postcode matches once trimmed', () => {
+  const excluding = { ...policy, excludedPostcodes: ['4020'] }
+  assert.equal(isExcludedPostcode(excluding, ' 4020 '), true)
+  assert.equal(isExcludedPostcode(excluding, '4000'), false)
+})
+
 test('a missing postcode is never excluded', () => {
   assert.equal(isExcludedPostcode(policy, null), false)
   assert.equal(isExcludedPostcode(policy, undefined), false)

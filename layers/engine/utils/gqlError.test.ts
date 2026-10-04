@@ -1,18 +1,19 @@
 // GqlError and its helpers: the one error type of every GraphQL call (gqlFetch, useGqlQuery, useGqlMutation, subscriptions).
-// Complements gqlErrors.test.mjs (code table, Sentry filter) with the construction rules and the odd inputs of transports.
+// One file for utils/gqlError.ts: construction rules, the odd inputs of transports, abort detection and the Sentry filter.
+// The message table (code -> i18n key) is tested in gqlErrors.test.mjs.
 // Run: `vp test run layers/engine/utils/gqlError.test.ts`.
 import { describe, expect, it } from 'vite-plus/test'
 import {
   GQL_HTTP_ERROR,
   GQL_NETWORK_ERROR,
   GqlError,
+  isAbortError,
   isGqlError,
   isReportableError,
+  operationNameOf,
   toGqlError,
   unwrapGqlError,
 } from './gqlError.ts'
-import { DEFAULT_ORDERING_POLICY } from './orderingPolicy.ts'
-import { describeCouponRefusal, describeGqlError } from './gqlErrors.ts'
 
 describe('GqlError', () => {
   it('has a generic message, no code and empty extensions when the response carried no error entry', () => {
@@ -23,6 +24,33 @@ describe('GqlError', () => {
     expect(error.errors).toEqual([])
     expect(error.operationName).toBeNull()
     expect(error.status).toBeNull()
+    expect(error.cause).toBeUndefined()
+  })
+
+  it('is a real Error carrying code, extensions, errors and the operation', () => {
+    const error = new GqlError(
+      [
+        {
+          message: 'product Salmon not found',
+          path: ['createOrder'],
+          extensions: { code: 'PRODUCT_NOT_FOUND', productId: 'p1' },
+        },
+      ],
+      { operationName: 'CreateOrder' },
+    )
+    expect(error).toBeInstanceOf(Error)
+    expect(error.name).toBe('GqlError')
+    expect(error.code).toBe('PRODUCT_NOT_FOUND')
+    expect(error.extensions).toEqual({ code: 'PRODUCT_NOT_FOUND', productId: 'p1' })
+    expect(error.operationName).toBe('CreateOrder')
+    expect(error.errors).toHaveLength(1)
+    expect(error.message).toBe('product Salmon not found')
+    expect(error.stack).toContain('GqlError')
+    expect(error.hasCode('PRODUCT_NOT_FOUND')).toBe(true)
+  })
+
+  it('an error entry without extensions has no code (an old backend)', () => {
+    expect(new GqlError([{ message: 'product X not found' }]).code).toBeNull()
   })
 
   it('takes message, code and extensions from the first error, and ignores a code that is not a string', () => {
@@ -115,6 +143,17 @@ describe('GqlError.fromTransport', () => {
   it('keeps the original error as the cause', () => {
     const original = new TypeError('fetch failed')
     expect(GqlError.fromTransport(original).cause).toBe(original)
+    const http = Object.assign(new Error('502 Bad Gateway'), { status: 502 })
+    const error = GqlError.fromTransport(http, 'Menu')
+    expect(error).toMatchObject({ code: GQL_HTTP_ERROR, status: 502, operationName: 'Menu' })
+    expect(error.cause).toBe(http)
+  })
+
+  it('a failed answer whose body has no GraphQL errors stays the transport error it was', () => {
+    const error = GqlError.fromTransport(
+      Object.assign(new Error('x'), { status: 502, data: { error: 'bad gateway' } }),
+    )
+    expect(error.code).toBe(GQL_HTTP_ERROR)
   })
 })
 
@@ -132,6 +171,14 @@ describe('unwrapGqlError', () => {
     expect(unwrapGqlError(new Error('x'))).toBeNull()
     expect(unwrapGqlError(null)).toBeNull()
     expect(unwrapGqlError(undefined)).toBeNull()
+  })
+})
+
+describe('operationNameOf', () => {
+  it('is the name of the query or mutation, null for an anonymous one', () => {
+    expect(operationNameOf('mutation CreateOrder($input: X!) { createOrder }')).toBe('CreateOrder')
+    expect(operationNameOf('query ValidateCoupon { a }')).toBe('ValidateCoupon')
+    expect(operationNameOf('{ me { id } }')).toBeNull()
   })
 })
 
@@ -163,6 +210,7 @@ describe('toGqlError', () => {
   it('wraps anything else (a string, an empty array, a close event) in a plain Error', () => {
     expect(toGqlError('boom')).toMatchObject({ message: 'boom' })
     expect(toGqlError([])).toBeInstanceOf(Error)
+    expect(toGqlError([]).message).toBe('')
     expect(toGqlError([])).not.toBeInstanceOf(GqlError)
     expect(toGqlError(undefined).message).toBe('undefined')
   })
@@ -198,6 +246,30 @@ describe('isReportableError: an HTTP error that is not a GqlError', () => {
   })
 })
 
+describe('isAbortError', () => {
+  const abort = () => Object.assign(new Error('aborted'), { name: 'AbortError' })
+
+  it('is an abort wrapped by ofetch (FetchError -> cause AbortError) or by the transport, however deep', () => {
+    const fetchError = Object.assign(new Error('[POST] "/graphql": <no response> aborted'), {
+      name: 'FetchError',
+      cause: abort(),
+    })
+    expect(isAbortError(abort())).toBe(true)
+    expect(isAbortError(fetchError)).toBe(true)
+    expect(isReportableError(fetchError)).toBe(false)
+    expect(isAbortError(GqlError.fromTransport(fetchError))).toBe(true)
+  })
+
+  it('is not anything else, and a cyclic cause chain ends', () => {
+    expect(isAbortError(Object.assign(new Error('x'), { cause: new Error('y') }))).toBe(false)
+    expect(isAbortError(new Error('x'))).toBe(false)
+    expect(isAbortError(null)).toBe(false)
+    const loop = new Error('loop')
+    loop.cause = loop
+    expect(isAbortError(loop)).toBe(false)
+  })
+})
+
 describe('isReportableError: a GqlError', () => {
   const withCode = (code: string | null, init: ConstructorParameters<typeof GqlError>[1] = {}) =>
     new GqlError([{ message: 'x', ...(code ? { extensions: { code } } : {}) }], init)
@@ -208,6 +280,7 @@ describe('isReportableError: a GqlError', () => {
 
   it('reports HTTP 5xx only, and treats a missing status as 0', () => {
     expect(isReportableError(withCode(GQL_HTTP_ERROR, { status: 500 }))).toBe(true)
+    expect(isReportableError(withCode(GQL_HTTP_ERROR, { status: 499 }))).toBe(false)
     expect(isReportableError(withCode(GQL_HTTP_ERROR, { status: 429 }))).toBe(false)
     expect(isReportableError(withCode(GQL_HTTP_ERROR))).toBe(false)
   })
@@ -226,7 +299,14 @@ describe('isReportableError: a GqlError', () => {
   })
 
   it("does not report what is the customer's input or session", () => {
-    for (const code of ['UNAUTHENTICATED', 'FORBIDDEN', 'COUPON_INVALID', 'DELIVERY_OUT_OF_ZONE']) {
+    for (const code of [
+      'UNAUTHENTICATED',
+      'FORBIDDEN',
+      'COUPON_INVALID',
+      'COUPON_EXPIRED',
+      'DELIVERY_OUT_OF_ZONE',
+      'RATE_LIMITED',
+    ]) {
       expect(isReportableError(withCode(code))).toBe(false)
     }
   })
@@ -234,58 +314,5 @@ describe('isReportableError: a GqlError', () => {
   it('reads a GqlError behind a Nuxt error', () => {
     expect(isReportableError({ cause: withCode('PAYMENT_FAILED') })).toBe(true)
     expect(isReportableError({ cause: withCode('FORBIDDEN') })).toBe(false)
-  })
-})
-
-describe('describeGqlError with errors that are not GqlErrors', () => {
-  it.each([
-    ['a plain Error', new Error('boom')],
-    ['a string', 'boom'],
-    ['null', null],
-    ['undefined', undefined],
-  ])('knows nothing about %s (the caller shows its own generic message)', (_label, error) => {
-    expect(describeGqlError(error, DEFAULT_ORDERING_POLICY)).toBeNull()
-  })
-
-  it('recognises the English message of an old backend that interpolates a choice name', () => {
-    expect(
-      describeGqlError(
-        new GqlError([{ message: 'Choice Spicy mayo not found' }]),
-        DEFAULT_ORDERING_POLICY,
-      ),
-    ).toEqual({ key: 'notify.errors.selectionInvalid' })
-  })
-
-  it('shows nothing specific for an HTTP error without a status, nor a 4xx; the throttle and 5xx have their own', () => {
-    const http = (status?: number) =>
-      new GqlError([{ message: 'x', extensions: { code: GQL_HTTP_ERROR } }], { status })
-    expect(describeGqlError(http(), DEFAULT_ORDERING_POLICY)).toBeNull()
-    expect(describeGqlError(http(404), DEFAULT_ORDERING_POLICY)).toBeNull()
-    expect(describeGqlError(http(429), DEFAULT_ORDERING_POLICY)).toEqual({
-      key: 'notify.errors.tooManyRequests',
-    })
-    expect(describeGqlError(http(500), DEFAULT_ORDERING_POLICY)).toEqual({
-      key: 'notify.errors.serverError',
-    })
-  })
-
-  it('knows nothing about a backend message it does not recognise, with no code', () => {
-    expect(
-      describeGqlError(
-        new GqlError([{ message: 'something unheard of' }]),
-        DEFAULT_ORDERING_POLICY,
-      ),
-    ).toBeNull()
-  })
-})
-
-describe('describeCouponRefusal', () => {
-  it('falls back to the generic coupon message for a refusal it cannot place', () => {
-    expect(describeCouponRefusal({ valid: false }, DEFAULT_ORDERING_POLICY)).toEqual({
-      key: 'coupon.invalid',
-    })
-    expect(
-      describeCouponRefusal({ valid: false, errorMessage: 'who knows' }, DEFAULT_ORDERING_POLICY),
-    ).toEqual({ key: 'coupon.invalid' })
   })
 })

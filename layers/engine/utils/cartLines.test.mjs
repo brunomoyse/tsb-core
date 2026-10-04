@@ -259,16 +259,39 @@ test('cartLineKeys: unique keys, the first occurrence keeps the plain key', () =
   assert.strictEqual(new Set(keys).size, 3)
 })
 
-test('cartLineKey: a line without selectedChoices / selectedChoice is keyed by its product and "none"', () => {
-  assert.strictEqual(cartLineKey({ product: { id: 'p1' }, quantity: 3 }), 'p1-none')
-  assert.strictEqual(
-    cartLineKey({ product: { id: 'p1' }, quantity: 3, selectedChoice: { id: 'legacy' } }),
-    'p1-legacy',
-  )
+test('canChangeLineQuantity: no selections at all is an uncustomised line, a uniform composition can change, a non-uniform one cannot', () => {
+  for (const selections of [undefined, null, []]) {
+    assert.strictEqual(canChangeLineQuantity(selections, 3), true)
+  }
+  const selection = (quantity) => ({ groupId: 'g', choiceId: 'c', quantity })
+  assert.strictEqual(canChangeLineQuantity([selection(4)], 2), true)
+  assert.strictEqual(canChangeLineQuantity([selection(3)], 2), false)
 })
 
-test('canChangeLineQuantity: null selections are an uncustomised line', () => {
-  assert.strictEqual(canChangeLineQuantity(null, 2), true)
+test('cartLineKey is the product id and the per-unit composition, whatever the quantity', () => {
+  const product = { id: 'p1' }
+  const selection = (quantity) => ({ groupId: 'g', choiceId: 'c', quantity })
+  const one = cartLineKey({ product, quantity: 1, selectedChoices: [selection(1)] })
+  const three = cartLineKey({ product, quantity: 3, selectedChoices: [selection(3)] })
+  assert.strictEqual(one, three)
+  assert.ok(one.startsWith('p1-'))
+})
+
+test('cartLineKey: a line without selections is keyed by its product and the legacy choice, or "none"', () => {
+  const product = { id: 'p1' }
+  assert.strictEqual(cartLineKey({ product, quantity: 3 }), 'p1-none')
+  assert.strictEqual(
+    cartLineKey({ product, quantity: 2, selectedChoices: null, selectedChoice: null }),
+    'p1-none',
+  )
+  assert.strictEqual(
+    cartLineKey({ product, quantity: 3, selectedChoice: { id: 'legacy' } }),
+    'p1-legacy',
+  )
+  assert.strictEqual(
+    cartLineKey({ product, quantity: 1, selectedChoices: [], selectedChoice: { id: 'x' } }),
+    'p1-x',
+  )
 })
 
 test('matchesLine: a plain line without selectedChoices matches the plain lookup only', () => {

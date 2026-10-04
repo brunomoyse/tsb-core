@@ -154,3 +154,12 @@ test('a plain order line (no selections array at all, no choice) is just product
     quantity: 2,
   })
 })
+
+test('a line with only the legacy single choice sends its choiceId and no selections', () => {
+  const payload = orderItemPayload({
+    product: { id: 'p1', price: '10.00' },
+    quantity: 1,
+    selectedChoice: { id: 'legacy', priceModifier: '1.00' },
+  })
+  assert.deepEqual(payload, { productId: 'p1', quantity: 1, choiceId: 'legacy' })
+})

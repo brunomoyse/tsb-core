@@ -424,3 +424,11 @@ test('quoteLineByKey: a key beyond the quoted lines (the cart grew) finds no lin
   const q = quote({ lines: [line()] })
   assert.equal(quoteLineByKey(q, ['k1', 'k2'], 'k2'), null)
 })
+
+test('quoteLineByKey: a key that is unknown, or whose line the server did not return, finds no line', () => {
+  const quoted = { lines: [line()] }
+  assert.equal(quoteLineByKey(quoted, ['k1', 'k2'], 'missing'), null)
+  assert.equal(quoteLineByKey(quoted, ['k1', 'k2'], 'k2'), null)
+  const withIssue = { lines: [line({ issues: [{ code: 'X', currentPrice: null }] })] }
+  assert.deepEqual(lineIssuesByKey(withIssue, []), {})
+})

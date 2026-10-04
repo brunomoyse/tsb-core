@@ -148,3 +148,9 @@ test('a product the query sent without a category gets its parent category (id, 
   assert.equal(live.products[0].category.slug, 'a')
   assert.equal(searchProducts(flattenProducts([only]), 'cat a').length, 1)
 })
+
+test('a product that already has its own category keeps it (only a missing one is stamped)', () => {
+  const own = { id: 'other', name: 'Other', slug: 'other' }
+  const [only] = baseCategories([cat('a', 1, [{ ...prod('p1', 'Ramen'), category: own }])], {})
+  assert.equal(only.products[0].category, own)
+})

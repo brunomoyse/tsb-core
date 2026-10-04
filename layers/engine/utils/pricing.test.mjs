@@ -5,6 +5,7 @@ import {
   exactUnitPriceCents,
   lineTotalCents as itemLineTotalCents,
   unitPriceCents as itemUnitPriceCents,
+  priceCartLine,
   priceLine,
   toCents,
 } from './pricing.ts'
@@ -161,4 +162,15 @@ test('selections naming a choice the product does not have are not priced; the r
   assert.strictEqual(itemLineTotalCents(item), 1100)
   // Selections of a product that lists no choices at all price nothing extra.
   assert.strictEqual(itemLineTotalCents({ ...item, product: { price: '10.00' } }), 1000)
+})
+
+test('a legacy single choice applies to every unit of the line; a negative modifier never discounts', () => {
+  const price = (modifier) =>
+    priceCartLine({
+      quantity: 3,
+      product: { price: '10.00' },
+      selectedChoice: { priceModifier: modifier },
+    }).lineTotalCents
+  assert.strictEqual(price('1.50'), 3 * 1000 + 3 * 150)
+  assert.strictEqual(price('-1.50'), 3000)
 })

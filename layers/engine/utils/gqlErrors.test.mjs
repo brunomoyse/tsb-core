@@ -1,4 +1,4 @@
-// GqlError, the code -> i18n map and the Sentry filter.
+// The code -> i18n map of utils/gqlErrors.ts (GqlError itself, the abort detection and the Sentry filter are in gqlError.test.ts).
 // Run: `vp test run layers/engine/utils/gqlErrors.test.mjs`.
 
 import { DEFAULT_ORDERING_POLICY, orderingPolicyFromApi } from './orderingPolicy.ts'
@@ -9,14 +9,7 @@ import {
   describeErrorCode,
   describeGqlError,
 } from './gqlErrors.ts'
-import {
-  GqlError,
-  isAbortError,
-  isReportableError,
-  operationNameOf,
-  toGqlError,
-  unwrapGqlError,
-} from './gqlError.ts'
+import { GqlError } from './gqlError.ts'
 import { existsSync, readFileSync } from 'node:fs'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
@@ -28,61 +21,6 @@ const response = (code, message = 'raw backend text', extra = {}) =>
     [{ message, path: ['createOrder'], extensions: { ...(code ? { code } : {}), ...extra } }],
     { operationName: 'CreateOrder' },
   )
-
-test('GqlError is a real Error carrying code, extensions, errors and operation', () => {
-  const err = response('PRODUCT_NOT_FOUND', 'product Salmon not found', { productId: 'p1' })
-  assert.ok(err instanceof Error)
-  assert.ok(err instanceof GqlError)
-  assert.equal(err.name, 'GqlError')
-  assert.equal(err.code, 'PRODUCT_NOT_FOUND')
-  assert.deepEqual(err.extensions, { code: 'PRODUCT_NOT_FOUND', productId: 'p1' })
-  assert.equal(err.operationName, 'CreateOrder')
-  assert.equal(err.errors.length, 1)
-  assert.equal(err.message, 'product Salmon not found')
-  assert.ok(err.stack?.includes('GqlError'))
-  assert.ok(err.hasCode('PRODUCT_NOT_FOUND'))
-})
-
-test('an error without extensions has a null code (old backend)', () => {
-  const err = response(null, 'product X not found')
-  assert.equal(err.code, null)
-})
-
-test('transport failures become GqlErrors that keep the status and the cause', () => {
-  const http = GqlError.fromTransport(
-    Object.assign(new Error('502 Bad Gateway'), { status: 502 }),
-    'Menu',
-  )
-  assert.equal(http.code, 'HTTP_ERROR')
-  assert.equal(http.status, 502)
-  assert.equal(http.operationName, 'Menu')
-  assert.ok(http.cause instanceof Error)
-
-  const offline = GqlError.fromTransport(new TypeError('Failed to fetch'))
-  assert.equal(offline.code, 'NETWORK_ERROR')
-  assert.equal(offline.status, null)
-})
-
-test('unwrapGqlError finds the error behind a NuxtError-style cause', () => {
-  const inner = response('COUPON_INVALID')
-  assert.equal(unwrapGqlError(inner), inner)
-  assert.equal(unwrapGqlError(Object.assign(new Error('wrapped'), { cause: inner })), inner)
-  assert.equal(unwrapGqlError(new Error('plain')), null)
-  assert.equal(unwrapGqlError(null), null)
-})
-
-test('toGqlError turns the graphql-ws array into a GqlError', () => {
-  const err = toGqlError([{ message: 'boom', extensions: { code: 'FORBIDDEN' } }])
-  assert.ok(err instanceof GqlError)
-  assert.equal(err.code, 'FORBIDDEN')
-  assert.ok(toGqlError('x') instanceof Error)
-})
-
-test('operationNameOf', () => {
-  assert.equal(operationNameOf('mutation CreateOrder($input: X!) { createOrder }'), 'CreateOrder')
-  assert.equal(operationNameOf('query ValidateCoupon { a }'), 'ValidateCoupon')
-  assert.equal(operationNameOf('{ me { id } }'), null)
-})
 
 test('every known code maps to a translated key, never to the raw message', () => {
   for (const code of GQL_KNOWN_CODES) {
@@ -161,31 +99,6 @@ test('a bare code (an issue of a quote) is described like the error that carries
   assert.equal(describeErrorCode('SOMETHING_NEW', POLICY), null)
 })
 
-test('a non-2xx response that still carries GraphQL errors keeps their codes', () => {
-  const fetchError = Object.assign(new Error('[POST] 422'), {
-    status: 422,
-    data: {
-      errors: [
-        { message: 'Cannot query field', extensions: { code: 'GRAPHQL_VALIDATION_FAILED' } },
-        { message: 'second' },
-        'garbage',
-      ],
-    },
-  })
-  const err = GqlError.fromTransport(fetchError, 'Q')
-  assert.equal(err.code, 'GRAPHQL_VALIDATION_FAILED')
-  assert.equal(err.status, 422)
-  assert.equal(err.errors.length, 2)
-  assert.ok(err.cause === fetchError)
-  // No GraphQL body: still the transport error it was.
-  assert.equal(
-    GqlError.fromTransport(
-      Object.assign(new Error('x'), { status: 502, data: { error: 'bad gateway' } }),
-    ).code,
-    'HTTP_ERROR',
-  )
-})
-
 test('an unknown code or a non GqlError has no specific message (the caller shows its generic one)', () => {
   assert.equal(
     describeGqlError(response('SOMETHING_NEW_FROM_A_NEWER_BACKEND', 'English text'), POLICY),
@@ -212,6 +125,11 @@ test('transport errors: offline, rate limit, server error', () => {
     describeGqlError(GqlError.fromTransport({ status: 400, message: 'x' }), POLICY),
     null,
   )
+  // An HTTP error without a status, and a 4xx other than the throttle, say nothing specific.
+  const http = (status) =>
+    new GqlError([{ message: 'x', extensions: { code: 'HTTP_ERROR' } }], status ? { status } : {})
+  assert.equal(describeGqlError(http(undefined), POLICY), null)
+  assert.equal(describeGqlError(http(404), POLICY), null)
 })
 
 test('rollout fallback: an old backend sends English text without a code', () => {
@@ -231,7 +149,12 @@ test('rollout fallback: an old backend sends English text without a code', () =>
       'product "Salmon" is only available for a weekday lunch slot',
       'notify.errors.lunchOnlyRequiresLunchSlot',
     ],
+    ['order must contain at least one item', 'notify.errors.cartEmpty'],
     ['product 1234 not found', 'notify.errors.productNotFound'],
+    ['Product Maki Saumon not found', 'notify.errors.productNotFound'],
+    ['choice Tomate not found', 'notify.errors.selectionInvalid'],
+    ['Choice Spicy mayo not found', 'notify.errors.selectionInvalid'],
+    ['Failed to create order: db down', 'notify.errors.orderCreationFailed'],
     [
       'invalid number of selections for group Broth on product Ramen: expected between 1 and 1, got 0',
       'notify.errors.selectionInvalid',
@@ -288,52 +211,6 @@ test('coupon refusals: code first, old-backend text second, generic last', () =>
   )
 })
 
-test('what Sentry gets: our faults only, never the customer’s input, offline or aborts', () => {
-  assert.equal(isReportableError(response('PRODUCT_NOT_FOUND')), false)
-  assert.equal(isReportableError(response('COUPON_ALREADY_ACTIVE')), false)
-  assert.equal(isReportableError(response('UNAUTHENTICATED')), false)
-  assert.equal(isReportableError(response('PAYMENT_FAILED')), true)
-  assert.equal(isReportableError(response('ORDER_CREATE_FAILED')), true)
-  assert.equal(isReportableError(response(null, 'something unexpected')), true)
-  assert.equal(isReportableError(GqlError.fromTransport(new TypeError('Failed to fetch'))), false)
-  assert.equal(isReportableError(GqlError.fromTransport({ status: 500, message: 'x' })), true)
-  assert.equal(isReportableError(GqlError.fromTransport({ status: 404, message: 'x' })), false)
-  assert.equal(isReportableError(new TypeError('x is not a function')), true)
-  // REST failures: 4xx is the customer's input, 5xx is ours, a FetchError without status is offline.
-  assert.equal(isReportableError(Object.assign(new Error('401'), { statusCode: 401 })), false)
-  assert.equal(
-    isReportableError(Object.assign(new Error('x'), { response: { status: 422 } })),
-    false,
-  )
-  assert.equal(isReportableError(Object.assign(new Error('x'), { status: 503 })), true)
-  assert.equal(isReportableError(Object.assign(new Error('x'), { name: 'FetchError' })), false)
-  const abort = Object.assign(new Error('aborted'), { name: 'AbortError' })
-  assert.ok(isAbortError(abort))
-  assert.equal(isReportableError(abort), false)
-})
-
-test('an abort wrapped by ofetch (FetchError -> cause AbortError) or by the transport is still an abort', () => {
-  const abort = Object.assign(new Error('aborted'), { name: 'AbortError' })
-  const fetchError = Object.assign(new Error('[POST] "/graphql": <no response> aborted'), {
-    name: 'FetchError',
-    cause: abort,
-  })
-  assert.equal(isAbortError(fetchError), true)
-  assert.equal(isReportableError(fetchError), false)
-  assert.equal(
-    isAbortError(GqlError.fromTransport(fetchError)),
-    true,
-    'GqlError -> FetchError -> AbortError',
-  )
-  assert.equal(isAbortError(Object.assign(new Error('x'), { cause: new Error('y') })), false)
-  assert.equal(isAbortError(new Error('x')), false)
-  assert.equal(isAbortError(null), false)
-  // A cyclic cause chain terminates.
-  const loop = new Error('loop')
-  loop.cause = loop
-  assert.equal(isAbortError(loop), false)
-})
-
 test('RATE_LIMITED and COUPON_CHECK_FAILED have messages; the throttle is not an error to report', () => {
   assert.equal(
     describeGqlError(response('RATE_LIMITED'), POLICY).key,
@@ -347,7 +224,6 @@ test('RATE_LIMITED and COUPON_CHECK_FAILED have messages; the throttle is not an
     describeCouponRefusal({ valid: false, errorCode: 'COUPON_CHECK_FAILED' }, POLICY).key,
     'notify.errors.couponCheckFailed',
   )
-  assert.equal(isReportableError(response('RATE_LIMITED')), false)
 })
 
 // ---------------------------------------------------------------------------------------------
