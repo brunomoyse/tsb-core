@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "lint": "vp lint . && node ../../scripts/check-ssr-safety.mjs && node ../../scripts/check-engine-boundaries.mjs",
     "test:e2e": "playwright test",
+    "test:e2e:mock": "playwright test -c playwright.mock.config.ts",
     "test:visual": "playwright test --grep @visual",
     "test:visual:update": "playwright test --grep @visual --update-snapshots",
     "test:e2e:headed": "playwright test --headed",
