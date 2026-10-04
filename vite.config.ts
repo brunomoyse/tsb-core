@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite-plus'
+import { runtimeFlagsPlugin } from './test/flags'
 
 const r = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 // The aliases brand apps declare in their nuxt.config.ts, for the vitest projects that do not boot Nuxt.
@@ -12,30 +13,31 @@ export default defineConfig({
     projects: [
       {
         // Pure code: no Nuxt, no Nitro. Node environment, fast.
+        plugins: [runtimeFlagsPlugin({ server: false, client: true, dev: false })],
         resolve: { alias },
         test: {
           name: 'unit',
           include: ['{layers,apps}/**/*.test.{mjs,ts}'],
-          exclude: [
-            ...excluded,
-            '**/*.nuxt.test.ts',
-            '**/*.nuxt-ssr.test.ts',
-            '**/*.server.test.ts',
-          ],
+          setupFiles: [r('./test/setup/noNetwork.ts'), r('./test/setup/flags.ts')],
+          exclude: [...excluded, '**/*.nuxt.test.ts', '**/*.server.test.ts'],
         },
       },
       {
         // Nitro server handlers (routes, API, middleware): h3 + a stand-in for Nitro's `#imports` (test/nitro).
+        plugins: [runtimeFlagsPlugin({ server: true, client: false, dev: false })],
         resolve: { alias: { ...alias, '#imports': r('./test/nitro/imports.ts') } },
         test: {
           name: 'server',
           include: ['{layers,apps}/**/*.server.test.ts'],
           exclude: excluded,
-          setupFiles: [r('./test/nitro/setup.ts')],
+          setupFiles: [
+            r('./test/setup/noNetwork.ts'),
+            r('./test/setup/flags.ts'),
+            r('./test/nitro/setup.ts'),
+          ],
         },
       },
       './vitest.nuxt.config.ts',
-      './vitest.nuxt-ssr.config.ts',
     ],
     coverage: {
       provider: 'v8',
