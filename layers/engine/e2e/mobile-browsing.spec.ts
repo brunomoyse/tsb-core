@@ -50,45 +50,51 @@ test.describe('getting to the menu', () => {
 })
 
 test.describe('categories', () => {
-  test('the strip lists every category and each chip jumps to its section, clear of the sticky header', async ({
-    page,
-  }) => {
-    await page.goto('/fr/menu')
-    await waitForNuxtHydration(page)
-    const ids = await categoryIds(page)
-    expect(ids.length).toBeGreaterThan(2)
-    // One section per chip, in the same order.
-    const sections = await page
-      .locator('[id^="category-"]')
-      .evaluateAll((els) =>
-        els.map((el) => el.id.replace('category-', '')).filter((id) => !id.startsWith('card-')),
-      )
-    expect(sections).toEqual(ids)
-
-    for (const id of ids
-      .slice()
-      .reverse()
-      .concat(ids[0] ?? [])) {
-      await page.locator(`[data-chip-category="${id}"]`).click()
-      const heading = page.locator(`#category-${id} h2`).first()
-      await expect(heading).toBeInViewport({ ratio: 1 })
-      // Settled (smooth scroll): the heading is below everything pinned to the top, and in the upper half.
-      await expect
-        .poll(async () => {
-          const box = await heading.boundingBox()
-          return box ? Math.round(box.y) : -1
-        })
-        .toBeGreaterThanOrEqual(Math.floor(await stickyBottom(page)))
-      // (The last category is shorter than a screen: the page cannot scroll it up any further.)
-      if (id !== ids.at(-1)) {
-        const box = await heading.boundingBox()
-        expect(box?.y ?? 0, `${id}: the heading sits in the upper half of the screen`).toBeLessThan(
-          (page.viewportSize()?.height ?? 0) / 2,
+  for (const [width, height] of [
+    [393, 727],
+    [320, 568],
+  ] as const)
+    test(`the strip lists every category and each chip jumps to its section, clear of the sticky header at ${width}x${height}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height })
+      await page.goto('/fr/menu')
+      await waitForNuxtHydration(page)
+      const ids = await categoryIds(page)
+      expect(ids.length).toBeGreaterThan(2)
+      // One section per chip, in the same order.
+      const sections = await page
+        .locator('[id^="category-"]')
+        .evaluateAll((els) =>
+          els.map((el) => el.id.replace('category-', '')).filter((id) => !id.startsWith('card-')),
         )
+      expect(sections).toEqual(ids)
+
+      for (const id of ids
+        .slice()
+        .reverse()
+        .concat(ids[0] ?? [])) {
+        await page.locator(`[data-chip-category="${id}"]`).click()
+        const heading = page.locator(`#category-${id} h2`).first()
+        await expect(heading).toBeInViewport({ ratio: 1 })
+        // Settled (smooth scroll): the heading is below everything pinned to the top, and in the upper half.
+        await expect
+          .poll(async () => {
+            const box = await heading.boundingBox()
+            return box ? Math.round(box.y) : -1
+          })
+          .toBeGreaterThanOrEqual(Math.floor(await stickyBottom(page)))
+        // (The last category is shorter than a screen: the page cannot scroll it up any further.)
+        if (id !== ids.at(-1)) {
+          const box = await heading.boundingBox()
+          expect(
+            box?.y ?? 0,
+            `${id}: the heading sits in the upper half of the screen`,
+          ).toBeLessThan((page.viewportSize()?.height ?? 0) / 2)
+        }
+        await expect.poll(() => chipIsActive(page, id)).toBe(true)
       }
-      await expect.poll(() => chipIsActive(page, id)).toBe(true)
-    }
-  })
+    })
 
   test('scrolling the page moves the selected chip, down to the last category at the end', async ({
     page,
