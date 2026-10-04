@@ -32,12 +32,12 @@ export type OrderItemPayload = CreateOrderRequest['items'][number]
 
 /** One order line: its selections, or the legacy single choice when it has none. */
 export function orderItemPayload(line: PayloadLine): OrderItemPayload {
-  const hasSelections = (line.selectedChoices?.length ?? 0) > 0
+  const selections = line.selectedChoices ?? []
   return {
     productId: line.product.id,
     quantity: line.quantity,
-    ...(hasSelections
-      ? { selections: line.selectedChoices ?? [] }
+    ...(selections.length > 0
+      ? { selections }
       : line.selectedChoice
         ? { choiceId: line.selectedChoice.id }
         : {}),

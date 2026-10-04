@@ -34,8 +34,9 @@ export function evaluateCashAmount(
  */
 export function sanitizeCashAmount(value: string | number | null | undefined): string | null {
   if (value === '' || value === null || value === undefined) return null
-  const raw = String(value).replace(',', '.')
-  const match = /^(?<whole>\d*)(?<decimals>\.\d{0,2})?/u.exec(raw)
-  const sanitized = match ? `${match.groups?.whole ?? ''}${match.groups?.decimals ?? ''}` : ''
+  // The pattern matches any text (every part is optional and `.*` takes the rest): digits, then at most 2 decimals.
+  const sanitized = String(value)
+    .replace(',', '.')
+    .replace(/^(\d*)(\.\d{0,2})?.*$/su, '$1$2')
   return sanitized === '' ? null : sanitized
 }

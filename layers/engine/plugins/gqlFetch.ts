@@ -26,9 +26,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   const httpURL = cfg.public.graphqlHttp
   const localePath = useLocalePath()
 
-  /** Get access token from OIDC client (client-side only) */
+  /** Get access token from OIDC client. Only called from the client branch of the request hook (never during SSR). */
   const getOidcToken = async (): Promise<string | null> => {
-    if (import.meta.server) return null
     const { useOidc } = await import('#engine/composables/useOidc')
     const { getAccessToken } = useOidc()
     return getAccessToken()
