@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
+import { useDateLocale } from '#engine/composables/useDateLocale'
 // Phosphor icons (same set as the vitrine site) — raw SVGs, tinted via
 // CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
@@ -15,7 +16,9 @@ definePageMeta({
   sitemap: { priority: 1, changefreq: 'weekly' },
 })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.
+const dateLocale = useDateLocale()
 const { brand } = useAppConfig()
 
 // Live ordering status for the hero; lazy so the page renders without waiting
@@ -42,7 +45,7 @@ const nextOpeningTime = computed(() => {
   if (!iso) return null
   const next = new Date(iso)
   const sameDay = isSameBrusselsDay(next, new Date())
-  return new Intl.DateTimeFormat(locale.value, {
+  return new Intl.DateTimeFormat(dateLocale.value, {
     ...(sameDay ? {} : { weekday: 'long' }),
     hour: '2-digit',
     minute: '2-digit',
