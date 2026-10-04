@@ -1,9 +1,9 @@
 import { type Page, type Route } from '@playwright/test'
-import { type SeededOrderStatus, deleteOrder, findUserIdByEmail, seedOrder } from './support/db'
 import { dismissCookieConsent, waitForNuxtHydration } from './support/hydration'
 import { expect, test } from './support/test'
 import { SEL } from './support/selectors'
 import { addProductsAndGoToCheckout } from './support/cart.helpers'
+import type { OrderStatus } from './mock/types'
 
 /*
  * Audit PR 2.8: phone entry (M22), a quantity-2 product with choices in the product modal (M23) and the
@@ -145,7 +145,8 @@ test.describe('Pay with an unsaved phone number', () => {
     await expect.poll(() => calls.createOrder, { timeout: 15_000 }).toBeGreaterThan(0)
     expect(calls.updateMe).toEqual(['+33612345678'])
     expect(calls.log.indexOf('updateMe')).toBeLessThan(calls.log.indexOf('createOrder'))
-    await expect(capture).toContainText(/34 56 78/u)
+    // The saved number is shown as the API returned it (E.164) or formatted: either way all its digits.
+    await expect(capture).toContainText(/\+33\s?6\s?12\s?34\s?56\s?78/u)
     await expect(capture.locator('[data-testid="checkout-phone-input"]')).toHaveCount(0)
   })
 
@@ -205,7 +206,7 @@ test.describe('Product modal with choices', () => {
     const counters = await modal
       .locator('span.text-xs.font-semibold.whitespace-nowrap')
       .allInnerTexts()
-    if (counters.some((counter) => !/\/1$/u.test(counter.trim()))) {
+    if (counters.some((counter) => !counter.trim().endsWith('/1'))) {
       test.skip(true, 'The first choice product has a multi-select group')
       return
     }
@@ -224,21 +225,21 @@ test.describe('Product modal with choices', () => {
 test.describe('Order confirmation receipt', () => {
   let orderId: string | null = null
 
-  test.afterEach(() => {
-    if (orderId) deleteOrder(orderId)
+  test.afterEach(async ({ backend }) => {
+    if (orderId) await backend.deleteOrder(orderId)
     orderId = null
   })
 
-  const userId = (): string => {
-    const email = process.env.E2E_USER_EMAIL
-    if (!email) throw new Error('E2E_USER_EMAIL must be set')
-    return findUserIdByEmail(email)
+  // Each brand's pickup point is its own restaurant (apps/<brand>/brand.ts address.street).
+  const PICKUP_POINT = {
+    tokyosushi: /Rue de la Cathédrale 59/u,
+    ygfliege: /Rue de la Cathédrale 51/u,
   }
 
   const cases: {
     label: string
     online: boolean
-    status: SeededOrderStatus
+    status: OrderStatus
     payment: RegExp
     total: RegExp
   }[] = [
@@ -261,10 +262,11 @@ test.describe('Order confirmation receipt', () => {
   cases.forEach(({ label, online, status, payment, total }) => {
     test(`${label}: rows add up to the total, payment method and pickup point`, async ({
       authenticatedPage: page,
+      backend,
+      brand,
     }) => {
-      // The seeded order is a pickup order with one 25,00 € item (see helpers/db.ts seedOrder, withItem): 25,00 € cash, 25,30 € online (0,30 € fee).
-      orderId = seedOrder({
-        userId: userId(),
+      // The seeded order is a pickup order with one 25,00 € item (see backend.seedOrder, withItem): 25,00 € cash, 25,30 € online (0,30 € fee).
+      orderId = await backend.seedOrder({
         status,
         online,
         paymentStatus: online ? 'paid' : undefined,
@@ -282,7 +284,7 @@ test.describe('Order confirmation receipt', () => {
       // No delivery row on a pickup order; the pickup point is the restaurant.
       await expect(receipt.locator('[data-testid="receipt-delivery"]')).toHaveCount(0)
       await expect(receipt.locator('[data-testid="receipt-destination"]')).toContainText(
-        /Rue de la Cathédrale 59/u,
+        PICKUP_POINT[brand],
       )
       if (online)
         await expect(receipt.locator('[data-testid="receipt-online-fee"]')).toContainText(/0,30/u)

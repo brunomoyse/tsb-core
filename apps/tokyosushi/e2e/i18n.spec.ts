@@ -2,12 +2,14 @@ import {
   dismissCookieConsent,
   waitForNuxtHydration,
 } from '../../../layers/engine/e2e/support/hydration'
-import { expect, test } from '@playwright/test'
+import { expect, test } from '../../../layers/engine/e2e/support/test'
 import { SEL } from '../../../layers/engine/e2e/support/selectors'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
-  await context.addInitScript(() => localStorage.clear())
+  await context.addInitScript(() => {
+    localStorage.clear()
+  })
 })
 
 test.describe('Internationalization', () => {
@@ -18,14 +20,15 @@ test.describe('Internationalization', () => {
     expect(page.url()).toContain('/fr')
   })
 
-  test('Direct English URL loads correctly', async ({ browser }) => {
+  test('Direct English URL loads correctly', async ({ browser, baseURL }) => {
     // Need a fresh context with English locale — the default context uses fr-BE
     const context = await browser.newContext({
+      baseURL,
       locale: 'en-US',
       extraHTTPHeaders: { 'Accept-Language': 'en-US,en;q=0.9' },
     })
     const page = await context.newPage()
-    await page.goto('http://localhost:3000/en/menu')
+    await page.goto('/en/menu')
     await waitForNuxtHydration(page)
     await dismissCookieConsent(page)
     await expect(page.locator(SEL.productCard).first()).toBeVisible()

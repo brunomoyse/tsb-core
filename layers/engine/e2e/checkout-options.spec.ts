@@ -14,7 +14,7 @@ test.describe('Checkout options', () => {
     const toggles = page.locator(
       'input[type="checkbox"][data-testid^="order-extra-"]:not([data-testid="order-extra-sauce"])',
     )
-    // count() doesn't wait: let the extras card render first.
+    // Count() doesn't wait: let the extras card render first.
     await expect(toggles.first()).toBeVisible()
     const count = await toggles.count()
     expect(count).toBeGreaterThan(0)
@@ -145,6 +145,11 @@ test.describe('Checkout options', () => {
      */
     const addressSection = page.locator('#checkout-delivery-address')
 
+    // A pickup-only brand renders the delivery option disabled: nothing to toggle.
+    test.skip(
+      !(await page.locator(SEL.checkoutOptionDelivery).isEnabled()),
+      'Brand is pickup-only: no delivery option to exercise',
+    )
     await page.locator(SEL.checkoutOptionDelivery).click()
     await expect(addressSection).toBeVisible({ timeout: 3_000 })
 
