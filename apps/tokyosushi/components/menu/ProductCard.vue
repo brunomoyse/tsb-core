@@ -113,7 +113,7 @@
                 data-testid="product-add-to-cart"
                 class="flex items-center justify-center w-11 h-11 rounded-xl border border-neutral-200 bg-white text-neutral-600 hover:bg-tsb-four hover:text-primary-400 hover:border-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                 type="button"
-                :disabled="orderingDisabled"
+                :disabled="orderingDisabled || !isMounted"
                 @click="addToCart"
               >
                 <img alt="" aria-hidden="true" class="w-6 h-6" src="/icons/shopping-bag-icon.svg" />
@@ -218,6 +218,8 @@ const productImageBaseSrc = computed(() =>
 )
 
 // SSR-safe: cart store hydrates from localStorage post-mount, so render as empty until then.
+// The add button is disabled (and dimmed) until then too: Vue replays no event, so a tap on the server-rendered button
+// before hydration would do nothing and leave the visitor wondering; a disabled one says "not yet" (e2e/early-tap.spec.ts).
 const isMounted = useMounted()
 
 const isInCart = computed(
