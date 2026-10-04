@@ -73,6 +73,31 @@ export const test = base.extend<
   e2eUserEmail: [undefined, { option: true }],
   mock: [undefined, { option: true }],
 
+  /*
+   * `page.goto` resolves once the app is hydrated. The app starts its JavaScript a moment after the first paint
+   * (server/plugins/defer-hydration.ts), and on a page with nothing left to load the window's load event, which `goto`
+   * waits for, can fire before that: a click straight after `goto` would then land on server-rendered HTML with no handlers.
+   * Pages that are not the app (the fake Mollie page, a download) have no #__nuxt and are not waited for.
+   */
+  page: async ({ page }, use) => {
+    const goto = page.goto.bind(page)
+    page.goto = async (url, options) => {
+      const response = await goto(url, options)
+      await page
+        .waitForFunction(
+          () => {
+            const root = document.getElementById('__nuxt')
+            return !root || '__vue_app__' in root
+          },
+          undefined,
+          { timeout: 10_000 },
+        )
+        .catch(() => undefined)
+      return response
+    }
+    await use(page)
+  },
+
   /* Real DB helpers or mock control behind one interface (support/backend.ts). */
   backend: async ({ mock }, use) => {
     await use(mock ? mockBackend(new MockControl(mock.url)) : realBackend())
