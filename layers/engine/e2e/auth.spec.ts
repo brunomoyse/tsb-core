@@ -1,7 +1,6 @@
 import { expect, test } from './support/test'
 import { SEL } from './support/selectors'
 import { waitForLoginPage } from './support/auth-flow'
-import { waitForOtpFromZitadel } from './support/zitadel-otp'
 
 /*
  * Auth coverage for the OTP-only login flow. The legacy password tests are gone
@@ -9,7 +8,10 @@ import { waitForOtpFromZitadel } from './support/zitadel-otp'
  * 6-digit code via email; the happy-path test reads the code straight from
  * Zitadel's event store (via the psql tunnel + AES-CFB decrypt) because the
  * real send path goes through Scaleway on the test instance and isn't
- * interceptable locally.
+ * interceptable locally. In mock mode (playwright.mock.config.ts) the same
+ * flow runs against the mock's fake Zitadel and OTP endpoints, and `backend.otpCode`
+ * is the code the mock accepts; the failure paths (wrong, expired, new account...)
+ * are in auth-otp.spec.ts.
  *
  * Why not use the authenticatedPage fixture: those tests are about the login
  * UI itself, not about being logged in. The fixture replays a captured session
@@ -29,7 +31,12 @@ test.beforeEach(async ({ context, loginAvailable }) => {
 })
 
 test.describe('Authentication flows (OTP)', () => {
-  test('Login via OTP code redirects to menu', async ({ page, e2eUserEmail, loginOrigin }) => {
+  test('Login via OTP code redirects to menu', async ({
+    page,
+    backend,
+    e2eUserEmail,
+    loginOrigin,
+  }) => {
     const email = e2eUserEmail
     test.skip(!email, 'No e2e user email for this brand (see the app global-setup)')
 
@@ -51,7 +58,7 @@ test.describe('Authentication flows (OTP)', () => {
     /* OTP input appears only after the backend confirms the code was sent. */
     await page.locator('#auth-code').waitFor({ state: 'visible', timeout: 15_000 })
 
-    const code = await waitForOtpFromZitadel(email!, { after: before })
+    const code = await backend.otpCode(email!, before)
     await page.locator('#auth-code').fill(code)
     await page.locator(SEL.loginVerify).click()
 

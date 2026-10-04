@@ -53,6 +53,22 @@ export interface CouponRule {
   refusal?: string
 }
 
+/** How the sign-in endpoints (`/auth/session/otp/*`, auth.ts) behave. `POST /__mock/scenario` merges a partial of it. */
+export interface OtpScenario {
+  /** The one code `otp/verify` accepts; any other is refused with 400. */
+  code: string
+  /** The address is new: `verify` answers `requiresProfile` and the name must be completed before `finalize`. */
+  newAccount: boolean
+  /** `otp/request` fails: 422 `invalid_email` (address cannot receive mail), 429 or 500. */
+  requestFailure: 'invalid_email' | 'rate_limited' | 'server' | null
+  /** The code in the mailbox is past its lifetime: `verify` refuses it (400) until a `resend` issued a fresh one. */
+  codeExpired: boolean
+  /** `otp/resend` fails with 429 or 500. */
+  resendFailure: 'rate_limited' | 'server' | null
+  /** `otp/verify` fails with 429 or 500 whatever the code. */
+  verifyFailure: 'rate_limited' | 'server' | null
+}
+
 /** Everything a spec can flip, in one object: `POST /__mock/scenario` merges a partial of it. */
 export interface Scenario {
   restaurant: RestaurantMode
@@ -75,8 +91,24 @@ export interface Scenario {
   mollie: MollieBehavior
   /** Tokens are refused (UNAUTHENTICATED) even when the request carries one: an expired session. */
   rejectSession: boolean
+  /** The sign-in endpoints (OTP) and the order invoice download. */
+  otp: OtpScenario
+  /** `GET /orders/:id/invoice` answers 500. */
+  invoiceFailure: boolean
+  /** `POST /feedback` (contact form) is refused: 400 invalid input, 400 captcha_failed, 429 or 500. */
+  feedbackFailure: 'invalid' | 'captcha_failed' | 'rate_limited' | 'server' | null
+  /** Any root query/mutation by field name (`updateMe`, `myOrders`...) fails with this GraphQL error before it runs. */
+  operationFailures: Record<string, GqlFailure>
   /** Promo codes by (upper-case) code. */
   coupons: Record<string, CouponRule>
+}
+
+/** What `POST /__mock/scenario` takes: every field optional, the nested `otp` and `coupons` merged key by key. */
+export type ScenarioPatch = Partial<Omit<Scenario, 'otp' | 'coupons' | 'operationFailures'>> & {
+  otp?: Partial<OtpScenario>
+  coupons?: Record<string, CouponRule>
+  /** A `null` value lifts the failure of that operation. */
+  operationFailures?: Record<string, GqlFailure | null>
 }
 
 export interface MockAddress {
@@ -122,6 +154,8 @@ export interface SeedOrderInput {
    * modifier of every selection). What a re-order or the receipt shows comes from here.
    */
   items?: { productId: string; quantity: number; selections?: OrderSelection[] }[]
+  /** The product of that line (default: the first of the catalog, which may carry choice groups a reorder cannot rebuild). */
+  productId?: string
   type?: 'PICKUP' | 'DELIVERY'
 }
 
@@ -148,6 +182,17 @@ export interface OperationLog {
   authenticated: boolean
 }
 
+/** One REST call (everything that is not GraphQL: sign-in, invoice), as the mock logged it. */
+export interface RestLog {
+  at: string
+  method: string
+  /** Path without the `/api/v1` prefix, e.g. `/auth/session/otp/verify`. */
+  path: string
+  /** Parsed JSON body, for assertions (codes, names...). */
+  body: Record<string, unknown>
+  authenticated: boolean
+}
+
 export interface MockOrderSummary {
   id: string
   type: string
@@ -164,6 +209,8 @@ export interface MockStateSnapshot {
   user: MockUser
   orders: MockOrderSummary[]
   operations: OperationLog[]
+  /** REST calls the app made (sign-in endpoints, invoice download), oldest first. */
+  rest: RestLog[]
   /** Fields or root operations the app asked for and the mock has no answer for (the mock lags the app). */
   gaps: string[]
   /** Live GraphQL subscriptions: `myOrderUpdated:<orderId>`, `restaurantConfigUpdated`... */

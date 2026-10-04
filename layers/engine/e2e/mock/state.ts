@@ -9,6 +9,7 @@ import type {
   OrderPatch,
   OrderStatus,
   PaymentStatus,
+  RestLog,
   Scenario,
   SeedOrderInput,
 } from './types.ts'
@@ -68,9 +69,19 @@ export const defaultScenario = (): Scenario => ({
   quoteFailure: null,
   createOrderFailure: null,
   createOrderDelayMs: 0,
-  operationFailures: {},
   mollie: 'ask',
   rejectSession: false,
+  otp: {
+    code: '123456',
+    newAccount: false,
+    requestFailure: null,
+    codeExpired: false,
+    resendFailure: null,
+    verifyFailure: null,
+  },
+  invoiceFailure: false,
+  feedbackFailure: null,
+  operationFailures: {},
   coupons: {
     WELCOME10: { kind: 'percent', value: 10, minOrder: 15 },
     FIVEOFF: { kind: 'fixed', value: 5 },
@@ -93,6 +104,54 @@ export const defaultUser = (): MockUser => ({
 
 type Listener = (payload: unknown) => void
 
+/** An OTP login in progress (`POST /auth/session/otp/request` created it). */
+export interface OtpSession {
+  id: string
+  /** Rotated by every verify, as Zitadel's session token is. */
+  token: string
+  loginName: string
+  verified: boolean
+  /** A new account whose name has not been sent yet: `finalize` refuses until `complete-profile`. */
+  needsProfile: boolean
+}
+
+/** An OIDC authorize request the app started (the login page shows its id as `?authRequest=`). */
+export interface AuthRequest {
+  id: string
+  redirectUri: string
+  state: string
+  nonce: string | null
+  codeChallenge: string | null
+}
+
+export class AuthState {
+  sessions = new Map<string, OtpSession>()
+  requests = new Map<string, AuthRequest>()
+  /** Authorization codes handed out by `finalize`, waiting for the token exchange. */
+  codes = new Map<string, AuthRequest>()
+  /** Refresh tokens issued: the refresh grant accepts only these. */
+  refreshTokens = new Set<string>()
+  private seq = 0
+
+  next(prefix: string): string {
+    this.seq += 1
+    return `${prefix}-${this.seq}`
+  }
+
+  /** Remembers an authorize request (its query string) and returns the id the login page carries as `?authRequest=`. */
+  startRequest(params: URLSearchParams): string {
+    const id = this.next('authreq')
+    this.requests.set(id, {
+      id,
+      redirectUri: params.get('redirect_uri') ?? '',
+      state: params.get('state') ?? '',
+      nonce: params.get('nonce'),
+      codeChallenge: params.get('code_challenge'),
+    })
+    return id
+  }
+}
+
 export class MockState {
   readonly brand: MockBrand
   scenario: Scenario = defaultScenario()
@@ -100,6 +159,9 @@ export class MockState {
   catalog: MockCategory[]
   orders = new Map<string, MockOrder>()
   operations: OperationLog[] = []
+  rest: RestLog[] = []
+  /** Sign-in state (auth.ts, zitadel.ts): OTP sessions, pending authorize requests, issued codes and refresh tokens. */
+  auth = new AuthState()
   gaps = new Set<string>()
   private readonly listeners = new Map<string, Set<Listener>>()
   private orderSeq = 0
@@ -116,6 +178,8 @@ export class MockState {
     this.catalog = catalogFor(this.brand)
     this.orders.clear()
     this.operations.length = 0
+    this.rest.length = 0
+    this.auth = new AuthState()
     this.gaps.clear()
     // Live sockets stay connected across a reset: only the data is forgotten.
   }
@@ -123,6 +187,11 @@ export class MockState {
   log(entry: OperationLog): void {
     this.operations.push(entry)
     if (this.operations.length > 500) this.operations.shift()
+  }
+
+  logRest(entry: RestLog): void {
+    this.rest.push(entry)
+    if (this.rest.length > 500) this.rest.shift()
   }
 
   noteGap(gap: string): void {
@@ -170,7 +239,8 @@ export class MockState {
     const id = this.nextOrderId()
     const created = new Date(Date.now() - (input.createdMinutesAgo ?? 0) * 60_000).toISOString()
     const fee = input.online ? 30 : 0
-    const product = this.catalog.flatMap((category) => category.products)[0]
+    const products = this.catalog.flatMap((category) => category.products)
+    const product = products.find((candidate) => candidate.id === input.productId) ?? products[0]
     const lines: MockOrderLine[] = input.items
       ? input.items.map((item) => this.seedLine(item))
       : input.withItem && product
@@ -280,6 +350,7 @@ export class MockState {
       user: this.user,
       orders,
       operations: this.operations,
+      rest: this.rest,
       gaps: [...this.gaps],
       subscriptions: this.topics(),
     }

@@ -1,6 +1,7 @@
 import type { MockControl } from '../mock/client'
 import type { OrderStatus, PaymentStatus, SeedOrderInput } from '../mock/types'
 import { deleteOrder, findUserIdByEmail, seedOrder, settleOrder } from './db'
+import { waitForOtpFromZitadel } from './zitadel-otp'
 
 /*
  * What a spec may do to the backend behind the app, whichever backend it is:
@@ -23,6 +24,11 @@ export interface Backend {
   /** Simulates the webhook landing: the order moves to `status` and its payment to `paymentStatus`. */
   settleOrder(orderId: string, status: OrderStatus, paymentStatus: PaymentStatus): Promise<void>
   deleteOrder(orderId: string): Promise<void>
+  /**
+   * The sign-in code mailed to `email` since `after`: read from Zitadel's event store in real mode, the scenario's
+   * `otp.code` in mock mode (the mock accepts exactly that code).
+   */
+  otpCode(email: string, after: Date): Promise<string>
 }
 
 export function mockBackend(control: MockControl): Backend {
@@ -34,6 +40,7 @@ export function mockBackend(control: MockControl): Backend {
     settleOrder: (orderId, status, paymentStatus) =>
       control.settleOrder(orderId, status, paymentStatus),
     deleteOrder: (orderId) => control.deleteOrder(orderId),
+    otpCode: async () => (await control.state()).scenario.otp.code,
   }
 }
 
@@ -67,5 +74,6 @@ export function realBackend(): Backend {
     deleteOrder: async (orderId) => {
       deleteOrder(orderId)
     },
+    otpCode: (email, after) => waitForOtpFromZitadel(email, { after }),
   }
 }

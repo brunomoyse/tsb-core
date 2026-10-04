@@ -13,7 +13,7 @@
         :disabled="!deliveryEnabled"
         @click="setMode('DELIVERY')"
         :class="[
-          'flex-1 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+          'flex-1 inline-flex min-h-11 flex-wrap items-center justify-center gap-x-2 gap-y-0.5 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
           !deliveryEnabled
             ? 'cursor-not-allowed text-neutral-600 opacity-70'
             : cartStore.collectionOption === 'DELIVERY'
@@ -48,7 +48,7 @@
         :aria-checked="cartStore.collectionOption === 'PICKUP'"
         @click="setMode('PICKUP')"
         :class="[
-          'flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
+          'flex-1 inline-flex min-h-11 items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:outline-none',
           cartStore.collectionOption === 'PICKUP'
             ? 'bg-white text-neutral-900 shadow-sm'
             : 'text-neutral-600 hover:text-neutral-700',

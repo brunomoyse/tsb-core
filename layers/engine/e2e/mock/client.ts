@@ -8,8 +8,9 @@ import type {
   OrderPatch,
   OrderStatus,
   PaymentStatus,
+  RestLog,
   RestaurantMode,
-  Scenario,
+  ScenarioPatch,
   SeedOrderInput,
 } from './types.ts'
 
@@ -50,14 +51,14 @@ export class MockControl {
     await this.call('POST', '/reset', {})
   }
 
-  /** Merges a partial scenario (see `Scenario` in types.ts). */
-  async scenario(patch: Partial<Scenario>): Promise<void> {
+  /** Merges a partial scenario (see `Scenario` in types.ts; `otp` and `coupons` merge key by key). */
+  async scenario(patch: ScenarioPatch): Promise<void> {
     await this.call('POST', '/scenario', patch)
   }
 
-  /** Makes one root operation of the app (`validateCoupon`, `restaurantConfig`...) fail with a GraphQL error; null repairs it. */
-  async failOperation(op: string, failure: GqlFailure | null): Promise<void> {
-    await this.call('POST', '/scenario', { operationFailures: { [op]: failure } })
+  /** Makes a root query/mutation (`updateMe`, `myOrders`...) fail with a GraphQL error code, or `null` to lift it. */
+  failOperation(operation: string, failure: GqlFailure | null): Promise<void> {
+    return this.scenario({ operationFailures: { [operation]: failure } })
   }
 
   /** Open | scheduled-only (closed now, today's slots bookable) | closed | disabled. Pushed to open pages. */
@@ -105,6 +106,12 @@ export class MockControl {
   async operations(op?: string): Promise<OperationLog[]> {
     const { operations } = await this.state()
     return op ? operations.filter((entry) => entry.op === op) : operations
+  }
+
+  /** The REST calls the app made (sign-in endpoints, invoice download), oldest first, optionally only paths starting with `prefix`. */
+  async restCalls(prefix = ''): Promise<RestLog[]> {
+    const { rest } = await this.state()
+    return rest.filter((entry) => entry.path.startsWith(prefix))
   }
 
   /** The `CreateOrderInput`s the app sent that the mock accepted, oldest first. */

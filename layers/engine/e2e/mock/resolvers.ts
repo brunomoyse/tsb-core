@@ -223,7 +223,8 @@ export const operations: Operations = {
         'notifyOrderUpdates',
       ] as const) {
         if (key in patch && patch[key] !== undefined)
-          Object.assign(state.user, { [key]: patch[key] })
+          // An empty phone number clears it, as the real service stores it.
+          Object.assign(state.user, { [key]: patch[key] === '' ? null : patch[key] })
       }
       if ('addressPlaceId' in patch) {
         const place = findPlace(patch.addressPlaceId as string | null)

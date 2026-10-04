@@ -35,8 +35,8 @@ const engineSpecDir = fileURLToPath(new URL('..', import.meta.url))
 const desktop = { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } }
 const mobile = devices['Pixel 5']
 
-/* Specs that cannot run on the mock: they need the real Zitadel round-trip or pixel baselines of the real data. */
-const REAL_BACKEND_ONLY = ['auth.spec.ts', 'visual.spec.ts']
+/* Specs that cannot run on the mock: they need pixel baselines of the real data. */
+const REAL_BACKEND_ONLY = ['visual.spec.ts']
 
 /** The environment baked into the app build: every URL points at the mock. */
 export function mockBuildEnv({ appPort, mockPort }: Pick<MockModeOptions, 'appPort' | 'mockPort'>) {
@@ -61,7 +61,7 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
     {
       name: 'brand-desktop',
       testDir: `${appDir}/e2e`,
-      testIgnore: REAL_BACKEND_ONLY,
+      testIgnore: [...REAL_BACKEND_ONLY, '**/mobile-*.spec.ts'],
       use: desktop,
     },
     {
@@ -78,14 +78,13 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
       use: mobile,
     },
   ]
-  if (brandMobileSpecs.length > 0) {
-    projects.splice(1, 0, {
-      name: 'brand-mobile',
-      testDir: `${appDir}/e2e`,
-      testMatch: brandMobileSpecs,
-      use: mobile,
-    })
-  }
+  // The brand's phone project: its smoke specs and every `mobile-*.spec.ts` of its e2e folder.
+  projects.splice(1, 0, {
+    name: 'brand-mobile',
+    testDir: `${appDir}/e2e`,
+    testMatch: [...brandMobileSpecs, '**/mobile-*.spec.ts'],
+    use: mobile,
+  })
 
   return {
     timeout: 60_000,
@@ -101,9 +100,10 @@ export function mockPlaywrightConfig(options: MockModeOptions): PlaywrightTestCo
     use: {
       baseURL: `http://localhost:${appPort}`,
       brand,
-      loginAvailable: false,
+      // The mock serves the whole round trip: authorize -> the app's login page -> OTP endpoints -> token endpoint.
+      loginAvailable: true,
       loginOrigin: undefined,
-      e2eUserEmail: undefined,
+      e2eUserEmail: 'e2e@example.test',
       mock: {
         url: `http://localhost:${mockPort}`,
         oidcAuthority: env.ZITADEL_AUTHORITY,

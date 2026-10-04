@@ -1,7 +1,7 @@
 import type { MockState } from './state.ts'
 import { findPlace } from './restaurant.ts'
 import { findProduct } from './catalog/index.ts'
-import type { MockUser, Scenario, SeedOrderInput } from './types.ts'
+import type { MockUser, ScenarioPatch, SeedOrderInput } from './types.ts'
 
 /*
  * The control API (`/__mock/*`): what a spec uses to put the mock in the situation it wants to test. JSON in, JSON out.
@@ -10,7 +10,7 @@ import type { MockUser, Scenario, SeedOrderInput } from './types.ts'
  *   GET    /__mock/health
  *   GET    /__mock/state                 snapshot: scenario, user, orders, operations the app made, gaps
  *   POST   /__mock/reset                 back to the defaults (the fixture does this before every test)
- *   POST   /__mock/scenario              merge a partial Scenario (coupons and operationFailures are merged per key; a null failure clears it)
+ *   POST   /__mock/scenario              merge a partial Scenario (coupons per code, otp and operationFailures per key; a null failure clears it)
  *   POST   /__mock/user                  merge a partial user; `address` is a place id (see restaurant.ts PLACES) or null
  *   POST   /__mock/orders                seed an order (SeedOrderInput) -> { id }
  *   POST   /__mock/orders/:id            change an order (OrderPatch), pushed to its subscribers
@@ -43,9 +43,7 @@ export function handleControl(
   }
 
   if (route === '/scenario' && method === 'POST') {
-    const patch = body as Partial<Omit<Scenario, 'operationFailures'>> & {
-      operationFailures?: Record<string, Scenario['operationFailures'][string] | null>
-    }
+    const patch = body as ScenarioPatch
     const before = state.scenario.restaurant
     const operationFailures = { ...state.scenario.operationFailures }
     for (const [operation, failure] of Object.entries(patch.operationFailures ?? {})) {
@@ -55,6 +53,7 @@ export function handleControl(
     state.scenario = {
       ...state.scenario,
       ...patch,
+      otp: { ...state.scenario.otp, ...patch.otp },
       coupons: { ...state.scenario.coupons, ...patch.coupons },
       operationFailures,
     }
