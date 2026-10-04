@@ -22,3 +22,25 @@ export function mountComposable<T>(setup: () => T, template?: () => ReturnType<t
     },
   }
 }
+
+/** Same, inside the real Nuxt app (i18n, router, auto-imports available to the composable, as in a page). */
+export async function mountComposableInNuxt<T>(setup: () => T) {
+  const { mountSuspended } = await import('@nuxt/test-utils/runtime')
+  let result!: T
+  const wrapper = await mountSuspended(
+    defineComponent({
+      setup() {
+        result = setup()
+        return () => h('div')
+      },
+    }),
+    { attachTo: document.body },
+  )
+  return {
+    result,
+    wrapper,
+    unmount: () => {
+      wrapper.unmount()
+    },
+  }
+}
