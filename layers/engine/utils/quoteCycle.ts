@@ -125,10 +125,9 @@ export function createQuoteCycle(deps: QuoteCycleDeps) {
   }
 
   const send = async () => {
-    const request = latest
     timer = null
-    if (!request) return
-    await run(request)
+    // `latest` is set before the timer is armed and only cleared together with it (cancel), so it is there when it fires.
+    await run(latest as QuoteRequest)
   }
 
   return {

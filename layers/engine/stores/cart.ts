@@ -219,6 +219,36 @@ export const useCartStore = defineStore('cart', {
     },
 
     /**
+     * Edit of a cart line from the menu: the line `edited` becomes the product/selections/quantity just composed,
+     * IN PLACE (it keeps its position in the cart instead of moving to the bottom). Like `addProduct` the new line
+     * merges into another line that is identical, and then the edited one just disappears. When the edited line is
+     * not in the cart any more (emptied meanwhile, order placed), this is a plain `addProduct`.
+     */
+    replaceLine(
+      edited: CartItem,
+      product: Product,
+      quantity: number,
+      selection: ItemSelectionInput = {},
+    ): void {
+      const index = this.products.findIndex((item) =>
+        matchesCartItem(item, {
+          productId: edited.product.id,
+          selections: normalizeSelections(edited.selectedChoice, edited.selectedChoices),
+          quantity: edited.quantity,
+        }),
+      )
+      if (index < 0) {
+        this.addProduct(product, quantity, selection)
+        return
+      }
+      this.products.splice(index, 1)
+      const before = this.products.length
+      this.addProduct(product, quantity, selection)
+      // No identical line to merge into: addProduct pushed the new line last, move it to where the edited one was.
+      if (this.products.length > before) this.products.splice(index, 0, this.products.pop()!)
+    },
+
+    /**
      * The customer accepts the new price of a line (PRICE_CHANGED): the stored snapshot takes the
      * product's current price and the current modifiers of its choices. The line gets a new
      * `product` object, so the menu's own product is not touched.
@@ -226,30 +256,23 @@ export const useCartStore = defineStore('cart', {
     acceptQuotedPrice(item: CartItem, quoteLine: QuoteLine): void {
       const pricing = quotedSnapshotPricing(item.product, quoteLine)
       if (!pricing) return
-      const modifierOf = new Map(pricing.choices.map((choice) => [choice.id, choice.priceModifier]))
-      const known = new Set(item.product.choices.map((choice: ProductChoice) => choice.id))
-      // Choices the quote priced that the snapshot lacked (no name: the cart labels skip them).
-      const added = pricing.choices
-        .filter((choice) => !known.has(choice.id))
-        .map((choice): ProductChoice => ({
-          id: choice.id,
+      const snapshot = new Map(
+        item.product.choices.map((choice: ProductChoice) => [choice.id, choice]),
+      )
+      // Every choice of the snapshot, repriced, then the ones the quote priced that it lacked (no name: the cart labels skip them).
+      const choices = pricing.choices.map((priced): ProductChoice => {
+        const existing = snapshot.get(priced.id)
+        if (existing) return { ...existing, priceModifier: priced.priceModifier }
+        return {
+          id: priced.id,
           productId: item.product.id,
-          choiceGroupId: choice.groupId ?? '',
-          priceModifier: choice.priceModifier,
+          choiceGroupId: priced.groupId ?? '',
+          priceModifier: priced.priceModifier,
           sortOrder: 0,
           name: '',
-        }))
-      item.product = {
-        ...item.product,
-        price: pricing.price,
-        choices: [
-          ...item.product.choices.map((choice: ProductChoice) => ({
-            ...choice,
-            priceModifier: modifierOf.get(choice.id) ?? choice.priceModifier,
-          })),
-          ...added,
-        ],
-      }
+        }
+      })
+      item.product = { ...item.product, price: pricing.price, choices }
       if (item.selectedChoice) {
         item.selectedChoice =
           item.product.choices.find(

@@ -15,9 +15,9 @@ npm run test:coverage                             # coverage + thresholds (what 
 
 `coverage/lcov-report/index.html` is the browsable report. The thresholds in `vite.config.ts`
 (`test.coverage.thresholds`) only ever go up: a global one, and one per file for the files of the order, auth and payment
-flows (`criticalFiles`), held at what they reach (100 % lines and functions; the few arms below 100 % are defensive
-fallbacks and dead `import.meta.server` arms: `useOrderCompleted`, `useOrderTracking`, `plugins/api`, `plugins/gqlFetch`,
-`quoteCycle`, `cashPayment`, `orderPayload`, `orderCompleted`, `cartLines`, `stores/cart`, `useOrderQuote`).
+flows (`criticalFiles`), held at what they reach: 100 % everywhere except the few defensive arms of `useOrderCompleted`
+(a cleanup before mount, which only runs during SSR), `useOrderTracking` and `useOrderQuote` (guards for an inactive
+scope / a coupon that is gone), which stay on purpose.
 
 ## Where tests go and how they are named
 

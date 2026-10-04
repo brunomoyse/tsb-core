@@ -13,7 +13,11 @@
       class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60"
     >
       <div class="min-w-0">
-        <span v-if="p?.category?.name" translate="no" class="section-label">{{
+        <!-- Editing a cart line: the eyebrow says so (the button alone is easy to miss) -->
+        <span v-if="editItem" class="section-label" data-testid="product-modal-eyebrow">{{
+          $t('menu.editing')
+        }}</span>
+        <span v-else-if="p?.category?.name" translate="no" class="section-label">{{
           p.category.name
         }}</span>
         <h2
@@ -231,7 +235,7 @@
           :disabled="!canAddToCart"
           @click="addToCart"
         >
-          <span>{{ $t('menu.addToCart') }}</span>
+          <span>{{ $t(editItem ? 'menu.update' : 'menu.addToCart') }}</span>
           <span class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
         </button>
       </div>
@@ -253,6 +257,7 @@ import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disab
 import LoadError from '#engine/components/LoadError.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
+import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { formatCents } from '#engine/lib/price'
 import { lineSignature } from '#engine/utils/cartLines'
 import { useCartStore } from '#engine/stores/cart'
@@ -311,7 +316,12 @@ const openLightbox = (id: string, name: string) => {
   lightboxRef.value?.open()
 }
 
-const quantity = ref(1)
+// Set when the modal was opened from a customized cart line ("Edit"): prefill from that line and replace it on
+// confirm instead of adding a second one (same as the Tokyo Sushi modal).
+const cartItemEdit = useCartItemEdit()
+const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value : null
+
+const quantity = ref(editItem?.quantity ?? 1)
 const maxQuantity = 99
 
 const PRODUCT_QUERY = /* GraphQL */ `
@@ -373,6 +383,7 @@ const p = dataProduct.value?.product
 const choicesApi = useProductChoices(p, quantity)
 const {
   choiceGroups,
+  selectedChoiceQuantities,
   selectionList,
   selectedChoice,
   displayPriceCents,
@@ -381,6 +392,13 @@ const {
   allGroupsSatisfied,
   groupHint,
 } = choicesApi
+
+// Editing a cart line: start from its selections.
+if (editItem?.selectedChoices?.length) {
+  selectedChoiceQuantities.value = Object.fromEntries(
+    editItem.selectedChoices.map((selection) => [selection.choiceId, selection.quantity]),
+  )
+}
 
 const canAddToCart = computed(() => {
   if (orderingDisabled) return false
@@ -396,7 +414,10 @@ onMounted(() => {
     if (e.key === 'Escape') emit('close')
   }
   document.addEventListener('keydown', handleEscape)
-  onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleEscape)
+    cartItemEdit.value = null
+  })
 
   // Track product view
   if (p) {
@@ -412,10 +433,10 @@ onMounted(() => {
 const addToCart = () => {
   if (!p || !canAddToCart.value) return
 
-  cartStore.addProduct(p, quantity.value, {
-    choice: selectedChoice.value,
-    selections: selectionList.value,
-  })
+  // An edited line is replaced where it is (it keeps its place in the cart), a new one is added.
+  const composed = { choice: selectedChoice.value, selections: selectionList.value }
+  if (editItem) cartStore.replaceLine(editItem, p, quantity.value, composed)
+  else cartStore.addProduct(p, quantity.value, composed)
   trackEvent('product_added_to_cart', {
     product_id: p.id,
     product_name: p.name,

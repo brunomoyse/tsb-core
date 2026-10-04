@@ -290,6 +290,84 @@ describe('incrementQuantity / decrementQuantity / removeFromCart', () => {
   })
 })
 
+describe('replaceLine (the edit of a cart line from the menu)', () => {
+  const pick = (choiceId: string, quantity = 1) => ({ groupId: 'broth', choiceId, quantity })
+
+  it('puts the edited line where the old one was, not at the bottom of the cart', () => {
+    const cart = freshStore()
+    cart.addProduct(sushi, 1)
+    cart.addProduct(ramen, 1, { selections: [pick('broth-a')] })
+    cart.addProduct(makeProduct({ id: 'gyoza' }), 1)
+    const edited = cart.products[1]!
+
+    cart.replaceLine(edited, ramen, 2, { selections: [pick('broth-b', 2)] })
+
+    expect(cart.products.map((l) => l.product.id)).toEqual(['sushi', 'ramen', 'gyoza'])
+    expect(cart.products[1]).toMatchObject({
+      quantity: 2,
+      selectedChoices: [pick('broth-b', 2)],
+    })
+  })
+
+  it('replaces, it does not add: the line count stays', () => {
+    const cart = freshStore()
+    cart.addProduct(ramen, 1, { selections: [pick('broth-a')] })
+    cart.replaceLine(cart.products[0]!, ramen, 1, { selections: [pick('broth-b')] })
+    expect(cart.products).toHaveLength(1)
+    expect(cart.products[0]!.selectedChoices).toEqual([pick('broth-b')])
+  })
+
+  it('merges into an identical line elsewhere in the cart, and the edited one disappears', () => {
+    const cart = freshStore()
+    cart.addProduct(ramen, 1, { selections: [pick('broth-a')] })
+    cart.addProduct(sushi, 1)
+    cart.addProduct(ramen, 1, { selections: [pick('broth-b')] })
+
+    cart.replaceLine(cart.products[2]!, ramen, 1, { selections: [pick('broth-a')] })
+
+    expect(cart.products.map((l) => [l.product.id, l.quantity])).toEqual([
+      ['ramen', 2],
+      ['sushi', 1],
+    ])
+  })
+
+  it('edits only the line it was opened from when two lines look alike (same selections, other quantity)', () => {
+    const cart = freshStore()
+    const mixed = [{ groupId: 'g', choiceId: 'a', quantity: 2 }]
+    cart.products.push(
+      { product: ramen, quantity: 2, selectedChoices: mixed, selectedChoice: null },
+      { product: ramen, quantity: 3, selectedChoices: mixed, selectedChoice: null },
+    )
+    cart.replaceLine(cart.products[1]!, sushi, 1)
+    expect(cart.products.map((l) => [l.product.id, l.quantity])).toEqual([
+      ['ramen', 2],
+      ['sushi', 1],
+    ])
+  })
+
+  it('is a plain add when the edited line is not in the cart any more', () => {
+    const cart = freshStore()
+    cart.addProduct(sushi, 1)
+    const gone: CartItem = {
+      product: ramen,
+      quantity: 1,
+      selectedChoices: [],
+      selectedChoice: null,
+    }
+    cart.replaceLine(gone, ramen, 1, { selections: [pick('broth-a')] })
+    expect(cart.products.map((l) => l.product.id)).toEqual(['sushi', 'ramen'])
+  })
+
+  it('finds a line stored with a lone legacy choice and no selection list', () => {
+    const cart = freshStore()
+    cart.addProduct(ramen, 1, { choice: brothA })
+    cart.addProduct(sushi, 1)
+    cart.replaceLine(cart.products[0]!, ramen, 1, { selections: [pick('broth-b')] })
+    expect(cart.products.map((l) => l.product.id)).toEqual(['ramen', 'sushi'])
+    expect(cart.products[0]!.selectedChoices).toEqual([pick('broth-b')])
+  })
+})
+
 describe('lines without a selectedChoices list (older in-memory shape)', () => {
   const legacyLine = (quantity: number) =>
     ({ product: sushi, quantity, selectedChoice: null }) as unknown as CartItem

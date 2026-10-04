@@ -4,6 +4,7 @@
 // Run: `vp test run layers/engine/plugins/auth-sync.client.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
+import { SilentRenewUnavailableError } from '#engine/utils/silentRenewError'
 import { makeUser } from '../../../test/fixtures/auth'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
@@ -143,6 +144,37 @@ describe('case 1: a profile is stored but the OIDC session is gone or expired', 
   })
 })
 
+describe('case 1 when Zitadel cannot be reached', () => {
+  it('keeps both the profile and the OIDC session (offline is not a dead session)', async () => {
+    const store = freshStore(makeUser())
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+
+    await sync()
+
+    expect(oidc.removeUser).not.toHaveBeenCalled()
+    expect(store.user).toEqual(makeUser())
+    expect(reportError).not.toHaveBeenCalled()
+  })
+
+  it('reports an unexpected failure of the renewal, and leaves the profile alone', async () => {
+    const store = freshStore(makeUser())
+    const bug = new TypeError('boom')
+    oidc.silentRenew.mockRejectedValue(bug)
+    let run: Promise<void> = Promise.resolve()
+    definition.setup({
+      runWithContext: (fn: () => Promise<void>) => {
+        run = fn()
+        return run
+      },
+    })
+    whenReady.callbacks[0]!()
+    await expect(run).rejects.toBe(bug)
+
+    expect(reportError).toHaveBeenCalledExactlyOnceWith(bug, 'auth.sync')
+    expect(store.user).toEqual(makeUser())
+  })
+})
+
 describe('case 2: the OIDC session is valid but no profile is stored', () => {
   it('loads /me with the token and stores the profile', async () => {
     const store = freshStore(null)
@@ -173,10 +205,15 @@ describe('case 2: the OIDC session is valid but no profile is stored', () => {
   })
 
   it.each([
-    ['no `me` in the answer', { data: {} }],
-    ['GraphQL errors only', { errors: [{ message: 'unauthenticated' }] }],
-    ['an empty answer', undefined],
-  ])('drops the stale OIDC session when /me returns %s', async (_label, answer) => {
+    [
+      'GraphQL UNAUTHENTICATED',
+      { errors: [{ message: 'no', extensions: { code: 'UNAUTHENTICATED' } }] },
+    ],
+    [
+      'UNAUTHENTICATED among other errors',
+      { errors: [{ message: 'x' }, { message: 'no', extensions: { code: 'UNAUTHENTICATED' } }] },
+    ],
+  ])('drops the stale OIDC session when /me answers %s', async (_label, answer) => {
     const store = freshStore(null)
     oidc.isAuthenticated.mockResolvedValue(true)
     $fetchMock.mockResolvedValue(answer)
@@ -187,24 +224,80 @@ describe('case 2: the OIDC session is valid but no profile is stored', () => {
     expect(store.user).toBeNull()
   })
 
-  it('drops the stale OIDC session when the backend refuses the token (revoked, user deleted), without reporting it', async () => {
-    const store = freshStore(null)
-    oidc.isAuthenticated.mockResolvedValue(true)
-    $fetchMock.mockRejectedValue(Object.assign(new Error('401'), { status: 401 }))
+  it.each([
+    ['no `me` in the answer', { data: {} }],
+    [
+      'a GraphQL error that is not about the token',
+      { errors: [{ message: 'boom', extensions: { code: 'INTERNAL' } }] },
+    ],
+    ['an error without extensions', { errors: [{ message: 'boom' }] }],
+    ['an empty answer', undefined],
+  ])(
+    'keeps the OIDC session when /me answers %s (nothing says the token is bad)',
+    async (_label, answer) => {
+      const store = freshStore(null)
+      oidc.isAuthenticated.mockResolvedValue(true)
+      $fetchMock.mockResolvedValue(answer)
 
-    await sync()
+      await sync()
 
-    expect(oidc.removeUser).toHaveBeenCalledOnce()
-    expect(store.user).toBeNull()
-    expect(reportError).not.toHaveBeenCalled()
-  })
+      expect(oidc.removeUser).not.toHaveBeenCalled()
+      expect(store.user).toBeNull()
+    },
+  )
+
+  it.each([
+    ['status', { status: 401 }],
+    ['statusCode', { statusCode: 401 }],
+  ])(
+    'drops the stale OIDC session when the backend refuses the token with HTTP 401 (%s), without reporting it',
+    async (_label, props) => {
+      const store = freshStore(null)
+      oidc.isAuthenticated.mockResolvedValue(true)
+      $fetchMock.mockRejectedValue(Object.assign(new Error('401'), props))
+
+      await sync()
+
+      expect(oidc.removeUser).toHaveBeenCalledOnce()
+      expect(store.user).toBeNull()
+      expect(reportError).not.toHaveBeenCalled()
+    },
+  )
+
+  it.each([
+    ['the network dropped', new TypeError('Failed to fetch')],
+    [
+      'the request was aborted by a navigation',
+      Object.assign(new Error('aborted'), { name: 'AbortError' }),
+    ],
+    ['the backend failed (502)', Object.assign(new Error('502'), { status: 502 })],
+    [
+      'the backend refused for another reason (403)',
+      Object.assign(new Error('403'), { status: 403 }),
+    ],
+    ['something that is not an error was thrown', 'boom'],
+    ['null was thrown', null],
+  ])(
+    'keeps the OIDC session when %s while loading /me: no sign-out mid-order',
+    async (_label, failure) => {
+      const store = freshStore(null)
+      oidc.isAuthenticated.mockResolvedValue(true)
+      $fetchMock.mockRejectedValue(failure)
+
+      await sync()
+
+      expect(oidc.removeUser).not.toHaveBeenCalled()
+      expect(store.user).toBeNull()
+      expect(reportError).not.toHaveBeenCalled()
+    },
+  )
 
   it('says so on the console in development', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     setFlags({ dev: true })
     freshStore(null)
     oidc.isAuthenticated.mockResolvedValue(true)
-    const failure = new Error('401')
+    const failure = Object.assign(new Error('401'), { status: 401 })
     $fetchMock.mockRejectedValue(failure)
 
     await sync()
@@ -213,11 +306,25 @@ describe('case 2: the OIDC session is valid but no profile is stored', () => {
     warn.mockRestore()
   })
 
+  it('says that the session was kept when the failure is not a refusal, in development', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    setFlags({ dev: true })
+    freshStore(null)
+    oidc.isAuthenticated.mockResolvedValue(true)
+    const failure = new TypeError('Failed to fetch')
+    $fetchMock.mockRejectedValue(failure)
+
+    await sync()
+
+    expect(warn).toHaveBeenCalledExactlyOnceWith('[auth-sync] /me failed, session kept', failure)
+    warn.mockRestore()
+  })
+
   it('stays silent in production', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     freshStore(null)
     oidc.isAuthenticated.mockResolvedValue(true)
-    $fetchMock.mockRejectedValue(new Error('401'))
+    $fetchMock.mockRejectedValue(Object.assign(new Error('401'), { status: 401 }))
     await sync()
     expect(warn).not.toHaveBeenCalled()
     warn.mockRestore()

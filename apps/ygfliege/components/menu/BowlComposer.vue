@@ -13,7 +13,9 @@
       class="flex items-start justify-between gap-4 px-5 py-4 sm:px-8 sm:py-6 border-b border-ygf-orange-100 bg-ygf-orange-50/60"
     >
       <div class="min-w-0">
-        <span class="section-label">{{ $t('composer.eyebrow') }}</span>
+        <span class="section-label" data-testid="bowl-composer-eyebrow">{{
+          $t(editItem ? 'menu.editing' : 'composer.eyebrow')
+        }}</span>
         <h2
           id="bowl-composer-title"
           translate="no"
@@ -142,7 +144,7 @@
           :disabled="!canAddToCart"
           @click="addToCart"
         >
-          <span>{{ $t('menu.addToCart') }}</span>
+          <span>{{ $t(editItem ? 'menu.update' : 'menu.addToCart') }}</span>
           <!-- Price only once the bowl is valid: before that, lineTotal
                          is just the 2,50 € base and reads as the full price. -->
           <span v-if="canAddToCart" class="tabular-nums">{{ formatCents(lineTotalCents) }}</span>
@@ -158,6 +160,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ChoiceGroupPicker from '~/components/menu/ChoiceGroupPicker.vue'
 import LoadError from '#engine/components/LoadError.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
+import { useCartItemEdit } from '#engine/composables/useCartItemEdit'
 import { formatCents } from '#engine/lib/price'
 import { lineSignature } from '#engine/utils/cartLines'
 import { useCartStore } from '#engine/stores/cart'
@@ -198,7 +201,12 @@ const cartItemAdded = useEventBus(cartItemAddedKey)
 const panelRef = ref<HTMLElement | null>(null)
 useFocusTrap(panelRef)
 
-const quantity = ref(1)
+// Set when the composer was opened from a customized cart line ("Edit"): prefill from that line and replace it on
+// confirm instead of adding a second one.
+const cartItemEdit = useCartItemEdit()
+const editItem = cartItemEdit.value?.product.id === product ? cartItemEdit.value : null
+
+const quantity = ref(editItem?.quantity ?? 1)
 
 const PRODUCT_QUERY = /* GraphQL */ `
   query Product($id: ID!) {
@@ -258,6 +266,7 @@ const {
   groupTargetMax,
   selectedCountIn,
   quantityOf,
+  selectedChoiceQuantities,
   selectionList,
   selectedChoice,
   displayPriceCents,
@@ -267,6 +276,13 @@ const {
   groupHint,
   blockingGroup,
 } = choicesApi
+
+// Editing a cart line: start from its selections.
+if (editItem?.selectedChoices?.length) {
+  selectedChoiceQuantities.value = Object.fromEntries(
+    editItem.selectedChoices.map((selection) => [selection.choiceId, selection.quantity]),
+  )
+}
 
 const canAddToCart = computed(() => {
   if (orderingDisabled) return false
@@ -293,10 +309,10 @@ const summaryLabel = computed(() => {
 const addToCart = () => {
   if (!p || !canAddToCart.value) return
 
-  cartStore.addProduct(p, quantity.value, {
-    choice: selectedChoice.value,
-    selections: selectionList.value,
-  })
+  // An edited line is replaced where it is (it keeps its place in the cart), a new one is added.
+  const composed = { choice: selectedChoice.value, selections: selectionList.value }
+  if (editItem) cartStore.replaceLine(editItem, p, quantity.value, composed)
+  else cartStore.addProduct(p, quantity.value, composed)
   trackEvent('product_added_to_cart', {
     product_id: p.id,
     product_name: p.name,
@@ -330,6 +346,9 @@ onMounted(() => {
     if (e.key === 'Escape') emit('close')
   }
   document.addEventListener('keydown', handleEscape)
-  onUnmounted(() => document.removeEventListener('keydown', handleEscape))
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleEscape)
+    cartItemEdit.value = null
+  })
 })
 </script>

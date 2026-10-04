@@ -128,7 +128,9 @@
     "choice": "Choix",
     "required": "Obligatoire",
     "addWithPrice": "Ajouter · {price}",
+    "update": "Mettre à jour",
     "updateWithPrice": "Mettre à jour · {price}",
+    "editing": "Modification",
     "viewDetails": "Voir le détail de {name}",
     "loadFailed": "Impossible de charger le menu.",
     "productLoadFailed": "Impossible de charger ce produit."
@@ -182,7 +184,8 @@
       "selected": "Adresse sélectionnée : {address}",
       "cleared": "Adresse effacée"
     },
-    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)",
+    "incompletePhone": "Numéro incomplet\u00a0: continuez la saisie (ex. 0470 12 34 56)",
+    "phoneMaybeMobile": "Il semble manquer un chiffre à ce GSM\u00a0: vérifiez-le",
     "phoneCountry": "Pays du numéro de téléphone"
   },
   "me": {

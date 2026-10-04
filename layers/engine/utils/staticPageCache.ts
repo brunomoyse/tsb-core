@@ -75,10 +75,10 @@ export function preferredLocale(
 ): string | null {
   const tags = (header ?? '')
     .split(',')
-    .map((tag) => tag.split(';')[0] ?? '')
+    .map((tag) => tag.replace(/;.*$/su, '')) // Cut at the first `;`
     .filter((tag) => tag !== '*' && tag !== '')
   for (const tag of tags) {
-    const primary = (tag.split('-')[0] ?? '').toLowerCase()
+    const primary = tag.replace(/-.*$/su, '').toLowerCase()
     const locale = locales.find((code) => code.toLowerCase() === primary)
     if (locale) return locale
   }
