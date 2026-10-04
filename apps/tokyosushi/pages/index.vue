@@ -611,6 +611,8 @@ useHead({
             src="/icons/bancontact-logo.svg"
             alt=""
             aria-hidden="true"
+            width="24"
+            height="14"
             class="h-3.5 w-auto grayscale contrast-125 brightness-75 opacity-80"
             loading="lazy"
           />
