@@ -4,6 +4,7 @@
 import type * as NuxtAppModule from 'nuxt/app'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { RouteLocationNormalized } from 'vue-router'
+import { SilentRenewUnavailableError } from '#engine/utils/silentRenewError'
 import { setFlags } from '../../../test/flags'
 
 const oidc = vi.hoisted(() => ({
@@ -66,6 +67,20 @@ describe('protected pages (meta.public === false) in the browser', () => {
     expect(oidc.signIn).not.toHaveBeenCalled()
     expect(navigateTo).not.toHaveBeenCalled()
     expect(sessionStorage.getItem('oidc_return_to')).toBeNull()
+  })
+
+  it('let the customer through, signed in, when the renewal cannot reach Zitadel (offline): no login flow', async () => {
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+    expect(await run('/fr/me')).toBeUndefined()
+    expect(oidc.signIn).not.toHaveBeenCalled()
+    expect(navigateTo).not.toHaveBeenCalled()
+    expect(sessionStorage.getItem('oidc_return_to')).toBeNull()
+  })
+
+  it('does not swallow an unexpected failure of the renewal', async () => {
+    const bug = new TypeError('boom')
+    oidc.silentRenew.mockRejectedValue(bug)
+    await expect(run('/fr/me')).rejects.toBe(bug)
   })
 
   it('send an anonymous customer to the login flow in the language of the page, remembering the destination', async () => {

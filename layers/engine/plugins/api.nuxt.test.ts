@@ -4,6 +4,7 @@
 // paths are real.
 // Run: `vp test run layers/engine/plugins/api.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { SilentRenewUnavailableError } from '#engine/utils/silentRenewError'
 import { useNuxtApp, useRuntimeConfig } from '#imports'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
@@ -198,6 +199,31 @@ describe('expired session: HTTP 401', () => {
 
     expect(baseApi).toHaveBeenCalledOnce()
     expect(navigateTo).toHaveBeenCalledExactlyOnceWith('/fr/auth/login?session=expired')
+  })
+
+  it('keeps the customer where they are when Zitadel cannot be reached: no login redirect, the 401 is thrown, the next call renews', async () => {
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+    const failure = httpError(401)
+    baseApi.mockRejectedValue(failure)
+
+    await expect(install('fr')('/me')).rejects.toBe(failure)
+
+    expect(baseApi).toHaveBeenCalledOnce()
+    expect(navigateTo).not.toHaveBeenCalled()
+    expect(sessionStorage.getItem('oidc_return_to')).toBeNull()
+
+    // The network is back: the next call renews and goes through.
+    oidc.silentRenew.mockResolvedValue({ access_token: 'token-2' })
+    baseApi.mockReset()
+    baseApi.mockRejectedValueOnce(httpError(401)).mockResolvedValueOnce({ id: 'u1' })
+    await expect(install('fr')('/me')).resolves.toEqual({ id: 'u1' })
+  })
+
+  it('an unexpected failure of the renewal is not hidden', async () => {
+    const bug = new TypeError('boom')
+    oidc.silentRenew.mockRejectedValue(bug)
+    baseApi.mockRejectedValue(httpError(401))
+    await expect(install('fr')('/me')).rejects.toBe(bug)
   })
 
   it('remembers the page the customer was on, so that the login brings them back to it', async () => {

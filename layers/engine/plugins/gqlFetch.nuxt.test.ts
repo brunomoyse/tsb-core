@@ -3,7 +3,8 @@
 // Run: `vp test run layers/engine/plugins/gqlFetch.nuxt.test.ts`.
 import { GQL_HTTP_ERROR, GQL_NETWORK_ERROR, GqlError } from '#engine/utils/gqlError'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
+import { SilentRenewUnavailableError } from '#engine/utils/silentRenewError'
+import { fakeUserManagers, refusal } from '../../../test/helpers/fakeOidc'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
 import { useRuntimeConfig } from '#imports'
@@ -268,6 +269,16 @@ describe('expired session: HTTP 401', () => {
     expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
   })
 
+  it('keeps the customer where they are when Zitadel cannot be reached (offline): the 401 is thrown, no login redirect', async () => {
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+    $fetchMock.mockRejectedValue(httpError(401))
+    const error = await install('fr')(QUERY).catch((e: unknown) => e)
+    expect(error).toMatchObject({ code: GQL_HTTP_ERROR, status: 401 })
+    expect($fetchMock).toHaveBeenCalledOnce()
+    expect(navigateTo).not.toHaveBeenCalled()
+    expect(sessionStorage.getItem('oidc_return_to')).toBeNull()
+  })
+
   it('reports the failure of the retry, and keeps an abort of the retry as an abort', async () => {
     $fetchMock.mockRejectedValueOnce(httpError(401)).mockRejectedValueOnce(httpError(500))
     const failed = await install('fr')(QUERY).catch((e: unknown) => e)
@@ -325,6 +336,14 @@ describe('expired session: UNAUTHENTICATED GraphQL error', () => {
     await expect(install('fr')(QUERY)).rejects.toBe(abort)
   })
 
+  it('throws the original UNAUTHENTICATED error without a login redirect when Zitadel cannot be reached (offline)', async () => {
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+    $fetchMock.mockResolvedValue(unauthenticated())
+    const error = await install('fr')(QUERY).catch((e: unknown) => e)
+    expect(error).toMatchObject({ code: 'UNAUTHENTICATED' })
+    expect(navigateTo).not.toHaveBeenCalled()
+  })
+
   it('throws the original UNAUTHENTICATED error and sends the customer to the login page when the session cannot be renewed', async () => {
     oidc.silentRenew.mockResolvedValue(null)
     $fetchMock.mockResolvedValue(unauthenticated())
@@ -359,6 +378,7 @@ describe('the way back from a dead session', () => {
 describe('with the real OIDC client', () => {
   const session = (accessToken: string, expired = false) => ({
     access_token: accessToken,
+    refresh_token: 'refresh-1',
     expired,
   })
 
@@ -388,7 +408,7 @@ describe('with the real OIDC client', () => {
   it('a refresh token that Zitadel refuses ends the session: wiped, back to the login page, the 401 thrown', async () => {
     window.history.replaceState({}, '', '/fr/me')
     const { gqlFetch, manager } = await withRealOidc(session('old'))
-    manager.signinSilent.mockRejectedValue(new Error('invalid_grant'))
+    manager.signinSilent.mockRejectedValue(refusal('invalid_grant'))
     $fetchMock.mockRejectedValue(httpError(401))
 
     const error = await gqlFetch(QUERY).catch((e: unknown) => e)
@@ -399,6 +419,33 @@ describe('with the real OIDC client', () => {
     expect($fetchMock).toHaveBeenCalledOnce()
     expect(navigateTo).toHaveBeenCalledExactlyOnceWith(LOGIN_EXPIRED)
     expect(sessionStorage.getItem('oidc_return_to')).toBe('/fr/me')
+  })
+
+  it('a network failure while renewing keeps the session: not wiped, no login redirect, and the next request renews', async () => {
+    const { gqlFetch, manager } = await withRealOidc(session('old', true))
+    // Offline for both attempts of the first request (the token lookup, then the renewal the 401 asks for).
+    manager.signinSilent
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValueOnce(session('new'))
+    $fetchMock.mockRejectedValueOnce(httpError(401))
+
+    const error = await gqlFetch(QUERY).catch((e: unknown) => e)
+
+    expect(error).toMatchObject({ code: GQL_HTTP_ERROR, status: 401 })
+    expect(manager.removeUser).not.toHaveBeenCalled()
+    expect(navigateTo).not.toHaveBeenCalled()
+    // The request went out without a token (none could be had); the retry never happened.
+    expect($fetchMock).toHaveBeenCalledOnce()
+    expect($fetchMock.mock.calls[0]![1].headers.Authorization).toBeUndefined()
+
+    // The network is back: the next request gets a fresh token from the same refresh token.
+    manager.getUser.mockImplementation(() => Promise.resolve(session('old', true)))
+    $fetchMock.mockResolvedValueOnce(ok({ me: { id: 'u1' } }))
+    await expect(gqlFetch(QUERY)).resolves.toEqual({ me: { id: 'u1' } })
+    expect($fetchMock.mock.calls[1]![1].headers.Authorization).toBe('Bearer new')
+    expect(manager.signinSilent).toHaveBeenCalledTimes(3)
+    expect(navigateTo).not.toHaveBeenCalled()
   })
 
   it('a session that is already gone ends the same way, without asking Zitadel', async () => {

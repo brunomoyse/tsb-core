@@ -3,12 +3,14 @@
 // oidc-client-ts's UserManager (which talks to Zitadel) and $fetch are the boundaries, replaced by a fake.
 // Run: `vp test run layers/engine/composables/useOidc.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { fakeUserManagers } from '../../../test/helpers/fakeOidc'
+import { fakeUserManagers, refusal } from '../../../test/helpers/fakeOidc'
+import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useRuntimeConfig } from '#imports'
 
 interface FakeUser {
   access_token: string
+  refresh_token?: string
   expired: boolean
 }
 
@@ -21,6 +23,7 @@ mockNuxtImport('$fetch', () => $fetchMock)
 
 const user = (overrides: Partial<FakeUser> = {}): FakeUser => ({
   access_token: 'access-1',
+  refresh_token: 'refresh-1',
   expired: false,
   ...overrides,
 })
@@ -275,8 +278,27 @@ describe('getAccessToken', () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
-    manager().signinSilent.mockRejectedValue(new Error('invalid_grant'))
+    manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
     await expect(oidc.getAccessToken()).resolves.toBeNull()
+  })
+
+  it('returns null without touching the session when the renewal cannot reach Zitadel (offline)', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager().getUser.mockResolvedValue(user({ expired: true }))
+    manager().signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
+    await expect(oidc.getAccessToken()).resolves.toBeNull()
+    expect(manager().removeUser).not.toHaveBeenCalled()
+  })
+
+  it('lets an unexpected failure of the renewal (the session store broke) reach the caller', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    const failure = new Error('localStorage blocked')
+    manager()
+      .getUser.mockResolvedValueOnce(user({ expired: true }))
+      .mockRejectedValueOnce(failure)
+    await expect(oidc.getAccessToken()).rejects.toBe(failure)
   })
 
   it('makes concurrent callers with an expired token share one renewal', async () => {
@@ -319,7 +341,7 @@ describe('silentRenew', () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
-    manager().signinSilent.mockRejectedValue(new Error('invalid_grant'))
+    manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
     manager().listeners.loaded!(user())
 
     await expect(oidc.silentRenew()).resolves.toBeNull()
@@ -328,18 +350,68 @@ describe('silentRenew', () => {
     expect(oidc.oidcUser.value).toBeNull()
   })
 
-  // NOTE (owner decision pending, not asserted as desirable): every failure of signinSilent wipes the session, a dropped
-  // connection (a TypeError from fetch, e.g. a phone coming back from sleep with no network yet) included, although
-  // the refresh token would still be valid. Telling "refused by Zitadel" from "could not reach it" needs the shapes
-  // oidc-client-ts throws against a real Zitadel; until then the safe side is to wipe, as the comment in useOidc says.
-  it('NOTE: a network failure while renewing wipes the session just like a refused refresh token', async () => {
+  // A refusal is an answer of Zitadel's token endpoint (oidc-client-ts's ErrorResponse): the refresh token is expired,
+  // revoked or was already used. Anything that is not an answer (no network, a timeout, a 5xx) says nothing about the
+  // session: it is kept, and the renewal rejects so that the callers do not mistake it for a dead session.
+  it.each(['invalid_grant', 'login_required', 'interaction_required', 'invalid_client'])(
+    'wipes the session on a definitive refusal (%s)',
+    async (code) => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager().getUser.mockResolvedValue(user({ expired: true }))
+      manager().signinSilent.mockRejectedValue(refusal(code))
+
+      await expect(oidc.silentRenew()).resolves.toBeNull()
+
+      expect(manager().removeUser).toHaveBeenCalledOnce()
+      expect(oidc.oidcUser.value).toBeNull()
+    },
+  )
+
+  it.each([
+    ['a dropped connection (fetch fails)', () => new TypeError('Failed to fetch')],
+    ['a timeout', () => Object.assign(new Error('Network timed out'), { name: 'ErrorTimeout' })],
+    ['a 5xx without an OAuth error', () => new Error('Service Unavailable (503)')],
+    ['an OAuth server_error', () => refusal('server_error')],
+    ['an OAuth temporarily_unavailable', () => refusal('temporarily_unavailable')],
+  ])('keeps the session when the renewal fails on %s', async (_title, failure) => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    const stored = user({ expired: true })
+    manager().getUser.mockResolvedValue(stored)
+    const cause = failure()
+    manager().signinSilent.mockRejectedValue(cause)
+    manager().listeners.loaded!(stored)
+
+    const outcome = await oidc.silentRenew().catch((e: unknown) => e)
+
+    expect(isSilentRenewUnavailable(outcome)).toBe(true)
+    expect((outcome as Error).cause).toBe(cause)
+    expect(manager().removeUser).not.toHaveBeenCalled()
+    expect(oidc.oidcUser.value).toEqual(stored)
+  })
+
+  it('renews again once the network is back: the session was kept, the refresh token is still good', async () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
-    manager().signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
+    manager()
+      .signinSilent.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValueOnce(user({ access_token: 'access-2' }))
+
+    await expect(oidc.silentRenew()).rejects.toSatisfy(isSilentRenewUnavailable)
+    await expect(oidc.silentRenew()).resolves.toMatchObject({ access_token: 'access-2' })
+    expect(manager().removeUser).not.toHaveBeenCalled()
+  })
+
+  it('wipes a session that has no refresh token: nothing can renew it, asking Zitadel would be pointless', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager().getUser.mockResolvedValue(user({ expired: true, refresh_token: undefined }))
 
     await expect(oidc.silentRenew()).resolves.toBeNull()
 
+    expect(manager().signinSilent).not.toHaveBeenCalled()
     expect(manager().removeUser).toHaveBeenCalledOnce()
     expect(oidc.oidcUser.value).toBeNull()
   })
@@ -348,7 +420,7 @@ describe('silentRenew', () => {
     const { oidc, manager } = await load()
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
-    manager().signinSilent.mockRejectedValue(new Error('invalid_grant'))
+    manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
     manager().removeUser.mockRejectedValue(new Error('storage unavailable'))
     await expect(oidc.silentRenew()).resolves.toBeNull()
     expect(oidc.oidcUser.value).toBeNull()
@@ -383,9 +455,9 @@ describe('silentRenew', () => {
     await oidc.signIn()
     manager().getUser.mockResolvedValue(user({ expired: true }))
     manager()
-      .signinSilent.mockRejectedValueOnce(new Error('invalid_grant'))
+      .signinSilent.mockRejectedValueOnce(refusal('invalid_grant'))
       .mockResolvedValueOnce(user({ access_token: 'access-3' }))
-      .mockRejectedValueOnce(new Error('invalid_grant'))
+      .mockRejectedValueOnce(refusal('invalid_grant'))
 
     await expect(oidc.silentRenew()).resolves.toBeNull()
     await expect(oidc.silentRenew()).resolves.toMatchObject({ access_token: 'access-3' })
@@ -405,6 +477,27 @@ describe('silentRenew', () => {
 
     expect(manager().signinSilent).toHaveBeenCalledOnce()
     expect(oidc.oidcUser.value).toMatchObject({ access_token: 'access-2' })
+  })
+})
+
+describe('the access-token-expired event when Zitadel cannot be reached', () => {
+  it('keeps the session and does not fail: the next request renews it', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    manager().getUser.mockResolvedValue(user({ expired: true }))
+    manager().signinSilent.mockRejectedValue(new TypeError('Failed to fetch'))
+
+    await expect(manager().listeners.expired!()).resolves.toBeUndefined()
+
+    expect(manager().removeUser).not.toHaveBeenCalled()
+  })
+
+  it('does not hide an unexpected failure of the renewal', async () => {
+    const { oidc, manager } = await load()
+    await oidc.signIn()
+    const failure = new Error('localStorage blocked')
+    manager().getUser.mockRejectedValue(failure)
+    await expect(manager().listeners.expired!()).rejects.toBe(failure)
   })
 })
 

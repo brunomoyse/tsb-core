@@ -191,6 +191,12 @@ const criticalFiles = {
     lines: 100,
   },
   'layers/engine/utils/authFlow.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  'layers/engine/utils/silentRenewError.ts': {
+    statements: 100,
+    branches: 100,
+    functions: 100,
+    lines: 100,
+  },
   'layers/engine/utils/authErrors.ts': {
     statements: 100,
     branches: 100,

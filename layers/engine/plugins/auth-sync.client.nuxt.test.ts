@@ -4,6 +4,7 @@
 // Run: `vp test run layers/engine/plugins/auth-sync.client.nuxt.test.ts`.
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { createPinia, setActivePinia } from 'pinia'
+import { SilentRenewUnavailableError } from '#engine/utils/silentRenewError'
 import { makeUser } from '../../../test/fixtures/auth'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setFlags } from '../../../test/flags'
@@ -140,6 +141,37 @@ describe('case 1: a profile is stored but the OIDC session is gone or expired', 
     expect(oidc.removeUser).toHaveBeenCalledOnce()
     expect(store.user).toBeNull()
     expect($fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('case 1 when Zitadel cannot be reached', () => {
+  it('keeps both the profile and the OIDC session (offline is not a dead session)', async () => {
+    const store = freshStore(makeUser())
+    oidc.silentRenew.mockRejectedValue(new SilentRenewUnavailableError())
+
+    await sync()
+
+    expect(oidc.removeUser).not.toHaveBeenCalled()
+    expect(store.user).toEqual(makeUser())
+    expect(reportError).not.toHaveBeenCalled()
+  })
+
+  it('reports an unexpected failure of the renewal, and leaves the profile alone', async () => {
+    const store = freshStore(makeUser())
+    const bug = new TypeError('boom')
+    oidc.silentRenew.mockRejectedValue(bug)
+    let run: Promise<void> = Promise.resolve()
+    definition.setup({
+      runWithContext: (fn: () => Promise<void>) => {
+        run = fn()
+        return run
+      },
+    })
+    whenReady.callbacks[0]!()
+    await expect(run).rejects.toBe(bug)
+
+    expect(reportError).toHaveBeenCalledExactlyOnceWith(bug, 'auth.sync')
+    expect(store.user).toEqual(makeUser())
   })
 })
 

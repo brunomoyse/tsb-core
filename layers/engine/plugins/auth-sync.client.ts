@@ -1,4 +1,5 @@
 import type { User } from '#engine/types'
+import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { reportError } from '#engine/utils/reportError'
 
 /**
@@ -10,7 +11,8 @@ import { reportError } from '#engine/utils/reportError'
  * /login bounces the user to /menu in a loop.
  *
  * Cases handled:
- *   1. authStore filled + OIDC expired → silent renew, else clear both.
+ *   1. authStore filled + OIDC expired → silent renew, else clear both (but not when Zitadel cannot be reached:
+ *      the session is kept and the next request renews it).
  *   2. authStore empty + OIDC valid    → fetch /me and repopulate authStore.
  *      If /me fails, the OIDC token is stale — clear it.
  *   3. Both empty / both valid         → no-op.
@@ -75,7 +77,14 @@ async function syncAuth(): Promise<void> {
 
   // Case 1: authStore says logged-in but OIDC token is gone/expired.
   if (authStore.user && !oidcAuthed) {
-    const renewed = await silentRenew()
+    let renewed: unknown
+    try {
+      renewed = await silentRenew()
+    } catch (err: unknown) {
+      // Zitadel could not be reached (offline): the session is intact, the profile stays, the next request renews.
+      if (isSilentRenewUnavailable(err)) return
+      throw err
+    }
     if (renewed) return
     // The profile goes whether or not the OIDC store could be cleaned: a failing removeUser must not leave a ghost user.
     try {
