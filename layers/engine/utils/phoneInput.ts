@@ -28,6 +28,23 @@ export function looksLikeShortMobile(e164: string): boolean {
   return e164.startsWith('+32') && /^4[6-9]\d{6}$/u.test(e164.slice(3))
 }
 
+/**
+ * A saved E.164 number as the customer reads it: national for a Belgian one (with its trunk 0, grouped in pairs, so a
+ * missing digit shows), international for the others. The raw string when it cannot be parsed.
+ */
+export async function formatPhoneForDisplay(e164: string): Promise<string> {
+  const { parsePhoneNumberFromString } = await import('libphonenumber-js')
+  const parsed = parsePhoneNumberFromString(e164)
+  if (!parsed) return e164
+  if (parsed.country !== 'BE') return parsed.formatInternational()
+  const national = parsed.formatNational()
+  if (national.startsWith('0')) return national
+  // libphonenumber leaves the trunk 0 off a number that fits no pattern: exactly the mobile with a digit missing that
+  // the hint is about. Group it the way a mobile is written (0470 12 34 5) so the missing digit can be seen.
+  const digits = `0${parsed.nationalNumber}`
+  return `${digits.slice(0, 4)} ${digits.slice(4).replace(/(\d{2})(?=\d)/gu, '$1 ')}`.trim()
+}
+
 export async function classifyPhoneInput(raw: string): Promise<PhoneInputState> {
   const trimmed = raw.trim()
   if (!trimmed) return { kind: 'empty' }

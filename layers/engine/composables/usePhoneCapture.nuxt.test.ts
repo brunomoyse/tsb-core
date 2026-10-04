@@ -7,6 +7,7 @@ import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { clearNuxtState, useState } from '#imports'
 import { createPinia, setActivePinia } from 'pinia'
+import { settle } from '../../../test/helpers/settle'
 import { makeUser } from '../../../test/fixtures/auth'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { ref } from 'vue'
@@ -68,6 +69,45 @@ describe('what the field shows', () => {
     expect(phone.savedNumber.value).toBe('+3242229888')
     expect(phone.isCollapsed.value).toBe(true)
     expect(phone.hasUnsavedInput.value).toBe(false)
+  })
+
+  it('the collapsed card shows the saved number in national format, the saved one stays E.164', async () => {
+    saved('+32470123456')
+    const phone = usePhoneCapture()
+    // Until the formatter is loaded: the stored string.
+    expect(phone.savedNumberDisplay.value).toBe('+32470123456')
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('0470 12 34 56')
+    expect(phone.savedNumber.value).toBe('+32470123456')
+  })
+
+  it('shows a number that misses a digit with its trunk 0, so the missing digit can be seen', async () => {
+    saved('+3247012345')
+    const phone = usePhoneCapture()
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('0470 12 34 5')
+  })
+
+  it('drops the formatting of a number that was replaced while the library loaded', async () => {
+    saved('+3242229888')
+    const phone = usePhoneCapture()
+    saved('+33612345678')
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('+33 6 12 34 56 78')
+  })
+
+  it('follows a number saved later, and shows nothing without one', async () => {
+    const phone = usePhoneCapture()
+    expect(phone.savedNumberDisplay.value).toBe('')
+    saved('+3242229888')
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('04 222 98 88')
+    saved('+33612345678')
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('+33 6 12 34 56 78')
+    saved(null)
+    await settle()
+    expect(phone.savedNumberDisplay.value).toBe('')
   })
 
   it('an open field holding something is unsaved input; whitespace is not', () => {

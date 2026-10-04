@@ -1,7 +1,7 @@
 // Run: `vp test run layers/engine/utils/phoneInput.test.mjs`.
 
 import assert from 'node:assert/strict'
-import { classifyPhoneInput, looksLikeShortMobile } from './phoneInput.ts'
+import { classifyPhoneInput, formatPhoneForDisplay, looksLikeShortMobile } from './phoneInput.ts'
 import { test } from 'vite-plus/test'
 
 const kind = async (value) => (await classifyPhoneInput(value)).kind
@@ -116,4 +116,20 @@ test('nine digits starting 04 are never "incomplete" or "invalid"', async () => 
   for (const raw of ['040000000', '041234567', '045555555', '046123456', '049999999']) {
     assert.equal(await kind(raw), 'valid', raw)
   }
+})
+
+test('a saved number is shown in national format when Belgian, international otherwise', async () => {
+  assert.equal(await formatPhoneForDisplay('+32470123456'), '0470 12 34 56')
+  assert.equal(await formatPhoneForDisplay('+3242229888'), '04 222 98 88')
+  assert.equal(await formatPhoneForDisplay('+33612345678'), '+33 6 12 34 56 78')
+})
+
+test('a number missing a digit shows it: 0470 12 34 5, not the E.164 string', async () => {
+  assert.equal(await formatPhoneForDisplay('+3247012345'), '0470 12 34 5')
+  assert.equal(await formatPhoneForDisplay('+3249912345'), '0499 12 34 5')
+})
+
+test('what is not a number is shown as it is', async () => {
+  assert.equal(await formatPhoneForDisplay('abc'), 'abc')
+  assert.equal(await formatPhoneForDisplay(''), '')
 })

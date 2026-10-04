@@ -35,7 +35,7 @@
           {{ $t('checkout.phoneCapture.title') }}
         </h3>
         <p v-if="isCollapsed" class="text-xs mt-0.5 text-neutral-600 tabular-nums">
-          {{ savedNumber }}
+          {{ savedNumberDisplay }}
         </p>
         <p v-else class="text-xs mt-0.5 text-amber-800">
           {{ $t('checkout.phoneCapture.description') }}
@@ -129,7 +129,7 @@ const {
   loading,
   isCollapsed,
   saved,
-  savedNumber,
+  savedNumberDisplay,
   startEditing,
   cancelEditing,
   onInput,

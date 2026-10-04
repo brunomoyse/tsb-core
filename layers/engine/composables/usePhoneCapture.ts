@@ -1,9 +1,10 @@
 import {
   type PhoneInputState,
   classifyPhoneInput,
+  formatPhoneForDisplay,
   looksLikeShortMobile,
 } from '#engine/utils/phoneInput'
-import { type Ref, computed, nextTick, ref } from 'vue'
+import { type Ref, computed, nextTick, ref, watch } from 'vue'
 import { useAuthStore, useGqlMutation, useState } from '#imports'
 import type { User } from '#engine/types'
 import { reportError } from '#engine/utils/reportError'
@@ -70,6 +71,21 @@ export function usePhoneCapture(phoneInputRef?: Ref<HTMLInputElement | null>) {
 
   const savedNumber = computed(() => authStore.user?.phoneNumber ?? '')
   const saved = computed(() => Boolean(savedNumber.value))
+  // What the collapsed card shows: the saved number in national format. The E.164 string until the formatter (a lazy
+  // chunk) is loaded, and for a number it cannot read.
+  const formattedNumber = ref('')
+  watch(
+    savedNumber,
+    async (number) => {
+      formattedNumber.value = ''
+      if (!number) return
+      const formatted = await formatPhoneForDisplay(number)
+      // The number may have changed while the library loaded.
+      if (number === savedNumber.value) formattedNumber.value = formatted
+    },
+    { immediate: true },
+  )
+  const savedNumberDisplay = computed(() => formattedNumber.value || savedNumber.value)
   // Collapsed: we have a saved number and the customer isn't actively editing.
   const isCollapsed = computed(() => saved.value && !isEditing.value)
   // Under the field, when there is no error to show: on the open field it follows the number typed and checked,
@@ -186,6 +202,7 @@ export function usePhoneCapture(phoneInputRef?: Ref<HTMLInputElement | null>) {
     isCollapsed,
     saved,
     savedNumber,
+    savedNumberDisplay,
     hasUnsavedInput,
     startEditing,
     cancelEditing,
