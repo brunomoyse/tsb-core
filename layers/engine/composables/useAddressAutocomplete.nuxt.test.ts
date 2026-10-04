@@ -9,7 +9,7 @@ import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import type { Address, AddressSuggestion } from '#engine/types'
-import { withSetup } from '../../../test/helpers/withSetup'
+import { mountComposable } from '../../../test/helpers/mountComposable'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
 const reportError = vi.hoisted(() => vi.fn())
@@ -47,7 +47,7 @@ let unmountCurrent: (() => void) | undefined
 
 /** Mounts the composable in a component. */
 const setup = () => {
-  const { result, unmount } = withSetup(() => useAddressAutocomplete(onUpdate))
+  const { result, unmount } = mountComposable(() => useAddressAutocomplete(onUpdate))
   unmountCurrent = unmount
   return { api: result, unmount }
 }

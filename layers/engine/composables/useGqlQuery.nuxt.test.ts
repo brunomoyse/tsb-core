@@ -14,12 +14,9 @@ const gqlFetch = vi.hoisted(() => vi.fn())
 const locale = vi.hoisted(() => ({ current: null as null | { value: string } }))
 const asyncDataCalls = vi.hoisted(() => [] as unknown[][])
 
-mockNuxtImport('useNuxtApp', (original) => () => {
-  const app = original()
-  return new Proxy(app, {
-    get: (target, key, receiver) =>
-      key === '$gqlFetch' ? gqlFetch : Reflect.get(target, key, receiver),
-  })
+mockNuxtImport('useNuxtApp', async (original) => {
+  const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
+  return () => withGqlFetch(original(), gqlFetch)
 })
 // The real useAsyncData, observed: the options a caller's flags turn into are part of the contract.
 mockNuxtImport('useAsyncData', (original) => (...args: unknown[]) => {

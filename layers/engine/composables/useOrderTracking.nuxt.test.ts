@@ -9,7 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { setFlags } from '../../../test/flags'
 import type { Order } from '#engine/types'
 import { makeOrder } from '../../../test/fixtures/order'
-import { withSetup } from '../../../test/helpers/withSetup'
+import { mountComposable } from '../../../test/helpers/mountComposable'
 
 interface Sub {
   query: string
@@ -60,7 +60,7 @@ const refetch = vi.fn()
 const revealOrder = vi.fn()
 
 const mount = (options: { autoExpandActive?: boolean; reveal?: boolean } = {}) => {
-  const view = withSetup(() =>
+  const view = mountComposable(() =>
     useOrderTracking({
       orders,
       refetch,

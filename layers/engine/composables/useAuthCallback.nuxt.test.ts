@@ -19,12 +19,9 @@ vi.mock('#engine/composables/useOidc', () => ({ useOidc: () => oidc }))
 vi.mock('#engine/utils/reportError', () => ({ reportError }))
 mockNuxtImport('navigateTo', () => navigateTo)
 // The plugin-provided transport is the one thing replaced on the real nuxtApp.
-mockNuxtImport('useNuxtApp', (original) => () => {
-  const app = original()
-  return new Proxy(app, {
-    get: (target, key, receiver) =>
-      key === '$gqlFetch' ? gqlFetch : Reflect.get(target, key, receiver),
-  })
+mockNuxtImport('useNuxtApp', async (original) => {
+  const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
+  return () => withGqlFetch(original(), gqlFetch)
 })
 
 const { useAuthCallback } = await import('./useAuthCallback')

@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { useAuthStore } from '#engine/stores/auth'
 import { useNotificationsStore } from '#engine/stores/notifications'
 import { clearNuxtState, useState } from '#imports'
-import { makeUser } from '../../../test/fixtures/order'
+import { makeUser } from '../../../test/fixtures/auth'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
 const reportError = vi.hoisted(() => vi.fn())

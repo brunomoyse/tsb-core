@@ -1,18 +1,23 @@
-// Runs a composable inside a real component instance (lifecycle hooks such as onUnmounted/onBeforeUnmount work) and
-// returns what it returned, plus the wrapper to unmount it. Mounted into document.body so the real DOM is observable.
+// Runs a composable inside a real component instance (lifecycle hooks such as onMounted / onUnmounted / onScopeDispose,
+// `useId` and injections behave as in a page) and returns what it returned, plus the wrapper to unmount it.
+//
+//   const { result, unmount } = mountComposable(() => useOrderCompleted('o-1'))
+//   const { result } = mountComposable(() => useFocusTrap(...), { attach: true })   // in document.body: real DOM focus
+//
+// Every mounted component is unmounted after the test (test/setup/vue.ts); `unmount` ends one earlier.
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 
-export function mountComposable<T>(setup: () => T, template?: () => ReturnType<typeof h>) {
+export function mountComposable<T>(setup: () => T, options: { attach?: boolean } = {}) {
   let result!: T
   const wrapper = mount(
     defineComponent({
       setup() {
         result = setup()
-        return () => (template ? template() : h('div'))
+        return () => h('div')
       },
     }),
-    { attachTo: document.body },
+    options.attach === false ? {} : { attachTo: document.body },
   )
   return {
     result,

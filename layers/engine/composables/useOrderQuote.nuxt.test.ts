@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { setFlags } from '../../../test/flags'
 import { makeProduct } from '../../../test/fixtures/catalog'
 import { makeQuote, makeQuoteLine } from '../../../test/fixtures/quote'
-import { makeUser } from '../../../test/fixtures/order'
+import { makeUser } from '../../../test/fixtures/auth'
 import type { OrderQuote } from '#engine/utils/orderQuote'
 
 const gqlFetch = vi.hoisted(() => vi.fn())

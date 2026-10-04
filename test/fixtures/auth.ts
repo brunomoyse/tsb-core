@@ -4,10 +4,10 @@ import type { User } from '../../layers/engine/types'
 export function makeUser(overrides: Partial<User> = {}): User {
   return {
     id: 'user-1',
-    email: 'ada@example.com',
+    email: 'ada@example.test',
     firstName: 'Ada',
     lastName: 'Lovelace',
-    phoneNumber: '+32470123456',
+    phoneNumber: null,
     notifyMarketing: false,
     notifyOrderUpdates: true,
     deletionRequestedAt: null,

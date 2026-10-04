@@ -6,12 +6,9 @@ import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { GqlError } from '#engine/utils/gqlError'
 
 const gqlFetch = vi.hoisted(() => vi.fn())
-mockNuxtImport('useNuxtApp', (original) => () => {
-  const app = original()
-  return new Proxy(app, {
-    get: (target, key, receiver) =>
-      key === '$gqlFetch' ? gqlFetch : Reflect.get(target, key, receiver),
-  })
+mockNuxtImport('useNuxtApp', async (original) => {
+  const { withGqlFetch } = await import('../../../test/helpers/gqlFetch')
+  return () => withGqlFetch(original(), gqlFetch)
 })
 
 const { useGqlMutation } = await import('./useGqlMutation')

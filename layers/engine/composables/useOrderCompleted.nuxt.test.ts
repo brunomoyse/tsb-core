@@ -14,7 +14,7 @@ import { useCartStore } from '#engine/stores/cart'
 import type { Order } from '#engine/types'
 import { makeProduct } from '../../../test/fixtures/catalog'
 import { makeOrder, makePayment } from '../../../test/fixtures/order'
-import { withSetup } from '../../../test/helpers/withSetup'
+import { mountComposable } from '../../../test/helpers/mountComposable'
 
 interface SubscriptionCall {
   query: string
@@ -70,7 +70,7 @@ const serve = (...orders: (Order | Error)[]) => {
   })
 }
 const mount = (orderId = 'order-1') => {
-  const view = withSetup(() => useOrderCompleted(orderId))
+  const view = mountComposable(() => useOrderCompleted(orderId))
   current = view
   return view.result
 }
