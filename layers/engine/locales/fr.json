@@ -184,8 +184,8 @@
       "selected": "Adresse sélectionnée : {address}",
       "cleared": "Adresse effacée"
     },
-    "incompletePhone": "Numéro incomplet : continuez la saisie (ex. 0470 12 34 56)",
-    "phoneMaybeMobile": "Il semble manquer un chiffre à ce GSM : vérifiez-le",
+    "incompletePhone": "Numéro incomplet\u00a0: continuez la saisie (ex. 0470 12 34 56)",
+    "phoneMaybeMobile": "Il semble manquer un chiffre à ce GSM\u00a0: vérifiez-le",
     "phoneCountry": "Pays du numéro de téléphone"
   },
   "me": {
