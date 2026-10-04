@@ -80,6 +80,7 @@ export const defaultScenario = (): Scenario => ({
     verifyFailure: null,
   },
   invoiceFailure: false,
+  operationFailures: {},
   coupons: {
     WELCOME10: { kind: 'percent', value: 10, minOrder: 15 },
     FIVEOFF: { kind: 'fixed', value: 5 },
@@ -238,7 +239,8 @@ export class MockState {
     const created = new Date(Date.now() - (input.createdMinutesAgo ?? 0) * 60_000).toISOString()
     const fee = input.online ? 30 : 0
     const itemsCents = input.withItem ? 2500 : 0
-    const product = this.catalog.flatMap((category) => category.products)[0]
+    const products = this.catalog.flatMap((category) => category.products)
+    const product = products.find((candidate) => candidate.id === input.productId) ?? products[0]
     const order: MockOrder = {
       id,
       createdAt: created,

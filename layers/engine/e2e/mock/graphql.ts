@@ -200,6 +200,10 @@ export async function execute(
       continue
     }
     try {
+      const injected = context.state.scenario.operationFailures[name]
+      if (injected) {
+        throw new GraphQLFailure(injected.code, injected.message ?? injected.code)
+      }
       const raw = await resolver(context, args)
       data[key] = project(selection.selectionSet, raw, fragments, context.state, name)
     } catch (error) {

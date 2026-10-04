@@ -1,7 +1,7 @@
 import type { MockState } from './state.ts'
 import { findPlace } from './restaurant.ts'
 import { findProduct } from './catalog/index.ts'
-import type { MockUser, ScenarioPatch, SeedOrderInput } from './types.ts'
+import type { GqlFailure, MockUser, ScenarioPatch, SeedOrderInput } from './types.ts'
 
 /*
  * The control API (`/__mock/*`): what a spec uses to put the mock in the situation it wants to test. JSON in, JSON out.
@@ -10,7 +10,7 @@ import type { MockUser, ScenarioPatch, SeedOrderInput } from './types.ts'
  *   GET    /__mock/health
  *   GET    /__mock/state                 snapshot: scenario, user, orders, operations the app made, gaps
  *   POST   /__mock/reset                 back to the defaults (the fixture does this before every test)
- *   POST   /__mock/scenario              merge a partial Scenario (coupons are merged per code)
+ *   POST   /__mock/scenario              merge a partial Scenario (coupons per code, otp and operationFailures per key)
  *   POST   /__mock/user                  merge a partial user; `address` is a place id (see restaurant.ts PLACES) or null
  *   POST   /__mock/orders                seed an order (SeedOrderInput) -> { id }
  *   POST   /__mock/orders/:id            change an order (OrderPatch), pushed to its subscribers
@@ -49,6 +49,12 @@ export function handleControl(
       ...state.scenario,
       ...patch,
       otp: { ...state.scenario.otp, ...patch.otp },
+      operationFailures: Object.fromEntries(
+        Object.entries({
+          ...state.scenario.operationFailures,
+          ...patch.operationFailures,
+        }).filter(([, failure]) => failure !== null),
+      ) as Record<string, GqlFailure>,
       coupons: { ...state.scenario.coupons, ...patch.coupons },
     }
     if (state.scenario.restaurant !== before) state.publish('restaurantConfigUpdated', null)

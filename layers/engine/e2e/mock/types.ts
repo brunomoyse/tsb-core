@@ -90,14 +90,18 @@ export interface Scenario {
   otp: OtpScenario
   /** `GET /orders/:id/invoice` answers 500. */
   invoiceFailure: boolean
+  /** Any root query/mutation by field name (`updateMe`, `myOrders`...) fails with this GraphQL error before it runs. */
+  operationFailures: Record<string, GqlFailure>
   /** Promo codes by (upper-case) code. */
   coupons: Record<string, CouponRule>
 }
 
 /** What `POST /__mock/scenario` takes: every field optional, the nested `otp` and `coupons` merged key by key. */
-export type ScenarioPatch = Partial<Omit<Scenario, 'otp' | 'coupons'>> & {
+export type ScenarioPatch = Partial<Omit<Scenario, 'otp' | 'coupons' | 'operationFailures'>> & {
   otp?: Partial<OtpScenario>
   coupons?: Record<string, CouponRule>
+  /** A `null` value lifts the failure of that operation. */
+  operationFailures?: Record<string, GqlFailure | null>
 }
 
 export interface MockAddress {
@@ -138,6 +142,8 @@ export interface SeedOrderInput {
   createdMinutesAgo?: number
   /** One 25,00 EUR line (2 x 12,50): the receipt's subtotal is the items and the total is consistent with them. */
   withItem?: boolean
+  /** The product of that line (default: the first of the catalog, which may carry choice groups a reorder cannot rebuild). */
+  productId?: string
   type?: 'PICKUP' | 'DELIVERY'
 }
 
