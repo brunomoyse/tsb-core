@@ -31,12 +31,12 @@
     "login": "Inloggen",
     "logout": "Uitloggen",
     "myAccount": "Mijn account",
-    "search": "Zoeken...",
+    "search": "Zoeken…",
     "cart": "Winkelwagen",
     "language": "Taal selecteren",
     "toggleMenu": "Menu openen/sluiten",
     "sidebar": "Hoofdnavigatie",
-    "searchLabel": "Zoek in het menu",
+    "searchLabel": "Zoek een gerecht",
     "clearSearch": "Zoekopdracht wissen",
     "currentLanguage": "Taal: {language}",
     "primary": "Hoofdnavigatie"
@@ -46,7 +46,7 @@
     "orderNow": "Nu bestellen",
     "schedule": "Openingsuren",
     "status": {
-      "open": "Geopend",
+      "open": "Open",
       "onsiteOnly": "Open · enkel ter plaatse",
       "preorder": "Gesloten · bestel nu voor {time}",
       "closed": "Gesloten"
@@ -56,24 +56,24 @@
   "contact": {
     "title": "Contacteer ons",
     "subtitle": "Bezoek ons, bel ons of reserveer vandaag nog een tafel!",
-    "viewLargerMap": "Bekijk de kaart groter",
+    "viewLargerMap": "Grotere kaart bekijken",
     "addressTitle": "Adres",
     "address": "Rue de la Cathédrale 59, Luik, België",
     "phoneTitle": "Telefoon",
     "emailTitle": "E-mail",
     "openingHoursTitle": "Openingsuren",
     "followUs": "Volg ons",
-    "reservationNotice": "Reservaties per e-mail worden niet in aanmerking genomen. Om een tafel te reserveren, gelieve ons telefonisch te contacteren.",
-    "weekdays": "Maandag - Vrijdag",
-    "weekends": "Zaterdag - Zondag",
+    "reservationNotice": "Reservaties per e-mail worden niet aanvaard. Bel ons om een tafel te reserveren.",
+    "weekdays": "Maandag – vrijdag",
+    "weekends": "Zaterdag – zondag",
     "closedTuesday": "Gesloten op dinsdag",
     "mapTitle": "Kaart: locatie van {name}"
   },
   "about": {
-    "ourStoryTitle": "Ons Verhaal",
+    "ourStoryTitle": "Ons verhaal",
     "ourStoryText1": "In 2016 opende een jong koppel met een passie voor de Japanse keuken een klein restaurant in de Rue de la Régence in Luik, met de steun van hun ouders. Elke ochtend wordt de verse vis zorgvuldig geselecteerd en met de hand bereid om een onberispelijke kwaliteit te garanderen. De mond-tot-mondreclame deed snel zijn werk: tussen de klanten ter plaatse en de leveringsbestellingen was de kleine zaal al snel te klein.",
     "ourStoryText2": "Eind 2024 verhuisde het restaurant naar de Rue de la Cathédrale, naar een grotere ruimte op slechts enkele stappen van het oorspronkelijke adres. Vandaag blijft __BRAND__ een familiebedrijf waar elk gerecht met dezelfde zorg wordt bereid als op de eerste dag.",
-    "ourStoryText3": "In 2026 viert __BRAND__ zijn 10-jarig bestaan. Een decennium van verse vis, verfijnde recepten en gedeelde glimlachen met u. Dank aan iedereen die ons vanaf de eerste dag vertrouwde. Dit avontuur is ook het uwe.",
+    "ourStoryText3": "In 2026 viert __BRAND__ zijn tiende verjaardag. Tien jaar verse vis, verfijnde recepten en glimlachen die we met u deelden. Bedankt aan iedereen die ons al vanaf de eerste dag vertrouwt: dit avontuur is ook het uwe.",
     "yearsOfPassion": "jaar passie",
     "openingHoursLabel": "Openingsuren",
     "contactLink": "Contacteer ons",
@@ -82,9 +82,9 @@
     "cash": "Contant",
     "infoCards": {
       "freeDelivery": "Gratis levering",
-      "freeDeliveryDesc": "Gratis vanaf {deliveryMinimum} €, met leveringskosten op basis van afstand daarboven.",
+      "freeDeliveryDesc": "Vanaf € {deliveryMinimum} aan bestellingen. Gratis dichtbij, daarna volgens afstand.",
       "takeawayDiscount": "Afhalen -{rate}%",
-      "takeawayDiscountDesc": "{rate}% korting op kortingsbare artikelen vanaf {pickupMinimum} € voor elke afhaalbestelling.",
+      "takeawayDiscountDesc": "{rate}% korting op de artikelen die in aanmerking komen, voor elke afhaalbestelling vanaf € {pickupMinimum}.",
       "freshDaily": "Dagelijks vers",
       "freshDailyDesc": "Onze vis wordt elke ochtend vers gesneden door onze chef voor een onberispelijke kwaliteit."
     }
@@ -99,7 +99,7 @@
     "allergenNotice": "Onze producten kunnen vis, schaaldieren en lactose bevatten. Gelieve ons te informeren over eventuele allergieën.",
     "allergenNoticeShort": "Allergieën? Info:",
     "unavailable": "Niet beschikbaar",
-    "noResults": "Geen resultaten voor \"{query}\"",
+    "noResults": "Geen resultaten voor ‘{query}’",
     "previousCategory": "Vorige categorie",
     "nextCategory": "Volgende categorie",
     "halal": "Halal",
@@ -113,9 +113,9 @@
     "pcs": "stuks",
     "addToCart": "Toevoegen",
     "selectChoice": "Kies een optie",
-    "chooseRemaining": "Nog {count} te selecteren | Nog {count} te selecteren",
-    "chooseAtLeast": "Selecteer minstens {count} optie | Selecteer minstens {count} opties",
-    "removeExcess": "Verwijder {count} selectie | Verwijder {count} selecties",
+    "chooseRemaining": "Nog {count} te kiezen | Nog {count} te kiezen",
+    "chooseAtLeast": "Kies minstens {count} optie | Kies minstens {count} opties",
+    "removeExcess": "Verwijder {count} keuze | Verwijder {count} keuzes",
     "price": "Prijs",
     "code": "Code",
     "description": "Beschrijving",
@@ -147,18 +147,18 @@
     "resendCooldown": "Opnieuw over {seconds}s",
     "backToEmail": "Terug",
     "dividerOr": "of",
-    "ssoGoogle": "Inloggen met Google",
-    "ssoApple": "Inloggen met Apple",
-    "authenticating": "Bezig met aanmelden...",
-    "callbackError": "De aanmelding is mislukt. Probeer het opnieuw.",
+    "ssoGoogle": "Doorgaan met Google",
+    "ssoApple": "Doorgaan met Apple",
+    "authenticating": "Bezig met inloggen…",
+    "callbackError": "Het inloggen is mislukt. Probeer het opnieuw.",
     "tryAgain": "Opnieuw proberen",
-    "profileTitle": "Bijna klaar, hoe mogen we u noemen?",
+    "profileTitle": "Bijna klaar! Hoe mogen we u noemen?",
     "profileSubtitle": "We gebruiken uw voornaam om uw bestellingen en e-mails te personaliseren.",
     "completeSignup": "Registratie voltooien",
     "stepEmail": "E-mail",
     "stepCode": "Code",
     "stepProfile": "Profiel",
-    "stepsAriaLabel": "Voortgang van aanmelding"
+    "stepsAriaLabel": "Voortgang van het inloggen"
   },
   "form": {
     "firstName": "Voornaam",
@@ -175,7 +175,7 @@
       "placeholder": "Straat en nummer…",
       "noMatch": "Geen adres gevonden.",
       "callHint": "Als uw adres er niet tussen staat, bel ons gerust op",
-      "houseNumberRequired": "Huisnummer is verplicht.",
+      "houseNumberRequired": "Het huisnummer is verplicht.",
       "example": "Voorbeeld: Rue de Fragnée 12, Liège",
       "clear": "Adres wissen",
       "suggestions": "1 suggestie beschikbaar | {count} suggesties beschikbaar",
@@ -186,7 +186,7 @@
     "phoneCountry": "Land van het telefoonnummer"
   },
   "me": {
-    "greeting": "Goedendag",
+    "greeting": "Hallo",
     "subtitle": "Beheer uw profiel en bekijk uw bestellingen.",
     "orders": {
       "recentTitle": "Recente bestellingen",
@@ -194,9 +194,9 @@
       "backToAccount": "Mijn account",
       "allOrdersTitle": "Al mijn bestellingen",
       "loadMore": "Toon {count} meer",
-      "loadMoreLast": "Toon de laatste {count}",
-      "loading": "Bestellingen laden...",
-      "empty": "Geen bestellingen gevonden",
+      "loadMoreLast": "De laatste {count} tonen",
+      "loading": "Bestellingen laden…",
+      "empty": "U hebt nog geen bestellingen",
       "total": "Totaal",
       "downloadInvoice": "Factuur downloaden",
       "status": {
@@ -232,13 +232,13 @@
       "update": "Profiel bijwerken",
       "addAddress": "Adres toevoegen",
       "editAddress": "Adres wijzigen",
-      "addressUpdateSuccess": "Uw adres is succesvol bijgewerkt.",
-      "updateSuccess": "Het profiel is succesvol bijgewerkt.",
+      "addressUpdateSuccess": "Uw adres is bijgewerkt.",
+      "updateSuccess": "Uw profiel is bijgewerkt.",
       "deleteAccount": "Account verwijderen",
       "deleteConfirmTitle": "Uw account verwijderen?",
-      "deleteConfirmBody": "Deze actie is permanent en kan niet ongedaan worden gemaakt.",
+      "deleteConfirmBody": "Dit is definitief en kan niet ongedaan worden gemaakt.",
       "deleteActiveOrderWarning": "U hebt een bestelling in behandeling. Als u uw account nu verwijdert, kunt u deze niet meer volgen of updates ontvangen. Het restaurant bereidt deze toch nog voor.",
-      "deleteAnonymizeNote": "Uw account en persoonsgegevens (naam, e-mail, telefoonnummer en opgeslagen adressen) worden permanent geanonimiseerd en u wordt afgemeld.",
+      "deleteAnonymizeNote": "Uw account en persoonsgegevens (naam, e-mail, telefoonnummer en opgeslagen adressen) worden definitief geanonimiseerd en u wordt uitgelogd.",
       "deleteOrdersNote": "Uw eerdere bestellingen blijven bij het restaurant in geanonimiseerde vorm, zoals de Belgische boekhoudwetgeving vereist. Ze zijn niet langer aan u gekoppeld.",
       "deleteConfirmPrompt": "Typ ter bevestiging uw e-mailadres hieronder:",
       "deleteConfirmCheckbox": "Ik begrijp dat mijn account en gegevens permanent worden verwijderd.",
@@ -260,8 +260,8 @@
       "marketingDescription": "Ontvang promotionele aanbiedingen en nieuws van het restaurant.",
       "orderUpdatesLabel": "Bestelstatus",
       "orderUpdatesDescription": "Ontvang e-mails bij elke stap van uw lopende bestelling.",
-      "updateSuccess": "Notificatievoorkeuren bijgewerkt.",
-      "updateError": "Bijwerken van voorkeuren mislukt."
+      "updateSuccess": "Meldingsvoorkeuren bijgewerkt.",
+      "updateError": "Uw voorkeuren konden niet worden opgeslagen."
     }
   },
   "delivery": {
@@ -270,31 +270,31 @@
       "verify": "Zone controleren",
       "verifyCompact": "Zone",
       "inZone": "Levering · {km} km",
-      "outOfZone": "Buiten leveringszone",
+      "outOfZone": "Buiten de leveringszone",
       "outOfZoneCompact": "Buiten zone",
       "pickup": "Afhalen in het restaurant",
       "pickupCompact": "Afhalen",
-      "actionHint": "tik om te wijzigen"
+      "actionHint": "wijzigen"
     },
     "modal": {
       "title": "Leveren of afhalen?",
-      "subtitle": "Bevestig uw adres vóór u bestelt.",
-      "modeLabel": "Ophaalwijze",
+      "subtitle": "Controleer uw adres voordat u bestelt.",
+      "modeLabel": "Leveren of afhalen",
       "deliveryTab": "Levering",
       "pickupTab": "Afhalen",
       "currentAddress": "Huidig adres",
       "change": "Wijzigen",
       "distanceOk": "We leveren op dit adres",
-      "distanceTooFar": "Dit adres ligt buiten onze leveringszone van {distance} km",
+      "distanceTooFar": "Dit adres ligt buiten onze leveringszone ({distance} km)",
       "distanceValue": "Afstand: {km} km",
-      "switchToPickup": "Overschakelen naar afhalen",
+      "switchToPickup": "Liever afhalen",
       "confirm": "Bevestigen",
       "pickupLabel": "Afhalen in het restaurant",
       "pickupHint": "Kom uw bestelling ter plaatse ophalen."
     },
     "gate": {
       "title": "Voordat u verdergaat",
-      "subtitle": "Laten we eerst controleren of we op uw adres kunnen leveren. Zo voorkomt u verrassingen bij het afrekenen."
+      "subtitle": "We controleren eerst of we op uw adres kunnen leveren. Zo voorkomt u verrassingen bij het afrekenen."
     }
   },
   "cart": {
@@ -308,9 +308,9 @@
     "deliveryFee": "Leveringskosten",
     "pickupDiscount": "Afhaalkorting",
     "total": "Totaal",
-    "minimumDelivery": "Minimum levering van {amount} €",
-    "minimumPickup": "Minimum afhalen van {amount} €",
-    "checkout": "Bestelling plaatsen",
+    "minimumDelivery": "Minimumbedrag voor levering: € {amount}",
+    "minimumPickup": "Minimumbedrag voor afhalen: € {amount}",
+    "checkout": "Afrekenen",
     "removeItem": "Verwijderen",
     "decreaseQty": "Aantal verminderen",
     "increaseQty": "Aantal verhogen",
@@ -325,17 +325,17 @@
     "undo": "Ongedaan maken",
     "removedUndo": "“{name}” verwijderd",
     "eachSuffix": "per stuk",
-    "deliveryTbd": "Levering wordt berekend bij het afrekenen",
+    "deliveryTbd": "Leveringskosten worden berekend bij het afrekenen",
     "onlineFee": "Kosten online betaling",
-    "addForDelivery": "Voeg nog {amount} toe om te laten leveren.",
+    "addForDelivery": "Nog {amount} om te laten leveren.",
     "quoteUpdating": "Prijzen worden bijgewerkt…",
-    "removedUnavailable": "Sommige artikelen in je winkelwagen zijn niet meer beschikbaar en werden verwijderd.",
+    "removedUnavailable": "Sommige artikelen in uw winkelwagen zijn niet meer beschikbaar en werden verwijderd.",
     "issues": {
       "notFound": "Dit artikel staat niet meer op het menu.",
       "unavailable": "Dit artikel is momenteel niet beschikbaar.",
       "priceChanged": "Prijs bijgewerkt: {from} → {to}",
       "acceptPrice": "Nieuwe prijs accepteren",
-      "lunchOnly": "Alleen beschikbaar op een lunchmoment (maandag-vrijdag).",
+      "lunchOnly": "Enkel beschikbaar voor een lunchtijdslot (maandag–vrijdag).",
       "chooseSlot": "Kies een tijdslot",
       "selectionInvalid": "Een gekozen optie is niet meer geldig. Verwijder dit artikel en stel het opnieuw samen via het menu.",
       "invalidQuantity": "De hoeveelheid van dit artikel is niet geldig.",
@@ -356,18 +356,18 @@
   "checkout": {
     "title": "Bestelling",
     "authStep": {
-      "heading": "Bijna klaar, log in om uw bestelling te plaatsen",
+      "heading": "Bijna klaar: log in om uw bestelling te plaatsen",
       "cartSaved": "Uw winkelwagen is bewaard",
       "tabLogin": "Inloggen",
       "tabRegister": "Account aanmaken",
       "returnToLogin": "E-mail bevestigd, nu inloggen"
     },
     "phoneCapture": {
-      "title": "Telefoonnummer vereist",
+      "title": "Telefoonnummer",
       "description": "Nodig om u te contacteren over uw bestelling.",
       "saved": "Telefoonnummer opgeslagen",
       "edit": "Wijzigen",
-      "addCountryPrefix": "Voor een niet-Belgisch nummer, voeg het landnummer toe (bijv. +33)",
+      "addCountryPrefix": "Voeg bij een niet-Belgisch nummer het landnummer toe (bv. +33)",
       "requiredBeforeOrder": "Voeg uw telefoonnummer toe voordat u bestelt.",
       "unsaved": "Sla uw telefoonnummer op of corrigeer het voordat u bestelt.",
       "editAria": "Telefoonnummer wijzigen"
@@ -387,24 +387,24 @@
     "editAddress": "Adres wijzigen",
     "noAddress": "Geen adres geselecteerd",
     "addAddress": "Adres toevoegen",
-    "addressComment": "Aanvullende informatie voor het adres",
-    "addressCommentPlaceholder": "bv. Twee keer bellen",
+    "addressComment": "Aanvullende adresgegevens",
+    "addressCommentPlaceholder": "bv. 2de verdieping, twee keer bellen",
     "preferredTime": "Gewenst tijdstip",
-    "asapDelivery": "Zo snel mogelijk (40-60 min)",
-    "asapDeliveryShort": "ZSM (40-60 min)",
+    "asapDelivery": "Zo snel mogelijk (40–60 min)",
+    "asapDeliveryShort": "Zo snel mogelijk (40–60 min)",
     "asapPickup": "Zo snel mogelijk",
-    "asapUnavailableWhileClosed": "De optie \"zo snel mogelijk\" is niet beschikbaar buiten de openingsuren. Kies een vast tijdstip voor vandaag.",
+    "asapUnavailableWhileClosed": "We zijn momenteel gesloten: \"Zo snel mogelijk\" is niet beschikbaar. Kies een tijdstip voor vandaag.",
     "noRemainingSlotsToday": "Er zijn geen beschikbare tijdsloten meer voor vandaag.",
-    "extrasAndPayment": "Extra's & Betaling",
+    "extrasAndPayment": "Extra's en betaling",
     "paymentMethod": "Betaalmethode",
     "online": "Online",
     "cash": "Contant",
     "cashWarning": "Let op: zodra de bestelling is geplaatst, kan de betaalmethode niet meer worden gewijzigd.",
-    "cashAcknowledge": "Ik heb dit begrepen en bevestig dat ik contant betaal.",
+    "cashAcknowledge": "Ik bevestig dat ik contant betaal.",
     "cashAcknowledgeMissing": "Bevestig dat u contant betaalt",
     "cashAcknowledged": "Contante betaling bevestigd",
-    "discardAddress": "Ingevoerd adres verwijderen?",
-    "cashAmountLabel": "Met hoeveel gaat u betalen?",
+    "discardAddress": "Ingevoerd adres wissen?",
+    "cashAmountLabel": "Met welk bedrag betaalt u?",
     "cashAmountPlaceholder": "bv. 50",
     "extras": "Extra's",
     "addChopsticks": "Eetstokjes toevoegen",
@@ -421,7 +421,7 @@
     "orderCommentPlaceholder": "bv. Allergieën of speciale instructies",
     "goToPayment": "Naar betaling",
     "placeOrder": "Bestelling plaatsen",
-    "processing": "Verwerking bezig...",
+    "processing": "Bezig met verwerken…",
     "restaurantClosed": "Het restaurant is momenteel gesloten. Controleer de openingsuren.",
     "orderDisabled": "Bestellingen zijn momenteel uitgeschakeld. Probeer het later opnieuw.",
     "free": "Gratis",
@@ -434,36 +434,36 @@
     "stepPayment": "Betaling",
     "itemCount": "{count} artikel | {count} artikelen",
     "opensAt": "Opent om {time}",
-    "tooFar": "Te ver voor levering (max {distance} km)",
-    "notDeliverableArea": "Wij leveren niet in uw zone.",
+    "tooFar": "Te ver voor levering (max. {distance} km)",
+    "notDeliverableArea": "We leveren niet in uw buurt.",
     "tbd": "Nader te bepalen",
     "optional": "(optioneel)",
-    "openingPayment": "Veilige betaling openen...",
+    "openingPayment": "Beveiligde betaling wordt geopend…",
     "completeBeforeOrder": "Vul dit eerst aan voordat u bestelt:",
-    "completeBeforeOrderCount": "{count} ontbrekend item | {count} ontbrekende items",
-    "addressDistanceKm": "{distance} km afstand",
+    "completeBeforeOrderCount": "{count} item ontbreekt | {count} items ontbreken",
+    "addressDistanceKm": "Op {distance} km",
     "addExtras": "Zin in extra's?",
     "extrasDescription": "Maak uw bestelling compleet met bijgerechten",
-    "paidExtra": "Betaalde extra",
+    "paidExtra": "Extra (betalend)",
     "paidExtrasNotice": "Deze extra's worden als producten aangerekend en aan uw winkelwagen toegevoegd.",
-    "quoteIssuesTitle": "Je bestelling kan nog niet worden betaald",
-    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in je bestelling.",
+    "quoteIssuesTitle": "Uw bestelling kan nog niet worden betaald",
+    "quoteLineIssues": "Sommige artikelen kunnen niet meer zo besteld worden: controleer de gemarkeerde regels in uw bestelling.",
     "quoteChanged": "Prijzen of beschikbaarheid zijn gewijzigd: controleer uw bestelling.",
     "cashAmountTooLow": "Dit bedrag is lager dan het totaal ({total}). Geef minstens {total} in, of laat het veld leeg.",
-    "cashChangeDue": "Terug te geven wisselgeld: {amount}",
-    "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen"
+    "cashChangeDue": "Wisselgeld: {amount}",
+    "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen | {name}, {count} toegevoegd, {price} per stuk: nog één toevoegen"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
-    "thankYou": "Bedankt voor uw aankoop!",
-    "orderSuccess": "Uw bestelling is succesvol geplaatst.",
+    "thankYou": "Bedankt voor uw bestelling!",
+    "orderSuccess": "Uw bestelling is geplaatst.",
     "items": "Gerechten",
-    "loading": "Bestelgegevens laden...",
-    "returnHome": "Terug naar start",
+    "loading": "Bestelgegevens laden…",
+    "returnHome": "Terug naar de startpagina",
     "viewOrders": "Mijn bestellingen bekijken",
     "status": "Status",
     "pageTitle": "Bestelbevestiging - __BRAND__",
-    "liveTracking": "Live tracking, de status wordt automatisch bijgewerkt",
+    "liveTracking": "Live opvolging: de status wordt automatisch bijgewerkt",
     "estimatedDeliveredTime": "Geschatte leveringstijd:",
     "estimatedReadyTime": "Geschatte afhaaltijd:",
     "orderCanceled": "Uw bestelling is geannuleerd. Neem contact op met het restaurant via __PHONE__ voor meer informatie.",
@@ -472,9 +472,9 @@
     "cancellationReasons": {
       "OUT_OF_STOCK": "Uitverkocht",
       "KITCHEN_CLOSED": "Keuken gesloten",
-      "DELIVERY_AREA": "Buiten bezorggebied"
+      "DELIVERY_AREA": "Buiten de leveringszone"
     },
-    "loadError": "Kan de bestelgegevens niet laden. Probeer het opnieuw.",
+    "loadError": "We konden de bestelgegevens niet laden. Probeer het opnieuw.",
     "backToMenu": "Terug naar menu",
     "payment": {
       "canceledTitle": "Betaling geannuleerd",
@@ -501,54 +501,54 @@
       "cashWith": "U betaalt met {amount}",
       "changeDue": "wisselgeld: {amount}",
       "deliveryTo": "Leveringsadres",
-      "pickupAt": "Afhalen bij"
+      "pickupAt": "Af te halen bij"
     }
   },
   "error": {
-    "homeButton": "Terug naar start",
+    "homeButton": "Terug naar de startpagina",
     "menuButton": "Bekijk het menu",
-    "notFound": "Oeps! Deze pagina lijkt verdwenen te zijn...",
-    "forbidden": "Toegang geweigerd. U heeft geen toestemming om deze pagina te bekijken.",
+    "notFound": "Oeps! Deze pagina lijkt verdwenen…",
+    "forbidden": "Toegang geweigerd. U hebt geen toestemming om deze pagina te bekijken.",
     "serverError": "Er is een fout opgetreden. Probeer het later opnieuw.",
     "generic": "Er is iets misgegaan. Probeer het opnieuw.",
     "title404": "Niets op het bord",
     "title403": "Toegang geweigerd",
     "title500": "Probleem in de keuken",
-    "titleGeneric": "Verkeerde beweging"
+    "titleGeneric": "Oeps, foutje"
   },
   "footer": {
-    "terms": "AV",
+    "terms": "Algemene voorwaarden",
     "privacy": "Privacybeleid"
   },
   "notify": {
     "errors": {
       "cartEmpty": "Uw winkelwagen is leeg.",
       "addressRequired": "Een adres is vereist voor levering.",
-      "deliveryAddressTooFar": "Het leveringsadres is te ver. Max {distance} km.",
-      "deliveryAddressExcluded": "Wij leveren niet in uw zone.",
-      "deliveryUnavailable": "Levering is niet beschikbaar — kies voor afhalen.",
+      "deliveryAddressTooFar": "Het leveringsadres ligt te ver (max. {distance} km).",
+      "deliveryAddressExcluded": "We leveren niet in uw buurt.",
+      "deliveryUnavailable": "Levering is niet beschikbaar: kies voor afhalen.",
       "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
       "codeExpired": "De code is verlopen. Vraag een nieuwe aan.",
-      "emailNotVerified": "Gelieve uw e-mailadres te verifiëren voordat u inlogt. Controleer uw inbox voor de verificatielink.",
+      "emailNotVerified": "Bevestig eerst uw e-mailadres voordat u inlogt. De bevestigingslink staat in uw mailbox.",
       "orderingUnavailable": "Bestellingen zijn momenteel niet beschikbaar. Probeer het later opnieuw.",
-      "fixedTimeRequiredWhileClosed": "Kies een vast tijdstip voor vandaag buiten de openingsuren.",
-      "lunchOnlyRequiresLunchSlot": "Sommige producten in uw winkelwagen zijn alleen beschikbaar tijdens een lunchslot (maandag tot vrijdag). Kies een lunchslot of verwijder deze producten.",
+      "fixedTimeRequiredWhileClosed": "We zijn momenteel gesloten: kies een tijdstip voor vandaag.",
+      "lunchOnlyRequiresLunchSlot": "Sommige artikelen in uw winkelwagen zijn enkel beschikbaar voor een lunchtijdslot (maandag–vrijdag). Kies een lunchtijdslot of verwijder deze artikelen.",
       "slotExpiredAutoReset": "Uw tijdslot is verlopen. Het tijdstip werd opnieuw ingesteld.",
       "slotTooSoon": "Het gekozen tijdslot is te vroeg. Kies een later tijdstip.",
       "slotOutsideHours": "Het gekozen tijdslot valt buiten de openingsuren.",
       "slotNotToday": "Het tijdslot moet voor vandaag zijn.",
       "slotNotAligned": "Het tijdslot moet op een interval van 15 minuten vallen.",
-      "orderingClosedToday": "Bestellingen zijn vandaag gesloten.",
+      "orderingClosedToday": "Vandaag zijn er geen bestellingen meer mogelijk.",
       "tooManyRequests": "Te veel pogingen. Wacht enkele minuten en probeer het opnieuw.",
       "couponCheckFailed": "We konden uw kortingscode niet controleren. Probeer het opnieuw.",
-      "orderCreationFailed": "Het aanmaken van de bestelling is mislukt. Probeer het opnieuw.",
+      "orderCreationFailed": "Uw bestelling kon niet worden aangemaakt. Probeer het opnieuw.",
       "profileUpdateFailed": "Het bijwerken van het profiel is mislukt.",
-      "requestFailed": "Het verzoek is mislukt. Probeer het opnieuw.",
+      "requestFailed": "Er ging iets mis. Probeer het opnieuw.",
       "addressLookupFailed": "Het opzoeken van het adres is mislukt. Probeer het opnieuw.",
       "addressMissingHouseNumber": "Selecteer een volledig adres met een huisnummer.",
-      "ordersLoadFailed": "Kan uw bestellingen niet laden.",
+      "ordersLoadFailed": "We konden uw bestellingen niet laden.",
       "invoiceDownloadFailed": "Het downloaden van de factuur is mislukt.",
-      "sessionExpired": "Uw sessie is verlopen. Gelieve opnieuw in te loggen.",
+      "sessionExpired": "Uw sessie is verlopen. Log opnieuw in.",
       "oauthFailed": "Het inloggen is mislukt. Probeer het opnieuw.",
       "invalidEmail": "Voer een geldig e-mailadres in.",
       "undeliverableEmail": "We kunnen geen code naar dit adres sturen. Controleer of het juist geschreven is (bijvoorbeeld \".com\" en niet \".coma\").",
@@ -558,11 +558,11 @@
       "productNotFound": "Een artikel in uw winkelwagen staat niet meer op het menu. Verwijder het uit uw winkelwagen en probeer opnieuw.",
       "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
       "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelwagen en probeer opnieuw.",
-      "couponMinOrderNotMet": "Voor deze promocode is een hoger bestelbedrag nodig.",
-      "couponAlreadyActive": "U heeft al een lopende bestelling met een promocode. Probeer opnieuw zodra die is afgerond.",
+      "couponMinOrderNotMet": "Voor deze kortingscode is een hoger bestelbedrag nodig.",
+      "couponAlreadyActive": "U hebt al een lopende bestelling met een kortingscode. Probeer opnieuw zodra die is afgerond.",
       "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
       "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
-      "priceChanged": "De prijs van een artikel in je winkelwagen is gewijzigd. Controleer je winkelwagen en bevestig de nieuwe prijs.",
+      "priceChanged": "De prijs van een artikel in uw winkelwagen is gewijzigd. Controleer uw winkelwagen en bevestig de nieuwe prijs.",
       "productNotFoundNamed": "\"{name}\" staat niet meer op het menu. Verwijder het uit uw winkelwagen en probeer opnieuw.",
       "productUnavailable": "Een artikel in uw winkelwagen is momenteel uitverkocht. Verwijder het uit uw winkelwagen en probeer opnieuw.",
       "productUnavailableNamed": "\"{name}\" is momenteel uitverkocht. Verwijder het uit uw winkelwagen en probeer opnieuw.",
@@ -575,7 +575,7 @@
     "restaurantName": "__BRAND__",
     "cuisine": "Japanse",
     "home": {
-      "title": "__BRAND__ - Japans Restaurant in Luik",
+      "title": "__BRAND__ - Japans restaurant in Luik",
       "description": "Ontdek de beste smaken van Japan in Luik. Verse sushi, sashimi en authentieke Japanse keuken."
     },
     "menu": {
@@ -585,10 +585,10 @@
     },
     "contact": {
       "title": "Contacteer ons - __BRAND__",
-      "description": "Bezoek ons, bel ons of reserveer vandaag nog een tafel! Rue de la Cathédrale 59, Liège, Belgique"
+      "description": "Bezoek ons, bel ons of reserveer vandaag nog een tafel! Rue de la Cathédrale 59, Luik, België"
     },
     "terms": {
-      "title": "Algemene Voorwaarden - __BRAND__",
+      "title": "Algemene voorwaarden - __BRAND__",
       "description": "Algemene voorwaarden van __BRAND__. Juridische informatie, levering, betaling en retourbeleid."
     },
     "login": {
@@ -606,17 +606,17 @@
     },
     "privacy": {
       "title": "Privacybeleid - __BRAND__",
-      "description": "Privacybeleid van __BRAND__. Verzamelde gegevens, doeleinden, GDPR-rechten en cookies."
+      "description": "Privacybeleid van __BRAND__. Verzamelde gegevens, doeleinden, AVG-rechten en cookies."
     },
     "orderConfirmation": {
       "title": "Bestelbevestiging - __BRAND__",
-      "description": "Uw bestelling is bevestigd"
+      "description": "Het overzicht van uw bestelling"
     },
     "breadcrumb": {
-      "home": "Start",
+      "home": "Home",
       "menu": "Menu",
       "contact": "Contact",
-      "terms": "AV",
+      "terms": "Algemene voorwaarden",
       "privacy": "Privacybeleid",
       "accountDeletion": "Account verwijderen"
     },
@@ -650,8 +650,8 @@
     "message": "Bericht",
     "messagePlaceholder": "Vertel ons over uw ervaring (min. 10 tekens)",
     "submit": "Verzenden",
-    "sending": "Bezig met verzenden...",
-    "success": "Bedankt voor uw feedback! Wij waarderen de tijd die u heeft genomen om uw mening te delen.",
+    "sending": "Bezig met verzenden…",
+    "success": "Bedankt voor uw feedback! Fijn dat u de tijd nam om uw mening te delen.",
     "sendAnother": "Nog een bericht versturen",
     "errorGeneric": "Er is een probleem opgetreden. Probeer het opnieuw.",
     "errorTooManyRequests": "Te veel inzendingen. Wacht enkele minuten en probeer het opnieuw.",
@@ -659,20 +659,20 @@
     "errorCaptchaFailed": "Botverificatie mislukt. Probeer het opnieuw."
   },
   "coupon": {
-    "title": "Promocode",
-    "placeholder": "Voer de promocode in",
+    "title": "Kortingscode",
+    "placeholder": "Voer uw kortingscode in",
     "apply": "Toepassen",
     "remove": "Verwijderen",
-    "removed": "Promocode verwijderd",
-    "applied": "Promocode toegepast: -{discount} korting",
-    "invalid": "Ongeldige promocode",
-    "discount": "Korting promocode",
-    "removedNoLongerApplies": "Promocode {code} is verwijderd: {reason}"
+    "removed": "Kortingscode verwijderd",
+    "applied": "Kortingscode toegepast: -{discount}",
+    "invalid": "Ongeldige kortingscode",
+    "discount": "Kortingscode",
+    "removedNoLongerApplies": "Kortingscode {code} is verwijderd: {reason}"
   },
   "reorder": {
     "button": "Opnieuw bestellen",
-    "success": "{count} artikelen toegevoegd aan winkelwagen",
-    "partial": "{added} artikelen toegevoegd. Niet toegevoegd: {names}",
+    "success": "{count} artikel toegevoegd aan uw winkelwagen | {count} artikelen toegevoegd aan uw winkelwagen",
+    "partial": "{added} artikel toegevoegd. Niet toegevoegd: {names} | {added} artikelen toegevoegd. Niet toegevoegd: {names}",
     "empty": "Geen beschikbare artikelen om opnieuw te bestellen",
     "emptyWithNames": "Er kon niets opnieuw besteld worden: {names}",
     "reason": {
@@ -680,7 +680,7 @@
       "choices": "keuzes gewijzigd, stel het opnieuw samen via het menu"
     },
     "confirmTitle": "Uw huidige winkelwagen vervangen?",
-    "confirmBody": "Uw winkelwagen bevat al artikelen. Vervang ze door deze bestelling of voeg deze bestelling eraan toe.",
+    "confirmBody": "Uw winkelwagen bevat al artikelen. Wilt u hem vervangen door deze bestelling, of deze bestelling eraan toevoegen?",
     "replace": "Vervangen",
     "add": "Toevoegen aan winkelwagen"
   },
@@ -689,8 +689,8 @@
     "acceptAria": "Cookies accepteren"
   },
   "faq": {
-    "title": "Veelgestelde Vragen",
-    "subtitle": "Vind antwoorden op uw vragen over __BRAND__",
+    "title": "Veelgestelde vragen",
+    "subtitle": "Antwoorden op uw vragen over __BRAND__",
     "stillHaveQuestions": "Heeft u nog vragen?",
     "contactUs": "Contacteer ons",
     "schemaTitle": "FAQ - __BRAND__",
@@ -699,11 +699,11 @@
     "questions": {
       "delivery": {
         "question": "Leveren jullie? Wat is het leveringsgebied?",
-        "answer": "Ja, wij leveren vanuit ons restaurant aan de Rue de la Cathédrale 59, Luik. De leveringskosten variëren op basis van de afstand:<br><br>• Minder dan 3 km: <strong>Gratis</strong> (minimum 25 €)<br>• 3-4 km: 1 €<br>• 4-5 km: 2 €<br>• 5-6 km: 3 €<br>• 6-7 km: 4 €<br>• 7-8 km: 5 €<br>• 8-9 km: 6 €<br><br>Boven 9 km is levering niet beschikbaar, tenzij voor bestellingen van 130 € of meer. U kunt uw adres controleren bij het plaatsen van uw bestelling."
+        "answer": "Ja, we leveren vanuit ons restaurant in de Rue de la Cathédrale 59 in Luik. De leveringskosten hangen af van de afstand:<br><br>• Minder dan 3 km: <strong>gratis</strong> (minimumbestelling € 25)<br>• 3–4 km: € 1<br>• 4–5 km: € 2<br>• 5–6 km: € 3<br>• 6–7 km: € 4<br>• 7–8 km: € 5<br>• 8–9 km: € 6<br><br>Boven 9 km leveren we niet, behalve voor bestellingen vanaf € 130. U kunt uw adres controleren wanneer u bestelt."
       },
       "hours": {
-        "question": "Wat zijn de openingsuren?",
-        "answer": "Wij zijn geopend van maandag tot vrijdag van 12u tot 14u30 en van 18u tot 22u30. Zaterdag en zondag van 12u tot 15u en van 18u tot 23u. Wij zijn gesloten op dinsdag."
+        "question": "Wat zijn jullie openingsuren?",
+        "answer": "We zijn open van maandag tot vrijdag van 12u tot 14u30 en van 18u tot 22u30, op zaterdag en zondag van 12u tot 15u en van 18u tot 23u. Op dinsdag zijn we gesloten."
       },
       "halal": {
         "question": "Bieden jullie halal-opties aan?",
@@ -711,11 +711,11 @@
       },
       "discount": {
         "question": "Is er korting voor afhaalbestellingen?",
-        "answer": "Ja! Geniet van {rate}% korting op alle kortingsbare artikelen wanneer u kiest voor afhalen. De korting wordt automatisch toegepast bij de betaling."
+        "answer": "Ja! U krijgt {rate}% korting op alle artikelen die in aanmerking komen wanneer u kiest voor afhalen. De korting wordt automatisch toegepast bij het afrekenen."
       },
       "payment": {
-        "question": "Welke betaalmethoden accepteren jullie?",
-        "answer": "Wij accepteren online betaling (bankkaart) en contante betaling bij levering of afhaling. Voor online bestellingen is de betaling beveiligd."
+        "question": "Welke betaalmethodes aanvaarden jullie?",
+        "answer": "We aanvaarden online betaling (bankkaart) en contante betaling bij levering of afhaling. Online betalingen zijn beveiligd."
       },
       "allergens": {
         "question": "Hebben jullie informatie over allergenen?",
@@ -731,7 +731,7 @@
       },
       "parking": {
         "question": "Is er parkeergelegenheid in de buurt?",
-        "answer": "Ons restaurant is gelegen in het centrum van Luik. Er zijn meerdere openbare parkings in de buurt: Parking Cathédrale, Parking Opéra, en straatparkeerplaatsen (betalend)."
+        "answer": "Ons restaurant ligt in het centrum van Luik. Er zijn verschillende openbare parkings in de buurt (Parking Cathédrale, Parking Opéra) en betalende parkeerplaatsen op straat."
       }
     }
   },
@@ -740,8 +740,8 @@
     "lastUpdated": "Laatst bijgewerkt: 08/06/2026",
     "intro": "U kunt uw __BRAND__-account en de bijbehorende persoonsgegevens zelf verwijderen, op elk moment, rechtstreeks vanuit de app of deze website.",
     "howTitle": "Uw account verwijderen",
-    "howBody": "Meld u aan, open de pagina van uw account en selecteer “Account verwijderen”. Na bevestiging wordt uw account onmiddellijk verwijderd en wordt u afgemeld, zonder wachttijd.",
-    "fallbackTitle": "Kunt u niet aanmelden?",
+    "howBody": "Log in, open de pagina van uw account en kies \"Account verwijderen\". Na bevestiging wordt uw account onmiddellijk verwijderd en wordt u uitgelogd, zonder wachttijd.",
+    "fallbackTitle": "Kunt u niet inloggen?",
     "fallbackBody": "Als u geen toegang meer heeft tot uw account, stuur ons dan een e-mail vanaf het gekoppelde adres, met als onderwerp “Account verwijderen”. We verwijderen het na verificatie van uw identiteit.",
     "emailSubject": "Account verwijderen",
     "dataTitle": "Welke gegevens worden verwijderd",
@@ -762,9 +762,12 @@
     "loadFailed": "We konden niet controleren of bestellen mogelijk is."
   },
   "orderStatus": {
-    "label": "Voortgang van de bestelling",
+    "label": "Verloop van de bestelling",
     "completed": "voltooid",
-    "upcoming": "nog te komen",
+    "upcoming": "volgt nog",
     "changed": "Status van de bestelling: {status}"
+  },
+  "legal": {
+    "frenchOnly": "Deze pagina is enkel in het Frans beschikbaar."
   }
 }
