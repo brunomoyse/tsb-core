@@ -31,15 +31,15 @@ describe('EUROPEAN_COUNTRIES', () => {
   })
 
   it('every prefix is the calling code libphonenumber knows for the country', () => {
-    for (const { code, prefix } of EUROPEAN_COUNTRIES.filter((c) => c.code !== 'VA')) {
+    for (const { code, prefix } of EUROPEAN_COUNTRIES) {
       expect(prefix, code).toBe(`+${getCountryCallingCode(code)}`)
     }
   })
 
-  it('Vatican City uses the calling code libphonenumber knows (+39)', () => {
-    expect(EUROPEAN_COUNTRIES.find((c) => c.code === 'VA')?.prefix).toBe(
-      `+${getCountryCallingCode('VA')}`,
-    )
+  it('Italy is listed before Vatican City, which shares its +39: a stored +39 number resolves to Italy', () => {
+    const codes = EUROPEAN_COUNTRIES.map((c) => c.code)
+    expect(EUROPEAN_COUNTRIES.find((c) => c.code === 'VA')?.prefix).toBe('+39')
+    expect(codes.indexOf('IT')).toBeLessThan(codes.indexOf('VA'))
   })
 
   it('every flag is the emoji of its own country code', () => {

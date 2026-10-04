@@ -27,9 +27,7 @@ describe('useTracking', () => {
   })
 
   it('does nothing when umami is not loaded (blocked or not yet there)', () => {
-    expect(() => {
-      useTracking().trackEvent('x')
-    }).not.toThrow()
+    expect(useTracking().trackEvent('x')).toBeUndefined()
   })
 
   it('looks umami up at call time, so a script that loads late is used', () => {

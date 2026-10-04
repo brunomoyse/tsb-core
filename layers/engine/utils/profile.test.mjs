@@ -1,5 +1,6 @@
 // Run: `vp test run layers/engine/utils/profile.test.mjs`.
 
+import { EUROPEAN_COUNTRIES } from './europeanCountries.ts'
 import { hasActiveOrder, profileFullName, profileInitials, splitStoredPhone } from './profile.ts'
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
@@ -41,4 +42,11 @@ test('an unknown prefix keeps the whole number and the current country; no numbe
   assert.deepEqual(splitStoredPhone('+44123', countries), { phoneLocal: '+44123' })
   assert.deepEqual(splitStoredPhone('', countries), { phoneLocal: '' })
   assert.deepEqual(splitStoredPhone(null, countries), { phoneLocal: '' })
+})
+
+test('with the real country list, a stored +39 number is Italian (Vatican City shares the prefix and comes later)', () => {
+  assert.deepEqual(splitStoredPhone('+390612345678', EUROPEAN_COUNTRIES), {
+    phoneLocal: '0612345678',
+    selectedCountry: 'IT',
+  })
 })
