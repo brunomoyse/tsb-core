@@ -487,6 +487,81 @@ describe('silentRenew', () => {
     expect(manager().removeUser).not.toHaveBeenCalled()
   })
 
+  // Two tabs share localStorage but not the in-flight renewal: the second one to use the refresh token gets invalid_grant.
+  describe('when another tab renewed at the same time', () => {
+    it('keeps the user the other tab stored (new refresh token) instead of wiping it', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      const renewedByOtherTab = user({ access_token: 'access-B', refresh_token: 'refresh-2' })
+      manager()
+        .getUser.mockResolvedValueOnce(user({ expired: true, refresh_token: 'refresh-1' }))
+        .mockResolvedValueOnce(renewedByOtherTab)
+      manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+      await expect(oidc.silentRenew()).resolves.toBe(renewedByOtherTab)
+
+      expect(manager().removeUser).not.toHaveBeenCalled()
+      expect(oidc.oidcUser.value).toEqual(renewedByOtherTab)
+    })
+
+    it('lets getAccessToken hand the new token to the request', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager()
+        .getUser.mockResolvedValueOnce(user({ expired: true, refresh_token: 'refresh-1' }))
+        .mockResolvedValueOnce(user({ expired: true, refresh_token: 'refresh-1' }))
+        .mockResolvedValueOnce(user({ access_token: 'access-B', refresh_token: 'refresh-2' }))
+      manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+      await expect(oidc.getAccessToken()).resolves.toBe('access-B')
+    })
+
+    it('still wipes the session when the stored refresh token is the one that was refused', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager().getUser.mockResolvedValue(user({ expired: true, refresh_token: 'refresh-1' }))
+      manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+      await expect(oidc.silentRenew()).resolves.toBeNull()
+      expect(manager().removeUser).toHaveBeenCalledOnce()
+    })
+
+    it('still wipes the session when the other tab signed out (nothing stored any more)', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager()
+        .getUser.mockResolvedValueOnce(user({ expired: true }))
+        .mockResolvedValueOnce(null)
+      manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+      await expect(oidc.silentRenew()).resolves.toBeNull()
+      expect(manager().removeUser).toHaveBeenCalledOnce()
+    })
+
+    it('still wipes the session when the stored user cannot be read again', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager()
+        .getUser.mockResolvedValueOnce(user({ expired: true }))
+        .mockRejectedValueOnce(new Error('localStorage blocked'))
+      manager().signinSilent.mockRejectedValue(refusal('invalid_grant'))
+
+      await expect(oidc.silentRenew()).resolves.toBeNull()
+      expect(manager().removeUser).toHaveBeenCalledOnce()
+    })
+
+    it('does not look at the other tab for another refusal (only a used refresh token is a race)', async () => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      manager().getUser.mockResolvedValue(user({ expired: true, refresh_token: 'refresh-1' }))
+      manager().signinSilent.mockRejectedValue(refusal('invalid_client'))
+
+      await expect(oidc.silentRenew()).resolves.toBeNull()
+      expect(manager().getUser).toHaveBeenCalledOnce()
+      expect(manager().removeUser).toHaveBeenCalledOnce()
+    })
+  })
+
   it('wipes a session that has no refresh token: nothing can renew it, asking Zitadel would be pointless', async () => {
     const { oidc, manager } = await load()
     await oidc.signIn()

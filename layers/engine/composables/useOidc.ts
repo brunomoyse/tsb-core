@@ -46,6 +46,9 @@ const isTransient = (err: unknown): boolean => {
   return err.name === 'ErrorTimeout' || TRANSIENT_HTTP_STATUS.test(err.message)
 }
 
+const isInvalidGrant = (err: unknown): boolean =>
+  err instanceof ErrorResponse && err.error === 'invalid_grant'
+
 /*
  * After a transient failure no new renewal is attempted for this long: every authenticated request renews once on its
  * token and once more on the 401 that follows, so during an outage they would hammer the token endpoint. Requests
@@ -226,7 +229,32 @@ export function useOidc() {
         renewBlockedBy = err
         throw new SilentRenewUnavailableError({ cause: err })
       }
+      if (isInvalidGrant(err)) {
+        const rotated = await renewedByAnotherTab(mgr, existing.refresh_token)
+        if (rotated) {
+          oidcUser.value = rotated
+          return rotated
+        }
+      }
       return endSession(mgr)
+    }
+  }
+
+  /*
+   * The coalescer is per tab but localStorage is shared. If another tab used the same refresh token first, Zitadel
+   * rotated it and answers invalid_grant to this tab, although the session is alive: the other tab stored a user with a
+   * new refresh token. That user is the session now (wiping it would log both tabs out): hand it back so that the
+   * caller retries with its token.
+   */
+  async function renewedByAnotherTab(
+    mgr: UserManager,
+    used: string | undefined,
+  ): Promise<OidcUser | null> {
+    try {
+      const current = await mgr.getUser()
+      return current?.refresh_token && current.refresh_token !== used ? current : null
+    } catch {
+      return null
     }
   }
 
