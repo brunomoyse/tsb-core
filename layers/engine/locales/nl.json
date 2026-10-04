@@ -748,7 +748,7 @@
     "dataIntro": "Wanneer uw account wordt verwijderd, worden de volgende gegevens definitief verwijderd:",
     "dataItems": [
       "Accountprofiel: voornaam, achternaam, e-mailadres, telefoonnummer",
-      "Bezorgadressen",
+      "Leveringsadressen",
       "Push-notificatietokens"
     ],
     "retainTitle": "Welke gegevens worden bewaard",
