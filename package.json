@@ -53,7 +53,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^6.0.3",
     "vite-plus": "1.0.0",
-    "vue-tsc": "^3.3.11",
+    "vue-tsc": "^3.3.12",
     "ws": "^8.21.3"
   },
   "overrides": {
