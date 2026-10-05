@@ -402,7 +402,7 @@ definePageMeta({
 })
 
 import type { Product, ProductCategory } from '#engine/types'
-import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useHead, useRoute, useRouter } from '#imports'
 import CategoryCard from '~/components/menu/CategoryCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
@@ -843,14 +843,30 @@ watch(
 // A server-side listener would pin every rendered request (heap leak, 2026-10).
 if (import.meta.client) useEventBus(cartItemAddedKey).on(handleCartItemAdded)
 
-onMounted(() => {
+/*
+ * The strip's scroll listener sits on the element itself, kept in a variable: when the page unmounts the template ref is already
+ * null (a listener removed through it stayed on the element), and the strip is not rendered while a search is active, so a new
+ * element has to be bound when it comes back. The pending frame is cancelled with the listener.
+ */
+let stripElement: HTMLElement | null = null
+const bindStrip = (el: HTMLElement | null) => {
+  stripElement?.removeEventListener('scroll', scheduleScrollButtons)
+  stripElement = el
+  el?.addEventListener('scroll', scheduleScrollButtons, { passive: true })
   updateScrollButtons()
-  scrollContainer.value?.addEventListener('scroll', scheduleScrollButtons, { passive: true })
+}
+const stopWatchingStrip = watch(scrollContainer, bindStrip, { flush: 'post' })
+
+onMounted(() => {
+  bindStrip(scrollContainer.value)
 })
 
-onUnmounted(() => {
-  scrollContainer.value?.removeEventListener('scroll', scheduleScrollButtons)
+onBeforeUnmount(() => {
+  stopWatchingStrip()
+  stripElement?.removeEventListener('scroll', scheduleScrollButtons)
+  stripElement = null
   cancelAnimationFrame(scrollButtonsFrame)
+  scrollButtonsFrame = 0
 })
 </script>
 
