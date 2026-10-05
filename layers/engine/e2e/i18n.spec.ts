@@ -2,6 +2,7 @@ import { ACCEPT_LANGUAGE, LOCALES, type Locale, chooseLocale } from './support/l
 import { addSimpleProductToCart, cartLines, switchLanguage } from './support/nav'
 import { expect, test } from './support/test'
 import { expectNoUntranslatedText, message, untranslatedText } from './support/i18n'
+import { layoutShifts, totalShift, trackLayoutShifts } from './support/layout-shift'
 import { settleNuxt, waitForNuxtHydration, watchHydrationMismatches } from './support/hydration'
 
 /*
@@ -329,37 +330,36 @@ test.describe('no raw translation keys', () => {
           await page.locator('button[aria-controls^="order-panel-"]').first().click()
         await expectNoUntranslatedText(page, brand, `/${locale}${path}`)
       }
-      // (/me is the known exception: see the test.fail below.)
-      expect(
-        mismatches().filter((entry) => !/\/me: /u.test(entry)),
-        'server and client rendered different DOM',
-      ).toEqual([])
+      expect(mismatches(), 'server and client rendered different DOM').toEqual([])
     })
   }
 
   /*
-   * BUG (found by the sweep above, not fixed: a rendering decision): a signed-in customer who reloads /me gets "Hydration
-   * completed but contains mismatches". The server renders the page without a user (generic title, "-" placeholders: the
-   * OIDC session and the persisted profile live in localStorage, which it cannot read) while the client's first render
-   * already has the persisted profile (greeting, e-mail, initials). Vue repairs it by rendering again, so nothing breaks,
-   * but every signed-in visit pays a second render and flashes the placeholders. The profile should be shown after
-   * mount (ClientOnly, or an `onMounted` read) so both renders agree.
+   * A signed-in customer reloading /me: the server renders the page without a user (the OIDC session and the persisted profile
+   * live in localStorage, which it cannot read), and the first client render has to be that same page, or Vue reports
+   * "Hydration completed but contains mismatches" and renders it all again. The profile is shown once the page is mounted
+   * (pages/me/index.vue); the cells keep their height, so nothing moves when it arrives.
    */
-  test.fail(
-    'a signed-in customer opening /me hydrates without a mismatch',
-    async ({ authenticatedPage: page, backend }) => {
-      test.skip(!backend.isMock, 'needs the mock API')
-      const mismatches = watchHydrationMismatches(page)
-      // Any page first: the profile is persisted (localStorage "auth") once the app has loaded it.
-      await page.goto('/fr/menu')
-      await waitForNuxtHydration(page)
-      await expect
-        .poll(() => page.evaluate(() => localStorage.getItem('auth') ?? ''))
-        .toContain('e2e@')
-      await page.goto('/fr/me')
-      await waitForNuxtHydration(page)
-      await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour')
-      expect(mismatches()).toEqual([])
-    },
-  )
+  test('a signed-in customer opening /me hydrates without a mismatch and without a layout shift', async ({
+    authenticatedPage: page,
+    backend,
+  }) => {
+    test.skip(!backend.isMock, 'needs the mock API')
+    await backend.mock.user({ phoneNumber: '+32470123456', address: 'place-home' })
+    const mismatches = watchHydrationMismatches(page)
+    await trackLayoutShifts(page)
+    // Any page first: the profile is persisted (localStorage "auth") once the app has loaded it.
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('auth') ?? ''))
+      .toContain('e2e@')
+    await page.goto('/fr/me')
+    await waitForNuxtHydration(page)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Bonjour')
+    await expect(page.getByText('+32470123456')).toBeVisible()
+    expect(mismatches()).toEqual([])
+    const shifts = await layoutShifts(page)
+    expect(totalShift(shifts), `/me moved: ${JSON.stringify(shifts)}`).toBeLessThan(0.01)
+  })
 })

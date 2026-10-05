@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Address, UpdateUserRequest, User } from '#engine/types'
 import { computed, onMounted, ref } from 'vue'
+import { useMounted } from '@vueuse/core'
 import {
   definePageMeta,
   useGqlMutation,
@@ -40,6 +41,15 @@ const languages = [
   { code: 'zh', label: '中文' },
 ] as const
 const authStore = useAuthStore()
+/*
+ * The profile is persisted in localStorage, which the server cannot read: it renders this page without a user (generic title,
+ * "-" placeholders). The first client render has to be that same page, or Vue reports "Hydration completed but contains
+ * mismatches" and renders everything again on every signed-in visit. So what the template shows comes from `user`, empty
+ * until the app is mounted (the render that follows is in the same frame as the end of hydration, before the next paint).
+ * The cells keep the height of their filled state (see the phone and address cells), so nothing moves when it arrives.
+ */
+const isMounted = useMounted()
+const user = computed(() => (isMounted.value ? authStore.user : null))
 const notifications = useNotificationsStore()
 const { $gqlFetch } = useNuxtApp()
 const { trackEvent } = useTracking()
@@ -84,9 +94,9 @@ useSeoMeta({
 
 // ── Display computed ──
 
-const initials = computed(() => profileInitials(authStore.user))
+const initials = computed(() => profileInitials(user.value))
 
-const fullName = computed(() => profileFullName(authStore.user))
+const fullName = computed(() => profileFullName(user.value))
 
 // ── Profile edit logic ──
 
@@ -305,8 +315,8 @@ const handleLogout = async () => {
   navigateTo(localePath('/'))
 }
 
-const notifyMarketing = computed(() => authStore.user?.notifyMarketing ?? true)
-const notifyOrderUpdates = computed(() => authStore.user?.notifyOrderUpdates ?? true)
+const notifyMarketing = computed(() => user.value?.notifyMarketing ?? true)
+const notifyOrderUpdates = computed(() => user.value?.notifyOrderUpdates ?? true)
 
 const toggleNotifyMarketing = () =>
   updateNotificationPref('notifyMarketing', !notifyMarketing.value)
@@ -345,9 +355,7 @@ const updateNotificationPref = async (
       <!-- min-h-16 below sm: the server's title ("Mon compte - Tokyo Sushi Bar") takes two lines on a phone and the greeting that replaces it after hydration one: the block keeps the two-line height (the text is centred in it), so the grid does not jump (CLS), and the title stays the largest text of the first screen (LCP). -->
       <PageTitle class="flex min-h-16 items-center justify-center sm:min-h-0">
         {{
-          authStore.user?.firstName
-            ? `${t('me.greeting')}, ${authStore.user.firstName}`
-            : t('schema.myAccount.title')
+          user?.firstName ? `${t('me.greeting')}, ${user.firstName}` : t('schema.myAccount.title')
         }}
       </PageTitle>
       <p class="mt-2 text-sm sm:text-base text-neutral-600 font-light">{{ t('me.subtitle') }}</p>
@@ -417,9 +425,7 @@ const updateNotificationPref = async (
           <span class="text-xs text-neutral-600 uppercase tracking-wider">{{
             t('me.profile.email')
           }}</span>
-          <span class="text-sm text-neutral-900 mt-1 break-all">{{
-            authStore.user?.email || '–'
-          }}</span>
+          <span class="text-sm text-neutral-900 mt-1 break-all">{{ user?.email || '–' }}</span>
 
           <!-- Email verification status (verified if logged in via Zitadel) -->
           <div class="mt-2">
@@ -465,13 +471,15 @@ const updateNotificationPref = async (
             t('me.profile.phoneNumber')
           }}</span>
           <a
-            v-if="authStore.user?.phoneNumber"
-            :href="`tel:${authStore.user.phoneNumber}`"
+            v-if="user?.phoneNumber"
+            :href="`tel:${user.phoneNumber}`"
             class="inline-flex min-h-11 items-center text-sm text-neutral-900 mt-1 hover:text-primary-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
           >
-            {{ authStore.user.phoneNumber }}
+            {{ user.phoneNumber }}
           </a>
-          <span v-else class="text-sm text-neutral-600 mt-1">–</span>
+          <span v-else class="inline-flex min-h-11 items-center text-sm text-neutral-600 mt-1"
+            >–</span
+          >
         </div>
       </div>
 
@@ -501,18 +509,20 @@ const updateNotificationPref = async (
           <span class="text-xs text-neutral-600 uppercase tracking-wider">{{
             t('me.profile.address')
           }}</span>
+          <!-- Two lines tall (the formatted address) with or without one, so the cell does not grow when the profile arrives after mount. -->
           <span
-            v-if="authStore.user?.address"
-            class="text-sm text-neutral-900 mt-1 whitespace-pre-line"
+            v-if="user?.address"
+            class="text-sm text-neutral-900 mt-1 min-h-10 whitespace-pre-line"
           >
-            {{ formatAddress(authStore.user.address) }}
+            {{ formatAddress(user.address) }}
           </span>
+          <span v-else class="text-sm text-neutral-600 mt-1 min-h-10">–</span>
           <button
             type="button"
             class="mt-2 min-h-11 text-sm text-primary-700 hover:text-primary-900 transition text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             @click="openAddressModal"
           >
-            {{ authStore.user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
+            {{ user?.address ? t('me.profile.editAddress') : t('me.profile.addAddress') }}
           </button>
         </div>
       </div>
