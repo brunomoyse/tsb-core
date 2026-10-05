@@ -48,17 +48,18 @@
         <picture class="relative w-full h-full flex justify-center items-center">
           <source :srcset="`${productImageBaseSrc}.avif`" type="image/avif" />
           <source :srcset="`${productImageBaseSrc}.webp`" type="image/webp" />
+          <!-- The thumbnails are square (320 x 320): the box is reserved square (attributes and aspect-square) so the card does not grow when the picture lands, which moved the add button under it by ~45 px (CLS 0.035 on a phone). -->
           <img
             ref="imageElement"
             :alt="product.name"
             width="185"
-            height="130"
+            height="185"
             :class="!product.isAvailable ? 'grayscale' : ''"
             :draggable="false"
             :fetchpriority="imagePriority.fetchpriority"
             :loading="imagePriority.loading"
             :src="`${productImageBaseSrc}.png`"
-            class="object-contain max-h-full"
+            class="aspect-square object-contain max-h-full"
             @error="handleImageError"
           />
         </picture>
