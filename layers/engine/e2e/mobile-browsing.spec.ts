@@ -129,28 +129,45 @@ test.describe('categories', () => {
   })
 
   /*
-   * BUG (minor, not fixed: UX call): at the very top of the page, above the first section (search, filters and the allergen
-   * notice fill the first screen), no section is in the scroll-spy band, so the chip selected when the visitor left the
-   * strip stays selected: after reading to the end and scrolling back up, "Accompagnements" is highlighted over the search
-   * box. useMenuCategoryScrollspy's `selectFirst` only applies before the first scroll; the first chip should be
-   * selected again whenever no section is in the band above the first one.
+   * At the very top of the page, above the first section (search, filters and the allergen notice fill the first screen), no
+   * section is in the scroll-spy band: the chip that was selected on the way down used to stay selected ("Accompagnements"
+   * over the search box). useMenuCategoryScrollspy selects the first category again when nothing is in the band and the
+   * first section is still below it.
    */
-  test.fail(
-    'back at the very top of the page the first category is selected again',
-    async ({ page }) => {
-      await page.goto('/fr/menu')
-      await waitForNuxtHydration(page)
-      const ids = await categoryIds(page)
-      await page.evaluate(() => {
-        window.scrollTo({ top: document.documentElement.scrollHeight })
-      })
-      await expect.poll(() => chipIsActive(page, ids.at(-1) ?? '')).toBe(true)
-      await page.evaluate(() => {
-        window.scrollTo({ top: 0 })
-      })
-      await expect.poll(() => chipIsActive(page, ids[0] ?? ''), { timeout: 3_000 }).toBe(true)
-    },
-  )
+  test('back at the very top of the page the first category is selected again', async ({
+    page,
+  }) => {
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    const ids = await categoryIds(page)
+    await page.evaluate(() => {
+      window.scrollTo({ top: document.documentElement.scrollHeight })
+    })
+    await expect.poll(() => chipIsActive(page, ids.at(-1) ?? '')).toBe(true)
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0 })
+    })
+    await expect.poll(() => chipIsActive(page, ids[0] ?? ''), { timeout: 3_000 }).toBe(true)
+  })
+
+  test('scrolling up from the middle of the menu to the very top selects the first category', async ({
+    page,
+  }) => {
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    const ids = await categoryIds(page)
+    const middle = ids[Math.floor(ids.length / 2)] ?? ''
+    await page.evaluate((id) => {
+      const section = document.getElementById(`category-${id}`)
+      if (section)
+        window.scrollTo({ top: section.getBoundingClientRect().top + window.scrollY - 140 })
+    }, middle)
+    await expect.poll(() => chipIsActive(page, middle)).toBe(true)
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0 })
+    })
+    await expect.poll(() => chipIsActive(page, ids[0] ?? ''), { timeout: 3_000 }).toBe(true)
+  })
 
   test('a long category name stays inside its chip', async ({ page, backend, brand }) => {
     void backend

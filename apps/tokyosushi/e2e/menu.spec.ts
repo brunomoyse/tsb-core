@@ -106,4 +106,62 @@ test.describe('Menu browsing', () => {
 
     await page.keyboard.press('Escape')
   })
+
+  /*
+   * The category strip's scroll listener (it drives the arrow fades) is bound to the strip element and released with it:
+   * leaving the menu used to remove it through a template ref that was already null, so the listener stayed on the detached
+   * strip (and its frame was not cancelled), and a strip that came back after a search had none. Counts the scroll listeners
+   * each strip element holds.
+   */
+  test('the category strip releases its scroll listener when the page unmounts and follows a new strip', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const holders = new Map<EventTarget, number>()
+      // oxlint-disable-next-line typescript/unbound-method -- called back with `this` below
+      const add = EventTarget.prototype.addEventListener
+      // oxlint-disable-next-line typescript/unbound-method -- called back with `this` below
+      const remove = EventTarget.prototype.removeEventListener
+      const isStrip = (target: EventTarget) =>
+        target instanceof HTMLElement && target.querySelector('[data-chip-category]') !== null
+      EventTarget.prototype.addEventListener = function addEventListener(type, ...rest) {
+        if (type === 'scroll' && isStrip(this)) holders.set(this, (holders.get(this) ?? 0) + 1)
+        add.call(this, type, ...(rest as [EventListener]))
+      }
+      EventTarget.prototype.removeEventListener = function removeEventListener(type, ...rest) {
+        if (type === 'scroll' && holders.has(this)) holders.set(this, (holders.get(this) ?? 1) - 1)
+        remove.call(this, type, ...(rest as [EventListener]))
+      }
+      ;(window as unknown as { stripListeners: () => number[][] }).stripListeners = () =>
+        [...holders].map(([el, count]) => [(el as HTMLElement).isConnected ? 1 : 0, count])
+    })
+    const listeners = () =>
+      page.evaluate(() =>
+        (window as unknown as { stripListeners: () => number[][] }).stripListeners(),
+      )
+
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await page.locator(SEL.categoryCard).first().waitFor()
+    // [connected, listeners]: one strip, listened to.
+    expect(await listeners()).toEqual([[1, 1]])
+
+    // A search takes the strip out of the page; clearing it brings a new element, which is listened to in its turn.
+    await page.locator('#menuSearch').fill('gyoza')
+    await expect(page.locator(SEL.categoryCard)).toHaveCount(0)
+    await page.locator('#menuSearch').fill('')
+    await page.locator(SEL.categoryCard).first().waitFor()
+    await expect.poll(listeners).toEqual([
+      [0, 0],
+      [1, 1],
+    ])
+
+    // Leaving the menu (client-side) releases it from the strip that is going away.
+    await page.locator('a[href="/fr"]:visible').first().click()
+    await page.waitForURL(/\/fr\/?$/u)
+    await expect.poll(listeners).toEqual([
+      [0, 0],
+      [0, 0],
+    ])
+  })
 })

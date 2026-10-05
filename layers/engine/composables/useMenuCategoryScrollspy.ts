@@ -62,6 +62,18 @@ export const useMenuCategoryScrollspy = (
       ? bandRootMargin(stickyBottom(header.value), window.innerHeight)
       : DEFAULT_BAND_MARGIN
 
+  /* Nothing crosses the band and the first section is still below it: the page is above the first category (the search,
+       the filters and the allergen notice fill the first screen). Another category stays selected from the way down otherwise,
+       and the first one goes back to being selected, as before the first scroll. Only when a category is selected already: a
+       strip that starts with none (no `selectFirst`) is not given one by a page that has not been read yet. */
+  const selectFirstWhenAbove = () => {
+    const first = categoryIds.value[0]
+    if (!first || !activeCategoryId.value || activeCategoryId.value === first) return
+    if (inBand.size > 0) return
+    const section = sectionEl(first)
+    if (section && section.getBoundingClientRect().top > 0) activeCategoryId.value = first
+  }
+
   // (Re)creates the observer on the current sections and band. Search filtering swaps the rendered sections, and a measured header may have changed height, so this runs again whenever the ids change.
   const observeAll = () => {
     observer?.disconnect()
@@ -77,6 +89,7 @@ export const useMenuCategoryScrollspy = (
         if (Date.now() < suppressSpyUntil || atPageEnd) return
         const topmost = topmostInBand(categoryIds.value, inBand)
         if (topmost) activeCategoryId.value = topmost
+        else selectFirstWhenAbove()
       },
       {
         // Threshold 0 fires on any overlap with the band.
@@ -119,6 +132,7 @@ export const useMenuCategoryScrollspy = (
       } else if (!atEnd && atPageEnd && settled) {
         const topmost = topmostInBand(categoryIds.value, inBand)
         if (topmost) activeCategoryId.value = topmost
+        else selectFirstWhenAbove()
       }
       atPageEnd = atEnd
     },

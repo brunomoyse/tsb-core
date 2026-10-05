@@ -253,6 +253,77 @@ describe('page end', () => {
   })
 })
 
+describe('back above the first category', () => {
+  // happy-dom has no layout: where the first section sits is stated, in px from the top of the viewport.
+  const firstSectionAt = (top: number) => {
+    vi.spyOn(sections.get('a')!, 'getBoundingClientRect').mockReturnValue({ top } as DOMRect)
+  }
+
+  it('selects the first category when the page is scrolled back above it (nothing in the band)', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b', 'c'], { selectFirst: true })
+    enter('c')
+    expect(activeCategoryId.value).toBe('c')
+    firstSectionAt(600)
+    leave('c')
+    expect(activeCategoryId.value).toBe('a')
+  })
+
+  it('does so for a strip that had no selected category from the start, once one was selected', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b'])
+    enter('b')
+    firstSectionAt(300)
+    leave('b')
+    expect(activeCategoryId.value).toBe('a')
+  })
+
+  it('leaves a strip nobody has touched without a selection (the first callback reports nothing in the band)', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b'])
+    firstSectionAt(300)
+    latest().emit([
+      { target: sections.get('a')!, isIntersecting: false },
+      { target: sections.get('b')!, isIntersecting: false },
+    ])
+    expect(activeCategoryId.value).toBeNull()
+  })
+
+  it('keeps the category when the first section is not below the band (a gap between sections)', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b', 'c'], { selectFirst: true })
+    enter('c')
+    firstSectionAt(-400)
+    leave('c')
+    expect(activeCategoryId.value).toBe('c')
+  })
+
+  it('never overrides a section that crosses the band', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b', 'c'], { selectFirst: true })
+    enter('c')
+    enter('b')
+    firstSectionAt(600)
+    leave('c')
+    expect(activeCategoryId.value).toBe('b')
+  })
+
+  it('after reading to the end, one jump back to the top selects the first category', () => {
+    const { activeCategoryId } = mountSpy(['a', 'b', 'c'], { selectFirst: true })
+    setPage({ inner: 800, scrollY: 4200, height: 5000 })
+    scroll()
+    expect(activeCategoryId.value).toBe('c')
+    // The scroll event comes first, the observer's report after it (or the other way round: the end mutes it).
+    firstSectionAt(900)
+    setPage({ inner: 800, scrollY: 0, height: 5000 })
+    scroll()
+    expect(activeCategoryId.value).toBe('a')
+  })
+
+  it('does not fight a jump in flight', () => {
+    const { activeCategoryId, scrollToCategory } = mountSpy(['a', 'b', 'c'], { selectFirst: true })
+    scrollToCategory('c')
+    firstSectionAt(900)
+    leave('b')
+    expect(activeCategoryId.value).toBe('c')
+  })
+})
+
 describe('selectFirst', () => {
   it('marks the first category active before any scroll', () => {
     expect(mountSpy(['a', 'b'], { selectFirst: true }).activeCategoryId.value).toBe('a')
