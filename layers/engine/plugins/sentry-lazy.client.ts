@@ -14,8 +14,9 @@ import { isNuxtError } from '#app'
  * sent, so an early failure is reported (a little later), not lost. Without an error, the SDK starts at idle time
  * once the page has been loaded for LOAD_DELAY_MS, which keeps it out of the first-interaction window.
  *
- * `enforce: 'pre'`: this plugin runs before the engine's others (api, auth-sync, gqlFetch...), so an error thrown while
- * one of them sets up is kept too instead of vanishing before the `app:error` hook below exists.
+ * `order: -40`: this plugin runs before every other one, Nuxt's own included (the payload reviver is -30, head and router
+ * -20), so an error thrown while any of them sets up is kept too instead of vanishing before the hooks below exist. With
+ * `enforce: 'pre'` it ran fifth, and a failure in the router or payload plugins at startup was lost (TSB-CORE-C).
  *
  * Known trade-off: an error kept before the SDK is there is sent without breadcrumbs (the SDK records the console, fetch and
  * navigation from its own start) and without the Vue component context (its Vue integration is not installed either; the
@@ -34,7 +35,7 @@ interface Captured {
 
 export default defineNuxtPlugin({
   name: 'sentry-lazy',
-  enforce: 'pre',
+  order: -40,
   parallel: true,
   setup(nuxtApp) {
     const env = nuxtApp as unknown as SentryEnvironment

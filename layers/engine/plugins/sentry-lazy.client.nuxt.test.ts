@@ -86,9 +86,10 @@ const flush = () => vi.advanceTimersByTimeAsync(0)
 
 describe('registration', () => {
   it('is a parallel plugin that runs before the others, and does nothing at all without a DSN', () => {
-    const meta = plugin as unknown as { parallel: boolean; enforce: string }
+    const meta = plugin as unknown as { parallel: boolean; order: number }
     expect(meta.parallel).toBe(true)
-    expect(meta.enforce).toBe('pre')
+    // Before Nuxt's own plugins too (the payload reviver is -30): a startup failure in any of them must be kept.
+    expect(meta.order).toBeLessThan(-30)
     const hooks = setup('')
     expect(hooks).toEqual({})
     expect(whenReady.callbacks).toHaveLength(0)

@@ -24,7 +24,7 @@
 
       <div class="err-content">
         <span class="sr-only">
-          {{ $t('error.title' + statusCode, $t('error.titleGeneric')) }} — {{ statusCode }}
+          {{ t('error.title' + statusCode, t('error.titleGeneric')) }} — {{ statusCode }}
         </span>
 
         <h1 class="err-title">{{ errorTitle }}</h1>
@@ -39,7 +39,7 @@
               data-testid="error-retry"
               @click="retry"
             >
-              {{ $t('common.retry') }}
+              {{ t('common.retry') }}
             </button>
             <span class="err-sep" aria-hidden="true">&middot;</span>
           </template>
@@ -58,11 +58,11 @@
             >
               <path d="M19 12H5M11 18l-6-6 6-6" />
             </svg>
-            {{ $t('error.homeButton') }}
+            {{ t('error.homeButton') }}
           </button>
           <span class="err-sep" aria-hidden="true">&middot;</span>
           <button type="button" class="err-link" @click="goMenu">
-            {{ $t('error.menuButton') }}
+            {{ t('error.menuButton') }}
             <svg
               class="err-arrow err-arrow-next"
               aria-hidden="true"
@@ -85,78 +85,29 @@
 </template>
 
 <script setup lang="ts">
-import {
-  clearError,
-  computed,
-  ref,
-  reloadNuxtApp,
-  useHead,
-  useLocalePath,
-  useSeoMeta,
-} from '#imports'
+import { useSeoMeta } from '#imports'
 import type { NuxtError } from '#app'
-import { useI18n } from 'vue-i18n'
-import { useLocaleHead } from '#i18n'
+import { useErrorPage } from '#engine/composables/useErrorPage'
 
 const { error } = defineProps<{
   error: NuxtError
 }>()
 
-const { t } = useI18n()
-
-// The error page replaces the layout, which is what sets the document language (WCAG 3.1.1): same ISO code as the layout (zh-CN, fr-BE...).
-const localeHead = useLocaleHead()
-useHead({ htmlAttrs: { lang: computed(() => localeHead.value.htmlAttrs?.lang ?? 'fr') } })
-
-const statusCode = computed(() => error?.statusCode || 500)
-
-const errorTitle = computed(() => {
-  switch (error?.statusCode) {
-    case 404:
-      return t('error.title404')
-    case 403:
-      return t('error.title403')
-    case 500:
-      return t('error.title500')
-    default:
-      return t('error.titleGeneric')
-  }
-})
+// Texts, language, way back, retry and the Sentry report: shared with every brand, and safe when i18n failed to start.
+const {
+  t,
+  statusCode,
+  isServerError,
+  errorTitle,
+  errorMessage,
+  goHome,
+  goMenu,
+  recovering,
+  retry,
+} = useErrorPage(() => error)
 
 // The page replaces the layout, so it names itself (tab, history, share) and stays out of the index.
 useSeoMeta({ title: () => errorTitle.value, robots: 'noindex,nofollow' })
-
-const errorMessage = computed(() => {
-  switch (error?.statusCode) {
-    case 404:
-      return t('error.notFound')
-    case 403:
-      return t('error.forbidden')
-    case 500:
-      return t('error.serverError')
-    default:
-      return t('error.generic')
-  }
-})
-
-// Locale-prefixed targets: "/" and "/menu" would land on the default locale whatever language the visitor is reading.
-const localePath = useLocalePath()
-const goHome = () => clearError({ redirect: localePath('/') })
-const goMenu = () => clearError({ redirect: localePath('/menu') })
-
-const isServerError = computed(() => statusCode.value >= 500)
-
-// Clears the error, then reloads the current URL for real so the page that failed runs its data fetching again.
-const recovering = ref(false)
-const retry = async () => {
-  recovering.value = true
-  await clearError()
-  reloadNuxtApp({
-    path: `${window.location.pathname}${window.location.search}`,
-    force: true,
-    persistState: false,
-  })
-}
 </script>
 
 <style scoped>

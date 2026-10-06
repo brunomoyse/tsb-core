@@ -174,3 +174,56 @@ describe('in development', () => {
     expect(warn).not.toHaveBeenCalled()
   })
 })
+
+describe('reportPageError (the error the error page shows)', () => {
+  async function loadPage() {
+    await load()
+    return (await import('./reportError')).reportPageError
+  }
+  const pageHint = (statusCode: number | null) => ({
+    mechanism: { handled: false, type: 'auto.function.nuxt.error-page' },
+    captureContext: {
+      tags: { context: 'error-page' },
+      extra: { statusCode, url: globalThis.location?.href ?? null },
+    },
+  })
+
+  beforeEach(() => {
+    withDsn('https://dsn.test/1')
+  })
+
+  it('reports what was thrown, not the NuxtError wrapping it', async () => {
+    const reportPageError = await loadPage()
+    const original = new TypeError('Importing a module script failed.')
+    reportPageError(Object.assign(new Error('wrapper'), { statusCode: 500, cause: original }))
+    await vi.waitFor(() => {
+      expect(sentry.captureException).toHaveBeenCalledExactlyOnceWith(original, pageHint(500))
+    })
+  })
+
+  it('reports a dropped connection too, which reportError would skip: here it is the cause of a broken page', async () => {
+    const reportPageError = await loadPage()
+    const dropped = gqlError(GQL_NETWORK_ERROR)
+    reportPageError(dropped)
+    await vi.waitFor(() => {
+      expect(sentry.captureException).toHaveBeenCalledExactlyOnceWith(dropped, pageHint(null))
+    })
+  })
+
+  it.each([301, 403, 404])('leaves a %i out (a redirect or a visitor typo)', async (statusCode) => {
+    const reportPageError = await loadPage()
+    reportPageError(Object.assign(new Error('nope'), { statusCode }))
+    await vi.dynamicImportSettled()
+    expect(sentry.loaded).not.toHaveBeenCalled()
+  })
+
+  it('does nothing without a DSN, and never throws', async () => {
+    withDsn(undefined)
+    const reportPageError = await loadPage()
+    expect(() => {
+      reportPageError(serverFault())
+    }).not.toThrow()
+    await vi.dynamicImportSettled()
+    expect(sentry.loaded).not.toHaveBeenCalled()
+  })
+})
