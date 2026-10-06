@@ -8,6 +8,8 @@ import {
   type SentryEnvironment,
   type SentryModule,
   createBeforeSend,
+  extensionNoise,
+  extensionUrls,
   initSentry,
   oidcNoise,
 } from './sentryClient'
@@ -58,7 +60,8 @@ describe('initSentry', () => {
       tracesSampleRate: 0.1,
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 0,
-      ignoreErrors: oidcNoise,
+      ignoreErrors: [...oidcNoise, ...extensionNoise],
+      denyUrls: extensionUrls,
       dataCollection: {
         userInfo: false,
         cookies: false,
@@ -217,6 +220,33 @@ describe('oidcNoise', () => {
     expect(oidcNoise.some((pattern) => pattern.test('Cannot read properties of undefined'))).toBe(
       false,
     )
+  })
+})
+
+describe('extension noise', () => {
+  it.each([
+    'Invalid call to runtime.sendMessage(). Tab not found.',
+    'Extension context invalidated.',
+    'Could not establish connection. Receiving end does not exist.',
+  ])('matches "%s"', (message) => {
+    expect(extensionNoise.some((pattern) => pattern.test(message))).toBe(true)
+  })
+
+  it.each([
+    'safari-web-extension://4E2A/content.js',
+    'safari-extension://com.example.blocker/script.js',
+    'chrome-extension://abcdef/inject.js',
+    'moz-extension://1234/content.js',
+    'webkit-masked-url://hidden/',
+  ])('denies the script %s', (url) => {
+    expect(extensionUrls.some((pattern) => pattern.test(url))).toBe(true)
+  })
+
+  it('leaves the shop errors and scripts alone', () => {
+    expect(extensionNoise.some((pattern) => pattern.test('Failed to fetch'))).toBe(false)
+    expect(
+      extensionUrls.some((pattern) => pattern.test('https://tokyosushibarliege.be/_nuxt/a.js')),
+    ).toBe(false)
   })
 })
 

@@ -49,6 +49,24 @@ export const oidcNoise = [
   /User is not authenticated/iu,
 ]
 
+/*
+ * Errors of the visitor's browser extensions, which run in our page and end up in its unhandled-rejection handler. The shop
+ * never calls the WebExtension API (`runtime.sendMessage`...), so these are never ours and never actionable (TSB-CORE-D: a
+ * Safari extension on iOS, no stack trace).
+ */
+export const extensionNoise = [
+  /runtime\.sendMessage/u,
+  /Extension context invalidated/iu,
+  /Could not establish connection\. Receiving end does not exist/iu,
+]
+
+/** Scripts of browser extensions: an error whose stack points there came from an extension, not from the shop. */
+export const extensionUrls = [
+  /^safari-(?:web-)?extension:\/\//iu,
+  /^(?:chrome|moz)-extension:\/\//iu,
+  /^webkit-masked-url:\/\//iu,
+]
+
 type BeforeSend = (
   event: SentryNuxt.ErrorEvent,
   hint: SentryNuxt.EventHint,
@@ -113,7 +131,8 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
       stackFrameVariables: false,
     },
 
-    ignoreErrors: oidcNoise,
+    ignoreErrors: [...oidcNoise, ...extensionNoise],
+    denyUrls: extensionUrls,
     beforeSend: createBeforeSend(),
   })
 
