@@ -15,6 +15,9 @@ const fallbackBaseByVariant = (variant: ProductImageVariant): string =>
 const fallbackPngByVariant = (variant: ProductImageVariant): string =>
   variant === 'classic' ? PRODUCT_IMAGE_FALLBACK_CLASSIC : PRODUCT_IMAGE_FALLBACK_THUMBNAIL
 
+const hasText = (value: string | null | undefined): value is string =>
+  value !== undefined && value !== null && value !== ''
+
 export const productImageUrl = (
   s3BaseUrl?: string,
   id?: string | null,
@@ -23,7 +26,7 @@ export const productImageUrl = (
   const ext = typeof format === 'string' ? format : (format.ext ?? 'png')
   const variant = typeof format === 'string' ? 'thumbnail' : (format.variant ?? 'thumbnail')
 
-  if (!s3BaseUrl || !id) {
+  if (!hasText(s3BaseUrl) || !hasText(id)) {
     return `${fallbackBaseByVariant(variant)}.${ext}`
   }
 
@@ -35,7 +38,7 @@ export const productImageBase = (
   id?: string | null,
   variant: ProductImageVariant = 'thumbnail',
 ): string => {
-  if (!s3BaseUrl || !id) {
+  if (!hasText(s3BaseUrl) || !hasText(id)) {
     return fallbackBaseByVariant(variant)
   }
 
@@ -46,7 +49,7 @@ export const handleProductImageError = (
   event: Event,
   variant: ProductImageVariant = 'thumbnail',
 ): void => {
-  const img = event.target as HTMLImageElement | null
+  const img = event.target instanceof HTMLImageElement ? event.target : null
   applyProductImageFallback(img, variant)
 }
 

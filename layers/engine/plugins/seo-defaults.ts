@@ -19,8 +19,10 @@ export default defineNuxtPlugin(() => {
     ogImageWidth: OG_IMAGE_WIDTH,
     ogImageHeight: OG_IMAGE_HEIGHT,
     ogImageAlt: alt,
+    // oxlint-disable typescript/no-deprecated -- unhead's successors (ogImage...) do not render the twitter:* tags: these three keep the tags this page has always had.
     twitterCard: 'summary_large_image',
     twitterImage: image,
     twitterImageAlt: alt,
+    // oxlint-enable typescript/no-deprecated
   })
 })

@@ -151,12 +151,10 @@ function makeRefetch(
   policyUnsupported: Ref<boolean>,
 ): () => Promise<void> {
   // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
-  const { $gqlFetch } = useNuxtApp() as unknown as {
-    $gqlFetch: <T>(query: string) => Promise<T>
-  }
+  const { $gqlFetch } = useNuxtApp()
   let inFlight: Promise<void> | null = null
   const run = async () => {
-    let fresh: RestaurantConfigResponse
+    let fresh: RestaurantConfigResponse | null | undefined
     try {
       fresh = await $gqlFetch<RestaurantConfigResponse>(
         policyUnsupported.value ? RESTAURANT_CONFIG_QUERY_LEGACY : RESTAURANT_CONFIG_QUERY,
@@ -166,7 +164,14 @@ function makeRefetch(
       policyUnsupported.value = true
       fresh = await $gqlFetch<RestaurantConfigResponse>(RESTAURANT_CONFIG_QUERY_LEGACY)
     }
-    if (!fresh?.restaurantConfig) return
+    if (
+      fresh === null ||
+      fresh === undefined ||
+      fresh.restaurantConfig === null ||
+      fresh.restaurantConfig === undefined
+    ) {
+      return
+    }
     state.value = fresh
     // The hours or the slots may have changed in the gap: what the quote of the cart on screen says may too.
     requestQuoteRefresh()
@@ -187,7 +192,10 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
    * mounted. A page rendered for one visitor carries a config that is seconds old and does not.
    */
   const renderedForCache = useState<boolean>('restaurant-config-rendered-for-cache', () => false)
-  if (import.meta.server && useRequestEvent()?.node.req.headers[STATIC_PAGE_FILL_HEADER]) {
+  const fillHeader = import.meta.server
+    ? useRequestEvent()?.node.req.headers[STATIC_PAGE_FILL_HEADER]
+    : undefined
+  if (fillHeader !== undefined && fillHeader !== '') {
     renderedForCache.value = true
   }
   // Taken here, not after the await below: the Nuxt context is gone by then (the render would fail with NUXT_E1001).
@@ -230,15 +238,15 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
         isUnsupported: isPolicyUnsupportedError,
         unsupported: policyUnsupported,
       },
-      ...(options.lazy ? { lazy: true } : {}),
+      ...(options.lazy === true ? { lazy: true } : {}),
       ...(options.server === false ? { server: false } : {}),
     },
   )
   const { data, refresh, pending, error } = asyncData
   // A render for the cache without the config (the API failed): the cache must not replay it, see STATIC_PAGE_SKIP_HEADER.
-  if (skipCache && renderedForCache.value && error.value) skipCache.value = '1'
+  if (skipCache && renderedForCache.value && error.value !== undefined) skipCache.value = '1'
   answer.value = () => data.value
-  if (data.value) state.value = data.value
+  if (data.value !== undefined && data.value !== null) state.value = data.value
 
   return {
     config: state,

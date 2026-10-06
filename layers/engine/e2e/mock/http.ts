@@ -48,7 +48,9 @@ const sendJson = (res: ServerResponse, status: number, body: unknown) => {
 const readBody = (req: IncomingMessage): Promise<string> =>
   new Promise((resolve) => {
     let data = ''
-    req.on('data', (chunk: Buffer) => (data += chunk))
+    req.on('data', (chunk: Buffer) => {
+      data += chunk.toString()
+    })
     req.on('end', () => {
       resolve(data)
     })
@@ -84,7 +86,7 @@ export function createMockServer({ brand, port, appUrl }: MockServerOptions): Pr
     selfUrl,
   })
 
-  const server = createServer(async (req, res) => {
+  const handle = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     const url = new URL(req.url ?? '/', selfUrl)
     if (req.method === 'OPTIONS') {
       res.writeHead(204, CORS)
@@ -121,7 +123,10 @@ export function createMockServer({ brand, port, appUrl }: MockServerOptions): Pr
         return
       }
       const wait = delay + state.scenario.latencyMs
-      if (wait) await new Promise((resolve) => setTimeout(resolve, wait))
+      if (wait)
+        await new Promise((resolve) => {
+          setTimeout(resolve, wait)
+        })
       const result = await execute(operations, contextOf(req), {
         query: body.query,
         variables: (body.variables as Record<string, unknown> | undefined) ?? {},
@@ -131,6 +136,9 @@ export function createMockServer({ brand, port, appUrl }: MockServerOptions): Pr
     }
 
     sendJson(res, 404, { errors: [{ message: `mock: no route ${req.method} ${url.pathname}` }] })
+  }
+  const server = createServer((req, res) => {
+    void handle(req, res)
   })
 
   // Graphql-transport-ws
@@ -214,6 +222,7 @@ export function createMockServer({ brand, port, appUrl }: MockServerOptions): Pr
           unsubscribe.get(message.id ?? '')?.()
           unsubscribe.delete(message.id ?? '')
           break
+        case undefined:
         default:
           break
       }

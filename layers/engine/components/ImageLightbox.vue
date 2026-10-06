@@ -62,7 +62,7 @@ import { ref } from 'vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 
-const { src, alt } = defineProps<{
+const { src, alt = undefined } = defineProps<{
   src: string
   alt?: string
 }>()

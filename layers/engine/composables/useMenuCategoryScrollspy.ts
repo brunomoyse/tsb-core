@@ -67,8 +67,17 @@ export const useMenuCategoryScrollspy = (
        and the first one goes back to being selected, as before the first scroll. Only when a category is selected already: a
        strip that starts with none (no `selectFirst`) is not given one by a page that has not been read yet. */
   const selectFirstWhenAbove = () => {
-    const first = categoryIds.value[0]
-    if (!first || !activeCategoryId.value || activeCategoryId.value === first) return
+    const [first] = categoryIds.value
+    const active = activeCategoryId.value
+    if (
+      first === undefined ||
+      first === '' ||
+      active === null ||
+      active === '' ||
+      active === first
+    ) {
+      return
+    }
     if (inBand.size > 0) return
     const section = sectionEl(first)
     if (section && section.getBoundingClientRect().top > 0) activeCategoryId.value = first
@@ -88,7 +97,7 @@ export const useMenuCategoryScrollspy = (
         }
         if (Date.now() < suppressSpyUntil || atPageEnd) return
         const topmost = topmostInBand(categoryIds.value, inBand)
-        if (topmost) activeCategoryId.value = topmost
+        if (topmost !== null && topmost !== '') activeCategoryId.value = topmost
         else selectFirstWhenAbove()
       },
       {
@@ -128,10 +137,11 @@ export const useMenuCategoryScrollspy = (
       const settled = Date.now() >= suppressSpyUntil
       if (atEnd && !atPageEnd && settled) {
         const last = categoryIds.value.at(-1)
-        if (last && categoryIds.value.length > 1) activeCategoryId.value = last
+        if (last !== undefined && last !== '' && categoryIds.value.length > 1)
+          activeCategoryId.value = last
       } else if (!atEnd && atPageEnd && settled) {
         const topmost = topmostInBand(categoryIds.value, inBand)
-        if (topmost) activeCategoryId.value = topmost
+        if (topmost !== null && topmost !== '') activeCategoryId.value = topmost
         else selectFirstWhenAbove()
       }
       atPageEnd = atEnd
@@ -153,7 +163,9 @@ export const useMenuCategoryScrollspy = (
     watch(
       categoryIds,
       (ids) => {
-        if (!activeCategoryId.value && ids.length) activeCategoryId.value = ids[0]!
+        if ((activeCategoryId.value === null || activeCategoryId.value === '') && ids.length > 0) {
+          activeCategoryId.value = ids[0]!
+        }
       },
       { immediate: true },
     )
@@ -161,7 +173,7 @@ export const useMenuCategoryScrollspy = (
 
   // Keep the active chip visible in the horizontally scrollable row.
   watch(activeCategoryId, async (id) => {
-    if (!id) return
+    if (id === null || id === '') return
     await nextTick()
     const row = chipRowRef.value
     const chip = row?.querySelector<HTMLElement>(`[data-chip-category="${id}"]`)

@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from './support/test'
 import { openAccount, toast } from './support/account'
 
@@ -12,8 +13,7 @@ test.beforeEach(({ backend }) => {
   test.skip(!backend.isMock, 'needs the mock API')
 })
 
-const rows = (page: import('@playwright/test').Page) =>
-  page.locator('button[aria-controls^="order-panel-"]')
+const rows = (page: Page) => page.locator('button[aria-controls^="order-panel-"]')
 
 test.describe('/me/orders', () => {
   test('a customer with no order sees the empty state, not an error', async ({

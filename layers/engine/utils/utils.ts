@@ -9,7 +9,7 @@ export function formatAddress(address: Address | null): string {
   if (!address) return ''
   const { streetName, houseNumber, boxNumber, postcode, municipalityName } = address
   let formatted = `${streetName} ${houseNumber}`
-  if (boxNumber) {
+  if (boxNumber !== undefined && boxNumber !== null && boxNumber !== '') {
     formatted += ` / ${boxNumber}`
   }
   formatted += `\n${postcode} – ${municipalityName}`

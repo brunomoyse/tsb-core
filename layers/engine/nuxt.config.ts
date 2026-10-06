@@ -27,14 +27,20 @@ const REQUIRED_PUBLIC_ENV = [
   'ZITADEL_CLIENT_ID',
 ] as const
 
+// An empty variable counts as unset: it falls back like a missing one (CI passes unset repository variables as '').
+const envOr = (name: string, fallback: string): string => {
+  const value = process.env[name]
+  return value !== undefined && value !== '' ? value : fallback
+}
+
 // Derive origins for CSP from environment variables (the API falls back to a local one for development only).
-const apiOrigin = new URL(process.env.API_BASE_URL || 'http://localhost:8080/api/v1').origin
+const apiOrigin = new URL(envOr('API_BASE_URL', 'http://localhost:8080/api/v1')).origin
 const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
-const s3Url = process.env.S3_BUCKET_URL
+const s3Url = envOr('S3_BUCKET_URL', '')
 const s3Origin = s3Url ? new URL(s3Url).origin : ''
 const osm = 'https://www.openstreetmap.org'
-const umamiHost = process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev'
-const zitadelOrigin = process.env.ZITADEL_AUTHORITY || ''
+const umamiHost = envOr('UMAMI_HOST', 'https://analytics.nuagemagique.dev')
+const zitadelOrigin = envOr('ZITADEL_AUTHORITY', '')
 const turnstile = 'https://challenges.cloudflare.com'
 const sentryHost = 'https://*.ingest.de.sentry.io'
 
@@ -92,7 +98,7 @@ export default defineNuxtConfig({
       // `_prepare` is `nuxi prepare` / `typecheck` (and the postinstall): types only, nothing is built.
       // oxlint-disable-next-line no-underscore-dangle -- `_prepare` is Nuxt's own flag for `nuxi prepare` / `typecheck`.
       if (nuxt.options.dev || nuxt.options._prepare) return
-      const missing = REQUIRED_PUBLIC_ENV.filter((name) => !process.env[name]?.trim())
+      const missing = REQUIRED_PUBLIC_ENV.filter((name) => (process.env[name]?.trim() ?? '') === '')
       if (missing.length > 0) {
         throw new Error(
           `Missing required environment variable(s) for a production build: ${missing.join(', ')}. ` +
@@ -118,7 +124,7 @@ export default defineNuxtConfig({
      * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
      * own sentry.server.config.ts + org/project. The browser SDK is not set up by the module (no sentry.client.config.ts): plugins/sentry-lazy.client.ts loads it once the page is interactive.
      */
-    ...(process.env.SENTRY_DSN ? ['@sentry/nuxt/module'] : []),
+    ...(envOr('SENTRY_DSN', '') === '' ? [] : ['@sentry/nuxt/module']),
   ],
 
   // Pinia store auto-import. The stores live in THIS layer, so point the
@@ -189,17 +195,17 @@ export default defineNuxtConfig({
       api: process.env.API_BASE_URL,
       graphqlHttp: `${process.env.API_BASE_URL}/graphql`,
       graphqlWs: process.env.GRAPHQL_WS_URL,
-      umamiHost: process.env.UMAMI_HOST || 'https://analytics.nuagemagique.dev',
-      umamiWebsiteId: process.env.UMAMI_WEBSITE_ID || '',
+      umamiHost: envOr('UMAMI_HOST', 'https://analytics.nuagemagique.dev'),
+      umamiWebsiteId: envOr('UMAMI_WEBSITE_ID', ''),
       // Zitadel OIDC
-      zitadelAuthority: process.env.ZITADEL_AUTHORITY || '',
-      zitadelClientId: process.env.ZITADEL_CLIENT_ID || '',
-      zitadelNativeClientId: process.env.ZITADEL_NATIVE_CLIENT_ID || '',
-      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      zitadelAuthority: envOr('ZITADEL_AUTHORITY', ''),
+      zitadelClientId: envOr('ZITADEL_CLIENT_ID', ''),
+      zitadelNativeClientId: envOr('ZITADEL_NATIVE_CLIENT_ID', ''),
+      turnstileSiteKey: envOr('NUXT_PUBLIC_TURNSTILE_SITE_KEY', ''),
       // Sentry (DSN is safe to expose client-side by design)
-      sentryDsn: process.env.SENTRY_DSN || '',
-      sentryEnvironment: process.env.SENTRY_ENVIRONMENT || 'production',
-      sentryRelease: process.env.SENTRY_RELEASE || '',
+      sentryDsn: envOr('SENTRY_DSN', ''),
+      sentryEnvironment: envOr('SENTRY_ENVIRONMENT', 'production'),
+      sentryRelease: envOr('SENTRY_RELEASE', ''),
     },
   },
 

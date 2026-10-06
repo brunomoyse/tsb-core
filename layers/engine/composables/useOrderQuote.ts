@@ -79,8 +79,7 @@ export function useOrderQuote(options: UseOrderQuoteOptions = {}) {
   const authStore = useAuthStore()
   const quoteStore = useQuoteStore()
   const notifications = useNotificationsStore()
-  // The plugin's `provide` is untyped in this workspace (see the typecheck ratchet): type the one call we make.
-  const gqlFetch = (useNuxtApp() as unknown as { $gqlFetch: GqlFetch }).$gqlFetch
+  const gqlFetch: GqlFetch = useNuxtApp().$gqlFetch
   const { t } = useI18n()
   const { policy } = useOrderingPolicy()
 

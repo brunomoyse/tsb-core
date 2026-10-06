@@ -9,14 +9,14 @@ export interface NamedUser {
 }
 
 export const profileInitials = (user: NamedUser | null | undefined): string => {
-  const first = user?.firstName?.[0] || ''
-  const last = user?.lastName?.[0] || ''
+  const first = user?.firstName?.[0] ?? ''
+  const last = user?.lastName?.[0] ?? ''
   return (first + last).toUpperCase() || '?'
 }
 
 export const profileFullName = (user: NamedUser | null | undefined): string => {
-  const first = user?.firstName || ''
-  const last = user?.lastName || ''
+  const first = user?.firstName ?? ''
+  const last = user?.lastName ?? ''
   return `${first} ${last}`.trim() || '–'
 }
 
@@ -48,7 +48,7 @@ export function splitStoredPhone(
   stored: string | null | undefined,
   countries: readonly PhoneCountry[],
 ): SplitPhone {
-  if (!stored) return { phoneLocal: '' }
+  if (stored === null || stored === undefined || stored === '') return { phoneLocal: '' }
   const country = countries.find((candidate) => stored.startsWith(candidate.prefix))
   if (!country) return { phoneLocal: stored }
   return { phoneLocal: stored.substring(country.prefix.length), selectedCountry: country.code }

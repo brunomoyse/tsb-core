@@ -59,7 +59,7 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
 
   for (let i = 0; i < available && addedCount < count; i++) {
     const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-    if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+    if (await addBtn.isVisible().catch(() => false)) {
       await addBtn.click()
       await expect(page.locator(SEL.cartItem).nth(addedCount)).toBeVisible()
       addedCount++
@@ -79,7 +79,7 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
   if (await warning.isVisible()) {
     for (let i = 0; i < available; i++) {
       const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-      if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+      if (await addBtn.isVisible().catch(() => false)) {
         await addBtn.click()
         await expect(page.locator(SEL.cartItem).last()).toBeVisible()
       }
@@ -98,7 +98,7 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
  */
 export async function ensurePhoneNumber(page: Page) {
   const input = page.locator('#checkout-phone-capture input[type="tel"]')
-  if (!(await input.isVisible({ timeout: 2_000 }).catch(() => false))) return
+  if (!(await input.isVisible().catch(() => false))) return
   await input.fill('0470 12 34 56')
   await page.locator('#checkout-phone-capture [data-testid="checkout-phone-save"]').click()
   await expect(input).toBeHidden({ timeout: 10_000 })

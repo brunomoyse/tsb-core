@@ -22,6 +22,7 @@ describe('frenchPlural in vue-i18n', () => {
     en: { items: '{count} item | {count} items', cart: 'none | {count} | {count} items' },
   }
   const i18n = createI18n<{ message: Record<string, string> }, 'fr' | 'en', false>({
+    // oxlint-disable-next-line typescript/no-deprecated -- vue-i18n 11 still defaults to the legacy API; composition mode (the global `t`) needs this until v12
     legacy: false,
     locale: 'fr',
     messages,

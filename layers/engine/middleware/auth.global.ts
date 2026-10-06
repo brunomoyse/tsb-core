@@ -29,7 +29,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     throw err
   }
 
-  const locale = to.path.split('/')[1] || 'fr'
+  const [, firstSegment] = to.path.split('/')
+  const locale = firstSegment === undefined || firstSegment === '' ? 'fr' : firstSegment
 
   // Stash the original destination (incl. query) so processCallback can restore it after the OIDC round-trip.
   if (typeof sessionStorage !== 'undefined' && to.fullPath.startsWith('/')) {
@@ -39,7 +40,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // 3. Start OIDC flow (redirects to Zitadel Login V2 UI)
   try {
     await signIn({ ui_locales: locale })
-    return navigateTo(`/${locale}/auth/login`)
+    return await navigateTo(`/${locale}/auth/login`)
   } catch (err: unknown) {
     reportError(err, 'auth.signIn')
     return navigateTo(`/${locale}/auth/login`)

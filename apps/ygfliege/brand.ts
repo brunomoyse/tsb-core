@@ -7,7 +7,7 @@ import type { BrandConfig } from '#engine/types/brand'
 // Contact details, address, coordinates and socials are taken from the existing
 // Ygfliege.be site (../../../malatang), which this app replaces at cutover.
 //
-// TODO(user): `vat` and `administrators` are deliberately absent — the legal
+// Open item (needs the owner): `vat` and `administrators` are deliberately absent: the legal
 // Pages on the old site were never written ("bientôt disponible"), so no real
 // Company number or list of representatives exists yet. Add them here once
 // Registered and the legal pages will render them automatically. Do not fill in

@@ -26,7 +26,9 @@ for (const width of WIDTHS)
     await page.setViewportSize({ width, height: 800 })
     await page.route('**/images/thumbnails/**', async (route) => {
       const response = await route.fetch()
-      await new Promise((resolve) => setTimeout(resolve, IMAGE_DELAY_MS))
+      await new Promise((resolve) => {
+        setTimeout(resolve, IMAGE_DELAY_MS)
+      })
       await route.fulfill({ response })
     })
     await trackLayoutShifts(page)
@@ -50,7 +52,9 @@ for (const width of WIDTHS)
     await page.evaluate(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += window.innerHeight * 0.7) {
         window.scrollTo(0, y)
-        await new Promise((resolve) => setTimeout(resolve, 150))
+        await new Promise((resolve) => {
+          setTimeout(resolve, 150)
+        })
       }
     })
     await expect

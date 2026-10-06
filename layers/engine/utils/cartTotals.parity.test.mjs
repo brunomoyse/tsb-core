@@ -48,19 +48,19 @@ const fromString = (str) => {
 }
 const align = (a, b) => {
   const exp = Math.min(a.exp, b.exp)
-  return [a.coef * pow10(a.exp - exp), b.coef * pow10(b.exp - exp), exp]
+  return { x: a.coef * pow10(a.exp - exp), y: b.coef * pow10(b.exp - exp), exp }
 }
 const add = (a, b) => {
-  const [x, y, exp] = align(a, b)
+  const { x, y, exp } = align(a, b)
   return dec(x + y, exp)
 }
 const sub = (a, b) => {
-  const [x, y, exp] = align(a, b)
+  const { x, y, exp } = align(a, b)
   return dec(x - y, exp)
 }
 const mul = (a, b) => dec(a.coef * b.coef, a.exp + b.exp)
 const cmp = (a, b) => {
-  const [x, y] = align(a, b)
+  const { x, y } = align(a, b)
   return x < y ? -1 : x > y ? 1 : 0
 }
 const roundHalfAwayDiv = (num, den) => {

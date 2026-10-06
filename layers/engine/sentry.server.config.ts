@@ -1,10 +1,14 @@
 import * as Sentry from '@sentry/nuxt'
 
 const dsn = process.env.SENTRY_DSN
-const env = process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production'
+// An empty variable counts as unset.
+const nonEmpty = (value: string | undefined): string | undefined =>
+  value !== undefined && value !== '' ? value : undefined
+const env =
+  nonEmpty(process.env.SENTRY_ENVIRONMENT) ?? nonEmpty(process.env.NODE_ENV) ?? 'production'
 const release = process.env.SENTRY_RELEASE
 
-if (dsn) {
+if (nonEmpty(dsn) !== undefined) {
   Sentry.init({
     dsn,
     environment: env,

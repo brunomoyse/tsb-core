@@ -13,7 +13,7 @@
 export type Messages = Record<string, unknown>
 
 const isPlainObject = (value: unknown): value is Messages =>
-  Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+  value !== null && typeof value === 'object' && !Array.isArray(value)
 
 /** Deep-merge brand overrides onto the base messages (the brand wins on leaf keys). */
 export function deepMerge(base: Messages, override: Messages): Messages {
@@ -26,6 +26,8 @@ export function deepMerge(base: Messages, override: Messages): Messages {
 }
 
 /** Replace the `__BRAND__` and `__PHONE__` tokens in every string of the tree. */
+export function applyBrand(node: Messages, brandName: string, phone: string): Messages
+export function applyBrand(node: unknown, brandName: string, phone: string): unknown
 export function applyBrand(node: unknown, brandName: string, phone: string): unknown {
   if (typeof node === 'string')
     return node.replaceAll('__BRAND__', brandName).replaceAll('__PHONE__', phone)
@@ -42,5 +44,5 @@ export function applyBrand(node: unknown, brandName: string, phone: string): unk
 export function buildLocaleMessages(base: Messages, brand: Messages, phone: string): Messages {
   const merged = deepMerge(base, brand)
   const brandName = typeof merged.brandName === 'string' ? merged.brandName : ''
-  return applyBrand(merged, brandName, phone) as Messages
+  return applyBrand(merged, brandName, phone)
 }

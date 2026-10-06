@@ -25,6 +25,8 @@ export function outcomeFromPaymentStatus(status: string | null | undefined): Pay
     case 'expired':
       return 'expired'
     // `open` / `pending` / unknown → not finalised yet.
+    case undefined:
+    case null:
     default:
       return 'abandoned'
   }

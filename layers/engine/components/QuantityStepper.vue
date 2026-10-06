@@ -53,6 +53,9 @@ const {
   incDisabled = false,
   bounce = false,
   name = undefined,
+  decTestid = undefined,
+  incTestid = undefined,
+  valueTestid = undefined,
 } = defineProps<{
   value: number
   /** What the stepper changes ("Increase quantity of {name}"): without it every stepper on a page is announced the same. */

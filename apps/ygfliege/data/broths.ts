@@ -55,7 +55,7 @@ export const brothPhotoSlugs = (
   const out: Record<string, string> = {}
   for (const choice of choices) {
     const slug = brothSlugForName(choice.name)
-    if (!slug || bySlug.has(slug)) return null
+    if (slug === undefined || slug === '' || bySlug.has(slug)) return null
     bySlug.add(slug)
     out[choice.id] = slug
   }

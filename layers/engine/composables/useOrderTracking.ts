@@ -85,7 +85,8 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
     const live = liveOrderData.value[order.id]
     if (!live) return order
     if (
-      live.updatedAt &&
+      live.updatedAt !== undefined &&
+      live.updatedAt !== '' &&
       order.updatedAt &&
       Date.parse(live.updatedAt) < Date.parse(order.updatedAt)
     )
@@ -165,7 +166,7 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
       for (const id of Array.from(subscriptions.keys())) {
         if (!wanted.has(id)) unsubscribeFromOrder(id)
       }
-      if (options.autoExpandActive) {
+      if (options.autoExpandActive === true) {
         for (const id of ids) {
           if (autoExpanded.has(id)) continue
           autoExpanded.add(id)
@@ -205,7 +206,7 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
   watch(
     [trackedOrders, followOrderId],
     async ([list, id]) => {
-      if (!list || !id || followHandled === id) return
+      if (!list || id === null || followHandled === id) return
       const index = list.findIndex((o) => o.id === id)
       if (index === -1) return // Not loaded (yet): the watcher re-runs when the list changes
       followHandled = id
@@ -249,7 +250,7 @@ export function useOrderTracking(options: UseOrderTrackingOptions) {
       CANCELLED: t('me.orders.status.cancelled'),
       FAILED: t('me.orders.status.failed'),
     }
-    return map[status] || ''
+    return map[status] ?? ''
   }
 
   return {

@@ -25,7 +25,7 @@ const isMobile = (testInfo: { project: { use: { isMobile?: boolean } } }) =>
  * the delivery-only rules (minimum order, delivery fee) never apply. Gate on that capability
  * rather than on the brand name, so a brand that turns delivery on gets the tests back.
  */
-async function deliveryAvailable(page: Page) {
+function deliveryAvailable(page: Page): Promise<boolean> {
   return page
     .locator(SEL.cartOptionDelivery)
     .isEnabled({ timeout: 2_000 })
@@ -38,7 +38,7 @@ async function addFirstAvailableProduct(page: Page) {
   const count = await simpleCards.count()
   for (let i = 0; i < count; i++) {
     const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-    if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+    if (await addBtn.isVisible().catch(() => false)) {
       await addBtn.click()
       return true
     }
@@ -79,7 +79,7 @@ test.describe('Cart operations', () => {
     let addedCount = 0
     for (let i = 0; i < count && addedCount < 3; i++) {
       const addBtn = simpleCards.nth(i).locator(`${SEL.productAddToCart}:not([disabled])`)
-      if (await addBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+      if (await addBtn.isVisible().catch(() => false)) {
         await addBtn.click()
         await expect(page.locator(SEL.cartItem).nth(addedCount)).toBeVisible()
         addedCount++

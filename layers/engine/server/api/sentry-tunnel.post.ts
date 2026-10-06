@@ -21,12 +21,19 @@ export default defineEventHandler(async (event) => {
 
   let header: { dsn?: string }
   try {
-    header = JSON.parse(text.slice(0, newlineIdx))
+    const parsed: unknown = JSON.parse(text.slice(0, newlineIdx))
+    header =
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'dsn' in parsed &&
+      typeof parsed.dsn === 'string'
+        ? { dsn: parsed.dsn }
+        : {}
   } catch {
     throw createError({ statusCode: 400, statusMessage: 'Invalid envelope header' })
   }
 
-  if (!header.dsn) {
+  if (header.dsn === undefined || header.dsn === '') {
     throw createError({ statusCode: 400, statusMessage: 'Missing DSN' })
   }
 

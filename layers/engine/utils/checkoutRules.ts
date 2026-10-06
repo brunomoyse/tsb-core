@@ -65,6 +65,10 @@ export interface CheckoutBlock {
 
 /** The first reason the order cannot go out, or null. The order of the checks is the order of the rules. */
 export function checkoutPreflight(input: CheckoutPreflightInput): CheckoutBlock | null {
+  const hasReadyTime =
+    input.preferredReadyTime !== undefined &&
+    input.preferredReadyTime !== null &&
+    input.preferredReadyTime !== ''
   if (!input.orderingAvailable) {
     return { messageKey: 'notify.errors.orderingUnavailable', variant: 'error', duration: 5000 }
   }
@@ -76,7 +80,7 @@ export function checkoutPreflight(input: CheckoutPreflightInput): CheckoutBlock 
       duration: 3000,
     }
   }
-  if (!input.openNow && !input.preferredReadyTime) {
+  if (!input.openNow && !hasReadyTime) {
     return {
       messageKey: 'notify.errors.fixedTimeRequiredWhileClosed',
       variant: 'error',
@@ -84,7 +88,7 @@ export function checkoutPreflight(input: CheckoutPreflightInput): CheckoutBlock 
     }
   }
   // Lunch-only products require a slot in the weekday lunch window.
-  if (input.cartHasLunchOnly && !(input.preferredReadyTime && input.slotAllowsLunchOnly)) {
+  if (input.cartHasLunchOnly && !(hasReadyTime && input.slotAllowsLunchOnly === true)) {
     return {
       messageKey: 'notify.errors.lunchOnlyRequiresLunchSlot',
       variant: 'error',

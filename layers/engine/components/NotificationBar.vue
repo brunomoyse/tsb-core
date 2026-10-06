@@ -101,7 +101,7 @@ const {
   duration = 4500,
   cookieConsent = false,
   variant = 'neutral',
-  action,
+  action = undefined,
 } = defineProps<{
   message: string
   persistent?: boolean

@@ -2,6 +2,7 @@
 // low priority) and only the language file and the prefetch hints wait for the first frame; in full mode the module scripts
 // leave the head too and a loader starts them. Pure string work on what Nuxt hands to the `render:html` hook.
 // Run: `vp test run layers/engine/utils/deferHydration.test.ts`.
+import { compileFunction } from 'node:vm'
 import { FALLBACK_MS, type HtmlParts, deferModuleGraph } from './deferHydration'
 import { describe, expect, it } from 'vite-plus/test'
 
@@ -64,7 +65,7 @@ function runLoader(html: HtmlParts, browser: { hidden: boolean }) {
       })
     },
   }
-  new Function('document', 'requestAnimationFrame', 'setTimeout', loader)(
+  compileFunction(loader, ['document', 'requestAnimationFrame', 'setTimeout'])(
     document,
     (fn: () => void) => frames.push(fn),
     (fn: () => void, ms: number) => timers.push({ fn, ms }),

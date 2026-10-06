@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from './support/test'
 import { holdHydration } from './support/hydration'
 import { openLogin } from './support/login'
@@ -13,7 +14,7 @@ test.beforeEach(({ backend }) => {
   test.skip(!backend.isMock, 'needs the mock')
 })
 
-const hydrated = (page: import('@playwright/test').Page) =>
+const hydrated = (page: Page) =>
   page.waitForFunction(() => '__vue_app__' in document.getElementById('__nuxt')!, undefined, {
     timeout: 15_000,
   })

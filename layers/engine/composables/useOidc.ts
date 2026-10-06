@@ -48,6 +48,20 @@ const isTransient = (err: unknown): boolean => {
   return err.name === 'ErrorTimeout' || TRANSIENT_HTTP_STATUS.test(err.message)
 }
 
+/*
+ * `createSigninRequest` lives on the UserManager's private `_client` (oidc-client-ts exposes no public way to build the
+ * authorize URL without navigating), so it is reached through a runtime-checked shape instead of a cast.
+ */
+interface SigninRequestClient {
+  createSigninRequest: (args: { redirect_uri: string }) => Promise<{ url: string }>
+}
+const isSigninClient = (client: unknown): client is SigninRequestClient =>
+  client instanceof Object && typeof Reflect.get(client, 'createSigninRequest') === 'function'
+const signinClientOf = (mgr: object): SigninRequestClient | null => {
+  const client: unknown = Reflect.get(mgr, '_client')
+  return isSigninClient(client) ? client : null
+}
+
 const isInvalidGrant = (err: unknown): boolean =>
   err instanceof ErrorResponse && err.error === 'invalid_grant'
 
@@ -77,7 +91,10 @@ export function useOidc() {
   function callbackUrl(): string {
     // Only a language the app serves has a registered callback: a page outside i18n ("/_nuxt/...", "/x") gets French.
     const first = typeof window === 'undefined' ? '' : window.location.pathname.split('/')[1]
-    const locale = first && supportedLocales.includes(first) ? first : DEFAULT_LOCALE
+    const locale =
+      first !== undefined && first !== '' && supportedLocales.includes(first)
+        ? first
+        : DEFAULT_LOCALE
     return `${baseUrl}/${locale}/auth/callback`
   }
 
@@ -150,8 +167,8 @@ export function useOidc() {
    */
   async function getAuthRequestId(): Promise<string> {
     const mgr = getUserManager()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const client = (mgr as any)._client
+    const client = signinClientOf(mgr)
+    if (client === null) throw new Error('oidc-client-ts internals changed: no _client')
     const signinRequest = await client.createSigninRequest({ redirect_uri: callbackUrl() })
 
     const apiUrl = config.public.api as string
@@ -178,7 +195,7 @@ export function useOidc() {
   async function getAccessToken(): Promise<string | null> {
     const mgr = getUserManager()
     const user = await mgr.getUser()
-    if (user && !user.expired) return user.access_token
+    if (user && user.expired !== true) return user.access_token
     if (!user) return null // No session — nothing to renew
 
     /*
@@ -220,7 +237,8 @@ export function useOidc() {
     const existing = await mgr.getUser()
     if (!existing) return null // No session to renew
     // Without a refresh token oidc-client-ts would try a hidden iframe, which this app does not configure: no way back.
-    if (!existing.refresh_token) return endSession(mgr)
+    if (existing.refresh_token === undefined || existing.refresh_token === '')
+      return endSession(mgr)
     if (Date.now() < renewBlockedUntil) {
       throw new SilentRenewUnavailableError({ cause: renewBlockedBy })
     }
@@ -257,7 +275,12 @@ export function useOidc() {
   ): Promise<OidcUser | null> {
     try {
       const current = await mgr.getUser()
-      return current?.refresh_token && current.refresh_token !== used ? current : null
+      return current !== null &&
+        current.refresh_token !== undefined &&
+        current.refresh_token !== '' &&
+        current.refresh_token !== used
+        ? current
+        : null
     } catch {
       return null
     }
@@ -299,7 +322,7 @@ export function useOidc() {
   async function isAuthenticated(): Promise<boolean> {
     const mgr = getUserManager()
     const user = await mgr.getUser()
-    return user !== null && !user.expired
+    return user !== null && user.expired !== true
   }
 
   /** Get the current OIDC user (from cache). */

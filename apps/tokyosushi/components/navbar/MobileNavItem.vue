@@ -15,7 +15,11 @@
 <script lang="ts" setup>
 import NavIcon from './NavIcon.vue'
 
-const { to, icon, label } = defineProps<{
+const {
+  to = undefined,
+  icon = undefined,
+  label = undefined,
+} = defineProps<{
   to?: string
   icon?: string
   label?: string

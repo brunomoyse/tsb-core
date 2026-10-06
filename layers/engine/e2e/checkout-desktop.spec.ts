@@ -24,7 +24,7 @@ import { expect, test } from './support/test'
  */
 
 test.skip(({ mock }) => !mock, 'needs the mock tsb-service (catalog, fake Mollie, created orders)')
-test.skip(({ isMobile }) => Boolean(isMobile), 'desktop layout')
+test.skip(({ isMobile }) => isMobile, 'desktop layout')
 
 const PHONE = '+32470123456'
 const GYOZA = /Gyoza/u

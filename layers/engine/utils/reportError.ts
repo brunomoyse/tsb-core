@@ -14,6 +14,20 @@ import { type SentryEnvironment, startSentry } from './sentryClient.ts'
  *
  * Fire and forget: it never throws and never blocks the caller.
  */
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+/** The Nuxt app when this shop reports to Sentry (a DSN is configured), undefined outside a Nuxt context or without one. */
+function sentryEnvironment(): SentryEnvironment | undefined {
+  try {
+    const nuxtApp: SentryEnvironment | undefined = tryUseNuxtApp() ?? undefined
+    const dsn = nuxtApp?.$config?.public?.sentryDsn
+    return dsn === undefined || dsn === '' ? undefined : nuxtApp
+  } catch {
+    return undefined
+  }
+}
+
 export function reportError(
   error: unknown,
   context: string,
@@ -22,13 +36,8 @@ export function reportError(
   if (import.meta.dev) console.warn(`[${context}]`, error)
   if (!isReportableError(error)) return
 
-  let nuxtApp: SentryEnvironment | undefined
-  try {
-    nuxtApp = tryUseNuxtApp() as unknown as SentryEnvironment | undefined
-    if (!nuxtApp?.$config?.public?.sentryDsn) return
-  } catch {
-    return
-  }
+  const nuxtApp = sentryEnvironment()
+  if (nuxtApp === undefined) return
 
   // Starts the SDK when it is not there yet (it is loaded after the page is interactive, see utils/sentryClient.ts).
   void startSentry(nuxtApp)
@@ -46,20 +55,16 @@ export function reportError(
  * a typo) stay out, like in the buffering plugin. Sentry's dedupe drops it when the plugin already sent the same error.
  */
 export function reportPageError(error: unknown): void {
-  const status = (error as { statusCode?: number; status?: number } | null)?.statusCode
-  if (status && status >= 300 && status < 500) return
+  const status =
+    isRecord(error) && typeof error.statusCode === 'number' ? error.statusCode : undefined
+  if (status !== undefined && status >= 300 && status < 500) return
   if (import.meta.dev) console.warn('[error-page]', error)
 
-  let nuxtApp: SentryEnvironment | undefined
-  try {
-    nuxtApp = tryUseNuxtApp() as unknown as SentryEnvironment | undefined
-    if (!nuxtApp?.$config?.public?.sentryDsn) return
-  } catch {
-    return
-  }
+  const nuxtApp = sentryEnvironment()
+  if (nuxtApp === undefined) return
 
   // A NuxtError wraps what was thrown: report the original (its stack points at the failing code), keep the page URL.
-  const cause = (error as { cause?: unknown } | null)?.cause
+  const cause = isRecord(error) ? error.cause : undefined
   void startSentry(nuxtApp)
     .then((Sentry) => {
       Sentry.captureException(cause instanceof Error ? cause : error, {

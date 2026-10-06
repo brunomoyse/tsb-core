@@ -82,7 +82,7 @@ export function useFocusTrap(
   const handleEscape = (e: KeyboardEvent) => {
     if (e.key !== 'Escape' || !isTopmost()) return
     // Escape inside a companion (the toast) belongs to that companion.
-    const target = e.target as Node | null
+    const target = e.target instanceof Node ? e.target : null
     if (target && (options.companions?.() ?? []).some((el) => el.contains(target))) return
     e.preventDefault()
     e.stopImmediatePropagation()
@@ -92,7 +92,8 @@ export function useFocusTrap(
   const activate = () => {
     if (active) return
     active = true
-    previouslyFocused = document.activeElement as HTMLElement | null
+    previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
     activeTraps.push(id)
     document.addEventListener('keydown', handleKeydown)
     if (options.onEscape) window.addEventListener('keydown', handleEscape, true)
@@ -110,9 +111,9 @@ export function useFocusTrap(
     window.removeEventListener('keydown', handleEscape, true)
 
     const requested = options.returnFocus?.()
-    const target = requested === undefined || requested === null ? previouslyFocused : requested
+    const target = requested ?? previouslyFocused
     previouslyFocused = null
-    if (target && target.isConnected) target.focus()
+    if (target !== null && target !== false && target.isConnected) target.focus()
   }
 
   // Post flush: the container (or the attributes that make it reachable, such as `inert`) is in the DOM by the time we look for something to focus.

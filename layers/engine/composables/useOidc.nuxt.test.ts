@@ -272,6 +272,17 @@ describe('getAuthRequestId (inline login at checkout)', () => {
     )
   })
 
+  it.each([undefined, {}])(
+    'fails clearly when the manager has no signin client (%j)',
+    async (client) => {
+      const { oidc, manager } = await load()
+      await oidc.signIn()
+      Object.assign(manager(), { _client: client })
+      await expect(oidc.getAuthRequestId()).rejects.toThrow('oidc-client-ts internals changed')
+      expect($fetchMock).not.toHaveBeenCalled()
+    },
+  )
+
   it('lets a proxy failure reach the caller', async () => {
     const { oidc, manager } = await load()
     await oidc.signIn()

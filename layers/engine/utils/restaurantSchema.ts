@@ -30,7 +30,14 @@ const DAYS: [string, string][] = [
 const HHMM = /^(?<hour>[01]?\d|2[0-3]):[0-5]\d$/u
 const pad = (hhmm: string): string => (hhmm.length === 4 ? `0${hhmm}` : hhmm)
 const validRange = (open?: string, close?: string): [string, string] | null =>
-  open && close && HHMM.test(open) && HHMM.test(close) ? [pad(open), pad(close)] : null
+  open !== undefined &&
+  open !== '' &&
+  close !== undefined &&
+  close !== '' &&
+  HHMM.test(open) &&
+  HHMM.test(close)
+    ? [pad(open), pad(close)]
+    : null
 
 /**
  * OpeningHoursSpecification entries from a monday..sunday map: one entry per distinct opening range, listing every

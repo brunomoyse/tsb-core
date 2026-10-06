@@ -52,30 +52,35 @@ export function useErrorPage(error: () => NuxtError | undefined) {
   }
   useHead({ htmlAttrs: { lang: computed(htmlLang) } })
 
-  const statusCode = computed(() => error()?.statusCode || 500)
+  const statusCode = computed(() => {
+    const status = error()?.status
+    return status !== undefined && status !== 0 ? status : 500
+  })
   const isServerError = computed(() => statusCode.value >= 500)
 
   const errorTitle = computed(() => {
-    switch (error()?.statusCode) {
+    switch (error()?.status) {
       case 404:
         return t('error.title404')
       case 403:
         return t('error.title403')
       case 500:
         return t('error.title500')
+      case undefined:
       default:
         return t('error.titleGeneric')
     }
   })
 
   const errorMessage = computed(() => {
-    switch (error()?.statusCode) {
+    switch (error()?.status) {
       case 404:
         return t('error.notFound')
       case 403:
         return t('error.forbidden')
       case 500:
         return t('error.serverError')
+      case undefined:
       default:
         return t('error.generic')
     }

@@ -7,7 +7,7 @@ const HOMEPAGE_PATH = /^\/(?:(?:fr|en|zh|nl)\/?)?$/u
 
 export default defineEventHandler((event) => {
   const [pathname] = (event.path || '').split('?')
-  if (pathname && HOMEPAGE_PATH.test(pathname)) {
+  if (pathname !== undefined && pathname !== '' && HOMEPAGE_PATH.test(pathname)) {
     appendResponseHeader(event, 'Link', HERO_LINK)
   }
 })

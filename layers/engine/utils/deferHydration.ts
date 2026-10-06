@@ -41,8 +41,8 @@ export interface HtmlParts {
 
 const PARTS = ['head', 'bodyPrepend', 'body', 'bodyAppend'] as const
 const MODULE_PRELOAD = /<link\b[^>]*\brel="modulepreload"[^>]*>/gu
-const MODULE_ENTRY = /<script\b[^>]*\btype="module"[^>]*\bsrc="([^"]+)"[^>]*>\s*<\/script>/gu
-const HREF = /\bhref="([^"]+)"/u
+const MODULE_ENTRY = /<script\b[^>]*\btype="module"[^>]*\bsrc="(?<src>[^"]+)"[^>]*>\s*<\/script>/gu
+const HREF = /\bhref="(?<href>[^"]+)"/u
 const FETCH_PRELOAD = /<link\b[^>]*\brel="preload"[^>]*\bas="fetch"[^>]*>/gu
 const PREFETCH = /<link\b[^>]*\brel="prefetch"[^>]*>/gu
 const FETCH_PRIORITY = /\bfetchpriority=/u
@@ -102,16 +102,16 @@ export function deferModuleGraph(html: HtmlParts, { full = false }: DeferOptions
     if (full) {
       result = result
         .replace(MODULE_PRELOAD, (tag) => {
-          const href = HREF.exec(tag)?.[1]
-          if (href) deferred.preloads.push(href)
+          const href = HREF.exec(tag)?.groups?.href
+          if (href !== undefined && href !== '') deferred.preloads.push(href)
           return ''
         })
         .replace(MODULE_ENTRY, '')
     } else {
       // The entry's own preload keeps the default priority, the others yield to the stylesheet, fonts and images.
       result = result.replace(MODULE_PRELOAD, (tag) => {
-        const href = HREF.exec(tag)?.[1]
-        return href && entries.includes(href) ? tag : lowPriority(tag)
+        const href = HREF.exec(tag)?.groups?.href
+        return href !== undefined && href !== '' && entries.includes(href) ? tag : lowPriority(tag)
       })
     }
     return result

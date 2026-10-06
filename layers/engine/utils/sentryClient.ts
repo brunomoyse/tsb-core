@@ -15,16 +15,26 @@ import { isChunkLoadError } from './chunkError.ts'
 
 export type SentryModule = typeof SentrySdk
 
+/** What `namePageload` reads of the Vue router. */
+interface CurrentRoute {
+  currentRoute: { value: { path: string; matched: readonly { path: string }[] } }
+}
+
+/** The router the SDK's navigation tracing and `namePageload` both work with. */
+type TracedRouter = NonNullable<
+  NonNullable<Parameters<typeof SentrySdk.browserTracingIntegration>[0]>['router']
+> &
+  CurrentRoute
+
+/** `SentryEnvironment.$router` is `unknown` so the plugin's `nuxtApp` and hand-built environments both fit; at runtime it is the Vue router. */
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- duck-typed: the SDK and `namePageload` only call what a Vue router has
+const asTracedRouter = (router: unknown): TracedRouter => router as TracedRouter
+
 export interface SentryEnvironment {
   /** Public runtime config: DSN, environment and release. */
   $config: { public: { sentryDsn?: string; sentryEnvironment?: string; sentryRelease?: string } }
   /** The Vue router, for the navigation transactions. */
   $router?: unknown
-}
-
-/** What `namePageload` reads of the Vue router. */
-interface CurrentRoute {
-  currentRoute: { value: { path: string; matched: readonly { path: string }[] } }
 }
 
 /*
@@ -107,8 +117,11 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
   const { sentryDsn, sentryEnvironment, sentryRelease } = env.$config.public
   Sentry.init({
     dsn: sentryDsn,
-    environment: sentryEnvironment || 'production',
-    release: sentryRelease || undefined,
+    environment:
+      sentryEnvironment !== undefined && sentryEnvironment !== ''
+        ? sentryEnvironment
+        : 'production',
+    release: sentryRelease === '' ? undefined : sentryRelease,
 
     // Route envelopes through our own origin to bypass ad-blockers and privacy extensions that block *.ingest.sentry.io.
     tunnel: '/api/sentry-tunnel',
@@ -136,16 +149,14 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
     beforeSend: createBeforeSend(),
   })
 
-  if (env.$router) {
+  if (env.$router !== undefined && env.$router !== null) {
     Sentry.getClient()?.addIntegration(
       Sentry.browserTracingIntegration({
-        router: env.$router as NonNullable<
-          Parameters<typeof Sentry.browserTracingIntegration>[0]
-        >['router'],
+        router: asTracedRouter(env.$router),
         routeLabel: 'path',
       }),
     )
-    namePageload(Sentry, env.$router as CurrentRoute)
+    namePageload(Sentry, asTracedRouter(env.$router))
   }
 }
 

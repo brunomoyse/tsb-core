@@ -21,6 +21,10 @@ interface GqlResponse {
   errors?: GqlErrorEntry[]
 }
 
+/** An HTTP failure carrying a 401 status (ofetch's FetchError). */
+const isUnauthorized = (err: unknown): boolean =>
+  typeof err === 'object' && err !== null && 'status' in err && err.status === 401
+
 export default defineNuxtPlugin((nuxtApp) => {
   const cfg = useRuntimeConfig()
   const httpURL = cfg.public.graphqlHttp
@@ -53,12 +57,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     try {
       res = await doFetch(body, signal)
     } catch (err: unknown) {
-      if (
-        err &&
-        typeof err === 'object' &&
-        'status' in err &&
-        (err as { status: number }).status === 401
-      ) {
+      if (isUnauthorized(err)) {
         const ok = await attemptRefresh()
         if (!ok) throw failure(err)
         try {
@@ -72,25 +71,21 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
 
     // 2) Handle GraphQL-level errors
-    if (res.errors?.length) {
+    if (res.errors !== undefined && res.errors.length > 0) {
       const unauth = res.errors.find((e) => e.extensions?.code === 'UNAUTHENTICATED')
-      if (unauth) {
-        const ok = await attemptRefresh()
-        if (ok) {
-          try {
-            res = await doFetch(body, signal)
-          } catch (retryErr: unknown) {
-            throw failure(retryErr)
-          }
-          if (res.errors?.length) {
-            throw new GqlError(res.errors, { operationName })
-          }
-          return res.data as T
-        }
+      const refreshed = unauth !== undefined && (await attemptRefresh())
+      if (!refreshed) throw new GqlError(res.errors, { operationName })
+      try {
+        res = await doFetch(body, signal)
+      } catch (retryErr: unknown) {
+        throw failure(retryErr)
       }
-      throw new GqlError(res.errors, { operationName })
+      if (res.errors !== undefined && res.errors.length > 0) {
+        throw new GqlError(res.errors, { operationName })
+      }
     }
 
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the caller declares the document's result type; the transport cannot check it
     return res.data as T
   }
 
@@ -99,8 +94,14 @@ export default defineNuxtPlugin((nuxtApp) => {
    * (a first visit or a crawler on /en/menu has no i18n_redirected cookie yet, and the cookie of an earlier visit may
    * name another language), on the client it follows a locale switch immediately. The cookie is only a fallback.
    */
-  const currentLocale = (): string =>
-    nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
+  const currentLocale = (): string => {
+    const routeLocale = nuxtApp.$i18n?.locale?.value
+    if (routeLocale !== undefined) return routeLocale
+    const cookieLocale = useCookie('i18n_redirected').value
+    return cookieLocale !== undefined && cookieLocale !== null && cookieLocale !== ''
+      ? cookieLocale
+      : 'fr'
+  }
 
   /** Low-level POST that returns the raw { data, errors } */
   const doFetch = async (
@@ -125,11 +126,11 @@ export default defineNuxtPlugin((nuxtApp) => {
       // SSR: forward cookies if available (for Accept-Language, session context)
       const ev = useRequestEvent()
       const cook = ev?.node.req.headers.cookie
-      if (cook) headers.cookie = cook
+      if (cook !== undefined && cook !== '') headers.cookie = cook
     } else {
       // Client-side: attach OIDC Bearer token
       const token = await getOidcToken()
-      if (token) {
+      if (token !== null && token !== '') {
         headers.Authorization = `Bearer ${token}`
       }
     }

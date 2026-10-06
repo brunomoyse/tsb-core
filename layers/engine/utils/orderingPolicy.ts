@@ -82,7 +82,7 @@ export const ORDERING_POLICY_SELECTION = `
  */
 const deepFreeze = <T extends object>(value: T): T => {
   for (const child of Object.values(value))
-    if (child && typeof child === 'object') deepFreeze(child)
+    if (typeof child === 'object' && child !== null) deepFreeze(child)
   return Object.freeze(value)
 }
 
@@ -119,6 +119,9 @@ const centsOr = (value: unknown, fallback: number): number => {
   return Number.isFinite(amount) && amount >= 0 ? Math.round(amount * 100) : fallback
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
 const positiveIntOr = (value: unknown, fallback: number): number =>
   isFiniteNumber(value) && value > 0 ? Math.round(value) : fallback
 
@@ -138,10 +141,13 @@ const strictCents = (value: unknown): number | null => {
 const tiersFromApi = (raw: unknown): DeliveryFeeTierCents[] | null => {
   if (!Array.isArray(raw) || raw.length === 0) return null
   const tiers: DeliveryFeeTierCents[] = []
-  for (const tier of raw) {
-    const feeCents = strictCents(tier?.fee)
-    if (!isFiniteNumber(tier?.upToKm) || tier.upToKm <= 0 || feeCents === null) return null
-    tiers.push({ upToMeters: kmToMeters(tier.upToKm), feeCents })
+  const rawTiers: unknown[] = raw
+  for (const tier of rawTiers) {
+    const fields = isRecord(tier) ? tier : {}
+    const feeCents = strictCents(fields.fee)
+    const { upToKm } = fields
+    if (!isFiniteNumber(upToKm) || upToKm <= 0 || feeCents === null) return null
+    tiers.push({ upToMeters: kmToMeters(upToKm), feeCents })
   }
   return tiers.toSorted((a, b) => a.upToMeters - b.upToMeters)
 }
@@ -239,8 +245,9 @@ export const deliveryMaxKm = (policy: OrderingPolicy): number => policy.delivery
  */
 export function isPolicyUnsupportedError(err: unknown): boolean {
   const gqlError = unwrapGqlError(err)
-  return Boolean(
-    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') &&
-    /\bpolicy\b|OrderingPolicy/u.test(gqlError.message),
+  return (
+    gqlError !== null &&
+    gqlError.hasCode('GRAPHQL_VALIDATION_FAILED') &&
+    /\bpolicy\b|OrderingPolicy/u.test(gqlError.message)
   )
 }

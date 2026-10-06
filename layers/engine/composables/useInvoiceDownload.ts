@@ -17,7 +17,7 @@ export function useInvoiceDownload() {
         const { useOidc } = await import('#engine/composables/useOidc')
         const { getAccessToken } = useOidc()
         const token = await getAccessToken()
-        if (token) {
+        if (token !== null && token !== '') {
           headers.Authorization = `Bearer ${token}`
         }
       }
@@ -32,9 +32,9 @@ export function useInvoiceDownload() {
       // Extract filename from Content-Disposition header, fallback to generic name
       const disposition = response.headers.get('Content-Disposition')
       let filename = `invoice-${orderId}.pdf`
-      if (disposition) {
-        const [, extracted] = /filename="(.+?)"/u.exec(disposition) ?? []
-        if (extracted) filename = extracted
+      if (disposition !== null && disposition !== '') {
+        const extracted = /filename="(?<name>.+?)"/u.exec(disposition)?.groups?.name
+        if (extracted !== undefined && extracted !== '') filename = extracted
       }
 
       const blob = await response.blob()

@@ -1,3 +1,4 @@
+import type { MockControl } from './mock/client'
 import { expect, test } from './support/test'
 import { openAccount, openProfileDialog, pickAddress, toast } from './support/account'
 import { sessionEntries } from './support/login'
@@ -14,7 +15,7 @@ test.beforeEach(({ backend }) => {
 })
 
 /** The `input` of the n-th updateMe the app sent (0 = first). */
-const updateMeInput = async (backend: { mock: import('./mock/client').MockControl }, nth = 0) =>
+const updateMeInput = async (backend: { mock: MockControl }, nth = 0) =>
   (await backend.mock.operations('updateMe'))[nth]?.args.input as Record<string, unknown>
 
 test.describe('profile', () => {

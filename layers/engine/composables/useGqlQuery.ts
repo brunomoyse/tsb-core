@@ -47,14 +47,13 @@ interface Options {
  * bypasses the cache and goes to the network.
  */
 type GetCachedData<T> = (key: string, nuxtApp: NuxtApp, ctx: { cause: string }) => T | undefined
-const freshExceptWhenHydrating = (
-  key: string,
-  nuxtApp: NuxtApp,
-  ctx: { cause: string },
-): unknown =>
-  ctx.cause === 'initial' && (nuxtApp.isHydrating || import.meta.server)
-    ? nuxtApp.payload.data[key]
-    : undefined
+const freshExceptWhenHydrating =
+  <T>(): GetCachedData<T> =>
+  (key, nuxtApp, ctx) =>
+    ctx.cause === 'initial' && (nuxtApp.isHydrating === true || import.meta.server)
+      ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the Nuxt payload is untyped (any), the key is this query's own
+        (nuxtApp.payload.data[key] as T | undefined)
+      : undefined
 
 /*
  * What `await useGqlQuery()` gives. An `AsyncData` is itself thenable (it is the data object AND a promise of it), so
@@ -99,11 +98,13 @@ export async function useGqlQuery<T>(
 
   const asyncData = await useAsyncData<T>(key, handler, {
     immediate: opts.immediate,
-    ...(opts.lazy ? { lazy: true } : {}),
-    ...(opts.dedupe ? { dedupe: opts.dedupe } : {}),
+    ...(opts.lazy === true ? { lazy: true } : {}),
+    ...(opts.dedupe === undefined ? {} : { dedupe: opts.dedupe }),
     ...(opts.server === false ? { server: false } : {}),
-    ...(opts.cache ? {} : { getCachedData: freshExceptWhenHydrating as GetCachedData<T> }),
+    ...(opts.cache === true ? {} : { getCachedData: freshExceptWhenHydrating<T>() }),
   })
 
+  // The declared result is the awaited (non-thenable) data object plus `refetch`, which no inference can reach (see GqlQueryResult).
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- AsyncData is thenable, so its awaited shape cannot be derived from the value
   return Object.assign(asyncData, { refetch: asyncData.refresh }) as unknown as GqlQueryResult<T>
 }

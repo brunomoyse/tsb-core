@@ -1,5 +1,10 @@
 // Middleware: preload-messages.global.ts — the page's language file is asked for while the HTML is parsed.
 import { defineNuxtRouteMiddleware, useHead, useRuntimeConfig } from '#imports'
+import type { RouteLocationNormalized } from 'vue-router'
+
+// Private runtime config set by build/i18n-messages.ts: language code -> address of its messages file.
+const isUrlMap = (value: unknown): value is Record<string, string | undefined> =>
+  typeof value === 'object' && value !== null
 
 /*
  * The messages of a language are one static, hashed JSON file (build/i18n-messages.ts) that the language module fetches
@@ -10,9 +15,10 @@ import { defineNuxtRouteMiddleware, useHead, useRuntimeConfig } from '#imports'
  * The language is the one in the URL (`/fr/...`): a request the module redirects to another language is answered by
  * a redirect, no HTML is sent. Server render only, and not in dev (there the files come from the module's loaders).
  */
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   if (!import.meta.server || import.meta.dev) return
-  const urls = useRuntimeConfig().tsbI18nMessageUrls
+  const urls: unknown = useRuntimeConfig().tsbI18nMessageUrls
+  if (!isUrlMap(urls)) return
   const href = urls[to.path.split('/')[1] ?? '']
   if (href === undefined) return
   useHead({

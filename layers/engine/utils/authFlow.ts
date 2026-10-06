@@ -7,6 +7,9 @@ import { isValidEmail } from '../lib/validators.ts'
  * The component owns the refs, the requests and the focus handling; it only asks these functions what to do.
  */
 
+const hasText = (value: string | null | undefined): value is string =>
+  value !== null && value !== undefined && value !== ''
+
 export type AuthStep = 'email' | 'code' | 'profile'
 
 /** The field-level format error shown after the customer leaves the email field: an empty field is not an error yet. */
@@ -16,7 +19,7 @@ export const emailFormatInvalid = (value: string): boolean =>
 /** The backend answered without a usable session (auth service unavailable, short-circuit): nothing to verify a code against. */
 export const hasUsableOtpSession = (
   session: { sessionId?: string | null; sessionToken?: string | null } | null | undefined,
-): boolean => Boolean(session?.sessionId && session?.sessionToken)
+): boolean => hasText(session?.sessionId) && hasText(session?.sessionToken)
 
 export type RequestCodeFailure =
   /** 422 invalid_email: shown on the email field itself. */
@@ -87,10 +90,10 @@ export const isVerifyDisabled = (code: string, loading: boolean): boolean =>
  * any backslash or control character disqualifies the path.
  */
 export function sanitizeReturnTo(raw: string | null | undefined): string | null {
-  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return null
+  if (!hasText(raw) || !raw.startsWith('/') || raw.startsWith('//')) return null
   // oxlint-disable-next-line no-control-regex -- the point is to refuse control characters
   if (/[\\\u0000-\u001f\u007f]/u.test(raw)) return null
-  if (/^\/[^/]+\/auth(\/|$)/u.test(raw)) return null
+  if (/^\/[^/]+\/auth(?:\/|$)/u.test(raw)) return null
   return raw
 }
 
@@ -103,7 +106,7 @@ export function rememberCurrentPage(): void {
   if (typeof window === 'undefined') return
   const { pathname, search, hash } = window.location
   const path = sanitizeReturnTo(`${pathname}${search}${hash}`)
-  if (!path) return
+  if (path === null) return
   try {
     sessionStorage.setItem('oidc_return_to', path)
   } catch {
@@ -121,6 +124,6 @@ export type PostAuthTarget =
 
 /** Where the OIDC callback sends the customer once the session is restored. */
 export function postAuthTarget(returnTo: string | null, cartEmpty: boolean): PostAuthTarget {
-  if (returnTo) return { kind: 'path', path: returnTo }
+  if (hasText(returnTo)) return { kind: 'path', path: returnTo }
   return cartEmpty ? { kind: 'menu' } : { kind: 'checkout-if-open' }
 }

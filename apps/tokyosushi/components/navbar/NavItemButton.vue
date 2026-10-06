@@ -48,8 +48,8 @@ interface NavItemButtonProps {
 
 const {
   icon,
-  tooltipText,
-  badge,
+  tooltipText = undefined,
+  badge = undefined,
   expanded,
   controls = undefined,
 } = defineProps<NavItemButtonProps>()

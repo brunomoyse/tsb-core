@@ -45,7 +45,12 @@ export async function trackLayoutShifts(page: Page): Promise<void> {
 
 export async function layoutShifts(page: Page): Promise<LayoutShift[]> {
   // Entries are queued to the observer a moment after they happen.
-  await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 100)))
+  await page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        setTimeout(resolve, 100)
+      }),
+  )
   return page.evaluate(() => window.__layoutShifts ?? [])
 }
 

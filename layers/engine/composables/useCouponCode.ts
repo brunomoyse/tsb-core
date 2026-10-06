@@ -37,8 +37,8 @@ let serverHasErrorCode = true
 
 const isMissingErrorCodeField = (err: unknown): boolean => {
   const gqlError = unwrapGqlError(err)
-  return Boolean(
-    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') && /errorCode/u.test(gqlError.message),
+  return (
+    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') === true && /errorCode/u.test(gqlError.message)
   )
 }
 

@@ -30,7 +30,9 @@ const b64url = (value: unknown): string => Buffer.from(JSON.stringify(value)).to
 const readForm = (req: IncomingMessage): Promise<URLSearchParams> =>
   new Promise((resolve) => {
     let data = ''
-    req.on('data', (chunk: Buffer) => (data += chunk))
+    req.on('data', (chunk: Buffer) => {
+      data += chunk.toString()
+    })
     req.on('end', () => {
       resolve(new URLSearchParams(data))
     })

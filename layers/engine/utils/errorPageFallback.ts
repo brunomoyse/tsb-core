@@ -83,10 +83,13 @@ const HTML_LANG: Record<ErrorPageLocale, string> = {
   zh: 'zh-CN',
 }
 
+const isErrorPageLocale = (value: string): value is ErrorPageLocale =>
+  Object.hasOwn(ERROR_PAGE_FALLBACK, value)
+
 /** The language of the URL's prefix (`/nl/menu` -> nl), French (the default locale) otherwise. */
 export function fallbackLocale(path: string): ErrorPageLocale {
-  const prefix = path.split('/')[1]
-  return prefix && prefix in ERROR_PAGE_FALLBACK ? (prefix as ErrorPageLocale) : 'fr'
+  const [, prefix] = path.split('/')
+  return prefix !== undefined && isErrorPageLocale(prefix) ? prefix : 'fr'
 }
 
 export function fallbackHtmlLang(locale: ErrorPageLocale): string {

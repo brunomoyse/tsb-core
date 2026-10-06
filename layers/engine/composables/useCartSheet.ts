@@ -40,7 +40,7 @@ export function useCartSheet(
     () => cartStore.isCartVisible,
     (visible) => {
       if (!visible) return
-      const focused = document.activeElement as HTMLElement | null
+      const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null
       opener = focused && focused !== document.body ? focused : null
       openedPath = route.path
       navigatedAway = false
@@ -56,7 +56,7 @@ export function useCartSheet(
 
   const returnTarget = (): HTMLElement | null | false => {
     if (navigatedAway || (openedPath && route.path !== openedPath)) return false
-    if (opener?.isConnected && isRendered(opener)) return opener
+    if (opener !== null && opener.isConnected && isRendered(opener)) return opener
     // Safari does not focus a button on click: fall back to whichever cart trigger is on screen.
     return (
       Array.from(document.querySelectorAll<HTMLElement>(TRIGGER_SELECTOR)).find(isRendered) ?? null
@@ -71,7 +71,9 @@ export function useCartSheet(
     {
       initialFocus: () => closeButtonRef.value,
       returnFocus: returnTarget,
-      onEscape: () => cartStore.setCartVisibility(false),
+      onEscape: () => {
+        cartStore.setCartVisibility(false)
+      },
       companions: () => Array.from(document.querySelectorAll('[data-focus-trap-companion]')),
     },
   )

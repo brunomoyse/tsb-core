@@ -127,6 +127,7 @@ export function createQuoteCycle(deps: QuoteCycleDeps) {
   const send = async () => {
     timer = null
     // `latest` is set before the timer is armed and only cleared together with it (cancel), so it is there when it fires.
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- `latest` is never null when the timer fires, see above
     await run(latest as QuoteRequest)
   }
 

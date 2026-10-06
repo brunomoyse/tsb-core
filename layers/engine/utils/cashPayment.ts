@@ -37,6 +37,6 @@ export function sanitizeCashAmount(value: string | number | null | undefined): s
   // The pattern matches any text (every part is optional and `.*` takes the rest): digits, then at most 2 decimals.
   const sanitized = String(value)
     .replace(',', '.')
-    .replace(/^(\d*)(\.\d{0,2})?.*$/su, '$1$2')
+    .replace(/^(?<int>\d*)(?<dec>\.\d{0,2})?.*$/su, '$<int>$<dec>')
   return sanitized === '' ? null : sanitized
 }

@@ -12,7 +12,9 @@ import { fileURLToPath } from 'node:url'
  * instead of hard-coding the Dutch, so it follows a copy change and still proves the right language is on screen.
  */
 
-type Tree = { [key: string]: string | Tree }
+interface Tree {
+  [key: string]: string | Tree
+}
 
 const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url))
 
@@ -54,7 +56,7 @@ export function message(
   let node: string | Tree | undefined = messages(brand, locale)
   for (const part of key.split('.')) node = typeof node === 'object' ? node[part] : undefined
   if (typeof node !== 'string') throw new Error(`no message ${key} in ${brand}/${locale}`)
-  const brandName = messages(brand, locale).brandName
+  const { brandName } = messages(brand, locale)
   let text = node.replaceAll('__BRAND__', typeof brandName === 'string' ? brandName : '')
   for (const [name, value] of Object.entries(params))
     text = text.replaceAll(`{${name}}`, String(value))
@@ -70,7 +72,7 @@ export function message(
  *  - `undefined`, `NaN` or `[object Object]` where a value was expected.
  * Scans the text nodes and the attributes a customer reads or a screen reader announces.
  */
-export async function untranslatedText(page: Page, brand: Brand): Promise<string[]> {
+export function untranslatedText(page: Page, brand: Brand): Promise<string[]> {
   const namespaces = Object.keys(messages(brand, 'fr')).filter((name) => /^[a-z]\w*$/iu.test(name))
   return page.evaluate((names) => {
     const key = new RegExp(

@@ -2,7 +2,9 @@ import { expect, test } from './support/test'
 
 test.beforeEach(async ({ context }) => {
   await context.clearCookies()
-  await context.addInitScript(() => localStorage.clear())
+  await context.addInitScript(() => {
+    localStorage.clear()
+  })
 })
 
 test.describe('Protected route redirects', () => {

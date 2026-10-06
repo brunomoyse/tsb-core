@@ -91,12 +91,14 @@ const render = defineCachedFunction(
 
 export default defineEventHandler(async (event) => {
   // In dev a page edited a minute ago must show: nothing is cached there.
-  if (import.meta.dev || event.method !== 'GET' || getRequestHeader(event, FILL_HEADER)) return
+  if (import.meta.dev || event.method !== 'GET') return undefined
+  const fillHeader = getRequestHeader(event, FILL_HEADER)
+  if (fillHeader !== undefined && fillHeader !== '') return undefined
   const config = useRuntimeConfig(event).staticPageCache as StaticPageCacheConfig | undefined
-  if (!config) return
+  if (!config) return undefined
 
   const { pathname } = getRequestURL(event)
-  if (!staticPageLocale(pathname, config)) return
+  if (staticPageLocale(pathname, config) === null) return undefined
   const locale = cacheableLocale(
     {
       pathname,
@@ -105,16 +107,16 @@ export default defineEventHandler(async (event) => {
     },
     config,
   )
-  if (!locale) return
+  if (locale === null) return undefined
 
   let page: Rendered
   try {
     page = await render(pathname)
   } catch {
     // The render failed: let the normal handler produce the error page.
-    return
+    return undefined
   }
-  if (page.status !== 200) return
+  if (page.status !== 200) return undefined
 
   for (const [name, value] of page.headers) setResponseHeader(event, name, value)
   // What the live render sets for a page in this language (same cookie, same lifetime as the language module's redirects).

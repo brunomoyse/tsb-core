@@ -25,7 +25,7 @@ export function createAddressPrefill<A extends { id: string }>(io: AddressPrefil
   }
 
   /** Call when the user record changes: a dropped user takes the address it provided along, and the pre-fill may run again. */
-  const onUserChanged = (user: unknown): void => {
+  const onUserChanged = (user: object | null | undefined): void => {
     if (user || !prefilled) return
     if (io.cartAddress()?.id === prefilledId) io.setCartAddress(null)
     prefilled = false
