@@ -73,7 +73,13 @@ export const isTransitionalCheckout = (
   createdAt: string | null | undefined,
   now: number = Date.now(),
 ): boolean => {
-  if (typeof pendingOrderId === 'string' || !createdAt) return false
+  if (
+    typeof pendingOrderId === 'string' ||
+    createdAt === undefined ||
+    createdAt === null ||
+    createdAt === ''
+  )
+    return false
   const age = now - Date.parse(createdAt)
   return Number.isFinite(age) && age >= 0 && age < TRANSITIONAL_CHECKOUT_WINDOW_MS
 }

@@ -10,12 +10,22 @@ import {
   useRuntimeConfig,
 } from '#imports'
 
+/** An HTTP failure carrying a 401 status (ofetch's FetchError). */
+const isUnauthorized = (err: unknown): boolean =>
+  typeof err === 'object' && err !== null && 'status' in err && err.status === 401
+
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
   const apiUrl: string = config.public.api
   // The page's language at call time (route locale on the server, current locale on the client); the cookie is only a fallback.
-  const currentLocale = (): string =>
-    nuxtApp.$i18n?.locale?.value || useCookie('i18n_redirected').value || 'fr'
+  const currentLocale = (): string => {
+    const routeLocale = nuxtApp.$i18n?.locale?.value
+    if (routeLocale !== undefined) return routeLocale
+    const cookieLocale = useCookie('i18n_redirected').value
+    return cookieLocale !== undefined && cookieLocale !== null && cookieLocale !== ''
+      ? cookieLocale
+      : 'fr'
+  }
   const localePath = useLocalePath()
 
   /** Get access token from OIDC client. Only called from the client branch of the request hook (never during SSR). */
@@ -46,11 +56,11 @@ export default defineNuxtPlugin((nuxtApp) => {
         // SSR: forward cookies if available
         const event = useRequestEvent()
         const cookies = event?.node.req.headers.cookie
-        if (cookies) options.headers.set('cookie', cookies)
+        if (cookies !== undefined && cookies !== '') options.headers.set('cookie', cookies)
       } else {
         // Client-side: attach Bearer token from OIDC
         const token = await getOidcToken()
-        if (token) options.headers.set('Authorization', `Bearer ${token}`)
+        if (token !== null && token !== '') options.headers.set('Authorization', `Bearer ${token}`)
       }
     },
   })
@@ -60,13 +70,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     try {
       return await baseApi<T, string>(request, options)
     } catch (err: unknown) {
-      if (
-        !import.meta.server &&
-        err &&
-        typeof err === 'object' &&
-        'status' in err &&
-        (err as { status: number }).status === 401
-      ) {
+      if (!import.meta.server && isUnauthorized(err)) {
         let ok: boolean
         try {
           ok = await refreshAuth()

@@ -1,4 +1,10 @@
-import type { CartItem, Product, ProductChoice, ProductChoiceSelection } from '../types/index.ts'
+import type {
+  CartItem,
+  Product,
+  ProductCategory,
+  ProductChoice,
+  ProductChoiceSelection,
+} from '../types/index.ts'
 import { centsToDecimalString, toCents } from './money.ts'
 import { migratePersistedLines } from './cartLines.ts'
 
@@ -89,6 +95,10 @@ export function toPersistedLine(item: CartItem): PersistedLine {
       name: item.selectedChoice.name,
     })
   }
+  // Older catalog answers may lack the category even though the type says it is there.
+  const category: ProductCategory | undefined = product.category
+  // Likewise the two flags: a hand-built product may omit them, and the snapshot then says false.
+  const flags: Partial<Pick<Product, 'isDiscountable' | 'isLunchOnly'>> = product
   return {
     productId: product.id,
     quantity: item.quantity,
@@ -104,15 +114,16 @@ export function toPersistedLine(item: CartItem): PersistedLine {
       slug: product.slug ?? '',
       priceCents: toCents(product.price),
       pieceCount: product.pieceCount ?? null,
-      isDiscountable: Boolean(product.isDiscountable),
-      isLunchOnly: Boolean(product.isLunchOnly),
-      category: product.category
-        ? {
-            id: product.category.id ?? product.categoryId ?? '',
-            name: product.category.name ?? '',
-            slug: product.category.slug ?? '',
-          }
-        : null,
+      isDiscountable: flags.isDiscountable === true,
+      isLunchOnly: flags.isLunchOnly === true,
+      category:
+        category === undefined
+          ? null
+          : {
+              id: category.id ?? product.categoryId ?? '',
+              name: category.name ?? '',
+              slug: category.slug ?? '',
+            },
       choices,
     },
   }
@@ -161,9 +172,10 @@ export function lineFromPersisted(line: PersistedLine): CartItem {
     product,
     quantity: line.quantity,
     selectedChoices: line.selections.map((selection) => ({ ...selection })),
-    selectedChoice: line.choiceId
-      ? (product.choices.find((choice) => choice.id === line.choiceId) ?? null)
-      : null,
+    selectedChoice:
+      line.choiceId !== null && line.choiceId !== ''
+        ? (product.choices.find((choice) => choice.id === line.choiceId) ?? null)
+        : null,
   }
 }
 
@@ -261,7 +273,8 @@ function cleanLegacyLine(value: unknown, max: number): CartItem | null {
 
   const selectedChoice =
     isRecord(value.selectedChoice) && nonEmpty(value.selectedChoice.id)
-      ? (value.selectedChoice as unknown as ProductChoice)
+      ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- legacy v0/v1 JSON, only the id is validated, the rest is trusted as before
+        (value.selectedChoice as unknown as ProductChoice)
       : null
   let selections: ProductChoiceSelection[]
   if (Array.isArray(value.selectedChoices)) {
@@ -275,6 +288,7 @@ function cleanLegacyLine(value: unknown, max: number): CartItem | null {
     selections = []
   }
   return {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- legacy v0/v1 JSON: the whole product was persisted, name and price are validated above
     product: product as unknown as Product,
     quantity,
     selectedChoices: selections,
@@ -346,7 +360,7 @@ export function migratePersistedCart(raw: unknown, maxQuantity: number): Migrate
     couponDiscountCents =
       typeof couponDiscount === 'number' && couponDiscount > 0 ? toCents(couponDiscount) : 0
   }
-  if (!rest.couponCode) couponDiscountCents = 0
+  if (!nonEmpty(rest.couponCode)) couponDiscountCents = 0
 
   return { state: { ...rest, couponDiscountCents, products: recovered }, dropped, from: version }
 }

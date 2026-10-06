@@ -12,18 +12,24 @@ export interface OrderItemLabelParts {
   choice?: string
 }
 
+/** Trimmed text, undefined when absent or blank. */
+const trimmed = (value: string | null | undefined): string | undefined => {
+  const text = value?.trim()
+  return text === undefined || text === '' ? undefined : text
+}
+
 /**
  * Canonical order/cart item label parts — `code · category · name` plus
  * optional `choice`.
  */
 export function orderItemLabelParts(input: OrderItemLabelInput): OrderItemLabelParts {
-  const code = input.code?.trim() || undefined
-  const rawCategory = input.categoryName?.trim() || undefined
+  const code = trimmed(input.code)
+  const rawCategory = trimmed(input.categoryName)
   return {
     code,
     category: rawCategory,
     name: input.productName,
-    choice: input.choiceName?.trim() || undefined,
+    choice: trimmed(input.choiceName),
   }
 }
 
@@ -46,14 +52,14 @@ export function orderItemChoiceText(item: OrderItemChoiceInput): string | undefi
     const text = selections
       .map((selection) => {
         const name = names.get(selection.choiceId)
-        if (!name) return ''
+        if (name === undefined || name === '') return ''
         return selection.quantity > 1 ? `${name} x${selection.quantity}` : name
       })
       .filter(Boolean)
       .join(', ')
-    if (text) return text
+    if (text !== '') return text
   }
-  return item.choice?.name?.trim() || undefined
+  return trimmed(item.choice?.name)
 }
 
 export interface CartLineLabelInput {
@@ -91,12 +97,11 @@ export function cartLineMeta(
     productName: item.product.name,
   })
   const bits: string[] = []
-  if (options.showProductCode && parts.code) bits.push(parts.code)
-  if (parts.category) bits.push(parts.category)
-  if (options.pieces && item.product.pieceCount) {
-    bits.push(
-      `${item.product.pieceCount} ${item.product.pieceCount === 1 ? options.pieces.one : options.pieces.many}`,
-    )
+  if (options.showProductCode && parts.code !== undefined) bits.push(parts.code)
+  if (parts.category !== undefined) bits.push(parts.category)
+  const { pieceCount } = item.product
+  if (options.pieces && pieceCount !== undefined && pieceCount !== null && pieceCount !== 0) {
+    bits.push(`${pieceCount} ${pieceCount === 1 ? options.pieces.one : options.pieces.many}`)
   }
   return bits.length > 0
     ? bits.join(options.pieces || options.spaced === true ? ' · ' : '·')
@@ -138,8 +143,8 @@ export function orderLineSegments(
     productName: item.product.name,
   })
   const segments: OrderLineSegment[] = []
-  if (showProductCode && parts.code) segments.push({ text: parts.code, muted: true })
-  if (parts.category) segments.push({ text: parts.category, muted: true })
+  if (showProductCode && parts.code !== undefined) segments.push({ text: parts.code, muted: true })
+  if (parts.category !== undefined) segments.push({ text: parts.category, muted: true })
   segments.push({ text: parts.name, muted: false })
   return segments
 }

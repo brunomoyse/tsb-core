@@ -38,8 +38,9 @@ export default defineNuxtPlugin({
   order: -40,
   parallel: true,
   setup(nuxtApp) {
-    const env = nuxtApp as unknown as SentryEnvironment
-    if (!env.$config.public.sentryDsn) return
+    const env: SentryEnvironment = nuxtApp
+    const { sentryDsn } = env.$config.public
+    if (sentryDsn === undefined || sentryDsn === '') return
 
     let sentry: SentryModule | null = null
     const kept: Captured[] = []
@@ -97,8 +98,8 @@ export default defineNuxtPlugin({
       // Same rule as the @sentry/nuxt module's own plugin: redirects and client errors of a Nuxt/h3 error (a 404 is a
       // visitor's typo) are not ours to track. Any other thrown value is reported, whatever fields it has.
       if (isNuxtError(error)) {
-        const status = error.status ?? error.statusCode
-        if (status && status >= 300 && status < 500) return
+        const { status } = error
+        if (status !== undefined && status >= 300 && status < 500) return
       }
       capture({ error, mechanism: 'auto.function.nuxt.app-error' })
     })

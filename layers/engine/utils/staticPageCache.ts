@@ -46,7 +46,12 @@ export function staticPageLocale(
 ): string | null {
   const match = /^\/(?<locale>[^/]+)\/(?<page>[^/]+)$/u.exec(pathname)
   const { locale, page } = match?.groups ?? {}
-  return locale && page && locales.includes(locale) && pages.includes(page) ? locale : null
+  return locale !== undefined &&
+    page !== undefined &&
+    locales.includes(locale) &&
+    pages.includes(page)
+    ? locale
+    : null
 }
 
 /** The value of one cookie of a `Cookie` header, or null. */
@@ -80,7 +85,7 @@ export function preferredLocale(
   for (const tag of tags) {
     const primary = tag.replace(/-.*$/su, '').toLowerCase()
     const locale = locales.find((code) => code.toLowerCase() === primary)
-    if (locale) return locale
+    if (locale !== undefined && locale !== '') return locale
   }
   return null
 }
@@ -97,9 +102,10 @@ export function cacheableLocale(
   config: StaticPageCacheConfig,
 ): string | null {
   const locale = staticPageLocale(req.pathname, config)
-  if (!locale) return null
+  if (locale === null || locale === '') return null
   const cookie = cookieValue(req.cookie, config.cookie)
   if (cookie !== null) return cookie === locale ? locale : null
-  if (!req.acceptLanguage?.trim()) return locale
+  const acceptLanguage = req.acceptLanguage?.trim()
+  if (acceptLanguage === undefined || acceptLanguage === '') return locale
   return preferredLocale(req.acceptLanguage, config.locales) === locale ? locale : null
 }

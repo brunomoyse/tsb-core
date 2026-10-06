@@ -30,7 +30,9 @@ export type OrderPlacementRoute =
 
 /** Where a created order sends the customer: the payment page when the backend gave a link, the confirmation otherwise. */
 export function orderPlacementRoute(order: PlacedOrder | null | undefined): OrderPlacementRoute {
-  if (order?.payment?.links) return { kind: 'payment', href: order.payment.links.checkout.href }
-  if (order?.id) return { kind: 'confirmation', orderId: order.id }
+  const links = order?.payment?.links
+  if (links !== undefined && links !== null) return { kind: 'payment', href: links.checkout.href }
+  const id = order?.id
+  if (id !== undefined && id !== null && id !== '') return { kind: 'confirmation', orderId: id }
   return { kind: 'none' }
 }

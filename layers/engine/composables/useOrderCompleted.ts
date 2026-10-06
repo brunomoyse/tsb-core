@@ -101,9 +101,13 @@ export function useOrderCompleted(orderId: string) {
        report the error while there is still no order to show. */
   const orderError = computed(() => (order.value ? null : fetchError.value))
 
-  const mergeOrder = (patch: Partial<Order>) => {
-    dataOrder.value = { myOrder: { ...(dataOrder.value?.myOrder ?? {}), ...patch } as Order }
+  // A queried order laid over the one on screen (or the first one, when the first load failed).
+  const mergeOrder = (fresh: Order) => {
+    dataOrder.value = { myOrder: { ...dataOrder.value?.myOrder, ...fresh } }
   }
+  // `fetchOrder`'s order, when the answer has one.
+  const orderOf = (answer: { myOrder?: Order | null } | null | undefined): Order | null =>
+    answer?.myOrder ?? null
 
   /* ── Online payment outcome ──
        payment.status (set by the webhook) is the truth. null = nothing to
@@ -182,8 +186,8 @@ export function useOrderCompleted(orderId: string) {
         await sleep(delay)
         if (disposed || phase.value !== 'verifying') return
         try {
-          const fresh = await fetchOrder()
-          if (fresh?.myOrder) mergeOrder(fresh.myOrder)
+          const fresh = orderOf(await fetchOrder())
+          if (fresh) mergeOrder(fresh)
         } catch {
           /* Transient — keep polling */
         }
@@ -208,8 +212,8 @@ export function useOrderCompleted(orderId: string) {
   // WebSocket because onScopeDispose can't bind to the component scope.
   const refetchOnReconnect = async () => {
     try {
-      const fresh = await fetchOrder()
-      if (fresh?.myOrder) mergeOrder(fresh.myOrder)
+      const fresh = orderOf(await fetchOrder())
+      if (fresh) mergeOrder(fresh)
     } catch {
       /* Non-critical */
     }
@@ -234,7 +238,10 @@ export function useOrderCompleted(orderId: string) {
   )
 
   watch(liveUpdate, (val) => {
-    if (val?.myOrderUpdated && dataOrder.value?.myOrder) mergeOrder(val.myOrderUpdated)
+    const current = dataOrder.value?.myOrder
+    if (val?.myOrderUpdated && current) {
+      dataOrder.value = { myOrder: { ...current, ...val.myOrderUpdated } }
+    }
   })
 
   /* ── Polling fallback ──
@@ -246,25 +253,28 @@ export function useOrderCompleted(orderId: string) {
   let pollDelay: ReturnType<typeof setTimeout> | null = null
   // Called once, by the timeout armed on mount.
   const startPolling = () => {
-    pollTimer = setInterval(async () => {
+    const poll = async () => {
       try {
-        const fresh = await fetchOrder()
-        if (!fresh?.myOrder || disposed) return
+        const fresh = orderOf(await fetchOrder())
+        if (!fresh || disposed) return
         const current = dataOrder.value?.myOrder
         if (
           !current ||
-          fresh.myOrder.status !== current.status ||
-          fresh.myOrder.payment?.status !== current.payment?.status
+          fresh.status !== current.status ||
+          fresh.payment?.status !== current.payment?.status
         ) {
-          mergeOrder(fresh.myOrder)
+          mergeOrder(fresh)
         }
-        if (TERMINAL_STATUSES.includes(fresh.myOrder.status) && pollTimer) {
+        if (TERMINAL_STATUSES.includes(fresh.status) && pollTimer) {
           clearInterval(pollTimer)
           pollTimer = null
         }
       } catch {
         /* Polling errors are non-critical */
       }
+    }
+    pollTimer = setInterval(() => {
+      void poll()
     }, FALLBACK_POLL_MS)
   }
 

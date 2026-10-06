@@ -129,7 +129,9 @@ export class MockControl {
       const state = await this.state()
       if (predicate(state)) return state
       if (Date.now() > deadline) throw new Error(message)
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100)
+      })
     }
   }
 }

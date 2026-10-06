@@ -236,7 +236,12 @@ interface Props {
   onBeforeRedirect?: () => void
 }
 
-const { authRequestId = '', onComplete, onBeforeRedirect } = defineProps<Props>()
+const {
+  mode = 'page',
+  authRequestId = '',
+  onComplete = undefined,
+  onBeforeRedirect = undefined,
+} = defineProps<Props>()
 
 const { t } = useI18n()
 const { trackEvent } = useTracking()

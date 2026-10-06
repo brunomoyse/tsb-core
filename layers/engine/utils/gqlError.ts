@@ -13,6 +13,28 @@ export interface GqlErrorEntry {
   extensions?: Record<string, unknown>
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const numberOf = (value: unknown): number | undefined =>
+  typeof value === 'number' ? value : undefined
+
+/** The optional `path` / `extensions` of an error entry received over the wire, kept only when well-formed. */
+const entryDetails = (
+  entry: Record<string, unknown>,
+): Pick<GqlErrorEntry, 'path' | 'extensions'> => {
+  const { path, extensions } = entry
+  const segments = Array.isArray(path)
+    ? path.filter(
+        (part): part is string | number => typeof part === 'string' || typeof part === 'number',
+      )
+    : []
+  return {
+    ...(segments.length > 0 ? { path: segments } : {}),
+    ...(isRecord(extensions) ? { extensions } : {}),
+  }
+}
+
 export interface GqlErrorInit {
   operationName?: string | null
   /** HTTP status when the request itself failed (not a GraphQL `errors` response). */
@@ -62,29 +84,19 @@ export class GqlError extends Error {
    * (GRAPHQL_VALIDATION_FAILED...) stays readable.
    */
   static fromTransport(err: unknown, operationName: string | null = null): GqlError {
-    const raw = err as {
-      status?: number
-      statusCode?: number
-      message?: string
-      data?: { errors?: unknown }
-    } | null
-    const status = raw?.status ?? raw?.statusCode ?? null
-    const bodyErrors = Array.isArray(raw?.data?.errors) ? (raw.data.errors as unknown[]) : []
-    const entries = bodyErrors.flatMap((entry): GqlErrorEntry[] => {
-      const candidate = entry as Partial<GqlErrorEntry> | null
-      return candidate && typeof candidate.message === 'string'
-        ? [
-            {
-              message: candidate.message,
-              ...(candidate.path ? { path: candidate.path } : {}),
-              ...(candidate.extensions ? { extensions: candidate.extensions } : {}),
-            },
-          ]
-        : []
-    })
+    const raw = isRecord(err) ? err : null
+    const status = numberOf(raw?.status) ?? numberOf(raw?.statusCode) ?? null
+    const data = raw?.data
+    const rawErrors = isRecord(data) ? data.errors : undefined
+    const bodyErrors: unknown[] = Array.isArray(rawErrors) ? rawErrors : []
+    const entries = bodyErrors.flatMap((entry): GqlErrorEntry[] =>
+      isRecord(entry) && typeof entry.message === 'string'
+        ? [{ message: entry.message, ...entryDetails(entry) }]
+        : [],
+    )
     if (entries.length > 0) return new GqlError(entries, { operationName, status, cause: err })
-    const code = status ? GQL_HTTP_ERROR : GQL_NETWORK_ERROR
-    const message = raw?.message ?? 'Request failed'
+    const code = status !== null && status !== 0 ? GQL_HTTP_ERROR : GQL_NETWORK_ERROR
+    const message = typeof raw?.message === 'string' ? raw.message : 'Request failed'
     return new GqlError([{ message, extensions: { code } }], { operationName, status, cause: err })
   }
 }
@@ -97,9 +109,9 @@ export const isGqlError = (err: unknown): err is GqlError => err instanceof GqlE
  */
 export function unwrapGqlError(err: unknown): GqlError | null {
   let current: unknown = err
-  for (let depth = 0; depth < 3 && current; depth++) {
+  for (let depth = 0; depth < 3 && isRecord(current); depth++) {
     if (current instanceof GqlError) return current
-    current = (current as { cause?: unknown }).cause
+    current = current.cause
   }
   return null
 }
@@ -109,17 +121,13 @@ export function toGqlError(err: unknown, operationName: string | null = null): E
   if (err instanceof Error) return err
   if (Array.isArray(err) && err.length > 0) {
     return new GqlError(
-      err.map(
-        (entry: {
-          message?: string
-          path?: (string | number)[]
-          extensions?: Record<string, unknown>
-        }) => ({
-          message: String(entry?.message ?? 'GraphQL error'),
-          ...(entry?.path ? { path: entry.path } : {}),
-          ...(entry?.extensions ? { extensions: entry.extensions } : {}),
-        }),
-      ),
+      err.map((entry: unknown): GqlErrorEntry => {
+        const fields = isRecord(entry) ? entry : {}
+        return {
+          message: typeof fields.message === 'string' ? fields.message : 'GraphQL error',
+          ...entryDetails(fields),
+        }
+      }),
       { operationName },
     )
   }
@@ -137,9 +145,9 @@ export const operationNameOf = (query: string): string | null =>
  */
 export const isAbortError = (err: unknown): boolean => {
   let current: unknown = err
-  for (let depth = 0; depth < 3 && current && typeof current === 'object'; depth++) {
-    if ((current as { name?: string }).name === 'AbortError') return true
-    current = (current as { cause?: unknown }).cause
+  for (let depth = 0; depth < 3 && isRecord(current); depth++) {
+    if (current.name === 'AbortError') return true
+    current = current.cause
   }
   return false
 }
@@ -165,14 +173,13 @@ export function isReportableError(raw: unknown): boolean {
      * A REST call that failed (the OTP / address endpoints use $fetch): a 4xx is the customer's
      * input (wrong code, unknown address) and a FetchError without a status is a dropped connection.
      */
-    const http = raw as {
-      status?: number
-      statusCode?: number
-      response?: { status?: number }
-      name?: string
-    } | null
-    const status = http?.status ?? http?.statusCode ?? http?.response?.status
-    if (status) return status >= 500
+    const http = isRecord(raw) ? raw : null
+    const response = http?.response
+    const status =
+      numberOf(http?.status) ??
+      numberOf(http?.statusCode) ??
+      (isRecord(response) ? numberOf(response.status) : undefined)
+    if (status !== undefined && status !== 0) return status >= 500
     return http?.name !== 'FetchError'
   }
   if (err.code === GQL_NETWORK_ERROR) return false

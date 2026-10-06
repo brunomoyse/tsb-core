@@ -29,7 +29,16 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps<{
+const {
+  src,
+  widths,
+  fallbackWidth,
+  fallbackHeight,
+  alt,
+  sizes = undefined,
+  eager = false,
+  imgClass = undefined,
+} = defineProps<{
   /** Extension-less base path, e.g. "/images/broths/beef-bone" */
   src: string
   /** Available widths, e.g. [480, 800, 1200] */
@@ -47,10 +56,8 @@ const props = defineProps<{
 // A height utility of the caller (h-full, sm:h-64, ...; not max-h-/min-h-) replaces the default h-auto.
 const HEIGHT_UTILITY = /(?:^|\s)(?:[\w[\]-]+:)*!?h-/u
 const classes = computed(() =>
-  props.imgClass && HEIGHT_UTILITY.test(props.imgClass)
-    ? props.imgClass
-    : ['h-auto', props.imgClass],
+  imgClass !== undefined && HEIGHT_UTILITY.test(imgClass) ? imgClass : ['h-auto', imgClass],
 )
 
-const srcset = (ext: string) => props.widths.map((w) => `${props.src}-${w}.${ext} ${w}w`).join(', ')
+const srcset = (ext: string) => widths.map((w) => `${src}-${w}.${ext} ${w}w`).join(', ')
 </script>

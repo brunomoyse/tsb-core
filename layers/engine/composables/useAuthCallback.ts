@@ -63,8 +63,8 @@ export function useAuthCallback() {
     const { getAccessToken } = useOidc()
     await getAccessToken()
 
-    const data = await $gqlFetch<{ me: User }>(ME)
-    if (data) {
+    const data = await $gqlFetch<{ me: User } | null>(ME)
+    if (data !== null) {
       authStore.setUser(data.me)
       identifyUser()
     }

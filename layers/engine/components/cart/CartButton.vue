@@ -71,14 +71,13 @@ const label = computed(() =>
 
 // Badge bounce animation
 const animating = ref(false)
-watch(cartCount, (newVal) => {
+watch(cartCount, async (newVal) => {
   if (newVal > 0) {
-    nextTick(() => {
-      animating.value = true
-      setTimeout(() => {
-        animating.value = false
-      }, 600)
-    })
+    await nextTick()
+    animating.value = true
+    setTimeout(() => {
+      animating.value = false
+    }, 600)
   }
 })
 </script>

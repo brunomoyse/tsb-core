@@ -80,9 +80,12 @@ function literal(node: ValueNode, variables: Record<string, unknown>): unknown {
       return Object.fromEntries(
         node.fields.map((field) => [field.name.value, literal(field.value, variables)]),
       )
-    default:
+    case Kind.STRING:
+    case Kind.BOOLEAN:
+    case Kind.ENUM:
       return node.value
   }
+  return undefined
 }
 
 /** Projects `selectionSet` onto `value`. `where` names the root field, for gap reports. */

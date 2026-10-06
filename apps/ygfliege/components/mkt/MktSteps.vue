@@ -37,17 +37,18 @@
 <script setup lang="ts">
 // 4-step "how it works" grid. The home and concept pages use different locale
 // Namespaces for the same structure, hence keyPrefix.
-withDefaults(
-  defineProps<{
-    /** E.g. "mkt.home.steps" or "mkt.concept" */
-    keyPrefix: string
-    /** The level of the step titles: one under the page's own title is h2, one under a section heading is h3. */
-    headingTag?: 'h2' | 'h3'
-    /** The first step's picture is on the first screen of a phone and is the page's largest image: load it at once. */
-    eagerFirst?: boolean
-  }>(),
-  { headingTag: 'h3', eagerFirst: false },
-)
+const {
+  keyPrefix,
+  headingTag = 'h3',
+  eagerFirst = false,
+} = defineProps<{
+  /** E.g. "mkt.home.steps" or "mkt.concept" */
+  keyPrefix: string
+  /** The level of the step titles: one under the page's own title is h2, one under a section heading is h3. */
+  headingTag?: 'h2' | 'h3'
+  /** The first step's picture is on the first screen of a phone and is the page's largest image: load it at once. */
+  eagerFirst?: boolean
+}>()
 
 const steps = [{ num: 1 }, { num: 2 }, { num: 3 }, { num: 4 }]
 </script>

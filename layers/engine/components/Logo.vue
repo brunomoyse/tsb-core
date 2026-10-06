@@ -38,5 +38,12 @@ interface NavItemProps {
   size?: number
 }
 
-const { to, icon, alt, tooltipText, ariaLabel, size = 50 } = defineProps<NavItemProps>()
+const {
+  to,
+  icon,
+  alt = undefined,
+  tooltipText = undefined,
+  ariaLabel = undefined,
+  size = 50,
+} = defineProps<NavItemProps>()
 </script>

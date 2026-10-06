@@ -25,9 +25,16 @@ export const baseCategories = (
       ...cat,
       products: cat.products
         .map((p) => {
-          const withCategory = p.category
-            ? p
-            : { ...p, category: { id: cat.id, name: cat.name, slug: cat.slug } as ProductCategory }
+          // The query no longer sends it, whatever the type says.
+          const own: ProductCategory | undefined = p.category
+          const withCategory =
+            own === undefined
+              ? {
+                  ...p,
+                  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the stamped category is deliberately only id, name and slug (no order, no products)
+                  category: { id: cat.id, name: cat.name, slug: cat.slug } as ProductCategory,
+                }
+              : p
           const update = live[p.id]
           return update ? { ...withCategory, ...update } : withCategory
         })

@@ -1,10 +1,17 @@
+interface Umami {
+  track: (name: string, data?: Record<string, unknown>) => void
+}
+const isUmami = (value: unknown): value is Umami =>
+  typeof value === 'object' &&
+  value !== null &&
+  'track' in value &&
+  typeof value.track === 'function'
+
 export function useTracking() {
   const getUmami = () => {
     if (typeof window === 'undefined') return null
-    return (
-      (window as { umami?: { track: (name: string, data?: Record<string, unknown>) => void } })
-        .umami ?? null
-    )
+    const umami: unknown = Reflect.get(window, 'umami')
+    return isUmami(umami) ? umami : null
   }
 
   const trackEvent = (name: string, props?: Record<string, unknown>) => {

@@ -28,6 +28,14 @@ export const MAX_ITEM_QUANTITY = 99
 // What the last deserialization dropped; handed to the store by afterHydrate (the serializer cannot reach the store).
 let pendingDropped = 0
 
+// The store as afterHydrate sees it (the plugin's context types it as the whole store, which is circular here).
+interface HydratedCartStore {
+  isCartVisible: boolean
+  droppedOnHydrate: number
+  orderExtra: CartState['orderExtra']
+  $persist?: () => void
+}
+
 interface ItemSelectionInput {
   choice?: ProductChoice | null
   selections?: ProductChoiceSelection[]
@@ -54,7 +62,11 @@ const normalizeSelections = (
 
   // A lone legacy choice applies to every unit of the line. Without its group (a query that
   // Did not select it) it stays a plain choiceId on the order line.
-  if (choice?.choiceGroupId) {
+  if (
+    choice?.choiceGroupId !== undefined &&
+    choice.choiceGroupId !== null &&
+    choice.choiceGroupId !== ''
+  ) {
     return [{ groupId: choice.choiceGroupId, choiceId: choice.id, quantity: choiceQuantity }]
   }
 
@@ -88,10 +100,14 @@ const setLineQuantity = (item: CartItem, quantity: number): boolean => {
 }
 
 /** The `orderExtra` entry for an extra in its pre-selected form (e.g. soy sauce -> `both`). */
-export const defaultOrderExtra = (extra: OrderExtraConfig): { name: string; options?: string[] } =>
-  extra.options?.length
-    ? { name: extra.name, options: [extra.defaultOption ?? extra.options[0]!] }
-    : { name: extra.name }
+export const defaultOrderExtra = (
+  extra: OrderExtraConfig,
+): { name: string; options?: string[] } => {
+  const [firstOption] = extra.options ?? []
+  return firstOption === undefined
+    ? { name: extra.name }
+    : { name: extra.name, options: [extra.defaultOption ?? firstOption] }
+}
 
 // Single source for the initial state and resetState(), so a second order starts exactly like the first.
 const defaultState = (): CartState => ({
@@ -224,6 +240,7 @@ export const useCartStore = defineStore('cart', {
      * merges into another line that is identical, and then the edited one just disappears. When the edited line is
      * not in the cart any more (emptied meanwhile, order placed), this is a plain `addProduct`.
      */
+    // oxlint-disable-next-line max-params -- public store action called from three components and its tests
     replaceLine(
       edited: CartItem,
       product: Product,
@@ -335,12 +352,8 @@ export const useCartStore = defineStore('cart', {
      */
     omit: ['isCartVisible', 'droppedOnHydrate'],
     afterHydrate: (ctx) => {
-      const store = ctx.store as unknown as {
-        isCartVisible: boolean
-        droppedOnHydrate: number
-        orderExtra: CartState['orderExtra']
-        $persist?: () => void
-      }
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the plugin types the store as the whole cart store, which is circular here
+      const store = ctx.store as unknown as HydratedCartStore
       store.isCartVisible = false
       // Drop extras this brand doesn't offer (old carts, or entries removed from the UI).
       if (Array.isArray(store.orderExtra)) {

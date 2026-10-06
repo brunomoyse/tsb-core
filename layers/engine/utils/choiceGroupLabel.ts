@@ -9,8 +9,11 @@ export function choiceGroupLabelKey(
   categorySlug: string | null | undefined,
   maxSelections: number,
 ): string | null {
-  const entry = categorySlug ? labels?.[categorySlug] : undefined
-  if (!entry) return null
+  const entry =
+    categorySlug !== null && categorySlug !== undefined && categorySlug !== ''
+      ? labels?.[categorySlug]
+      : undefined
+  if (entry === undefined) return null
   return maxSelections > 1 ? entry.other : entry.one
 }
 

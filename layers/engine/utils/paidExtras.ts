@@ -20,7 +20,7 @@ export interface PaidExtraProduct {
 export interface CartLineForExtras {
   product: { code?: string | null }
   quantity: number
-  selectedChoice?: unknown
+  selectedChoice?: object | null
   selectedChoices?: unknown[] | null
 }
 
@@ -55,22 +55,26 @@ export function paidExtrasOf(
   lines: readonly CartLineForExtras[],
 ): PaidExtra[] {
   return products
-    .filter((product) => {
+    .flatMap((product): PaidExtra[] => {
+      const { code } = product
       const priceCents = toCents(product.price)
-      return (
-        product.isVisible &&
-        product.code !== null &&
-        priceCents > 0 &&
-        priceCents <= PAID_EXTRA_PRICE_MAX_CENTS
+      if (
+        !product.isVisible ||
+        code === null ||
+        priceCents <= 0 ||
+        priceCents > PAID_EXTRA_PRICE_MAX_CENTS
       )
+        return []
+      return [
+        {
+          code,
+          label: product.name,
+          priceCents,
+          isAvailable: product.isAvailable,
+          quantity: paidExtraQuantity(lines, code),
+        },
+      ]
     })
-    .map((product) => ({
-      code: product.code as string,
-      label: product.name,
-      priceCents: toCents(product.price),
-      isAvailable: product.isAvailable,
-      quantity: paidExtraQuantity(lines, product.code as string),
-    }))
     .sort(
       (a, b) =>
         a.priceCents - b.priceCents ||
@@ -84,8 +88,9 @@ export function paidExtrasOf(
  */
 export function isCategoryBySlugUnsupportedError(err: unknown): boolean {
   const gqlError = unwrapGqlError(err)
-  return Boolean(
-    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') &&
-    /productCategoryBySlug/u.test(gqlError.message),
+  return (
+    gqlError !== null &&
+    gqlError.hasCode('GRAPHQL_VALIDATION_FAILED') &&
+    /productCategoryBySlug/u.test(gqlError.message)
   )
 }

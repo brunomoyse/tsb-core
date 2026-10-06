@@ -35,7 +35,7 @@ interface Props {
   ariaLabel?: string
 }
 
-const { total, labels = [] } = defineProps<Props>()
+const { total, labels = [], ariaLabel = undefined } = defineProps<Props>()
 
 const displayLabels = computed(() => Array.from({ length: total }, (_, i) => labels[i] || ''))
 </script>

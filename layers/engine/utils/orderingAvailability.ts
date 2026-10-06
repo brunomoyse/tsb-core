@@ -74,8 +74,8 @@ export function orderingStatus(
   nowMs: number,
   policy: SlotPolicy,
 ): OrderingStatus {
-  if (!config?.orderingEnabled) return 'disabled'
-  if (config.isOrderingCurrentlyOpen) return 'open'
+  if (config?.orderingEnabled !== true) return 'disabled'
+  if (config.isOrderingCurrentlyOpen === true) return 'open'
   return bookableSlots(
     config.availableSlotsToday,
     { preparationMinutes: config.preparationMinutes, nowMs },

@@ -149,93 +149,99 @@ const ensureGlobalListeners = () => {
   document.addEventListener('visibilitychange', handleVisibilityChange)
 }
 
+// graphql-ws hands over its socket as `unknown`: the two members the watchdog uses are checked rather than cast.
+const isWebSocket = (socket: unknown): socket is WebSocket =>
+  typeof socket === 'object' &&
+  socket !== null &&
+  'readyState' in socket &&
+  'close' in socket &&
+  typeof socket.close === 'function'
+
 const getWsClient = (): Promise<Client> => {
   if (wsClient) return Promise.resolve(wsClient)
-  if (!wsClientPromise) {
-    wsClientPromise = Promise.all([
-      // The client entry: the package root also holds the server, which pulls in the whole `graphql` library.
-      import('graphql-ws/client'),
-      import('#engine/composables/useOidc'),
-    ]).then(([{ createClient }, { useOidc }]) => {
-      const cfg = useRuntimeConfig()
-      const { getAccessToken } = useOidc()
+  wsClientPromise ??= Promise.all([
+    // The client entry: the package root also holds the server, which pulls in the whole `graphql` library.
+    import('graphql-ws/client'),
+    import('#engine/composables/useOidc'),
+  ]).then(([{ createClient }, { useOidc }]) => {
+    const cfg = useRuntimeConfig()
+    const { getAccessToken } = useOidc()
 
+    /*
+     * Track the underlying WebSocket so the ping/pong timeout
+     * handler can force-close on silent drops. `keepAlive` only
+     * schedules pings: detection requires our own pong timer.
+     */
+    let activeSocket: WebSocket | null = null
+    let pongTimer: ReturnType<typeof setTimeout> | null = null
+
+    const client = createClient({
+      url: cfg.public.graphqlWs,
+      connectionParams: async () => {
+        const token = await getAccessToken()
+        return token !== null && token !== '' ? { Authorization: `Bearer ${token}` } : {}
+      },
       /*
-       * Track the underlying WebSocket so the ping/pong timeout
-       * handler can force-close on silent drops. `keepAlive` only
-       * schedules pings — detection requires our own pong timer.
+       * Ping every 12s. Combined with the pong watchdog below,
+       * detects silent drops (cellular handoff, Cloudflare Tunnel
+       * idle timeout) within ~17s instead of waiting for the next
+       * outbound message.
        */
-      let activeSocket: WebSocket | null = null
-      let pongTimer: ReturnType<typeof setTimeout> | null = null
-
-      const client = createClient({
-        url: cfg.public.graphqlWs,
-        connectionParams: async () => {
-          const token = await getAccessToken()
-          return token ? { Authorization: `Bearer ${token}` } : {}
+      keepAlive: 12_000,
+      on: {
+        connected: (socket, _payload, wasRetry) => {
+          activeSocket = isWebSocket(socket) ? socket : null
+          /*
+           * The socket was re-established by graphql-ws itself (network blip, server
+           * restart, pong timeout), which re-subscribed: the events of the gap are
+           * lost, so give every subscriber its gap-recovery callback too. The
+           * first connection of a client is not a reconnect, and recycleClient()
+           * (which creates a NEW client) notifies on its own.
+           */
+          if (wasRetry) notifyReconnected()
         },
-        /*
-         * Ping every 12s. Combined with the pong watchdog below,
-         * detects silent drops (cellular handoff, Cloudflare Tunnel
-         * idle timeout) within ~17s instead of waiting for the next
-         * outbound message.
-         */
-        keepAlive: 12_000,
-        on: {
-          connected: (socket, _payload, wasRetry) => {
-            activeSocket = socket as WebSocket
-            /*
-             * The socket was re-established by graphql-ws itself (network blip, server
-             * restart, pong timeout), which re-subscribed: the events of the gap are
-             * lost, so give every subscriber its gap-recovery callback too. The
-             * first connection of a client is not a reconnect, and recycleClient()
-             * (which creates a NEW client) notifies on its own.
-             */
-            if (wasRetry) notifyReconnected()
-          },
-          closed: () => {
-            if (pongTimer) {
-              clearTimeout(pongTimer)
-              pongTimer = null
+        closed: () => {
+          if (pongTimer) {
+            clearTimeout(pongTimer)
+            pongTimer = null
+          }
+          activeSocket = null
+        },
+        ping: (received) => {
+          // We sent a ping; arm a 5s watchdog for the pong.
+          if (received) return
+          if (pongTimer) clearTimeout(pongTimer)
+          pongTimer = setTimeout(() => {
+            if (activeSocket?.readyState === WebSocket.OPEN) {
+              activeSocket.close(4408, 'Pong timeout')
             }
-            activeSocket = null
-          },
-          ping: (received) => {
-            // We sent a ping; arm a 5s watchdog for the pong.
-            if (received) return
-            if (pongTimer) clearTimeout(pongTimer)
-            pongTimer = setTimeout(() => {
-              if (activeSocket?.readyState === WebSocket.OPEN) {
-                activeSocket.close(4408, 'Pong timeout')
-              }
-            }, 5_000)
-          },
-          pong: (received) => {
-            if (received && pongTimer) {
-              clearTimeout(pongTimer)
-              pongTimer = null
-            }
-          },
+          }, 5_000)
         },
-        retryAttempts: Infinity,
-        /*
-         * Plain exponential backoff, also after a session that failed to renew:
-         * getAccessToken() then returns null (the stale user was wiped) and the
-         * socket reconnects anonymously, which keeps the public feeds (open/closed,
-         * availability) alive. Authenticated subscriptions simply fail as
-         * unauthorized on their own; the backoff keeps that from becoming a tight loop.
-         */
-        retryWait: async (retries) => {
-          const delay = Math.min(1000 * 2 ** retries, 30_000)
-          await new Promise<void>((resolve) => {
-            setTimeout(resolve, delay)
-          })
+        pong: (received) => {
+          if (received && pongTimer) {
+            clearTimeout(pongTimer)
+            pongTimer = null
+          }
         },
-      })
-      wsClient = client
-      return client
+      },
+      retryAttempts: Infinity,
+      /*
+       * Plain exponential backoff, also after a session that failed to renew:
+       * getAccessToken() then returns null (the stale user was wiped) and the
+       * socket reconnects anonymously, which keeps the public feeds (open/closed,
+       * availability) alive. Authenticated subscriptions simply fail as
+       * unauthorized on their own; the backoff keeps that from becoming a tight loop.
+       */
+      retryWait: async (retries) => {
+        const delay = Math.min(1000 * 2 ** retries, 30_000)
+        await new Promise<void>((resolve) => {
+          setTimeout(resolve, delay)
+        })
+      },
     })
-  }
+    wsClient = client
+    return client
+  })
   return wsClientPromise
 }
 
@@ -271,6 +277,7 @@ export function useGqlSubscription<T = unknown>(
           },
           {
             next: (msg) => {
+              // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- graphql-ws types the payload as a plain record; T is the document's result shape the caller declares
               if (msg.data !== undefined) data.value = msg.data as T
             },
             error: (e) => {

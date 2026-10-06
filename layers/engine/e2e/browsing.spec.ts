@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { categoryIds, chipIsActive, stickyBottom } from './support/nav'
 import { expect, test } from './support/test'
 import { SEL } from './support/selectors'
@@ -73,7 +74,9 @@ test.describe('categories (Tokyo Sushi: the strip is on the desktop too)', () =>
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     const ids = await categoryIds(page)
-    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight }))
+    await page.evaluate(() => {
+      window.scrollTo({ top: document.documentElement.scrollHeight })
+    })
     await expect.poll(() => chipIsActive(page, ids.at(-1) ?? '')).toBe(true)
   })
 
@@ -91,7 +94,7 @@ test.describe('categories (Tokyo Sushi: the strip is on the desktop too)', () =>
 })
 
 test.describe('product modal as a dialog', () => {
-  const openFirstChoiceProduct = async (page: import('@playwright/test').Page) => {
+  const openFirstChoiceProduct = async (page: Page) => {
     await page.goto('/fr/menu')
     await waitForNuxtHydration(page)
     const card = page.locator(SEL.choiceProduct).first()

@@ -11,7 +11,8 @@ import type { Ref } from 'vue'
  * page loaded) has no server-rendered field and does nothing.
  */
 export function useKeepTypedValue(model: Ref<string>, id: string): void {
-  if (!import.meta.client || !useNuxtApp().isHydrating) return
-  const typed = (document.getElementById(id) as HTMLInputElement | null)?.value
-  if (typed && model.value === '') model.value = typed
+  if (!import.meta.client || useNuxtApp().isHydrating !== true) return
+  const field = document.getElementById(id)
+  const typed = field instanceof HTMLInputElement ? field.value : undefined
+  if (typed !== undefined && typed !== '' && model.value === '') model.value = typed
 }

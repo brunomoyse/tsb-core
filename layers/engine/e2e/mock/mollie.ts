@@ -33,7 +33,10 @@ const BUTTONS: { result: PaymentStatus; label: string }[] = [
 export const isPaymentStatus = (value: string): value is PaymentStatus => value in OUTCOMES
 
 function returnUrl(order: MockOrder, fallbackAppUrl: string): string {
-  const origin = order.returnTo?.origin || fallbackAppUrl
+  const origin =
+    order.returnTo?.origin === undefined || order.returnTo.origin === ''
+      ? fallbackAppUrl
+      : order.returnTo.origin
   const locale = /^(fr|en|nl|zh)/u.exec(order.returnTo?.locale ?? '')?.[1] ?? 'fr'
   return `${origin}/${locale}/order-completed/${order.id}`
 }

@@ -24,7 +24,7 @@ mockNuxtImport(
 vi.mock('#engine/utils/reportError', () => ({ reportPageError }))
 
 const nuxtError = (statusCode: number) =>
-  Object.assign(new Error('boom'), { statusCode, fatal: true }) as unknown as NuxtError
+  Object.assign(new Error('boom'), { status: statusCode, fatal: true }) as unknown as NuxtError
 
 async function mountWith(error: NuxtError) {
   let page!: ReturnType<typeof useErrorPage>

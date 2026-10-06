@@ -78,7 +78,7 @@ async function syncAuth(): Promise<void> {
 
   // Case 1: authStore says logged-in but OIDC token is gone/expired.
   if (authStore.user && !oidcAuthed) {
-    let renewed: unknown
+    let renewed: Awaited<ReturnType<typeof silentRenew>>
     try {
       renewed = await silentRenew()
     } catch (err: unknown) {
@@ -103,7 +103,7 @@ async function syncAuth(): Promise<void> {
    */
   if (!authStore.user && oidcAuthed) {
     const token = await getAccessToken()
-    if (!token) return
+    if (token === null || token === '') return
     const url = cfg.public.graphqlHttp
     let refused = false
     try {

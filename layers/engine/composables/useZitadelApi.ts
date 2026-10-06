@@ -37,7 +37,8 @@ export function useZitadelApi() {
   /** Detect current locale from URL path (safe outside Vue setup context). */
   function getLang(): string {
     if (typeof window !== 'undefined') {
-      return window.location.pathname.split('/')[1] || 'fr'
+      const [, first] = window.location.pathname.split('/')
+      return first !== undefined && first !== '' ? first : 'fr'
     }
     return 'fr'
   }
@@ -120,7 +121,11 @@ export function useZitadelApi() {
   ): Promise<IdpSessionResponse> {
     return $fetch<IdpSessionResponse>(`${apiUrl}/auth/idp/session`, {
       method: 'POST',
-      body: { idpIntentId, idpIntentToken, ...(userId && { userId }) },
+      body: {
+        idpIntentId,
+        idpIntentToken,
+        ...(userId !== undefined && userId !== '' && { userId }),
+      },
     })
   }
 

@@ -5,7 +5,7 @@ const PRODUCTION_BASE_URL = `https://${brand.domain}`
 
 export default defineEventHandler((event) => {
   // Same source as the sitemap and robots.txt: the public runtime config's baseUrl.
-  const baseUrl = String(useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
+  const baseUrl = (useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
   const isProduction = baseUrl === PRODUCTION_BASE_URL
 
   if (!isProduction) {

@@ -48,6 +48,10 @@ export function orderItemPayload(line: PayloadLine): OrderItemPayload {
 const addressPlaceIdOf = (source: PayloadSource): string | null =>
   source.collectionOption === 'DELIVERY' ? (source.address?.id ?? null) : null
 
+/** Absent and blank both mean "nothing" in the payload. */
+const emptyToNull = (value: string | null | undefined): string | null =>
+  value === undefined || value === null || value === '' ? null : value
+
 /** The `createOrder` input for the cart. */
 export function buildCreateOrderInput(source: PayloadSource): CreateOrderRequest {
   // Fixed slots are RFC3339 values; ASAP is null.
@@ -59,10 +63,10 @@ export function buildCreateOrderInput(source: PayloadSource): CreateOrderRequest
     addressPlaceId: addressPlaceIdOf(source),
     addressExtra: source.addressExtra ?? null,
     couponCode: source.couponCode ?? null,
-    orderNote: source.orderNote?.trim() || null,
+    orderNote: emptyToNull(source.orderNote?.trim()),
     orderExtra: source.orderExtra ?? null,
     items: source.products.map(orderItemPayload),
-    preferredReadyTime: source.preferredReadyTime || null,
+    preferredReadyTime: emptyToNull(source.preferredReadyTime),
     cashPaymentAmount: cashAmount,
   }
 }
@@ -86,8 +90,8 @@ export function buildQuoteInput(source: PayloadSource): QuoteOrderInput {
     orderType: source.collectionOption,
     isOnlinePayment: source.paymentOption === 'ONLINE',
     addressPlaceId: addressPlaceIdOf(source),
-    preferredReadyTime: source.preferredReadyTime || null,
-    couponCode: source.couponCode || null,
+    preferredReadyTime: emptyToNull(source.preferredReadyTime),
+    couponCode: emptyToNull(source.couponCode),
     items: source.products.map((line) => ({
       ...orderItemPayload(line),
       expectedLineTotal: centsToDecimalString(lineTotalCents(line)),

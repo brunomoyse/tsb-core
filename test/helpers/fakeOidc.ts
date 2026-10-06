@@ -46,7 +46,11 @@ class ErrorResponseImpl extends Error {
   error: string
   error_description: string | null
   constructor(args: { error: string; error_description?: string }) {
-    super(args.error_description || args.error)
+    super(
+      args.error_description === undefined || args.error_description === ''
+        ? args.error
+        : args.error_description,
+    )
     this.name = 'ErrorResponse'
     this.error = args.error
     this.error_description = args.error_description ?? null
@@ -55,7 +59,8 @@ class ErrorResponseImpl extends Error {
 
 // One class for every copy of this module (a `vi.resetModules()` re-evaluates it): `useOidc` tests it with `instanceof`.
 const classHolder = globalThis as { __fakeErrorResponse?: typeof ErrorResponseImpl }
-export const FakeErrorResponse = (classHolder.__fakeErrorResponse ??= ErrorResponseImpl)
+classHolder.__fakeErrorResponse ??= ErrorResponseImpl
+export const FakeErrorResponse = classHolder.__fakeErrorResponse
 
 /** A refusal as Zitadel answers it: `refusal('invalid_grant')` is an expired, revoked or already used refresh token. */
 export const refusal = (error: string) => new FakeErrorResponse({ error })

@@ -6,13 +6,32 @@
 export type AuthErrorKind = 'rateLimited' | 'network' | 'server' | 'rejected'
 
 interface HttpLikeError {
-  response?: { status?: number; _data?: unknown }
+  /** `responseData` is ofetch's `response._data`. */
+  response?: { status?: number; responseData?: unknown }
   statusCode?: number
   data?: unknown
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const toStatus = (value: unknown): number | undefined =>
+  typeof value === 'number' ? value : undefined
+
+/** Narrows an unknown thrown value to the error shapes the HTTP clients produce. */
+const asHttpLikeError = (error: unknown): HttpLikeError | undefined => {
+  if (!isRecord(error)) return undefined
+  const { response } = error
+  const { _data: responseData } = isRecord(response) ? response : {}
+  return {
+    response: isRecord(response) ? { status: toStatus(response.status), responseData } : undefined,
+    statusCode: toStatus(error.statusCode),
+    data: error.data,
+  }
+}
+
 export const httpStatusOf = (error: unknown): number | undefined => {
-  const err = error as HttpLikeError | null | undefined
+  const err = asHttpLikeError(error)
   return err?.response?.status ?? err?.statusCode
 }
 
@@ -26,16 +45,11 @@ export function classifyAuthError(error: unknown): AuthErrorKind {
 
 /** The i18n key to show: the shared wording for the rate limiter, the network and the server, `rejectedKey` otherwise. */
 export function authErrorKey(error: unknown, rejectedKey: string): string {
-  switch (classifyAuthError(error)) {
-    case 'rateLimited':
-      return 'notify.errors.tooManyRequests'
-    case 'network':
-      return 'notify.errors.networkError'
-    case 'server':
-      return 'notify.errors.serverError'
-    default:
-      return rejectedKey
-  }
+  const kind = classifyAuthError(error)
+  if (kind === 'rateLimited') return 'notify.errors.tooManyRequests'
+  if (kind === 'network') return 'notify.errors.networkError'
+  if (kind === 'server') return 'notify.errors.serverError'
+  return rejectedKey
 }
 
 /**
@@ -43,8 +57,8 @@ export function authErrorKey(error: unknown, rejectedKey: string): string {
  * or a domain that does not exist, such as "name@hotmail.coma". Shown on the email field itself.
  */
 export function isUndeliverableEmailError(error: unknown): boolean {
-  const err = error as HttpLikeError | null | undefined
   if (httpStatusOf(error) !== 422) return false
-  const body = (err?.data ?? err?.response?._data) as { error?: unknown } | null | undefined
-  return body?.error === 'invalid_email'
+  const err = asHttpLikeError(error)
+  const body = err?.data ?? err?.response?.responseData
+  return isRecord(body) && body.error === 'invalid_email'
 }

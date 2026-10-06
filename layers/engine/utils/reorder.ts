@@ -94,9 +94,11 @@ export function planReorder(items: ReorderItem[]): ReorderPlan {
       }
       // A choice without a group cannot be a selection (the API's `groupId` is a mandatory UUID and an empty one
       // fails the whole order): like the cart store does, it stays the plain legacy `choice` (a `choiceId` on the line).
-      selections = legacyChoice.choiceGroupId
-        ? [{ groupId: legacyChoice.choiceGroupId, choiceId: legacyChoice.id, quantity }]
-        : []
+      const { choiceGroupId } = legacyChoice
+      selections =
+        choiceGroupId !== undefined && choiceGroupId !== ''
+          ? [{ groupId: choiceGroupId, choiceId: legacyChoice.id, quantity }]
+          : []
     } else {
       selections = []
     }

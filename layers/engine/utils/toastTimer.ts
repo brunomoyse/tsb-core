@@ -19,11 +19,14 @@ export interface TimerEnv<H> {
 const defaultEnv: TimerEnv<ReturnType<typeof setTimeout>> = {
   now: () => Date.now(),
   set: (fn, ms) => setTimeout(fn, ms),
-  clear: (handle) => clearTimeout(handle),
+  clear: (handle) => {
+    clearTimeout(handle)
+  },
 }
 
 export function createToastTimer<H = ReturnType<typeof setTimeout>>(
   onExpire: () => void,
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the default clock is only ever used with the default handle type `H`
   env: TimerEnv<H> = defaultEnv as unknown as TimerEnv<H>,
 ) {
   let handle: H | null = null

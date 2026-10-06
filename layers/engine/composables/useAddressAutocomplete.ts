@@ -146,7 +146,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
     isDismissed.value = false
     cancelPendingSearch()
 
-    debounceTimer = setTimeout(async () => {
+    const search = async () => {
       const query = addressQuery.value.trim()
       const seq = ++searchSeq
 
@@ -185,6 +185,9 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
         })
         suggestions.value = []
       }
+    }
+    debounceTimer = setTimeout(() => {
+      void search()
     }, 250)
   }
 
@@ -193,7 +196,7 @@ export function useAddressAutocomplete(onUpdate: (address: Address | null) => vo
     cancelPendingSearch()
     isLoadingAddress.value = true
     try {
-      const data: { resolveAddress: Address } = await $gqlFetch(RESOLVE_ADDRESS, {
+      const data: { resolveAddress: Address | null } = await $gqlFetch(RESOLVE_ADDRESS, {
         variables: { placeId: suggestion.placeId, sessionToken },
       })
 

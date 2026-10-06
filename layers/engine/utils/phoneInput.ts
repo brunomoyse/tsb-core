@@ -42,7 +42,7 @@ export async function formatPhoneForDisplay(e164: string): Promise<string> {
   // libphonenumber leaves the trunk 0 off a number that fits no pattern: exactly the mobile with a digit missing that
   // the hint is about. Group it the way a mobile is written (0470 12 34 5) so the missing digit can be seen.
   const digits = `0${parsed.nationalNumber}`
-  return `${digits.slice(0, 4)} ${digits.slice(4).replace(/(\d{2})(?=\d)/gu, '$1 ')}`.trim()
+  return `${digits.slice(0, 4)} ${digits.slice(4).replace(/(?<pair>\d{2})(?=\d)/gu, '$<pair> ')}`.trim()
 }
 
 export async function classifyPhoneInput(raw: string): Promise<PhoneInputState> {
@@ -53,7 +53,7 @@ export async function classifyPhoneInput(raw: string): Promise<PhoneInputState> 
     await import('libphonenumber-js')
   // Default to BE so a leading "0" parses as a Belgian national number; a leading "+" or "00" overrides it.
   const parsed = parsePhoneNumberFromString(trimmed, 'BE')
-  if (parsed?.isValid()) return { kind: 'valid', e164: parsed.format('E.164') }
+  if (parsed?.isValid() === true) return { kind: 'valid', e164: parsed.format('E.164') }
 
   const length = validatePhoneNumberLength(trimmed, 'BE')
   if (length === 'TOO_LONG' || length === 'NOT_A_NUMBER') return { kind: 'invalid' }

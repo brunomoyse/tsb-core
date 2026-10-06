@@ -19,13 +19,13 @@ export function useOrderExtras() {
     const items = cartStore.products
     if (items.length === 0) return ''
     return offered
-      .filter(
-        (extra) =>
-          extra.unavailableWhenCartOnlyIn?.length &&
-          items.every((item) =>
-            extra.unavailableWhenCartOnlyIn!.includes(item.product.category?.slug ?? ''),
-          ),
-      )
+      .filter((extra) => {
+        const restricted = extra.unavailableWhenCartOnlyIn ?? []
+        return (
+          restricted.length > 0 &&
+          items.every((item) => restricted.includes(item.product.category?.slug ?? ''))
+        )
+      })
       .map((extra) => extra.name)
       .join(',')
   })
@@ -33,7 +33,7 @@ export function useOrderExtras() {
   const isLocked = (name: string) => lockedNames(lockedKey.value).has(name)
 
   const entries = () => {
-    if (!cartStore.orderExtra) cartStore.orderExtra = []
+    cartStore.orderExtra ??= []
     return cartStore.orderExtra
   }
   const removeExtra = (name: string) => {
@@ -56,7 +56,7 @@ export function useOrderExtras() {
 
     const locked = lockedNames(lockedKey.value)
     for (const extra of offered) {
-      if (!extra.unavailableWhenCartOnlyIn?.length) continue
+      if ((extra.unavailableWhenCartOnlyIn?.length ?? 0) === 0) continue
       if (locked.has(extra.name)) removeExtra(extra.name)
       else if (extra.preselected) addDefaultExtra(extra)
     }
@@ -114,7 +114,7 @@ export function useOrderExtras() {
     get: () => sauce.value !== 'none',
     set: (value: boolean) => {
       const pre = sauceConfig ? defaultOrderExtra(sauceConfig).options?.[0] : undefined
-      sauce.value = value && pre ? pre : 'none'
+      sauce.value = value && pre !== undefined && pre !== '' ? pre : 'none'
     },
   })
 

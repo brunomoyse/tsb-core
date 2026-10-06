@@ -14,7 +14,8 @@ test.beforeEach(async ({ context }) => {
 
 // Brand name to assert in the page title. Defaults to Tokyo Sushi Bar; override
 // Via E2E_BRAND_NAME when running against another white-label brand.
-const BRAND_NAME = process.env.E2E_BRAND_NAME || 'Tokyo Sushi'
+const brandNameEnv = process.env.E2E_BRAND_NAME
+const BRAND_NAME = brandNameEnv === undefined || brandNameEnv === '' ? 'Tokyo Sushi' : brandNameEnv
 
 test.describe('Public page smoke tests', () => {
   test('Homepage loads', async ({ page }) => {

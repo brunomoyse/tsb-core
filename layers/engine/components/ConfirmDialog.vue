@@ -36,7 +36,12 @@
 import { nextTick, ref, useId, watch } from 'vue'
 
 // Styled replacement for window.confirm(), matching the account modals.
-const { open } = defineProps<{
+const {
+  open,
+  message = undefined,
+  confirmLabel = undefined,
+  cancelLabel = undefined,
+} = defineProps<{
   open: boolean
   title: string
   message?: string

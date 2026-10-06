@@ -2,8 +2,7 @@ import { GraphQLFailure, type Operations, type RequestContext } from './graphql.
 import { type MockOrder, type MockState } from './state.ts'
 import { PLACES, describePlace, findPlace, policyFor, restaurantConfigFor } from './restaurant.ts'
 import { allProducts, findProduct } from './catalog/index.ts'
-import { evaluateCoupon, money, quote, toCents } from './pricing.ts'
-import type { QuoteInput } from './pricing.ts'
+import { evaluateCoupon, money, quote, toCents, type QuoteInput } from './pricing.ts'
 import type { Scenario } from './types.ts'
 
 /*
@@ -14,7 +13,10 @@ import type { Scenario } from './types.ts'
  * is reported as a gap and fails the test), and add the topic to `subscriptions` if it is pushed.
  */
 
-const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+const sleep = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms)
+  })
 
 const failure = (spec: NonNullable<Scenario['quoteFailure']>) =>
   new GraphQLFailure(
@@ -89,7 +91,7 @@ function createOrder(context: RequestContext, args: Record<string, unknown>) {
 
   const id = state.nextOrderId()
   const now = new Date().toISOString()
-  const online = Boolean(input.isOnlinePayment)
+  const online = input.isOnlinePayment
   const origin = context.origin ?? ''
   const order: MockOrder = {
     id,

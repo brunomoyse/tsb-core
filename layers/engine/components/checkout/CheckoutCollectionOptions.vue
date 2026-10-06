@@ -211,14 +211,19 @@ interface OpeningHourEntry {
   dinnerClose?: string
 }
 
-const { openingHours, orderingEnabled, isCurrentlyOpen, availableSlotsToday, preparationMinutes } =
-  defineProps<{
-    openingHours?: Record<string, OpeningHourEntry | null>
-    orderingEnabled?: boolean
-    isCurrentlyOpen?: boolean
-    availableSlotsToday?: RestaurantTimeSlot[]
-    preparationMinutes?: number
-  }>()
+const {
+  openingHours = undefined,
+  orderingEnabled,
+  isCurrentlyOpen,
+  availableSlotsToday = undefined,
+  preparationMinutes = undefined,
+} = defineProps<{
+  openingHours?: Record<string, OpeningHourEntry | null>
+  orderingEnabled?: boolean
+  isCurrentlyOpen?: boolean
+  availableSlotsToday?: RestaurantTimeSlot[]
+  preparationMinutes?: number
+}>()
 
 const emit = defineEmits<{
   'open-address-modal': []

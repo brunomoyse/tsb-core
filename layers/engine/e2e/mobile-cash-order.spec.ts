@@ -404,7 +404,7 @@ test.describe('Cash order on a phone', () => {
       expect(await cartLines(page)).toHaveLength(0)
     })
 
-    await test.step('the browser reported no error during the run', async () => {
+    await test.step('the browser reported no error during the run', () => {
       expect(problems(), problems().join('\n')).toEqual([])
     })
   })

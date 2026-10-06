@@ -34,7 +34,7 @@ test.describe('Checkout flows', () => {
       await page.waitForURL('**/fr/order-completed/**', { timeout: 15_000 })
     })
 
-    const orderId = page.url().match(/order-completed\/([^/?#]+)/u)?.[1] ?? ''
+    const orderId = /order-completed\/([^/?#]+)/u.exec(page.url())?.[1] ?? ''
     expect(orderId).toMatch(/^[0-9a-f-]{36}$/u)
 
     await test.step('Order-completed page shows confirmation + items', async () => {

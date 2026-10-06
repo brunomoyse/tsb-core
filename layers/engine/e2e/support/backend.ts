@@ -20,15 +20,15 @@ export interface Backend {
   /** The mock's control client. Throws in real mode: check `isMock` first. */
   readonly mock: MockControl
   /** An order in a given state, as the Mollie webhook would have left it. Returns its id. */
-  seedOrder(input: SeedOrderInput): Promise<string>
+  seedOrder: (input: SeedOrderInput) => Promise<string>
   /** Simulates the webhook landing: the order moves to `status` and its payment to `paymentStatus`. */
-  settleOrder(orderId: string, status: OrderStatus, paymentStatus: PaymentStatus): Promise<void>
-  deleteOrder(orderId: string): Promise<void>
+  settleOrder: (orderId: string, status: OrderStatus, paymentStatus: PaymentStatus) => Promise<void>
+  deleteOrder: (orderId: string) => Promise<void>
   /**
    * The sign-in code mailed to `email` since `after`: read from Zitadel's event store in real mode, the scenario's
    * `otp.code` in mock mode (the mock accepts exactly that code).
    */
-  otpCode(email: string, after: Date): Promise<string>
+  otpCode: (email: string, after: Date) => Promise<string>
 }
 
 export function mockBackend(control: MockControl): Backend {
@@ -59,20 +59,24 @@ export function realBackend(): Backend {
         'mock control is not available against the real backend: guard with backend.isMock',
       )
     },
-    seedOrder: async (input) =>
-      seedOrder({
-        userId: realUserId(),
-        status: input.status,
-        online: input.online,
-        paymentStatus: input.paymentStatus,
-        createdMinutesAgo: input.createdMinutesAgo,
-        withItem: input.withItem,
-      }),
-    settleOrder: async (orderId, status, paymentStatus) => {
+    seedOrder: (input) =>
+      Promise.resolve(
+        seedOrder({
+          userId: realUserId(),
+          status: input.status,
+          online: input.online,
+          paymentStatus: input.paymentStatus,
+          createdMinutesAgo: input.createdMinutesAgo,
+          withItem: input.withItem,
+        }),
+      ),
+    settleOrder: (orderId, status, paymentStatus) => {
       settleOrder(orderId, status, paymentStatus)
+      return Promise.resolve()
     },
-    deleteOrder: async (orderId) => {
+    deleteOrder: (orderId) => {
       deleteOrder(orderId)
+      return Promise.resolve()
     },
     otpCode: (email, after) => waitForOtpFromZitadel(email, { after }),
   }

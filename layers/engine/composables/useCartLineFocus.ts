@@ -37,7 +37,8 @@ export function useCartLineFocus(options: CartLineFocusOptions) {
     const now = document.activeElement
     if (now && now !== document.body && now.isConnected) return
     // The surface itself may be gone (the menu drops the side cart with the last line): its detached lines are not candidates.
-    const remaining = root?.isConnected ? Array.from(root.querySelectorAll<HTMLElement>(LINE)) : []
+    const remaining =
+      root?.isConnected === true ? Array.from(root.querySelectorAll<HTMLElement>(LINE)) : []
     const target = remaining.length
       ? remaining[Math.min(index, remaining.length - 1)]?.querySelector<HTMLElement>(REMOVE)
       : options.fallback()

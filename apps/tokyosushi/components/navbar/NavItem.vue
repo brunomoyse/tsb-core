@@ -58,7 +58,13 @@ interface NavItemProps {
   badge?: number
 }
 
-const { to, icon, tooltipText, ariaLabel, badge = 0 } = defineProps<NavItemProps>()
+const {
+  to = undefined,
+  icon,
+  tooltipText = undefined,
+  ariaLabel = undefined,
+  badge = 0,
+} = defineProps<NavItemProps>()
 
 const NuxtLinkLocale = resolveComponent('NuxtLinkLocale')
 

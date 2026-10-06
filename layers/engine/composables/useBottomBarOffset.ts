@@ -38,7 +38,7 @@ export function useBottomBarOffset(
   if (!import.meta.client) return
 
   const id = Symbol('bottom-bar')
-  if (options.reserveSpace) reserved.add(id)
+  if (options.reserveSpace === true) reserved.add(id)
   let observer: ResizeObserver | null = null
 
   const measure = (el: HTMLElement): void => {

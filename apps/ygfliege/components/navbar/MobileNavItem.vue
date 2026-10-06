@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-const { to, label } = defineProps<{
+const { to = undefined, label = undefined } = defineProps<{
   to?: string
   label?: string
 }>()

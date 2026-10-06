@@ -290,22 +290,23 @@ export default defineConfig({
   },
   lint: {
     plugins: ['typescript', 'vue'],
+    // Everything is an error: the codebase is at zero, and a warning would just pile up unnoticed again.
     categories: {
       correctness: 'error',
-      suspicious: 'warn',
-      pedantic: 'warn',
-      perf: 'warn',
-      style: 'warn',
+      suspicious: 'error',
+      pedantic: 'error',
+      perf: 'error',
+      style: 'error',
     },
     rules: {
-      'no-shadow': 'warn',
+      'no-shadow': 'error',
       'no-underscore-dangle': [
-        'warn',
+        'error',
         {
           allow: ['__dirname', '__vue_app__', '_client'],
         },
       ],
-      'default-case-last': 'warn',
+      'default-case-last': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
       eqeqeq: 'error',
@@ -333,11 +334,17 @@ export default defineConfig({
       // lint run (without Nuxt's generated types) believes useless, the second rewrites arrow bodies as `=>{  x; }`.
       'typescript/no-unnecessary-type-assertion': 'off',
       'typescript/strict-void-return': 'off',
+      // Wants every parameter deeply readonly, which Vue refs, DOM events and most library types can never be: it fired on
+      // two thirds of the codebase for no safety gain.
+      'typescript/prefer-readonly-parameter-types': 'off',
+      // Import order is the formatter's job; this rule disagreed with it and the pre-commit fix never settled it.
+      'sort-imports': 'off',
     },
     overrides: [
       {
         // Tests cast to fakes, build partial objects and read `any` from mocks: these rules are noise there, and only there.
-        files: ['**/*.test.{ts,mjs}', 'test/**/*.ts'],
+        // The Playwright specs and their helpers (e2e/) are test code too.
+        files: ['**/*.test.{ts,mjs}', 'test/**/*.ts', '**/e2e/**/*.ts'],
         rules: {
           'typescript/prefer-readonly-parameter-types': 'off',
           'typescript/no-unsafe-type-assertion': 'off',

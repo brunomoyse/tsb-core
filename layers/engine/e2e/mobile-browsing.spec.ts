@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import {
   categoryIds,
   chipIsActive,
@@ -254,9 +255,9 @@ test.describe('dietary filters', () => {
     )
   })
 
-  const chip = (page: import('@playwright/test').Page, key: string) =>
+  const chip = (page: Page, key: string) =>
     page.getByRole('button', { name: message('tokyosushi', 'fr', key), exact: true })
-  const cards = (page: import('@playwright/test').Page) => page.locator(SEL.productCard)
+  const cards = (page: Page) => page.locator(SEL.productCard)
 
   test('each chip narrows the menu, shows it is on, and a second tap lifts it', async ({
     page,
@@ -306,7 +307,7 @@ test.describe('dietary filters', () => {
 
 test.describe('product modal', () => {
   /** A product that opens the modal (it has choices) and its id. */
-  const choiceProductId = async (page: import('@playwright/test').Page) => {
+  const choiceProductId = async (page: Page) => {
     const card = page.locator(SEL.choiceProduct).first()
     await expect(card).toBeVisible()
     return (await card.getAttribute('data-product-id')) ?? ''

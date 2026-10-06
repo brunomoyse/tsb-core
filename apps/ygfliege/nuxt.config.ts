@@ -14,6 +14,12 @@ import { fileURLToPath } from 'node:url'
 //             UseAppConfig().brand resolve against this brand.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// An empty variable counts as unset: it falls back like a missing one (CI passes unset repository variables as '').
+const envOr = (name: string, fallback: string): string => {
+  const value = process.env[name]
+  return value !== undefined && value !== '' ? value : fallback
+}
+
 const appDir = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineNuxtConfig({
@@ -90,11 +96,11 @@ export default defineNuxtConfig({
    * org/project defaults here.
    */
   sentry: {
-    org: process.env.SENTRY_ORG || 'yangguofu-malatang-liege',
-    project: process.env.SENTRY_PROJECT || 'ygfliege-core',
+    org: envOr('SENTRY_ORG', 'yangguofu-malatang-liege'),
+    project: envOr('SENTRY_PROJECT', 'ygfliege-core'),
     authToken: process.env.SENTRY_AUTH_TOKEN,
     sourcemaps: {
-      disable: !process.env.SENTRY_AUTH_TOKEN,
+      disable: envOr('SENTRY_AUTH_TOKEN', '') === '',
     },
   },
 

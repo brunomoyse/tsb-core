@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', {
         Object.assign(this.user, user)
       } else {
         // Callers pass a full profile when no user is loaded yet (e.g. updateMe's result).
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- callers pass a full profile when no user is loaded
         this.user = user as User
       }
     },

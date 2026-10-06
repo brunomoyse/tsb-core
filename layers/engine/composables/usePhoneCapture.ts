@@ -27,18 +27,12 @@ import { useNotificationsStore } from '#engine/stores/notifications'
 // Shown (never blocking) under a valid number that looks like a mobile with a digit missing: see `looksLikeShortMobile`.
 const SHORT_MOBILE_HINT_KEY = 'form.phoneMaybeMobile'
 
-const messageKey = (state: PhoneInputState): string | null => {
-  switch (state.kind) {
-    case 'incomplete':
-      return 'form.incompletePhone'
-    case 'needsCountryCode':
-      return 'checkout.phoneCapture.addCountryPrefix'
-    case 'invalid':
-      return 'form.invalidPhone'
-    default:
-      return null
-  }
+const MESSAGE_KEYS: Partial<Record<PhoneInputState['kind'], string>> = {
+  incomplete: 'form.incompletePhone',
+  needsCountryCode: 'checkout.phoneCapture.addCountryPrefix',
+  invalid: 'form.invalidPhone',
 }
+const messageKey = (state: PhoneInputState): string | null => MESSAGE_KEYS[state.kind] ?? null
 
 const UPDATE_ME = /* GraphQL */ `
   mutation ($input: UpdateUserInput!) {
@@ -134,7 +128,7 @@ export function usePhoneCapture(phoneInputRef?: Ref<HTMLInputElement | null>) {
     const state = await classifyPhoneInput(phoneLocal.value)
     const key = messageKey(state)
     // The capture was closed while the library loaded (Cancel): no stray error on a collapsed card.
-    phoneError.value = key && !isCollapsed.value ? t(key) : ''
+    phoneError.value = key !== null && !isCollapsed.value ? t(key) : ''
     draftLooksShortMobile.value =
       state.kind === 'valid' && looksLikeShortMobile(state.e164) && !isCollapsed.value
     return state

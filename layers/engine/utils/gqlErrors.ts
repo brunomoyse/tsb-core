@@ -185,7 +185,9 @@ export function describeGqlError(
   }
 
   const code = err.code ?? legacyCodeOf(err.message)
-  return code ? describeErrorCode(code, policy, { ...err.extensions, ...context }) : null
+  return code !== null && code !== ''
+    ? describeErrorCode(code, policy, { ...err.extensions, ...context })
+    : null
 }
 
 /**
@@ -212,7 +214,10 @@ export function describeCouponRefusal(
   result: CouponValidationResult,
   policy: OrderingPolicy,
 ): GqlErrorDescriptor {
-  const code = result.errorCode ?? (result.errorMessage ? legacyCodeOf(result.errorMessage) : null)
-  const describe = code ? CODE_TABLE[code] : undefined
+  const message = result.errorMessage
+  const code =
+    result.errorCode ??
+    (message !== undefined && message !== null && message !== '' ? legacyCodeOf(message) : null)
+  const describe = code !== null && code !== '' ? CODE_TABLE[code] : undefined
   return describe ? describe({}, policy) : { key: 'coupon.invalid' }
 }

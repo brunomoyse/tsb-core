@@ -9,7 +9,7 @@ export default defineEventHandler((event) => {
   // Same source as the sitemap and schema.org (public runtime config).
   // Baked at build time, overridable via NUXT_PUBLIC_BASE_URL.
   // Reading process.env.BASE_URL here depended on a runtime-only env var.
-  const baseUrl = String(useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
+  const baseUrl = (useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
   const isProduction = baseUrl === PRODUCTION_BASE_URL
 
   if (!isProduction) {

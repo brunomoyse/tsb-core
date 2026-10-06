@@ -56,7 +56,7 @@ export const menuItemImage = (
 ) => {
   const photo = photoFor?.(product.slug)
   if (photo) return imageObject(absolute(baseUrl, photo.png), absolute(baseUrl, photo.webp))
-  if (!s3BaseUrl || !product.id)
+  if (s3BaseUrl === undefined || s3BaseUrl === '' || !product.id)
     return imageObject(`${baseUrl}${PRODUCT_IMAGE_FALLBACK}`, `${baseUrl}${PRODUCT_IMAGE_FALLBACK}`)
   return imageObject(
     productImageUrl(s3BaseUrl, product.id, 'png'),
@@ -77,8 +77,8 @@ export const buildMenuSchema = (input: MenuSchemaInput) => {
       })
     }
     const diets: string[] = []
-    if (product.isHalal) diets.push('https://schema.org/HalalDiet')
-    if (product.isVegetarian) diets.push('https://schema.org/VegetarianDiet')
+    if (product.isHalal === true) diets.push('https://schema.org/HalalDiet')
+    if (product.isVegetarian === true) diets.push('https://schema.org/VegetarianDiet')
 
     sections.get(product.category.id)!.items.push({
       '@type': 'MenuItem',

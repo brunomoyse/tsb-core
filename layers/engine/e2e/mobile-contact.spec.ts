@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from './support/test'
 import { waitForNuxtHydration } from './support/hydration'
 
@@ -12,7 +13,7 @@ test.beforeEach(({ backend }) => {
 
 const MESSAGE = 'Les gyozas étaient parfaits, merci beaucoup !'
 
-async function fill(page: import('@playwright/test').Page, { message = MESSAGE } = {}) {
+async function fill(page: Page, { message = MESSAGE } = {}) {
   await page.goto('/fr/contact')
   await waitForNuxtHydration(page)
   await page.locator('#feedback-name').scrollIntoViewIfNeeded()
@@ -23,8 +24,7 @@ async function fill(page: import('@playwright/test').Page, { message = MESSAGE }
   await page.locator('#feedback-message').fill(message)
 }
 
-const send = (page: import('@playwright/test').Page) =>
-  page.getByRole('button', { name: 'Envoyer', exact: true })
+const send = (page: Page) => page.getByRole('button', { name: 'Envoyer', exact: true })
 
 test('the button stays off until every field is filled and the message has 10 characters', async ({
   page,

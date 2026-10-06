@@ -129,7 +129,7 @@ export function lineIssuesByKey(
   const byKey: Record<string, QuoteLineIssue[]> = {}
   quote.lines.forEach((line, index) => {
     const key = lineKeys[index]
-    if (key && line.issues.length > 0) byKey[key] = line.issues
+    if (key !== undefined && key !== '' && line.issues.length > 0) byKey[key] = line.issues
   })
   return byKey
 }
@@ -192,9 +192,12 @@ export function totalsFromQuote(
   const outOfZone = codes.has('DELIVERY_OUT_OF_ZONE') || codes.has('DELIVERY_AREA_EXCLUDED')
 
   const minimumIssue = quote.issues.find((issue) => issue.code === 'DELIVERY_MINIMUM_NOT_MET')
-  const minimumCents = minimumIssue?.minimum
-    ? toCents(minimumIssue.minimum)
-    : policy.deliveryMinimumCents
+  const minimumCents =
+    minimumIssue?.minimum !== undefined &&
+    minimumIssue.minimum !== null &&
+    minimumIssue.minimum !== ''
+      ? toCents(minimumIssue.minimum)
+      : policy.deliveryMinimumCents
   const isMinimumReached = !isDelivery || !minimumIssue
 
   return {
@@ -224,10 +227,18 @@ export type CouponVerdict =
 
 export function couponVerdict(quote: OrderQuote, cartCouponCode: string | null): CouponVerdict {
   const { coupon } = quote
-  if (!cartCouponCode || !coupon || coupon.code !== cartCouponCode) return { kind: 'unchanged' }
+  if (cartCouponCode === null || cartCouponCode === '' || !coupon || coupon.code !== cartCouponCode)
+    return { kind: 'unchanged' }
   if (coupon.valid) return { kind: 'applied', discountCents: toCents(quote.couponDiscount) }
-  if (!coupon.errorCode || coupon.errorCode === COUPON_NOT_EVALUATED) return { kind: 'unchanged' }
-  return { kind: 'refused', errorCode: coupon.errorCode }
+  const { errorCode } = coupon
+  if (
+    errorCode === undefined ||
+    errorCode === null ||
+    errorCode === '' ||
+    errorCode === COUPON_NOT_EVALUATED
+  )
+    return { kind: 'unchanged' }
+  return { kind: 'refused', errorCode }
 }
 
 /**
@@ -237,9 +248,10 @@ export function couponVerdict(quote: OrderQuote, cartCouponCode: string | null):
  */
 export function isQuoteUnsupportedError(err: unknown): boolean {
   const gqlError = unwrapGqlError(err)
-  return Boolean(
-    gqlError?.hasCode('GRAPHQL_VALIDATION_FAILED') &&
-    /quoteOrder|QuoteOrder/u.test(gqlError.message),
+  return (
+    gqlError !== null &&
+    gqlError.hasCode('GRAPHQL_VALIDATION_FAILED') &&
+    /quoteOrder|QuoteOrder/u.test(gqlError.message)
   )
 }
 

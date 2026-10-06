@@ -13,6 +13,12 @@ import { fileURLToPath } from 'node:url'
 //             UseAppConfig().brand resolve against this brand.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// An empty variable counts as unset: it falls back like a missing one (CI passes unset repository variables as '').
+const envOr = (name: string, fallback: string): string => {
+  const value = process.env[name]
+  return value !== undefined && value !== '' ? value : fallback
+}
+
 const appDir = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineNuxtConfig({
@@ -121,11 +127,11 @@ export default defineNuxtConfig({
    * is the CI-only source-map upload token.
    */
   sentry: {
-    org: process.env.SENTRY_ORG || 'tokyo-sushi-bar',
-    project: process.env.SENTRY_PROJECT || 'tsb-core',
+    org: envOr('SENTRY_ORG', 'tokyo-sushi-bar'),
+    project: envOr('SENTRY_PROJECT', 'tsb-core'),
     authToken: process.env.SENTRY_AUTH_TOKEN,
     sourcemaps: {
-      disable: !process.env.SENTRY_AUTH_TOKEN,
+      disable: envOr('SENTRY_AUTH_TOKEN', '') === '',
     },
   },
 
