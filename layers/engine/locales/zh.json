@@ -153,6 +153,7 @@
     "ssoApple": "使用 Apple 继续",
     "authenticating": "正在登录…",
     "callbackError": "登录失败，请重试。",
+    "idpCancelled": "登录已取消，您可以重试。",
     "tryAgain": "重试",
     "profileTitle": "快完成了！我们该怎么称呼您？",
     "profileSubtitle": "我们将使用您的名字来个性化您的订单和邮件。",

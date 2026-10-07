@@ -153,6 +153,7 @@
     "ssoApple": "Continuer avec Apple",
     "authenticating": "Connexion en cours…",
     "callbackError": "La connexion a échoué. Veuillez réessayer.",
+    "idpCancelled": "Connexion annulée. Vous pouvez réessayer.",
     "tryAgain": "Réessayer",
     "profileTitle": "Presque fini ! Comment devons-nous vous appeler ?",
     "profileSubtitle": "Nous utiliserons votre prénom pour personnaliser vos commandes et e-mails.",

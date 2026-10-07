@@ -7,6 +7,12 @@
           {{ $t('login.tryAgain') }}
         </NuxtLinkLocale>
       </div>
+      <div v-else-if="cancelled" data-testid="idp-cancelled">
+        <p class="text-lg font-medium text-neutral-800">{{ $t('login.idpCancelled') }}</p>
+        <NuxtLinkLocale to="/auth/login" class="text-primary-700 underline mt-2 inline-block">
+          {{ $t('login.tryAgain') }}
+        </NuxtLinkLocale>
+      </div>
       <div v-else-if="error" class="text-red-700">
         <p class="text-lg font-medium">{{ $t('login.callbackError') }}</p>
         <NuxtLinkLocale to="/auth/login" class="text-primary-700 underline mt-2 inline-block">
@@ -30,6 +36,7 @@
 <script lang="ts" setup>
 import { definePageMeta, onMounted, ref, useRoute, useSeoMeta } from '#imports'
 import ProfileNameForm from '#engine/components/auth/ProfileNameForm.vue'
+import { isIdpSignInCancelled } from '#engine/utils/authErrors'
 import { reportError } from '#engine/utils/reportError'
 import { useI18n } from 'vue-i18n'
 
@@ -41,6 +48,8 @@ const route = useRoute()
 const { t } = useI18n()
 const error = ref(false)
 const rateLimited = ref(false)
+// The customer stopped on the Google or Apple screen: not an error, just the way back.
+const cancelled = ref(false)
 const needsProfile = ref(false)
 const profileLoading = ref(false)
 const profileError = ref('')
@@ -100,6 +109,10 @@ onMounted(async () => {
     const result = await finalizeOidcAuth(authRequestId, session.sessionId, session.sessionToken)
     redirectToCallback(result.callbackUrl)
   } catch (e: any) {
+    if (isIdpSignInCancelled(e)) {
+      cancelled.value = true
+      return
+    }
     reportError(e, 'auth.idpCallback')
     const status = e?.response?.status || e?.statusCode
     if (status === 429) {

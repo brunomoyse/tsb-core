@@ -62,3 +62,15 @@ export function isUndeliverableEmailError(error: unknown): boolean {
   const body = err?.data ?? err?.response?.responseData
   return isRecord(body) && body.error === 'invalid_email'
 }
+
+/**
+ * The customer did not finish the Google or Apple step (cancelled, closed it, came back with the back button): the
+ * backend answers 400 `idp_intent_not_succeeded`. Not a failure of the shop, so the callback page offers to try again
+ * without reporting it.
+ */
+export function isIdpSignInCancelled(error: unknown): boolean {
+  if (httpStatusOf(error) !== 400) return false
+  const err = asHttpLikeError(error)
+  const body = err?.data ?? err?.response?.responseData
+  return isRecord(body) && body.error === 'idp_intent_not_succeeded'
+}

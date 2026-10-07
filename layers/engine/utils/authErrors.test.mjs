@@ -4,6 +4,7 @@ import {
   authErrorKey,
   classifyAuthError,
   httpStatusOf,
+  isIdpSignInCancelled,
   isUndeliverableEmailError,
 } from './authErrors.ts'
 import assert from 'node:assert/strict'
@@ -52,4 +53,13 @@ test('a 422 invalid_email is an undeliverable address, nothing else is', () => {
     false,
   )
   assert.equal(isUndeliverableEmailError(new TypeError('Failed to fetch')), false)
+})
+
+test('a 400 idp_intent_not_succeeded is a sign-in the customer cancelled, nothing else is', () => {
+  const body = { error: 'idp_intent_not_succeeded' }
+  assert.equal(isIdpSignInCancelled({ statusCode: 400, data: body }), true)
+  assert.equal(isIdpSignInCancelled({ response: { status: 400, _data: body } }), true)
+  assert.equal(isIdpSignInCancelled({ statusCode: 400, data: { error: 'other' } }), false)
+  assert.equal(isIdpSignInCancelled({ statusCode: 502, data: body }), false)
+  assert.equal(isIdpSignInCancelled(new TypeError('Failed to fetch')), false)
 })

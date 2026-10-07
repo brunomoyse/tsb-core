@@ -153,6 +153,7 @@
     "ssoApple": "Continue with Apple",
     "authenticating": "Logging you in…",
     "callbackError": "Login failed. Please try again.",
+    "idpCancelled": "Sign-in cancelled. You can try again.",
     "tryAgain": "Try again",
     "profileTitle": "Almost done! What should we call you?",
     "profileSubtitle": "We'll use your first name to personalise your orders and emails.",

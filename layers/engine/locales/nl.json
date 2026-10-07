@@ -153,6 +153,7 @@
     "ssoApple": "Doorgaan met Apple",
     "authenticating": "Bezig met inloggen…",
     "callbackError": "Het inloggen is mislukt. Probeer het opnieuw.",
+    "idpCancelled": "Inloggen geannuleerd. U kunt het opnieuw proberen.",
     "tryAgain": "Opnieuw proberen",
     "profileTitle": "Bijna klaar! Hoe mogen we u noemen?",
     "profileSubtitle": "We gebruiken uw voornaam om uw bestellingen en e-mails te personaliseren.",
