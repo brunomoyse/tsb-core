@@ -686,7 +686,10 @@
     "confirmTitle": "Uw huidige winkelwagen vervangen?",
     "confirmBody": "Uw winkelwagen bevat al artikelen. Wilt u hem vervangen door deze bestelling, of deze bestelling eraan toevoegen?",
     "replace": "Vervangen",
-    "add": "Toevoegen aan winkelwagen"
+    "add": "Toevoegen aan winkelwagen",
+    "barTitle": "Uw laatste bestelling",
+    "barMore": "+{count} ander | +{count} andere",
+    "barClose": "Uw laatste bestelling verbergen"
   },
   "cookies": {
     "accept": "Accepteren",

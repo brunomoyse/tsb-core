@@ -686,7 +686,10 @@
     "confirmTitle": "替换当前购物车？",
     "confirmBody": "购物车中已有商品。要用此订单替换，还是将此订单加入购物车？",
     "replace": "替换",
-    "add": "加入购物车"
+    "add": "加入购物车",
+    "barTitle": "您的上一单",
+    "barMore": "等另外 {count} 项 | 等另外 {count} 项",
+    "barClose": "隐藏上一单"
   },
   "cookies": {
     "accept": "接受",

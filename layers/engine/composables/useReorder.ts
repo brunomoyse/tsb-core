@@ -75,7 +75,7 @@ export function useReorder() {
     void navigateTo(localePath('/checkout'))
   }
 
-  const reorder = (order: Order) => {
+  const reorder = (order: Pick<Order, 'items'>) => {
     const plan = planReorder(order.items)
     if (plan.lines.length === 0) {
       notifications.notify({

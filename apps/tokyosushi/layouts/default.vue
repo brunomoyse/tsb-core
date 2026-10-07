@@ -132,6 +132,8 @@
         <ClientOnly>
           <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
           <LazyCartFloatingCartBar v-if="isMenuPage" />
+          <!-- A signed-in customer's last order, one tap away, where an order starts (home, menu) -->
+          <LazyCartReorderBar v-if="isMenuPage || isHomePage" />
         </ClientOnly>
         <ClientOnly>
           <ToastAnnouncer />
@@ -204,4 +206,6 @@ const title = computed(() =>
   t(typeof route.meta.title === 'string' ? route.meta.title : 'head.title'),
 )
 const isMenuPage = computed(() => route.path.endsWith('/menu'))
+// The home page of any language (/fr, /en/, ...), or / before the locale redirect.
+const isHomePage = computed(() => /^\/(?:[a-z]{2}\/?)?$/u.test(route.path))
 </script>

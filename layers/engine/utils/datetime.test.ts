@@ -3,6 +3,7 @@ import {
   RESTAURANT_TZ,
   formatDate,
   formatDateTime,
+  formatDayMonth,
   formatTime,
   getBrusselsParts,
   isSameBrusselsDay,
@@ -44,6 +45,11 @@ describe('formatting in Brussels time', () => {
 
   it('follows the requested locale', () => {
     expect(formatDate('2026-07-14T10:30:00Z', 'en-US')).toBe('07/14/2026')
+  })
+
+  it('gives day and short month in Brussels time', () => {
+    expect(formatDayMonth('2026-10-03T22:30:00Z', 'fr-BE')).toBe('4 oct.')
+    expect(formatDayMonth('2026-10-03T10:30:00Z', 'en-GB')).toBe('3 Oct')
   })
 })
 

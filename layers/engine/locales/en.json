@@ -686,7 +686,10 @@
     "confirmTitle": "Replace your current cart?",
     "confirmBody": "Your cart already has items. Replace it with this order, or add this order to it?",
     "replace": "Replace",
-    "add": "Add to cart"
+    "add": "Add to cart",
+    "barTitle": "Your last order",
+    "barMore": "+{count} more | +{count} more",
+    "barClose": "Hide your last order"
   },
   "cookies": {
     "accept": "Accept",

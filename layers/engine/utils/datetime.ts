@@ -19,6 +19,15 @@ export function formatTime(iso: string, locale: string): string {
   }).format(new Date(iso))
 }
 
+/** Day and short month ("3 oct.", "3 Oct"), for a recent date where the year goes without saying. */
+export function formatDayMonth(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    timeZone: RESTAURANT_TZ,
+  }).format(new Date(iso))
+}
+
 export function formatDate(iso: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
     day: '2-digit',
