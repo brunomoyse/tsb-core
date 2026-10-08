@@ -49,7 +49,7 @@
     "@vue/test-utils": "^2.5.1",
     "happy-dom": "^20.14.5",
     "jiti": "^2.7.0",
-    "oxc-parser": "^0.141.0",
+    "oxc-parser": "^0.153.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^6.0.3",
     "vite-plus": "1.0.0",
