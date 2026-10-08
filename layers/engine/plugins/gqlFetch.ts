@@ -1,4 +1,4 @@
-// Plugins: gqlFetch.ts — OIDC Bearer token authentication via Zitadel
+// Plugins: gqlFetch.ts, OIDC Bearer token authentication via Zitadel
 import { rememberCurrentPage } from '#engine/utils/authFlow'
 import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { GqlError, type GqlErrorEntry, isAbortError, operationNameOf } from '#engine/utils/gqlError'

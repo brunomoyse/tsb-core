@@ -28,7 +28,7 @@ onMounted(async () => {
   const { useOidc } = await import('#engine/composables/useOidc')
 
   // Front-channel logout: Zitadel already ended the session and notified us via
-  // A logout_token query param. Just clear local state and redirect — do NOT
+  // A logout_token query param. Just clear local state and redirect; do NOT
   // Call signOut() or we loop back into Zitadel's end-session endpoint.
   if (route.query.logout_token) {
     const { removeUser } = useOidc()

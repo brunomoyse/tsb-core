@@ -251,7 +251,7 @@
               >
             </div>
           </div>
-          <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+          <!-- Delivery minimum (delivery only; pickup has no minimum) -->
           <div
             v-if="!isMinimumReached"
             data-testid="cart-minimum-warning"
@@ -303,7 +303,7 @@
 import * as productImage from '#engine/utils/productImage'
 import { computed, defineAsyncComponent, nextTick, ref, useRuntimeConfig, watch } from '#imports'
 import type { CartItem } from '#engine/types'
-// Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page — otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
+// Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page; otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
 import { cartLineKeys } from '#engine/utils/cartLines'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'

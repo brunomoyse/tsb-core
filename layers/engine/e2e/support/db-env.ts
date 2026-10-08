@@ -1,7 +1,7 @@
 /*
  * Centralised env loader for the e2e DB tunnel + Zitadel decryption.
  *
- * Every value here is required — no in-code defaults. Hardcoded fallbacks
+ * Every value here is required; no in-code defaults. Hardcoded fallbacks
  * for a connection password were previously committed to a public repo
  * and burned through a rotation; do not re-introduce them, even for the
  * "boring" fields like host/db/user, since they document the deployment

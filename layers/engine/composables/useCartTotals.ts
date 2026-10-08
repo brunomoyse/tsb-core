@@ -32,7 +32,7 @@ import { useTracking } from '#engine/composables/useTracking'
  *
  * The contract mirrors what the backend charges (see tsb-service/pkg/money/rounding.go and
  * `computePayableCents`): subtotal stays raw, the discounts are rounded individually, and
- * payableCents — the amount Mollie is asked for — is rounded once after summing everything,
+ * payableCents, the amount Mollie is asked for, is rounded once after summing everything,
  * including the delivery fee and the online payment fee.
  */
 

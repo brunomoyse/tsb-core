@@ -183,24 +183,22 @@
           l&rsquo;Union européenne&nbsp;:
         </p>
         <ul class="terms-list">
+          <li><strong>Mollie B.V.</strong> (Pays-Bas)&nbsp;: traitement des paiements en ligne,</li>
           <li>
-            <strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne,
-          </li>
-          <li>
-            <strong>Zitadel</strong> (auto-hébergé, Gravelines, France) &mdash; fournisseur
+            <strong>Zitadel</strong> (auto-hébergé, Gravelines, France)&nbsp;: fournisseur
             d&rsquo;identité et d&rsquo;authentification (protocole OIDC),
           </li>
           <li>
-            <strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels
+            <strong>Scaleway</strong> (France)&nbsp;: envoi d&rsquo;e-mails transactionnels
             (confirmation de commande, vérification de compte),
           </li>
           <li>
-            <strong>Umami</strong> (auto-hébergé, France) &mdash; analyse de fréquentation anonyme
+            <strong>Umami</strong> (auto-hébergé, France)&nbsp;: analyse de fréquentation anonyme
             (sans cookies),
           </li>
-          <li><strong>OVH</strong> (France) &mdash; hébergement du Site,</li>
+          <li><strong>OVH</strong> (France)&nbsp;: hébergement du Site,</li>
           <li>
-            <strong>Google</strong> (UE) &mdash; authentification OAuth (uniquement si le Client
+            <strong>Google</strong> (UE)&nbsp;: authentification OAuth (uniquement si le Client
             choisit cette option).
           </li>
         </ul>
@@ -251,7 +249,7 @@
         </p>
         <ul class="terms-list">
           <li>
-            <strong>Préférence linguistique</strong> (<code>i18n_redirected</code>) &mdash; cookie
+            <strong>Préférence linguistique</strong> (<code>i18n_redirected</code>)&nbsp;: cookie
             mémorisant la langue choisie par le Client.
           </li>
         </ul>
@@ -328,7 +326,7 @@ const localizedUrl = useLocalizedUrl()
 const { t, locale } = useI18n()
 const { brand } = useAppConfig()
 
-// "Belgique" is intentionally hardcoded — this French legal page targets a Belgian entity.
+// "Belgique" is intentionally hardcoded; this French legal page targets a Belgian entity.
 const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
 const fullAddress = `${streetCityLine}, Belgique`
 

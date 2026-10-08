@@ -109,7 +109,7 @@ async function* walk(dir) {
   }
 }
 
-// `$t('a.b')`, `t("a.b", ...)`, `te('a.b')` — the literal must be the whole first argument.
+// `$t('a.b')`, `t("a.b", ...)`, `te('a.b')`; the literal must be the whole first argument.
 const callPattern =
   /(?<![\w.])(?:\$t|\$tc|t|tc|te)\(\s*(['"`])([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+)\1\s*[,)]/gu
 

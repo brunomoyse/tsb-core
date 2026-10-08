@@ -15,7 +15,7 @@
       <!-- Content -->
       <div class="err-content">
         <span class="sr-only">
-          {{ t('error.title' + statusCode, t('error.titleGeneric')) }} — {{ statusCode }}
+          {{ t('error.title' + statusCode, t('error.titleGeneric')) }} ({{ statusCode }})
         </span>
 
         <h1 class="err-title">{{ errorTitle }}</h1>

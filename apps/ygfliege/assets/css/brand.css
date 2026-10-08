@@ -1,4 +1,4 @@
-/* Yangguofu Malatang Liège brand tokens — ported from the official guide
+/* Yangguofu Malatang Liège brand tokens; ported from the official guide
    (malatang GUIDELINES.md / tokens.css). Tailwind utilities cover most usage;
    these custom properties exist for ported marketing-page CSS and for values
    utilities can't express (warm borders, eases). */
@@ -32,7 +32,7 @@
    in serif and leave the Chinese characters to the system sans (mixed glyphs). 24 KB instead of the three slices (78 KB) the full family cost on every page, and
    no 300 unicode-range rules in the stylesheet. Made with Google's `text=` subsetting:
      https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=<the characters below>
-   典冬刻功在就幸拌本此汤甜番石磨福穹经茄草菌辣酸醇阴顶香骨麻 + printable ASCII, French accents, « » · – — ’ “ ” €, pinyin vowels.
+   典冬刻功在就幸拌本此汤甜番石磨福穹经茄草菌辣酸醇阴顶香骨麻 + printable ASCII, French accents, « » · en and em dashes, ’ “ ” €, pinyin vowels.
    A new Chinese character in one of those texts is drawn by the next font of the stack until this file is made again. */
 @font-face {
   font-family: 'YGF Accent Serif';
@@ -65,18 +65,18 @@
   /* Accessibility-corrected variants of the brand orange.
      *
      * GUIDELINES.md §4.3 specifies white text on #F58220, but that measures
-     * 2.59:1 against white — below the 4.5:1 WCAG AA minimum the same guide
+     * 2.59:1 against white; below the 4.5:1 WCAG AA minimum the same guide
      * asks for in §8.4 (Lighthouse Accessibility 100). These two tokens
      * resolve that conflict without abandoning the palette: both are existing
      * steps of the official orange scale, not invented colors.
      *
      * Use --ygf-orange-on-white for any fill that carries white label text
-     * (buttons, selected chips, badges). Decorative orange — large surfaces,
-     * borders, icons, imagery, hover washes — stays #F58220.
+     * (buttons, selected chips, badges). Decorative orange (large surfaces,
+     * borders, icons, imagery, hover washes) stays #F58220.
      */
-  --ygf-orange-on-white: #c2570c; /* white text: 4.50:1 — AA */
+  --ygf-orange-on-white: #c2570c; /* white text: 4.50:1, AA */
   --ygf-orange-on-white-hover: #9a3412; /* white text: 7.31:1 */
-  --ygf-orange-text: #9a3412; /* orange text on cream: 6.88:1 — AA */
+  --ygf-orange-text: #9a3412; /* orange text on cream: 6.88:1, AA */
   /* Keyboard-focus indicator colour (WCAG 1.4.11, >= 3:1 on white and the
        orange tints). Mirrors the `focus` colour in tailwind.config.ts. */
   --ygf-focus: var(--ygf-orange-on-white);
@@ -92,7 +92,7 @@
   --ygf-success-dark: #1f7a4a; /* success text/fill that passes AA (the success token) */
   --ygf-error: #d32f2f;
 
-  /* Warm neutrals — the guide's body/secondary text grays. */
+  /* Warm neutrals: the guide's body/secondary text grays. */
   --ygf-gray-100: #f5f5f5;
   --ygf-gray-200: #e5e5e5;
   --ygf-gray-400: #999999;

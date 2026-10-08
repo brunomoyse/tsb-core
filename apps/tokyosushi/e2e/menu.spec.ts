@@ -39,7 +39,7 @@ test.describe('Menu browsing', () => {
     await page.locator('#menuSearch').focus()
     await page.keyboard.type('gyoza', { delay: 50 })
 
-    // Wait for debounced search (300ms) to take effect — category tab count should decrease
+    // Wait for debounced search (300ms) to take effect; category tab count should decrease
     await expect(async () => {
       const filteredCategoryCount = await page.locator(SEL.categoryCard).count()
       expect(filteredCategoryCount).toBeLessThan(initialCategoryCount)
@@ -54,13 +54,13 @@ test.describe('Menu browsing', () => {
 
     const choiceProduct = page.locator(SEL.choiceProduct).first()
     if (await choiceProduct.isVisible().catch(() => false)) {
-      // Click the product image area — event bubbles to parent div with @click handler
+      // Click the product image area; event bubbles to parent div with @click handler
       await choiceProduct.locator('img').first().click()
 
       // Wait for the router.push({ query: { product: id } }) to take effect
       await page.waitForURL('**product=**', { timeout: 5_000 })
 
-      // Modal fetches product data via GraphQL — wait with generous timeout
+      // Modal fetches product data via GraphQL; wait with generous timeout
       await expect(page.locator(SEL.productModal)).toBeVisible({ timeout: 15_000 })
 
       // Modal should have an add-to-cart button

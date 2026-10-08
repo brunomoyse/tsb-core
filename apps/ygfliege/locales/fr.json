@@ -10,7 +10,7 @@
     "serverError": "Fuzi s'active en cuisine, mais quelque chose n'a pas fonctionné. Réessayez dans un instant."
   },
   "schema": {
-    "siteDescription": "Composez votre bol de malatang à Liège — bouillon aux herbes cuit minute",
+    "siteDescription": "Composez votre bol de malatang à Liège : bouillon aux herbes cuit minute",
     "cuisine": "Chinoise",
     "home": {
       "title": "__BRAND__ - Malatang à Liège",
@@ -109,7 +109,7 @@
       "video": {
         "label": "Frais, cuit à la minute",
         "title": "Composez votre bol, on s'occupe de la cuisson",
-        "subtitle": "Légumes, tofu, viandes, nouilles — choisissez ce qui vous fait envie. Cuit minute dans votre bouillon, jamais frit.",
+        "subtitle": "Légumes, tofu, viandes, nouilles : choisissez ce qui vous fait envie. Cuit minute dans votre bouillon, jamais frit.",
         "pause": "Pause vidéo",
         "play": "Lire la vidéo"
       },

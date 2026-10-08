@@ -142,7 +142,7 @@ test('rollout fallback: an old backend sends English text without a code', () =>
     ['invalid coupon: invalid or expired coupon', 'coupon.invalid'],
     ['invalid coupon: minimum order amount of 30 not met', 'notify.errors.couponMinOrderNotMet'],
     [
-      'preferred ready time is no longer available — it is within the minimum preparation window',
+      'preferred ready time is no longer available; it is within the minimum preparation window',
       'notify.errors.slotTooSoon',
     ],
     [

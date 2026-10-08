@@ -1,9 +1,9 @@
-/* Yangguofu Malatang Liège — commerce component vocabulary.
+/* Yangguofu Malatang Liège: commerce component vocabulary.
  *
  * The buttons, card and section headings are ported from the vitrine site's
  * design system (../../../../malatang/src/styles/layers/components.css) so the
  * shop and ygfliege.be read as one brand at cutover. The form field, chip and
- * quantity stepper have no vitrine equivalent — that site has no forms — so
+ * quantity stepper have no vitrine equivalent, that site has no forms, so
  * they are derived from GUIDELINES.md §4.3–4.4: 48px pill CTAs, 12px cards,
  * warm orange-tinted borders and shadows, 200ms ease.
  *
@@ -81,7 +81,7 @@
     }
   }
 
-  /* On orange/photo backgrounds — the guide's inverted CTA. */
+  /* On orange/photo backgrounds: the guide's inverted CTA. */
   .btn-white {
     background: var(--ygf-white);
     border-color: var(--ygf-white);
@@ -147,7 +147,7 @@
       border-color var(--duration-normal) var(--ease-out);
   }
 
-  /* Lift only where the whole card is a control — opt in with .card-interactive
+  /* Lift only where the whole card is a control; opt in with .card-interactive
        so static cards (order summaries, receipts) don't animate under the cursor. */
   @media (hover: hover) {
     .card-interactive:hover {
@@ -222,7 +222,7 @@
   }
 
   /* ===== CHIP ===== */
-  /* Dietary filters, spice levels, delivery zones — selectable pills. */
+  /* Dietary filters, spice levels, delivery zones; selectable pills. */
   .chip {
     display: inline-flex;
     align-items: center;
@@ -246,7 +246,7 @@
 
   /* Unselected hover only. `.chip:hover` outweighs `.chip[aria-pressed]`
        on specificity, so without these guards hovering a *selected* chip
-       reverted the fill to near-white while the label stayed white — an
+       reverted the fill to near-white while the label stayed white; an
        invisible label. Keep the guards if you add another selected variant. */
   @media (hover: hover) {
     .chip:not(:disabled):not([aria-pressed='true']):not([aria-selected='true']):not(
@@ -346,7 +346,7 @@
   }
 
   /* Compact variant for the narrow 2-col product-card grid: at 375px the
-       full-size stepper overflows the card next to the price. Mobile-first —
+       full-size stepper overflows the card next to the price. Mobile-first;
        compact below sm, back to full size from sm up. */
   .stepper--sm {
     gap: 0;

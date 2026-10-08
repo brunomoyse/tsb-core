@@ -2,7 +2,7 @@ import type { Page, Route } from '@playwright/test'
 
 /*
  * Wait for Nuxt 4 to finish mounting. The old probe (`app.$nuxt?.isHydrating`)
- * was a Nuxt 2 internal that doesn't exist in Nuxt 4 — it always resolved
+ * was a Nuxt 2 internal that doesn't exist in Nuxt 4; it always resolved
  * truthy as soon as #__nuxt had a Vue app, *unless* the page was still
  * about:blank, in which case it polled forever.
  *
@@ -31,7 +31,7 @@ export async function waitForNuxtHydration(page: Page) {
    * Nuxt devtools renders an iframe overlay (#nuxt-devtools-container) in
    * dev mode. On mobile viewports its floating panel sits over the
    * FloatingCartBar / other interactive elements and intercepts clicks.
-   * Hide it for the duration of the test — has no effect in prod (the
+   * Hide it for the duration of the test; has no effect in prod (the
    * element doesn't exist) or if devtools is already disabled.
    */
   await page

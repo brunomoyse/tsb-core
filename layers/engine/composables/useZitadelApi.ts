@@ -6,14 +6,14 @@ interface SessionResponse {
 }
 
 interface VerifyOtpResponse extends SessionResponse {
-  /** True when the OTP request created a placeholder Zitadel user — the
+  /** True when the OTP request created a placeholder Zitadel user, the
    *  frontend must capture first/last name before /auth/finalize. */
   requiresProfile: boolean
 }
 
 interface IdpSessionResponse extends SessionResponse {
   /** True when the IdP returned no name (e.g. Apple only sends it on the
-   *  first-ever authorization) and a placeholder Zitadel user was created —
+   *  first-ever authorization) and a placeholder Zitadel user was created,
    *  the frontend must capture first/last name before /auth/finalize. */
   requiresProfile: boolean
 }
@@ -28,7 +28,7 @@ interface IdpStartResponse {
 
 /**
  * Calls tsb-service auth proxy endpoints which forward to Zitadel's Session API.
- * The proxy adds the service account PAT — the frontend never touches Zitadel directly.
+ * The proxy adds the service account PAT; the frontend never touches Zitadel directly.
  */
 export function useZitadelApi() {
   const config = useRuntimeConfig()
@@ -43,7 +43,7 @@ export function useZitadelApi() {
     return 'fr'
   }
 
-  /** Step 1: request an OTP — creates a Zitadel session and emails a 6-digit code. */
+  /** Step 1: request an OTP; creates a Zitadel session and emails a 6-digit code. */
   function requestOtpLogin(loginName: string): Promise<SessionResponse> {
     return $fetch<SessionResponse>(`${apiUrl}/auth/session/otp/request`, {
       method: 'POST',
@@ -52,7 +52,7 @@ export function useZitadelApi() {
   }
 
   /** Step 2: verify the OTP code; returns a fresh sessionToken with otpEmail check fulfilled.
-   *  When requiresProfile is true the user is a fresh placeholder created during request — the
+   *  When requiresProfile is true the user is a fresh placeholder created during request, the
    *  frontend must call completeOtpProfile before /auth/finalize. */
   function verifyOtpLogin(
     sessionId: string,
@@ -112,7 +112,7 @@ export function useZitadelApi() {
   }
 
   /** Create a session from a completed IdP intent. userId is optional (provided when user already exists in Zitadel).
-   *  When requiresProfile is true the IdP omitted the name and a placeholder account was created — the
+   *  When requiresProfile is true the IdP omitted the name and a placeholder account was created, the
    *  frontend must call completeOtpProfile before /auth/finalize (same as the OTP flow). */
   function createIdpSession(
     idpIntentId: string,

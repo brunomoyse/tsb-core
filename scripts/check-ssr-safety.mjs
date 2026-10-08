@@ -22,7 +22,7 @@
  *  - `*.subscribe(...)`
  *
  * Scope: components/, composables/, layouts/, pages/, middleware/, plugins/ of the engine layer
- * and of every app under apps/ — code that runs in the SSR render path. The server/ directory is
+ * and of every app under apps/; code that runs in the SSR render path. The server/ directory is
  * excluded; Nitro handlers run per request and don't share state in this way.
  */
 
@@ -81,7 +81,7 @@ async function* walk(dir) {
 
 function extractScriptBlock(source, filePath) {
   if (filePath.endsWith('.ts')) return { code: source, offset: 0 }
-  // .vue — pick the <script setup> block (or first <script>) by hand. We don't need full SFC
+  // .vue; pick the <script setup> block (or first <script>) by hand. We don't need full SFC
   // parsing, just the script body offset so line numbers reported below match the file.
   const setupMatch = source.match(/<script[^>]*\bsetup\b[^>]*>([\s\S]*?)<\/script>/u)
   if (setupMatch) {
@@ -191,7 +191,7 @@ async function checkFile(filePath, repoRoot) {
       sourceType: 'module',
     })
   } catch (e) {
-    // Parse error — skip silently; oxlint will catch real syntax issues.
+    // Parse error: skip silently; oxlint will catch real syntax issues.
     return []
   }
   const violations = []
@@ -220,7 +220,7 @@ async function main() {
     return
   }
   console.error(
-    `ssr-safety: ${allViolations.length} top-level subscription(s) — each leaks per SSR request:\n`,
+    `ssr-safety: ${allViolations.length} top-level subscription(s): each leaks per SSR request:\n`,
   )
   for (const v of allViolations) {
     console.error(`  ${v.file}:${v.line}:${v.col}  .${v.method}() at top of setup`)

@@ -1,4 +1,4 @@
-// V-reveal — IntersectionObserver-based scroll-reveal for marketing sections.
+// V-reveal: IntersectionObserver-based scroll-reveal for marketing sections.
 // Registered universally: the server side is a no-op (getSSRProps) so SSR can
 // Resolve the directive and content renders visible for crawlers/no-JS; the
 // Hidden state is only applied client-side on mount. Usage:

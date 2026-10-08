@@ -63,7 +63,7 @@ export interface RestaurantConfigResponse {
 }
 
 interface UseRestaurantConfigOptions {
-  // When true, don't block on the initial query — callers render a loading state via the returned `pending` ref. Default preserves the original awaited semantics.
+  // When true, don't block on the initial query; callers render a loading state via the returned `pending` ref. Default preserves the original awaited semantics.
   lazy?: boolean
   /**
    * False: the server render does not ask for it (the browser does, unless the page's own call put the answer in the
@@ -203,7 +203,7 @@ export async function useRestaurantConfig(options: UseRestaurantConfigOptions = 
 
   /*
    * Register the subscription and the watcher synchronously, before any await. After an `await`, Vue's active
-   * effect-scope binding is fragile and the watch can leak across CSR navigations — manifesting as a "Cannot
+   * effect-scope binding is fragile and the watch can leak across CSR navigations, manifesting as a "Cannot
    * destructure property 'bum' of 'v' as it is null" crash when the next page's Suspense unmounts and the stale
    * watch still mutates state on the unmounting component.
    *

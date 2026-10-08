@@ -12,7 +12,7 @@ let wsClientPromise: Promise<Client> | null = null
  * Subscribers register here so global lifecycle events (visibility,
  * online/offline) are handled exactly once across the whole app. With
  * multiple parallel subscriptions on a single page (e.g. /me/orders
- * subscribing per active order), per-subscription listeners would race —
+ * subscribing per active order), per-subscription listeners would race;
  * each handler would dispose the client another handler had just created,
  * preventing the connection from ever stabilizing on Safari mobile where
  * the OS aggressively backgrounds tabs and severs the WebSocket.
@@ -32,7 +32,7 @@ let proactivelyDisposed = false
 
 /*
  * Tear down the client without notifying subscribers to restart. Used when
- * the page is unloading or the WebView is about to be suspended by the OS —
+ * the page is unloading or the WebView is about to be suspended by the OS;
  * sends a clean WS close frame so the server cancels in-flight resolvers
  * without the lib/pq "canceling statement due to user request" noise that
  * arises from a timeout-based close. Subscribers keep their `stop` handles
@@ -71,7 +71,7 @@ const recycleClient = () => {
     s.restart()
   })
   /*
-   * GraphQL subscriptions don't replay history — events emitted during the
+   * GraphQL subscriptions don't replay history; events emitted during the
    * disconnect window are lost. Callers that need gap recovery pass an
    * onReconnect callback that refetches the underlying query.
    */
@@ -135,7 +135,7 @@ const handlePageHide = () => {
 }
 
 const handlePageShow = (e: PageTransitionEvent) => {
-  // Restored from bfcache — visibilitychange may not fire, so recycle here.
+  // Restored from bfcache: visibilitychange may not fire, so recycle here.
   if (e.persisted) recycleClient()
 }
 
@@ -250,7 +250,7 @@ interface SubscriptionOptions {
    * Called after the shared WS client reconnects (cellular handoff, CF tunnel
    * timeout, online event, visibility-driven recycle). The handler typically
    * refetches the underlying query so events emitted during the disconnect
-   * window — which GraphQL subscriptions don't replay — are not lost.
+   * window, which GraphQL subscriptions don't replay, are not lost.
    */
   onReconnect?: () => void | Promise<void>
 }
@@ -295,7 +295,7 @@ export function useGqlSubscription<T = unknown>(
   const subscriber: Subscriber = {
     restart: () => {
       /*
-       * Shared client was just torn down — the previous stop() targets
+       * Shared client was just torn down; the previous stop() targets
        * a disposed client, so drop it and resubscribe against the next
        * client created on demand.
        */
@@ -329,7 +329,7 @@ export function useGqlSubscription<T = unknown>(
     error,
     stop: cleanup,
     /*
-     * Retained for backward compatibility — global lifecycle is now
+     * Retained for backward compatibility; global lifecycle is now
      * handled internally, so this only tears down the local subscription.
      */
     closeAll: cleanup,

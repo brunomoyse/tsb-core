@@ -32,7 +32,7 @@ const error = ref(false)
  * Module-instance once-guard. Hydration mismatches, accidental remounts and
  * HMR can fire onMounted twice; the OIDC authorization code in the URL is
  * one-shot, so a second handleCallback() call hits Zitadel with an
- * already-consumed code and returns invalid_grant — the user sees "expired".
+ * already-consumed code and returns invalid_grant; the user sees "expired".
  */
 let callbackHandled = false
 
@@ -52,7 +52,7 @@ onMounted(async () => {
       if (import.meta.dev) console.log('User profile loaded, navigating...')
     } catch (e) {
       // Token exchange succeeded but processCallback failed (e.g. silent renew error).
-      // The OIDC tokens are already stored (localStorage) — navigate to menu as fallback.
+      // The OIDC tokens are already stored (localStorage); navigate to menu as fallback.
       reportError(e, 'auth.processCallback')
       const localePath = useLocalePath()
       navigateTo(localePath('menu'))

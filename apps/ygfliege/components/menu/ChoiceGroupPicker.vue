@@ -135,7 +135,7 @@ import { toCents } from '#engine/utils/money'
 import type { ProductChoicesApi } from '#engine/composables/useProductChoices'
 
 /**
- * Renders one choice group's options — shared by ProductModal (fixed sets)
+ * Renders one choice group's options; shared by ProductModal (fixed sets)
  * and BowlComposer so both surfaces present choices identically:
  *
  *  - pick-one groups whose names all match an official broth → photo cards

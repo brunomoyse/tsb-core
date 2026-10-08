@@ -21,7 +21,7 @@ ARG UMAMI_WEBSITE_ID
 ARG NUXT_PUBLIC_TURNSTILE_SITE_KEY
 
 # Sentry (optional). SENTRY_DSN is public-by-design (embedded in client bundle).
-# SENTRY_AUTH_TOKEN is private — only used at build time to upload source maps.
+# SENTRY_AUTH_TOKEN is private: only used at build time to upload source maps.
 ARG SENTRY_DSN
 ARG SENTRY_ENVIRONMENT
 ARG SENTRY_RELEASE

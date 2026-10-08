@@ -152,7 +152,7 @@
         </div>
       </div>
 
-      <!-- Choice groups — same picker as the bowl composer, so the fixed
+      <!-- Choice groups: same picker as the bowl composer, so the fixed
                  sets show the official broth cards and spice chips too. -->
       <section
         v-for="(group, index) in choiceGroups"
@@ -269,7 +269,7 @@ import { useTracking } from '#engine/composables/useTracking'
 /**
  * Fixed-set product dialog (broth + spice sets, plain dishes, drinks).
  * Composer products (any group with maxSelections > 1) open BowlComposer
- * instead — pages/menu.vue routes between the two. Both share
+ * instead: pages/menu.vue routes between the two. Both share
  * useProductChoices and ChoiceGroupPicker, so a "Menu Découverte" shows the
  * same official broth cards and spice chips as the bowl composer, echoing the
  * "BASE DE SOUPE" spread of the official YGF France menu.

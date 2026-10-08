@@ -211,7 +211,7 @@ const submitProfileUpdate = async (formData: UpdateUserRequest) => {
   closeModal()
 }
 
-// ── Account deletion (immediate, in-app — App Store 5.1.1(v) / GDPR) ──
+// ── Account deletion (immediate, in-app; App Store 5.1.1(v) / GDPR) ──
 
 const showDeleteModal = ref(false)
 const deleteModalRef = ref<HTMLElement | null>(null)
@@ -370,7 +370,7 @@ const updateNotificationPref = async (
 
     <!-- Bento Grid -->
     <div class="bento-grid">
-      <!-- Profile card — avatar + name + edit -->
+      <!-- Profile card: avatar + name + edit -->
       <div class="bento-profile bento-cell" style="--delay: 1">
         <div
           class="bg-tsb-two rounded-2xl p-6 sm:p-7 h-full flex flex-col items-center justify-center text-center"
@@ -671,13 +671,13 @@ const updateNotificationPref = async (
         </button>
       </div>
 
-      <!-- Orders — hero cell -->
+      <!-- Orders: hero cell -->
       <div class="bento-orders bento-cell" style="--delay: 10">
         <OrdersWidget />
       </div>
     </div>
 
-    <!-- Account deletion — subtle, outside the grid -->
+    <!-- Account deletion: subtle, outside the grid -->
     <div class="mt-8 text-center bento-cell" style="--delay: 11">
       <button
         type="button"

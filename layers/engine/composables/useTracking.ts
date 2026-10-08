@@ -19,11 +19,11 @@ export function useTracking() {
   }
 
   const identifyUser = () => {
-    // Umami is anonymous by design — no-op
+    // Umami is anonymous by design; no-op
   }
 
   const resetUser = () => {
-    // Umami is anonymous by design — no-op
+    // Umami is anonymous by design; no-op
   }
 
   return {

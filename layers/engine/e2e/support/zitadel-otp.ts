@@ -1,11 +1,11 @@
 /*
- * Zitadel OTP retrieval for e2e — bypasses the email channel by reading the
+ * Zitadel OTP retrieval for e2e; bypasses the email channel by reading the
  * encrypted OTP code straight from Zitadel's event store and decrypting it
  * with the instance master key.
  *
  * Why: the e2e flow lands on the test domain (tsb.brunomoyse.be) because
  * Zitadel's loginUI is configured there globally, which means the test
- * tsb-service sends the OTP via its own Scaleway sender — a local Mailpit
+ * tsb-service sends the OTP via its own Scaleway sender; a local Mailpit
  * never sees it. The event store is the only place we can recover the code
  * after the fact.
  *
@@ -100,7 +100,7 @@ export async function waitForOtpFromZitadel(
   /*
    * Resolve user id once up front. If the address is brand new the lookup
    * may return empty on the first poll because the placeholder-account
-   * creation in tsb-service races the OTP request slightly — keep retrying
+   * creation in tsb-service races the OTP request slightly; keep retrying
    * until either id or deadline.
    */
   let userId = ''

@@ -196,10 +196,10 @@ export function useOidc() {
     const mgr = getUserManager()
     const user = await mgr.getUser()
     if (user && user.expired !== true) return user.access_token
-    if (!user) return null // No session — nothing to renew
+    if (!user) return null // No session; nothing to renew
 
     /*
-     * Token expired — route through the coalesced silentRenew so concurrent
+     * Token expired: route through the coalesced silentRenew so concurrent
      * callers share one refresh-token use (Zitadel rotates on first use).
      */
     try {
@@ -215,7 +215,7 @@ export function useOidc() {
   /**
    * Attempt silent token renewal. All callers (middleware, plugins, the
    * accessTokenExpired event, getAccessToken) share a single in-flight
-   * promise so we never use the same refresh token twice in parallel —
+   * promise so we never use the same refresh token twice in parallel;
    * Zitadel rotates on first use and would log the loser out.
    *
    * Resolves the renewed user, or `null` when the session is over (nothing to
@@ -307,7 +307,7 @@ export function useOidc() {
      * Wipe local oidc.user:* before redirecting. signoutRedirect() does
      * window.location.replace() and never returns control, and oidc-client-ts
      * does not clear the user store on its own. Without this, the access
-     * token sits in localStorage for its full TTL after logout — any later
+     * token sits in localStorage for its full TTL after logout; any later
      * isAuthenticated() check passes and bounces the user off /login.
      */
     try {

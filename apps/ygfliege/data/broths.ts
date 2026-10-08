@@ -24,7 +24,7 @@ export const BROTHS: [Broth, ...Broth[]] = [
  *
  * Name-keyword matching replaced the earlier sortOrder-keyed map because the
  * fixed sets don't share the composer's shape: "Menu Découverte" offers 4
- * broths, "Festin Végétarien" only 2 (tomato at sortOrder 0 — which the old
+ * broths, "Festin Végétarien" only 2 (tomato at sortOrder 0, which the old
  * map would have captioned as beef bone). Keywords cover all four locales of
  * `product_choice_translations` in the seed. Order matters: "tom-yum" is
  * tested before "tomato" so nl "tomyum-bouillon" never falls into the tomato

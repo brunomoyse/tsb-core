@@ -172,7 +172,7 @@ import { useProductChoices } from '#engine/composables/useProductChoices'
 import { useTracking } from '#engine/composables/useTracking'
 
 /**
- * "Malatang sur mesure" — the signature build-your-own-bowl flow.
+ * "Malatang sur mesure": the signature build-your-own-bowl flow.
  *
  * Split out of ProductModal because the composer is a different task: the modal
  * presents a dish you accept or reject, whereas this is a multi-step assembly

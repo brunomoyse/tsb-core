@@ -70,7 +70,7 @@
           @touchmove="onTouchMove($event, item)"
           @touchend="onTouchEnd(item)"
         >
-          <!-- IMAGE — square, rounded, no crop -->
+          <!-- IMAGE: square, rounded, no crop -->
           <div
             class="row-span-2 sm:row-span-1 w-14 h-14 sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden"
           >
@@ -275,7 +275,7 @@
           >
         </div>
       </div>
-      <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+      <!-- Delivery minimum (delivery only; pickup has no minimum) -->
       <div
         v-if="!isMinimumReached"
         data-testid="cart-minimum-warning"

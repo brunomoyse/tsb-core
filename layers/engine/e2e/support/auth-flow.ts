@@ -1,6 +1,6 @@
 /*
  * OTP login helper used by globalSetup. The runtime auth fixture doesn't go
- * through the UI — it injects OIDC localStorage entries captured here.
+ * through the UI: it injects OIDC localStorage entries captured here.
  *
  * Why one round-trip per test session: oidc-client-ts persists the access
  * token, refresh token, and PKCE state in localStorage; capturing them once

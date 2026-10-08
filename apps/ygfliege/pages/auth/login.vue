@@ -94,13 +94,13 @@ onMounted(async () => {
     if (authRequestId.value) sessionStorage.removeItem('auth_session_expired')
   }
 
-  // Have an authRequestId — AuthFlow can drive the OTP / SSO flows.
+  // Have an authRequestId: AuthFlow can drive the OTP / SSO flows.
   if (authRequestId.value) return
 
   const { useOidc } = await import('#engine/composables/useOidc')
   const { isAuthenticated } = useOidc()
 
-  // Already authenticated and no auth flow in progress — they don't belong here.
+  // Already authenticated and no auth flow in progress; they don't belong here.
   if (await isAuthenticated()) {
     const localePath = useLocalePath()
     await navigateTo(localePath('menu'))
@@ -109,7 +109,7 @@ onMounted(async () => {
 
   /*
    * Bounce through Zitadel so we come back with an authRequestID. This
-   * is the ONLY way AuthFlow obtains one — its finalize step must not mint
+   * is the ONLY way AuthFlow obtains one; its finalize step must not mint
    * a fresh signIn() mid-flow, which orphans the auth_request and strands
    * the user mid-OTP.
    */

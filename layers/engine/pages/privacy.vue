@@ -53,23 +53,23 @@
         <p>Nous collectons les donn&eacute;es suivantes&nbsp;:</p>
         <ul class="privacy-list">
           <li>
-            <strong>Donn&eacute;es de compte</strong> &mdash; nom, pr&eacute;nom, adresse e-mail,
+            <strong>Donn&eacute;es de compte</strong>&nbsp;: nom, pr&eacute;nom, adresse e-mail,
             num&eacute;ro de t&eacute;l&eacute;phone.
           </li>
           <li>
-            <strong>Adresse de livraison</strong> &mdash; rue, num&eacute;ro, code postal, commune.
+            <strong>Adresse de livraison</strong>&nbsp;: rue, num&eacute;ro, code postal, commune.
           </li>
           <li>
-            <strong>Donn&eacute;es de commande</strong> &mdash; produits command&eacute;s, montant,
+            <strong>Donn&eacute;es de commande</strong>&nbsp;: produits command&eacute;s, montant,
             mode de paiement, statut.
           </li>
           <li v-if="brand.hasMobileApp">
-            <strong>Jeton de notification push</strong> &mdash; identifiant technique de
+            <strong>Jeton de notification push</strong>&nbsp;: identifiant technique de
             l&rsquo;appareil (iOS ou Android), utilis&eacute; exclusivement pour l&rsquo;envoi de
             notifications relatives &agrave; vos commandes.
           </li>
           <li>
-            <strong>Donn&eacute;es d&rsquo;analyse</strong> &mdash; pages visit&eacute;es et
+            <strong>Donn&eacute;es d&rsquo;analyse</strong>&nbsp;: pages visit&eacute;es et
             &eacute;v&eacute;nements de navigation, collect&eacute;s de mani&egrave;re anonyme via
             Umami (aucun cookie, aucune donn&eacute;e personnelle).
           </li>
@@ -121,33 +121,31 @@
         <h2 class="privacy-heading">4. Destinataires des donn&eacute;es</h2>
         <p>Vos donn&eacute;es peuvent &ecirc;tre transmises aux prestataires suivants&nbsp;:</p>
         <ul class="privacy-list">
+          <li><strong>Mollie B.V.</strong> (Pays-Bas)&nbsp;: traitement des paiements en ligne.</li>
           <li>
-            <strong>Mollie B.V.</strong> (Pays-Bas) &mdash; traitement des paiements en ligne.
+            <strong>Zitadel</strong> (auto-h&eacute;berg&eacute;, France)&nbsp;: authentification et
+            gestion des identit&eacute;s (OIDC).
           </li>
+          <li><strong>Scaleway</strong> (France)&nbsp;: envoi d&rsquo;e-mails transactionnels.</li>
           <li>
-            <strong>Zitadel</strong> (auto-h&eacute;berg&eacute;, France) &mdash; authentification
-            et gestion des identit&eacute;s (OIDC).
-          </li>
-          <li><strong>Scaleway</strong> (France) &mdash; envoi d&rsquo;e-mails transactionnels.</li>
-          <li>
-            <strong>Umami</strong> (auto-h&eacute;berg&eacute;, France) &mdash; analyse de
+            <strong>Umami</strong> (auto-h&eacute;berg&eacute;, France)&nbsp;: analyse de
             fr&eacute;quentation anonyme (sans cookies).
           </li>
           <li>
-            <strong>OVH</strong> (France) &mdash; h&eacute;bergement du Site et de l&rsquo;API.
+            <strong>OVH</strong> (France)&nbsp;: h&eacute;bergement du Site et de l&rsquo;API.
           </li>
           <li v-if="brand.hasMobileApp">
-            <strong>Apple APNs</strong> &mdash; acheminement des notifications push iOS.
+            <strong>Apple APNs</strong>&nbsp;: acheminement des notifications push iOS.
           </li>
           <li v-if="brand.hasMobileApp">
-            <strong>Google FCM</strong> &mdash; acheminement des notifications push Android.
+            <strong>Google FCM</strong>&nbsp;: acheminement des notifications push Android.
           </li>
           <li>
-            <strong>Google OAuth</strong> &mdash; authentification (uniquement si le Client choisit
+            <strong>Google OAuth</strong>&nbsp;: authentification (uniquement si le Client choisit
             cette option).
           </li>
           <li>
-            <strong>Apple Sign In</strong> &mdash; authentification (uniquement si le Client choisit
+            <strong>Apple Sign In</strong>&nbsp;: authentification (uniquement si le Client choisit
             cette option).
           </li>
         </ul>
@@ -209,8 +207,8 @@
         <h3 class="privacy-subheading">Cookie essentiel</h3>
         <ul class="privacy-list">
           <li>
-            <strong>Pr&eacute;f&eacute;rence linguistique</strong> (<code>i18n_redirected</code>)
-            &mdash; m&eacute;morise la langue choisie par le Client.
+            <strong>Pr&eacute;f&eacute;rence linguistique</strong>
+            (<code>i18n_redirected</code>)&nbsp;: m&eacute;morise la langue choisie par le Client.
           </li>
         </ul>
 
@@ -227,18 +225,18 @@
         <h2 class="privacy-heading">{{ 8 - skipped }}. Conservation des donn&eacute;es</h2>
         <ul class="privacy-list">
           <li>
-            <strong>Donn&eacute;es de compte</strong> &mdash; conserv&eacute;es tant que votre
-            compte est actif ou jusqu&rsquo;&agrave; demande de suppression.
+            <strong>Donn&eacute;es de compte</strong>&nbsp;: conserv&eacute;es tant que votre compte
+            est actif ou jusqu&rsquo;&agrave; demande de suppression.
           </li>
           <li>
-            <strong>Donn&eacute;es de facturation</strong> &mdash; conserv&eacute;es 7 ans
+            <strong>Donn&eacute;es de facturation</strong>&nbsp;: conserv&eacute;es 7 ans
             conform&eacute;ment aux obligations comptables belges.
           </li>
           <li v-if="brand.hasMobileApp">
-            <strong>Jetons push</strong> &mdash; supprim&eacute;s lors de la d&eacute;connexion.
+            <strong>Jetons push</strong>&nbsp;: supprim&eacute;s lors de la d&eacute;connexion.
           </li>
           <li>
-            <strong>Donn&eacute;es analytiques</strong> &mdash; anonymis&eacute;es apr&egrave;s 12
+            <strong>Donn&eacute;es analytiques</strong>&nbsp;: anonymis&eacute;es apr&egrave;s 12
             mois.
           </li>
         </ul>
@@ -252,19 +250,19 @@
           suivants&nbsp;:
         </p>
         <ul class="privacy-list">
-          <li><strong>Acc&egrave;s</strong> &mdash; obtenir une copie de vos donn&eacute;es.</li>
-          <li><strong>Rectification</strong> &mdash; corriger des donn&eacute;es inexactes.</li>
+          <li><strong>Acc&egrave;s</strong>&nbsp;: obtenir une copie de vos donn&eacute;es.</li>
+          <li><strong>Rectification</strong>&nbsp;: corriger des donn&eacute;es inexactes.</li>
           <li>
-            <strong>Effacement</strong> &mdash; demander la suppression de vos donn&eacute;es (vous
+            <strong>Effacement</strong>&nbsp;: demander la suppression de vos donn&eacute;es (vous
             pouvez initier cette demande depuis les param&egrave;tres de votre compte).
           </li>
-          <li><strong>Limitation</strong> &mdash; restreindre le traitement dans certains cas.</li>
+          <li><strong>Limitation</strong>&nbsp;: restreindre le traitement dans certains cas.</li>
           <li>
-            <strong>Portabilit&eacute;</strong> &mdash; recevoir vos donn&eacute;es dans un format
+            <strong>Portabilit&eacute;</strong>&nbsp;: recevoir vos donn&eacute;es dans un format
             structur&eacute;.
           </li>
           <li>
-            <strong>Opposition</strong> &mdash; vous opposer au traitement fond&eacute; sur
+            <strong>Opposition</strong>&nbsp;: vous opposer au traitement fond&eacute; sur
             l&rsquo;int&eacute;r&ecirc;t l&eacute;gitime.
           </li>
         </ul>
@@ -277,7 +275,7 @@
         </p>
         <p class="mt-2">
           Vous pouvez &eacute;galement introduire une r&eacute;clamation aupr&egrave;s de
-          l&rsquo;Autorit&eacute; de protection des donn&eacute;es (APD) &mdash;
+          l&rsquo;Autorit&eacute; de protection des donn&eacute;es (APD)&nbsp;:
           <a
             href="https://www.autoriteprotectiondonnees.be"
             target="_blank"
@@ -319,7 +317,7 @@ const localizedUrl = useLocalizedUrl()
 const { t, locale } = useI18n()
 const { brand } = useAppConfig()
 
-// "Belgique" is intentionally hardcoded — this French legal page targets a
+// "Belgique" is intentionally hardcoded; this French legal page targets a
 // Belgian entity.
 const streetCityLine = `${brand.address.street}, ${brand.address.postal} ${brand.address.city}`
 const fullAddress = `${streetCityLine}, Belgique`

@@ -93,7 +93,7 @@ module.exports = {
           'on-white-hover': '#9A3412',
           text: '#9A3412',
         },
-        // `border-subtle` — faintest warm hairline (--border-subtle).
+        // `border-subtle`: faintest warm hairline (--border-subtle).
         subtle: 'rgba(242, 123, 32, 0.08)',
         // Theme contract shared with every brand app: the engine layer's
         // Components only use these names (primary-N accent scale,
@@ -213,7 +213,7 @@ module.exports = {
         'ygf-lg': '24px',
         'ygf-btn': '48px',
       },
-      // Warm orange-tinted shadows — the guide forbids cold gray shadows.
+      // Warm orange-tinted shadows: the guide forbids cold gray shadows.
       boxShadow: {
         // Tailwind's default scale, re-tinted warm: a stray `shadow-md` inherits the brand, never a grey shadow.
         DEFAULT: '0 2px 8px rgba(242, 123, 32, 0.08)',

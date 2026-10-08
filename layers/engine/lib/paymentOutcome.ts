@@ -1,8 +1,8 @@
 /**
  * User-facing outcome of an online (Mollie) payment attempt.
  *
- * Mollie redirects back to our return URL for EVERY outcome — paid, canceled,
- * failed and expired alike — so the redirect itself tells us nothing. The
+ * Mollie redirects back to our return URL for EVERY outcome, paid, canceled,
+ * failed and expired alike, so the redirect itself tells us nothing. The
  * authoritative signal is the order's `payment.status`, set by the backend
  * webhook. `abandoned` is our own state for "the user left checkout before it
  * finalised" (payment still `open`/`pending`, order still unpaid).

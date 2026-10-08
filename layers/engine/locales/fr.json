@@ -770,7 +770,7 @@
     "contactBody": "Une question ? Contactez-nous à l'adresse ci-dessus."
   },
   "ordering": {
-    "closedPreorder": "Nous sommes fermés pour le moment — commandez dès maintenant pour {time}.",
+    "closedPreorder": "Nous sommes fermés pour le moment. Commandez dès maintenant pour {time}.",
     "loadFailed": "Impossible de vérifier si les commandes sont ouvertes."
   },
   "orderStatus": {

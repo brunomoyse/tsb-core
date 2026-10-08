@@ -15,7 +15,7 @@ import type { Order } from '#engine/types'
  *
  * Mollie redirects back here with a FULL page load for every outcome (paid,
  * canceled, failed, expired, user pressed "back"), so the redirect says nothing
- * and the order query — client-only because SSR has no OIDC token — has not
+ * and the order query, client-only because SSR has no OIDC token, has not
  * resolved yet when setup runs. Everything below therefore derives from the
  * *loaded* order and never from a snapshot taken in setup/onMounted:
  *
@@ -176,7 +176,7 @@ export function useOrderCompleted(orderId: string) {
        times before deciding. Stops as soon as the phase leaves `verifying`
        (subscription/poll update, unmount). If it is still pending when it runs
        out, fall through to the neutral "awaiting confirmation" state (never the retry screen:
-       the webhook may just be late) — the cart is kept and live updates keep running. */
+       the webhook may just be late); the cart is kept and live updates keep running. */
   let verifyRunning = false
   const runVerifyLoop = async () => {
     if (verifyRunning) return
@@ -189,7 +189,7 @@ export function useOrderCompleted(orderId: string) {
           const fresh = orderOf(await fetchOrder())
           if (fresh) mergeOrder(fresh)
         } catch {
-          /* Transient — keep polling */
+          /* Transient: keep polling */
         }
         if (disposed || phase.value !== 'verifying') return
       }

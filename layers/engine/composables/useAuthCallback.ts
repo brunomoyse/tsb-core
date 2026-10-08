@@ -81,7 +81,7 @@ export function useAuthCallback() {
       return
     }
     /*
-     * Cart has items — auto-jump to checkout when ordering is actually
+     * Cart has items: auto-jump to checkout when ordering is actually
      * available: open, or closed with a slot still bookable today (a
      * pre-order, see utils/orderingAvailability.ts). When the restaurant
      * is closed for good today, /cart is a dead-end (the user can see

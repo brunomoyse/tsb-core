@@ -125,7 +125,7 @@ const chipLabel = computed(() => {
   }
 })
 
-const chipAriaLabel = computed(() => `${chipLabel.value} — ${t('delivery.chip.actionHint')}`)
+const chipAriaLabel = computed(() => `${chipLabel.value}, ${t('delivery.chip.actionHint')}`)
 
 const stateClasses = computed(() => {
   switch (state.value) {

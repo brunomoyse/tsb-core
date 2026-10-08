@@ -133,7 +133,7 @@
       <!-- Product Details (fixed size: does not grow) -->
       <div class="card-buy shrink-0 px-3 pb-3 pt-1">
         <!-- Text block: fixed height so price always aligns across cards.
-                     The category name that used to sit above the title is gone —
+                     The category name that used to sit above the title is gone;
                      these cards only ever render inside their own category
                      section, so it repeated the heading on every tile. -->
         <div class="min-h-[52px] flex flex-col">

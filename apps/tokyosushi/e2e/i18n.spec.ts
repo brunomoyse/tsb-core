@@ -21,7 +21,7 @@ test.describe('Internationalization', () => {
   })
 
   test('Direct English URL loads correctly', async ({ browser, baseURL }) => {
-    // Need a fresh context with English locale — the default context uses fr-BE
+    // Need a fresh context with English locale; the default context uses fr-BE
     const context = await browser.newContext({
       baseURL,
       locale: 'en-US',
@@ -42,7 +42,7 @@ test.describe('Internationalization', () => {
     await dismissCookieConsent(page)
     await page.locator(SEL.productCard).first().waitFor()
 
-    // Two language pickers in DOM (mobile + desktop sidebar) — use nth(1) for desktop
+    // Two language pickers in DOM (mobile + desktop sidebar); use nth(1) for desktop
     await page.locator(SEL.languagePicker).nth(1).click()
 
     // Select English from the dropdown

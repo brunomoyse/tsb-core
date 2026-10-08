@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared engine layer — brand-agnostic infrastructure extended by every brand
+// Shared engine layer: brand-agnostic infrastructure extended by every brand
 // App under apps/*. Owns: modules, engine plugins, i18n plumbing, runtimeConfig,
 // Security headers/CSP, sitemap, sentry (conditional), SSR.
 //
@@ -120,7 +120,7 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/sitemap',
     /*
-     * Skip Sentry when no DSN is set at build time — including the module
+     * Skip Sentry when no DSN is set at build time; including the module
      * bundles ~50KB of SDK that's inert without a DSN. Each app supplies its
      * own sentry.server.config.ts + org/project. The browser SDK is not set up by the module (no sentry.client.config.ts): plugins/sentry-lazy.client.ts loads it once the page is interactive.
      */
@@ -128,7 +128,7 @@ export default defineNuxtConfig({
   ],
 
   // Pinia store auto-import. The stores live in THIS layer, so point the
-  // Scanner at an absolute path — a brand app extending the engine has no
+  // Scanner at an absolute path; a brand app extending the engine has no
   // Stores/ dir of its own, and pinia only scans the main app by default.
   pinia: {
     storesDirs: [fileURLToPath(new URL('./stores/**', import.meta.url))],

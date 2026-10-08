@@ -57,7 +57,7 @@ export function roundCentsToStep(cents: number, stepCents: number): number {
 
 /**
  * Rounds an amount in cents to the nearest 0,10 €. Inputs whose last cent digit is 0 stay
- * unchanged; 1–4 round down, 5–9 round up — so 0,05 € ties always resolve in favour of the
+ * unchanged, 1-4 round down, 5-9 round up, so 0,05 € ties always resolve in favour of the
  * restaurant (negative amounts round symmetrically, away from zero on ties).
  *
  * Examples:

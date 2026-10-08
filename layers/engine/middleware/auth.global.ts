@@ -1,4 +1,4 @@
-// Middleware: auth.global.ts — OIDC session management via Zitadel
+// Middleware: auth.global.ts, OIDC session management via Zitadel
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
 import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { reportError } from '#engine/utils/reportError'
@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Public pages skip auth check
   if (to.meta.public !== false) return
 
-  // SSR: skip auth check — OIDC tokens live in localStorage (client-only).
+  // SSR: skip auth check; OIDC tokens live in localStorage (client-only).
   // Client-side middleware handles authentication after hydration.
   if (import.meta.server) return
 

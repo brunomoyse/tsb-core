@@ -252,7 +252,7 @@
           class="space-y-4"
         >
           <!-- Category heading. The 「 」 brackets that used to frame
-                         this were Tokyo Sushi's Japanese motif — wrong for a
+                         this were Tokyo Sushi's Japanese motif; wrong for a
                          Chinese brand. Replaced with the vitrine site's rule +
                          eyebrow rhythm. -->
           <div class="flex items-center gap-4">

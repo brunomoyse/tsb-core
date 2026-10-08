@@ -61,7 +61,7 @@ useSeoMeta({
 
     <!-- Bento Grid -->
     <div class="bento-grid">
-      <!-- Map — large featured cell -->
+      <!-- Map: large featured cell -->
       <div class="bento-map bento-cell" style="--delay: 1">
         <div class="relative h-full rounded-2xl overflow-hidden group">
           <iframe
@@ -96,7 +96,7 @@ useSeoMeta({
         </div>
       </div>
 
-      <!-- Opening Hours — shared with homepage -->
+      <!-- Opening Hours: shared with homepage -->
       <div class="bento-hours bento-cell" style="--delay: 2">
         <OpeningHoursCard as="h2" surface="white" />
       </div>
@@ -301,7 +301,7 @@ useSeoMeta({
   grid-auto-rows: auto;
 }
 
-/* Named grid areas — mobile (stacked) */
+/* Named grid areas: mobile (stacked) */
 .bento-map {
   grid-area: map;
 }

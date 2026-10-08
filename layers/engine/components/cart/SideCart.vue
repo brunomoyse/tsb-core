@@ -23,7 +23,7 @@
           :disabled="option.disabled"
           :title="option.disabled ? `${option.label}: ${$t('delivery.comingSoon')}` : undefined"
           :aria-label="
-            option.disabled ? `${option.label} — ${$t('delivery.comingSoon')}` : undefined
+            option.disabled ? `${option.label} (${$t('delivery.comingSoon')})` : undefined
           "
           :class="[
             'flex min-h-11 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -234,7 +234,7 @@
         </div>
       </div>
 
-      <!-- Delivery minimum (delivery only — pickup has no minimum) -->
+      <!-- Delivery minimum (delivery only; pickup has no minimum) -->
       <div
         v-if="!isMinimumReached"
         data-testid="cart-minimum-warning"

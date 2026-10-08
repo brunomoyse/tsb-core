@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tokyo Sushi Bar app — the main app. Extends the shared engine layer and owns
+// Tokyo Sushi Bar app; the main app. Extends the shared engine layer and owns
 // Everything visual: pages, components, layouts, theme, assets, copy, and the
 // Brand identity (brand.ts / app.config.ts / locale overrides).
 //
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   $meta: {
     title: 'Tokyo Sushi Bar',
     description:
-      'Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.',
+      'Restaurant japonais à Liège : sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.',
   },
 
   app: {
@@ -55,7 +55,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Restaurant japonais à Liège — sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.',
+            'Restaurant japonais à Liège : sushi frais, sashimi et cuisine japonaise authentique. Livraison et à emporter.',
         },
         // Light only (no dark theme): stops Android auto-dark from inverting the UI. theme-color is the page background (site.webmanifest agrees).
         { name: 'color-scheme', content: 'only light' },
@@ -122,8 +122,8 @@ export default defineNuxtConfig({
   },
 
   /*
-   * @sentry/nuxt module (registered by the engine layer when SENTRY_DSN is set)
-   * — org/project defaults for this brand's Sentry project. SENTRY_AUTH_TOKEN
+   * @sentry/nuxt module (registered by the engine layer when SENTRY_DSN is set):
+   * org/project defaults for this brand's Sentry project. SENTRY_AUTH_TOKEN
    * is the CI-only source-map upload token.
    */
   sentry: {

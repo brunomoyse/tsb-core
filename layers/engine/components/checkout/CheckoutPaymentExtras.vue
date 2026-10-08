@@ -413,7 +413,7 @@
       </p>
     </div>
 
-    <!-- Minimum Order Warning (delivery only — pickup has no minimum) -->
+    <!-- Minimum Order Warning (delivery only; pickup has no minimum) -->
     <div v-if="!isMinimumReached" class="text-sm text-primary-700 text-center">
       {{ $t('cart.minimumDelivery', { amount: minimumAmount }) }}
     </div>
@@ -684,7 +684,7 @@ const onPaymentKeydown = (e: KeyboardEvent) => {
   nextTick().then(() => (wantOnline ? onlineRadioRef.value : cashRadioRef.value)?.focus())
 }
 
-// Auto-focus the acknowledgement checkbox when the user switches to Cash — the ack control is far enough below the radio that users miss it otherwise.
+// Auto-focus the acknowledgement checkbox when the user switches to Cash; the ack control is far enough below the radio that users miss it otherwise.
 const cashAckRef = ref<HTMLInputElement | null>(null)
 watch(isOnlinePayment, (online, prev) => {
   if (prev !== undefined && !online) {

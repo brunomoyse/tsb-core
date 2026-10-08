@@ -4,7 +4,7 @@ import { expect, test } from '../../../layers/engine/e2e/support/test'
 // Compose-a-bowl flow against the seeded YGF menu
 // (tsb-service/seeds/ygfliege_menu.sql). The "Malatang sur mesure" product has
 // Three choice groups: base (min 1/max 1), ingredients (min 5/max 20) and
-// Spice level (min 1/max 1) — the add-to-cart button must stay disabled until
+// Spice level (min 1/max 1); the add-to-cart button must stay disabled until
 // Every group is satisfied.
 //
 // Composer products open BowlComposer; fixed sets (broth + spice, every group

@@ -8,7 +8,7 @@ import { SEL } from './support/selectors'
  * Cart UI splits by viewport: desktop renders <SideCart>, mobile renders
  * <FloatingCartBar> + <CartMobile>. Both now expose the same item-level
  * testids (cart-item, cart-item-quantity, cart-item-increment/decrement,
- * cart-total) so most tests are viewport-agnostic — the mobile project
+ * cart-total) so most tests are viewport-agnostic; the mobile project
  * just needs an extra tap on the floating bar to reveal the panel.
  *
  * A handful of features genuinely exist only on desktop: the pickup/
@@ -91,7 +91,7 @@ test.describe('Cart operations', () => {
       'Brand is pickup-only: no delivery/pickup toggle to exercise',
     )
 
-    // Default is DELIVERY — get the total
+    // Default is DELIVERY: get the total
     const deliveryTotal = await page.locator(SEL.cartTotal).textContent()
 
     // Switch to PICKUP (10% discount on discountable items)
@@ -151,7 +151,7 @@ test.describe('Cart operations', () => {
   test('Remove product from cart', async ({ page }, testInfo) => {
     test.skip(
       isMobile(testInfo),
-      'mobile has no dedicated remove button — items are dropped by decrementing past 1, which would belong to a different test',
+      'mobile has no dedicated remove button; items are dropped by decrementing past 1, which would belong to a different test',
     )
 
     await page.goto('/fr/menu')
@@ -259,7 +259,7 @@ test.describe('Cart operations', () => {
 
     /*
      * Parse the localised total ("17,90 €" → 17.9) and verify that bumping
-     * the quantity strictly increases it. Don't assert exact doubling —
+     * the quantity strictly increases it. Don't assert exact doubling;
      * pickup-discount + rounding make the relationship non-linear.
      */
     const parseTotal = async () => {

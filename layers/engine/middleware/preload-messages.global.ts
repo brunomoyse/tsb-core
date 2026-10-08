@@ -1,4 +1,4 @@
-// Middleware: preload-messages.global.ts — the page's language file is asked for while the HTML is parsed.
+// Middleware: preload-messages.global.ts, the page's language file is asked for while the HTML is parsed.
 import { defineNuxtRouteMiddleware, useHead, useRuntimeConfig } from '#imports'
 import type { RouteLocationNormalized } from 'vue-router'
 

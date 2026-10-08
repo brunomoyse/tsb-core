@@ -770,7 +770,7 @@
     "contactBody": "Questions? Contact us at the address above."
   },
   "ordering": {
-    "closedPreorder": "We're closed right now — order now for {time}.",
+    "closedPreorder": "We're closed right now. Order now for {time}.",
     "loadFailed": "We couldn't check whether ordering is open."
   },
   "orderStatus": {

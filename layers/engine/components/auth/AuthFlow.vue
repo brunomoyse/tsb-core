@@ -188,7 +188,7 @@
       </div>
     </form>
 
-    <!-- Step 3: Profile (new users only) — shared with the IdP callback -->
+    <!-- Step 3: Profile (new users only); shared with the IdP callback -->
     <ProfileNameForm
       v-else-if="step === 'profile'"
       :loading="loading"
@@ -269,7 +269,7 @@ const emailUndeliverable = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null
 
-// True after a successful OTP verify on a new placeholder account — drives the
+// True after a successful OTP verify on a new placeholder account; drives the
 // "3 steps" variant of the indicator and gates the profile step.
 const requiresProfile = ref(false)
 
@@ -333,7 +333,7 @@ const validateEmailOnBlur = () => {
 
 /*
  * Synchronous in-flight flags. The reactive `loading` ref drives the UI,
- * but Vue's reactivity is async — a tight double-fire (form submit + click,
+ * but Vue's reactivity is async; a tight double-fire (form submit + click,
  * hydration remount, retry path) can sneak past the loading guard. These
  * plain JS booleans flip atomically inside the handler, blocking the
  * duplicate before it ever reaches the network.
@@ -501,7 +501,7 @@ const finalizeAndComplete = async () => {
 
   if (!effectiveAuthRequestId) {
     /*
-     * Inline mode (e.g. /checkout) has no authRequestId on the URL —
+     * Inline mode (e.g. /checkout) has no authRequestId on the URL;
      * mint one via the backend proxy. Do NOT fall back to
      * signinRedirect({ login_hint }) here: that triggered a full-page
      * redirect to Zitadel, which redirected to /auth/login and destroyed

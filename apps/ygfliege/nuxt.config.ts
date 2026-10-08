@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Yangguofu Malatang Liège app — the main app for ygfliege.be. Extends the
+// Yangguofu Malatang Liège app; the main app for ygfliege.be. Extends the
 // Shared engine layer and owns everything visual: pages, components, layouts,
 // Theme, assets, copy, and the brand identity (brand.ts / app.config.ts /
 // Locale overrides).
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   },
 
   css: [
-    // Main.css @imports components.css — the commerce vocabulary needs to
+    // Main.css @imports components.css; the commerce vocabulary needs to
     // Share a PostCSS pass with the @tailwind directives, and every entry
     // In this array is compiled independently.
     '~/assets/css/main.css',
@@ -46,7 +46,7 @@ export default defineNuxtConfig({
   $meta: {
     title: 'Yangguofu Malatang Liège',
     description:
-      'Yangguofu Malatang à Liège — composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.',
+      'Yangguofu Malatang à Liège : composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.',
   },
 
   app: {
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Yangguofu Malatang à Liège — composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.',
+            'Yangguofu Malatang à Liège : composez votre bol de malatang, bouillon aux herbes cuit minute. Le bonheur tient dans un bol.',
         },
         { name: 'theme-color', content: '#F58220' },
         // Light only (no dark theme): stops Android auto-dark from inverting the UI.

@@ -19,7 +19,7 @@ const trimmed = (value: string | null | undefined): string | undefined => {
 }
 
 /**
- * Canonical order/cart item label parts — `code · category · name` plus
+ * Canonical order/cart item label parts: `code · category · name` plus
  * optional `choice`.
  */
 export function orderItemLabelParts(input: OrderItemLabelInput): OrderItemLabelParts {

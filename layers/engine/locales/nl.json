@@ -770,7 +770,7 @@
     "contactBody": "Vragen? Neem contact met ons op via het bovenstaande adres."
   },
   "ordering": {
-    "closedPreorder": "We zijn momenteel gesloten — bestel nu voor {time}.",
+    "closedPreorder": "We zijn momenteel gesloten. Bestel nu voor {time}.",
     "loadFailed": "We konden niet controleren of bestellen mogelijk is."
   },
   "orderStatus": {

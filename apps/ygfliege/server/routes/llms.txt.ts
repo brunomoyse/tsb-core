@@ -20,15 +20,15 @@ export default defineEventHandler((event) => {
 
 ## Menu et commande
 
-- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète — bols malatang, bouillons signatures, nouilles, entrées et boissons.
+- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète (bols malatang, bouillons signatures, nouilles, entrées et boissons).
 - [Accueil](${PRODUCTION_BASE_URL}/fr): Statut d'ouverture en direct, choix livraison/à emporter, présentation du restaurant.
-- [Le concept](${PRODUCTION_BASE_URL}/fr/concept): Le malatang expliqué — 4 étapes, le bouillon aux herbes (草本骨汤), questions fréquentes.
+- [Le concept](${PRODUCTION_BASE_URL}/fr/concept): Le malatang expliqué en 4 étapes, le bouillon aux herbes (草本骨汤), questions fréquentes.
 
 ## Informations pratiques
 
 - [Contact](${PRODUCTION_BASE_URL}/fr/contact): Adresse (${brand.address.street}, ${brand.address.postal} ${brand.address.city}), téléphone (${brand.phone}), horaires d'ouverture, plan d'accès.
-- [À propos](${PRODUCTION_BASE_URL}/fr/about): L'histoire Yangguofu — de Harbin (2003) à Liège (2026).
-- [FAQ](${PRODUCTION_BASE_URL}/fr/faq): Questions fréquentes — malatang, piquant, options végétariennes, livraison, paiement, allergènes.
+- [À propos](${PRODUCTION_BASE_URL}/fr/about): L'histoire Yangguofu, de Harbin (2003) à Liège (2026).
+- [FAQ](${PRODUCTION_BASE_URL}/fr/faq): Questions fréquentes (malatang, piquant, options végétariennes, livraison, paiement, allergènes).
 
 ## Mentions légales
 

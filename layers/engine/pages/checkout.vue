@@ -167,7 +167,7 @@
             between a server-rendered "anonymous / empty" version and the real one.
         -->
     <ClientOnly>
-      <!-- Step Indicator — reflects the current sub-step inside checkout so users
+      <!-- Step Indicator: reflects the current sub-step inside checkout so users
              know which stage they're on (address, sign in, phone, review, payment). -->
       <nav
         class="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm mb-6"
@@ -343,7 +343,7 @@
       </template>
     </ClientOnly>
 
-    <!-- Payment Redirect Overlay (z-[110]: above the toasts, which sit at z-[100]) — v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
+    <!-- Payment Redirect Overlay (z-[110]: above the toasts, which sit at z-[100]); v-if on the Teleport itself (not the inner div) so the teleport vnode doesn't exist during normal navigation. An always-rendered Teleport with an empty body races with the out-in page transition and crashes Vue's unmount with "Cannot read 'type' of null". -->
     <Teleport v-if="isRedirectingToPayment" to="body">
       <div
         role="status"
@@ -733,7 +733,7 @@ const confirmAddress = () => {
 }
 
 onMounted(() => {
-  // Defend against an SSR-to-CSR hydration race: post-OIDC redirects land here with `cart.products = []` from the server payload, and the orderExtra/address writes below would persist that empty array — wiping the pre-auth selection. `$hydrate` (pinia-plugin-persistedstate) forces a re-read from localStorage first.
+  // Defend against an SSR-to-CSR hydration race: post-OIDC redirects land here with `cart.products = []` from the server payload, and the orderExtra/address writes below would persist that empty array; wiping the pre-auth selection. `$hydrate` (pinia-plugin-persistedstate) forces a re-read from localStorage first.
   if (import.meta.client) {
     const persisted = cartStore as unknown as { $hydrate?: (opts?: { runHooks?: boolean }) => void }
     persisted.$hydrate?.({ runHooks: false })

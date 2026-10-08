@@ -20,7 +20,7 @@
           {{ $t('common.skipToContent') }}
         </a>
         <div class="min-h-dvh flex flex-col" data-app-root>
-          <!-- display:contents — a plain <header> box would be TopNavbar's
+          <!-- display:contents: a plain <header> box would be TopNavbar's
                  containing block, exactly nav-height, so sticky couldn't stick. -->
           <header class="contents">
             <MobileNavbar />

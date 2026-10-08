@@ -9,7 +9,7 @@
  * line quantity, so 2 bowls need 2 broths and the 2 is the broth's selection
  * quantity. The surcharge is therefore NOT multiplied by the line quantity
  * again (it used to be, which charged 2 bowls with a 1.50 broth 6.00 of
- * surcharge instead of 3.00 — audit finding M2).
+ * surcharge instead of 3.00, audit finding M2).
  *
  * All arithmetic is in integer cents; callers sum cents and format once at display time
  * (`formatCents`), so summing lines never accumulates float error.
@@ -82,7 +82,7 @@ const selectionsOf = (item: PriceableLine): PricedSelection[] => {
 export const priceCartLine = (item: PriceableLine): PricedLine =>
   priceLine(item.product.price, item.quantity, selectionsOf(item))
 
-/** Line amount in cents — sum these, divide once. */
+/** Line amount in cents; sum these, divide once. */
 export const lineTotalCents = (item: PriceableLine): number => priceCartLine(item).lineTotalCents
 
 /**

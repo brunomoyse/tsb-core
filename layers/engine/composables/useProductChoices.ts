@@ -14,13 +14,13 @@ import { useI18n } from 'vue-i18n'
  * sur mesure" bowl).
  *
  * Lifted verbatim out of ProductModal.vue rather than rewritten, so both
- * surfaces gate, price and serialise selections identically — the cart store's
+ * surfaces gate, price and serialise selections identically; the cart store's
  * selection signature depends on it. Two rules worth remembering because they
  * are not obvious:
  *
  *  - min/max scale with the line quantity: ordering 2 bowls requires 10
  *    ingredients, not 5. Hence `groupTargetMin/Max` multiply by `quantity`.
- *  - the minimum counts total *quantity*, not distinct choices — 4× shrimp and
+ *  - the minimum counts total *quantity*, not distinct choices; 4× shrimp and
  *    1× noodles satisfies "min 5". `e2e/compose-bowl.spec.ts` asserts this.
  */
 export const useProductChoices = (product: Product | null | undefined, quantity: Ref<number>) => {
@@ -57,7 +57,7 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
   /** A group the user picks several items from (ingredients), vs. pick-one. */
   const isMultiSelectGroup = (group: ProductChoiceGroup) => group.maxSelections > 1
 
-  /** True when any group is multi-select — i.e. this product is a composer. */
+  /** True when any group is multi-select, i.e. this product is a composer. */
   const isComposer = computed(() => choiceGroups.value.some(isMultiSelectGroup))
 
   const groupTargetMin = (group: ProductChoiceGroup) => group.minSelections * quantity.value
@@ -186,7 +186,7 @@ export const useProductChoices = (product: Product | null | undefined, quantity:
    *
    * The recorded quantity is the group's scaled target, not 1: ordering 2
    * bowls needs the broth counted twice for the min/max gate to pass. The
-   * pick applies to every unit on the line — a customer wanting two bowls
+   * pick applies to every unit on the line; a customer wanting two bowls
    * with different broths adds them as two lines (which the cart's selection
    * signature keeps distinct anyway).
    */

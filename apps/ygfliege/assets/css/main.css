@@ -127,13 +127,13 @@ textarea {
    in the app sets the `dark` class. Add one here if that ever changes. */
 @layer base {
   :root {
-    --background: 33.3 100% 96.5%; /* #FFF7ED — warm page cream */
-    --foreground: 0 0% 10.2%; /* #1A1A1A — brand black */
+    --background: 33.3 100% 96.5%; /* #FFF7ED; warm page cream */
+    --foreground: 0 0% 10.2%; /* #1A1A1A; brand black */
 
-    --primary: 27.6 91.4% 54.3%; /* #F58220 — brand orange */
+    --primary: 27.6 91.4% 54.3%; /* #F58220; brand orange */
     --primary-foreground: 0 0% 100%;
 
-    /* #FDE8D4 — rgba(242,123,32,.12) flattened over the page cream, so the
+    /* #FDE8D4: rgba(242,123,32,.12) flattened over the page cream, so the
            default border matches --border-default in brand.css. */
     --border: 29.3 91.2% 91.2%;
     --input: 29.3 91.2% 91.2%;

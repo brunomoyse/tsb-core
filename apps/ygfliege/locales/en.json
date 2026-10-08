@@ -10,7 +10,7 @@
     "serverError": "Fuzi is busy in the kitchen, but something went wrong. Please try again in a moment."
   },
   "schema": {
-    "siteDescription": "Build your own malatang bowl in Liège — herbal broth cooked to order",
+    "siteDescription": "Build your own malatang bowl in Liège: herbal broth cooked to order",
     "cuisine": "Chinese",
     "home": {
       "title": "__BRAND__ - Malatang in Liège",
@@ -109,7 +109,7 @@
       "video": {
         "label": "Fresh, cooked to order",
         "title": "You build your bowl, we cook it fresh",
-        "subtitle": "Veg, tofu, meat, noodles — pick whatever you fancy. Cooked to the minute in your broth, never fried.",
+        "subtitle": "Veg, tofu, meat, noodles: pick whatever you fancy. Cooked to the minute in your broth, never fried.",
         "pause": "Pause video",
         "play": "Play video"
       },

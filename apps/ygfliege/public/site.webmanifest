@@ -1,7 +1,7 @@
 {
   "name": "Yangguofu Malatang Liège",
   "short_name": "Yangguofu",
-  "description": "Yangguofu Malatang à Liège — composez votre bol de malatang, bouillon aux herbes cuit minute. Commande en ligne.",
+  "description": "Yangguofu Malatang à Liège : composez votre bol de malatang, bouillon aux herbes cuit minute. Commande en ligne.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

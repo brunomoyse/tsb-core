@@ -17,8 +17,8 @@ import { useI18n } from 'vue-i18n'
 /*
  * Live tracking for a list of orders (/me widget and /me/orders, both brands).
  *
- * The orders query is client-only (SSR has no OIDC token), so on a hard load —
- * every "follow your order" email link to /me?followOrder=<id> — the list is
+ * The orders query is client-only (SSR has no OIDC token), so on a hard load,
+ * every "follow your order" email link to /me?followOrder=<id>, the list is
  * still empty when setup and onMounted run. Nothing here reads the list once:
  * everything is derived from the (reactive) list through watchers, so it works
  * whether the orders are there at setup, arrive a moment later, or are

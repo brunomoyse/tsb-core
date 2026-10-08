@@ -5,7 +5,7 @@ import type { BrandConfig } from '#engine/types/brand'
 // #brand alias) so both render from the same data.
 export const brand: BrandConfig = {
   name: 'Tokyo Sushi Bar',
-  legalName: 'Tokyo Sushi Bar — SRL',
+  legalName: 'Tokyo Sushi Bar SRL',
   legalForm: 'SRL',
   vat: 'BE0772.499.585',
   address: {

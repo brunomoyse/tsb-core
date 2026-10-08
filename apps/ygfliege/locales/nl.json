@@ -10,7 +10,7 @@
     "serverError": "Fuzi is druk in de keuken, maar er ging iets mis. Probeer het zo meteen opnieuw."
   },
   "schema": {
-    "siteDescription": "Stel je eigen kom malatang samen in Luik — kruidenbouillon, vers bereid",
+    "siteDescription": "Stel je eigen kom malatang samen in Luik: kruidenbouillon, vers bereid",
     "cuisine": "Chinese",
     "home": {
       "title": "__BRAND__ - Malatang in Luik",
@@ -109,7 +109,7 @@
       "video": {
         "label": "Vers en à la minute bereid",
         "title": "Jij stelt je kom samen, wij koken hem vers",
-        "subtitle": "Groenten, tofu, vlees, noedels — kies waar je zin in hebt. À la minute gegaard in je bouillon, nooit gefrituurd.",
+        "subtitle": "Groenten, tofu, vlees, noedels: kies waar je zin in hebt. À la minute gegaard in je bouillon, nooit gefrituurd.",
         "pause": "Video pauzeren",
         "play": "Video afspelen"
       },

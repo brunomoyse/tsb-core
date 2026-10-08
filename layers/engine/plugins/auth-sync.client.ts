@@ -14,7 +14,7 @@ import { reportError } from '#engine/utils/reportError'
  *   1. authStore filled + OIDC expired → silent renew, else clear both (but not when Zitadel cannot be reached:
  *      the session is kept and the next request renews it).
  *   2. authStore empty + OIDC valid    → fetch /me and repopulate authStore.
- *      If /me refuses the token (HTTP 401 / UNAUTHENTICATED) the OIDC token is stale — clear it; any other
+ *      If /me refuses the token (HTTP 401 / UNAUTHENTICATED) the OIDC token is stale; clear it; any other
  *      failure (offline, aborted, 5xx) keeps the session.
  *   3. Both empty / both valid         → no-op.
  */

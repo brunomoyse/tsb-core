@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useDateLocale } from '#engine/composables/useDateLocale'
-// Phosphor icons (same set as the vitrine site) — raw SVGs, tinted via
+// Phosphor icons (same set as the vitrine site); raw SVGs, tinted via
 // CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
 import leafIcon from '~/assets/icons/leaf.svg?raw'

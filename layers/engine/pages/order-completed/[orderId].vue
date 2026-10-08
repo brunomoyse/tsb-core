@@ -5,7 +5,7 @@
   >
     <!-- Online payment did not complete: distinct per-status outcome
              (canceled / failed / expired, or an open payment on a cancelled order). The cart
-             is kept so the user can retry — mirrors tsb-mobile. -->
+             is kept so the user can retry; mirrors tsb-mobile. -->
     <div
       v-if="paymentProblem"
       data-testid="order-completed-payment-problem"
@@ -262,7 +262,7 @@
               {{ $t('orderCompleted.liveTracking') }}
             </div>
 
-            <!-- Restaurant hasn't confirmed within 5 min — invite to call. -->
+            <!-- Restaurant hasn't confirmed within 5 min; invite to call. -->
             <div
               v-if="pendingTooLong"
               class="mt-4 flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs text-amber-800"
@@ -510,7 +510,7 @@ const writePaymentEventFlag = () => {
   try {
     window.localStorage.setItem(paymentEventStorageKey, '1')
   } catch {
-    /* Quota / private mode — funnel can dedupe by session */
+    /* Quota / private mode; funnel can dedupe by session */
   }
 }
 
@@ -547,7 +547,7 @@ watch(
 
 /* Reactive "now" ticks every 30s so the unconfirmed-order banner appears
    without a hard reload. The subscription updates `order.status` separately
-   — once it leaves PENDING the computed flips back to false. */
+  : once it leaves PENDING the computed flips back to false. */
 // VueUse 15 dropped `interval` (it defaulted to a per-frame tick); pass the 30s scheduler.
 const now = useNow({ scheduler: (update) => useIntervalFn(update, 30_000) })
 const pendingTooLong = computed(() => {

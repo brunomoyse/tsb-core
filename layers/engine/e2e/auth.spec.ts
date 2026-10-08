@@ -3,8 +3,8 @@ import { SEL } from './support/selectors'
 import { waitForLoginPage } from './support/auth-flow'
 
 /*
- * Auth coverage for the OTP-only login flow. The legacy password tests are gone
- * — there is no password field anywhere in the customer app. Test users get a
+ * Auth coverage for the OTP-only login flow. The legacy password tests are gone:
+ * there is no password field anywhere in the customer app. Test users get a
  * 6-digit code via email; the happy-path test reads the code straight from
  * Zitadel's event store (via the psql tunnel + AES-CFB decrypt) because the
  * real send path goes through Scaleway on the test instance and isn't
@@ -24,7 +24,7 @@ test.beforeEach(async ({ context, loginAvailable }) => {
     'Zitadel login is not set up for this brand locally (see the app global-setup)',
   )
   /*
-   * Cookies only — oidc-client-ts keeps its PKCE/login state (stateStore) in
+   * Cookies only: oidc-client-ts keeps its PKCE/login state (stateStore) in
    * localStorage (see useOidc.ts), which must survive the Zitadel redirect chain.
    */
   await context.clearCookies()
@@ -48,7 +48,7 @@ test.describe('Authentication flows (OTP)', () => {
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
-     * Wait for hydration before clicking — otherwise the click hits the form
+     * Wait for hydration before clicking; otherwise the click hits the form
      * before @submit.prevent attaches and the browser does a native GET.
      */
     await page.waitForLoadState('networkidle')
@@ -75,7 +75,7 @@ test.describe('Authentication flows (OTP)', () => {
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
-     * Wait for hydration before clicking — otherwise the click hits the form
+     * Wait for hydration before clicking; otherwise the click hits the form
      * before @submit.prevent attaches and the browser does a native GET.
      */
     await page.waitForLoadState('networkidle')
@@ -84,7 +84,7 @@ test.describe('Authentication flows (OTP)', () => {
 
     await page.locator('#auth-code').waitFor({ state: 'visible', timeout: 15_000 })
 
-    /* Six obviously-wrong digits — backend should reject without consulting the event store. */
+    /* Six obviously-wrong digits: backend should reject without consulting the event store. */
     await page.locator('#auth-code').fill('000000')
     await page.locator(SEL.loginVerify).click()
 
@@ -115,7 +115,7 @@ test.describe('Authentication flows (OTP)', () => {
 
     await page.locator('#auth-email').waitFor({ state: 'visible', timeout: 10_000 })
     /*
-     * Wait for hydration before clicking — otherwise the click hits the form
+     * Wait for hydration before clicking; otherwise the click hits the form
      * before @submit.prevent attaches and the browser does a native GET.
      */
     await page.waitForLoadState('networkidle')

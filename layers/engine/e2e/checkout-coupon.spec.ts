@@ -36,7 +36,7 @@ test.describe('Coupon input', () => {
     await expect(page.locator(SEL.couponError)).toBeVisible({ timeout: 10_000 })
     /*
      * The applied-pill (coupon-remove badge) is what actually proves a
-     * coupon mutated the order — it doesn't render until the backend
+     * coupon mutated the order; it doesn't render until the backend
      * accepts the code. Its absence is a stronger guarantee than scraping
      * the button label, which contains a running total that gets re-keyed
      * during the validation round-trip.
@@ -55,7 +55,7 @@ test.describe('Coupon input', () => {
     await page.locator(SEL.couponApply).click()
     await expect(page.locator(SEL.couponError)).toBeVisible({ timeout: 10_000 })
 
-    // Clear and type new code — error should still be visible until next submit
+    // Clear and type new code; error should still be visible until next submit
     await page.locator(SEL.couponInput).fill('ANOTHERCODE')
     await page.locator(SEL.couponApply).click()
 

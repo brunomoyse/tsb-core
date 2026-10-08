@@ -24,7 +24,7 @@ const sqlString = (value: string): string => `'${value.replace(/'/gu, "''")}'`
 /** Id of the application `users` row for an e2e account (matched by email). */
 export function findUserIdByEmail(email: string): string {
   const id = psql(`SELECT id FROM users WHERE lower(email) = lower(${sqlString(email)}) LIMIT 1`)
-  if (!id) throw new Error(`No users row for ${email} — log in once so the backend provisions it`)
+  if (!id) throw new Error(`No users row for ${email}; log in once so the backend provisions it`)
   return id
 }
 
@@ -59,7 +59,7 @@ export interface SeedOrderInput {
 /*
  * Inserts a PICKUP order (no items unless `withItem`, no address) flagged `is_test` (so it never reaches the
  * kitchen, revenue figures or customer mailings if cleanup fails) plus, for online orders, its
- * mollie_payments row — exactly the rows the Mollie webhook would have left
+ * mollie_payments row: exactly the rows the Mollie webhook would have left
  * behind. Returns the order id. Columns follow tsb-service/migrations; keep in
  * sync if NOT NULL columns are added to `orders` / `mollie_payments`.
  */

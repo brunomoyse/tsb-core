@@ -104,7 +104,7 @@ test.describe('Checkout options', () => {
     await addProductsAndGoToCheckout(page)
 
     /*
-     * Race the closed banner — if the kitchen is shut the place-order button
+     * Race the closed banner; if the kitchen is shut the place-order button
      * never renders and the validation we want to test doesn't fire.
      */
     await page
@@ -141,7 +141,7 @@ test.describe('Checkout options', () => {
      * #checkout-delivery-address container shows under DELIVERY and is
      * removed under PICKUP. The inner button text varies ("Add Address"
      * vs "Edit Address") depending on whether the test user already has
-     * a saved profile address — the seeded e2e user does.
+     * a saved profile address; the seeded e2e user does.
      */
     const addressSection = page.locator('#checkout-delivery-address')
 

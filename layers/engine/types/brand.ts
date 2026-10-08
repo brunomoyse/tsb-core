@@ -42,8 +42,8 @@ export interface BrandConfig {
   /** Customer-facing display name, e.g. "Tokyo Sushi Bar". */
   name: string
   /**
-   * Registered legal entity, e.g. "Tokyo Sushi Bar — SRL". Use the plain
-   * trading name until the legal form is confirmed — never guess "— SRL".
+   * Registered legal entity, e.g. "Tokyo Sushi Bar SRL". Use the plain
+   * trading name until the legal form is confirmed, never guess a legal form.
    */
   legalName: string
   /**
@@ -70,7 +70,7 @@ export interface BrandConfig {
   /** Public website domain (no scheme), e.g. "tokyosushibarliege.be". */
   domain: string
   /**
-   * Social profiles; all optional — each brand sets the networks it has.
+   * Social profiles, all optional: each brand sets the networks it has.
    * Values feed schema.org sameAs and the app's own footer/contact links.
    */
   socials: {
@@ -121,7 +121,7 @@ export interface BrandConfig {
   hasMobileApp: boolean
   /**
    * Real, publicly verifiable review aggregate. Omit entirely for a brand
-   * with no reviews yet — schema.org then drops aggregateRating rather than
+   * with no reviews yet; schema.org then drops aggregateRating rather than
    * publishing invented numbers, which would be fabricated review data in
    * search results (a structured-data policy violation).
    */

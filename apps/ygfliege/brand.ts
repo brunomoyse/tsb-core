@@ -14,7 +14,7 @@ import type { BrandConfig } from '#engine/types/brand'
 // Placeholders: these render publicly as company identifiers.
 export const brand: BrandConfig = {
   name: 'Yangguofu Malatang Liège',
-  // Trading name only — the legal form (SRL/SA/…) is not confirmed yet.
+  // Trading name only: the legal form (SRL/SA/…) is not confirmed yet.
   legalName: 'Yangguofu Malatang Liège',
   address: {
     street: 'Rue de la Cathédrale 51',
@@ -31,7 +31,7 @@ export const brand: BrandConfig = {
     tiktok: 'https://www.tiktok.com/@yangguofu.europe',
     rednote: 'https://www.xiaohongshu.com/user/profile/5cc5d7700000000011010db5',
   },
-  // Rue de la Cathédrale 51 — a few doors from Tokyo Sushi Bar (59).
+  // Rue de la Cathédrale 51; a few doors from Tokyo Sushi Bar (59).
   // Geocoded via OSM Nominatim (same values the old site's Leaflet map used).
   geo: {
     lat: 50.64255,

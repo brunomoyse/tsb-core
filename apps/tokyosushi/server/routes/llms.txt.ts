@@ -20,13 +20,13 @@ export default defineEventHandler((event) => {
 
 ## Menu et commande
 
-- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète — sushi, sashimi, makis, plats chauds. Filtres halal et végétarien.
+- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète (sushi, sashimi, makis, plats chauds). Filtres halal et végétarien.
 - [Accueil](${PRODUCTION_BASE_URL}/fr): Statut d'ouverture en direct, choix livraison/à emporter, présentation du restaurant.
 
 ## Informations pratiques
 
 - [Contact](${PRODUCTION_BASE_URL}/fr/contact): Adresse (${brand.address.street}, ${brand.address.postal} ${brand.address.city}), téléphone (${brand.phone}), horaires d'ouverture, plan d'accès.
-- [FAQ](${PRODUCTION_BASE_URL}/fr/faq): Questions fréquentes — livraison, options halal, allergies, paiement.
+- [FAQ](${PRODUCTION_BASE_URL}/fr/faq): Questions fréquentes (livraison, options halal, allergies, paiement).
 
 ## Mentions légales
 

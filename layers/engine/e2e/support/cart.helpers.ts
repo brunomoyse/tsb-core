@@ -30,7 +30,7 @@ export async function openCartIfMobile(page: Page): Promise<void> {
 }
 
 /*
- * Returns a Locator scoped to whichever cart container is visible — the
+ * Returns a Locator scoped to whichever cart container is visible; the
  * desktop SideCart or the mobile CartMobile panel. Both expose the same
  * cart-item / cart-total / qty-control testids, so callers can run the
  * same assertions against either viewport without picking the wrong (and
@@ -43,7 +43,7 @@ export function visibleCart(page: Page) {
 /**
  * Adds simple products to the cart and navigates to checkout.
  * Navigates to /fr/menu first if not already there (the authenticatedPage
- * fixture only injects auth state — it does not navigate).
+ * fixture only injects auth state; it does not navigate).
  * Only clicks enabled (not disabled) add-to-cart buttons.
  * Skips the test if no products can be added (e.g. restaurant is closed).
  */
@@ -67,7 +67,7 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
   }
 
   if (addedCount === 0) {
-    test.skip(true, 'No products can be added — restaurant may be closed')
+    test.skip(true, 'No products can be added; restaurant may be closed')
     return
   }
 

@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, readRawBody, setResponseStatus } from 'h3'
 
 /*
- * Sentry tunnel — forwards envelopes from the browser to Sentry's ingest endpoint
+ * Sentry tunnel: forwards envelopes from the browser to Sentry's ingest endpoint
  * via our own origin. Ad-blockers and privacy extensions that block *.ingest.sentry.io
  * cannot match our domain, so events get through.
  * https://docs.sentry.io/platforms/javascript/troubleshooting/#using-the-tunnel-option
@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
       timeout: 5000,
     })
   } catch {
-    // Sentry ingest is best-effort — never surface failures to the client.
+    // Sentry ingest is best-effort; never surface failures to the client.
   }
 
   setResponseStatus(event, 204)

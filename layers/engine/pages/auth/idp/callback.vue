@@ -94,7 +94,7 @@ onMounted(async () => {
     /*
      * The IdP returned no name (notably Apple, which only sends it on the
      * first-ever authorization), so the backend created a placeholder
-     * account. Capture first/last name before finalize — identical to the
+     * account. Capture first/last name before finalize; identical to the
      * OTP signup flow, reusing the same ProfileNameForm screen.
      */
     if (session.requiresProfile) {
