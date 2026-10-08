@@ -289,6 +289,34 @@
 
       <!-- Products Grid -->
       <section v-else class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
+        <!-- The customer's own products, or the most ordered ones (engine, utils/menuPicks.ts) -->
+        <MenuPicksRow v-if="menuPicks" :picks="menuPicks">
+          <template #heading="{ title, headingId }">
+            <div class="flex items-center gap-3 ml-0 sm:ml-4">
+              <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true"
+                >「</span
+              >
+              <h2
+                :id="headingId"
+                class="font-channel inline-block text-xl font-semibold text-neutral-800 tracking-wide"
+              >
+                {{ title }}
+              </h2>
+              <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true"
+                >」</span
+              >
+            </div>
+          </template>
+          <template #card="{ product, index }">
+            <ProductCard
+              in-picks
+              :index="index"
+              :product="product"
+              :ordering-disabled="!isCartAddAvailable"
+              @open-product-modal="openModal(product.id)"
+            />
+          </template>
+        </MenuPicksRow>
         <div
           v-for="(cat, catIdx) in displayedCategories"
           :key="cat.id"
@@ -317,7 +345,7 @@
             class="grid grid-cols-2 gap-3 sm:gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
           >
             <ProductCard
-              :index="(cardOffsets[catIdx] ?? 0) + idx"
+              :index="picksCount + (cardOffsets[catIdx] ?? 0) + idx"
               :product="prod"
               :ordering-disabled="!isCartAddAvailable"
               v-for="(prod, idx) in cat.products"
@@ -410,6 +438,9 @@ import ProductCard from '~/components/menu/ProductCard.vue'
 import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useHaptics } from '#engine/composables/useHaptics'
 import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
+import MenuPicksRow from '#engine/components/menu/MenuPicksRow.vue'
+import { useMenuPickCounts } from '#engine/composables/useMenuPickCounts'
+import { pickMenuRow } from '#engine/utils/menuPicks'
 import { whenIdle } from '#engine/utils/whenIdle'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
@@ -553,11 +584,13 @@ const [
     pending: categoriesPending,
     refresh: refetchCategories,
   },
+  pickCounts,
 ] = await Promise.all([
   useOrderingAvailability(),
   useGqlQuery<{
     productCategories: ProductCategory[]
   }>(PRODUCT_CATEGORIES, {}, { immediate: true, cache: true }),
+  useMenuPickCounts(),
 ])
 const isCartAddAvailable = computed(() => !isOrderingDisabled.value)
 
@@ -665,6 +698,19 @@ const displayedCategories = computed<ProductCategory[]>(() =>
     excludeComposer: false,
   }),
 )
+
+// The row at the top: the whole menu only, not while a search or a diet filter narrows it.
+const menuPicks = computed(() =>
+  debouncedSearchValue.value.trim() || activeFilters.value.size > 0
+    ? null
+    : pickMenuRow({
+        mine: pickCounts.mine.value,
+        popular: pickCounts.popular.value,
+        products: allProducts.value,
+      }),
+)
+// The row's cards come first on the page, the categories' after them.
+const picksCount = computed(() => menuPicks.value?.products.length ?? 0)
 
 // Where each category starts on the page: a card's image priority follows its place on the page, not in its category (see utils/menuImagePriority.ts).
 const cardOffsets = computed(() =>

@@ -133,7 +133,12 @@
     "editing": "正在修改",
     "viewDetails": "查看 {name} 详情",
     "loadFailed": "无法加载菜单。",
-    "productLoadFailed": "无法加载该商品。"
+    "productLoadFailed": "无法加载该商品。",
+    "picks": {
+      "favorites": "您的最爱",
+      "ordered": "您点过的",
+      "popular": "最受欢迎"
+    }
   },
   "days": {},
   "login": {

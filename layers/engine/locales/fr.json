@@ -133,7 +133,12 @@
     "editing": "Modification",
     "viewDetails": "Voir le détail de {name}",
     "loadFailed": "Impossible de charger le menu.",
-    "productLoadFailed": "Impossible de charger ce produit."
+    "productLoadFailed": "Impossible de charger ce produit.",
+    "picks": {
+      "favorites": "Vos favoris",
+      "ordered": "Déjà commandés",
+      "popular": "Les plus commandés"
+    }
   },
   "days": {},
   "login": {

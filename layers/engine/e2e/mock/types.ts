@@ -99,6 +99,11 @@ export interface Scenario {
   feedbackFailure: 'invalid' | 'captcha_failed' | 'rate_limited' | 'server' | null
   /** Promo codes by (upper-case) code. */
   coupons: Record<string, CouponRule>
+  /**
+   * What `popularProducts` answers (the menu's "most ordered" row), most ordered first. Empty by default, so the row
+   * only shows in the specs that ask for it.
+   */
+  popularProducts: { productId: string; orderCount: number }[]
 }
 
 /** What `POST /__mock/scenario` takes: every field optional, the nested `otp` and `coupons` merged key by key. */

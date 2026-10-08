@@ -159,6 +159,34 @@ export const operations: Operations = {
         .slice(0, limit)
         .map((order) => orderOut(state, order))
     },
+    // The real query: delivered or collected orders, a product counted once per order, most orders then most units
+    // first, only products on sale. The mock has one customer, so the counts are theirs.
+    myOrderedProducts: (context, { first }) => {
+      requireAuth(context)
+      const { state } = context
+      const counts = new Map<string, { productId: string; orderCount: number; units: number }>()
+      for (const order of state.ordersNewestFirst()) {
+        if (order.status !== 'DELIVERED' && order.status !== 'PICKED_UP') continue
+        for (const productId of new Set(order.items.map((line) => line.productId))) {
+          const units = order.items
+            .filter((line) => line.productId === productId)
+            .reduce((sum, line) => sum + line.quantity, 0)
+          const entry = counts.get(productId) ?? { productId, orderCount: 0, units: 0 }
+          counts.set(productId, {
+            ...entry,
+            orderCount: entry.orderCount + 1,
+            units: entry.units + units,
+          })
+        }
+      }
+      return [...counts.values()]
+        .filter(({ productId }) => findProduct(state.catalog, productId)?.isAvailable === true)
+        .sort((a, b) => b.orderCount - a.orderCount || b.units - a.units)
+        .slice(0, typeof first === 'number' ? first : 12)
+        .map(({ productId, orderCount }) => ({ productId, orderCount }))
+    },
+    popularProducts: ({ state }, { first }) =>
+      state.scenario.popularProducts.slice(0, typeof first === 'number' ? first : 8),
     myOrder: (context, { id }) => {
       requireAuth(context)
       const order = context.state.orders.get(strArg(id))

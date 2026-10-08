@@ -4,8 +4,8 @@
     <div
       v-if="product"
       :key="product.id"
-      data-testid="product-card"
-      :data-product-id="product.id"
+      :data-testid="inPicks ? 'menu-picks-card' : 'product-card'"
+      :data-product-id="inPicks ? undefined : product.id"
       :data-has-choices="hasChoices"
       class="isolate min-w-0 md:max-w-[185px] w-full h-full min-h-[260px] bg-white border border-neutral-100 rounded-xl shadow-sm flex flex-col p-2 transition-all duration-300 hover:shadow-md"
     >
@@ -176,10 +176,13 @@ const config = useRuntimeConfig()
 const { trackEvent } = useTracking()
 const { impact } = useHaptics()
 
-const { index, product, orderingDisabled } = defineProps<{
+const { index, product, orderingDisabled, inPicks } = defineProps<{
   index: number
   product: Product
   orderingDisabled?: boolean
+  /** In the row at the top of the menu: the same product is also in its category, which keeps the card's test id and
+   * `data-product-id` (what the scroll anchoring and the e2e tests look for). */
+  inPicks?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -282,7 +285,7 @@ const addToCart = () => {
     product_name: product.name,
     price: product.price,
     quantity: 1,
-    source: 'card',
+    source: inPicks ? 'picks' : 'card',
   })
   cartItemAdded.emit({
     productName: product.name,

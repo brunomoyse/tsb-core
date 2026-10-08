@@ -133,7 +133,12 @@
     "editing": "Editing",
     "viewDetails": "View details for {name}",
     "loadFailed": "We couldn't load the menu.",
-    "productLoadFailed": "We couldn't load this product."
+    "productLoadFailed": "We couldn't load this product.",
+    "picks": {
+      "favorites": "Your favourites",
+      "ordered": "Ordered before",
+      "popular": "Most ordered"
+    }
   },
   "days": {},
   "login": {

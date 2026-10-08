@@ -63,6 +63,7 @@ export interface MockOrder {
 }
 
 export const defaultScenario = (): Scenario => ({
+  popularProducts: [],
   restaurant: 'open',
   latencyMs: 0,
   quoteDelayMs: 0,

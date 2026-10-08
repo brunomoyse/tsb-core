@@ -133,7 +133,12 @@
     "editing": "Bewerken",
     "viewDetails": "Details van {name} bekijken",
     "loadFailed": "We konden het menu niet laden.",
-    "productLoadFailed": "We konden dit product niet laden."
+    "productLoadFailed": "We konden dit product niet laden.",
+    "picks": {
+      "favorites": "Jouw favorieten",
+      "ordered": "Eerder besteld",
+      "popular": "Meest besteld"
+    }
   },
   "days": {},
   "login": {
