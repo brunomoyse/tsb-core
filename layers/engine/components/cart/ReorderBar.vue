@@ -17,7 +17,7 @@
         <div class="min-w-0 flex-1">
           <p class="text-sm font-semibold text-neutral-900">
             {{ $t('reorder.barTitle') }}
-            <span class="font-normal text-neutral-500">· {{ orderDate }}</span>
+            <span class="font-normal text-neutral-600">· {{ orderDate }}</span>
           </p>
           <p class="truncate text-xs text-neutral-600" data-testid="reorder-bar-summary">
             {{ itemsLabel }} · {{ total }}
@@ -35,7 +35,7 @@
           type="button"
           data-testid="reorder-bar-close"
           :aria-label="$t('reorder.barClose')"
-          class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:text-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+          class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-neutral-600 hover:text-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           @click="onDismiss"
         >
           <svg
