@@ -11,6 +11,7 @@ import {
   extensionNoise,
   extensionUrls,
   initSentry,
+  networkNoise,
   oidcNoise,
 } from './sentryClient'
 
@@ -60,7 +61,7 @@ describe('initSentry', () => {
       tracesSampleRate: 0.1,
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 0,
-      ignoreErrors: [...oidcNoise, ...extensionNoise],
+      ignoreErrors: [...oidcNoise, ...extensionNoise, ...networkNoise],
       denyUrls: extensionUrls,
       dataCollection: {
         userInfo: false,
@@ -243,7 +244,7 @@ describe('extension noise', () => {
   })
 
   it('leaves the shop errors and scripts alone', () => {
-    expect(extensionNoise.some((pattern) => pattern.test('Failed to fetch'))).toBe(false)
+    expect(extensionNoise.some((pattern) => pattern.test('Load failed'))).toBe(false)
     expect(
       extensionUrls.some((pattern) => pattern.test('https://tokyosushibarliege.be/_nuxt/a.js')),
     ).toBe(false)
@@ -320,5 +321,28 @@ describe('startSentry', () => {
       'spanToJSON',
       'updateSpanName',
     ])
+  })
+})
+
+describe('network noise', () => {
+  it.each([
+    'Load failed (cdn.tokyosushibarliege.be)',
+    'TypeError: Load failed (cdn.tokyosushibarliege.be)',
+    'Load failed',
+    'Failed to fetch',
+    'Failed to fetch (tokyosushibarliege.be)',
+    'NetworkError when attempting to fetch resource.',
+  ])('matches "%s"', (message) => {
+    expect(networkNoise.some((pattern) => pattern.test(message))).toBe(true)
+  })
+
+  it('leaves the shop errors alone', () => {
+    for (const message of [
+      "Cannot read properties of undefined (reading 'id')",
+      'Failed to fetch dynamically imported module: https://tokyosushibarliege.be/_nuxt/a.js',
+      'Load failed: x is undefined',
+    ]) {
+      expect(networkNoise.some((pattern) => pattern.test(message))).toBe(false)
+    }
   })
 })

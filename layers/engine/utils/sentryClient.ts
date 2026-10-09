@@ -70,6 +70,16 @@ export const extensionNoise = [
   /Could not establish connection\. Receiving end does not exist/iu,
 ]
 
+/*
+ * A `fetch` that never got an answer (offline, a dropped connection, a suspended tab), in each browser's words; Sentry
+ * adds the host in brackets. Not actionable from the page, and the same messages `isReportableError` skips (see
+ * utils/gqlError.ts). TSB-CORE-A: Opera on iOS re-fetches the menu thumbnails itself, through the shop's page, and its
+ * failures land in the unhandled-rejection handler although the shop only shows them with <img>.
+ */
+export const networkNoise = [
+  /^(?:TypeError: )?(?:Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?)(?: \([^)]*\))?$/u,
+]
+
 /** Scripts of browser extensions: an error whose stack points there came from an extension, not from the shop. */
 export const extensionUrls = [
   /^safari-(?:web-)?extension:\/\//iu,
@@ -144,7 +154,7 @@ export function initSentry(Sentry: SentryModule, env: SentryEnvironment): void {
       stackFrameVariables: false,
     },
 
-    ignoreErrors: [...oidcNoise, ...extensionNoise],
+    ignoreErrors: [...oidcNoise, ...extensionNoise, ...networkNoise],
     denyUrls: extensionUrls,
     beforeSend: createBeforeSend(),
   })
