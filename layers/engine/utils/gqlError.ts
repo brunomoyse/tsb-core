@@ -153,6 +153,19 @@ export const isAbortError = (err: unknown): boolean => {
 }
 
 /*
+ * What the browser's own `fetch` rejects with when the request never got an answer (offline, the connection dropped,
+ * the tab was suspended): a plain TypeError whose message depends on the browser. Safari says "Load failed", Chrome
+ * "Failed to fetch", Firefox "NetworkError when attempting to fetch resource.". Code that calls `fetch` directly (e.g.
+ * oidc-client-ts reading Zitadel's discovery document) gets it without the FetchError ofetch would wrap it in.
+ */
+const BROWSER_NETWORK_FAILURE =
+  /^(?:Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?|The network connection was lost\.?|The Internet connection appears to be offline\.?)$/u
+
+/** A dropped connection reported by the browser's `fetch`, as opposed to a TypeError of our own code. */
+const isBrowserNetworkFailure = (err: unknown): boolean =>
+  err instanceof TypeError && BROWSER_NETWORK_FAILURE.test(err.message)
+
+/*
  * Codes that mean "our fault" (the backend flags the same ones as unexpected): reported to Sentry.
  * Every other code is the customer's input or session and is only shown, never reported.
  */
@@ -166,7 +179,7 @@ const SERVER_FAULT_CODES = new Set([
 
 /** Whether an error deserves a Sentry event (see utils/reportError.ts). */
 export function isReportableError(raw: unknown): boolean {
-  if (isAbortError(raw)) return false
+  if (isAbortError(raw) || isBrowserNetworkFailure(raw)) return false
   const err = unwrapGqlError(raw)
   if (!err) {
     /*

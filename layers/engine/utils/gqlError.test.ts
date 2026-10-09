@@ -240,6 +240,20 @@ describe('isReportableError: an HTTP error that is not a GqlError', () => {
     expect(isReportableError('boom')).toBe(true)
   })
 
+  it.each([
+    ['Safari', 'Load failed'],
+    ['Chrome', 'Failed to fetch'],
+    ['Firefox', 'NetworkError when attempting to fetch resource.'],
+    ['older Safari', 'The network connection was lost.'],
+  ])('is a dropped connection for the TypeError of a native fetch in %s', (_browser, message) => {
+    expect(isReportableError(new TypeError(message))).toBe(false)
+  })
+
+  it('still reports a TypeError of our own code, or a network message on another error type', () => {
+    expect(isReportableError(new TypeError('Load failed: x is undefined'))).toBe(true)
+    expect(isReportableError(new Error('Load failed'))).toBe(true)
+  })
+
   it('is never reportable when aborted, even behind a cause', () => {
     expect(isReportableError({ name: 'AbortError' })).toBe(false)
     expect(isReportableError({ cause: { name: 'AbortError' } })).toBe(false)
