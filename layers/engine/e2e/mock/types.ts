@@ -172,7 +172,13 @@ export interface OrderPatch {
   status?: OrderStatus
   paymentStatus?: PaymentStatus
   estimatedReadyTime?: string | null
-  cancellationReason?: 'OUT_OF_STOCK' | 'KITCHEN_CLOSED' | 'DELIVERY_AREA' | 'OTHER' | null
+  cancellationReason?:
+    | 'OUT_OF_STOCK'
+    | 'KITCHEN_CLOSED'
+    | 'DELIVERY_AREA'
+    | 'DUPLICATE'
+    | 'OTHER'
+    | null
 }
 
 /** One GraphQL root field the app asked for, as the mock logged it (`GET /__mock/state`). */

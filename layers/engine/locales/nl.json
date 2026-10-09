@@ -481,7 +481,8 @@
     "cancellationReasons": {
       "OUT_OF_STOCK": "Uitverkocht",
       "KITCHEN_CLOSED": "Keuken gesloten",
-      "DELIVERY_AREA": "Buiten de leveringszone"
+      "DELIVERY_AREA": "Buiten de leveringszone",
+      "DUPLICATE": "Dubbele bestelling"
     },
     "loadError": "We konden de bestelgegevens niet laden. Probeer het opnieuw.",
     "backToMenu": "Terug naar menu",

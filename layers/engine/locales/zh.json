@@ -481,7 +481,8 @@
     "cancellationReasons": {
       "OUT_OF_STOCK": "缺货",
       "KITCHEN_CLOSED": "厨房已停止接单",
-      "DELIVERY_AREA": "超出配送范围"
+      "DELIVERY_AREA": "超出配送范围",
+      "DUPLICATE": "重复下单"
     },
     "loadError": "加载订单详情失败，请重试。",
     "backToMenu": "返回菜单",

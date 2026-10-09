@@ -163,7 +163,12 @@ export type OrderPickUpStatus =
   | 'CANCELLED'
   | 'FAILED'
 export type OrderType = 'DELIVERY' | 'PICKUP'
-export type OrderCancellationReason = 'OUT_OF_STOCK' | 'KITCHEN_CLOSED' | 'DELIVERY_AREA' | 'OTHER'
+export type OrderCancellationReason =
+  | 'OUT_OF_STOCK'
+  | 'KITCHEN_CLOSED'
+  | 'DELIVERY_AREA'
+  | 'DUPLICATE'
+  | 'OTHER'
 
 export interface Order {
   addressExtra: string | null

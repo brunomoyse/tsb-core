@@ -481,7 +481,8 @@
     "cancellationReasons": {
       "OUT_OF_STOCK": "Rupture de stock",
       "KITCHEN_CLOSED": "Cuisine fermée",
-      "DELIVERY_AREA": "Hors zone de livraison"
+      "DELIVERY_AREA": "Hors zone de livraison",
+      "DUPLICATE": "Commande en double"
     },
     "loadError": "Impossible de charger les détails de la commande. Veuillez réessayer.",
     "backToMenu": "Retour au menu",
