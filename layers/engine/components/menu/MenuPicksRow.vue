@@ -1,8 +1,9 @@
 <template>
   <!--
     The row at the top of the menu: the customer's own products ("Vos favoris", "Déjà commandés") or the most ordered
-    ones (utils/menuPicks.ts decides). One horizontally scrolling line of the brand's own cards (`card` slot), under a
-    heading the brand can restyle (`heading` slot).
+    ones (utils/menuPicks.ts decides). The brand's own cards (`card` slot) under a heading the brand can restyle
+    (`heading` slot). On phones and tablets they sit in the same 2 / 3-column grid as a category; from `md` up, in one
+    horizontally scrolling line.
   -->
   <section
     data-testid="menu-picks"
@@ -18,20 +19,20 @@
     <div class="relative">
       <ul
         ref="scrollerRef"
-        class="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth motion-reduce:scroll-auto py-1 sm:gap-5"
+        class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 md:flex md:overflow-x-auto no-scrollbar md:snap-x md:snap-mandatory md:scroll-smooth md:motion-reduce:scroll-auto md:py-1"
       >
         <li
           v-for="(product, index) in picks.products"
           :key="product.id"
           data-testid="menu-picks-item"
-          class="w-[44%] shrink-0 snap-start sm:w-[185px]"
+          class="md:w-[185px] md:shrink-0 md:snap-start"
         >
           <slot name="card" :product="product" :index="index" />
         </li>
       </ul>
-      <!-- More to the right: the same gradient fade as the category strip -->
+      <!-- More to the right (scrolling line only): the same gradient fade as the category strip -->
       <div
-        class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-tsb-one to-transparent transition-opacity duration-300"
+        class="pointer-events-none absolute inset-y-0 right-0 hidden w-10 bg-gradient-to-l from-tsb-one to-transparent transition-opacity duration-300 md:block"
         :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
         aria-hidden="true"
       />

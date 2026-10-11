@@ -96,6 +96,38 @@ test.describe('the row at the top of the menu', () => {
     await expect(row.getByTestId('menu-picks-card').first()).toContainText('Coca')
   })
 
+  test('on a phone, lays the row out like a category (2 columns, no sideways scroll); on desktop, one line', async ({
+    page,
+    backend,
+  }) => {
+    await backend.mock.scenario({ popularProducts: POPULAR })
+    const cardTops = async () =>
+      Promise.all(
+        (await page.getByTestId('menu-picks-card').all()).map(
+          async (card) => (await card.boundingBox())?.y ?? Number.NaN,
+        ),
+      )
+    const overflowsSideways = () =>
+      page
+        .getByTestId('menu-picks')
+        .locator('ul')
+        .evaluate((list) => list.scrollWidth > list.clientWidth + 1)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/fr/menu')
+    await waitForNuxtHydration(page)
+    await expect(page.getByTestId('menu-picks-card')).toHaveCount(3)
+    const [first, second, third] = await cardTops()
+    expect(second).toBe(first)
+    expect(third).toBeGreaterThan(first!)
+    expect(await overflowsSideways()).toBe(false)
+
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await expect
+      .poll(async () => new Set(await cardTops()).size, { message: 'all cards on one line' })
+      .toBe(1)
+  })
+
   test('adds a product to the cart from the row', async ({ page, backend }) => {
     await backend.mock.scenario({ popularProducts: POPULAR })
     await page.goto('/fr/menu')
