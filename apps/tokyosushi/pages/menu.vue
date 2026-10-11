@@ -290,7 +290,7 @@
       <!-- Products Grid -->
       <section v-else class="max-w-7xl mx-auto px-0 sm:px-4 py-4 space-y-12">
         <!-- The customer's own products, or the most ordered ones (engine, utils/menuPicks.ts) -->
-        <MenuPicksRow v-if="menuPicks" :picks="menuPicks">
+        <MenuPicksRow v-if="menuPicks" :picks="menuPicks" :grid-class="productGridClass">
           <template #heading="{ title, headingId }">
             <div class="flex items-center gap-3 ml-0 sm:ml-4">
               <span class="text-primary-300/40 text-2xl leading-none font-light" aria-hidden="true"
@@ -340,10 +340,7 @@
           </div>
 
           <!-- Product Cards -->
-          <div
-            v-if="cat.products.length"
-            class="grid grid-cols-2 gap-3 sm:gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]"
-          >
+          <div v-if="cat.products.length" :class="productGridClass">
             <ProductCard
               :index="picksCount + (cardOffsets[catIdx] ?? 0) + idx"
               :product="prod"
@@ -698,6 +695,10 @@ const displayedCategories = computed<ProductCategory[]>(() =>
     excludeComposer: false,
   }),
 )
+
+// The product grid of a category, shared with the picks row so the row looks like one more category.
+const productGridClass =
+  'grid grid-cols-2 gap-3 sm:gap-5 justify-center sm:grid-cols-3 sm:justify-start md:[grid-template-columns:repeat(auto-fit,minmax(auto,185px))]'
 
 // The row at the top: the whole menu only, not while a search or a diet filter narrows it.
 const menuPicks = computed(() =>
