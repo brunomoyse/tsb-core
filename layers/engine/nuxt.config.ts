@@ -74,8 +74,8 @@ export default defineNuxtConfig({
         // Open the connections the page is about to need while the HTML is still being parsed (audit PR 6.2, P12): the
         // Product images come from the S3/CDN origin (plain <img>, so the default connection pool), the API is called
         // With fetch and no credentials (hence `crossorigin`: the anonymous pool).
-        ...(s3Origin ? [{ rel: 'preconnect', href: s3Origin }] : []),
-        { rel: 'preconnect', href: apiOrigin, crossorigin: 'anonymous' as const },
+        ...(s3Origin ? [{ rel: 'preconnect' as const, href: s3Origin }] : []),
+        { rel: 'preconnect' as const, href: apiOrigin, crossorigin: 'anonymous' as const },
       ],
       script: [
         /*
