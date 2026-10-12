@@ -263,17 +263,15 @@ export default defineNuxtConfig({
     nodeTsConfig: {
       include: [`${engineDir}nuxt.config.ts`, `${engineDir}types/nuxt-config.d.ts`],
     },
+    serverTsConfig: {
+      include: [`${engineDir}server/**/*`],
+    },
   },
   nitro: {
     // Static files are compressed once at build time (gzip + brotli next to the originals) and served with the encoding
     // The browser accepts: Nitro does not compress anything itself and tsb-infra configures no compression in Traefik.
     // Cloudflare (when the zone is proxied) compresses what it relays, but the home server is reached without it.
     compressPublicAssets: { gzip: true, brotli: true },
-    typescript: {
-      tsConfig: {
-        include: [`${engineDir}server/**/*`],
-      },
-    },
   },
 
   compatibilityDate: '2025-07-08', // Nuxt 4 RC release date
