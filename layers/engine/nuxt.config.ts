@@ -267,6 +267,12 @@ export default defineNuxtConfig({
       include: [`${engineDir}server/**/*`],
     },
   },
+  experimental: {
+    // Off: the import map Nuxt uses for the entry chunk (`#entry`) needs Safari 16.4, and on older iPhones every chunk
+    // That imports it failed with "Module specifier, '#entry' does not start with ..." (TSB-CORE-M/N, iOS 16.1): a
+    // Blank shop. The cost is cache stability only (an entry change renames the chunks that import it).
+    entryImportMap: false,
+  },
   nitro: {
     // Static files are compressed once at build time (gzip + brotli next to the originals) and served with the encoding
     // The browser accepts: Nitro does not compress anything itself and tsb-infra configures no compression in Traefik.

@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nuxt'
+import { isMalformedRequest } from './utils/sentryServer'
 
 const dsn = process.env.SENTRY_DSN
 // An empty variable counts as unset.
@@ -24,5 +25,7 @@ if (nonEmpty(dsn) !== undefined) {
       graphQL: { variables: false },
       stackFrameVariables: false,
     },
+    // Scanners with a Host header that is not a URL (utils/sentryServer.ts).
+    beforeSend: (event) => (isMalformedRequest(event) ? null : event),
   })
 }
