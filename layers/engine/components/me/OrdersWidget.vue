@@ -556,7 +556,7 @@
 
                 <!-- Download Invoice button -->
                 <button
-                  v-if="isOrderSuccess(order.status)"
+                  v-if="invoicesEnabled && isOrderSuccess(order.status)"
                   class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   @click.stop="downloadInvoice(order.id)"
                 >
@@ -690,8 +690,10 @@ import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
 import { useOrderItemLabel } from '#engine/composables/useOrderItemLabel'
 import { useReorder } from '#engine/composables/useReorder'
+import { brandIssuesInvoices } from '#engine/utils/invoices'
 
-const { japaneseAccents = false } = useAppConfig().brand
+const { japaneseAccents = false, invoicesEnabled: brandInvoices } = useAppConfig().brand
+const invoicesEnabled = brandIssuesInvoices(brandInvoices)
 const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
 const { reorder } = useReorder()

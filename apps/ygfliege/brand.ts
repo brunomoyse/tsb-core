@@ -69,6 +69,8 @@ export const brand: BrandConfig = {
   // Cart is forced to PICKUP (the engine plugin delivery-mode.ts). Flip to true (or
   // Remove) when delivery starts.
   deliveryEnabled: false,
+  // No invoice download until YGF's legal name, VAT and invoice logo are set (backend: RESTAURANT_INVOICES_ENABLED).
+  invoicesEnabled: false,
   // True keeps the privacy policy's app passages (push notifications, live activities, device tokens); false drops them.
   // oxlint-disable-next-line no-warning-comments
   // TODO(user): confirm whether YGF has a mobile app

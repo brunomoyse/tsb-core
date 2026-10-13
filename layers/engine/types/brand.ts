@@ -115,6 +115,12 @@ export interface BrandConfig {
    */
   deliveryEnabled?: boolean
   /**
+   * Whether customers can download PDF invoices for their orders. Defaults to true when omitted. Set false for a
+   * brand whose invoice details (legal name, VAT, logo) are not ready; the backend's `RESTAURANT_INVOICES_ENABLED`
+   * must match.
+   */
+  invoicesEnabled?: boolean
+  /**
    * Whether the brand publishes a customer mobile app. The privacy policy describes the app (push notifications, live
    * activities, device tokens) only when it does; a brand without one gets the web-only text.
    */

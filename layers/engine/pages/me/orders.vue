@@ -14,11 +14,13 @@ import { useI18n } from 'vue-i18n'
 import { useInvoiceDownload } from '#engine/composables/useInvoiceDownload'
 import { useOrderTracking } from '#engine/composables/useOrderTracking'
 import { useReorder } from '#engine/composables/useReorder'
+import { brandIssuesInvoices } from '#engine/utils/invoices'
 
 definePageMeta({ public: false })
 
 const { t } = useI18n()
 const { downloadInvoice } = useInvoiceDownload()
+const invoicesEnabled = brandIssuesInvoices(useAppConfig().brand.invoicesEnabled)
 const { reorder } = useReorder()
 
 const dateLocale = useDateLocale()
@@ -356,7 +358,7 @@ const getStatusColorClass = (status: string) => {
 
             <!-- Download Invoice Button -->
             <button
-              v-if="['DELIVERED', 'PICKED_UP'].includes(order.status)"
+              v-if="invoicesEnabled && ['DELIVERED', 'PICKED_UP'].includes(order.status)"
               type="button"
               class="mt-2 w-full min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-tsb-four/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               @click.stop="downloadInvoice(order.id)"
