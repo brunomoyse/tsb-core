@@ -435,6 +435,7 @@
     "eyebrow": "Composez votre bol",
     "title": "Votre bol sur mesure",
     "heroSubtitle": "Choisissez votre bouillon, remplissez votre bol ingrédient par ingrédient, réglez le piquant. Cuit minute, rien que pour vous.",
+    "heroSubtitleDry": "Sans bouillon : remplissez votre bol ingrédient par ingrédient, choisissez le piquant de la sauce sésame-cacahouète. Sauté minute, rien que pour vous.",
     "open": "Composer mon bol",
     "stepOf": "Étape {n}/{total}",
     "chosen": "Choisi",

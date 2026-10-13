@@ -7,11 +7,27 @@ export const COMPOSER_CATEGORY_SLUG = 'sur-mesure'
 
 export const isBowlComposer = (p: Product): boolean => p.category.slug === COMPOSER_CATEGORY_SLUG
 
-// Official bowl shot of each composer's hero card, by product slug. A bowl
-// built in a broth gets the beef-bone bowl, the dry one the mala dry-mix bowl.
-const COMPOSER_HERO_PHOTOS: Record<string, string> = {
-  'mala-mix-personnalise': '/images/bowls/mala-dry-mix-top',
+// Hero card of each composer, by product slug: the official bowl shot and
+// the subtitle. A bowl built in a broth gets the beef-bone bowl and the broth
+// copy; the dry one (Mala Mix, sans bouillon) the mala dry-mix bowl and a
+// subtitle about the sauce instead.
+export interface ComposerHero {
+  /** Asset base under /public, widths + ext appended by MktPicture. */
+  photo: string
+  /** I18n key of the subtitle. */
+  subtitleKey: string
 }
 
-export const composerHeroPhoto = (slug: string): string =>
-  COMPOSER_HERO_PHOTOS[slug] ?? '/images/bowls/beef-bone-top'
+const DEFAULT_HERO: ComposerHero = {
+  photo: '/images/bowls/beef-bone-top',
+  subtitleKey: 'composer.heroSubtitle',
+}
+
+const COMPOSER_HEROES: Record<string, ComposerHero> = {
+  'mala-mix-personnalise': {
+    photo: '/images/bowls/mala-dry-mix-top',
+    subtitleKey: 'composer.heroSubtitleDry',
+  },
+}
+
+export const composerHero = (slug: string): ComposerHero => COMPOSER_HEROES[slug] ?? DEFAULT_HERO

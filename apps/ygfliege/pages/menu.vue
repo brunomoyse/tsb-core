@@ -225,7 +225,9 @@
               <h2 translate="no" class="section-title text-2xl sm:text-3xl">
                 {{ composer.name }}
               </h2>
-              <p class="text-sm text-ygf-black/70 max-w-prose">{{ $t('composer.heroSubtitle') }}</p>
+              <p class="text-sm text-ygf-black/70 max-w-prose">
+                {{ $t(composerHero(composer.slug).subtitleKey) }}
+              </p>
               <button
                 type="button"
                 data-testid="composer-hero-cta"
@@ -237,7 +239,7 @@
               </button>
             </div>
             <MktPicture
-              :src="composerHeroPhoto(composer.slug)"
+              :src="composerHero(composer.slug).photo"
               :widths="[320, 560, 800]"
               :fallback-width="560"
               :fallback-height="560"
@@ -383,7 +385,7 @@ import {
   flattenProducts,
   searchProducts,
 } from '#engine/utils/menuCatalog'
-import { composerHeroPhoto, isBowlComposer } from '~/data/composer'
+import { composerHero, isBowlComposer } from '~/data/composer'
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
