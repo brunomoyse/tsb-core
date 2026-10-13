@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useDateLocale } from '#engine/composables/useDateLocale'
 import { useMenuOpen, useShopEnabled } from '#engine/composables/useShopEnabled'
+import { useHeroMotion, useMagnetic, useParallaxFrame } from '~/composables/useMktMotion'
 // Phosphor icons (same set as the vitrine site); raw SVGs, tinted via
 // CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
@@ -57,6 +58,18 @@ const nextOpeningTime = computed(() => {
   }).format(next)
 })
 
+// Motion of the old site (client only, none under reduced motion): hero bowl pop-in and scroll parallax, magnetic CTA,
+// Parallax frame of the herbs photo. The bowl's levitation is the CSS animation below.
+const hero = ref<HTMLElement | null>(null)
+const heroContent = ref<HTMLElement | null>(null)
+const heroBowl = ref<HTMLElement | null>(null)
+const heroBowlPop = ref<HTMLElement | null>(null)
+const heroCta = ref<HTMLElement | null>(null)
+const herbsFrame = ref<HTMLElement | null>(null)
+useHeroMotion({ hero, bowl: heroBowl, bowlPop: heroBowlPop, content: heroContent })
+useMagnetic(heroCta)
+useParallaxFrame(herbsFrame)
+
 useSeoMeta({
   title: t('mkt.seo.home_title'),
   ogType: 'website',
@@ -69,12 +82,12 @@ useSeoMeta({
 
 <template>
   <div>
-    <!-- ── Hero: levitating bowl, warm background ── -->
-    <section class="relative overflow-hidden bg-gradient-to-b from-ygf-bg to-white">
+    <!-- ── Hero: levitating bowl, warm background (motion: useHeroMotion, as on the old site) ── -->
+    <section ref="hero" class="relative overflow-hidden bg-gradient-to-b from-ygf-bg to-white">
       <div
         class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 grid gap-10 lg:grid-cols-2 lg:items-center"
       >
-        <div class="text-center lg:text-left">
+        <div ref="heroContent" class="relative z-[2] text-center lg:text-left">
           <h1
             class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-ygf-black leading-tight"
           >
@@ -88,12 +101,15 @@ useSeoMeta({
           >
             <!-- While the shop is switched off (utils/shopGate.ts) the ordering status pill is not shown; the CTA
                  still leads to the (static) menu, or to the concept page for a brand without one. -->
-            <NuxtLinkLocale
-              :to="menuOpen ? '/menu' : '/concept'"
-              class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {{ menuOpen ? $t('mkt.hero.cta') : $t('mkt.hero.ctaConcept') }}
-            </NuxtLinkLocale>
+            <!-- Magnetic on desktop: drifts toward the pointer (useMagnetic). -->
+            <span ref="heroCta" class="inline-flex">
+              <NuxtLinkLocale
+                :to="menuOpen ? '/menu' : '/concept'"
+                class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {{ menuOpen ? $t('mkt.hero.cta') : $t('mkt.hero.ctaConcept') }}
+              </NuxtLinkLocale>
+            </span>
             <!-- Live ordering status pill -->
             <span
               v-if="shopEnabled && orderingStatus !== 'loading'"
@@ -125,45 +141,52 @@ useSeoMeta({
           </div>
         </div>
 
-        <div class="relative flex justify-center" aria-hidden="false">
-          <!-- Rising steam -->
-          <div aria-hidden="true">
-            <span class="steam-wisp" style="left: 42%; animation-delay: 0s" />
-            <span class="steam-wisp" style="left: 50%; animation-delay: 1.1s" />
-            <span class="steam-wisp" style="left: 58%; animation-delay: 2.2s" />
-          </div>
-          <!--
+        <!-- Three layers: scroll parallax (outer), pop-in (middle), levitation of the image (.hero-bowl-float). -->
+        <div ref="heroBowl" class="relative z-[1] flex justify-center">
+          <div ref="heroBowlPop" class="relative">
+            <!-- Rising steam -->
+            <div aria-hidden="true">
+              <span class="steam-wisp" style="left: 42%; animation-delay: 0s" />
+              <span class="steam-wisp" style="left: 50%; animation-delay: 1.1s" />
+              <span class="steam-wisp" style="left: 58%; animation-delay: 2.2s" />
+            </div>
+            <!--
                         The width is on the <picture> (it is a flex item, so a percentage width on the image alone resolved
                         to 0 until the file arrived and the hero jumped: audit PR 3.8, P4). `sizes` is what that box really
                         measures: 72vw up to 448px below lg; 38vw up to the 532px column above (the 1400w file is never needed).
                     -->
-          <MktPicture
-            src="/images/hero/bowl-creative"
-            :widths="[640, 1000, 1400]"
-            :fallback-width="1000"
-            :fallback-height="1299"
-            :alt="$t('mkt.hero.bowl_alt')"
-            sizes="(min-width: 1024px) min(38vw, 532px), min(72vw, 448px)"
-            eager
-            class="block w-[72vw] max-w-md lg:w-[38vw] lg:max-w-xl"
-            img-class="w-full drop-shadow-2xl"
-          />
+            <div class="hero-bowl-float">
+              <MktPicture
+                src="/images/hero/bowl-creative"
+                :widths="[640, 1000, 1400]"
+                :fallback-width="1000"
+                :fallback-height="1299"
+                :alt="$t('mkt.hero.bowl_alt')"
+                sizes="(min-width: 1024px) min(38vw, 532px), min(72vw, 448px)"
+                eager
+                class="block w-[72vw] max-w-md lg:w-[38vw] lg:max-w-xl"
+                img-class="w-full drop-shadow-2xl"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ── Signature broths: interactive selector ── -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-      <div v-reveal class="text-center mb-10">
-        <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{
-          $t('mkt.broths.label')
-        }}</span>
-        <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black mt-2">
-          {{ $t('mkt.broths.title') }}
-        </h2>
-        <p class="mt-3 text-gray-600 max-w-2xl mx-auto">{{ $t('mkt.broths.subtitle') }}</p>
+    <section class="bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div v-reveal class="text-center mb-10">
+          <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{
+            $t('mkt.broths.label')
+          }}</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black mt-2">
+            {{ $t('mkt.broths.title') }}
+          </h2>
+          <p class="mt-3 text-gray-600 max-w-2xl mx-auto">{{ $t('mkt.broths.subtitle') }}</p>
+        </div>
+        <MktBrothSelector />
       </div>
-      <MktBrothSelector />
     </section>
 
     <!-- ── Herbal broth story (草本骨汤) ── -->
@@ -171,7 +194,8 @@ useSeoMeta({
       <div
         class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid gap-10 lg:grid-cols-2 lg:items-center"
       >
-        <div v-reveal>
+        <!-- Parallax frame: the photo wipes in from the bottom, then drifts inside it (useParallaxFrame). -->
+        <div ref="herbsFrame" class="overflow-hidden rounded-ygf-lg shadow-ygf-lg">
           <MktPicture
             src="/images/about/herbs-grid"
             :widths="[640, 1080, 1600]"
@@ -179,7 +203,8 @@ useSeoMeta({
             :fallback-height="720"
             :alt="$t('mkt.concept.broth_story.title')"
             sizes="(min-width: 1024px) 48vw, 92vw"
-            img-class="w-full rounded-ygf-lg shadow-ygf-lg"
+            class="block"
+            img-class="block w-full"
           />
         </div>
         <div v-reveal="1">
@@ -290,3 +315,22 @@ useSeoMeta({
     </section>
   </div>
 </template>
+
+<style scoped>
+/* Hero bowl levitation, as on the old site: up 10px and back, 2.2s each way (GSAP sine.inOut yoyo). */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-bowl-float {
+    animation: hero-bowl-levitate 2.2s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+  }
+}
+
+@keyframes hero-bowl-levitate {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-10px);
+  }
+}
+</style>

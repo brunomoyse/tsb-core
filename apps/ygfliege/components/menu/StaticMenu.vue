@@ -110,41 +110,7 @@
               <p class="text-sm text-gray-600 leading-relaxed">
                 {{ $t(`mkt.broths.${broth.key}.desc`) }}
               </p>
-              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <span
-                  class="inline-flex items-center gap-1 text-xs font-semibold rounded-ygf-btn px-3 py-1 border"
-                  :class="
-                    broth.spiceLevel > 0
-                      ? 'text-ygf-black bg-ygf-bg border-ygf-orange/10'
-                      : 'text-gray-600 bg-ygf-cream border-transparent'
-                  "
-                >
-                  <span
-                    v-if="broth.spiceLevel > 0"
-                    class="inline-flex items-center text-ygf"
-                    aria-hidden="true"
-                  >
-                    <span
-                      v-for="n in broth.spiceLevel"
-                      :key="n"
-                      class="block w-3.5 h-3.5 [&>svg]:w-full [&>svg]:h-full"
-                      v-html="pepperIcon"
-                    />
-                  </span>
-                  {{ $t(`mkt.broths.${broth.key}.spice`) }}
-                </span>
-                <span
-                  v-if="broth.vegan"
-                  class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.03em] rounded-ygf-btn px-3 py-1 border text-ygf-success-dark bg-ygf-success/10 border-ygf-success/30"
-                >
-                  <span
-                    class="block w-3 h-3 [&>svg]:w-full [&>svg]:h-full"
-                    aria-hidden="true"
-                    v-html="leafIcon"
-                  />
-                  {{ $t('mkt.broths.vegan_badge') }}
-                </span>
-              </div>
+              <MktBrothMeta :broth="broth" class="mt-3" />
               <p class="mt-2 text-xs text-gray-600">
                 <strong class="font-semibold text-ygf-black">{{
                   $t('mkt.broths.allergens_label')
@@ -233,6 +199,7 @@
           </p>
         </div>
         <div
+          ref="pricingSteps"
           v-reveal
           class="mt-8 flex flex-col items-center justify-center gap-6 sm:flex-row sm:flex-wrap"
         >
@@ -243,7 +210,7 @@
               aria-hidden="true"
               v-html="arrowRightIcon"
             />
-            <div class="flex flex-col items-center gap-3">
+            <div class="flex flex-col items-center gap-3" data-pop-in>
               <span
                 class="w-16 h-16 rounded-full bg-ygf text-white flex items-center justify-center"
                 aria-hidden="true"
@@ -266,7 +233,9 @@
  * dynamic, orderable menu once the shop is on.
  */
 import { computed, ref } from 'vue'
+import MktBrothMeta from '~/components/mkt/MktBrothMeta.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
+import { usePopInOnView } from '~/composables/useMktMotion'
 import { BROTHS } from '~/data/broths'
 import {
   INGREDIENT_FILTERS,
@@ -282,9 +251,7 @@ import cowIcon from '~/assets/icons/cow.svg?raw'
 import creditCardIcon from '~/assets/icons/credit-card.svg?raw'
 import cubeIcon from '~/assets/icons/cube.svg?raw'
 import fishIcon from '~/assets/icons/fish.svg?raw'
-import leafIcon from '~/assets/icons/leaf.svg?raw'
 import packageIcon from '~/assets/icons/package.svg?raw'
-import pepperIcon from '~/assets/icons/pepper-fill.svg?raw'
 import plantIcon from '~/assets/icons/plant.svg?raw'
 import scalesIcon from '~/assets/icons/scales.svg?raw'
 
@@ -304,6 +271,10 @@ const PRICING_STEPS = [
 ] as const
 
 const activeFilter = ref<IngredientFilter>('all')
+
+// Fill, weigh, pay: the steps pop in one after the other as the diagram comes into view (old site's GSAP pop-in).
+const pricingSteps = ref<HTMLElement | null>(null)
+usePopInOnView(pricingSteps)
 const shownIngredients = computed(() => ingredientsFor(activeFilter.value))
 
 const { t } = useI18n()
