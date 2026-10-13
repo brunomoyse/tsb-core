@@ -92,11 +92,11 @@ export default defineNuxtConfig({
 
   /*
    * @sentry/nuxt module (registered by the engine layer when SENTRY_DSN is
-   * set). TODO(user): create the Sentry project for ygfliege and set the
-   * org/project defaults here.
+   * set): the ygfliege-core project in the shared EU org. CI passes the DSN
+   * and org/project as YGF_SENTRY_* repo variables.
    */
   sentry: {
-    org: envOr('SENTRY_ORG', 'yangguofu-malatang-liege'),
+    org: envOr('SENTRY_ORG', 'nuagemagiquedev'),
     project: envOr('SENTRY_PROJECT', 'ygfliege-core'),
     authToken: process.env.SENTRY_AUTH_TOKEN,
     sourcemaps: {
