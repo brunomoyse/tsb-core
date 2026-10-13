@@ -91,6 +91,11 @@ export interface DisplayOptions {
   filters: ReadonlySet<string>
   /** Keep composer products out of the grid (their hero banner is their only entry point). */
   excludeComposer: boolean
+  /**
+   * Which products are composers, when the shape rule (`isComposerProduct`) is not enough: a menu whose fixed sets
+   * also have multi-pick groups (extra toppings, drinks) names its composers some other way, e.g. by category.
+   */
+  isComposer?: (p: Product) => boolean
 }
 
 /**
@@ -103,8 +108,8 @@ export const displayedCategories = (
   all: Product[],
   options: DisplayOptions,
 ): ProductCategory[] => {
-  const { query, filters, excludeComposer } = options
-  const inGrid = (p: Product) => !excludeComposer || !isComposerProduct(p)
+  const { query, filters, excludeComposer, isComposer = isComposerProduct } = options
+  const inGrid = (p: Product) => !excludeComposer || !isComposer(p)
   if (!query.trim() && filters.size === 0) {
     if (!excludeComposer) return base
     return base

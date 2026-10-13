@@ -268,7 +268,7 @@ import { useTracking } from '#engine/composables/useTracking'
 
 /**
  * Fixed-set product dialog (broth + spice sets, plain dishes, drinks).
- * Composer products (any group with maxSelections > 1) open BowlComposer
+ * Composer products (the composer category, data/composer.ts) open BowlComposer
  * instead: pages/menu.vue routes between the two. Both share
  * useProductChoices and ChoiceGroupPicker, so a "Menu Découverte" shows the
  * same official broth cards and spice chips as the bowl composer, echoing the

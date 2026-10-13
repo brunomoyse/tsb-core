@@ -139,6 +139,29 @@ test('a composer product is detected by its multi-pick group and kept out of the
   )
 })
 
+test('a custom composer rule replaces the shape one: a set with multi-pick extras stays in the grid', () => {
+  const set = prod('set', 'Set', { choiceGroups: [{ id: 'g', maxSelections: 5 }] })
+  const bowl = prod('bowl', 'Bowl', { choiceGroups: [{ id: 'g2', maxSelections: 16 }] })
+  const base = baseCategories([cat('sets', 1, [set]), cat('custom', 2, [bowl])], {})
+  const all = flattenProducts(base)
+  const opts = {
+    query: '',
+    filters: new Set(),
+    excludeComposer: true,
+    isComposer: (p) => p.category.slug === 'custom',
+  }
+  assert.deepEqual(
+    displayedCategories(base, all, opts).map((c) => [c.id, c.products.map((p) => p.id)]),
+    [['sets', ['set']]],
+  )
+  assert.deepEqual(
+    displayedCategories(base, all, { ...opts, query: 'set' }).map((c) =>
+      c.products.map((p) => p.id),
+    ),
+    [['set']],
+  )
+})
+
 test('a product the query sent without a category gets its parent category (id, name, slug) stamped on', () => {
   const bare = [cat('a', 1, [prod('p1', 'Ramen')])]
   const [only] = baseCategories(bare, {})

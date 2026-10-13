@@ -210,40 +210,44 @@
       <!-- Products Grid -->
       <section v-else class="max-w-7xl mx-auto px-4 py-4 space-y-12">
         <!-- Build-your-own-bowl is the signature experience, so it gets a
-                     full-width entry rather than an equal-weight grid tile. Hidden
-                     while searching or filtering, where the grid is the answer. -->
-        <article
-          v-if="composerProduct && !searchValue.trim().length"
-          data-testid="composer-hero"
-          class="card card-interactive grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
-        >
-          <div class="min-w-0 p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
-            <span class="section-label">{{ $t('composer.eyebrow') }}</span>
-            <h2 translate="no" class="section-title text-2xl sm:text-3xl">
-              {{ composerProduct.name }}
-            </h2>
-            <p class="text-sm text-ygf-black/70 max-w-prose">{{ $t('composer.heroSubtitle') }}</p>
-            <button
-              type="button"
-              data-testid="composer-hero-cta"
-              class="btn btn-primary mt-2 max-w-full whitespace-normal text-center"
-              :disabled="!isCartAddAvailable || !composerProduct.isAvailable"
-              @click="openModal(composerProduct.id)"
-            >
-              {{ $t('composer.open') }}
-            </button>
-          </div>
-          <MktPicture
-            src="/images/bowls/beef-bone-top"
-            :widths="[320, 560, 800]"
-            :fallback-width="560"
-            :fallback-height="560"
-            :alt="composerProduct.name"
-            sizes="(min-width: 640px) 260px, 100vw"
-            eager
-            img-class="w-full h-full object-contain sm:object-cover p-3 sm:p-0 aspect-[4/3] sm:aspect-auto"
-          />
-        </article>
+                     full-width entry rather than an equal-weight grid tile (one
+                     per composer: with and without broth). Hidden while
+                     searching or filtering, where the grid is the answer. -->
+        <template v-if="!searchValue.trim().length">
+          <article
+            v-for="composer in composerProducts"
+            :key="composer.id"
+            data-testid="composer-hero"
+            class="card card-interactive grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_260px] overflow-hidden bg-ygf-orange-50"
+          >
+            <div class="min-w-0 p-6 sm:p-8 flex flex-col items-start justify-center gap-3">
+              <span class="section-label">{{ $t('composer.eyebrow') }}</span>
+              <h2 translate="no" class="section-title text-2xl sm:text-3xl">
+                {{ composer.name }}
+              </h2>
+              <p class="text-sm text-ygf-black/70 max-w-prose">{{ $t('composer.heroSubtitle') }}</p>
+              <button
+                type="button"
+                data-testid="composer-hero-cta"
+                class="btn btn-primary mt-2 max-w-full whitespace-normal text-center"
+                :disabled="!isCartAddAvailable || !composer.isAvailable"
+                @click="openModal(composer.id)"
+              >
+                {{ $t('composer.open') }}
+              </button>
+            </div>
+            <MktPicture
+              :src="composerHeroPhoto(composer.slug)"
+              :widths="[320, 560, 800]"
+              :fallback-width="560"
+              :fallback-height="560"
+              :alt="composer.name"
+              sizes="(min-width: 640px) 260px, 100vw"
+              eager
+              img-class="w-full h-full object-contain sm:object-cover p-3 sm:p-0 aspect-[4/3] sm:aspect-auto"
+            />
+          </article>
+        </template>
 
         <div
           v-for="(cat, catIdx) in displayedCategories"
@@ -377,9 +381,9 @@ import {
   baseCategories as baseCategoriesOf,
   displayedCategories as displayedCategoriesOf,
   flattenProducts,
-  isComposerProduct,
   searchProducts,
 } from '#engine/utils/menuCatalog'
+import { composerHeroPhoto, isBowlComposer } from '~/data/composer'
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
@@ -586,15 +590,15 @@ const baseCategories = computed(() =>
 // All products flattened for search
 const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.value))
 
-// The build-your-own-bowl product is detected by shape (`isComposerProduct`), so a second composer on the menu needs no code change here.
-const composerProduct = computed(() => allProducts.value.find(isComposerProduct) ?? null)
+// The build-your-own bowls are the products of the composer category (see data/composer.ts), each with its own hero card.
+const composerProducts = computed(() => allProducts.value.filter(isBowlComposer))
 
 /** Whether the product currently open in the route query is a composer. */
 const routedProductIsComposer = computed(() => {
   const id = routedProductId.value
   if (id === null) return false
   const p = allProducts.value.find((product) => product.id === id)
-  return p ? isComposerProduct(p) : false
+  return p ? isBowlComposer(p) : false
 })
 
 // Filtered list based on search query (all words must match)
@@ -609,6 +613,7 @@ const displayedCategories = computed<ProductCategory[]>(() =>
     query: debouncedSearchValue.value,
     filters: new Set<string>(),
     excludeComposer: true,
+    isComposer: isBowlComposer,
   }),
 )
 
