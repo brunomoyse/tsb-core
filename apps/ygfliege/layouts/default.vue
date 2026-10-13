@@ -146,7 +146,8 @@
             </div>
           </footer>
         </div>
-        <ClientOnly>
+        <!-- The cart belongs to the shop: none while it is switched off (utils/shopGate.ts). -->
+        <ClientOnly v-if="shopEnabled">
           <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
           <LazyCartFloatingCartBar v-if="isMenuPage" />
           <!-- A signed-in customer's last order, one tap away, where an order starts (home, menu) -->
@@ -192,10 +193,12 @@ import { useNotificationsStore } from '#engine/stores/notifications'
 import { useOrderingAvailability } from '#engine/composables/useOrderingAvailability'
 import { useRestaurantSchema } from '#engine/composables/useRestaurantSchema'
 import { useRoute } from 'vue-router'
+import { useShopEnabled } from '#engine/composables/useShopEnabled'
 
 const route = useRoute()
 const { t } = useI18n()
 const { brand } = useAppConfig()
+const shopEnabled = useShopEnabled()
 
 // Lazy: only consumed by <CartMobile> below, which is wrapped in <ClientOnly>.
 // Awaiting non-lazy here was blocking SSR TTFB on every page (~300ms in the audit).

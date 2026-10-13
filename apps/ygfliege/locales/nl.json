@@ -41,6 +41,7 @@
       "slogan": "Geluk in een kom",
       "subtitle": "Malatang: jouw kom kruidenbouillon, door jou samengesteld, à la minute bereid en dampend geserveerd.",
       "cta": "Ontdek het menu",
+      "ctaConcept": "Ontdek het concept",
       "bowl_alt": "Kom malatang met runderbottenbouillon en verse ingrediënten"
     },
     "broths": {
@@ -160,7 +161,8 @@
     "cta": {
       "title": "Klaar om jouw kom samen te stellen?",
       "subtitle": "Kies je ingrediënten, wij doen de rest.",
-      "button": "Ontdek het menu"
+      "button": "Ontdek het menu",
+      "buttonVisit": "Vind ons"
     },
     "concept": {
       "title": "Hoe werkt het?",

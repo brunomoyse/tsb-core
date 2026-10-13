@@ -38,10 +38,10 @@
       <div class="flex shrink-0 items-center gap-1 lg:gap-2">
         <!-- Delivery zone: ordering-wide state, so it lives here from xl up; below, the row has no room for it and
                      the menu page carries the chip beside its search. -->
-        <DeliveryZoneChip class="hidden xl:inline-flex" />
+        <DeliveryZoneChip v-if="shopEnabled" class="hidden xl:inline-flex" />
 
         <!-- Cart, on every page once the cart has items. Tablet: opens the cart drawer. -->
-        <ClientOnly>
+        <ClientOnly v-if="shopEnabled">
           <button
             v-if="isMounted && cartStore.totalItems > 0"
             type="button"
@@ -75,7 +75,8 @@
           <LanguagePicker :label="$t('nav.language')" icon="/icons/translate-icon.svg" />
         </ul>
 
-        <ClientOnly>
+        <!-- Login and account belong to the shop: gone while it is switched off (utils/shopGate.ts). -->
+        <ClientOnly v-if="shopEnabled">
           <template v-if="!authStore.user">
             <!-- Below lg the row has no room for the labelled button: an icon with the same name. -->
             <NuxtLinkLocale
@@ -126,6 +127,7 @@ import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
+import { useShopEnabled } from '#engine/composables/useShopEnabled'
 
 /**
  * Desktop/tablet header. Replaces the inherited 142px vertical icon rail,
@@ -137,6 +139,7 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const shopEnabled = useShopEnabled()
 
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
@@ -146,8 +149,9 @@ const cartLabel = computed(() =>
   t('cart.buttonLabel', { count: cartStore.totalItems }, cartStore.totalItems),
 )
 
+// The menu entry goes while the shop is switched off (utils/shopGate.ts).
 const navItems = computed(() => [
-  { to: 'menu', label: t('nav.menu') },
+  ...(shopEnabled ? [{ to: 'menu', label: t('nav.menu') }] : []),
   { to: 'concept', label: t('mkt.nav.concept') },
   { to: 'about', label: t('mkt.nav.about') },
   { to: 'contact', label: t('nav.contact') },

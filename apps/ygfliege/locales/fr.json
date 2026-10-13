@@ -41,6 +41,7 @@
       "slogan": "Le bonheur tient dans un bol",
       "subtitle": "Le malatang, c'est votre bol de bouillon aux herbes : vous le composez, on le cuit à la minute, on vous le sert fumant.",
       "cta": "Découvrir le menu",
+      "ctaConcept": "Découvrir le concept",
       "bowl_alt": "Bol de malatang au bouillon d'os de bœuf, ingrédients frais en suspension"
     },
     "broths": {
@@ -160,7 +161,8 @@
     "cta": {
       "title": "Prêt à composer votre bol ?",
       "subtitle": "Choisissez vos ingrédients, on s'occupe du reste.",
-      "button": "Découvrir le menu"
+      "button": "Découvrir le menu",
+      "buttonVisit": "Nous trouver"
     },
     "concept": {
       "title": "Comment ça marche",

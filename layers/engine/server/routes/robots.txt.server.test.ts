@@ -6,8 +6,8 @@ import { callHandler } from '../../../../test/nitro/callHandler'
 import robots from './robots.txt'
 import { setRuntimeConfig } from '../../../../test/nitro/imports'
 
-const fetchRobots = async (baseUrl: unknown) => {
-  setRuntimeConfig({ public: { baseUrl } })
+const fetchRobots = async (baseUrl: unknown, shopEnabled?: unknown) => {
+  setRuntimeConfig({ public: { baseUrl, shopEnabled } })
   const response = await callHandler(robots, { path: '/robots.txt' })
   return { response, body: await response.text() }
 }
@@ -65,5 +65,20 @@ describe('on the production domain', () => {
     const { body } = await fetchRobots(`${production}//`)
     expect(body).toContain(`Sitemap: ${production}/sitemap_index.xml\n`)
     expect(body).toContain('Allow: /')
+  })
+})
+
+describe('with the shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false)', () => {
+  it('also keeps the menu out, with and without language prefix', async () => {
+    const { body } = await fetchRobots(production, 'false')
+    const lines = body.split('\n')
+    expect(lines).toEqual(expect.arrayContaining(['Disallow: /menu', 'Disallow: /*/menu']))
+    expect(lines).toContain(`Sitemap: ${production}/sitemap_index.xml`)
+  })
+
+  it('leaves the menu indexable while the shop is on', async () => {
+    const { body } = await fetchRobots(production, true)
+    expect(body).not.toContain('Disallow: /menu')
+    expect(body).not.toContain('Disallow: /*/menu')
   })
 })

@@ -8,8 +8,8 @@ import { setRuntimeConfig } from '../../../../test/nitro/imports'
 
 // The `server-ygfliege` project resolves `#brand` to this app: the route renders the brand it is shipped with.
 
-const fetchLlms = (baseUrl: unknown) => {
-  setRuntimeConfig({ public: { baseUrl } })
+const fetchLlms = (baseUrl: unknown, shopEnabled?: unknown) => {
+  setRuntimeConfig({ public: { baseUrl, shopEnabled } })
   return callHandler(handler, { path: '/llms.txt' })
 }
 const production = `https://${brand.domain}`
@@ -63,5 +63,21 @@ describe('on the production domain', () => {
   it('tolerates trailing slashes on the configured base URL', async () => {
     const response = await fetchLlms(`${production}//`)
     expect(response.status).toBe(200)
+  })
+})
+
+describe('with the shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false)', () => {
+  it('lists neither the menu nor online ordering, and keeps the info pages', async () => {
+    const body = await (await fetchLlms(production, 'false')).text()
+    expect(body).not.toContain('/fr/menu')
+    expect(body).not.toContain('commande en ligne')
+    expect(body).toContain(`${production}/fr/concept`)
+    expect(body).toContain(`${production}/fr/contact`)
+  })
+
+  it('lists them while the shop is on', async () => {
+    const body = await (await fetchLlms(production, true)).text()
+    expect(body).toContain(`[Menu](${production}/fr/menu)`)
+    expect(body).toContain('Livraison et à emporter, commande en ligne.')
   })
 })

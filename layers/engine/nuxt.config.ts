@@ -206,6 +206,11 @@ export default defineNuxtConfig({
       sentryDsn: envOr('SENTRY_DSN', ''),
       sentryEnvironment: envOr('SENTRY_ENVIRONMENT', 'production'),
       sentryRelease: envOr('SENTRY_RELEASE', ''),
+      /*
+       * Runtime switch (`NUXT_PUBLIC_SHOP_ENABLED=false`, read at container start, no rebuild) that closes the online
+       * shop before a brand opens: its routes redirect home and the brand UI hides their links (utils/shopGate.ts).
+       */
+      shopEnabled: true,
     },
   },
 

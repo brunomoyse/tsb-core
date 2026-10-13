@@ -1,11 +1,13 @@
 import { brand } from '#brand/brand'
+import { isShopEnabledValue } from '#engine/utils/shopGate'
 import { useRuntimeConfig } from '#imports'
 
 const PRODUCTION_BASE_URL = `https://${brand.domain}`
 
 export default defineEventHandler((event) => {
   // Same source as the sitemap and robots.txt: the public runtime config's baseUrl.
-  const baseUrl = (useRuntimeConfig(event).public.baseUrl ?? '').replace(/\/+$/u, '')
+  const config = useRuntimeConfig(event).public
+  const baseUrl = (config.baseUrl ?? '').replace(/\/+$/u, '')
   const isProduction = baseUrl === PRODUCTION_BASE_URL
 
   if (!isProduction) {
@@ -14,14 +16,20 @@ export default defineEventHandler((event) => {
 
   setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
 
+  // While the shop is switched off (utils/shopGate.ts) the menu redirects home: no menu link, no online ordering.
+  const shopEnabled = isShopEnabledValue(config.shopEnabled)
+  const ordering = shopEnabled ? ' Livraison et à emporter, commande en ligne.' : ''
+  const menuLine = shopEnabled
+    ? `- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète (bols malatang, bouillons signatures, nouilles, entrées et boissons).\n`
+    : ''
+
   return `# ${brand.name}
 
-> Restaurant de malatang (麻辣烫) à Liège (Belgique), franchise Yangguofu. Composez votre bol : bouillon aux herbes cuit à la minute, produits frais. Livraison et à emporter, commande en ligne.
+> Restaurant de malatang (麻辣烫) à Liège (Belgique), franchise Yangguofu. Composez votre bol : bouillon aux herbes cuit à la minute, produits frais.${ordering}
 
 ## Menu et commande
 
-- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète (bols malatang, bouillons signatures, nouilles, entrées et boissons).
-- [Accueil](${PRODUCTION_BASE_URL}/fr): Statut d'ouverture en direct, choix livraison/à emporter, présentation du restaurant.
+${menuLine}- [Accueil](${PRODUCTION_BASE_URL}/fr): Statut d'ouverture en direct, choix livraison/à emporter, présentation du restaurant.
 - [Le concept](${PRODUCTION_BASE_URL}/fr/concept): Le malatang expliqué en 4 étapes, le bouillon aux herbes (草本骨汤), questions fréquentes.
 
 ## Informations pratiques

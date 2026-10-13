@@ -12,7 +12,10 @@
       <div class="flex items-center ml-auto shrink-0">
         <!-- Cart icon with its count, on every page once the cart has items (it opens the cart drawer) -->
         <div>
-          <CartButton v-if="isMounted && cartStore.totalItems > 0" class="lg:hidden" />
+          <CartButton
+            v-if="shopEnabled && isMounted && cartStore.totalItems > 0"
+            class="lg:hidden"
+          />
         </div>
 
         <!-- Hamburger Menu -->
@@ -52,14 +55,20 @@
                     @click="closeMenu"
                   />
                 </li>
-                <MobileNavItem :label="$t('nav.menu')" to="/menu" @click="closeMenu" />
+                <!-- The shop's entries (menu, login, account) are gone while it is switched off (utils/shopGate.ts). -->
+                <MobileNavItem
+                  v-if="shopEnabled"
+                  :label="$t('nav.menu')"
+                  to="/menu"
+                  @click="closeMenu"
+                />
                 <!-- Concept and About were reachable only from
                                      the footer on mobile; the guide asks for the
                                      same 5–6 destinations as desktop. -->
                 <MobileNavItem :label="$t('mkt.nav.concept')" to="/concept" @click="closeMenu" />
                 <MobileNavItem :label="$t('mkt.nav.about')" to="/about" @click="closeMenu" />
                 <MobileNavItem :label="$t('nav.contact')" to="/contact" @click="closeMenu" />
-                <ClientOnly>
+                <ClientOnly v-if="shopEnabled">
                   <MobileNavItem
                     v-if="!authStore.user"
                     :label="$t('nav.login')"
@@ -102,9 +111,11 @@ import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useMediaQuery, useMounted } from '@vueuse/core'
+import { useShopEnabled } from '#engine/composables/useShopEnabled'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const shopEnabled = useShopEnabled()
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 

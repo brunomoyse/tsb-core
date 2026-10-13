@@ -41,6 +41,7 @@
       "slogan": "Happiness in every bowl",
       "subtitle": "Malatang: your herbal broth bowl, built by you, cooked to order, served steaming hot.",
       "cta": "Discover the menu",
+      "ctaConcept": "Discover the concept",
       "bowl_alt": "Malatang bowl with beef bone broth and fresh ingredients"
     },
     "broths": {
@@ -160,7 +161,8 @@
     "cta": {
       "title": "Ready to build your bowl?",
       "subtitle": "Pick your ingredients, we'll handle the rest.",
-      "button": "Discover the menu"
+      "button": "Discover the menu",
+      "buttonVisit": "Find us"
     },
     "concept": {
       "title": "How it works",
