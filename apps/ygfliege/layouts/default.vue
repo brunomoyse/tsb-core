@@ -211,9 +211,10 @@ const {
   lazy: true,
   /*
    * The menu asks for the config itself, next to its categories: the layout waiting for it first would make that two
-   * requests one after the other (the page only starts once its layout has resolved).
+   * requests one after the other (the page only starts once its layout has resolved). Only the dynamic menu does: the
+   * static one shown while the shop is switched off (utils/shopGate.ts) leaves it to the layout.
    */
-  server: !route.meta.loadsRestaurantConfig,
+  server: !shopEnabled || route.meta.loadsRestaurantConfig !== true,
 })
 
 // The restaurant's JSON-LD (hours from the live config), on every page.

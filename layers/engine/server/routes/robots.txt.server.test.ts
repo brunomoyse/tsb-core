@@ -69,12 +69,27 @@ describe('on the production domain', () => {
 })
 
 describe('with the shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false)', () => {
-  it('also keeps the menu out, with and without language prefix', async () => {
-    const { body } = await fetchRobots(production, 'false')
-    const lines = body.split('\n')
-    expect(lines).toEqual(expect.arrayContaining(['Disallow: /menu', 'Disallow: /*/menu']))
-    expect(lines).toContain(`Sitemap: ${production}/sitemap_index.xml`)
-  })
+  // Runs under both brands: one redirects its menu home, the other keeps a static menu there.
+  it.runIf(brand.staticMenuWhenShopClosed !== true)(
+    'also keeps the menu out, with and without language prefix',
+    async () => {
+      const { body } = await fetchRobots(production, 'false')
+      const lines = body.split('\n')
+      expect(lines).toEqual(expect.arrayContaining(['Disallow: /menu', 'Disallow: /*/menu']))
+      expect(lines).toContain(`Sitemap: ${production}/sitemap_index.xml`)
+    },
+  )
+
+  it.runIf(brand.staticMenuWhenShopClosed === true)(
+    'leaves the static menu indexable, but not the rest of the shop',
+    async () => {
+      const { body } = await fetchRobots(production, 'false')
+      const lines = body.split('\n')
+      expect(lines).not.toContain('Disallow: /menu')
+      expect(lines).not.toContain('Disallow: /*/menu')
+      expect(lines).toEqual(expect.arrayContaining(['Disallow: /cart', 'Disallow: /*/checkout']))
+    },
+  )
 
   it('leaves the menu indexable while the shop is on', async () => {
     const { body } = await fetchRobots(production, true)

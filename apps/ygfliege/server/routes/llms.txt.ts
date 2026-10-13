@@ -1,5 +1,5 @@
 import { brand } from '#brand/brand'
-import { isShopEnabledValue } from '#engine/utils/shopGate'
+import { isMenuOpen, isShopEnabledValue } from '#engine/utils/shopGate'
 import { useRuntimeConfig } from '#imports'
 
 const PRODUCTION_BASE_URL = `https://${brand.domain}`
@@ -16,11 +16,15 @@ export default defineEventHandler((event) => {
 
   setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
 
-  // While the shop is switched off (utils/shopGate.ts) the menu redirects home: no menu link, no online ordering.
+  // While the shop is switched off (utils/shopGate.ts) the menu page shows the static menu (staticMenuWhenShopClosed):
+  // Broths, ingredients and the price by weight, no online ordering.
   const shopEnabled = isShopEnabledValue(config.shopEnabled)
   const ordering = shopEnabled ? ' Livraison et à emporter, commande en ligne.' : ''
-  const menuLine = shopEnabled
-    ? `- [Menu](${PRODUCTION_BASE_URL}/fr/menu): Carte complète (bols malatang, bouillons signatures, nouilles, entrées et boissons).\n`
+  const menuDescription = shopEnabled
+    ? 'Carte complète (bols malatang, bouillons signatures, nouilles, entrées et boissons).'
+    : 'Les cinq bouillons signatures, les ingrédients frais et le prix au poids.'
+  const menuLine = isMenuOpen(shopEnabled, brand.staticMenuWhenShopClosed)
+    ? `- [Menu](${PRODUCTION_BASE_URL}/fr/menu): ${menuDescription}\n`
     : ''
 
   return `# ${brand.name}

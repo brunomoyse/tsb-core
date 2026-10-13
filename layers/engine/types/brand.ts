@@ -121,6 +121,12 @@ export interface BrandConfig {
    */
   invoicesEnabled?: boolean
   /**
+   * Keep /menu up while the shop is switched off (`NUXT_PUBLIC_SHOP_ENABLED=false`, utils/shopGate.ts). Defaults to
+   * false: the menu redirects home with the rest of the shop. Set true when the brand's menu page renders a static,
+   * order-free menu while the shop is off.
+   */
+  staticMenuWhenShopClosed?: boolean
+  /**
    * Whether the brand publishes a customer mobile app. The privacy policy describes the app (push notifications, live
    * activities, device tokens) only when it does; a brand without one gets the web-only text.
    */

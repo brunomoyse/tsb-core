@@ -67,9 +67,11 @@ describe('on the production domain', () => {
 })
 
 describe('with the shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false)', () => {
-  it('lists neither the menu nor online ordering, and keeps the info pages', async () => {
+  it('lists the static menu but no online ordering, and keeps the info pages', async () => {
     const body = await (await fetchLlms(production, 'false')).text()
-    expect(body).not.toContain('/fr/menu')
+    expect(body).toContain(
+      `[Menu](${production}/fr/menu): Les cinq bouillons signatures, les ingrédients frais et le prix au poids.`,
+    )
     expect(body).not.toContain('commande en ligne')
     expect(body).toContain(`${production}/fr/concept`)
     expect(body).toContain(`${production}/fr/contact`)
@@ -77,7 +79,7 @@ describe('with the shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false)', () => {
 
   it('lists them while the shop is on', async () => {
     const body = await (await fetchLlms(production, true)).text()
-    expect(body).toContain(`[Menu](${production}/fr/menu)`)
+    expect(body).toContain(`[Menu](${production}/fr/menu): Carte complète`)
     expect(body).toContain('Livraison et à emporter, commande en ligne.')
   })
 })

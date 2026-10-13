@@ -71,6 +71,9 @@ export const brand: BrandConfig = {
   deliveryEnabled: false,
   // No invoice download until YGF's legal name, VAT and invoice logo are set (backend: RESTAURANT_INVOICES_ENABLED).
   invoicesEnabled: false,
+  // While the shop is switched off (NUXT_PUBLIC_SHOP_ENABLED=false) /menu shows the static menu of the old ygfliege.be
+  // (broths, ingredients, price by weight); the dynamic, orderable menu comes back with the shop.
+  staticMenuWhenShopClosed: true,
   // True keeps the privacy policy's app passages (push notifications, live activities, device tokens); false drops them.
   // oxlint-disable-next-line no-warning-comments
   // TODO(user): confirm whether YGF has a mobile app

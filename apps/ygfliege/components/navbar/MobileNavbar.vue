@@ -55,9 +55,10 @@
                     @click="closeMenu"
                   />
                 </li>
-                <!-- The shop's entries (menu, login, account) are gone while it is switched off (utils/shopGate.ts). -->
+                <!-- Login and account are gone while the shop is switched off (utils/shopGate.ts); the menu stays,
+                     showing the static menu. -->
                 <MobileNavItem
-                  v-if="shopEnabled"
+                  v-if="menuOpen"
                   :label="$t('nav.menu')"
                   to="/menu"
                   @click="closeMenu"
@@ -111,11 +112,12 @@ import { useBodyScrollLock } from '#engine/composables/useBodyScrollLock'
 import { useCartStore } from '#engine/stores/cart'
 import { useFocusTrap } from '#engine/composables/useFocusTrap'
 import { useMediaQuery, useMounted } from '@vueuse/core'
-import { useShopEnabled } from '#engine/composables/useShopEnabled'
+import { useMenuOpen, useShopEnabled } from '#engine/composables/useShopEnabled'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const shopEnabled = useShopEnabled()
+const menuOpen = useMenuOpen()
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
 

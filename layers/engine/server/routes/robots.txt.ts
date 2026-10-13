@@ -1,5 +1,5 @@
 import { brand } from '#brand/brand'
-import { isShopEnabledValue } from '../../utils/shopGate'
+import { isMenuOpen, isShopEnabledValue } from '../../utils/shopGate'
 import { useRuntimeConfig } from '#imports'
 
 const PRODUCTION_BASE_URL = `https://${brand.domain}`
@@ -38,8 +38,11 @@ export default defineEventHandler((event) => {
     'Disallow: /*/me/',
     'Disallow: /order-completed/',
     'Disallow: /*/order-completed/',
-    // The shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false): the menu redirects home, keep it out as well.
-    ...(isShopEnabledValue(config.shopEnabled) ? [] : ['Disallow: /menu', 'Disallow: /*/menu']),
+    // The shop switched off (NUXT_PUBLIC_SHOP_ENABLED=false): the menu redirects home, keep it out as well. A brand
+    // That keeps a static menu there while the shop is off (staticMenuWhenShopClosed) leaves it crawlable.
+    ...(isMenuOpen(isShopEnabledValue(config.shopEnabled), brand.staticMenuWhenShopClosed)
+      ? []
+      : ['Disallow: /menu', 'Disallow: /*/menu']),
     '',
     // The index itself: /sitemap.xml is only an HTML page that refreshes to it (one sitemap per language).
     `Sitemap: ${baseUrl}/sitemap_index.xml`,

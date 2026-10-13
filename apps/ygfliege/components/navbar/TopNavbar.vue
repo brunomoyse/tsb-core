@@ -127,7 +127,7 @@ import { useCartStore } from '#engine/stores/cart'
 import { useI18n } from 'vue-i18n'
 import { useMounted } from '@vueuse/core'
 import { useRoute } from 'vue-router'
-import { useShopEnabled } from '#engine/composables/useShopEnabled'
+import { useMenuOpen, useShopEnabled } from '#engine/composables/useShopEnabled'
 
 /**
  * Desktop/tablet header. Replaces the inherited 142px vertical icon rail,
@@ -140,6 +140,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const shopEnabled = useShopEnabled()
+const menuOpen = useMenuOpen()
 
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
 const isMounted = useMounted()
@@ -149,9 +150,9 @@ const cartLabel = computed(() =>
   t('cart.buttonLabel', { count: cartStore.totalItems }, cartStore.totalItems),
 )
 
-// The menu entry goes while the shop is switched off (utils/shopGate.ts).
+// The menu entry stays while the shop is switched off: /menu then shows the static menu (utils/shopGate.ts).
 const navItems = computed(() => [
-  ...(shopEnabled ? [{ to: 'menu', label: t('nav.menu') }] : []),
+  ...(menuOpen ? [{ to: 'menu', label: t('nav.menu') }] : []),
   { to: 'concept', label: t('mkt.nav.concept') },
   { to: 'about', label: t('mkt.nav.about') },
   { to: 'contact', label: t('nav.contact') },

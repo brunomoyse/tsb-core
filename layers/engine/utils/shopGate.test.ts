@@ -1,7 +1,7 @@
 // Shop gate: which paths are shop routes, where they go while the shop is off, and how the flag value is read.
 // Run: `vp test run layers/engine/utils/shopGate.test.ts`.
 import { describe, expect, it } from 'vite-plus/test'
-import { isShopEnabledValue, isShopUrl, shopGateRedirect } from './shopGate'
+import { isMenuOpen, isShopEnabledValue, isShopUrl, shopGateRedirect } from './shopGate'
 
 describe('isShopEnabledValue', () => {
   it.each([true, 'true', '1', 'on', undefined, null, ''])('keeps the shop on for %s', (value) => {
@@ -58,5 +58,40 @@ describe('isShopUrl', () => {
     expect(isShopUrl('/en/checkout')).toBe(true)
     expect(isShopUrl('https://ygfliege.be/fr/concept')).toBe(false)
     expect(isShopUrl('https://ygfliege.be')).toBe(false)
+  })
+})
+
+describe('with a static menu while the shop is off (keepMenu)', () => {
+  it.each(['/fr/menu', '/en/menu?category=x', '/menu'])('leaves %s open', (path) => {
+    expect(shopGateRedirect(path, { keepMenu: true })).toBeNull()
+  })
+
+  it.each([
+    ['/fr/cart', '/fr'],
+    ['/nl/checkout', '/nl'],
+    ['/fr/order-completed/1', '/fr'],
+    ['/fr/me/orders', '/fr'],
+    ['/me', '/'],
+  ])('still sends %s to %s', (path, target) => {
+    expect(shopGateRedirect(path, { keepMenu: true })).toBe(target)
+  })
+
+  it('reads URLs the same way', () => {
+    expect(isShopUrl('https://ygfliege.be/fr/menu', { keepMenu: true })).toBe(false)
+    expect(isShopUrl('https://ygfliege.be/fr/cart', { keepMenu: true })).toBe(true)
+  })
+})
+
+describe('isMenuOpen', () => {
+  it('is open with the shop on, whatever the brand', () => {
+    expect(isMenuOpen(true, undefined)).toBe(true)
+    expect(isMenuOpen(true, false)).toBe(true)
+    expect(isMenuOpen(true, true)).toBe(true)
+  })
+
+  it('with the shop off, only for a brand with a static menu', () => {
+    expect(isMenuOpen(false, true)).toBe(true)
+    expect(isMenuOpen(false, false)).toBe(false)
+    expect(isMenuOpen(false, undefined)).toBe(false)
   })
 })

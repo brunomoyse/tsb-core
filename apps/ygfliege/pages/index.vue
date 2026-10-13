@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
 import { useDateLocale } from '#engine/composables/useDateLocale'
-import { useShopEnabled } from '#engine/composables/useShopEnabled'
+import { useMenuOpen, useShopEnabled } from '#engine/composables/useShopEnabled'
 // Phosphor icons (same set as the vitrine site); raw SVGs, tinted via
 // CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
@@ -19,6 +19,8 @@ definePageMeta({
 
 const { t } = useI18n()
 const shopEnabled = useShopEnabled()
+// The menu link stays while the shop is switched off: /menu then shows the static menu (utils/shopGate.ts).
+const menuOpen = useMenuOpen()
 // Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.
 const dateLocale = useDateLocale()
 const { brand } = useAppConfig()
@@ -84,13 +86,13 @@ useSeoMeta({
           <div
             class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
           >
-            <!-- While the shop is switched off (utils/shopGate.ts) the CTA leads to the concept page instead and
-                 the ordering status pill is not shown. -->
+            <!-- While the shop is switched off (utils/shopGate.ts) the ordering status pill is not shown; the CTA
+                 still leads to the (static) menu, or to the concept page for a brand without one. -->
             <NuxtLinkLocale
-              :to="shopEnabled ? '/menu' : '/concept'"
+              :to="menuOpen ? '/menu' : '/concept'"
               class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              {{ shopEnabled ? $t('mkt.hero.cta') : $t('mkt.hero.ctaConcept') }}
+              {{ menuOpen ? $t('mkt.hero.cta') : $t('mkt.hero.ctaConcept') }}
             </NuxtLinkLocale>
             <!-- Live ordering status pill -->
             <span
@@ -279,10 +281,10 @@ useSeoMeta({
         <p class="mt-3 text-white">{{ $t('mkt.cta.subtitle') }}</p>
         <p class="mt-1 text-white text-sm">{{ $t('contact.address') }}</p>
         <NuxtLinkLocale
-          :to="shopEnabled ? '/menu' : '/contact'"
+          :to="menuOpen ? '/menu' : '/contact'"
           class="mt-8 inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-white text-ygf-orange-text font-semibold hover:bg-ygf-orange-50 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          {{ shopEnabled ? $t('mkt.cta.button') : $t('mkt.cta.buttonVisit') }}
+          {{ menuOpen ? $t('mkt.cta.button') : $t('mkt.cta.buttonVisit') }}
         </NuxtLinkLocale>
       </div>
     </section>
