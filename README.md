@@ -96,7 +96,8 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
 - Push to `main`: builds and publishes `:latest` (multi-arch; the home server is
   arm64, so an amd64-only image would not start) and deploys to the home server
   at `ygf.brunomoyse.be`.
-- Tag `ygf-v*`: builds `:production` + version tags (AMD64). No production deploy
-  job yet: YGF prod infra is provisioned separately.
+- Tag `ygf-v*`: builds `:production` + version tags (AMD64) from the `YGF_*`
+  variables of the `production` environment, then deploys the Helm release
+  `ygf-apps` (namespace `ygf`; see tsb-infra `YGF_PRODUCTION.md`).
 - All ygfliege jobs are gated on the `YGF_BASE_URL` repo variable, so they no-op
   until the `YGF_*` variables exist.
