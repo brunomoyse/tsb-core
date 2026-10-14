@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BRAND_FIGURES } from '~/data/brandFigures'
 // Brand story: storytelling blocks, timeline (2003 Harbin → 2026 Liège), values, world map and counters.
 // Ported from the ygfliege.be Vike site.
 definePageMeta({
@@ -30,11 +31,7 @@ const VALUES = [
   { emoji: '🧡', key: 'happiness' },
 ] as const
 
-const COUNTERS = [
-  { value: '7000+', key: 'restaurants' },
-  { value: '25+', key: 'countries' },
-  { value: '20+', key: 'years' },
-] as const
+const COUNTERS = BRAND_FIGURES
 
 useSeoMeta({
   title: `${t('mkt.about.title')} - ${t('brandName')}`,

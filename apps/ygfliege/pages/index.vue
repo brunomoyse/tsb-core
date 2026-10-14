@@ -1,74 +1,83 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { RESTAURANT_TZ, isSameBrusselsDay } from '#engine/utils/datetime'
-import { useDateLocale } from '#engine/composables/useDateLocale'
+import { BRAND_FIGURES } from '~/data/brandFigures'
+import { COMPOSER_CATEGORY_SLUG } from '~/data/composer'
+import { COUNTER_PRICE_PER_100G_CENTS } from '~/data/estimator'
+import MktEstimator from '~/components/mkt/MktEstimator.vue'
+import MktIcon from '~/components/mkt/MktIcon.vue'
+import MktOpenStatus from '~/components/mkt/MktOpenStatus.vue'
+import MktPracticalInfo from '~/components/mkt/MktPracticalInfo.vue'
+import { formatCents, formatPrice } from '#engine/lib/price'
+import { toCents } from '#engine/utils/money'
 import { useMenuOpen, useShopEnabled } from '#engine/composables/useShopEnabled'
-import { useHeroMotion, useMagnetic, useParallaxFrame } from '~/composables/useMktMotion'
+import { useHeroMotion, useMagnetic } from '~/composables/useMktMotion'
 // Phosphor icons (same set as the vitrine site); raw SVGs, tinted via
 // CurrentColor. Never emojis or hand-drawn paths.
 import bowlSteamIcon from '~/assets/icons/bowl-steam.svg?raw'
 import leafIcon from '~/assets/icons/leaf.svg?raw'
 import scalesIcon from '~/assets/icons/scales.svg?raw'
 
-// Marketing homepage ported from the ygfliege.be Vike site (hero, broth
-// Selector, broth story, steps, video band, why, gallery, CTA) with the shop's
-// Live ordering status wired into the hero.
+// Marketing homepage (audit 1a/1b/1c): hero with live status and price, how it works, the broths, the price estimator,
+// the video band, why Yangguofu with the brand's figures, practical info with the map. Every ordering affordance shows
+// only while the shop is on; with the shop off it is a complete showcase (menu, directions, call, hours).
 definePageMeta({
   public: true,
   sitemap: { priority: 1, changefreq: 'weekly' },
 })
 
 const { t } = useI18n()
+const { brand } = useAppConfig()
 const shopEnabled = useShopEnabled()
 // The menu link stays while the shop is switched off: /menu then shows the static menu (utils/shopGate.ts).
 const menuOpen = useMenuOpen()
-// Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.
-const dateLocale = useDateLocale()
-const { brand } = useAppConfig()
 
-// Live ordering status for the hero; lazy so the page renders without waiting
-// On the config query.
-const {
-  config: restaurantConfig,
-  status: availability,
-  preorderTime,
-} = await useOrderingAvailability({ lazy: true })
+const { config: restaurantConfig } = await useOrderingAvailability({ lazy: true })
+const preparationMinutes = computed(
+  () => restaurantConfig.value?.restaurantConfig?.preparationMinutes ?? null,
+)
 
-// Status states: online-ordering open / closed but pre-orderable today / walk-in only / closed / still loading from backend.
-// Same rule as the menu, the cart and the checkout (useOrderingAvailability), not isOrderingCurrentlyOpen alone: in the pre-order window it says "order now for {time}", and it never says "open" while ordering is switched off.
-type OrderingStatus = 'open' | 'preorder' | 'onsiteOnly' | 'closed' | 'loading'
-const orderingStatus = computed<OrderingStatus>(() => {
-  const cfg = restaurantConfig.value?.restaurantConfig
-  if (!cfg || availability.value === null) return 'loading'
-  if (availability.value === 'open') return 'open'
-  if (availability.value === 'preorder' && preorderTime.value) return 'preorder'
-  return cfg.isCurrentlyOpen ? 'onsiteOnly' : 'closed'
+// The online price rule ("En ligne : 2,50 € + vos ingrédients"), read from the composer product's own price: only
+// asked for while the shop is on, and never in the server render's way.
+const { data: composerData } = await useGqlQuery<{
+  productCategories: { slug: string; products: { slug: string; price: string }[] }[]
+}>(
+  /* GraphQL */ `
+    query HomeComposerPrice {
+      productCategories {
+        slug
+        products {
+          slug
+          price
+        }
+      }
+    }
+  `,
+  {},
+  { immediate: shopEnabled, lazy: true, server: false, cache: true },
+)
+const onlinePrice = computed(() => {
+  if (!shopEnabled) return null
+  const composer = composerData.value?.productCategories.find(
+    (category) => category.slug === COMPOSER_CATEGORY_SLUG,
+  )?.products[0]
+  if (!composer) return null
+  return toCents(composer.price) > 0
+    ? t('composer.onlinePrice', { base: formatPrice(composer.price) })
+    : t('composer.onlinePriceNoBase')
 })
+const counterPrice = computed(() =>
+  t('mkt.estimator.rate', { price: formatCents(COUNTER_PRICE_PER_100G_CENTS) }),
+)
 
-const nextOpeningTime = computed(() => {
-  const iso = restaurantConfig.value?.restaurantConfig?.nextOpeningAt
-  if (!iso) return null
-  const next = new Date(iso)
-  const sameDay = isSameBrusselsDay(next, new Date())
-  return new Intl.DateTimeFormat(dateLocale.value, {
-    ...(sameDay ? {} : { weekday: 'long' }),
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: RESTAURANT_TZ,
-  }).format(next)
-})
-
-// Motion of the old site (client only, none under reduced motion): hero bowl pop-in and scroll parallax, magnetic CTA,
-// Parallax frame of the herbs photo. The bowl's levitation is the CSS animation below.
+// Motion of the old site (client only, none under reduced motion): hero bowl pop-in and scroll parallax, magnetic CTA.
+// The bowl's levitation is the CSS animation below.
 const hero = ref<HTMLElement | null>(null)
 const heroContent = ref<HTMLElement | null>(null)
 const heroBowl = ref<HTMLElement | null>(null)
 const heroBowlPop = ref<HTMLElement | null>(null)
 const heroCta = ref<HTMLElement | null>(null)
-const herbsFrame = ref<HTMLElement | null>(null)
 useHeroMotion({ hero, bowl: heroBowl, bowlPop: heroBowlPop, content: heroContent })
 useMagnetic(heroCta)
-useParallaxFrame(herbsFrame)
 
 useSeoMeta({
   title: t('mkt.seo.home_title'),
@@ -82,67 +91,107 @@ useSeoMeta({
 
 <template>
   <div>
-    <!-- ── Hero: levitating bowl, warm background (motion: useHeroMotion, as on the old site) ── -->
-    <section ref="hero" class="relative overflow-hidden bg-gradient-to-b from-ygf-bg to-white">
+    <!-- ── 1 · Hero: status, levitating bowl, price, two actions (motion: useHeroMotion, as on the old site) ── -->
+    <section ref="hero" class="hero relative overflow-hidden">
       <div
-        class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 grid gap-10 lg:grid-cols-2 lg:items-center"
+        class="max-w-6xl mx-auto px-6 pt-5 pb-10 sm:pt-10 lg:py-20 grid gap-6 lg:gap-10 lg:grid-cols-2 lg:items-center"
       >
-        <div ref="heroContent" class="relative z-[2] text-center lg:text-left">
+        <!-- Phone: the live status sits above the bowl (desktop: in the info row under the actions) -->
+        <div class="lg:hidden flex justify-center">
+          <MktOpenStatus />
+        </div>
+
+        <div
+          ref="heroContent"
+          class="relative z-[2] text-center lg:text-left order-2 lg:order-none"
+        >
+          <span class="section-label">{{ $t('mkt.home.broth_hero.label') }}</span>
           <h1
-            class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-ygf-black leading-tight"
+            class="font-display font-bold text-[2.75rem] sm:text-5xl lg:text-6xl text-ygf-black leading-[1.02] tracking-tight text-balance"
           >
             {{ $t('mkt.hero.slogan') }}
           </h1>
-          <p class="mt-5 text-gray-600 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+          <p
+            class="mt-4 text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 text-pretty"
+          >
             {{ $t('mkt.hero.subtitle') }}
           </p>
-          <div
-            class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+
+          <!-- The price: online base + ingredients while the shop is on, and the counter's rule, labelled as such -->
+          <p
+            class="mt-4 flex flex-wrap items-baseline justify-center lg:justify-start gap-x-2 gap-y-1 text-sm text-ygf-gray-600"
+            data-testid="hero-price"
           >
-            <!-- While the shop is switched off (utils/shopGate.ts) the ordering status pill is not shown; the CTA
-                 still leads to the (static) menu, or to the concept page for a brand without one. -->
+            <template v-if="onlinePrice">
+              <strong class="text-[1.0625rem] text-ygf-black">{{ onlinePrice }}</strong>
+              <span>{{ $t('mkt.hero.counterPrice', { price: counterPrice }) }}</span>
+            </template>
+            <template v-else>
+              <strong class="text-[1.0625rem] text-ygf-black">{{ counterPrice }}</strong>
+              <span>{{ $t('mkt.hero.payWhatYouWeigh') }}</span>
+            </template>
+          </p>
+
+          <div
+            class="mt-6 grid grid-cols-[1.4fr_1fr] gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:justify-center lg:justify-start sm:gap-4"
+          >
             <!-- Magnetic on desktop: drifts toward the pointer (useMagnetic). -->
             <span ref="heroCta" class="inline-flex">
               <NuxtLinkLocale
+                v-if="shopEnabled"
+                to="/menu?compose"
+                data-testid="hero-order"
+                class="hero-btn hero-btn-primary w-full"
+              >
+                {{ $t('mkt.hero.order') }}
+                <MktIcon name="arrow-right" :size="18" />
+              </NuxtLinkLocale>
+              <NuxtLinkLocale
+                v-else
                 :to="menuOpen ? '/menu' : '/concept'"
-                class="inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-primary-600 text-white font-semibold shadow-ygf-md hover:bg-primary-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                data-testid="hero-menu"
+                class="hero-btn hero-btn-primary w-full"
               >
                 {{ menuOpen ? $t('mkt.hero.cta') : $t('mkt.hero.ctaConcept') }}
               </NuxtLinkLocale>
             </span>
-            <!-- Live ordering status pill -->
-            <span
-              v-if="shopEnabled && orderingStatus !== 'loading'"
-              class="inline-flex items-center gap-2 text-sm font-medium rounded-full px-4 py-2"
-              :class="
-                orderingStatus === 'open'
-                  ? 'bg-ygf-success/10 text-ygf-success-dark'
-                  : 'bg-ygf-orange-50 text-ygf-orange-text'
-              "
+            <NuxtLinkLocale
+              v-if="shopEnabled"
+              to="/menu"
+              class="hero-btn hero-btn-secondary"
+              data-testid="hero-see-menu"
             >
-              <span
-                class="w-2 h-2 rounded-full"
-                :class="
-                  orderingStatus === 'open' ? 'bg-ygf-success animate-pulse' : 'bg-ygf-orange-400'
-                "
-              />
-              <template v-if="orderingStatus === 'open'">{{ $t('home.status.open') }}</template>
-              <template v-else-if="orderingStatus === 'preorder'">{{
-                $t('home.status.preorder', { time: preorderTime ?? '' })
-              }}</template>
-              <template v-else-if="orderingStatus === 'onsiteOnly'">{{
-                $t('home.status.onsiteOnly')
-              }}</template>
-              <template v-else-if="nextOpeningTime">{{
-                $t('checkout.opensAt', { time: nextOpeningTime })
-              }}</template>
-              <template v-else>{{ $t('home.status.closed') }}</template>
+              {{ $t('mkt.hero.seeMenu') }}
+            </NuxtLinkLocale>
+            <a
+              v-else
+              :href="brand.mapsUrl"
+              target="_blank"
+              rel="noopener"
+              class="hero-btn hero-btn-secondary"
+              data-testid="hero-directions"
+            >
+              <MktIcon name="map-pin" :size="18" />
+              {{ $t('mkt.actionBar.directions') }}
+            </a>
+          </div>
+
+          <!-- Desktop: status, address, price at a glance -->
+          <div
+            class="hidden lg:flex mt-8 flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ygf-gray-600"
+          >
+            <MktOpenStatus />
+            <span class="inline-flex items-center gap-1.5">
+              <span class="text-ygf-orange-on-white"
+                ><MktIcon name="map-pin-fill" :size="16"
+              /></span>
+              {{ brand.address.street }}, {{ brand.address.city }}
             </span>
           </div>
         </div>
 
         <!-- Three layers: scroll parallax (outer), pop-in (middle), levitation of the image (.hero-bowl-float). -->
-        <div ref="heroBowl" class="relative z-[1] flex justify-center">
+        <div ref="heroBowl" class="relative z-[1] flex justify-center order-1 lg:order-none">
           <div ref="heroBowlPop" class="relative">
             <!-- Rising steam -->
             <div aria-hidden="true">
@@ -150,11 +199,8 @@ useSeoMeta({
               <span class="steam-wisp" style="left: 50%; animation-delay: 1.1s" />
               <span class="steam-wisp" style="left: 58%; animation-delay: 2.2s" />
             </div>
-            <!--
-                        The width is on the <picture> (it is a flex item, so a percentage width on the image alone resolved
-                        to 0 until the file arrived and the hero jumped: audit PR 3.8, P4). `sizes` is what that box really
-                        measures: 72vw up to 448px below lg; 38vw up to the 532px column above (the 1400w file is never needed).
-                    -->
+            <!-- The width is on the <picture> (a flex item: a percentage width on the image alone resolved to 0 until
+                 the file arrived and the hero jumped). `sizes` is what that box really measures. -->
             <div class="hero-bowl-float">
               <MktPicture
                 src="/images/hero/bowl-creative"
@@ -162,9 +208,9 @@ useSeoMeta({
                 :fallback-width="1000"
                 :fallback-height="1299"
                 :alt="$t('mkt.hero.bowl_alt')"
-                sizes="(min-width: 1024px) min(38vw, 532px), min(72vw, 448px)"
+                sizes="(min-width: 1024px) min(38vw, 532px), min(66vw, 300px)"
                 eager
-                class="block w-[72vw] max-w-md lg:w-[38vw] lg:max-w-xl"
+                class="block w-[66vw] max-w-[300px] lg:w-[38vw] lg:max-w-xl"
                 img-class="w-full drop-shadow-2xl"
               />
             </div>
@@ -173,14 +219,29 @@ useSeoMeta({
       </div>
     </section>
 
-    <!-- ── Signature broths: interactive selector ── -->
+    <!-- ── 2 · How it works: before choosing a broth, a newcomer needs the counter explained (Sur place / En ligne) ── -->
     <section class="bg-white">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <div v-reveal class="text-center mb-10">
-          <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{
-            $t('mkt.broths.label')
-          }}</span>
-          <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black mt-2">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-24">
+        <div v-reveal class="mb-6 sm:mb-10 sm:text-center">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black tracking-tight">
+            {{ $t('mkt.home.steps.title') }}
+          </h2>
+          <p class="mt-2 text-gray-600">{{ $t('mkt.home.steps.subtitle') }}</p>
+        </div>
+        <MktSteps
+          key-prefix="mkt.home.steps"
+          :switchable="shopEnabled"
+          :preparation-minutes="preparationMinutes"
+        />
+      </div>
+    </section>
+
+    <!-- ── 3 · Signature broths: the bowls are the tabs; the broth story is on Concept ── -->
+    <section class="bg-ygf-cream">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-24">
+        <div v-reveal class="text-center mb-8 sm:mb-10">
+          <span class="section-label">{{ $t('mkt.broths.label') }}</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black tracking-tight">
             {{ $t('mkt.broths.title') }}
           </h2>
           <p class="mt-3 text-gray-600 max-w-2xl mx-auto">{{ $t('mkt.broths.subtitle') }}</p>
@@ -189,72 +250,18 @@ useSeoMeta({
       </div>
     </section>
 
-    <!-- ── Herbal broth story (草本骨汤) ── -->
-    <section class="bg-ygf-cream">
-      <div
-        class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid gap-10 lg:grid-cols-2 lg:items-center"
-      >
-        <!-- Parallax frame: the photo wipes in from the bottom, then drifts inside it (useParallaxFrame). -->
-        <div ref="herbsFrame" class="overflow-hidden rounded-ygf-lg shadow-ygf-lg">
-          <MktPicture
-            src="/images/about/herbs-grid"
-            :widths="[640, 1080, 1600]"
-            :fallback-width="1080"
-            :fallback-height="720"
-            :alt="$t('mkt.concept.broth_story.title')"
-            sizes="(min-width: 1024px) 48vw, 92vw"
-            class="block"
-            img-class="block w-full"
-          />
-        </div>
-        <div v-reveal="1">
-          <span class="text-ygf-orange-text text-sm font-semibold uppercase tracking-widest">{{
-            $t('mkt.home.broth_hero.label')
-          }}</span>
-          <h2 class="font-display font-bold text-3xl text-ygf-black mt-2 mb-1">
-            {{ $t('mkt.concept.broth_story.title') }}
-          </h2>
-          <p class="font-serifzh text-lg text-ygf-orange-text mb-4">
-            {{ $t('mkt.concept.broth_story.chinese_title') }} ·
-            {{ $t('mkt.home.broth_hero.translit') }}
-          </p>
-          <p class="text-gray-600 leading-relaxed mb-3">{{ $t('mkt.concept.broth_story.p1') }}</p>
-          <p class="text-gray-600 leading-relaxed mb-5">{{ $t('mkt.concept.broth_story.p2') }}</p>
-          <NuxtLinkLocale
-            to="/concept"
-            class="inline-flex items-center gap-1.5 font-semibold text-ygf-orange-text hover:text-ygf-orange-900 transition-colors"
-          >
-            {{ $t('mkt.home.broth_hero.cta') }}
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </NuxtLinkLocale>
-        </div>
+    <!-- ── 4 · How much is my bowl? (the counter's price by weight) ── -->
+    <section class="bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-24">
+        <MktEstimator />
       </div>
     </section>
 
-    <!-- ── How it works ── -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-      <div v-reveal class="text-center mb-10">
-        <h2 class="font-display font-bold text-3xl sm:text-4xl text-ygf-black">
-          {{ $t('mkt.home.steps.title') }}
-        </h2>
-        <p class="mt-3 text-gray-600">{{ $t('mkt.home.steps.subtitle') }}</p>
-      </div>
-      <MktSteps key-prefix="mkt.home.steps" />
-    </section>
-
-    <!-- ── Cinematic ingredient loop ── -->
+    <!-- ── 5 · Cinematic ingredient loop ── -->
     <MktVideoBand />
 
-    <!-- ── Why Yangguofu ── -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <!-- ── 6 · Why Yangguofu, with the brand's figures ── -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-24">
       <p v-reveal class="text-center font-serifzh text-ygf-orange-text mb-2">
         {{ $t('mkt.home.stats.slogan') }}
       </p>
@@ -284,39 +291,91 @@ useSeoMeta({
           </p>
         </article>
       </div>
+      <dl class="mt-10 grid grid-cols-3 gap-4 text-center" data-testid="brand-figures">
+        <div v-for="figure in BRAND_FIGURES" :key="figure.key" class="flex flex-col">
+          <dt class="order-2 text-sm text-gray-600">
+            {{ $t(`mkt.about.counters.${figure.key}`) }}
+          </dt>
+          <dd
+            class="font-display font-black text-3xl sm:text-4xl text-ygf-orange-text tabular-nums"
+          >
+            {{ figure.value }}
+          </dd>
+        </div>
+      </dl>
     </section>
 
-    <!-- ── Gallery: the art of eating ── -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
-      <h2
-        v-reveal
-        class="text-center font-display font-bold text-3xl sm:text-4xl text-ygf-black mb-10"
-      >
-        {{ $t('mkt.home.gallery.title') }}
-      </h2>
-      <MktGallery />
-    </section>
-
-    <!-- ── CTA + address ── -->
-    <section class="bg-primary-600">
-      <div v-reveal class="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
-        <h2 class="font-display font-bold text-3xl sm:text-4xl text-white">
-          {{ $t('mkt.cta.title') }}
-        </h2>
-        <p class="mt-3 text-white">{{ $t('mkt.cta.subtitle') }}</p>
-        <p class="mt-1 text-white text-sm">{{ $t('contact.address') }}</p>
-        <NuxtLinkLocale
-          :to="menuOpen ? '/menu' : '/contact'"
-          class="mt-8 inline-flex items-center justify-center min-h-12 px-8 py-3 rounded-ygf-btn bg-white text-ygf-orange-text font-semibold hover:bg-ygf-orange-50 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+    <!-- ── 7 · Practical info and the map ── -->
+    <section class="bg-ygf-cream">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+        <h2
+          v-reveal
+          class="font-display font-bold text-3xl sm:text-4xl text-ygf-black tracking-tight mb-6"
         >
-          {{ menuOpen ? $t('mkt.cta.button') : $t('mkt.cta.buttonVisit') }}
-        </NuxtLinkLocale>
+          {{ $t('mkt.practical.title') }}
+        </h2>
+        <MktPracticalInfo />
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
+.hero {
+  background: radial-gradient(
+    120% 80% at 50% 0%,
+    var(--ygf-orange-bg) 0%,
+    var(--ygf-cream) 55%,
+    #fbe3cc 100%
+  );
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  transition:
+    background-color 300ms ease-out,
+    border-color 300ms ease-out,
+    color 300ms ease-out;
+}
+
+.hero-btn:focus-visible {
+  outline: 2px solid var(--ygf-focus);
+  outline-offset: 2px;
+}
+
+/* Ink on the brand orange (6.7:1): white on it would be 2.6:1. */
+.hero-btn-primary {
+  background: var(--ygf-orange);
+  border-color: var(--ygf-orange);
+  color: var(--ygf-black);
+  box-shadow: 0 4px 20px rgb(242 123 32 / 20%);
+}
+
+.hero-btn-secondary {
+  background: var(--ygf-white);
+  border-color: var(--ygf-orange);
+  color: var(--ygf-orange-text);
+}
+
+@media (hover: hover) {
+  .hero-btn-primary:hover {
+    background: var(--ygf-orange-light);
+    border-color: var(--ygf-orange-light);
+  }
+
+  .hero-btn-secondary:hover {
+    background: var(--ygf-orange-bg);
+  }
+}
+
 /* Hero bowl levitation, as on the old site: up 10px and back, 2.2s each way (GSAP sine.inOut yoyo). */
 @media (prefers-reduced-motion: no-preference) {
   .hero-bowl-float {

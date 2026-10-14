@@ -42,7 +42,11 @@
       "subtitle": "麻辣烫：选你喜欢的食材，配上我们的草本骨汤，现煮现吃。",
       "cta": "查看菜单",
       "ctaConcept": "了解我们的理念",
-      "bowl_alt": "草本骨汤麻辣烫与新鲜食材"
+      "bowl_alt": "草本骨汤麻辣烫与新鲜食材",
+      "order": "外带点餐",
+      "seeMenu": "查看菜单",
+      "counterPrice": "柜台价：{price}",
+      "payWhatYouWeigh": "在柜台，按称重付款。"
     },
     "broths": {
       "label": "招牌之选",
@@ -105,6 +109,28 @@
         "step4": {
           "title": "享用",
           "desc": "你的碗在你选的汤底中现煮现出，热气腾腾。"
+        },
+        "mode": {
+          "onsite": "到店",
+          "online": "在线"
+        },
+        "online": {
+          "step1": {
+            "title": "自选搭配",
+            "desc": "一步一步选汤底、辣度和食材。"
+          },
+          "step2": {
+            "title": "在线支付",
+            "desc": "几秒完成支付，从第一样食材起即可看到总价。"
+          },
+          "step3": {
+            "title": "现煮",
+            "desc": "现点现煮，约 {minutes} 分钟可取。"
+          },
+          "step4": {
+            "title": "到店取餐",
+            "desc": "按所选时间到柜台取餐。"
+          }
         }
       },
       "video": {
@@ -399,6 +425,40 @@
     "shop": {
       "allergensLink": "过敏原与不耐受",
       "emptyCart": "购物车是空的。先来搭配你的麻辣烫吧。"
+    },
+    "status": {
+      "open": "营业中",
+      "closed": "已打烊",
+      "closesAt": "{time} 打烊",
+      "closingSoon": "即将打烊，{time}",
+      "readyIn": "约 {minutes} 分钟可取",
+      "preorder": "预订 {time}",
+      "onsiteOnly": "仅限堂食",
+      "opensToday": "{time} 开门",
+      "opensOn": "{day} {time} 开门",
+      "everyDay": "每天"
+    },
+    "estimator": {
+      "label": "按重量计价",
+      "title": "我的一碗多少钱？",
+      "desc": "在柜台称重计价：选多少，付多少。拖动滑块估算价格。",
+      "for": "{weight} · {rate}",
+      "rate": "{price} / 100 克",
+      "weight": "碗的重量",
+      "presets": ["小份 · {grams} 克", "中份 · {grams} 克", "大份 · {grams} 克"],
+      "note": "仅供参考：准确价格以电子秤显示为准。"
+    },
+    "practical": {
+      "title": "实用信息",
+      "openInMaps": "在地图中打开",
+      "bookingsByPhone": "仅接受电话预订。"
+    },
+    "actionBar": {
+      "label": "快捷操作",
+      "directions": "路线",
+      "call": "致电",
+      "order": "点餐",
+      "menu": "菜单"
     }
   },
   "faq": {

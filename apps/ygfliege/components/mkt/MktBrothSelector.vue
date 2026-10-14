@@ -48,10 +48,20 @@
           :aria-controls="`broth-panel-${broth.key}`"
           class="selector-tab"
           :class="{ active: i === current }"
+          :aria-label="$t(`mkt.broths.${broth.key}.name`)"
           data-testid="broth-selector-tab"
           @click="onTabClick(i)"
         >
-          {{ $t(`mkt.broths.${broth.key}.name`) }}
+          <MktPicture
+            :src="`/images/bowls/${broth.slug}-top`"
+            :widths="[320]"
+            :fallback-width="320"
+            :fallback-height="320"
+            alt=""
+            sizes="56px"
+            class="block w-full h-full"
+            img-class="w-full h-full object-contain"
+          />
         </button>
       </div>
       <div
@@ -75,11 +85,14 @@
           {{ $t(`mkt.broths.${broth.key}.desc`) }}
         </p>
       </div>
+      <!-- The herbal broth story lives on Concept (audit 1c): one link instead of a second home section. -->
       <NuxtLinkLocale
-        :to="menuOpen ? '/menu' : '/concept'"
-        class="inline-block mt-5 font-semibold text-ygf-orange-text underline underline-offset-4 decoration-ygf-orange/50 hover:decoration-ygf-orange-text transition-colors"
+        to="/concept"
+        data-testid="broth-story-link"
+        class="inline-flex items-center gap-1.5 mt-5 min-h-11 font-semibold text-ygf-orange-text underline underline-offset-4 decoration-ygf-orange/50 hover:decoration-ygf-orange-text transition-colors"
       >
-        {{ menuOpen ? $t('mkt.cta.button') : $t('mkt.hero.ctaConcept') }}
+        {{ $t('mkt.home.broth_hero.cta') }}
+        <MktIcon name="arrow-right" :size="16" />
       </NuxtLinkLocale>
     </div>
   </div>
@@ -94,8 +107,8 @@
  */
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import MktBrothMeta from '~/components/mkt/MktBrothMeta.vue'
+import MktIcon from '~/components/mkt/MktIcon.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
-import { useMenuOpen } from '#engine/composables/useShopEnabled'
 import { BROTHS } from '~/data/broths'
 import {
   MOTION_EASE,
@@ -106,8 +119,6 @@ import {
 } from '~/utils/motion'
 
 const AUTO_ADVANCE_MS = 5000
-
-const menuOpen = useMenuOpen()
 
 /** Broth of the tabs and panels; the bowl follows it once the outgoing one has turned away. */
 const current = ref(0)
@@ -346,57 +357,53 @@ onBeforeUnmount(() => {
   }
 }
 
-/* Tabs: a horizontal snap scroller on mobile, a wrapping row on desktop. */
+/* The bowls are the tabs (audit 1a): five round thumbnails that fit one row, the active one ringed in orange. */
 .broth-selector-tabs {
   display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
+  justify-content: center;
+  gap: 0.625rem;
   padding: 0.25rem 0.25rem 1rem;
   margin-bottom: 0.5rem;
-  scrollbar-width: none;
-}
-
-.broth-selector-tabs::-webkit-scrollbar {
-  display: none;
 }
 
 @media (min-width: 769px) {
   .broth-selector-tabs {
-    flex-wrap: wrap;
-    overflow-x: visible;
+    justify-content: flex-start;
   }
 }
 
 .selector-tab {
   flex-shrink: 0;
-  scroll-snap-align: center;
-  min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 48px;
-  background: theme('colors.ygf.cream');
-  color: theme('colors.ygf.black');
-  font-size: 0.875rem;
-  font-weight: 600;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background: theme('colors.ygf.white');
+  box-shadow: 0 2px 8px theme('colors.ygf.DEFAULT / 10%');
   cursor: pointer;
   transition:
-    background-color 300ms ease-out,
-    color 300ms ease-out;
+    border-color 200ms ease-out,
+    transform 200ms ease-out;
 }
 
 .selector-tab:hover {
-  background: theme('colors.ygf.bg');
+  border-color: theme('colors.ygf.light');
 }
 
-/* The AA-safe orange (white on the brand orange is 2.59:1). */
 .selector-tab.active {
-  background: theme('colors.primary.DEFAULT');
-  color: theme('colors.ygf.white');
+  border-color: theme('colors.ygf.DEFAULT');
+  transform: scale(1.08);
 }
 
 .selector-tab:focus-visible {
   outline: 2px solid theme('colors.ygf.black');
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selector-tab {
+    transition: none;
+  }
 }
 </style>

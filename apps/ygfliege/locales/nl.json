@@ -42,7 +42,11 @@
       "subtitle": "Malatang: jouw kom kruidenbouillon, door jou samengesteld, à la minute bereid en dampend geserveerd.",
       "cta": "Ontdek het menu",
       "ctaConcept": "Ontdek het concept",
-      "bowl_alt": "Kom malatang met runderbottenbouillon en verse ingrediënten"
+      "bowl_alt": "Kom malatang met runderbottenbouillon en verse ingrediënten",
+      "order": "Bestel om mee te nemen",
+      "seeMenu": "Bekijk het menu",
+      "counterPrice": "Aan de toonbank: {price}",
+      "payWhatYouWeigh": "Aan de toonbank betaal je alleen wat je weegt."
     },
     "broths": {
       "label": "Onze specialiteiten",
@@ -105,6 +109,28 @@
         "step4": {
           "title": "Geniet",
           "desc": "Je kom wordt à la minute bereid in de bouillon van je keuze en dampend geserveerd."
+        },
+        "mode": {
+          "onsite": "Ter plaatse",
+          "online": "Online"
+        },
+        "online": {
+          "step1": {
+            "title": "Stel samen",
+            "desc": "Kies je bouillon, je pittigheid en je ingrediënten, stap voor stap."
+          },
+          "step2": {
+            "title": "Betaal online",
+            "desc": "Afrekenen gaat in een paar seconden; het totaal zie je vanaf je eerste ingrediënt."
+          },
+          "step3": {
+            "title": "Wij koken",
+            "desc": "Je kom wordt vers gekookt, klaar in ~{minutes} min."
+          },
+          "step4": {
+            "title": "Haal op",
+            "desc": "Kom op het gekozen uur naar de toonbank, je kom staat klaar."
+          }
         }
       },
       "video": {
@@ -399,6 +425,40 @@
     "shop": {
       "allergensLink": "Allergenen en intoleranties",
       "emptyCart": "Je winkelmandje is leeg. Begin met je kom samen te stellen."
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Gesloten",
+      "closesAt": "sluit om {time}",
+      "closingSoon": "sluit bijna, om {time}",
+      "readyIn": "klaar in ~{minutes} min",
+      "preorder": "bestel voor {time}",
+      "onsiteOnly": "alleen ter plaatse",
+      "opensToday": "opent om {time}",
+      "opensOn": "opent {day} om {time}",
+      "everyDay": "Elke dag"
+    },
+    "estimator": {
+      "label": "Prijs per gewicht",
+      "title": "Hoeveel kost mijn kom?",
+      "desc": "Aan de toonbank wordt je kom gewogen: je betaalt wat je kiest. Schuif om te schatten.",
+      "for": "voor {weight} · {rate}",
+      "rate": "{price} / 100 g",
+      "weight": "Gewicht van de kom",
+      "presets": ["Klein · {grams} g", "Middel · {grams} g", "Hongerig · {grams} g"],
+      "note": "Indicatieve schatting: de exacte prijs staat op de weegschaal."
+    },
+    "practical": {
+      "title": "Praktische info",
+      "openInMaps": "Openen in Maps",
+      "bookingsByPhone": "Reserveren kan alleen telefonisch."
+    },
+    "actionBar": {
+      "label": "Snelle acties",
+      "directions": "Route",
+      "call": "Bellen",
+      "order": "Bestellen",
+      "menu": "Menu"
     }
   },
   "faq": {

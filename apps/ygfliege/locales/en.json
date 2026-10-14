@@ -42,7 +42,11 @@
       "subtitle": "Malatang: your herbal broth bowl, built by you, cooked to order, served steaming hot.",
       "cta": "Discover the menu",
       "ctaConcept": "Discover the concept",
-      "bowl_alt": "Malatang bowl with beef bone broth and fresh ingredients"
+      "bowl_alt": "Malatang bowl with beef bone broth and fresh ingredients",
+      "order": "Order for takeaway",
+      "seeMenu": "See the menu",
+      "counterPrice": "At the counter: {price}",
+      "payWhatYouWeigh": "At the counter, you only pay for what you weigh."
     },
     "broths": {
       "label": "Our signatures",
@@ -105,6 +109,28 @@
         "step4": {
           "title": "Enjoy",
           "desc": "Your bowl is cooked to order in your chosen broth and served steaming hot."
+        },
+        "mode": {
+          "onsite": "In store",
+          "online": "Online"
+        },
+        "online": {
+          "step1": {
+            "title": "Build it",
+            "desc": "Pick your broth, your heat and your ingredients, one step at a time."
+          },
+          "step2": {
+            "title": "Pay online",
+            "desc": "Checkout takes seconds; the total shows from your first ingredient."
+          },
+          "step3": {
+            "title": "We cook",
+            "desc": "Your bowl is cooked to order, ready in ~{minutes} min."
+          },
+          "step4": {
+            "title": "Pick it up",
+            "desc": "Come to the counter at your chosen time, your bowl is waiting."
+          }
         }
       },
       "video": {
@@ -399,6 +425,40 @@
     "shop": {
       "allergensLink": "Allergens and intolerances",
       "emptyCart": "Your cart is empty. Start by building your bowl."
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed",
+      "closesAt": "closes at {time}",
+      "closingSoon": "closing soon, at {time}",
+      "readyIn": "ready in ~{minutes} min",
+      "preorder": "order for {time}",
+      "onsiteOnly": "dine-in only",
+      "opensToday": "opens at {time}",
+      "opensOn": "opens {day} at {time}",
+      "everyDay": "Every day"
+    },
+    "estimator": {
+      "label": "Priced by weight",
+      "title": "How much is my bowl?",
+      "desc": "At the counter your bowl is weighed: you pay for what you pick. Slide to estimate.",
+      "for": "for {weight} · {rate}",
+      "rate": "{price} / 100 g",
+      "weight": "Bowl weight",
+      "presets": ["Small · {grams} g", "Medium · {grams} g", "Hungry · {grams} g"],
+      "note": "Indicative estimate: the exact price shows on the scale."
+    },
+    "practical": {
+      "title": "Practical info",
+      "openInMaps": "Open in Maps",
+      "bookingsByPhone": "Bookings are by phone only."
+    },
+    "actionBar": {
+      "label": "Quick actions",
+      "directions": "Directions",
+      "call": "Call",
+      "order": "Order",
+      "menu": "Menu"
     }
   },
   "faq": {

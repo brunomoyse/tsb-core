@@ -42,7 +42,11 @@
       "subtitle": "Le malatang, c'est votre bol de bouillon aux herbes : vous le composez, on le cuit à la minute, on vous le sert fumant.",
       "cta": "Découvrir le menu",
       "ctaConcept": "Découvrir le concept",
-      "bowl_alt": "Bol de malatang au bouillon d'os de bœuf, ingrédients frais en suspension"
+      "bowl_alt": "Bol de malatang au bouillon d'os de bœuf, ingrédients frais en suspension",
+      "order": "Commander à emporter",
+      "seeMenu": "Voir le menu",
+      "counterPrice": "Au comptoir : {price}",
+      "payWhatYouWeigh": "Au comptoir, vous ne payez que ce que vous pesez."
     },
     "broths": {
       "label": "Nos signatures",
@@ -105,6 +109,28 @@
         "step4": {
           "title": "Savourez",
           "desc": "On cuit votre bol à la minute dans le bouillon choisi, et on vous le sert bien fumant."
+        },
+        "mode": {
+          "onsite": "Sur place",
+          "online": "En ligne"
+        },
+        "online": {
+          "step1": {
+            "title": "Composez",
+            "desc": "Choisissez votre bouillon, votre piquant et vos ingrédients, étape par étape."
+          },
+          "step2": {
+            "title": "Payez en ligne",
+            "desc": "Réglez en quelques secondes, le total s'affiche dès le premier ingrédient."
+          },
+          "step3": {
+            "title": "On cuisine",
+            "desc": "Votre bol est cuit à la minute, prêt en ~{minutes} min."
+          },
+          "step4": {
+            "title": "Retirez",
+            "desc": "Passez au comptoir à l'heure choisie, votre bol vous attend."
+          }
         }
       },
       "video": {
@@ -399,6 +425,40 @@
     "shop": {
       "allergensLink": "Allergènes et intolérances",
       "emptyCart": "Votre panier est vide. Commencez par composer votre bol."
+    },
+    "status": {
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "closesAt": "ferme à {time}",
+      "closingSoon": "ferme bientôt, à {time}",
+      "readyIn": "prêt en ~{minutes} min",
+      "preorder": "commandez pour {time}",
+      "onsiteOnly": "sur place uniquement",
+      "opensToday": "ouvre à {time}",
+      "opensOn": "ouvre {day} à {time}",
+      "everyDay": "Tous les jours"
+    },
+    "estimator": {
+      "label": "Le prix au poids",
+      "title": "Combien coûte mon bol ?",
+      "desc": "Au comptoir, votre bol est pesé : vous payez ce que vous choisissez. Faites glisser pour estimer.",
+      "for": "pour {weight} · {rate}",
+      "rate": "{price} / 100 g",
+      "weight": "Poids du bol",
+      "presets": ["Petit · {grams} g", "Moyen · {grams} g", "Gourmand · {grams} g"],
+      "note": "Estimation indicative : le prix exact s'affiche sur la balance."
+    },
+    "practical": {
+      "title": "Infos pratiques",
+      "openInMaps": "Ouvrir dans Maps",
+      "bookingsByPhone": "Les réservations se font uniquement par téléphone."
+    },
+    "actionBar": {
+      "label": "Actions rapides",
+      "directions": "Itinéraire",
+      "call": "Appeler",
+      "order": "Commander",
+      "menu": "Menu"
     }
   },
   "faq": {
