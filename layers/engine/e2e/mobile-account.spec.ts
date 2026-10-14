@@ -88,7 +88,9 @@ for (const [width, height] of [
 test('the order list opens on a tap, lists the lines, and downloads the invoice', async ({
   authenticatedPage: page,
   backend,
+  brand,
 }) => {
+  test.skip(brand === 'ygfliege', 'Invoices are off for this brand (brand.invoicesEnabled false)')
   const id = await backend.seedOrder({
     status: 'PICKED_UP',
     online: true,

@@ -93,8 +93,9 @@ test.describe('Checkout options', () => {
     const timeSelect = page.locator(SEL.checkoutPreferredTime)
     await expect(timeSelect).toBeVisible()
 
-    // Should have at least one option
-    const optionCount = await timeSelect.locator('option').count()
+    // At least one choice: <option>s, or the chips of a brand with brand.pickupTimeChips
+    const chips = (await timeSelect.getAttribute('data-time-chips')) !== null
+    const optionCount = await timeSelect.locator(chips ? '[data-slot-value]' : 'option').count()
     expect(optionCount).toBeGreaterThanOrEqual(1)
   })
 
@@ -145,9 +146,12 @@ test.describe('Checkout options', () => {
      */
     const addressSection = page.locator('#checkout-delivery-address')
 
-    // A pickup-only brand renders the delivery option disabled: nothing to toggle.
+    // A pickup-only brand renders the delivery option disabled, or none at all: nothing to toggle.
     test.skip(
-      !(await page.locator(SEL.checkoutOptionDelivery).isEnabled()),
+      !(await page
+        .locator(SEL.checkoutOptionDelivery)
+        .isEnabled({ timeout: 2_000 })
+        .catch(() => false)),
       'Brand is pickup-only: no delivery option to exercise',
     )
     await page.locator(SEL.checkoutOptionDelivery).click()

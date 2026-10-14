@@ -58,6 +58,7 @@ test.describe('/me/orders', () => {
   test('a row opens to its lines and total; only a collected order offers the invoice and reorder', async ({
     authenticatedPage: page,
     backend,
+    brand,
   }) => {
     await backend.seedOrder({
       status: 'PICKED_UP',
@@ -82,11 +83,13 @@ test.describe('/me/orders', () => {
     await expect(preparing).toContainText('25,00')
     await expect(preparing.getByRole('button', { name: 'Télécharger la facture' })).toHaveCount(0)
 
-    // Collected: invoice and reorder.
+    // Collected: invoice (unless the brand has invoices off, brand.invoicesEnabled false: ygfliege) and reorder.
     await rows(page).nth(1).click()
     const collected = page.locator('[id^="order-panel-"]').nth(1)
-    await expect(collected.getByRole('button', { name: 'Télécharger la facture' })).toBeVisible()
     await expect(collected.getByRole('button', { name: 'Recommander' })).toBeVisible()
+    await expect(collected.getByRole('button', { name: 'Télécharger la facture' })).toHaveCount(
+      brand === 'ygfliege' ? 0 : 1,
+    )
 
     // A second click folds it again.
     await rows(page).nth(1).click()
@@ -126,7 +129,9 @@ test.describe('/me/orders', () => {
   test('the invoice of a collected order downloads as a PDF named by the server', async ({
     authenticatedPage: page,
     backend,
+    brand,
   }) => {
+    test.skip(brand === 'ygfliege', 'Invoices are off for this brand (brand.invoicesEnabled false)')
     const id = await backend.seedOrder({ status: 'PICKED_UP', online: false, withItem: true })
     await page.goto('/fr/me/orders')
     await rows(page).first().click()
@@ -145,7 +150,9 @@ test.describe('/me/orders', () => {
   test('a failing invoice download tells the customer and downloads nothing', async ({
     authenticatedPage: page,
     backend,
+    brand,
   }) => {
+    test.skip(brand === 'ygfliege', 'Invoices are off for this brand (brand.invoicesEnabled false)')
     await backend.seedOrder({ status: 'PICKED_UP', online: false, withItem: true })
     await backend.mock.scenario({ invoiceFailure: true })
     await page.goto('/fr/me/orders')
