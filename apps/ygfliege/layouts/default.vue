@@ -149,9 +149,16 @@
         <!-- The cart belongs to the shop: none while it is switched off (utils/shopGate.ts). -->
         <ClientOnly v-if="shopEnabled">
           <LazyCartMobile :is-ordering-available="!isClosed" :preorder-time="preorderTime" />
-          <LazyCartFloatingCartBar v-if="isMenuPage" />
           <!-- A signed-in customer's last order, one tap away, where an order starts (home, menu) -->
-          <LazyCartReorderBar v-if="isMenuPage || isHomePage" />
+          <!-- On a phone it sits on top of the action bar (below). -->
+          <LazyCartReorderBar
+            v-if="isMenuPage || isHomePage"
+            class="max-sm:bottom-[var(--action-bar-h,0px)]"
+          />
+        </ClientOnly>
+        <!-- Itinéraire / Appeler / Menu on a phone, merged with the cart bar once the cart has items (shop on). -->
+        <ClientOnly>
+          <ActionBar />
         </ClientOnly>
         <ClientOnly>
           <ToastAnnouncer />
@@ -183,6 +190,7 @@
 </template>
 
 <script lang="ts" setup>
+import ActionBar from '~/components/shop/ActionBar.vue'
 import MobileNavbar from '~/components/navbar/MobileNavbar.vue'
 import TopNavbar from '~/components/navbar/TopNavbar.vue'
 import { computed } from 'vue'
