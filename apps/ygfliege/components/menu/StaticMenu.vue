@@ -151,8 +151,8 @@
             class="min-h-11 px-4 py-3 rounded-ygf-btn border text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             :class="
               filter === activeFilter
-                ? 'bg-ygf border-ygf text-white'
-                : 'bg-white border-ygf-orange/10 text-gray-600 hover:bg-ygf hover:border-ygf hover:text-white'
+                ? 'bg-ygf border-ygf text-ygf-black'
+                : 'bg-white border-ygf-orange/10 text-gray-600 hover:bg-ygf hover:border-ygf hover:text-ygf-black'
             "
             data-testid="static-menu-filter"
             @click="activeFilter = filter"
@@ -212,7 +212,7 @@
             />
             <div class="flex flex-col items-center gap-3" data-pop-in>
               <span
-                class="w-16 h-16 rounded-full bg-ygf text-white flex items-center justify-center"
+                class="w-16 h-16 rounded-full bg-ygf text-ygf-black flex items-center justify-center"
                 aria-hidden="true"
               >
                 <span class="block w-12 h-12 [&>svg]:w-full [&>svg]:h-full" v-html="step.icon" />
@@ -221,6 +221,26 @@
             </div>
           </template>
         </div>
+      </div>
+    </section>
+
+    <!-- ── How much is my bowl? (audit 1a/1b: the estimator on Home and Menu) ── -->
+    <section class="bg-white px-4 sm:px-6 py-20 md:py-28">
+      <div class="max-w-6xl mx-auto">
+        <MktEstimator />
+      </div>
+    </section>
+
+    <!-- ── The art of eating: moved from the home page, captioned, a swipe row on a phone ── -->
+    <section class="bg-ygf-cream px-4 sm:px-6 py-20 md:py-28">
+      <div class="max-w-6xl mx-auto">
+        <h2
+          v-reveal
+          class="text-center font-display font-bold text-3xl sm:text-4xl text-ygf-black tracking-tight mb-10"
+        >
+          {{ $t('mkt.home.gallery.title') }}
+        </h2>
+        <MktGallery />
       </div>
     </section>
   </div>
@@ -234,6 +254,8 @@
  */
 import { computed, ref } from 'vue'
 import MktBrothMeta from '~/components/mkt/MktBrothMeta.vue'
+import MktEstimator from '~/components/mkt/MktEstimator.vue'
+import MktGallery from '~/components/mkt/MktGallery.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
 import { usePopInOnView } from '~/composables/useMktMotion'
 import { BROTHS } from '~/data/broths'

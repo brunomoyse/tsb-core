@@ -1,25 +1,44 @@
 <template>
   <div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-      <button
+    <!-- A swipe row on a phone, a grid from 640px; every tile is captioned (the franchise kit's dishes need context). -->
+    <ul
+      class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 pb-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-4 sm:overflow-visible"
+      data-testid="mkt-gallery"
+    >
+      <li
         v-for="(slug, i) in GALLERY_SLUGS"
         :key="slug"
         v-reveal="(i % 4) + 1"
-        class="group rounded-ygf-card overflow-hidden shadow-ygf-sm hover:shadow-ygf-md transition-shadow duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        :aria-label="$t(`mkt.home.gallery.items.${i}`)"
-        @click="openIndex = i"
+        class="shrink-0 basis-[68%] snap-start sm:basis-auto"
       >
-        <MktPicture
-          :src="`/images/gallery/${slug}`"
-          :widths="[480, 900, 1400]"
-          :fallback-width="900"
-          :fallback-height="636"
-          :alt="$t(`mkt.home.gallery.items.${i}`)"
-          sizes="(min-width: 1024px) 24vw, (min-width: 640px) 32vw, 46vw"
-          img-class="w-full aspect-[3/4] object-cover transition-transform duration-slow group-hover:scale-105"
-        />
-      </button>
-    </div>
+        <button
+          type="button"
+          class="group block w-full text-left rounded-ygf-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          :aria-label="$t(`mkt.home.gallery.items.${i}`)"
+          @click="openIndex = i"
+        >
+          <span
+            class="block rounded-ygf-card overflow-hidden shadow-ygf-sm group-hover:shadow-ygf-md transition-shadow duration-300"
+          >
+            <MktPicture
+              :src="`/images/gallery/${slug}`"
+              :widths="[480, 900, 1400]"
+              :fallback-width="900"
+              :fallback-height="636"
+              alt=""
+              sizes="(min-width: 1024px) 24vw, (min-width: 640px) 32vw, 68vw"
+              img-class="w-full aspect-[3/4] object-cover transition-transform duration-slow group-hover:scale-105"
+            />
+          </span>
+          <span
+            class="block mt-2 text-sm font-medium text-ygf-black leading-snug"
+            aria-hidden="true"
+          >
+            {{ $t(`mkt.home.gallery.items.${i}`) }}
+          </span>
+        </button>
+      </li>
+    </ul>
 
     <!-- Lightbox -->
     <Teleport to="body">
