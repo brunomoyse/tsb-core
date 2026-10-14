@@ -27,6 +27,14 @@
         <h2 class="text-xl font-semibold text-neutral-900 text-center mb-6">
           {{ $t('checkout.authStep.heading') }}
         </h2>
+        <!-- Optional brand copy under the heading (what signing in costs and brings); a brand without it shows none -->
+        <p
+          v-if="$te('checkout.authStep.subtitle')"
+          data-testid="checkout-auth-subtitle"
+          class="-mt-4 mb-6 text-sm text-neutral-600 text-center"
+        >
+          {{ $t('checkout.authStep.subtitle') }}
+        </p>
 
         <AuthFlow mode="inline" :on-before-redirect="saveReturnTo" :on-complete="handleComplete" />
       </div>

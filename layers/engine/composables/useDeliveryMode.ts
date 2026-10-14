@@ -7,10 +7,14 @@ import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
  * picker, checkout). It takes both switches: the brand flag (`brand.deliveryEnabled`, takeaway-only for a launch) AND
  * the API's delivery policy (`RestaurantConfig.policy.deliveryEnabled`, which the backend enforces: a delivery order is
  * refused with DELIVERY_UNAVAILABLE when it is off).
+ *
+ * `deliveryHidden`: the brand itself is takeaway-only (`brand.deliveryEnabled: false`), so delivery is not shown at
+ * all (no disabled "available soon" toggle): the surfaces show the pickup address instead. A delivery the API alone
+ * switched off stays visible and disabled.
  */
 export const useDeliveryMode = () => {
   const { policy } = useOrderingPolicy()
   const { deliveryEnabled: brandFlag = true } = useAppConfig().brand
   const deliveryEnabled = computed(() => brandFlag && policy.value.deliveryEnabled)
-  return { deliveryEnabled }
+  return { deliveryEnabled, deliveryHidden: !brandFlag }
 }

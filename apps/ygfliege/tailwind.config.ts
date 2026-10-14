@@ -99,14 +99,43 @@ module.exports = {
         // Components only use these names (primary-N accent scale,
         // Neutral-N neutrals, tsb-one..four surfaces) and each brand
         // Maps them. red-* stays reserved for errors.
+        // Warm, like `gray`: the shared cart and checkout surfaces (bg-neutral-50/100, hairlines, secondary text) read as
+        // cream and ink instead of the cold greys of the sushi skin (audit, webshop P2). 500/600 = 6.3:1 on white.
         neutral: {
-          50: '#FAFAFA',
-          100: '#F5F5F5',
-          200: '#E5E5E5',
-          300: '#D4D4D4',
-          400: '#999999',
-          500: '#666666',
-          600: '#666666',
+          50: '#FFFBF6',
+          100: '#FDF5EC',
+          200: '#F5E6D6',
+          300: '#EBD6C1',
+          400: '#A39A90',
+          500: '#5F574F',
+          600: '#5F574F',
+          700: '#1A1A1A',
+          800: '#1A1A1A',
+          900: '#1A1A1A',
+        },
+        // The engine's warnings (amber-*) in the brand's warm tones: cream boxes, orange hairline, deep orange-brown text
+        // (800 on 50 is 9:1). No cold or off-brand yellow in this skin.
+        amber: {
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          200: '#FED7AA',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: YGF_ORANGE,
+          600: '#C2570C',
+          700: '#9A3412',
+          800: '#7C2D12',
+          900: '#5C2410',
+        },
+        // The halal badge (blue-*): ink on cream, the brand bans cold colours.
+        blue: {
+          50: '#FDF5EC',
+          100: '#FDF5EC',
+          200: '#EBD6C1',
+          300: '#D6C2AE',
+          400: '#A39A90',
+          500: '#5F574F',
+          600: '#4A433D',
           700: '#1A1A1A',
           800: '#1A1A1A',
           900: '#1A1A1A',

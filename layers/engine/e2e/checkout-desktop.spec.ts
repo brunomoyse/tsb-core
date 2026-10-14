@@ -77,18 +77,15 @@ test.describe('Side cart', () => {
     await expect(cart.getByTestId('cart-option-pickup')).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('a takeaway-only brand offers delivery as "soon" and starts on pickup (YGF)', async ({
+  test('a takeaway-only brand shows no delivery at all, only pickup (YGF)', async ({
     page,
     brand,
   }) => {
     test.skip(brand !== 'ygfliege', 'delivery brand')
     await fillCart(page, [GYOZA])
     const cart = sideCart(page)
-    await expect(cart.getByTestId('cart-option-delivery')).toBeDisabled()
-    await expect(cart.getByTestId('cart-option-delivery')).toHaveAccessibleName(
-      /Bientôt disponible/u,
-    )
-    await expect(cart.getByTestId('cart-option-pickup')).toHaveAttribute('aria-pressed', 'true')
+    await expect(cart.getByTestId('cart-option-delivery')).toHaveCount(0)
+    await expect(cart.getByTestId('cart-pickup-only')).toBeVisible()
     await expect(cart.getByTestId('cart-checkout-link')).not.toHaveAttribute(
       'aria-disabled',
       'true',

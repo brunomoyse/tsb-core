@@ -6,6 +6,7 @@ import {
   gotoMenu,
   openCart,
   payButton,
+  timePicker,
   waitForQuote,
 } from './support/order-flow'
 import { expect, test } from './support/test'
@@ -102,22 +103,24 @@ test.describe('Closed, with time slots still bookable today (pre-order)', () => 
     await expect(banner).toContainText('Nous sommes fermés pour le moment')
     await expect(page.getByTestId('checkout-restaurant-closed')).toHaveCount(0)
 
-    const select = page.getByTestId('checkout-preferred-time')
-    await expect(select).toBeVisible()
+    // A <select>, or a row of chips for a brand with brand.pickupTimeChips.
+    const picker = timePicker(page)
+    await expect(picker.root).toBeVisible()
     await expect(page.getByText('« dès que possible »')).toBeVisible()
     // No "as soon as possible" while closed: only fixed times, the first one chosen.
-    const options = select.locator('option')
-    expect(await options.count()).toBeGreaterThan(2)
-    await expect(options.filter({ hasText: 'Dès que possible' })).toHaveCount(0)
-    const first = await options.first().getAttribute('value')
-    await expect(select).toHaveValue(first ?? '')
+    const values = await picker.values()
+    expect(values.length).toBeGreaterThan(2)
+    expect(await picker.countWithText('Dès que possible')).toBe(0)
+    const [first] = values
+    await expect.poll(picker.selected).toBe(first)
     // The banner names the slot that is preselected.
-    await expect(banner).toContainText((await options.first().innerText()).trim())
+    await expect(banner).toContainText(await picker.firstLabel())
 
     // Another slot, then a cash order.
-    const third = (await options.nth(2).getAttribute('value')) ?? ''
+    const third = values[2] ?? ''
     expect(third).not.toBe(first)
-    await select.selectOption(third)
+    await picker.choose(third)
+    await expect.poll(picker.selected).toBe(third)
     await choosePayment(page, 'cash')
     await page.getByTestId('cash-acknowledge').check()
     await waitForQuote(page)
@@ -139,18 +142,16 @@ test.describe('Closed, with time slots still bookable today (pre-order)', () => 
     await fillCart(page, [GYOZA])
     await gotoCheckout(page)
     await chooseCollection(page, 'pickup')
-    const select = page.getByTestId('checkout-preferred-time')
-    const first = (await select.locator('option').first().getAttribute('value')) ?? ''
-    await expect(select).toHaveValue(first)
+    const picker = timePicker(page)
+    const [first] = await picker.values()
+    await expect.poll(picker.selected).toBe(first)
 
     // 45 minutes later the first slot is inside the preparation window: it is no longer offered.
     await page.clock.fastForward('45:00')
     await expect(page.getByText('Votre créneau horaire a expiré').first()).toBeVisible()
-    await expect(select.locator(`option[value="${first}"]`)).toHaveCount(0)
-    await expect(select).not.toHaveValue(first)
-    await expect(select).toHaveValue(
-      (await select.locator('option').first().getAttribute('value')) ?? '',
-    )
+    await expect.poll(picker.values).not.toContain(first)
+    await expect.poll(picker.selected).not.toBe(first)
+    await expect.poll(picker.selected).toBe((await picker.values())[0])
   })
 
   test('the cart sheet advertises the pre-order time instead of "unavailable"', async ({

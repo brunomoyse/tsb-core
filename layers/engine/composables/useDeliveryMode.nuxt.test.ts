@@ -37,17 +37,22 @@ describe('useDeliveryMode', () => {
 
   it('is on by default: a brand without the flag, and a config that has not loaded', () => {
     expect(useDeliveryMode().deliveryEnabled.value).toBe(true)
+    expect(useDeliveryMode().deliveryHidden).toBe(false)
   })
 
   it('is off when the brand is takeaway-only, whatever the API says (ygfliege)', () => {
     brandFlag.value = false
     expect(useDeliveryMode().deliveryEnabled.value).toBe(false)
+    // Not even shown: the brand has no delivery at all.
+    expect(useDeliveryMode().deliveryHidden).toBe(true)
     serve(true)
     expect(useDeliveryMode().deliveryEnabled.value).toBe(false)
   })
 
   it('is off when the API policy switches delivery off (the backend refuses DELIVERY_UNAVAILABLE)', () => {
     brandFlag.value = true
+    // Still shown (disabled): the API may switch it back on.
+    expect(useDeliveryMode().deliveryHidden).toBe(false)
     serve(false)
     expect(useDeliveryMode().deliveryEnabled.value).toBe(false)
   })

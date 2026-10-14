@@ -360,7 +360,8 @@
     "increaseQtyOf": "Increase quantity of {name}",
     "decreaseQtyOf": "Decrease quantity of {name}",
     "addNamed": "Add {name} to the cart",
-    "inCartNamed": "{name}: {count} in the cart, change quantity"
+    "inCartNamed": "{name}: {count} in the cart, change quantity",
+    "showDetail": "Show details"
   },
   "checkout": {
     "title": "Checkout",
@@ -460,7 +461,9 @@
     "quoteChanged": "Prices or availability changed: please review your order.",
     "cashAmountTooLow": "That's less than the total ({total}). Enter at least {total}, or leave the field empty.",
     "cashChangeDue": "Change due: {amount}",
-    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more | {name}, {count} added, {price} each: add one more"
+    "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more | {name}, {count} added, {price} each: add one more",
+    "directions": "Directions",
+    "asapChip": "As soon as possible · ~{minutes} min"
   },
   "orderCompleted": {
     "title": "Order received",

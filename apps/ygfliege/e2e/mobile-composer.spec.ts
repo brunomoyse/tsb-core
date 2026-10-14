@@ -1,11 +1,12 @@
 import { type Locator, type Page } from '@playwright/test'
 import { type Brand, expect, test } from '../../../layers/engine/e2e/support/test'
 import { message } from '../../../layers/engine/e2e/support/i18n'
+import { showStepOf } from '../../../layers/engine/e2e/support/order-flow'
 
 /*
  * The bowl composer ("Malatang sur mesure") on a phone (Pixel 5, 393 px), against the mock YGF menu: the rules of its
- * three groups (one broth, 5 to 20 ingredients, one spice level), what the count and the price do while a bowl is built,
- * and what ends up in the cart. The happy path and the fixed sets are in compose-bowl.spec.ts (desktop).
+ * three groups (one broth, 5 to 20 ingredients, one spice level), shown one step per screen; what the count and the
+ * running total do while a bowl is built, and what ends up in the cart. The happy path and the fixed sets are in compose-bowl.spec.ts (desktop).
  *
  * Prices of the mock menu: base 2,50; vegetables, tofu and corn 1,00; udon 1,20; prawns 2,50.
  */
@@ -16,9 +17,29 @@ test.beforeEach(({ backend }) => {
 
 const composer = (page: Page) => page.getByTestId('bowl-composer')
 const add = (page: Page) => page.getByTestId('bowl-composer-add-to-cart')
+const next = (page: Page) => page.getByTestId('bowl-composer-next')
+const total = (page: Page) => page.getByTestId('bowl-composer-total')
 const row = (root: Locator, id: string) => root.getByTestId(`bowl-composer-choice-${id}`)
 const inc = (root: Locator, id: string) => root.getByTestId(`bowl-composer-choice-inc-${id}`)
 const dec = (root: Locator, id: string) => root.getByTestId(`bowl-composer-choice-dec-${id}`)
+
+/** The composer shows one step at a time: open the step of a choice before touching it. */
+const atStep = async (root: Locator, id: string): Promise<Locator> => {
+  await showStepOf(root, 'bowl-composer', row(root, id))
+  return row(root, id)
+}
+const tapRow = async (root: Locator, id: string) => (await atStep(root, id)).tap()
+const tapInc = async (root: Locator, id: string) => {
+  await atStep(root, id)
+  await inc(root, id).tap()
+}
+const tapDec = async (root: Locator, id: string) => {
+  await atStep(root, id)
+  await dec(root, id).tap()
+}
+/** The last step, where the add button is. */
+const lastStep = (root: Locator) =>
+  root.locator('[data-testid^="bowl-composer-step-"]').last().tap()
 
 const VEGETABLES = ['ch-pak', 'ch-epi', 'ch-broc', 'ch-tofu', 'ch-mais'] as const
 
@@ -50,45 +71,58 @@ test('opens from the hero button and from a deep link, and closes with its butto
   await expect(composer(page)).toBeHidden()
 })
 
-test('nothing can be added until the broth, 5 ingredients and the spice level are chosen, and the summary says what is missing', async ({
+test('one step at a time: "Continuer" waits for the broth, then 5 ingredients; the add button waits for the spice level', async ({
   page,
   brand,
 }) => {
   const root = await open(page)
-  await expect(add(page)).toBeDisabled()
-  // The first thing missing is named under the title of the footer.
-  await expect(root.getByText('Bouillon', { exact: true }).last()).toBeVisible()
+  await expect(next(page)).toBeDisabled()
+  // Nothing chosen yet: the footer says where to start, and the total is already the base price.
+  await expect(root.getByTestId('bowl-composer-summary')).toHaveText(
+    message(brand, 'fr', 'composer.pickBroth'),
+  )
+  await expect(total(page)).toContainText('2,50')
 
-  await row(root, 'ch-tomate').tap()
-  await expect(add(page)).toBeDisabled()
+  await tapRow(root, 'ch-tomate')
+  await expect(next(page)).toBeEnabled()
+  await next(page).tap()
+  await expect(root.getByTestId('bowl-composer-step-1')).toHaveAttribute('aria-current', 'step')
   for (const id of VEGETABLES.slice(0, 4)) await inc(root, id).tap()
   await expect(ingredientsCount(root, brand, 4, 20)).toBeVisible()
-  await row(root, 'ch-moyen').tap()
-  // 4 of 5 ingredients: still refused.
-  await expect(add(page)).toBeDisabled()
+  // 4 of 5 ingredients: not done.
+  await expect(next(page)).toBeDisabled()
 
   await inc(root, VEGETABLES[4]).tap()
   await expect(ingredientsCount(root, brand, 5, 20)).toBeVisible()
+  await next(page).tap()
+  // The last step: the spice level is still missing, and the footer names it.
+  await expect(add(page)).toBeDisabled()
+  await expect(root.getByTestId('bowl-composer-summary')).toContainText('Niveau de piment')
+  await tapRow(root, 'ch-moyen')
   await expect(add(page)).toBeEnabled()
-  // The price only shows once the bowl is valid: 2,50 + 5 x 1,00.
+  // 2,50 + 5 x 1,00.
   await expect(add(page)).toContainText('7,50')
+
+  // Back goes one step back.
+  await root.getByTestId('bowl-composer-back').tap()
+  await expect(root.getByTestId('bowl-composer-step-1')).toHaveAttribute('aria-current', 'step')
 })
 
-test('the price follows every ingredient, by its own supplement', async ({ page }) => {
+test('the total follows every ingredient, by its own supplement', async ({ page }) => {
   const root = await open(page)
-  await row(root, 'ch-tomate').tap()
-  await row(root, 'ch-doux').tap()
-  for (const id of VEGETABLES) await inc(root, id).tap()
-  await expect(add(page)).toContainText('7,50')
+  await tapRow(root, 'ch-tomate')
+  await tapRow(root, 'ch-doux')
+  for (const id of VEGETABLES) await tapInc(root, id)
+  await expect(total(page)).toContainText('7,50')
   await inc(root, 'ch-udon').tap()
-  await expect(add(page)).toContainText('8,70')
+  await expect(total(page)).toContainText('8,70')
   await inc(root, 'ch-crev').tap()
-  await expect(add(page)).toContainText('11,20')
+  await expect(total(page)).toContainText('11,20')
   await dec(root, 'ch-udon').tap()
-  await expect(add(page)).toContainText('10,00')
+  await expect(total(page)).toContainText('10,00')
   // The same ingredient twice counts twice.
   await inc(root, 'ch-crev').tap()
-  await expect(add(page)).toContainText('12,50')
+  await expect(total(page)).toContainText('12,50')
 })
 
 test('an ingredient is capped at 20 in all: at the limit every "+" is off, and removing one lifts it', async ({
@@ -96,17 +130,19 @@ test('an ingredient is capped at 20 in all: at the limit every "+" is off, and r
   brand,
 }) => {
   const root = await open(page)
-  await row(root, 'ch-tomate').tap()
-  await row(root, 'ch-doux').tap()
+  await tapRow(root, 'ch-tomate')
+  await tapRow(root, 'ch-doux')
+  await atStep(root, 'ch-pak')
   for (let count = 0; count < 20; count++) await inc(root, 'ch-pak').tap()
   await expect(ingredientsCount(root, brand, 20, 20)).toBeVisible()
   await expect(inc(root, 'ch-pak')).toBeDisabled()
   await expect(inc(root, 'ch-udon')).toBeDisabled()
   // 2,50 + 20 x 1,00, and the bowl is valid at the top of the range.
+  await expect(total(page)).toContainText('22,50')
+  await lastStep(root)
   await expect(add(page)).toBeEnabled()
-  await expect(add(page)).toContainText('22,50')
 
-  await dec(root, 'ch-pak').tap()
+  await tapDec(root, 'ch-pak')
   await expect(ingredientsCount(root, brand, 19, 20)).toBeVisible()
   await expect(inc(root, 'ch-udon')).toBeEnabled()
 })
@@ -114,7 +150,7 @@ test('an ingredient is capped at 20 in all: at the limit every "+" is off, and r
 test('"-" stops at zero, and the stepper of the bowl stops at one', async ({ page }) => {
   const root = await open(page)
   await expect(dec(root, 'ch-pak')).toBeDisabled()
-  await inc(root, 'ch-pak').tap()
+  await tapInc(root, 'ch-pak')
   await expect(dec(root, 'ch-pak')).toBeEnabled()
   await dec(root, 'ch-pak').tap()
   await expect(dec(root, 'ch-pak')).toBeDisabled()
@@ -127,25 +163,25 @@ test('the broth and the spice level are exclusive: a new pick replaces the old o
   page,
 }) => {
   const root = await open(page)
-  await row(root, 'ch-tomate').tap()
-  await row(root, 'ch-champi').tap()
+  await tapRow(root, 'ch-tomate')
+  await tapRow(root, 'ch-champi')
   await expect(row(root, 'ch-tomate')).toHaveAttribute('aria-pressed', 'false')
   await expect(row(root, 'ch-champi')).toHaveAttribute('aria-pressed', 'true')
-  await row(root, 'ch-doux').tap()
-  await row(root, 'ch-fort').tap()
+  await tapRow(root, 'ch-doux')
+  await tapRow(root, 'ch-fort')
   await expect(row(root, 'ch-doux')).toHaveAttribute('aria-pressed', 'false')
   await expect(row(root, 'ch-fort')).toHaveAttribute('aria-pressed', 'true')
 })
 
-test('a long ingredient name wraps inside the sheet', async ({ page }) => {
+test('a long ingredient name wraps inside its tile', async ({ page }) => {
   const root = await open(page)
-  const long = row(root, 'ch-boul')
+  const long = await atStep(root, 'ch-boul')
   await long.scrollIntoViewIfNeeded()
   const box = await long.boundingBox()
   expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(
     (page.viewportSize()?.width ?? 0) + 0.5,
   )
-  // And its "+" is still reachable beside it.
+  // And the tile (its "+") is whole on screen.
   await expect(inc(root, 'ch-boul')).toBeInViewport({ ratio: 1 })
 })
 
@@ -154,10 +190,11 @@ test('the bowl goes to the cart with its choices; the same bowl again joins that
 }) => {
   const compose = async (extra: string) => {
     const root = await open(page)
-    await row(root, 'ch-tomate').tap()
-    await row(root, 'ch-moyen').tap()
-    for (const id of VEGETABLES) await inc(root, id).tap()
+    await tapRow(root, 'ch-tomate')
+    await tapRow(root, 'ch-moyen')
+    for (const id of VEGETABLES) await tapInc(root, id)
     if (extra) await inc(root, extra).tap()
+    await lastStep(root)
     await add(page).tap()
     await expect(composer(page)).toBeHidden()
   }
@@ -183,8 +220,8 @@ test('closing the composer with a half-built bowl adds nothing, and the next ope
   page,
 }) => {
   const root = await open(page)
-  await row(root, 'ch-tomate').tap()
-  await inc(root, 'ch-pak').tap()
+  await tapRow(root, 'ch-tomate')
+  await tapInc(root, 'ch-pak')
   await page.getByTestId('bowl-composer-close').tap()
   const lines = await page.evaluate(() => localStorage.getItem('cart'))
   expect(
@@ -193,16 +230,17 @@ test('closing the composer with a half-built bowl adds nothing, and the next ope
 
   const again = await open(page)
   await expect(row(again, 'ch-tomate')).toHaveAttribute('aria-pressed', 'false')
-  await expect(add(page)).toBeDisabled()
+  await expect(next(page)).toBeDisabled()
 })
 
-test('the footer (stepper and add button) stays on screen while the groups scroll', async ({
+test('the footer (stepper, total and button) stays on screen while a step scrolls', async ({
   page,
 }) => {
   const root = await open(page)
-  await expect(add(page)).toBeInViewport({ ratio: 1 })
-  await root.getByTestId('bowl-composer-choice-ch-fort').scrollIntoViewIfNeeded()
-  await expect(add(page)).toBeInViewport({ ratio: 1 })
+  await expect(next(page)).toBeInViewport({ ratio: 1 })
+  await (await atStep(root, 'ch-boul')).scrollIntoViewIfNeeded()
+  await expect(next(page)).toBeInViewport({ ratio: 1 })
+  await expect(total(page)).toBeInViewport({ ratio: 1 })
 })
 
 test('ordering several bowls at once asks for 5 ingredients per bowl, and the price is for all of them', async ({
@@ -210,21 +248,23 @@ test('ordering several bowls at once asks for 5 ingredients per bowl, and the pr
   brand,
 }) => {
   const root = await open(page)
-  await row(root, 'ch-tomate').tap()
-  await row(root, 'ch-moyen').tap()
-  for (const id of VEGETABLES) await inc(root, id).tap()
-  await expect(add(page)).toContainText('7,50')
+  await tapRow(root, 'ch-tomate')
+  await tapRow(root, 'ch-moyen')
+  for (const id of VEGETABLES) await tapInc(root, id)
+  await expect(total(page)).toContainText('7,50')
 
   // Two bowls: the ingredients are shared out between them, 10 in all.
   await root.getByRole('button', { name: 'Augmenter la quantité de Malatang sur mesure' }).tap()
-  await expect(add(page)).toBeDisabled()
+  await expect(next(page)).toBeDisabled()
   await expect(ingredientsCount(root, brand, 5, 40)).toBeVisible()
-  await expect(root.getByText('Choisissez au moins 5 options')).toBeVisible()
+  await expect(root.getByText(message(brand, 'fr', 'composer.missing', { count: 5 }))).toBeVisible()
   for (const id of VEGETABLES) await inc(root, id).tap()
-  await expect(add(page)).toBeEnabled()
+  await expect(next(page)).toBeEnabled()
   // 2 x 2,50 + 10 x 1,00.
-  await expect(add(page)).toContainText('15,00')
+  await expect(total(page)).toContainText('15,00')
 
+  await lastStep(root)
+  await expect(add(page)).toContainText('15,00')
   await add(page).tap()
   const [line] = await page.evaluate(
     () =>

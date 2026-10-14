@@ -3,17 +3,7 @@
     <!-- Main Content -->
     <!-- Widths are plain fractions now: the old calc()s subtracted the
              142px side rail that the sticky TopNavbar replaced. -->
-    <div
-      ref="contentContainer"
-      class="w-full min-w-0"
-      :class="
-        isMounted
-          ? hasCartItems
-            ? 'lg:w-2/3'
-            : 'lg:w-full'
-          : 'lg:w-full [html[data-has-cart]_&]:lg:w-2/3'
-      "
-    >
+    <div ref="contentContainer" class="w-full min-w-0 lg:w-2/3">
       <!-- The page's heading for screen readers (the visible headings are the categories, h2): the menu had no h1. -->
       <h1 class="sr-only">{{ $t('nav.menu') }}</h1>
       <!-- Ordering banner: closed (loaded config only), closed but pre-orderable, or the config could not be loaded -->
@@ -21,20 +11,7 @@
         <div
           class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-amber-700 shrink-0 mt-0.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-            />
-          </svg>
+          <span class="text-amber-700 shrink-0 mt-0.5"><MktIcon name="info" :size="20" /></span>
           <div class="min-w-0">
             <p class="text-amber-900 text-sm font-semibold">{{ $t('menu.restaurantClosed') }}</p>
             <p class="text-amber-800 text-sm mt-0.5">{{ $t('menu.restaurantClosedDetails') }}</p>
@@ -50,21 +27,7 @@
         <div
           class="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-amber-700 shrink-0 mt-0.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <span class="text-amber-700 shrink-0 mt-0.5"><MktIcon name="clock" :size="20" /></span>
           <p class="text-amber-900 text-sm font-semibold">
             {{ $t('ordering.closedPreorder', { time: preorderTime }) }}
           </p>
@@ -139,8 +102,10 @@
               </svg>
             </button>
           </div>
-          <!-- Delivery zone on a phone: the header carries the logo with its name, so the chip sits beside the search (the desktop header, from xl up, shows it). -->
-          <ClientOnly>
+          <!-- Delivery zone (takeaway only: the pickup address) below xl: the header carries the logo with its name, so
+               the chip sits beside the search (the desktop header, from xl up, shows it). -->
+          <PickupChip v-if="deliveryHidden" compact class="xl:hidden shrink-0 max-w-[11rem]" />
+          <ClientOnly v-else>
             <DeliveryZoneChip compact class="xl:hidden shrink-0 max-w-[9.5rem]" />
           </ClientOnly>
         </section>
@@ -173,14 +138,25 @@
         </nav>
       </section>
 
-      <!-- Allergen Notice (compact, dismissible, scrolls away with content) -->
-      <MenuAllergenNotice
-        contained
-        :show="showAllergenNotice"
-        :phone-href="telHref(brand.phone)"
-        :phone-label="brand.phone"
-        @dismiss="dismissAllergenNotice"
-      />
+      <!-- Allergens: a permanent line, not a dismissible banner (each broth's allergens are on its composer card) -->
+      <p
+        data-testid="menu-allergen-link"
+        class="max-w-7xl mx-auto px-4 mb-2 flex flex-wrap items-center gap-x-2 text-sm text-ygf-gray-600"
+      >
+        <span class="text-ygf-orange-on-white"><MktIcon name="info" :size="16" /></span>
+        <NuxtLinkLocale
+          to="/faq"
+          class="inline-flex min-h-11 items-center font-medium text-ygf-orange-text underline underline-offset-4 decoration-ygf-orange/40"
+        >
+          {{ $t('mkt.shop.allergensLink') }}
+        </NuxtLinkLocale>
+        <span aria-hidden="true">&middot;</span>
+        <a
+          :href="telHref(brand.phone)"
+          class="inline-flex min-h-11 items-center whitespace-nowrap underline underline-offset-4 decoration-ygf-orange/40"
+          >{{ brand.phone }}</a
+        >
+      </p>
 
       <!-- The menu could not be loaded: say so and offer Retry, instead of a skeleton that never ends -->
       <section v-if="!dataCategories && categoriesError" class="max-w-7xl mx-auto px-4 py-4">
@@ -227,6 +203,16 @@
               </h2>
               <p class="text-sm text-ygf-black/70 max-w-prose">
                 {{ $t(composerHero(composer.slug).subtitleKey) }}
+              </p>
+              <!-- The online price rule, from the product's own base price (the counter weighs; online, it is base + ingredients) -->
+              <p
+                data-testid="composer-hero-price"
+                class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-sm font-semibold text-ygf-black shadow-ygf-sm"
+              >
+                <span class="text-ygf-orange-on-white"
+                  ><MktIcon name="shopping-bag" :size="16"
+                /></span>
+                {{ onlinePriceLabel(composer.price) }}
               </p>
               <button
                 type="button"
@@ -309,15 +295,40 @@
 
     <!-- Desktop Cart Sidebar -->
     <!-- The column is in the server's HTML and shown from the first paint when <html data-has-cart> says the visitor has a cart (see the engine nuxt.config): no width change after hydration. -->
-    <aside
-      class="hidden lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:w-1/3 lg:pr-4"
-      :class="isMounted ? hasCartItems && 'lg:block' : '[html[data-has-cart]_&]:lg:block'"
-    >
+    <!-- Reserved from the first paint (audit P3): adding the first item no longer narrows the grid under the cursor. -->
+    <aside class="hidden lg:block lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)] lg:w-1/3 lg:pr-4">
       <SideCart
         v-if="hasCartItems"
         :is-ordering-available="!isClosed"
         :preorder-time="preorderTime"
       />
+      <div
+        v-else
+        data-testid="side-cart-empty"
+        class="mt-4 rounded-l-xl bg-ygf-cream border border-ygf-border p-6 flex flex-col items-center text-center gap-3"
+      >
+        <MktPicture
+          src="/images/bowls/beef-bone-top"
+          :widths="[320]"
+          :fallback-width="320"
+          :fallback-height="320"
+          alt=""
+          sizes="140px"
+          class="block w-[140px] opacity-90"
+          img-class="w-full"
+        />
+        <h2 class="text-xl font-bold text-ygf-black">{{ $t('cart.title') }}</h2>
+        <p class="text-sm text-ygf-gray-600 max-w-[26ch]">{{ $t('mkt.shop.emptyCart') }}</p>
+        <button
+          v-if="composerProducts.length > 0"
+          type="button"
+          class="btn btn-primary btn-sm"
+          :disabled="!isCartAddAvailable"
+          @click="openModal(composerProducts[0]!.id)"
+        >
+          {{ $t('composer.open') }}
+        </button>
+      </div>
     </aside>
 
     <ClientOnly>
@@ -362,7 +373,12 @@ import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useGqlQuery, useGqlSubscription, useRoute, useRouter } from '#imports'
 import ProductCard from '~/components/menu/ProductCard.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
+import MktIcon from '~/components/mkt/MktIcon.vue'
 import MktPicture from '~/components/mkt/MktPicture.vue'
+import PickupChip from '~/components/shop/PickupChip.vue'
+import { formatPrice } from '#engine/lib/price'
+import { toCents } from '#engine/utils/money'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
 import { whenIdle } from '#engine/utils/whenIdle'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
 import { useCartStore } from '#engine/stores/cart'
@@ -384,7 +400,6 @@ import { composerHero, isBowlComposer } from '~/data/composer'
 import { productPhotoUrls } from '~/data/productPhotos'
 import { categoryCardOffsets } from '#engine/utils/menuImagePriority'
 import { telHref } from '#engine/utils/phone'
-import MenuAllergenNotice from '#engine/components/menu/MenuAllergenNotice.vue'
 import { useMenuCategoryScrollspy } from '#engine/composables/useMenuCategoryScrollspy'
 import { useStickyTopOffset } from '#engine/composables/useStickyTopOffset'
 
@@ -413,16 +428,13 @@ const routedProductId = computed(() =>
 )
 const router = useRouter()
 const { trackEvent } = useTracking()
-const showAllergenNotice = ref(true)
-onMounted(() => {
-  if (localStorage.getItem('allergenNoticeDismissed') === 'true') {
-    showAllergenNotice.value = false
-  }
-})
-const dismissAllergenNotice = () => {
-  showAllergenNotice.value = false
-  localStorage.setItem('allergenNoticeDismissed', 'true')
-}
+const { deliveryHidden } = useDeliveryMode()
+
+/** "En ligne : 2,50 € + vos ingrédients", read from the composer's own base price (never a literal). */
+const onlinePriceLabel = (price: string): string =>
+  toCents(price) > 0
+    ? t('composer.onlinePrice', { base: formatPrice(price) })
+    : t('composer.onlinePriceNoBase')
 
 // Bumped by a modal's Retry: remounting it runs its product query again.
 const modalAttempt = ref(0)
@@ -589,6 +601,18 @@ const allProducts = computed<Product[]>(() => flattenProducts(baseCategories.val
 
 // The build-your-own bowls are the products of the composer category (see data/composer.ts), each with its own hero card.
 const composerProducts = computed(() => allProducts.value.filter(isBowlComposer))
+
+// "Commander à emporter" (home page) links to /menu?compose, or ?compose=<slug>: open that composer (else the first one)
+// as soon as the menu is known, on the same history entry.
+watch(
+  [() => route.query.compose, composerProducts],
+  ([compose, composers]) => {
+    if (!import.meta.client || compose === undefined || composers.length === 0) return
+    const wanted = composers.find((composer) => composer.slug === compose) ?? composers[0]!
+    void router.replace({ query: { product: wanted.id } })
+  },
+  { immediate: true },
+)
 
 /** Whether the product currently open in the route query is a composer. */
 const routedProductIsComposer = computed(() => {

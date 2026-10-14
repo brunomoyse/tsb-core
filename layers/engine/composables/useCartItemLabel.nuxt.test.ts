@@ -5,6 +5,7 @@ import type * as VueI18NModule from 'vue-i18n'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { makeCartItem, makeChoice, makeProduct } from '../../../test/fixtures/catalog'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { useNuxtApp } from '#imports'
 
 const brandOverride = vi.hoisted(() => ({ showProductCode: undefined as boolean | undefined }))
 
@@ -112,5 +113,22 @@ describe('useOrderItemLabel', () => {
       label.orderItemChoice({ product: ramen, selections: [], choice: { name: 'Salmon' } }),
     ).toBe('Salmon')
     expect(label.orderItemChoice({ product: ramen, selections: [], choice: null })).toBeUndefined()
+  })
+})
+
+describe('useCartItemLabel().itemPresentation', () => {
+  it("is null without a brand presenter, and the presenter's answer with one", () => {
+    expect(useCartItemLabel().itemPresentation(line)).toBeNull()
+    // Provided for the rest of this file (a provided value cannot be removed): the last test here.
+    useNuxtApp().provide('cartLinePresenter', (item: typeof line) =>
+      item.product.id === 'ramen' ? { summary: 'Mild · Spicy', details: ['Spicy ×2'] } : null,
+    )
+    expect(useCartItemLabel().itemPresentation(line)).toEqual({
+      summary: 'Mild · Spicy',
+      details: ['Spicy ×2'],
+    })
+    expect(
+      useCartItemLabel().itemPresentation(makeCartItem({ product: makeProduct({ id: 'x' }) })),
+    ).toBeNull()
   })
 })

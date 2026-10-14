@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test'
+import { choiceRows, showStepOf } from '../../../layers/engine/e2e/support/order-flow'
 import { expect, test } from '../../../layers/engine/e2e/support/test'
 
 // Compose-a-bowl flow against the seeded YGF menu
@@ -10,9 +11,6 @@ import { expect, test } from '../../../layers/engine/e2e/support/test'
 // Composer products open BowlComposer; fixed sets (broth + spice, every group
 // Min=max=1) stay on ProductModal. Both are driven by the same
 // UseProductChoices composable, so the gating assertions below cover each.
-
-const choiceRowSelector = (prefix: string) =>
-  `[data-testid^="${prefix}-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"])`
 
 /** Opens the bowl composer from its hero entry on the menu page. */
 const openComposer = async (page: Page): Promise<Locator> => {
@@ -44,16 +42,18 @@ const openProductModal = async (page: Page, productName: string): Promise<Locato
 /**
  * Selects `choiceName` `times` over. Multi-select rows expose a `+` button;
  * pick-one choices (broth cards, spice chips) are themselves the button, so
- * clicking the row selects it exclusively.
+ * clicking the row selects it exclusively. In the composer the row's step is
+ * opened first.
  *
  * Exact-text filter: `hasText` is substring/case-insensitive and e.g. 'Doux'
  * would match the 'Maïs doux' ingredient row before the spice level.
  */
 const incrementChoice = async (root: Locator, prefix: string, choiceName: string, times = 1) => {
-  const row = root
-    .locator(choiceRowSelector(prefix))
+  const row = choiceRows(root, prefix)
     .filter({ has: root.page().getByText(choiceName, { exact: true }) })
     .first()
+  // The bowl composer shows one step at a time: open the row's step first.
+  await showStepOf(root, prefix, row)
   await expect(row).toBeVisible()
 
   const increment = row.locator(`[data-testid^="${prefix}-choice-inc-"]`)
@@ -72,23 +72,32 @@ test.describe('compose a bowl (Malatang sur mesure)', () => {
   test('composes a full bowl and adds it to the cart', async ({ page }) => {
     const composer = await openComposer(page)
     const addButton = composer.getByTestId('bowl-composer-add-to-cart')
+    const next = composer.getByTestId('bowl-composer-next')
     const pick = (name: string, times = 1) =>
       incrementChoice(composer, 'bowl-composer', name, times)
 
-    // Nothing selected yet → all three groups unsatisfied.
-    await expect(addButton).toBeDisabled()
+    // One step per screen, the broth first: "Continuer" waits for it.
+    await expect(composer.getByTestId('bowl-composer-step-0')).toHaveAttribute(
+      'aria-current',
+      'step',
+    )
+    await expect(next).toBeDisabled()
+    // The running total shows from the start: the base price.
+    await expect(composer.getByTestId('bowl-composer-total')).toContainText('2,50')
 
     // Base: one broth (min 1 / max 1).
     await pick('Bouillon tomate mijoté')
-    await expect(addButton).toBeDisabled()
+    await expect(next).toBeEnabled()
 
     // Ingredients: five picks across the catalogue (min 5).
     await pick('Pak choï')
     await pick('Épinards')
     await pick('Brocoli')
     await pick('Tofu frais')
-    await expect(addButton).toBeDisabled()
+    await expect(next).toBeDisabled()
     await pick('Nouilles udon')
+    await expect(next).toBeEnabled()
+    await next.click()
 
     // Spice level still missing.
     await expect(addButton).toBeDisabled()
@@ -118,16 +127,18 @@ test.describe('compose a bowl (Malatang sur mesure)', () => {
     const pick = (name: string, times = 1) =>
       incrementChoice(composer, 'bowl-composer', name, times)
 
+    const next = composer.getByTestId('bowl-composer-next')
     await pick('Bouillon champignons')
-    await pick('Doux')
     await pick('Maïs doux')
     await pick('Crevettes')
 
-    // Only 2 of 5 required ingredients → still disabled.
-    await expect(addButton).toBeDisabled()
+    // Only 2 of 5 required ingredients → the ingredients step is not done.
+    await expect(next).toBeDisabled()
 
     // Topping up the same ingredient counts toward the minimum.
     await pick('Crevettes', 3)
+    await expect(next).toBeEnabled()
+    await pick('Doux')
     await expect(addButton).toBeEnabled()
   })
 

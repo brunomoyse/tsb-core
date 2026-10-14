@@ -244,7 +244,8 @@ test.describe('phone layout, signed in', () => {
           await settle(page)
           await expect(page.getByTestId('bowl-composer')).toBeVisible()
           await expectPrimaryTargets(page, 'composer', {
-            add: page.getByTestId('bowl-composer-add-to-cart'),
+            // The first step's primary action ("Continuer"); the add button is on the last step.
+            add: page.getByTestId('bowl-composer-next'),
             close: page.getByTestId('bowl-composer-close'),
           })
           small.push(...(await checkHere(page, 'bowl composer')))

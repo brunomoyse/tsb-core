@@ -34,7 +34,12 @@
             aria-haspopup="dialog"
             @click="openLightbox(item.product.id, item.product.name)"
           >
-            <picture>
+            <CartLineImage
+              v-if="itemPresentation(item)?.image"
+              :image="itemPresentation(item)!.image!"
+              :size="56"
+            />
+            <picture v-else>
               <source :srcset="`${productImageBase(item.product.id)}.avif`" type="image/avif" />
               <source :srcset="`${productImageBase(item.product.id)}.webp`" type="image/webp" />
               <img
@@ -62,7 +67,12 @@
               <p class="text-[15px] font-semibold text-neutral-900 leading-tight break-words">
                 {{ itemLabelName(item) }}
               </p>
-              <p v-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
+              <CartLineSummary
+                v-if="itemPresentation(item)"
+                class="mt-0.5"
+                :presentation="itemPresentation(item)!"
+              />
+              <p v-else-if="itemChoice(item)" class="text-xs text-primary-700 mt-0.5 break-words">
                 ({{ itemChoice(item) }})
               </p>
               <span
@@ -72,7 +82,17 @@
               </span>
             </div>
 
-            <p v-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">
+            <!-- A brand-presented line (a composed bowl) is changed in its own editor: "Modifier" reopens it prefilled. -->
+            <button
+              v-if="itemPresentation(item) && !canChangeQuantity(item)"
+              type="button"
+              data-testid="checkout-item-edit"
+              class="btn-link mt-1 min-h-11 text-sm"
+              @click="editItem(item)"
+            >
+              {{ $t('cart.editItem') }}
+            </button>
+            <p v-else-if="!canChangeQuantity(item)" class="text-xs text-neutral-600 italic mt-1">
               {{ $t('cart.customizedItemHint') }}
             </p>
             <!-- What the server quote says about this line, with the way out -->
@@ -269,11 +289,14 @@ import * as productImage from '#engine/utils/productImage'
 import { canChangeLineQuantity, cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CartItem } from '#engine/types'
+import CartLineImage from '#engine/components/cart/CartLineImage.vue'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
+import CartLineSummary from '#engine/components/cart/CartLineSummary.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { deliveryFeeRows } from '#engine/utils/orderingPolicy'
 import { formatCents } from '#engine/lib/price'
+import { useCartItemActions } from '#engine/composables/useCartItemActions'
 import { useCartItemLabel } from '#engine/composables/useCartItemLabel'
 import { useCartRemoval } from '#engine/composables/useCartRemoval'
 import { useCartStore } from '#engine/stores/cart'
@@ -365,7 +388,9 @@ watch(
 const canChangeQuantity = (item: CartItem): boolean =>
   canChangeLineQuantity(item.selectedChoices, item.quantity)
 
-const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey, itemPresentation } =
+  useCartItemLabel()
+const { editItem } = useCartItemActions()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 

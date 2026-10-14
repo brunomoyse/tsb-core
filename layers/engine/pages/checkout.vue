@@ -238,8 +238,16 @@
           </div>
         </div>
 
-        <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl -->
-        <div ref="gridRef" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <!-- Grid Layout: 1 column by default, 2 on lg, 3 on xl; brand.checkoutLayout 'summaryRail': the form on the left, the order in a sticky rail on the right -->
+        <div
+          ref="gridRef"
+          class="grid grid-cols-1 gap-8"
+          :class="
+            summaryRail
+              ? 'lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start'
+              : 'lg:grid-cols-2 xl:grid-cols-3'
+          "
+        >
           <template v-if="restaurantConfigPending && !restaurantConfig">
             <div
               v-for="n in 3"
@@ -257,8 +265,16 @@
             </div>
           </template>
           <template v-else-if="!configLoadFailed">
-            <CheckoutProductSummary />
+            <!-- The summary renders two roots (its card and the photo lightbox): the rail placement goes on a wrapper -->
+            <div
+              v-if="summaryRail"
+              class="lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-[calc(var(--nav-h,64px)+1rem)]"
+            >
+              <CheckoutProductSummary />
+            </div>
+            <CheckoutProductSummary v-else />
             <CheckoutCollectionOptions
+              :class="summaryRail && 'lg:col-start-1 lg:row-start-1'"
               @open-address-modal="openAddressModal"
               @slot-expired="handleSlotExpired"
               :opening-hours="restaurantConfig?.restaurantConfig?.openingHours"
@@ -268,6 +284,7 @@
               :preparation-minutes="restaurantConfig?.restaurantConfig?.preparationMinutes"
             />
             <CheckoutPaymentExtras
+              :class="summaryRail && 'lg:col-start-1 lg:row-start-2'"
               @checkout="handleCheckout"
               :isMinimumReached="isMinimumReached"
               :loading="isCheckoutProcessing"
@@ -505,7 +522,8 @@ import { useOrderingAvailability } from '#engine/composables/useOrderingAvailabi
 import { useOrderingPolicy } from '#engine/composables/useOrderingPolicy'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { japaneseAccents = false } = useAppConfig().brand
+const { japaneseAccents = false, checkoutLayout = 'columns' } = useAppConfig().brand
+const summaryRail = checkoutLayout === 'summaryRail'
 
 const { t } = useI18n()
 // Intl wants the regional locale (en-GB: 19:30, not 07:30 PM), as everywhere else in the shop.

@@ -127,6 +127,24 @@ export async function openProductModal(page: Page, name: string | RegExp): Promi
   return modal
 }
 
+/**
+ * A stepped choice flow (a brand's bowl composer) marks each row with the step it is on (`data-composer-step`): open
+ * that step through its tab (`<prefix>-step-<n>`) before touching the row. Rows without the mark are always on screen.
+ */
+export async function showStepOf(root: Locator, prefix: string, row: Locator): Promise<void> {
+  const step = await row.getAttribute('data-composer-step')
+  if (step === null) return
+  const tab = root.getByTestId(`${prefix}-step-${step}`)
+  if ((await tab.getAttribute('aria-current')) !== 'step') await tab.click()
+  await expect(tab).toHaveAttribute('aria-current', 'step')
+}
+
+/** The row of a choice: never its "+", "-" or count. */
+export const choiceRows = (root: Locator, prefix: string): Locator =>
+  root.locator(
+    `[data-testid^="${prefix}-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"]):not([data-testid*="-qty-"])`,
+  )
+
 /** Multi-select rows have a "+"; pick-one rows are themselves the button. */
 export async function pickChoice(
   page: Page,
@@ -135,12 +153,10 @@ export async function pickChoice(
   name: string,
   times = 1,
 ): Promise<void> {
-  const row = root
-    .locator(
-      `[data-testid^="${prefix}-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"])`,
-    )
+  const row = choiceRows(root, prefix)
     .filter({ has: page.getByText(name, { exact: true }) })
     .first()
+  await showStepOf(root, prefix, row)
   await expect(row).toBeVisible()
   const increment = row.locator(`[data-testid^="${prefix}-choice-inc-"]`)
   const multi = (await increment.count()) > 0
@@ -205,9 +221,45 @@ export async function gotoCheckout(page: Page): Promise<void> {
 
 /** Picks pickup or delivery on the checkout page (the radio of the collection card). */
 export async function chooseCollection(page: Page, option: 'pickup' | 'delivery'): Promise<void> {
+  // A takeaway-only brand has no choice to make: the card shows the pickup address instead.
+  if (option === 'pickup' && (await page.getByTestId('checkout-pickup-only').count()) > 0) return
   const radio = page.getByTestId(`checkout-option-${option}`)
   await radio.click()
   await expect(radio).toHaveAttribute('aria-checked', 'true')
+}
+
+/**
+ * The checkout's ready-time picker, whichever form the brand uses: a <select> (the default) or a row of radio chips
+ * (`brand.pickupTimeChips`). Values are "ASAP" or the slot's own value.
+ */
+export function timePicker(page: Page) {
+  const root = page.getByTestId('checkout-preferred-time')
+  const isChips = async () => (await root.getAttribute('data-time-chips')) !== null
+  const items = async () => root.locator((await isChips()) ? '[data-slot-value]' : 'option')
+  const valueOf = async (item: Locator) =>
+    (await item.getAttribute((await isChips()) ? 'data-slot-value' : 'value')) ?? ''
+  return {
+    root,
+    /** Every offered value, in order. */
+    values: async (): Promise<string[]> => {
+      const list = await items()
+      return Promise.all((await list.all()).map(valueOf))
+    },
+    /** The visible label of the first offered time. */
+    firstLabel: async (): Promise<string> =>
+      ((await (await items()).first().innerText()) ?? '').trim(),
+    /** How many offered times carry `text` (e.g. "Dès que possible"). */
+    countWithText: async (text: string): Promise<number> =>
+      (await items()).filter({ hasText: text }).count(),
+    selected: async (): Promise<string> =>
+      (await isChips())
+        ? ((await root.locator('[aria-checked="true"]').getAttribute('data-slot-value')) ?? '')
+        : root.inputValue(),
+    choose: async (value: string): Promise<void> => {
+      if (await isChips()) await root.locator(`[data-slot-value="${value}"]`).click()
+      else await root.selectOption(value)
+    },
+  }
 }
 
 /** Picks a payment method on the checkout page. */

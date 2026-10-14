@@ -72,6 +72,22 @@ export interface CartItem {
   selectedChoice: ProductChoice | null
 }
 
+/**
+ * How a brand presents one of its cart lines instead of the product photo and the choices in parentheses (a composed
+ * bowl: the photo of its broth, one summary line, the full detail on demand). See `useCartItemLabel().itemPresentation`.
+ */
+export interface CartLinePresentation {
+  /** Replaces the product photo (paths under /public). */
+  image?: { avif: string; webp: string; fallback: string }
+  /** One line under the name, e.g. "Bouillon tomate · 7 ingrédients · Moyen". */
+  summary: string
+  /** The full composition, shown on demand ("Pak choï ×2"). */
+  details: string[]
+}
+
+/** Registered by a brand plugin as `$cartLinePresenter`; null keeps the default look for that line. */
+export type CartLinePresenter = (item: CartItem) => CartLinePresentation | null
+
 export interface CartState {
   address: Address | null
   addressExtra: string | null

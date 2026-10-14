@@ -360,7 +360,8 @@
     "increaseQtyOf": "Aantal van {name} verhogen",
     "decreaseQtyOf": "Aantal van {name} verminderen",
     "addNamed": "{name} toevoegen aan winkelwagen",
-    "inCartNamed": "{name}: {count} in de winkelwagen, aantal wijzigen"
+    "inCartNamed": "{name}: {count} in de winkelwagen, aantal wijzigen",
+    "showDetail": "Details bekijken"
   },
   "checkout": {
     "title": "Bestelling",
@@ -460,7 +461,9 @@
     "quoteChanged": "Prijzen of beschikbaarheid zijn gewijzigd: controleer uw bestelling.",
     "cashAmountTooLow": "Dit bedrag is lager dan het totaal ({total}). Geef minstens {total} in, of laat het veld leeg.",
     "cashChangeDue": "Wisselgeld: {amount}",
-    "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen | {name}, {count} toegevoegd, {price} per stuk: nog één toevoegen"
+    "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen | {name}, {count} toegevoegd, {price} per stuk: nog één toevoegen",
+    "directions": "Route",
+    "asapChip": "Zo snel mogelijk · ~{minutes} min"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",

@@ -360,7 +360,8 @@
     "increaseQtyOf": "增加{name}的数量",
     "decreaseQtyOf": "减少{name}的数量",
     "addNamed": "将{name}加入购物车",
-    "inCartNamed": "{name}：购物车中有 {count} 件，修改数量"
+    "inCartNamed": "{name}：购物车中有 {count} 件，修改数量",
+    "showDetail": "查看详情"
   },
   "checkout": {
     "title": "确认订单",
@@ -460,7 +461,9 @@
     "quoteChanged": "价格或供应情况已变更，请检查您的订单。",
     "cashAmountTooLow": "该金额低于订单总额（{total}）。请至少填写 {total}，或将此栏留空。",
     "cashChangeDue": "应找零：{amount}",
-    "paidExtraIncreaseAria": "{name}，已添加 {count} 件，每件 {price}：再加一件"
+    "paidExtraIncreaseAria": "{name}，已添加 {count} 件，每件 {price}：再加一件",
+    "directions": "路线",
+    "asapChip": "尽快 · 约 {minutes} 分钟"
   },
   "orderCompleted": {
     "title": "订单已提交",

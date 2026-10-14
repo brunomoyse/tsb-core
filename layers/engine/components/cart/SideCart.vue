@@ -13,7 +13,16 @@
       >
         {{ $t('cart.title') }}
       </h2>
-      <div class="flex gap-1 rounded-full bg-neutral-100 p-1">
+      <!-- A takeaway-only brand: no toggle, the cart says it is for pickup -->
+      <span
+        v-if="deliveryHidden"
+        data-testid="cart-pickup-only"
+        class="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-tsb-four px-3 text-xs font-semibold text-primary-700"
+      >
+        <img alt="" src="/icons/shopping-bag-icon.svg" class="w-4 h-4 shrink-0" />
+        {{ $t('cart.pickup') }}
+      </span>
+      <div v-else class="flex gap-1 rounded-full bg-neutral-100 p-1">
         <button
           v-for="option in collectionOptions"
           :key="option.value"
@@ -67,7 +76,11 @@
             aria-haspopup="dialog"
             @click="openLightbox(item.product?.id, item.product.name)"
           >
-            <picture>
+            <CartLineImage
+              v-if="itemPresentation(item)?.image"
+              :image="itemPresentation(item)!.image!"
+            />
+            <picture v-else>
               <source :srcset="`${productImageBase(item.product?.id)}.avif`" type="image/avif" />
               <source :srcset="`${productImageBase(item.product?.id)}.webp`" type="image/webp" />
               <img
@@ -97,7 +110,11 @@
                 >
                   {{ itemLabelName(item) }}
                 </h3>
-                <span v-if="itemChoice(item)" class="text-xs text-primary-700">
+                <CartLineSummary
+                  v-if="itemPresentation(item)"
+                  :presentation="itemPresentation(item)!"
+                />
+                <span v-else-if="itemChoice(item)" class="text-xs text-primary-700">
                   ({{ itemChoice(item) }})
                 </span>
                 <span v-if="item.product.pieceCount" class="text-xs text-neutral-600">
@@ -286,7 +303,9 @@ import { cartLineKeys } from '#engine/utils/cartLines'
 import { computed, onUnmounted, ref, useRuntimeConfig, watch } from '#imports'
 import { useEventBus, useMediaQuery } from '@vueuse/core'
 import type { CartItem } from '#engine/types'
+import CartLineImage from '#engine/components/cart/CartLineImage.vue'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
+import CartLineSummary from '#engine/components/cart/CartLineSummary.vue'
 import ImageLightbox from '#engine/components/ImageLightbox.vue' // eslint-disable-line typescript-eslint/consistent-type-imports
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { cartItemAddedKey } from '#engine/composables/useEventBuses'
@@ -303,7 +322,7 @@ import { useI18n } from 'vue-i18n'
 import { useOrderQuote } from '#engine/composables/useOrderQuote'
 import { useTracking } from '#engine/composables/useTracking'
 
-const { deliveryEnabled } = useDeliveryMode()
+const { deliveryEnabled, deliveryHidden } = useDeliveryMode()
 const { policyParams } = useOrderingPolicy()
 
 const { isOrderingAvailable = true, preorderTime = null } = defineProps<{
@@ -362,7 +381,8 @@ const itemImageElements = ref<HTMLImageElement[]>([])
 const highlightedKey = ref<string | null>(null)
 let highlightTimeout: NodeJS.Timeout | null = null
 
-const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey, itemPresentation } =
+  useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 

@@ -4,8 +4,33 @@
       {{ $t('checkout.collection', 'Delivery / Pickup') }}
     </h2>
 
+    <!-- A takeaway-only brand (brand.deliveryEnabled false): no choice to make, where to collect the order -->
+    <div
+      v-if="deliveryHidden"
+      data-testid="checkout-pickup-only"
+      class="flex items-start gap-3 rounded-lg border border-primary bg-tsb-four p-3 sm:p-4"
+    >
+      <img src="/icons/shopping-bag-icon.svg" alt="" aria-hidden="true" class="w-8 h-8 shrink-0" />
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold text-neutral-900">{{ $t('cart.pickup') }}</p>
+        <p class="text-sm text-neutral-700 break-words">
+          {{ brand.address.street }}, {{ brand.address.postal }} {{ brand.address.city }}
+        </p>
+      </div>
+      <a
+        :href="brand.mapsUrl"
+        target="_blank"
+        rel="noopener"
+        class="btn-link shrink-0 min-h-11 text-sm"
+        data-testid="checkout-pickup-directions"
+      >
+        {{ $t('checkout.directions') }}
+      </a>
+    </div>
+
     <!-- Delivery/Pickup Options -->
     <div
+      v-else
       class="flex gap-3 sm:gap-4 mb-6"
       role="radiogroup"
       :aria-label="$t('checkout.collection')"
@@ -170,8 +195,40 @@
           {{ $t('checkout.preferredTime') }}
         </label>
 
+        <!-- Chips (brand.pickupTimeChips): one scrolling row, "as soon as possible" first -->
+        <div
+          v-if="brand.pickupTimeChips"
+          id="checkout-preferred-time"
+          role="radiogroup"
+          :aria-label="$t('checkout.preferredTime')"
+          data-testid="checkout-preferred-time"
+          data-time-chips
+          class="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:-mx-5 sm:px-5 pb-1"
+          @keydown="onChipKeydown"
+        >
+          <button
+            v-for="(slot, index) in timeChips"
+            :key="slot.value"
+            :ref="
+              (el) => {
+                if (el) chipRefs[index] = el as HTMLButtonElement
+              }
+            "
+            type="button"
+            role="radio"
+            :aria-checked="preferredReadyTime === slot.value"
+            :tabindex="preferredReadyTime === slot.value ? 0 : -1"
+            :data-slot-value="slot.value"
+            class="chip shrink-0"
+            :class="{ 'chip-selected': preferredReadyTime === slot.value }"
+            @click="preferredReadyTime = slot.value"
+          >
+            {{ slot.label }}
+          </button>
+        </div>
         <!-- Open: ASAP + slots; Closed: fixed slots only -->
         <select
+          v-else
           v-model="preferredReadyTime"
           id="checkout-preferred-time"
           data-testid="checkout-preferred-time"
@@ -240,9 +297,9 @@ const { trackEvent } = useTracking()
 // Use backend ordering status when available
 const isOrderingDisabled = computed(() => !(orderingEnabled ?? true))
 
-// Delivery/Pickup options. A takeaway-only brand (brand.deliveryEnabled
-// False) keeps delivery visible but disabled ("available soon").
-const { deliveryEnabled } = useDeliveryMode()
+// Delivery/Pickup options. Delivery switched off by the API stays visible but disabled ("available soon"); a
+// takeaway-only brand (brand.deliveryEnabled false) shows the pickup address instead of the choice.
+const { deliveryEnabled, deliveryHidden } = useDeliveryMode()
 const collectionOptions = computed(() => [
   {
     value: 'DELIVERY',
@@ -414,6 +471,37 @@ const asapLabel = computed(() =>
       : t('checkout.asapDelivery', 'ASAP (± 40 min)')
     : t('checkout.asapPickup', 'ASAP (± 30 min)'),
 )
+
+// The chips of brand.pickupTimeChips: "Dès que possible · ~30 min" (while open), then every bookable slot.
+const timeChips = computed(() => [
+  ...(isOpen.value
+    ? [
+        {
+          value: 'ASAP',
+          label:
+            preparationMinutes === undefined
+              ? t('checkout.asapPickup')
+              : t('checkout.asapChip', { minutes: preparationMinutes }),
+        },
+      ]
+    : []),
+  ...availableFixedSlots.value.map((slot) => ({ value: slot.value, label: slot.label })),
+])
+const chipRefs = ref<HTMLButtonElement[]>([])
+// Arrow keys move the choice along the row (WAI-ARIA Radio Group pattern, as the collection radios above).
+const onChipKeydown = (e: KeyboardEvent) => {
+  const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key]
+  if (step === undefined) return
+  e.preventDefault()
+  const chips = timeChips.value
+  const current = Math.max(
+    0,
+    chips.findIndex((chip) => chip.value === preferredReadyTime.value),
+  )
+  const next = (current + step + chips.length) % chips.length
+  preferredReadyTime.value = chips[next]!.value
+  chipRefs.value[next]?.focus()
+}
 
 // Parent owns the modal state; this emit opens it.
 const openAddressModal = () => {

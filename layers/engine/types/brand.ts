@@ -115,6 +115,16 @@ export interface BrandConfig {
    */
   deliveryEnabled?: boolean
   /**
+   * Pickup time as one row of chips ("Dès que possible · ~30 min" first, then the slots) instead of a <select>.
+   * Defaults to false (the select).
+   */
+  pickupTimeChips?: boolean
+  /**
+   * Checkout layout from lg up: `columns` (default) puts the order, the collection and the payment side by side;
+   * `summaryRail` keeps the form on the left and the order summary in a sticky rail on the right.
+   */
+  checkoutLayout?: 'columns' | 'summaryRail'
+  /**
    * Whether customers can download PDF invoices for their orders. Defaults to true when omitted. Set false for a
    * brand whose invoice details (legal name, VAT, logo) are not ready; the backend's `RESTAURANT_INVOICES_ENABLED`
    * must match.

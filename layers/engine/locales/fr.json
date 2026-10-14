@@ -360,7 +360,8 @@
     "increaseQtyOf": "Augmenter la quantité de {name}",
     "decreaseQtyOf": "Diminuer la quantité de {name}",
     "addNamed": "Ajouter {name} au panier",
-    "inCartNamed": "{name} : {count} dans le panier, modifier la quantité"
+    "inCartNamed": "{name} : {count} dans le panier, modifier la quantité",
+    "showDetail": "Voir le détail"
   },
   "checkout": {
     "title": "Commande",
@@ -460,7 +461,9 @@
     "quoteChanged": "Les prix ou la disponibilité ont changé : veuillez vérifier votre commande.",
     "cashAmountTooLow": "Ce montant est inférieur au total ({total}). Indiquez au moins {total}, ou laissez le champ vide.",
     "cashChangeDue": "Monnaie à rendre : {amount}",
-    "paidExtraIncreaseAria": "{name}, {count} ajouté, {price} pièce : en ajouter un de plus | {name}, {count} ajoutés, {price} pièce : en ajouter un de plus"
+    "paidExtraIncreaseAria": "{name}, {count} ajouté, {price} pièce : en ajouter un de plus | {name}, {count} ajoutés, {price} pièce : en ajouter un de plus",
+    "directions": "Itinéraire",
+    "asapChip": "Dès que possible · ~{minutes} min"
   },
   "orderCompleted": {
     "title": "Commande reçue",

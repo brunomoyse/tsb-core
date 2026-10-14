@@ -281,7 +281,7 @@ test.describe('Before signing in', () => {
 })
 
 test.describe('Takeaway-only brand (YGF)', () => {
-  test('delivery is offered as "soon", pickup is selected and the pickup discount kicks in at 20,00', async ({
+  test('no delivery is offered, the pickup address is shown and the pickup discount kicks in at 20,00', async ({
     authenticatedPage: page,
     backend,
     brand,
@@ -291,10 +291,13 @@ test.describe('Takeaway-only brand (YGF)', () => {
     await fillCart(page, ['Gyoza de bœuf', 'Mochi']) // 5,50 + 3,90
     await gotoCheckout(page)
 
-    const delivery = page.getByTestId('checkout-option-delivery')
-    await expect(delivery).toBeDisabled()
-    await expect(delivery).toContainText('Bientôt disponible')
-    await expect(page.getByTestId('checkout-option-pickup')).toHaveAttribute('aria-checked', 'true')
+    // No delivery option at all: the card says where to collect the order, with directions.
+    await expect(page.getByTestId('checkout-option-delivery')).toHaveCount(0)
+    await expect(page.getByTestId('checkout-pickup-only')).toContainText('Rue de la Cathédrale 51')
+    await expect(page.getByTestId('checkout-pickup-directions')).toHaveAttribute(
+      'href',
+      /google\.com\/maps/u,
+    )
     await expect(page.locator('#checkout-delivery-address')).toHaveCount(0)
     await waitForQuote(page)
     // 9,40 of goods is under the threshold: no discount, only the 0,30 online fee.

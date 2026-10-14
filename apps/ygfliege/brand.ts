@@ -65,10 +65,13 @@ export const brand: BrandConfig = {
     saturday: { open: '11:30', close: '22:00' },
     sunday: { open: '11:30', close: '22:00' },
   },
-  // Takeaway-only at launch: delivery toggles show "available soon" and the
-  // Cart is forced to PICKUP (the engine plugin delivery-mode.ts). Flip to true (or
-  // Remove) when delivery starts.
+  // Takeaway-only at launch: delivery is not shown at all (the cart and the checkout show the pickup address) and the
+  // Cart is forced to PICKUP (the engine plugin delivery-mode.ts). Flip to true (or remove) when delivery starts.
   deliveryEnabled: false,
+  // Pickup time as a row of chips ("Dès que possible · ~30 min" first), and the checkout as a form with the order in a
+  // sticky rail on the right (audit 2c/2d).
+  pickupTimeChips: true,
+  checkoutLayout: 'summaryRail',
   // No invoice download until YGF's legal name, VAT and invoice logo are set (backend: RESTAURANT_INVOICES_ENABLED).
   invoicesEnabled: false,
   // While the shop is switched off (NUXT_PUBLIC_SHOP_ENABLED=false) /menu shows the static menu of the old ygfliege.be

@@ -31,4 +31,8 @@ describe('useDeliveryMode in the ygfliege app', () => {
     serve(true)
     expect(deliveryEnabled.value).toBe(false)
   })
+
+  it('hides delivery altogether, instead of a disabled "available soon" toggle', () => {
+    expect(useDeliveryMode().deliveryHidden).toBe(true)
+  })
 })

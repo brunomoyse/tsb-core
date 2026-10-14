@@ -1,6 +1,7 @@
 import { type Locator, type Page } from '@playwright/test'
 import { expect, test } from './support/test'
 import { collectBrowserProblems } from './support/browser-problems'
+import { pickChoice } from './support/order-flow'
 
 /*
  * The cash-order smoke flow on a phone, both brands, against the mock tsb-service (the former smoke.mjs harness).
@@ -48,20 +49,6 @@ const inViewport = async (page: Page, locator: Locator, label: string) => {
     (box?.x ?? 0) + (box?.width ?? 0),
     `${label}: ends right of the viewport`,
   ).toBeLessThanOrEqual(width + 0.5)
-}
-
-/** Multi-select rows have a "+"; pick-one rows are themselves the button. */
-async function pick(page: Page, root: Locator, prefix: string, name: string, times = 1) {
-  const row = root
-    .locator(
-      `[data-testid^="${prefix}-choice-"]:not([data-testid*="-inc-"]):not([data-testid*="-dec-"])`,
-    )
-    .filter({ has: page.getByText(name, { exact: true }) })
-    .first()
-  await expect(row).toBeVisible()
-  const increment = row.locator(`[data-testid^="${prefix}-choice-inc-"]`)
-  const multi = (await increment.count()) > 0
-  for (let i = 0; i < times; i++) await (multi ? increment : row).click()
 }
 
 test.describe('Cash order on a phone', () => {
@@ -172,15 +159,19 @@ test.describe('Cash order on a phone', () => {
           await cta.click()
           await expect(composer).toBeVisible({ timeout: 2_000 })
         }).toPass({ timeout: 30_000 })
+        // One step per screen: "Continuer" waits for each step, the add button is on the last one.
+        const next = composer.getByTestId('bowl-composer-next')
         const add = composer.getByTestId('bowl-composer-add-to-cart')
-        await expect(add).toBeDisabled()
-        await pick(page, composer, 'bowl-composer', 'Bouillon tomate mijoté')
+        await expect(next).toBeDisabled()
+        await pickChoice(page, composer, 'bowl-composer', 'Bouillon tomate mijoté')
+        await expect(next).toBeEnabled()
         for (const ingredient of ['Pak choï', 'Épinards', 'Brocoli', 'Tofu frais'])
-          await pick(page, composer, 'bowl-composer', ingredient)
-        await expect(add).toBeDisabled() // 4 of 5 ingredients, no spice
-        await pick(page, composer, 'bowl-composer', 'Nouilles udon')
+          await pickChoice(page, composer, 'bowl-composer', ingredient)
+        await expect(next).toBeDisabled() // 4 of 5 ingredients
+        await pickChoice(page, composer, 'bowl-composer', 'Nouilles udon')
+        await next.click()
         await expect(add).toBeDisabled() // Spice still missing
-        await pick(page, composer, 'bowl-composer', 'Moyen')
+        await pickChoice(page, composer, 'bowl-composer', 'Moyen')
         await expect(add).toBeEnabled()
         // 2,50 base + 4 x 1,00 + 1,20 udon
         await expect(composer.locator('text=/7,70/u').first()).toBeVisible()
@@ -311,11 +302,17 @@ test.describe('Cash order on a phone', () => {
     })
 
     await test.step('pickup is selected', async () => {
-      await page.getByTestId('checkout-option-pickup').click()
-      await expect(page.getByTestId('checkout-option-pickup')).toHaveAttribute(
-        'aria-checked',
-        'true',
-      )
+      // A takeaway-only brand shows the pickup address instead of a choice.
+      if ((await page.getByTestId('checkout-pickup-only').count()) > 0) {
+        await expect(page.getByTestId('checkout-pickup-only')).toBeVisible()
+        await expect(page.getByTestId('checkout-option-delivery')).toHaveCount(0)
+      } else {
+        await page.getByTestId('checkout-option-pickup').click()
+        await expect(page.getByTestId('checkout-option-pickup')).toHaveAttribute(
+          'aria-checked',
+          'true',
+        )
+      }
     })
 
     await test.step('the pay bar keeps the total readable while the quote is updating', async () => {

@@ -67,7 +67,12 @@
                 aria-haspopup="dialog"
                 @click="openLightbox(item.product.id, item.product.name)"
               >
-                <picture class="contents">
+                <CartLineImage
+                  v-if="itemPresentation(item)?.image"
+                  :image="itemPresentation(item)!.image!"
+                  :size="64"
+                />
+                <picture v-else class="contents">
                   <source :srcset="`${productImageBase(item.product.id)}.avif`" type="image/avif" />
                   <source :srcset="`${productImageBase(item.product.id)}.webp`" type="image/webp" />
                   <img
@@ -91,7 +96,11 @@
                 <span class="font-medium text-neutral-800 leading-snug break-words">
                   {{ itemLabelName(item) }}
                 </span>
-                <span v-if="itemChoice(item)" class="text-xs text-primary-700 break-words">
+                <CartLineSummary
+                  v-if="itemPresentation(item)"
+                  :presentation="itemPresentation(item)!"
+                />
+                <span v-else-if="itemChoice(item)" class="text-xs text-primary-700 break-words">
                   ({{ itemChoice(item) }})
                 </span>
                 <span v-if="item.product.pieceCount" class="text-neutral-600 text-xs mt-1">
@@ -306,7 +315,9 @@ import type { CartItem } from '#engine/types'
 // Async-loaded so the lightbox bundle is only fetched if the user actually opens it. We pair it with `v-if="showLightbox"` so the async resolve only fires while the user is on this page; otherwise the resolve callback could race the page-transition unmount and crash Vue with "Cannot read 'type' of null".
 const ImageLightbox = defineAsyncComponent(() => import('#engine/components/ImageLightbox.vue'))
 import { cartLineKeys } from '#engine/utils/cartLines'
+import CartLineImage from '#engine/components/cart/CartLineImage.vue'
 import CartLineIssues from '#engine/components/CartLineIssues.vue'
+import CartLineSummary from '#engine/components/cart/CartLineSummary.vue'
 import QuoteUpdatingHint from '#engine/components/QuoteUpdatingHint.vue'
 import { formatCents } from '#engine/lib/price'
 import { MAX_ITEM_QUANTITY, useCartStore } from '#engine/stores/cart'
@@ -398,7 +409,8 @@ watch(
   { flush: 'post' },
 )
 
-const { itemLabelMeta, itemLabelName, itemChoice, getItemKey } = useCartItemLabel()
+const { itemLabelMeta, itemLabelName, itemChoice, getItemKey, itemPresentation } =
+  useCartItemLabel()
 // Unique even if an old persisted cart still holds two lines that share a key.
 const lineKeys = computed(() => cartLineKeys(cartStore.products))
 

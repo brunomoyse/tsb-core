@@ -36,9 +36,12 @@
       <div class="flex-1 min-w-0" />
 
       <div class="flex shrink-0 items-center gap-1 lg:gap-2">
-        <!-- Delivery zone: ordering-wide state, so it lives here from xl up; below, the row has no room for it and
-                     the menu page carries the chip beside its search. -->
-        <DeliveryZoneChip v-if="shopEnabled" class="hidden xl:inline-flex" />
+        <!-- Delivery zone (or, takeaway only, the pickup address): ordering-wide state, so it lives here from xl up;
+                     below, the row has no room for it and the menu page carries the chip beside its search. -->
+        <template v-if="shopEnabled">
+          <PickupChip v-if="deliveryHidden" class="hidden xl:inline-flex max-w-[16rem]" />
+          <DeliveryZoneChip v-else class="hidden xl:inline-flex" />
+        </template>
 
         <!-- Cart, on every page once the cart has items. Tablet: opens the cart drawer. -->
         <ClientOnly v-if="shopEnabled">
@@ -120,6 +123,8 @@
 <script lang="ts" setup>
 import BrandLockup from '~/components/navbar/BrandLockup.vue'
 import DeliveryZoneChip from '#engine/components/delivery/DeliveryZoneChip.vue'
+import PickupChip from '~/components/shop/PickupChip.vue'
+import { useDeliveryMode } from '#engine/composables/useDeliveryMode'
 import LanguagePicker from '~/components/navbar/LanguagePicker.vue'
 import { computed } from 'vue'
 import { useAuthStore } from '#engine/stores/auth'
@@ -140,6 +145,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const shopEnabled = useShopEnabled()
+const { deliveryHidden } = useDeliveryMode()
 const menuOpen = useMenuOpen()
 
 // Cart store rehydrates from localStorage post-mount; defer the totalItems read.
