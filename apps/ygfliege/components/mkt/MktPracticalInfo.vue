@@ -45,34 +45,18 @@
       </div>
     </div>
 
-    <!-- The map is a picture of where we are: tapping it opens Maps (no scroll trap on a phone). -->
-    <a
-      :href="brand.mapsUrl"
-      target="_blank"
-      rel="noopener"
-      class="practical-map relative block rounded-ygf-lg overflow-hidden shadow-ygf-md bg-ygf-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      :aria-label="$t('mkt.practical.openInMaps')"
-    >
-      <iframe
-        :src="osmEmbedUrl"
-        :title="$t('contact.mapTitle', { name: brand.name })"
-        class="w-full h-full pointer-events-none"
-        loading="lazy"
-        tabindex="-1"
-        aria-hidden="true"
-      />
-    </a>
+    <!-- The old site's warm Leaflet map: one finger scrolls the page on a phone, the Maps link sits on the map -->
+    <MktMap class="practical-map rounded-ygf-lg shadow-ygf-md" />
   </div>
 </template>
 
 <script setup lang="ts">
 import MktIcon from '~/components/mkt/MktIcon.vue'
+import MktMap from '~/components/mkt/MktMap.vue'
 import MktOpenStatus from '~/components/mkt/MktOpenStatus.vue'
 import { telHref } from '#engine/utils/phone'
 
 const { brand } = useAppConfig()
-const { lat, lng } = brand.geo
-const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.002},${lat - 0.001},${lng + 0.002},${lat + 0.001}&layer=mapnik&marker=${lat},${lng}`
 </script>
 
 <style scoped>

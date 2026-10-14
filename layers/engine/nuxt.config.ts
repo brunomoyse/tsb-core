@@ -39,6 +39,8 @@ const wsOrigin = apiOrigin.replace(/^http/u, 'ws')
 const s3Url = envOr('S3_BUCKET_URL', '')
 const s3Origin = s3Url ? new URL(s3Url).origin : ''
 const osm = 'https://www.openstreetmap.org'
+// OSM map tiles (a brand's Leaflet map, e.g. ygfliege's MktMap): images only
+const osmTiles = 'https://tile.openstreetmap.org'
 const umamiHost = envOr('UMAMI_HOST', 'https://analytics.nuagemagique.dev')
 const zitadelOrigin = envOr('ZITADEL_AUTHORITY', '')
 const turnstile = 'https://challenges.cloudflare.com'
@@ -48,7 +50,7 @@ const csp = `${[
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' ${umamiHost} ${turnstile}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data:${s3Url ? ` ${s3Url}` : ''}`,
+  `img-src 'self' data: ${osmTiles}${s3Url ? ` ${s3Url}` : ''}`,
   "font-src 'self' https://fonts.gstatic.com",
   `connect-src 'self' ${apiOrigin} ${wsOrigin}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${osm} ${umamiHost} ${turnstile} ${sentryHost}`,
   `frame-src 'self' ${osm}${zitadelOrigin ? ` ${zitadelOrigin}` : ''} ${turnstile}`,

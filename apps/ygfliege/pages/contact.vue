@@ -1,5 +1,6 @@
 <script setup>
 import { telHref } from '#engine/utils/phone'
+import MktMap from '~/components/mkt/MktMap.vue'
 import { useLocalizedUrl } from '#engine/composables/useLocalizedUrl'
 definePageMeta({
   sitemap: { priority: 0.7, changefreq: 'monthly' },
@@ -9,9 +10,6 @@ const localizedUrl = useLocalizedUrl()
 const { t } = useI18n()
 const { brand } = useAppConfig()
 
-const latitude = brand.geo.lat
-const longitude = brand.geo.lng
-const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.001},${latitude - 0.001},${longitude + 0.001},${latitude + 0.001}&layer=mapnik&marker=${latitude},${longitude}`
 const googleMapsLink = brand.mapsUrl
 
 useJsonLd(
@@ -63,37 +61,8 @@ useSeoMeta({
     <div class="bento-grid">
       <!-- Map: large featured cell -->
       <div class="bento-map bento-cell" style="--delay: 1">
-        <div class="relative h-full rounded-2xl overflow-hidden group">
-          <iframe
-            :src="osmEmbedUrl"
-            class="w-full h-full min-h-[280px] sm:min-h-0"
-            :title="$t('contact.mapTitle', { name: brand.name })"
-            frameborder="0"
-            allowfullscreen
-            loading="lazy"
-          />
-          <a
-            :href="googleMapsLink"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="absolute bottom-3 right-3 inline-flex min-h-11 items-center bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            {{ $t('contact.viewLargerMap') }}
-            <svg
-              class="w-3 h-3 inline-block ml-1 -mt-px"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
-          </a>
-        </div>
+        <!-- The old site's warm Leaflet map (MktMap): one finger scrolls the page on a phone, Maps link on the map -->
+        <MktMap class="h-full min-h-[280px] sm:min-h-0 rounded-2xl" />
       </div>
 
       <!-- Opening Hours: shared with homepage -->
@@ -347,7 +316,7 @@ useSeoMeta({
       'feedback feedback';
   }
 
-  .bento-map iframe {
+  .bento-map .mkt-map {
     min-height: 100%;
   }
 }
@@ -364,7 +333,7 @@ useSeoMeta({
       'feedback feedback feedback';
   }
 
-  .bento-map iframe {
+  .bento-map .mkt-map {
     min-height: 320px;
   }
 }
