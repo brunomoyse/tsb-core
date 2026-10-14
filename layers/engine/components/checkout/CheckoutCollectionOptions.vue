@@ -1,7 +1,11 @@
 <template>
   <section class="card p-4 sm:p-5 w-full mx-auto space-y-6">
     <h2 class="text-lg font-bold text-neutral-900">
-      {{ $t('checkout.collection', 'Delivery / Pickup') }}
+      {{
+        deliveryHidden
+          ? $t('checkout.collectionPickupOnly')
+          : $t('checkout.collection', 'Delivery / Pickup')
+      }}
     </h2>
 
     <!-- A takeaway-only brand (brand.deliveryEnabled false): no choice to make, where to collect the order -->

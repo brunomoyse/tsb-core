@@ -463,7 +463,8 @@
     "cashChangeDue": "Monnaie à rendre : {amount}",
     "paidExtraIncreaseAria": "{name}, {count} ajouté, {price} pièce : en ajouter un de plus | {name}, {count} ajoutés, {price} pièce : en ajouter un de plus",
     "directions": "Itinéraire",
-    "asapChip": "Dès que possible · ~{minutes} min"
+    "asapChip": "Dès que possible · ~{minutes} min",
+    "collectionPickupOnly": "Retrait de la commande"
   },
   "orderCompleted": {
     "title": "Commande reçue",

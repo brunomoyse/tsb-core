@@ -463,7 +463,8 @@
     "cashChangeDue": "应找零：{amount}",
     "paidExtraIncreaseAria": "{name}，已添加 {count} 件，每件 {price}：再加一件",
     "directions": "路线",
-    "asapChip": "尽快 · 约 {minutes} 分钟"
+    "asapChip": "尽快 · 约 {minutes} 分钟",
+    "collectionPickupOnly": "取餐"
   },
   "orderCompleted": {
     "title": "订单已提交",

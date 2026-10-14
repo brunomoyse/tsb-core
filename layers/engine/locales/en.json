@@ -463,7 +463,8 @@
     "cashChangeDue": "Change due: {amount}",
     "paidExtraIncreaseAria": "{name}, {count} added, {price} each: add one more | {name}, {count} added, {price} each: add one more",
     "directions": "Directions",
-    "asapChip": "As soon as possible · ~{minutes} min"
+    "asapChip": "As soon as possible · ~{minutes} min",
+    "collectionPickupOnly": "Collecting your order"
   },
   "orderCompleted": {
     "title": "Order received",

@@ -463,7 +463,8 @@
     "cashChangeDue": "Wisselgeld: {amount}",
     "paidExtraIncreaseAria": "{name}, {count} toegevoegd, {price} per stuk: nog één toevoegen | {name}, {count} toegevoegd, {price} per stuk: nog één toevoegen",
     "directions": "Route",
-    "asapChip": "Zo snel mogelijk · ~{minutes} min"
+    "asapChip": "Zo snel mogelijk · ~{minutes} min",
+    "collectionPickupOnly": "Je bestelling ophalen"
   },
   "orderCompleted": {
     "title": "Bestelling ontvangen",
