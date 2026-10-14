@@ -72,6 +72,7 @@ export const brand: BrandConfig = {
   // sticky rail on the right (audit 2c/2d).
   pickupTimeChips: true,
   checkoutLayout: 'summaryRail',
+  checkoutAuthSubtitle: true,
   // No invoice download until YGF's legal name, VAT and invoice logo are set (backend: RESTAURANT_INVOICES_ENABLED).
   invoicesEnabled: false,
   // While the shop is switched off (NUXT_PUBLIC_SHOP_ENABLED=false) /menu shows the static menu of the old ygfliege.be

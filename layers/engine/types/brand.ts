@@ -125,6 +125,11 @@ export interface BrandConfig {
    */
   checkoutLayout?: 'columns' | 'summaryRail'
   /**
+   * Show the `checkout.authStep.subtitle` line under the sign-in step heading at checkout (what signing in costs and
+   * brings). The brand's locales must define the key. Defaults to false: no subtitle.
+   */
+  checkoutAuthSubtitle?: boolean
+  /**
    * Whether customers can download PDF invoices for their orders. Defaults to true when omitted. Set false for a
    * brand whose invoice details (legal name, VAT, logo) are not ready; the backend's `RESTAURANT_INVOICES_ENABLED`
    * must match.

@@ -27,13 +27,13 @@
         <h2 class="text-xl font-semibold text-neutral-900 text-center mb-6">
           {{ $t('checkout.authStep.heading') }}
         </h2>
-        <!-- Optional brand copy under the heading (what signing in costs and brings); a brand without it shows none -->
+        <!-- Optional brand copy under the heading (brand.checkoutAuthSubtitle): what signing in costs and brings -->
         <p
-          v-if="$te('checkout.authStep.subtitle')"
+          v-if="brand.checkoutAuthSubtitle"
           data-testid="checkout-auth-subtitle"
           class="-mt-4 mb-6 text-sm text-neutral-600 text-center"
         >
-          {{ $t('checkout.authStep.subtitle') }}
+          {{ $t(AUTH_SUBTITLE_KEY) }}
         </p>
 
         <AuthFlow mode="inline" :on-before-redirect="saveReturnTo" :on-complete="handleComplete" />
@@ -45,7 +45,12 @@
 <script lang="ts" setup>
 import AuthFlow from '#engine/components/auth/AuthFlow.vue'
 import { useCartStore } from '#engine/stores/cart'
-import { useLocalePath } from '#imports'
+import type { BrandConfig } from '#engine/types/brand'
+import { useAppConfig, useLocalePath } from '#imports'
+
+// Defined only by the brands that set brand.checkoutAuthSubtitle (the type documents it), hence not a literal $t key
+const AUTH_SUBTITLE_KEY = 'checkout.authStep.subtitle'
+const { brand } = useAppConfig() as { brand: BrandConfig }
 
 const cartStore = useCartStore()
 const localePath = useLocalePath()
