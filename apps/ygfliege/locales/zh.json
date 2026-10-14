@@ -395,6 +395,10 @@
     "privacy": {
       "coming": "本页面正在编写中，完整的隐私政策即将发布。",
       "meta_desc": "杨国福麻辣烫列日店隐私政策。"
+    },
+    "shop": {
+      "allergensLink": "过敏原与不耐受",
+      "emptyCart": "购物车是空的。先来搭配你的麻辣烫吧。"
     }
   },
   "faq": {
@@ -421,7 +425,7 @@
       },
       "payment": {
         "question": "你们接受哪些支付方式？",
-        "answer": "我们接受安全的在线支付（银行卡、Bancontact）以及送达或自取时现金支付。"
+        "answer": "我们接受安全的在线支付（银行卡、Bancontact），也可以在餐厅自取时现金支付。"
       },
       "allergens": {
         "question": "有过敏原信息吗？",
@@ -442,9 +446,48 @@
     "stepOf": "第 {n}/{total} 步",
     "chosen": "已选",
     "selectedCount": "已选 {count}/{max}",
-    "ingredientsSummary": "{count} 种食材"
+    "ingredientsSummary": "{count} 种食材",
+    "steps": {
+      "broth": "汤底",
+      "ingredients": "食材",
+      "variant": "辣度"
+    },
+    "stepLabel": "第 {n}/{total} 步 · {name}",
+    "back": "上一步",
+    "next": "继续",
+    "brothTitle": "选择汤底",
+    "brothSubtitle": "每天店内现熬。",
+    "ingredientsTitle": "选择食材",
+    "ingredientsSubtitle": "点一下添加食材，再点一下多加一份。",
+    "variantTitle": "选择辣度",
+    "missing": "至少还需 {count} 份",
+    "addIngredient": "添加{name}",
+    "removeIngredient": "移除{name}",
+    "included": "已含",
+    "allergens": "过敏原：{list}",
+    "pickBroth": "请先选择汤底",
+    "priceBase": "{base} + 所选食材",
+    "priceFromIngredients": "按所选食材计价",
+    "onlinePrice": "线上：{base} + 所选食材",
+    "onlinePriceNoBase": "线上：按所选食材计价",
+    "total": "合计",
+    "kinds": {
+      "vegetables": "蔬菜",
+      "mushrooms": "菌菇",
+      "tofu": "豆制品",
+      "noodles": "面类和米饭",
+      "meat": "肉类",
+      "seafood": "鱼类和海鲜",
+      "other": "其他"
+    }
   },
   "nav": {
     "secondary": "页脚链接"
+  },
+  "checkout": {
+    "authStep": {
+      "heading": "付款前最后一步：请登录",
+      "subtitle": "只需输入邮箱收到的验证码，无需密码。购物车会一直保存，下次一键即可再次下单。"
+    }
   }
 }

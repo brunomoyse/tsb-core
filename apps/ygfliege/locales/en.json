@@ -395,6 +395,10 @@
     "privacy": {
       "coming": "This page is in the works: our full privacy policy will be published here very soon.",
       "meta_desc": "Privacy policy of Yangguofu Malatang Liège."
+    },
+    "shop": {
+      "allergensLink": "Allergens and intolerances",
+      "emptyCart": "Your cart is empty. Start by building your bowl."
     }
   },
   "faq": {
@@ -421,7 +425,7 @@
       },
       "payment": {
         "question": "What payment methods do you accept?",
-        "answer": "We accept secure online payment (bank card, Bancontact) and cash on delivery or pickup."
+        "answer": "We accept secure online payment (bank card, Bancontact) and cash when you pick up your order at the restaurant."
       },
       "allergens": {
         "question": "Do you have allergen information?",
@@ -442,9 +446,48 @@
     "stepOf": "Step {n}/{total}",
     "chosen": "Chosen",
     "selectedCount": "{count}/{max} selected",
-    "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients"
+    "ingredientsSummary": "no ingredients | 1 ingredient | {count} ingredients",
+    "steps": {
+      "broth": "Broth",
+      "ingredients": "Ingredients",
+      "variant": "Heat"
+    },
+    "stepLabel": "Step {n}/{total} · {name}",
+    "back": "Previous step",
+    "next": "Continue",
+    "brothTitle": "Your broth",
+    "brothSubtitle": "Made in house every day.",
+    "ingredientsTitle": "Your ingredients",
+    "ingredientsSubtitle": "Tap an ingredient to add it, tap again for more.",
+    "variantTitle": "Your heat level",
+    "missing": "{count} more at least",
+    "addIngredient": "Add {name}",
+    "removeIngredient": "Remove {name}",
+    "included": "Included",
+    "allergens": "Allergens: {list}",
+    "pickBroth": "Choose your broth first",
+    "priceBase": "{base} + your ingredients",
+    "priceFromIngredients": "Priced by your ingredients",
+    "onlinePrice": "Online: {base} + your ingredients",
+    "onlinePriceNoBase": "Online: priced by your ingredients",
+    "total": "Total",
+    "kinds": {
+      "vegetables": "Vegetables",
+      "mushrooms": "Mushrooms",
+      "tofu": "Tofu & soy",
+      "noodles": "Noodles & rice",
+      "meat": "Meat",
+      "seafood": "Fish & seafood",
+      "other": "Other"
+    }
   },
   "nav": {
     "secondary": "Footer links"
+  },
+  "checkout": {
+    "authStep": {
+      "heading": "One last step before paying: sign in",
+      "subtitle": "A code sent by email is all it takes, no password. Your cart stays saved, and next time you reorder in one tap."
+    }
   }
 }

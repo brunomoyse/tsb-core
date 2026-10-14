@@ -81,9 +81,13 @@ const open = async (set: ReturnType<typeof bowl>) => {
   return composer
 }
 type Composer = Awaited<ReturnType<typeof open>>
-const confirm = (composer: Composer) => composer.get('[data-testid="bowl-composer-add-to-cart"]')
+/** The add (or update) button, on the last step: the composer goes there first. */
+const confirm = async (composer: Composer) => {
+  await composer.findAll('[data-testid^="bowl-composer-step-"]').at(-1)!.trigger('click')
+  return composer.get('[data-testid="bowl-composer-add-to-cart"]')
+}
 const ingredientCount = (composer: Composer, id: string) =>
-  composer.get(`[data-testid="bowl-composer-choice-${id}"] .stepper-value`).text()
+  composer.get(`[data-testid="bowl-composer-choice-qty-${id}"]`).text()
 const t = (key: string) => useNuxtApp().$i18n.t(key)
 
 /** One tomato bowl with 2 tofu and 1 noodles, in the cart, opened for editing. */
@@ -111,8 +115,8 @@ describe('opened from "Edit" on a cart line', () => {
     ).toBe('true')
     expect(ingredientCount(composer, set.tofu.id)).toBe('2')
     expect(ingredientCount(composer, set.noodles.id)).toBe('1')
-    expect(confirm(composer).text()).toContain(t('menu.update'))
-    expect(confirm(composer).attributes('disabled')).toBeUndefined()
+    expect((await confirm(composer)).text()).toContain(t('menu.update'))
+    expect((await confirm(composer)).attributes('disabled')).toBeUndefined()
     // The header says it too, not only the button.
     expect(composer.get('[data-testid="bowl-composer-eyebrow"]').text()).toBe(t('menu.editing'))
   })
@@ -126,7 +130,7 @@ describe('opened from "Edit" on a cart line', () => {
       .get(`[data-testid="bowl-composer-choice-inc-${set.noodles.id}"]`)
       .trigger('click')
     await composer.get(`[data-testid="bowl-composer-choice-${set.bone.id}"]`).trigger('click')
-    await confirm(composer).trigger('click')
+    await (await confirm(composer)).trigger('click')
 
     expect(cart.products).toHaveLength(1)
     expect(cart.products[0]!.quantity).toBe(1)
@@ -153,7 +157,7 @@ describe('opened from "Edit" on a cart line', () => {
     await composer
       .get(`[data-testid="bowl-composer-choice-inc-${set.noodles.id}"]`)
       .trigger('click')
-    await confirm(composer).trigger('click')
+    await (await confirm(composer)).trigger('click')
 
     expect(cart.products.map((line) => line.product.id)).toEqual([set.id, other.id])
     expect(cart.products[0]!.selectedChoices).toEqual(
@@ -179,8 +183,8 @@ describe('opened from "Edit" on a cart line', () => {
     const composer = await open(set)
 
     expect(ingredientCount(composer, set.tofu.id)).toBe('0')
-    expect(confirm(composer).text()).toContain(t('menu.addToCart'))
-    expect(confirm(composer).attributes('disabled')).toBeDefined()
+    expect((await confirm(composer)).text()).toContain(t('menu.addToCart'))
+    expect((await confirm(composer)).attributes('disabled')).toBeDefined()
   })
 })
 
@@ -190,13 +194,13 @@ describe('opened from the menu', () => {
     const composer = await open(set)
 
     expect(composer.get('[data-testid="bowl-composer-eyebrow"]').text()).toBe(t('composer.eyebrow'))
-    expect(confirm(composer).text()).toContain(t('menu.addToCart'))
+    expect((await confirm(composer)).text()).toContain(t('menu.addToCart'))
     await composer.get(`[data-testid="bowl-composer-choice-${set.tomato.id}"]`).trigger('click')
     await composer.get(`[data-testid="bowl-composer-choice-inc-${set.tofu.id}"]`).trigger('click')
     await composer
       .get(`[data-testid="bowl-composer-choice-inc-${set.noodles.id}"]`)
       .trigger('click')
-    await confirm(composer).trigger('click')
+    await (await confirm(composer)).trigger('click')
 
     expect(cart.products).toHaveLength(1)
     expect(cart.products[0]!.selectedChoices).toEqual(
@@ -206,5 +210,110 @@ describe('opened from the menu', () => {
         set.selection(set.noodles, 1),
       ]),
     )
+  })
+})
+
+describe('one step per screen', () => {
+  /** The local seed's shape: a broth (two real broths), 2 to 5 ingredients, a spice level. */
+  const seedBowl = () => {
+    const id = `seed-${++n}`
+    const choice = (key: string, group: string, name: string, priceModifier = '0.00') =>
+      makeChoice({
+        id: `${id}-${key}`,
+        productId: id,
+        choiceGroupId: `${id}-${group}`,
+        name,
+        priceModifier,
+      })
+    const tomato = choice('tomato', 'broth', 'Bouillon tomate mijoté')
+    const mushroom = choice('mushroom', 'broth', 'Bouillon champignons')
+    const tofu = choice('tofu', 'ingredients', 'Tofu frais', '1.00')
+    const pak = choice('pak', 'ingredients', 'Pak choï', '1.00')
+    const mild = choice('mild', 'spice', 'Doux')
+    const hot = choice('hot', 'spice', 'Fort')
+    const group = (
+      key: string,
+      min: number,
+      max: number,
+      sortOrder: number,
+      list: (typeof tofu)[],
+    ) => ({
+      id: `${id}-${key}`,
+      productId: id,
+      minSelections: min,
+      maxSelections: max,
+      sortOrder,
+      name: key,
+      choices: list,
+    })
+    const product = makeProduct({
+      id,
+      name: 'Malatang sur mesure',
+      price: '2.50',
+      choices: [tomato, mushroom, tofu, pak, mild, hot],
+      choiceGroups: [
+        group('broth', 1, 1, 0, [tomato, mushroom]),
+        group('ingredients', 2, 5, 1, [tofu, pak]),
+        group('spice', 1, 1, 2, [mild, hot]),
+      ],
+    })
+    return { id, product, tomato, tofu, pak, hot }
+  }
+  const step = (composer: Composer, index: number) =>
+    composer.get(`[data-testid="bowl-composer-step-${index}"]`)
+  const next = (composer: Composer) => composer.get('[data-testid="bowl-composer-next"]')
+
+  it('goes broth, ingredients, spice; "Continuer" waits for each step, and the total runs from the start', async () => {
+    const set = seedBowl()
+    gqlFetch.mockResolvedValue({ product: set.product })
+    const composer = await mountSuspended(BowlComposer, { props: { product: set.id } })
+    await settle()
+
+    expect(composer.findAll('[data-testid^="bowl-composer-step-"]')).toHaveLength(3)
+    expect(step(composer, 0).attributes('aria-current')).toBe('step')
+    expect(composer.get('[data-testid="bowl-composer-total"]').text()).toContain('2.50')
+    expect(next(composer).attributes('disabled')).toBeDefined()
+    // Only the current panel is reachable.
+    expect(composer.get('[data-testid="bowl-composer-panel-1"]').attributes('inert')).toBeDefined()
+
+    await composer.get(`[data-testid="bowl-composer-choice-${set.tomato.id}"]`).trigger('click')
+    expect(next(composer).attributes('disabled')).toBeUndefined()
+    await next(composer).trigger('click')
+    expect(step(composer, 1).attributes('aria-current')).toBe('step')
+    expect(
+      composer.get('[data-testid="bowl-composer-panel-1"]').attributes('inert'),
+    ).toBeUndefined()
+
+    await composer.get(`[data-testid="bowl-composer-choice-inc-${set.tofu.id}"]`).trigger('click')
+    expect(next(composer).attributes('disabled')).toBeDefined()
+    await composer.get(`[data-testid="bowl-composer-choice-inc-${set.pak.id}"]`).trigger('click')
+    expect(composer.get('[data-testid="bowl-composer-total"]').text()).toContain('4.50')
+    await next(composer).trigger('click')
+
+    // The last step trades "Continuer" for the add button.
+    expect(composer.find('[data-testid="bowl-composer-next"]').exists()).toBe(false)
+    const add = composer.get('[data-testid="bowl-composer-add-to-cart"]')
+    expect(add.attributes('disabled')).toBeDefined()
+    await composer.get(`[data-testid="bowl-composer-choice-${set.hot.id}"]`).trigger('click')
+    expect(add.attributes('disabled')).toBeUndefined()
+
+    // Back on a phone, and a tab straight to a step.
+    await composer.get('[data-testid="bowl-composer-back"]').trigger('click')
+    expect(step(composer, 1).attributes('aria-current')).toBe('step')
+    await step(composer, 0).trigger('click')
+    expect(composer.find('[data-testid="bowl-composer-back"]').exists()).toBe(false)
+  })
+
+  it('a removed ingredient goes down to zero and no further', async () => {
+    const set = seedBowl()
+    gqlFetch.mockResolvedValue({ product: set.product })
+    const composer = await mountSuspended(BowlComposer, { props: { product: set.id } })
+    await settle()
+    const dec = composer.get(`[data-testid="bowl-composer-choice-dec-${set.tofu.id}"]`)
+    expect(dec.attributes('disabled')).toBeDefined()
+    await composer.get(`[data-testid="bowl-composer-choice-inc-${set.tofu.id}"]`).trigger('click')
+    expect(ingredientCount(composer, set.tofu.id)).toBe('1')
+    await dec.trigger('click')
+    expect(ingredientCount(composer, set.tofu.id)).toBe('0')
   })
 })

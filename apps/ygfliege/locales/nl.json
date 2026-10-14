@@ -395,6 +395,10 @@
     "privacy": {
       "coming": "Deze pagina is in voorbereiding: ons volledige privacybeleid verschijnt hier binnenkort.",
       "meta_desc": "Privacybeleid van Yangguofu Malatang Luik."
+    },
+    "shop": {
+      "allergensLink": "Allergenen en intoleranties",
+      "emptyCart": "Je winkelmandje is leeg. Begin met je kom samen te stellen."
     }
   },
   "faq": {
@@ -421,7 +425,7 @@
       },
       "payment": {
         "question": "Welke betaalmethoden accepteren jullie?",
-        "answer": "We accepteren veilige onlinebetaling (bankkaart, Bancontact) en contante betaling bij levering of afhaling."
+        "answer": "We accepteren veilige onlinebetaling (bankkaart, Bancontact) en contante betaling wanneer je je bestelling in het restaurant afhaalt."
       },
       "allergens": {
         "question": "Hebben jullie allergenen-informatie?",
@@ -442,9 +446,48 @@
     "stepOf": "Stap {n}/{total}",
     "chosen": "Gekozen",
     "selectedCount": "{count}/{max} gekozen",
-    "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten"
+    "ingredientsSummary": "geen ingrediënten | 1 ingrediënt | {count} ingrediënten",
+    "steps": {
+      "broth": "Bouillon",
+      "ingredients": "Ingrediënten",
+      "variant": "Pittigheid"
+    },
+    "stepLabel": "Stap {n}/{total} · {name}",
+    "back": "Vorige stap",
+    "next": "Verder",
+    "brothTitle": "Jouw bouillon",
+    "brothSubtitle": "Elke dag huisgemaakt.",
+    "ingredientsTitle": "Jouw ingrediënten",
+    "ingredientsSubtitle": "Tik op een ingrediënt om het toe te voegen, nog eens voor meer.",
+    "variantTitle": "Jouw pittigheid",
+    "missing": "nog minstens {count}",
+    "addIngredient": "{name} toevoegen",
+    "removeIngredient": "{name} verwijderen",
+    "included": "Inbegrepen",
+    "allergens": "Allergenen: {list}",
+    "pickBroth": "Kies eerst je bouillon",
+    "priceBase": "{base} + je ingrediënten",
+    "priceFromIngredients": "Prijs volgens je ingrediënten",
+    "onlinePrice": "Online: {base} + je ingrediënten",
+    "onlinePriceNoBase": "Online: prijs volgens je ingrediënten",
+    "total": "Totaal",
+    "kinds": {
+      "vegetables": "Groenten",
+      "mushrooms": "Paddenstoelen",
+      "tofu": "Tofu & soja",
+      "noodles": "Noedels & rijst",
+      "meat": "Vlees",
+      "seafood": "Vis & zeevruchten",
+      "other": "Overige"
+    }
   },
   "nav": {
     "secondary": "Voettekstlinks"
+  },
+  "checkout": {
+    "authStep": {
+      "heading": "Nog één stap voor de betaling: meld je aan",
+      "subtitle": "Een code per e-mail volstaat, zonder wachtwoord. Je winkelmandje blijft bewaard, en de volgende keer bestel je opnieuw met één tik."
+    }
   }
 }

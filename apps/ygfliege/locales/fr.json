@@ -395,6 +395,10 @@
     "privacy": {
       "coming": "Cette page est en préparation : notre politique de confidentialité complète sera publiée ici très bientôt.",
       "meta_desc": "Politique de confidentialité de Yangguofu Malatang Liège."
+    },
+    "shop": {
+      "allergensLink": "Allergènes et intolérances",
+      "emptyCart": "Votre panier est vide. Commencez par composer votre bol."
     }
   },
   "faq": {
@@ -421,7 +425,7 @@
       },
       "payment": {
         "question": "Quels modes de paiement acceptez-vous ?",
-        "answer": "Nous acceptons le paiement en ligne sécurisé (carte bancaire, Bancontact) et le paiement en espèces à la livraison ou au retrait."
+        "answer": "Nous acceptons le paiement en ligne sécurisé (carte bancaire, Bancontact) et le paiement en espèces au retrait de votre commande au restaurant."
       },
       "allergens": {
         "question": "Avez-vous des informations sur les allergènes ?",
@@ -442,9 +446,48 @@
     "stepOf": "Étape {n}/{total}",
     "chosen": "Choisi",
     "selectedCount": "{count}/{max} choisis",
-    "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients"
+    "ingredientsSummary": "aucun ingrédient | 1 ingrédient | {count} ingrédients",
+    "steps": {
+      "broth": "Bouillon",
+      "ingredients": "Ingrédients",
+      "variant": "Piquant"
+    },
+    "stepLabel": "Étape {n}/{total} · {name}",
+    "back": "Étape précédente",
+    "next": "Continuer",
+    "brothTitle": "Votre bouillon",
+    "brothSubtitle": "Préparé maison chaque jour.",
+    "ingredientsTitle": "Vos ingrédients",
+    "ingredientsSubtitle": "Touchez un ingrédient pour l'ajouter, encore une fois pour en reprendre.",
+    "variantTitle": "Votre piquant",
+    "missing": "encore {count} minimum",
+    "addIngredient": "Ajouter {name}",
+    "removeIngredient": "Retirer {name}",
+    "included": "Inclus",
+    "allergens": "Allergènes : {list}",
+    "pickBroth": "Choisissez d'abord votre bouillon",
+    "priceBase": "{base} + vos ingrédients",
+    "priceFromIngredients": "Prix selon vos ingrédients",
+    "onlinePrice": "En ligne : {base} + vos ingrédients",
+    "onlinePriceNoBase": "En ligne : prix selon vos ingrédients",
+    "total": "Total",
+    "kinds": {
+      "vegetables": "Légumes",
+      "mushrooms": "Champignons",
+      "tofu": "Tofu & soja",
+      "noodles": "Nouilles & riz",
+      "meat": "Viandes",
+      "seafood": "Poisson & fruits de mer",
+      "other": "Autres"
+    }
   },
   "nav": {
     "secondary": "Liens de bas de page"
+  },
+  "checkout": {
+    "authStep": {
+      "heading": "Dernière étape avant le paiement : identifiez-vous",
+      "subtitle": "Un code reçu par e-mail suffit, sans mot de passe. Votre panier reste sauvegardé, et la prochaine fois vous recommandez en un tap."
+    }
   }
 }
