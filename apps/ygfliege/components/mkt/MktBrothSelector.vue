@@ -361,7 +361,8 @@ onBeforeUnmount(() => {
 .broth-selector-tabs {
   display: flex;
   justify-content: center;
-  gap: 0.625rem;
+  /* Five bowls must fit a 320 px phone (288 px inside the gutters), the active one scaled up */
+  gap: clamp(0.375rem, 2vw, 0.625rem);
   padding: 0.25rem 0.25rem 1rem;
   margin-bottom: 0.5rem;
 }
@@ -374,8 +375,8 @@ onBeforeUnmount(() => {
 
 .selector-tab {
   flex-shrink: 0;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: clamp(2.75rem, 14vw, 3.5rem);
+  height: clamp(2.75rem, 14vw, 3.5rem);
   padding: 3px;
   border: 2px solid transparent;
   border-radius: 9999px;

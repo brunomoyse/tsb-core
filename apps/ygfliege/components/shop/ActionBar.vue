@@ -17,7 +17,7 @@
           hasCart
             ? 'grid-cols-[auto_auto_minmax(0,1fr)]'
             : primary
-              ? 'grid-cols-[1fr_1fr_1.25fr]'
+              ? 'grid-cols-[1fr_1fr_1.25fr] max-[359px]:grid-cols-[auto_auto_minmax(0,1fr)]'
               : 'grid-cols-2'
         "
       >
@@ -30,7 +30,10 @@
           data-testid="action-bar-directions"
         >
           <MktIcon name="map-pin" :size="18" />
-          <span v-if="!hasCart">{{ $t('mkt.actionBar.directions') }}</span>
+          <!-- Icon only on the narrowest phones (320 px): the three buttons would not fit with their labels -->
+          <span v-if="!hasCart" class="max-[359px]:sr-only">{{
+            $t('mkt.actionBar.directions')
+          }}</span>
         </a>
         <a
           :href="telHref(brand.phone)"
@@ -39,7 +42,8 @@
           data-testid="action-bar-call"
         >
           <MktIcon name="phone" :size="18" />
-          <span v-if="!hasCart">{{ $t('mkt.actionBar.call') }}</span>
+          <!-- Icon only on the narrowest phones (320 px): the three buttons would not fit with their labels -->
+          <span v-if="!hasCart" class="max-[359px]:sr-only">{{ $t('mkt.actionBar.call') }}</span>
         </a>
         <button
           v-if="hasCart"
