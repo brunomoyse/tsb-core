@@ -200,12 +200,8 @@ const forcedChoiceGroups = computed(() =>
     .toSorted((a, b) => a.sortOrder - b.sortOrder),
 )
 
-// A brand label for the category ("2 soupes") wins; else the catalog's group name, with its option count for a pick-one group.
-const forcedChoiceGroupLabel = (group: {
-  name: string
-  maxSelections: number
-  choices?: { id: string }[]
-}) => {
+// A brand label for the category ("2 soupes") wins; else the catalog's group name (with the pick count for a multi-select group).
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) => {
   const key = choiceGroupLabelKey(
     brand.choiceGroupLabels,
     product.category?.slug,
@@ -213,7 +209,7 @@ const forcedChoiceGroupLabel = (group: {
   )
   return key
     ? `${group.maxSelections} ${t(key).toLowerCase()}`
-    : choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0)
+    : choiceGroupCountLabel(group.name, group.maxSelections)
 }
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() =>

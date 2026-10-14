@@ -18,17 +18,11 @@ export function choiceGroupLabelKey(
 }
 
 /**
- * Card-subtitle label for a required choice group whose name comes from the catalog. Pick-one groups show how many
- * options there are to choose from, "niveau de piquant (3)", because "1 niveau de piquant" read as if the set had a
- * single fixed level. Multi-select groups keep the pick count ("20 ingrédients"). Group names are DB translations, so
- * the option count is appended rather than pluralised.
+ * Card-subtitle label for a required choice group whose name comes from the catalog. Pick-one groups show the group's
+ * name alone, "sauce au choix" (no option count: it added nothing for the customer). Multi-select groups keep the pick
+ * count ("20 ingrédients"). Group names are DB translations, so the count is prefixed rather than pluralised.
  */
-export function choiceGroupCountLabel(
-  name: string,
-  maxSelections: number,
-  optionCount: number,
-): string {
+export function choiceGroupCountLabel(name: string, maxSelections: number): string {
   const label = name.toLowerCase()
-  if (maxSelections === 1) return optionCount > 1 ? `${label} (${optionCount})` : label
-  return `${maxSelections} ${label}`
+  return maxSelections === 1 ? label : `${maxSelections} ${label}`
 }

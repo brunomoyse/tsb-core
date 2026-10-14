@@ -272,11 +272,8 @@ const forcedChoiceGroups = computed(() =>
     .toSorted((a, b) => a.sortOrder - b.sortOrder),
 )
 
-const forcedChoiceGroupLabel = (group: {
-  name: string
-  maxSelections: number
-  choices?: { id: string }[]
-}) => choiceGroupCountLabel(group.name, group.maxSelections, group.choices?.length ?? 0)
+const forcedChoiceGroupLabel = (group: { name: string; maxSelections: number }) =>
+  choiceGroupCountLabel(group.name, group.maxSelections)
 const { handleProductImageError } = productImage
 const productImageBaseSrc = computed(() =>
   productImage.productImageBase(config.public.s3bucketUrl, product?.id),

@@ -5,14 +5,12 @@ import { choiceGroupCountLabel, choiceGroupLabelKey } from './choiceGroupLabel.t
 import assert from 'node:assert/strict'
 import { test } from 'vite-plus/test'
 
-test('a pick-one group shows how many options there are, not "1 sauce"', () => {
-  assert.equal(choiceGroupCountLabel('Sauce', 1, 4), 'sauce (4)')
-  assert.equal(choiceGroupCountLabel('Sauce', 1, 1), 'sauce')
-  assert.equal(choiceGroupCountLabel('Sauce', 1, 0), 'sauce')
+test('a pick-one group shows its name alone: no "1 sauce", no option count', () => {
+  assert.equal(choiceGroupCountLabel('Sauce au choix', 1), 'sauce au choix')
 })
 
 test('a multi-select group keeps the pick count', () => {
-  assert.equal(choiceGroupCountLabel('Ingrédients', 20, 30), '20 ingrédients')
+  assert.equal(choiceGroupCountLabel('Ingrédients', 20), '20 ingrédients')
 })
 
 test('a brand label is chosen per category and pick count', () => {
