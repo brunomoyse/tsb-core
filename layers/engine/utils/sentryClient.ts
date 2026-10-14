@@ -87,6 +87,35 @@ export const extensionUrls = [
   /^webkit-masked-url:\/\//iu,
 ]
 
+/** A stack frame as `isInjectedScriptError` reads it. */
+interface Frame {
+  filename?: string
+  lineno?: number
+}
+
+/** A frame in the HTML document itself (a page path, not a script file). */
+const isDocumentFrame = (frame: Frame): boolean => {
+  if (typeof frame.filename !== 'string' || !URL.canParse(frame.filename, 'https://x')) return false
+  const { pathname } = new URL(frame.filename, 'https://x')
+  return !pathname.startsWith('/_nuxt/') && !/\.m?js$/u.test(pathname)
+}
+
+/*
+ * The production HTML is served on a single line, so a frame of the document below line 1 is a script the browser put into
+ * the page itself: Chrome on iOS runs its translation and autofill scripts that way and WebKit attributes them to the page's
+ * URL (TSB-CORE-P "Maximum call stack size exceeded", TSB-CORE-Q "Error: La": /fr/auth/login:197, Russian-language phone, the
+ * sign-in itself went through). An error whose every frame is such a line is never the shop's.
+ */
+export function isInjectedScriptError(frames: readonly Frame[]): boolean {
+  const located = frames.filter(
+    (f) => typeof f.filename === 'string' && f.filename !== '[native code]',
+  )
+  return (
+    located.length > 0 &&
+    located.every((f) => isDocumentFrame(f) && typeof f.lineno === 'number' && f.lineno > 1)
+  )
+}
+
 type BeforeSend = (
   event: SentryNuxt.ErrorEvent,
   hint: SentryNuxt.EventHint,
@@ -103,6 +132,9 @@ export function createBeforeSend(): BeforeSend {
     const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? []
     if (frames.some((f) => typeof f.filename === 'string' && f.filename.includes('oidc-client-ts')))
       return null
+
+    // A script the browser injected into the page (translation, autofill), not ours.
+    if (isInjectedScriptError(frames)) return null
 
     const error = hint?.originalException
 

@@ -11,6 +11,7 @@ import {
   extensionNoise,
   extensionUrls,
   initSentry,
+  isInjectedScriptError,
   networkNoise,
   oidcNoise,
 } from './sentryClient'
@@ -192,6 +193,26 @@ describe('createBeforeSend', () => {
     ).toBeNull()
   })
 
+  it('drops an error thrown by a script the browser injected into the page', () => {
+    const beforeSend = createBeforeSend()
+    const injected = {
+      exception: {
+        values: [
+          {
+            stacktrace: {
+              frames: [
+                { filename: 'https://shop.test/fr/auth/login', lineno: 495 },
+                { filename: '[native code]' },
+                { filename: 'https://shop.test/fr/auth/login', lineno: 197 },
+              ],
+            },
+          },
+        ],
+      },
+    } as never
+    expect(beforeSend(injected, hintOf(new Error('La')))).toBeNull()
+  })
+
   it('sends at most MAX_EVENTS_PER_SESSION events per page load, counting only those it sent', () => {
     const beforeSend = createBeforeSend()
     expect(beforeSend(event(['/node_modules/oidc-client-ts/a.js']), hintOf())).toBeNull()
@@ -200,6 +221,40 @@ describe('createBeforeSend', () => {
     expect(beforeSend(event(), hintOf(new Error('one too many')))).toBeNull()
     // Another page load (a fresh hook) starts from zero.
     expect(createBeforeSend()(event(), hintOf(new Error('fresh')))).not.toBeNull()
+  })
+})
+
+describe('isInjectedScriptError', () => {
+  const page = 'https://shop.test/fr/auth/idp/callback'
+
+  it('flags frames that all sit in the page HTML below its single line', () => {
+    expect(
+      isInjectedScriptError([
+        { filename: page, lineno: 228 },
+        { filename: '/fr/auth/idp/callback', lineno: 200 },
+      ]),
+    ).toBe(true)
+  })
+
+  it("keeps the page's own inline scripts (line 1) and the bundle", () => {
+    expect(isInjectedScriptError([{ filename: page, lineno: 1 }])).toBe(false)
+    expect(
+      isInjectedScriptError([{ filename: 'https://shop.test/_nuxt/Ab12.js', lineno: 3 }]),
+    ).toBe(false)
+    expect(isInjectedScriptError([{ filename: 'https://shop.test/sw.mjs', lineno: 9 }])).toBe(false)
+  })
+
+  it('keeps a stack that also passes through the bundle or has no usable frame', () => {
+    expect(
+      isInjectedScriptError([
+        { filename: page, lineno: 228 },
+        { filename: 'https://shop.test/_nuxt/Ab12.js', lineno: 1 },
+      ]),
+    ).toBe(false)
+    expect(isInjectedScriptError([{ filename: page }])).toBe(false)
+    expect(isInjectedScriptError([{ filename: '[native code]' }, {}])).toBe(false)
+    expect(isInjectedScriptError([])).toBe(false)
+    expect(isInjectedScriptError([{ filename: 'http://[bad', lineno: 5 }])).toBe(false)
   })
 })
 
