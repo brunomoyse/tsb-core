@@ -2,6 +2,16 @@ import { type Page, expect, test } from '@playwright/test'
 import { SEL } from './selectors'
 import { waitForNuxtHydration } from './hydration'
 
+/**
+ * Pickup in the cart: a click on the toggle, or nothing to choose on a takeaway-only brand
+ * (brand.deliveryEnabled false shows the `cart-pickup-only` line instead of the toggle).
+ */
+export async function choosePickupInCart(page: Page): Promise<void> {
+  const toggle = page.locator(SEL.cartOptionPickup)
+  await expect(toggle.or(page.getByTestId('cart-pickup-only')).first()).toBeVisible()
+  if (await toggle.isVisible()) await toggle.click()
+}
+
 /*
  * When the SideCart is hidden (viewport < lg), tap the FloatingCartBar to
  * reveal CartMobile so the shared cart-item / cart-total / qty-control
@@ -72,7 +82,7 @@ export async function addProductsAndGoToCheckout(page: Page, count = 5) {
   }
 
   // Set pickup to avoid needing an address
-  await page.locator(SEL.cartOptionPickup).click()
+  await choosePickupInCart(page)
 
   // Ensure minimum order is met
   const warning = page.locator(SEL.cartMinimumWarning)

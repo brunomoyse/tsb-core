@@ -1,7 +1,7 @@
 import { expect, test } from './support/test'
 import type { Page } from '@playwright/test'
 import { dismissCookieConsent, waitForNuxtHydration } from './support/hydration'
-import { openCartIfMobile, visibleCart } from './support/cart.helpers'
+import { choosePickupInCart, openCartIfMobile, visibleCart } from './support/cart.helpers'
 import { SEL } from './support/selectors'
 
 /*
@@ -350,7 +350,7 @@ test.describe('Cart operations', () => {
     test.skip(!added, 'No available products')
 
     // Pickup avoids needing an address; the default payment option is ONLINE, so the 0,30 € fee is part of both.
-    await page.locator(SEL.cartOptionPickup).click()
+    await choosePickupInCart(page)
     const sideTotal = ((await page.locator(SEL.cartTotal).textContent()) ?? '').trim()
     expect(sideTotal).toMatch(/\d/u)
 

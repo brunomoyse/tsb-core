@@ -221,10 +221,19 @@ test.describe('pages that need an account', () => {
   test('the checkout is open to a guest but asks for the sign-in in place, cart intact', async ({
     page,
     backend,
+    brand,
   }) => {
     await addFirstSimpleProduct(page)
     await page.goto('/fr/checkout')
-    await expect(page.getByText("Plus qu'une étape : connectez-vous")).toBeVisible()
+    // Ygfliege has its own heading, and a subtitle under it (brand.checkoutAuthSubtitle)
+    const heading =
+      brand === 'ygfliege'
+        ? 'Dernière étape avant le paiement : identifiez-vous'
+        : "Plus qu'une étape : connectez-vous"
+    await expect(page.getByText(heading)).toBeVisible()
+    await expect(page.getByTestId('checkout-auth-subtitle')).toHaveCount(
+      brand === 'ygfliege' ? 1 : 0,
+    )
     await expect(page.getByText('Votre panier est sauvegardé')).toBeVisible()
     await expect(page.locator(SEL.checkoutPlaceOrder)).toHaveCount(0)
     expect(await page.evaluate(() => location.pathname)).toBe('/fr/checkout')

@@ -34,7 +34,7 @@ export function ygfliegeCatalog(): MockCategory[] {
         ],
       },
     ])
-    .category('c-malatang', 'Malatang', 'malatang', [
+    .category('c-malatang', 'Malatang', 'sur-mesure', [
       {
         id: 'p-bowl',
         name: 'Malatang sur mesure',
