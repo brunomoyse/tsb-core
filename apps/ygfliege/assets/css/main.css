@@ -102,6 +102,10 @@ html {
 * {
   max-width: 100%;
 }
+/* Phone swipe rows (steps, gallery) bleed into the 16px gutter with -mx-4: the cap above would cut them short. */
+.swipe-row {
+  max-width: none;
+}
 
 @layer base {
   h1,

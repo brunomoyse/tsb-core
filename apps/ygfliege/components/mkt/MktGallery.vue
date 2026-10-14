@@ -2,7 +2,7 @@
   <div>
     <!-- A swipe row on a phone, a grid from 640px; every tile is captioned (the franchise kit's dishes need context). -->
     <ul
-      class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 pb-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-4 sm:overflow-visible"
+      class="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-px-4 no-scrollbar swipe-row -mx-4 px-4 pb-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-4 sm:overflow-visible"
       data-testid="mkt-gallery"
     >
       <li

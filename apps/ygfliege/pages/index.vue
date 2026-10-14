@@ -133,7 +133,7 @@ useSeoMeta({
           </p>
 
           <div
-            class="mt-6 grid grid-cols-[1.4fr_1fr] gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:justify-center lg:justify-start sm:gap-4"
+            class="mt-5 grid grid-cols-1 gap-2.5 sm:flex sm:flex-wrap sm:items-center sm:justify-center lg:justify-start sm:gap-4"
           >
             <!-- Magnetic on desktop: drifts toward the pointer (useMagnetic). -->
             <span ref="heroCta" class="inline-flex">
@@ -208,9 +208,9 @@ useSeoMeta({
                 :fallback-width="1000"
                 :fallback-height="1299"
                 :alt="$t('mkt.hero.bowl_alt')"
-                sizes="(min-width: 1024px) min(38vw, 532px), min(66vw, 300px)"
+                sizes="(min-width: 1024px) min(38vw, 532px), (min-width: 640px) min(66vw, 300px), min(56vw, 230px)"
                 eager
-                class="block w-[66vw] max-w-[300px] lg:w-[38vw] lg:max-w-xl"
+                class="block w-[56vw] max-w-[230px] sm:w-[66vw] sm:max-w-[300px] lg:w-[38vw] lg:max-w-xl"
                 img-class="w-full drop-shadow-2xl"
               />
             </div>

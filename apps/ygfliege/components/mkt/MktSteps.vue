@@ -32,7 +32,7 @@
     >
       <ol
         ref="row"
-        class="steps-row flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 pb-3 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible"
+        class="steps-row flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-px-4 no-scrollbar swipe-row -mx-4 px-4 pb-3 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible"
         @scroll.passive="onScroll"
       >
         <li
