@@ -31,6 +31,8 @@ const BASKET = {
   ygfliege: { goods: 22.0, base: 20.1, fiveOff: 15.1, welcome10: 17.9, welcomeRow: '2,20' },
 } as const
 
+const BRAND_NAME = { tokyosushi: 'Tokyo Sushi Bar', ygfliege: 'Yangguofu Malatang Liège' } as const
+
 const input = (page: Page) => page.getByTestId('coupon-input')
 const apply = async (page: Page, code: string) => {
   await input(page).fill(code)
@@ -146,6 +148,23 @@ test.describe('Promo codes at checkout', () => {
     await backend.mock.coupon('SPAMMY', { kind: 'fixed', value: 1, refusal: 'COUPON_RATE_LIMITED' })
     await apply(page, 'SPAMMY')
     await expect(page.getByTestId('coupon-error')).toContainText('Trop de tentatives')
+  })
+
+  test('an app-only code says it only works in the app, with the brand name', async ({
+    authenticatedPage: page,
+    backend,
+    brand,
+  }) => {
+    // The app launch promo: tsb-service refuses it on the website (the token was not issued to the app).
+    await backend.mock.coupon('SAKURA5', { kind: 'fixed', value: 5, refusal: 'COUPON_APP_ONLY' })
+    await apply(page, 'SAKURA5')
+    const error = page.getByTestId('coupon-error')
+    await expect(error).toHaveText(
+      `Ce code est valable uniquement dans l'appli ${BRAND_NAME[brand]}.`,
+    )
+    await expect(page.getByTestId('coupon-applied')).toHaveCount(0)
+    await waitForQuote(page)
+    expect(await payAmount(page)).toBe(BASKET[brand].base)
   })
 
   test('when the code cannot be checked the message is a retry hint, not "invalid code"', async ({

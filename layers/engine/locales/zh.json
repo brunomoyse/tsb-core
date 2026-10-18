@@ -573,6 +573,7 @@
       "invalidQuantity": "某件商品的数量无效（须为1至99）。",
       "selectionInvalid": "您选择的某个选项已失效，请在购物车中修改该商品后重试。",
       "couponMinOrderNotMet": "此优惠码需要更高的订单金额。",
+      "couponAppOnly": "此优惠码仅限在 __BRAND__ App 中使用。",
       "couponAlreadyActive": "您已有一笔使用优惠码的进行中订单，请在其完成后再试。",
       "cashAmountInvalid": "填写的现金金额无效。",
       "paymentFailed": "无法发起支付，请重试。",

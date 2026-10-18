@@ -211,6 +211,26 @@ test('coupon refusals: code first, old-backend text second, generic last', () =>
   )
 })
 
+test('an app-only code has its own message wherever the backend reports it', () => {
+  // validateCoupon (the code field), createOrder (the error) and quoteOrder (an issue of the quote).
+  assert.equal(
+    describeCouponRefusal(
+      {
+        valid: false,
+        errorCode: 'COUPON_APP_ONLY',
+        errorMessage: 'this coupon can only be used in the app',
+      },
+      POLICY,
+    ).key,
+    'notify.errors.couponAppOnly',
+  )
+  assert.equal(
+    describeGqlError(response('COUPON_APP_ONLY'), POLICY).key,
+    'notify.errors.couponAppOnly',
+  )
+  assert.equal(describeErrorCode('COUPON_APP_ONLY', POLICY)?.key, 'notify.errors.couponAppOnly')
+})
+
 test('RATE_LIMITED and COUPON_CHECK_FAILED have messages; the throttle is not an error to report', () => {
   assert.equal(
     describeGqlError(response('RATE_LIMITED'), POLICY).key,

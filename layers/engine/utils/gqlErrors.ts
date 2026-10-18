@@ -90,6 +90,8 @@ const CODE_TABLE: Record<string, Describe> = {
   COUPON_INVALID: key('coupon.invalid'),
   COUPON_EXHAUSTED: key('coupon.invalid'),
   COUPON_MIN_ORDER_NOT_MET: key('notify.errors.couponMinOrderNotMet'),
+  // A real code, but only the iOS/Android app may redeem it (the website never can).
+  COUPON_APP_ONLY: key('notify.errors.couponAppOnly'),
   COUPON_RATE_LIMITED: key('notify.errors.tooManyRequests'),
   COUPON_ALREADY_ACTIVE: key('notify.errors.couponAlreadyActive'),
   COUPON_RESERVE_FAILED: key('notify.errors.orderCreationFailed'),

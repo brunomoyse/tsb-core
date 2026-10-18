@@ -5,7 +5,7 @@ export interface CouponValidation {
   discountAmount: string
   /** English backend text: for logs only, never shown (see utils/gqlErrors.ts). */
   errorMessage: string | null
-  /** Stable refusal code (COUPON_INVALID, COUPON_MIN_ORDER_NOT_MET, COUPON_RATE_LIMITED); absent on an old backend. */
+  /** Stable refusal code (COUPON_INVALID, COUPON_MIN_ORDER_NOT_MET, COUPON_APP_ONLY, COUPON_RATE_LIMITED); absent on an old backend. */
   errorCode?: string | null
 }
 

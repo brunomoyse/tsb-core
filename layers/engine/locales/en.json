@@ -573,6 +573,7 @@
       "invalidQuantity": "The quantity of an item is not valid (it must be between 1 and 99).",
       "selectionInvalid": "An option you chose is no longer valid. Edit that product in your cart and try again.",
       "couponMinOrderNotMet": "This promo code requires a higher order amount.",
+      "couponAppOnly": "This code is only valid in the __BRAND__ app.",
       "couponAlreadyActive": "You already have an order in progress that uses a promo code. Try again once it is complete.",
       "cashAmountInvalid": "The cash amount you entered is not valid.",
       "paymentFailed": "The payment could not be started. Please try again.",

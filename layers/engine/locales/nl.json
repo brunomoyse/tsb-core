@@ -573,6 +573,7 @@
       "invalidQuantity": "De hoeveelheid van een product is ongeldig (tussen 1 en 99).",
       "selectionInvalid": "Een gekozen optie is niet meer geldig. Pas dat product aan in uw winkelwagen en probeer opnieuw.",
       "couponMinOrderNotMet": "Voor deze kortingscode is een hoger bestelbedrag nodig.",
+      "couponAppOnly": "Deze code is alleen geldig in de app van __BRAND__.",
       "couponAlreadyActive": "U hebt al een lopende bestelling met een kortingscode. Probeer opnieuw zodra die is afgerond.",
       "cashAmountInvalid": "Het opgegeven contante bedrag is ongeldig.",
       "paymentFailed": "De betaling kon niet worden gestart. Probeer het opnieuw.",
