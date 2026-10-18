@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { fakeUserManagers, refusal } from '../../../test/helpers/fakeOidc'
 import { isSilentRenewUnavailable } from '#engine/utils/silentRenewError'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { useRuntimeConfig } from '#imports'
+import { useNuxtApp, useRuntimeConfig } from '#imports'
+import { LOCALE_CODES } from '#engine/lib/locales'
 
 interface FakeUser {
   access_token: string
@@ -99,6 +100,11 @@ describe('the user manager', () => {
         redirect_uri: `${useRuntimeConfig().public.baseUrl}/en/auth/callback`,
       }),
     )
+  })
+
+  // The list is read without $i18n (TSB-CORE-R); it must stay the one the i18n module serves.
+  it('knows the same languages as the i18n module', () => {
+    expect([...LOCALE_CODES].sort()).toEqual([...useNuxtApp().$i18n.localeCodes.value].sort())
   })
 
   it.each(['fr', 'en', 'nl', 'zh'])(

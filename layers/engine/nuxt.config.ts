@@ -1,5 +1,6 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
+import { LOCALES } from './lib/locales'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared engine layer: brand-agnostic infrastructure extended by every brand
@@ -59,12 +60,6 @@ const csp = `${[
 
 const engineDir = fileURLToPath(new URL('./', import.meta.url))
 
-const LOCALES = [
-  { code: 'fr', language: 'fr-BE' },
-  { code: 'en', language: 'en' },
-  { code: 'zh', language: 'zh-CN' },
-  { code: 'nl', language: 'nl-BE' },
-] as const
 const LANGUAGE_COOKIE = 'i18n_redirected'
 
 export default defineNuxtConfig({
