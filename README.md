@@ -108,13 +108,13 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
 
 Every Pili repository lives in the GitHub org `nuagemagique-dev`. Local folders kept their earlier names.
 
-| Repository | Local folder | What it is |
-|---|---|---|
-| pili-api | `tsb-service` | GraphQL API (Go) and the `pili-mcp` tool server |
-| **pili-shop** (this repository) | `tsb-core` | Customer web shop, one Nuxt app per brand |
-| pili-dashboard | `tsb-dashboard` | Admin dashboard (Nuxt) |
-| pili-mobile | `tsb-mobile` | Customer iOS and Android app (Expo) |
-| pili-handheld | `moyun-handheld` | Staff handheld app for the Sunmi V3H (Kotlin) |
-| pili-pos | `moyun-pos` | SCE 2.0 cash register (Rust engine, Android and Linux) |
-| pili-agent | `tsb-agent` | Owner and staff Telegram agent |
-| pili-infra | `tsb-infra` | Helm charts, Terraform, SOPS secrets, runbooks |
+| Repository                      | Local folder     | What it is                                             |
+| ------------------------------- | ---------------- | ------------------------------------------------------ |
+| pili-api                        | `tsb-service`    | GraphQL API (Go) and the `pili-mcp` tool server        |
+| **pili-shop** (this repository) | `tsb-core`       | Customer web shop, one Nuxt app per brand              |
+| pili-dashboard                  | `tsb-dashboard`  | Admin dashboard (Nuxt)                                 |
+| pili-mobile                     | `tsb-mobile`     | Customer iOS and Android app (Expo)                    |
+| pili-handheld                   | `moyun-handheld` | Staff handheld app for the Sunmi V3H (Kotlin)          |
+| pili-pos                        | `moyun-pos`      | SCE 2.0 cash register (Rust engine, Android and Linux) |
+| pili-agent                      | `tsb-agent`      | Owner and staff Telegram agent                         |
+| pili-infra                      | `tsb-infra`      | Helm charts, Terraform, SOPS secrets, runbooks         |
