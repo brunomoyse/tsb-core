@@ -26,7 +26,7 @@
  * Identical copies live in pili-shop (tsb-core), pili-dashboard (tsb-dashboard) and
  * pili-mobile (tsb-mobile); keep them in sync.
  */
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildSchema, NoUnusedFragmentsRule, parse, specifiedRules, validate } from 'graphql'
@@ -361,7 +361,11 @@ export function main(argv) {
   return problems.length === 0 ? 0 : 1
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// realpath both sides: a symlinked path (macOS /var -> /private/var) must not skip main().
+if (
+  process.argv[1] &&
+  realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
+) {
   try {
     process.exitCode = main(process.argv.slice(2))
   } catch (error) {
