@@ -1,8 +1,8 @@
 name: Security scan
 
 # Daily audit of the production dependencies against the npm advisory
-# database: fails on a high or critical advisory. Dependabot security updates
-# open the fix PRs; "CI watch" posts a failure to Telegram.
+# database: fails on a high or critical advisory that the allowlist does not
+# cover. Dependabot security updates open the fix PRs; "CI watch" posts a failure to Telegram.
 
 on:
   schedule:
@@ -30,10 +30,31 @@ jobs:
 
       # The npm that package.json devEngines asks for: older ones refuse to run
       # in the project, so it is installed from outside it.
+      # Fails on a high or critical advisory, unless .github/audit-allowlist.json
+      # lists its GHSA id with a reason and a review date that has not passed.
       - name: npm audit (production dependencies)
         run: |
           set -euo pipefail
           npm_version=$(jq -r '.devEngines.packageManager.version // empty' package.json)
           (cd "$RUNNER_TEMP" && npm install -g "npm@${npm_version:-latest}")
           npm --version
-          npm audit --omit=dev --audit-level=high
+          npm audit --omit=dev --json > "$RUNNER_TEMP/audit.json" || true
+          today=$(date -u +%F)
+          jq -r '[.vulnerabilities[] | .via[] | objects | select(.severity == "high" or .severity == "critical")
+                  | "\(.url | split("/") | last)\t\(.severity)\t\(.name)@\(.range)\t\(.title)"] | unique[]' \
+            "$RUNNER_TEMP/audit.json" > "$RUNNER_TEMP/findings.tsv"
+          allow='{}'
+          [ -f .github/audit-allowlist.json ] && allow=$(cat .github/audit-allowlist.json)
+          failed=0
+          while IFS=$'\t' read -r id severity pkg title; do
+            until=$(jq -r --arg id "$id" '.[$id].until // empty' <<<"$allow")
+            if [ -n "$until" ] && [[ ! "$until" < "$today" ]]; then
+              echo "allowed until $until: $id $severity $pkg ($(jq -r --arg id "$id" '.[$id].reason' <<<"$allow"))"
+            else
+              [ -n "$until" ] && echo "::error::$id: allowlist entry expired on $until, review it"
+              echo "::error::$id $severity $pkg: $title"
+              failed=1
+            fi
+          done < "$RUNNER_TEMP/findings.tsv"
+          echo "$(wc -l < "$RUNNER_TEMP/findings.tsv" | tr -d ' ') high or critical advisories."
+          exit "$failed"
