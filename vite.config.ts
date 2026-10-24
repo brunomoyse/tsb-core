@@ -241,7 +241,7 @@ export default defineConfig({
         resolve: { alias: alias('tokyosushi') },
         test: {
           name: 'unit',
-          include: ['{layers,apps}/**/*.test.{mjs,ts}'],
+          include: ['{layers,apps,scripts}/**/*.test.{mjs,ts}'],
           setupFiles: [r('./test/setup/noNetwork.ts'), r('./test/setup/flags.ts')],
           exclude: [...excluded, '**/*.nuxt.test.ts', '**/*.server.test.ts'],
           unstubGlobals: true,

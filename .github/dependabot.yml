@@ -27,7 +27,8 @@ updates:
         patterns:
           - '*'
       # Vite+ ships its own oxc/rolldown/vitest binaries; bump the CLI and its platform packages together.
-      # A bump also needs the `overrides.vite` pin (vite-plus-core) and @vitest/coverage-v8 moved by hand.
+      # Dependabot cannot move the `overrides.vite` alias (vite-plus-core) nor @vitest/coverage-v8:
+      # .github/workflows/dependabot-vite-plus.yml pushes that commit on the PR, then CI watch merges it when green.
       vite-plus:
         patterns:
           - 'vite-plus'

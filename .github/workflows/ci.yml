@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [main]
   workflow_call:
+  # Started by dependabot-vite-plus.yml after it pushed on a Dependabot branch.
+  workflow_dispatch:
 
 # A called workflow cannot hold more than its caller grants.
 permissions:
