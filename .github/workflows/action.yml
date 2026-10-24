@@ -16,7 +16,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.actor }}/tsb-core
+  IMAGE_NAME: ${{ github.repository_owner }}/pili-shop
 
 # ── Test (auto on push to main) ──────────────────────────────────────────────
 
@@ -273,11 +273,12 @@ jobs:
         env:
           APP: tsb-core
           TAG: ${{ github.ref_name }}
+          REPO: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-ygfliege
         with:
           host: ${{ vars.OVH_HOST }}
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-          envs: APP,TAG
+          envs: APP,TAG,REPO
           script: |
             set -euo pipefail
             export SOPS_AGE_KEY_FILE=/opt/tokyosushi/.config/sops/age/keys.txt
@@ -288,6 +289,7 @@ jobs:
               --namespace ygf \
               -f ./charts/tokyosushi-apps/values.ygf.yaml \
               --reuse-values \
+              --set "apps.${APP}.image.repository=${REPO}" \
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m
 
@@ -347,11 +349,12 @@ jobs:
         env:
           APP: tsb-core
           TAG: ${{ github.ref_name }}
+          REPO: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
         with:
           host: ${{ vars.OVH_HOST }}
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-          envs: APP,TAG
+          envs: APP,TAG,REPO
           script: |
             set -euo pipefail
             export SOPS_AGE_KEY_FILE=/opt/tokyosushi/.config/sops/age/keys.txt
@@ -361,6 +364,7 @@ jobs:
             sudo flock -w 600 /var/lock/tokyosushi-apps-helm.lock env KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
               --namespace tokyosushi \
               --reuse-values \
+              --set "apps.${APP}.image.repository=${REPO}" \
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m
 
@@ -378,16 +382,18 @@ jobs:
         env:
           APP: tsb-core
           TAG: ${{ inputs.version }}
+          REPO: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
         with:
           host: ${{ vars.OVH_HOST }}
           username: ${{ vars.OVH_USER }}
           key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-          envs: APP,TAG
+          envs: APP,TAG,REPO
           script: |
             set -euo pipefail
             cd /opt/tokyosushi/tsb-infra
             sudo flock -w 600 /var/lock/tokyosushi-apps-helm.lock env KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm upgrade --install tokyosushi-apps ./charts/tokyosushi-apps \
               --namespace tokyosushi \
               --reuse-values \
+              --set "apps.${APP}.image.repository=${REPO}" \
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m

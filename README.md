@@ -85,13 +85,13 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
 
 ## Deployment
 
-### tokyosushi (`ghcr.io/brunomoyse/tsb-core`)
+### tokyosushi (`ghcr.io/nuagemagique-dev/pili-shop`)
 
 - Push to `main`: builds and publishes `:latest` (multi-arch) and deploys to the home server.
 - Tag `v*`: builds `:production` + version tags (AMD64) and deploys to OVH.
 - Manual rollback: run the workflow with the target version.
 
-### ygfliege (`ghcr.io/brunomoyse/tsb-core-ygfliege`)
+### ygfliege (`ghcr.io/nuagemagique-dev/pili-shop-ygfliege`)
 
 - Push to `main`: builds and publishes `:latest` (multi-arch; the home server is
   arm64, so an amd64-only image would not start) and deploys to the home server
