@@ -22,7 +22,18 @@ env:
 # ── tokyosushi test image (auto on push to main) ─────────────────────────────
 
 jobs:
+  # ── Tests (every push to main and every release tag) ───────────────────────
+  # The whole of ci.yml runs first; every image build waits for it, so a commit
+  # that fails its checks never produces an image, a test deploy or a release.
+  # The rollback job does not need it: it ships an old, already-released version.
+  tests:
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+
   build_tokyosushi_amd64:
+    needs: tests
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
     name: Build tokyosushi AMD64 Image
     runs-on: ubuntu-latest
@@ -53,9 +64,19 @@ jobs:
             --build-arg UMAMI_HOST=${{ vars.TSB_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.TSB_UMAMI_WEBSITE_ID }} \
             --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.TSB_TURNSTILE_SITE_KEY }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:latest-amd64
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:latest-amd64
 
   build_tokyosushi_arm64:
+    needs: tests
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
     name: Build tokyosushi ARM64 Image
     runs-on: self-hosted
@@ -86,7 +107,16 @@ jobs:
             --build-arg UMAMI_HOST=${{ vars.TSB_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.TSB_UMAMI_WEBSITE_ID }} \
             --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.TSB_TURNSTILE_SITE_KEY }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:latest-arm64
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:latest-arm64
 
   create_manifest_tokyosushi:
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
@@ -125,6 +155,7 @@ jobs:
   # amd64-only image would not start there.
 
   build_ygfliege_amd64:
+    needs: tests
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
     name: Build ygfliege AMD64 Image
     runs-on: ubuntu-latest
@@ -155,9 +186,19 @@ jobs:
             --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
             --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.YGF_TURNSTILE_SITE_KEY }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:latest-amd64
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:latest-amd64
 
   build_ygfliege_arm64:
+    needs: tests
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
     name: Build ygfliege ARM64 Image
     runs-on: self-hosted
@@ -188,7 +229,16 @@ jobs:
             --build-arg UMAMI_HOST=${{ vars.YGF_UMAMI_HOST }} \
             --build-arg UMAMI_WEBSITE_ID=${{ vars.YGF_UMAMI_WEBSITE_ID }} \
             --build-arg NUXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.YGF_TURNSTILE_SITE_KEY }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:latest-arm64
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:latest-arm64
 
   create_manifest_ygfliege:
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && vars.YGF_BASE_URL != ''
@@ -221,6 +271,7 @@ jobs:
             --fail --max-time 300
 
   build_production_ygfliege:
+    needs: tests
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ygf-v')
     name: Build ygfliege Production Image
     runs-on: ubuntu-latest
@@ -259,7 +310,17 @@ jobs:
             --build-arg SENTRY_ORG=${{ vars.YGF_SENTRY_ORG }} \
             --build-arg SENTRY_PROJECT=${{ vars.YGF_SENTRY_PROJECT }} \
             --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:production
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:production
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_YGF }}:${{ github.ref_name }}
 
   deploy_production_ygfliege:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ygf-v')
@@ -297,6 +358,7 @@ jobs:
   # ── tokyosushi production release (tag push v*) ─────────────────────────────
 
   build_production_tokyosushi:
+    needs: tests
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     name: Build tokyosushi Production Image
     runs-on: ubuntu-latest
@@ -335,7 +397,17 @@ jobs:
             --build-arg SENTRY_ORG=${{ vars.TSB_SENTRY_ORG }} \
             --build-arg SENTRY_PROJECT=${{ vars.TSB_SENTRY_PROJECT }} \
             --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
-            --push
+            --load
+
+      # Boots the image that was just built (the server must answer and render a page)
+      # before anything is pushed: a broken image never reaches the registry.
+      - name: Boot smoke test
+        run: scripts/ci-smoke-image.sh ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:production
+
+      - name: Push image
+        run: |
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:production
+          docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME_TSB }}:${{ github.ref_name }}
 
   deploy_production_tokyosushi:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
