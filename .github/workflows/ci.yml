@@ -1,8 +1,15 @@
 name: CI
 
+# Pull requests run this directly. Pushes to main and release tags run it through
+# the "tests" job of action.yml (workflow_call), which every image build waits for.
 on:
   pull_request:
     branches: [main]
+  workflow_call:
+
+# A called workflow cannot hold more than its caller grants.
+permissions:
+  contents: read
 
 jobs:
   check:
@@ -25,6 +32,11 @@ jobs:
       # when coverage drops. Nothing is uploaded. See docs/testing.md.
       - name: Unit tests with coverage (vp test)
         run: vp test run --coverage
+
+      # The release and nightly workflows refuse an untested commit through
+      # this script: keep its verdicts honest.
+      - name: Self-test the green-commit gate
+        run: bash .github/scripts/main-green.test.sh
 
   typecheck:
     name: Typecheck (${{ matrix.app }})
@@ -125,7 +137,8 @@ jobs:
     name: E2E Tests
     needs: [check, typecheck, build]
     runs-on: ubuntu-latest
-    if: ${{ vars.E2E_ENABLED == 'true' }}
+    # Real-backend run: pull requests only, so it never gates a deploy.
+    if: ${{ vars.E2E_ENABLED == 'true' && github.event_name == 'pull_request' }}
     env:
       BASE_URL: https://localhost
       API_BASE_URL: https://localhost/api/v1
