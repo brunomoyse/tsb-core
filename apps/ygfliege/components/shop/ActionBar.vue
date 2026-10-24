@@ -178,7 +178,10 @@ onBeforeUnmount(() => clearTimeout(pulseTimeout))
   justify-content: center;
   gap: 0.375rem;
   min-height: 2.75rem;
-  padding: 0 0.75rem;
+  /* 0.5rem, not 0.75rem: at 360 px the three labelled buttons need their min-content width (the grid's fr shares are
+     narrower than "Itinéraire"), and with 0.75rem they overran the bar's side padding and, with Linux font metrics, the
+     viewport itself. The cells stretch the buttons, so the padding only sets how much room the labels need. */
+  padding: 0 0.5rem;
   border: 2px solid transparent;
   border-radius: var(--radius-btn);
   font-size: 0.875rem;

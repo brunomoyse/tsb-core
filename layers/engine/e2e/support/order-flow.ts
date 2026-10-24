@@ -222,8 +222,12 @@ export async function gotoCheckout(page: Page): Promise<void> {
 /** Picks pickup or delivery on the checkout page (the radio of the collection card). */
 export async function chooseCollection(page: Page, option: 'pickup' | 'delivery'): Promise<void> {
   // A takeaway-only brand has no choice to make: the card shows the pickup address instead.
-  if (option === 'pickup' && (await page.getByTestId('checkout-pickup-only').count()) > 0) return
+  const pickupOnly = page.getByTestId('checkout-pickup-only')
   const radio = page.getByTestId(`checkout-option-${option}`)
+  // The phone's pay bar shows while the restaurant config is still loading (the card is a skeleton then, e.g. after a
+  // Retry): wait for the card itself before telling the two forms apart.
+  await expect(pickupOnly.or(radio).first()).toBeVisible()
+  if (option === 'pickup' && (await pickupOnly.count()) > 0) return
   await radio.click()
   await expect(radio).toHaveAttribute('aria-checked', 'true')
 }
