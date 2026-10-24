@@ -13,6 +13,7 @@
     "preview": "npm run preview -w tokyosushi",
     "lint": "vp lint && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs && node scripts/check-token-contrast.mjs",
     "check": "vp check && node scripts/check-ssr-safety.mjs && node scripts/check-engine-boundaries.mjs && node scripts/check-locale-parity.mjs && node scripts/check-hardcoded-phone.mjs && node scripts/check-focus-ring-contrast.mjs && node scripts/check-token-contrast.mjs",
+    "check:graphql": "node scripts/check-graphql-operations.mjs --root layers --root apps",
     "fmt": "vp fmt",
     "test": "vp test run",
     "test:coverage": "vp test run --coverage",

@@ -63,28 +63,43 @@ export interface OrderQuote {
   issues: QuoteIssue[]
 }
 
-export const QUOTE_ORDER_QUERY = `
-    query QuoteOrder($input: QuoteOrderInput!) {
-        quoteOrder(input: $input) {
-            subtotal
-            deliveryFee
-            pickupDiscount
-            couponDiscount
-            onlineFee
-            total
-            coupon { code valid errorCode }
-            issues { code minimum }
-            lines {
-                productId
-                quantity
-                productPrice
-                unitPrice
-                lineTotal
-                selections { groupId choiceId quantity priceModifier }
-                issues { code currentPrice }
-            }
+export const QUOTE_ORDER_QUERY = /* GraphQL */ `
+  query QuoteOrder($input: QuoteOrderInput!) {
+    quoteOrder(input: $input) {
+      subtotal
+      deliveryFee
+      pickupDiscount
+      couponDiscount
+      onlineFee
+      total
+      coupon {
+        code
+        valid
+        errorCode
+      }
+      issues {
+        code
+        minimum
+      }
+      lines {
+        productId
+        quantity
+        productPrice
+        unitPrice
+        lineTotal
+        selections {
+          groupId
+          choiceId
+          quantity
+          priceModifier
         }
+        issues {
+          code
+          currentPrice
+        }
+      }
     }
+  }
 `
 
 /** Codes of the coupon refusals the server reports when it could not evaluate or accept the code. */

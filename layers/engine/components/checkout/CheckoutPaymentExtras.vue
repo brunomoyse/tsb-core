@@ -532,7 +532,7 @@ const EXTRA_PRODUCT_FIELDS = `
 `
 
 /** The extras category alone: tsb-service answers only that category's products. */
-const EXTRA_CATEGORY_QUERY = `
+const EXTRA_CATEGORY_QUERY = /* GraphQL */ `
     query CheckoutPaidExtraCategory($slug: String!) {
         productCategoryBySlug(slug: $slug) {
             id
@@ -550,7 +550,7 @@ const EXTRA_CATEGORY_QUERY = `
  * has no such field and answers GRAPHQL_VALIDATION_FAILED naming it. The whole menu is then fetched and filtered
  * (what the checkout always did), and the choice is remembered so later runs go straight to it.
  */
-const EXTRA_PRODUCTS_LEGACY_QUERY = `
+const EXTRA_PRODUCTS_LEGACY_QUERY = /* GraphQL */ `
     query CheckoutPaidExtraProducts {
         productCategories {
             id
