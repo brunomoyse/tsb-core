@@ -86,6 +86,8 @@ jobs:
     # Production build of the app against the in-repo mock of tsb-service (layers/engine/e2e/mock): no secret, database
     # or Zitadel. Each shard builds the app itself (Playwright webServer) and runs one half of the suite, chromium only:
     # a brand's whole run is ~20 min on one worker (the mock holds one state, so no parallelism), a shard ~10 min.
+    # Starts only once the ~1 min checks passed, so a lint, type or build failure never pays for four shards.
+    needs: [check, typecheck, build]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -121,6 +123,7 @@ jobs:
 
   test:
     name: E2E Tests
+    needs: [check, typecheck, build]
     runs-on: ubuntu-latest
     if: ${{ vars.E2E_ENABLED == 'true' }}
     env:
