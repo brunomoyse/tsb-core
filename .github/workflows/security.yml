@@ -28,9 +28,12 @@ jobs:
           # Its auto cache runs the runner's npm, which devEngines refuses.
           package-manager-cache: false
 
-      # The npm that package.json devEngines asks for (older ones refuse to run).
+      # The npm that package.json devEngines asks for: older ones refuse to run
+      # in the project, so it is installed from outside it.
       - name: npm audit (production dependencies)
         run: |
           set -euo pipefail
           npm_version=$(jq -r '.devEngines.packageManager.version // empty' package.json)
-          npx -y "npm@${npm_version:-latest}" audit --omit=dev --audit-level=high
+          (cd "$RUNNER_TEMP" && npm install -g "npm@${npm_version:-latest}")
+          npm --version
+          npm audit --omit=dev --audit-level=high
