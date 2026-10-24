@@ -76,16 +76,16 @@ export default defineNuxtModule({
     await generate()
 
     nuxt.hook('i18n:registerModule', (register) => {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see the comment above `register`
       const moduleLocales = locales.map(({ code, language }) => ({
         code,
         language: language ?? code,
         file: `${code}.json`,
-      })) as Parameters<typeof register>[0]['locales']
+      }))
       register({
         langDir: outDir,
         // The module types its locale codes from the project's own config: ours are the same four, as plain strings.
-        locales: moduleLocales,
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see the line above
+        locales: moduleLocales as Parameters<typeof register>[0]['locales'],
       })
     })
 
