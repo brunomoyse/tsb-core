@@ -41,8 +41,12 @@ jobs:
           mkdir -p "$tools"
           gql=$(node -p "require('./package-lock.json').packages['node_modules/graphql'].version")
           ts=$(node -p "require('./package-lock.json').packages['node_modules/typescript'].version")
-          npm install --prefix "$tools" --no-audit --no-fund --ignore-scripts "graphql@$gql" "typescript@$ts"
           cp scripts/check-graphql-operations.mjs "$tools/"
+          # Run npm from the scratch dir: the repo's devEngines (npm ^12.2, onFail error)
+          # would otherwise reject the runner's bundled npm.
+          cd "$tools"
+          echo '{"private":true}' > package.json
+          npm install --no-audit --no-fund --ignore-scripts "graphql@$gql" "typescript@$ts"
           echo "GQL_TOOLS=$tools" >> "$GITHUB_ENV"
 
       - name: Fetch the backend schema (pili-api main)
