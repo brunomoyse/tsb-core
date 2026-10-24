@@ -1,6 +1,8 @@
-# tsb-core
+# pili-shop
 
-Customer-facing webshop for Tokyo Sushi Bar.
+Customer-facing web shop of Pili: one Nuxt app per restaurant brand (`apps/tokyosushi`, `apps/ygfliege`) on a shared engine layer.
+
+Repository `nuagemagique-dev/pili-shop`, local folder and internal name `tsb-core`. Images: `ghcr.io/nuagemagique-dev/pili-shop-tsb` (tokyosushi) and `ghcr.io/nuagemagique-dev/pili-shop-ygf` (ygfliege).
 
 `tsb-core` lets customers browse the menu, build orders, pay online, and follow order status updates in real time.
 
@@ -85,13 +87,19 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
 
 ## Deployment
 
-### tokyosushi (`ghcr.io/nuagemagique-dev/pili-shop`)
+### tokyosushi (`ghcr.io/nuagemagique-dev/pili-shop-tsb`)
 
 - Push to `main`: builds and publishes `:latest` (multi-arch) and deploys to the home server.
-- Tag `v*`: builds `:production` + version tags (AMD64) and deploys to OVH.
+- Tag `v*`: builds `:production` + version tags (AMD64) from the `TSB_*`
+  variables, then deploys the Helm release `tokyosushi-apps` to OVH.
 - Manual rollback: run the workflow with the target version.
 
-### ygfliege (`ghcr.io/nuagemagique-dev/pili-shop-ygfliege`)
+Build and deploy settings are named per brand: `TSB_*` and `YGF_*` variables,
+`TSB_DEPLOY_TOKEN` and `YGF_DEPLOY_TOKEN` secrets, `IMAGE_NAME_TSB` and
+`IMAGE_NAME_YGF` in the workflow. Shared ones (`PAT`, `OVH_*`,
+`SENTRY_AUTH_TOKEN`) carry no prefix.
+
+### ygfliege (`ghcr.io/nuagemagique-dev/pili-shop-ygf`)
 
 - Push to `main`: builds and publishes `:latest` (multi-arch; the home server is
   arm64, so an amd64-only image would not start) and deploys to the home server
@@ -101,3 +109,18 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
   `ygf-apps` (namespace `ygf`; see tsb-infra `YGF_PRODUCTION.md`).
 - All ygfliege jobs are gated on the `YGF_BASE_URL` repo variable, so they no-op
   until the `YGF_*` variables exist.
+
+## Pili repositories
+
+Every Pili repository lives in the GitHub org `nuagemagique-dev`. Local folders kept their earlier names.
+
+| Repository                      | Local folder     | What it is                                             |
+| ------------------------------- | ---------------- | ------------------------------------------------------ |
+| pili-api                        | `tsb-service`    | GraphQL API (Go) and the `pili-mcp` tool server        |
+| **pili-shop** (this repository) | `tsb-core`       | Customer web shop, one Nuxt app per brand              |
+| pili-dashboard                  | `tsb-dashboard`  | Admin dashboard (Nuxt)                                 |
+| pili-mobile                     | `tsb-mobile`     | Customer iOS and Android app (Expo)                    |
+| pili-handheld                   | `moyun-handheld` | Staff handheld app for the Sunmi V3H (Kotlin)          |
+| pili-pos                        | `moyun-pos`      | SCE 2.0 cash register (Rust engine, Android and Linux) |
+| pili-agent                      | `tsb-agent`      | Owner and staff Telegram agent                         |
+| pili-infra                      | `tsb-infra`      | Helm charts, Terraform, SOPS secrets, runbooks         |
