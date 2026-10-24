@@ -22,6 +22,12 @@ updates:
         patterns:
           - 'vite-plus'
           - '@voidzero-dev/*'
+      # Every other non-major bump in one weekly PR: one CI run instead of one per
+      # package. Majors still get their own PR. Groups above take precedence.
+      minor-and-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
