@@ -12,7 +12,7 @@
       "
       :aria-expanded="open"
       :aria-controls="open ? panelId : undefined"
-      :aria-label="`${$t('nav.language')} (${$t('nav.currentLanguage', { language: current.label })})`"
+      :aria-label="buttonLabel"
       @click.stop="toggle"
     >
       <NavIcon
@@ -91,6 +91,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import NavIcon from './NavIcon.vue'
 import { useLanguagePicker } from '#engine/composables/useLanguagePicker'
 
@@ -110,4 +112,16 @@ const { variant = 'inline', placement = 'bottom-end' } = defineProps<{
 
 const { open, rootRef, buttonRef, panelId, languages, current, toggle, choose } =
   useLanguagePicker()
+
+const { t } = useI18n()
+
+/*
+ * The visible text must be part of the name (WCAG 2.5.3, axe `label-content-name-mismatch`): the inline pill shows the
+ * language's name, the rail button its two-letter code. A name that starts with the code ("FR Sélectionner la langue, ...")
+ * keeps what a voice-control user says, and the current language is spoken as before.
+ */
+const buttonLabel = computed(() => {
+  const name = `${t('nav.language')}, ${t('nav.currentLanguage', { language: current.value.label })}`
+  return variant === 'rail' ? `${current.value.short} ${name}` : name
+})
 </script>
