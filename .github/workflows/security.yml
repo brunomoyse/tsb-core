@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
+          # Its auto cache runs the runner's npm, which devEngines refuses.
+          package-manager-cache: false
 
       # The npm that package.json devEngines asks for (older ones refuse to run).
       - name: npm audit (production dependencies)
