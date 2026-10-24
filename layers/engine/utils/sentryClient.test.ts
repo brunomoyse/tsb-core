@@ -284,6 +284,8 @@ describe('extension noise', () => {
     'Invalid call to runtime.sendMessage(). Tab not found.',
     'Extension context invalidated.',
     'Could not establish connection. Receiving end does not exist.',
+    "ReferenceError: Can't find variable: SCDynimacBridge",
+    'ReferenceError: SCDynimacBridge is not defined',
   ])('matches "%s"', (message) => {
     expect(extensionNoise.some((pattern) => pattern.test(message))).toBe(true)
   })

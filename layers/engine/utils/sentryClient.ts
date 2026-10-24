@@ -62,12 +62,15 @@ export const oidcNoise = [
 /*
  * Errors of the visitor's browser extensions, which run in our page and end up in its unhandled-rejection handler. The shop
  * never calls the WebExtension API (`runtime.sendMessage`...), so these are never ours and never actionable (TSB-CORE-D: a
- * Safari extension on iOS, no stack trace).
+ * Safari extension on iOS, no stack trace). Same for the bridge that Snapchat's in-app browser injects into every page it
+ * opens: its script runs as line 1 of our HTML, so `isInjectedScriptError` cannot tell it apart from our own inline
+ * scripts (TSB-CORE-S: "Can't find variable: SCDynimacBridge" at /fr/checkout:1:16).
  */
 export const extensionNoise = [
   /runtime\.sendMessage/u,
   /Extension context invalidated/iu,
   /Could not establish connection\. Receiving end does not exist/iu,
+  /\bSCDynimacBridge\b/u,
 ]
 
 /*
