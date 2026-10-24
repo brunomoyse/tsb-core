@@ -142,11 +142,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout the smoke test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: scripts/smoke.sh
+          sparse-checkout-cone-mode: false
+
       - name: Trigger deploy webhook
         run: |
           curl -X POST ${{ vars.TSB_DEPLOY_WEBHOOK_URL }} \
             -H "X-Deploy-Token: ${{ secrets.TSB_DEPLOY_TOKEN }}" \
             --fail --max-time 300
+
+      # The webhook answering does not mean the new container came up: poll the test server for 4 minutes.
+      # Repository variable TSB_TEST_BASE_URL = public URL of the tokyosushi shop test server.
+      - name: Wait for the test server to answer
+        env:
+          URL: ${{ vars.TSB_TEST_BASE_URL }}
+          SMOKE_ATTEMPTS: '24'
+          SMOKE_DELAY: '10'
+        run: |
+          if [ -z "$URL" ]; then
+            echo "::warning::Repository variable TSB_TEST_BASE_URL is not set: the test deploy is not verified."
+            exit 0
+          fi
+          scripts/smoke.sh shop "$URL"
 
   # ── ygfliege (second brand) ──────────────────────────────────────────────────
   # Dormant until the YGF_* repo/environment vars are created (no-op otherwise).
@@ -264,11 +284,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout the smoke test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: scripts/smoke.sh
+          sparse-checkout-cone-mode: false
+
       - name: Trigger deploy webhook
         run: |
           curl -X POST ${{ vars.YGF_DEPLOY_WEBHOOK_URL }} \
             -H "X-Deploy-Token: ${{ secrets.YGF_DEPLOY_TOKEN }}" \
             --fail --max-time 300
+
+      # The webhook answering does not mean the new container came up: poll the test server for 4 minutes.
+      # Repository variable YGF_TEST_BASE_URL = public URL of the ygfliege shop test server.
+      - name: Wait for the test server to answer
+        env:
+          URL: ${{ vars.YGF_TEST_BASE_URL }}
+          SMOKE_ATTEMPTS: '24'
+          SMOKE_DELAY: '10'
+        run: |
+          if [ -z "$URL" ]; then
+            echo "::warning::Repository variable YGF_TEST_BASE_URL is not set: the test deploy is not verified."
+            exit 0
+          fi
+          scripts/smoke.sh shop "$URL"
 
   build_production_ygfliege:
     needs: tests
@@ -330,6 +370,12 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout the smoke test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: scripts/smoke.sh
+          sparse-checkout-cone-mode: false
+
       - name: Deploy via SSH (Helm)
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         env:
@@ -354,6 +400,42 @@ jobs:
               --set "apps.${APP}.image.repository=${REPO}" \
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m
+
+      - name: Smoke test ygfliege
+        id: smoke_ygf
+        env:
+          URL: ${{ vars.YGF_BASE_URL }}
+        run: scripts/smoke.sh --skip-unset shop "$URL"
+
+      - name: Roll back ygfliege after a failed smoke test
+        id: rollback_ygf
+        if: failure() && steps.smoke_ygf.outcome == 'failure'
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ vars.OVH_HOST }}
+          username: ${{ vars.OVH_USER }}
+          key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            sudo flock -w 600 /var/lock/ygf-apps-helm.lock env KUBECONFIG=/etc/rancher/k3s/k3s.yaml \
+              helm rollback ygf-apps --namespace ygf --wait --timeout 5m
+
+      - name: Alert on a failed deploy
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TEXT: >-
+            pili-shop ${{ github.ref_name }}: ygfliege production deploy failed.
+            smoke ${{ steps.smoke_ygf.outcome }}, rollback ${{ steps.rollback_ygf.outcome }}.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then exit 0; fi
+          curl -fsS -o /dev/null "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${TEXT}" \
+            --data-urlencode "disable_web_page_preview=true" \
+            || echo "::warning::Telegram alert failed"
 
   # ── tokyosushi production release (tag push v*) ─────────────────────────────
 
@@ -417,6 +499,12 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout the smoke test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: scripts/smoke.sh
+          sparse-checkout-cone-mode: false
+
       - name: Deploy via SSH (Helm)
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         env:
@@ -440,6 +528,42 @@ jobs:
               --set "apps.${APP}.image.repository=${REPO}" \
               --set "apps.${APP}.image.tag=${TAG}" \
               --atomic --timeout 5m
+
+      - name: Smoke test tokyosushi
+        id: smoke_tokyosushi
+        env:
+          URL: ${{ vars.TSB_BASE_URL }}
+        run: scripts/smoke.sh --skip-unset shop "$URL"
+
+      - name: Roll back tokyosushi after a failed smoke test
+        id: rollback_tokyosushi
+        if: failure() && steps.smoke_tokyosushi.outcome == 'failure'
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ vars.OVH_HOST }}
+          username: ${{ vars.OVH_USER }}
+          key: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            sudo flock -w 600 /var/lock/tokyosushi-apps-helm.lock env KUBECONFIG=/etc/rancher/k3s/k3s.yaml \
+              helm rollback tokyosushi-apps --namespace tokyosushi --wait --timeout 5m
+
+      - name: Alert on a failed deploy
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TEXT: >-
+            pili-shop ${{ github.ref_name }}: tokyosushi production deploy failed.
+            smoke ${{ steps.smoke_tokyosushi.outcome }}, rollback ${{ steps.rollback_tokyosushi.outcome }}.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then exit 0; fi
+          curl -fsS -o /dev/null "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${TEXT}" \
+            --data-urlencode "disable_web_page_preview=true" \
+            || echo "::warning::Telegram alert failed"
 
   # ── tokyosushi rollback (manual trigger) ─────────────────────────────────────
 
