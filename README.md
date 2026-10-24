@@ -90,8 +90,14 @@ One Dockerfile serves every brand app (`ARG APP`). It is multi-stage with a heal
 ### tokyosushi (`ghcr.io/nuagemagique-dev/pili-shop-tsb`)
 
 - Push to `main`: builds and publishes `:latest` (multi-arch) and deploys to the home server.
-- Tag `v*`: builds `:production` + version tags (AMD64) and deploys to OVH.
+- Tag `v*`: builds `:production` + version tags (AMD64) from the `TSB_*`
+  variables, then deploys the Helm release `tokyosushi-apps` to OVH.
 - Manual rollback: run the workflow with the target version.
+
+Build and deploy settings are named per brand: `TSB_*` and `YGF_*` variables,
+`TSB_DEPLOY_TOKEN` and `YGF_DEPLOY_TOKEN` secrets, `IMAGE_NAME_TSB` and
+`IMAGE_NAME_YGF` in the workflow. Shared ones (`PAT`, `OVH_*`,
+`SENTRY_AUTH_TOKEN`) carry no prefix.
 
 ### ygfliege (`ghcr.io/nuagemagique-dev/pili-shop-ygf`)
 
